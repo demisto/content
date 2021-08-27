@@ -11,7 +11,7 @@ To get your API key, you need to add an authorization code, and then activate th
   1. From the **Site Licenses** page, click **Enable**.
   2. Select the API Key link.
 
-  Enter this API key when configuring the AutoFocus integration in Demisto.
+  Enter this API key when configuring the AutoFocus integration in Cortex XSOAR.
   For more info on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
 ## How to Build a Query 

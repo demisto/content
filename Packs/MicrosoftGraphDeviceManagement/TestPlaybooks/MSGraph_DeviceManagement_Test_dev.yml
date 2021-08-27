@@ -1,0 +1,79 @@
+id: MSGraph_DeviceManagement_Test_dev
+version: -1
+name: MSGraph_DeviceManagement_Test_dev
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49be3148-cfe4-4308-9048-f5199be22d9a
+    type: start
+    task:
+      id: 49be3148-cfe4-4308-9048-f5199be22d9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 324ea9cd-4d9f-4ab6-8645-cc7599592ab0
+    type: regular
+    task:
+      id: 324ea9cd-4d9f-4ab6-8645-cc7599592ab0
+      version: -1
+      name: set playbook to MSGraph_DeviceManagement_Test
+      description: set playbook for current incident to MSGraph_DeviceManagement_Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: MSGraph_DeviceManagement_Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

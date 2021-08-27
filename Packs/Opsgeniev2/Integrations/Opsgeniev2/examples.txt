@@ -1,0 +1,9 @@
+list-alerts
+list-schedules
+get-schedule schedule-id=092748e8-c17d-4e53-99da-e84345f06a90
+get-on-call schedule-id=092748e8-c17d-4e53-99da-e84345f06a90
+create-alert message="Example Message"
+get-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202
+ack-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202
+close-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202
+delete-alert alert-id=37816db1-844e-449f-bf61-b28834cad50f-1613353779202

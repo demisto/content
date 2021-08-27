@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the RSA NetWitness integration for systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response on Demisto.</p>
+<p>Use the RSA NetWitness integration for systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response on Cortex XSOAR.</p>
 <p>Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.</p>
 <h2>Use Cases</h2>
 <hr>
@@ -17,7 +17,7 @@
 <ul>
 <li>integration-server.api.access</li>
 </ul>
-<h2>Configure RSA Netwitness on Demisto</h2>
+<h2>Configure RSA Netwitness on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -33,7 +33,7 @@
 <li>
 <strong>Password</strong>: Your personal account password.</li>
 <li>
-<strong>Fetched incidents data</strong>: The integration imports NetWitness incident, and all alerts related, as Demisto incident. All incidents created 24 hours prior to the configuration of ‘Fetch-incidents’  and up to current time will be imported.</li>
+<strong>Fetched incidents data</strong>: The integration imports NetWitness incident, and all alerts related, as Cortex XSOAR incident. All incidents created 24 hours prior to the configuration of ‘Fetch-incidents’  and up to current time will be imported.</li>
 <li>
 <strong>On Fetch incidents, import all alerts related to the incident</strong>.</li>
 <li>
@@ -45,12 +45,13 @@
 <h2>Fetched Incidents Data</h2>
 <hr>
 <p>To use Fetch incidents, select the <strong>Fetch Incidents</strong> checkbox when configuring a new integration instance.</p>
-<p>By default, the integration will import NetWitness incidents data as Demisto incidents.</p>
+<p>By default, the integration will import NetWitness incidents data as Cortex XSOAR incidents.</p>
 <p>To import related alerts data in addition to the incidents data, select the relevant checkbox in the instance settings.</p>
 <p>All incidents created 24 hours prior to the configuration of <strong>Fetch Incidents</strong> and up to current time will be imported.</p>
+<ul><li>Note - Due to API limitations, the first few attempts to fetch incidents may fail. If the fetch fails, you can either change the value of the "First fetch timestamp" parameter to fetch a smaller number of incidents or set the timeout of the fetch incidents command of the integration to a higher value.</li></ul>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_c7ca61c6-e51d-4664-9222-c8ee6b66dcad" target="_self">Get details for a specific incident: netwitness-get-incident</a></li>
 <li><a href="#h_c527c29d-dbad-48a5-a47d-2285b7eadfc0" target="_self">Get a list of incidents: netwitness-get-incidents</a></li>

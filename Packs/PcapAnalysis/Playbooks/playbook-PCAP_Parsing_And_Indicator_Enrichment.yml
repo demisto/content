@@ -1029,7 +1029,7 @@ tasks:
       - "48"
     scriptarguments:
       email:
-        simple: ${DetectedExternalEmail}
+        simple: ${ExternalEmailAddresses}
     separatecontext: false
     view: |-
       {

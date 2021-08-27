@@ -1,23 +1,11 @@
-from datetime import datetime
-
-import requests
-
 from CommonServerPython import *
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-URL = demisto.getParam('url')
-if URL[-1] != '/':
-    URL += '/'
-
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-VERIFY = not demisto.params().get('unsecure', False)
+URL = ''
+VERIFY = False
+DEFAULT_LIMIT = 100
 
 # Standard headers
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
@@ -34,7 +22,7 @@ def get_token():
         'password': demisto.getParam('credentials')['password']
     })
 
-    if response.status_code != requests.codes.ok:
+    if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         raise Exception('Error authenticating to RedLock service [%d] - %s' % (response.status_code, response.text))
     try:
         response_json = response.json()
@@ -60,7 +48,7 @@ def req(method, path, data, param_data):
     if not TOKEN:
         get_token()
     response = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS, verify=VERIFY)
-    if response.status_code != requests.codes.ok:
+    if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         text = response.text
         if response.headers.get('x-redlock-status'):
             try:
@@ -70,12 +58,22 @@ def req(method, path, data, param_data):
                     # Handle case for no remediation details
                     if status['i18nKey'] == 'remediation_unavailable':
                         return False
+                    if status['i18nKey'] == 'alert_no_longer_in_expected_state':
+                        return False
             except Exception:
                 pass
         raise Exception('Error in API call to RedLock service [%d] - %s' % (response.status_code, text))
     if not response.text:
         return {}
     return response.json()
+
+
+def format_response(response):
+    if response and isinstance(response, dict):
+        response = {pascalToSpace(key).replace(" ", ""): format_response(value) for key, value in response.items()}
+    elif response and isinstance(response, list):
+        response = [format_response(item) for item in response]
+    return response
 
 
 def list_filters():
@@ -107,7 +105,7 @@ def convert_date_to_unix(date_str):
 
 def convert_unix_to_date(timestamp):
     """
-    Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS
+    Convert milliseconds since epoch to date formatted MM/DD/YYYY HH:MI:SS
     """
     if timestamp:
         date_time = datetime.utcfromtimestamp(timestamp / 1000)
@@ -117,7 +115,7 @@ def convert_unix_to_date(timestamp):
 
 def convert_unix_to_demisto(timestamp):
     """
-    Convert millise since epoch to date formatted MM/DD/YYYYTHH:MI:SS
+    Convert milliseconds since epoch to date formatted MM/DD/YYYYTHH:MI:SS
     """
     if timestamp:
         date_time = datetime.utcfromtimestamp(timestamp / 1000)
@@ -313,21 +311,42 @@ def dismiss_alerts():
     policies = argToList(demisto.getArg('policy-id'))
     payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
     demisto.args().pop('alert-id', None)
+    args = demisto.args()
+    snooze_value = args.get('snooze-value', None)
+    snooze_unit = args.get('snooze-unit', None)
+    msg_notes = ['dismissed', 'Dismissal']
+
+    if snooze_value and snooze_unit:
+        payload['dismissalTimeRange'] = {
+            'type': 'relative',
+            'value': {
+                'unit': snooze_unit,
+                'amount': int(snooze_value)
+            }
+        }
+        msg_notes = ['snoozed', 'Snooze']
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
     if not ids and not policies:
         return_error('You must specify either alert-id or policy-id for dismissing alerts')
     response = req('POST', 'alert/dismiss', payload, None)
-    context = {}
-    if ids:
-        context['Redlock.DismissedAlert.ID'] = ids
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': response,
-        'EntryContext': context,
-        'HumanReadable': '### Alerts dismissed successfully. Dismissal Note: %s.' % demisto.getArg('dismissal-note')
-    })
+    if response is False:
+        demisto.results("Alert not in expected state.")
+    else:
+        context = {}
+        if ids:
+            context['Redlock.DismissedAlert.ID'] = ids
+
+            md = '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1],
+                                                                   demisto.getArg('dismissal-note'))
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'EntryContext': context,
+            'HumanReadable': md
+        })
 
 
 def reopen_alerts():
@@ -370,6 +389,52 @@ def translate_severity(alert):
     return 0
 
 
+def get_rql_response(args):
+    """"
+    Retrieve any RQL
+    """
+    rql = args.get('rql').encode("utf-8")
+
+    limit = str(args.get('limit', '1'))
+    rql += " limit search records to {}".format(limit)
+
+    payload = {"query": rql, "filter": {}}
+
+    handle_filters(payload['filter'])
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+
+    response = req('POST', 'search/config', payload, None)
+
+    human_readable = []
+
+    items = response["data"]["items"]
+
+    for item in items:
+        tmp_human_readable = {
+            "ResourceName": item["name"],
+            "Service": item["service"],
+            "Account": item["accountName"],
+            "Region": item["regionName"],
+            "Deleted": item["deleted"]
+        }
+        human_readable.append(tmp_human_readable)
+
+    contents = format_response(items)
+    rql_data = {
+        "Query": rql,
+        "Response": contents
+    }
+
+    md = tableToMarkdown(name="RQL Output:", t=human_readable, headerTransform=pascalToSpace, removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': rql_data,
+        'EntryContext': {'Redlock.RQL(val.Query === obj.Query)': rql_data},
+        'HumanReadable': md
+    })
+
+
 def get_remediation_details():
     """
     Retrieve remediation details for a given alert
@@ -378,9 +443,6 @@ def get_remediation_details():
     payload = {'alerts': alert_ids, 'filter': {}}
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-
-    if not alert_ids:
-        return_error('You must specify the alert-id to retrieve with CLI remediation')
 
     md_data = []
     context = []
@@ -415,15 +477,58 @@ def get_remediation_details():
         demisto.results('No Remediation Details Found')
 
 
+def redlock_search_config():
+    """
+    Run query in config
+    """
+    query = demisto.args().get('query', None)
+    limit = demisto.args().get('limit', None)
+    if not limit:
+        limit = DEFAULT_LIMIT
+    else:
+        limit = int(limit)
+
+    if not query:
+        return_error('You must specify a query to retrieve assets')
+    payload = {
+        'query': query,
+        'limit': limit,
+        'sort': [{"direction": "desc", "field": "insertTs"}],
+        'withResourceJson': True
+    }
+    handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
+
+    response = req('POST', 'search/config', payload, None)
+
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], dict)
+            or 'items' not in response['data']
+            or not isinstance(response['data']['items'], list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response['data']['items']
+        md = tableToMarkdown("Configuration Details", items)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': items,
+            'EntryContext': {'Redlock.Asset(val.id == obj.id)': items},
+            'HumanReadable': md
+        })
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run_object = demisto.getLastRun()
-    last_run = last_run_object and last_run_object['time']
-    if not last_run:
-        last_run = now - 24 * 60 * 60 * 1000
+    last_run = demisto.getLastRun().get('time')
+    if not last_run:  # first time fetch
+        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -448,29 +553,49 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-    demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+
+    return incidents, now
 
 
-try:
-    if demisto.command() == 'test-module':
-        get_token()
-        demisto.results('ok')
-    elif demisto.command() == 'redlock-search-alerts':
-        search_alerts()
-    elif demisto.command() == 'redlock-list-alert-filters':
-        list_filters()
-    elif demisto.command() == 'redlock-get-alert-details':
-        get_alert_details()
-    elif demisto.command() == 'redlock-dismiss-alerts':
-        dismiss_alerts()
-    elif demisto.command() == 'redlock-reopen-alerts':
-        reopen_alerts()
-    elif demisto.command() == 'redlock-get-remediation-details':
-        get_remediation_details()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    else:
-        raise Exception('Unrecognized command: ' + demisto.command())
-except Exception as err:
-    return_error(str(err))
+def main():
+    global URL, VERIFY
+    handle_proxy()
+    params = demisto.params()
+    URL = params.get('url')
+    if URL[-1] != '/':
+        URL += '/'
+    VERIFY = not params.get('unsecure', False)
+    try:
+        command = demisto.command()
+        if command == 'test-module':
+            get_token()
+            return_results('ok')
+        elif command == 'redlock-search-alerts':
+            search_alerts()
+        elif command == 'redlock-list-alert-filters':
+            list_filters()
+        elif command == 'redlock-get-alert-details':
+            get_alert_details()
+        elif command == 'redlock-dismiss-alerts':
+            dismiss_alerts()
+        elif command == 'redlock-reopen-alerts':
+            reopen_alerts()
+        elif command == 'redlock-get-remediation-details':
+            get_remediation_details()
+        elif command == 'redlock-get-rql-response':
+            get_rql_response(demisto.args())
+        elif command == 'redlock-search-config':
+            redlock_search_config()
+        elif command == 'fetch-incidents':
+            incidents, new_run = fetch_incidents()
+            demisto.incidents(incidents)
+            demisto.setLastRun({'time': new_run})
+        else:
+            raise Exception('Unrecognized command: ' + command)
+    except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(str(err))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

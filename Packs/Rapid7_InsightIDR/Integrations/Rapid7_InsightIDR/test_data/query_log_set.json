@@ -1,0 +1,30 @@
+{
+    "logs": [
+      "7efaf894-cf8a-4ed2-9495-77395bf2e5a6"
+    ],
+    "events": [
+      {
+        "labels": [
+           
+        ],
+        "sequence_number": 3237130348198785024,
+        "timestamp": 1604849794718,
+        "log_id": "7efaf894-cf8a-4ed2-9495-77395bf2e5a6",
+        "message": "{\"message\": \"hello\", \"event\": \"event1\"}",
+        "links": [
+          {
+            "rel": "Context",
+            "href": "https://us.api.insight.rapid7.com/log_search/query/context/3237130348198785024?per_page=50×tamp=1604849794718&log_keys=7efaf894-cf8a-4ed2-9495-77395bf2e5a6&context_type=SURROUND"
+          }
+        ],
+        "sequence_number_str": "3237130348198785024"
+      }
+    ],
+    "leql": {
+      "during": {
+        "from": 0,
+        "to": 1605436845000
+      },
+      "statement": "where(message=\"hello\")"
+    }
+  }

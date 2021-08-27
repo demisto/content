@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
 <p>PhishLabs’ three 24/7 Security Operations Centers enables enterprise security teams to rapidly detect and respond to the email-based threats that reach the inboxes of end users.</p>
-<p>In Demisto, PhishLabs IOC can be used to retrieve indicators from the global feed or fetch email based incidents from the user feed.</p>
+<p>In Cortex XSOAR, PhishLabs IOC can be used to retrieve indicators from the global feed or fetch email based incidents from the user feed.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="phishlabs-ioc-playbooks">PhishLabs IOC Playbooks</h2>
@@ -19,7 +19,7 @@
 </ol>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-phishlabs-ioc-on-demisto">Configure PhishLabs IOC on Demisto</h2>
+<h2 id="configure-phishlabs-ioc-on-demisto">Configure PhishLabs IOC on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -31,6 +31,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g.,<span> </span>https://ioc.phishlabs.com)</strong></li>
 <li><strong>Credentials</strong></li>
+<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is: B - Usually reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
@@ -46,7 +47,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -475,7 +476,7 @@
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Retrieves indicators from a specified PhishLabs incident. To fetch incidents to Demisto, enable fetching incidents.</p>
+<p>Retrieves indicators from a specified PhishLabs incident. To fetch incidents to Cortex XSOAR, enable fetching incidents.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-1">Base Command</h5>
@@ -1038,13 +1039,13 @@
 <h3 id="global-feed">Global Feed</h3>
 </div>
 <div class="cl-preview-section">
-<p>This is the PhishLabs global database for malicious indicators.<br> This feed consists of indicators that are classified as malicious by PhishLabs -<br> URLs, domains, and attachments (MD5 hashes). All the indicators from this feed are classified as malicious in Demisto.<br> To populate indicators from PhishLabs in Demisto, use the<span> </span><code>PhishLabsPopulateIndicators</code><span> </span>script/playbooks.</p>
+<p>This is the PhishLabs global database for malicious indicators.<br> This feed consists of indicators that are classified as malicious by PhishLabs -<br> URLs, domains, and attachments (MD5 hashes). All the indicators from this feed are classified as malicious in Cortex XSOAR.<br> To populate indicators from PhishLabs in Cortex XSOAR, use the<span> </span><code>PhishLabsPopulateIndicators</code><span> </span>script/playbooks.</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="user-feed">User Feed</h3>
 </div>
 <div class="cl-preview-section">
-<p>This feed is exclusive for the user and consists of emails that were sent to PhishLabs and were classified as malicious emails. For each malicious email, an incident is created that contains the email details and the extracted indicators. These indicators are not necessarily malicious though. In Demisto,<br> the user can choose whether to classify those indicators as malicious or suspicious. Incidents can be fetched by enabling fetch incidents in the integration configuration.</p>
+<p>This feed is exclusive for the user and consists of emails that were sent to PhishLabs and were classified as malicious emails. For each malicious email, an incident is created that contains the email details and the extracted indicators. These indicators are not necessarily malicious though. In Cortex XSOAR,<br> the user can choose whether to classify those indicators as malicious or suspicious. Incidents can be fetched by enabling fetch incidents in the integration configuration.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="known-limitations">Known Limitations</h2>
@@ -1056,5 +1057,5 @@
 <h2 id="troubleshooting">Troubleshooting</h2>
 </div>
 <div class="cl-preview-section">
-<p>Retrieving indicators for an incident - if the incident was fetched to Demisto but wasn’t found by the command, try running it with a longer duration, for example,<span> </span><code>since=30d</code>.<br> Possible error codes from the API:<br> <code>400 Bad Request</code><span> </span>- Unsupported request format<br> <code>401 Unauthorized</code><span> </span>- Incorrect credentials provided<br> <code>403 Forbidden</code><span> </span>- Insufficient permissions<br> <code>404 Not Found</code><span> </span>- Requested resource was not found<br> For further assistance, contact Demisto Customer Success:<span> </span><a href="mailto:support@demisto.com">support@demisto.com</a>.</p>
+<p>Retrieving indicators for an incident - if the incident was fetched to Cortex XSOAR but wasn’t found by the command, try running it with a longer duration, for example,<span> </span><code>since=30d</code>.<br> Possible error codes from the API:<br> <code>400 Bad Request</code><span> </span>- Unsupported request format<br> <code>401 Unauthorized</code><span> </span>- Incorrect credentials provided<br> <code>403 Forbidden</code><span> </span>- Insufficient permissions<br> <code>404 Not Found</code><span> </span>- Requested resource was not found<br>.</p>
 </div>

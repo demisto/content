@@ -6,7 +6,7 @@ Shows the details of sources in the Chronicle Domain Intelligence Sources sectio
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---

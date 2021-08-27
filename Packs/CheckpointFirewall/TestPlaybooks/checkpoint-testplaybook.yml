@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 855e852f-826c-43ee-98f4-6093d61e16e0
     type: start
     task:
-      id: '0'
+      id: 855e852f-826c-43ee-98f4-6093d61e16e0
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 280c311e-516d-4694-b139-a2d38b6b8191
     type: regular
     task:
-      id: '1'
+      id: 280c311e-516d-4694-b139-a2d38b6b8191
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: cd0956a2-2976-4e31-9ab8-ebd711bd9116
     type: regular
     task:
-      id: '2'
+      id: cd0956a2-2976-4e31-9ab8-ebd711bd9116
       version: -1
       name: checkpoint-host-list
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: af70b381-241b-4454-a167-7a4e82c18547
     type: condition
     task:
-      id: '3'
+      id: af70b381-241b-4454-a167-7a4e82c18547
       version: -1
       name: Verify Outputs
       type: condition
@@ -112,10 +112,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: bb868fc3-da14-4b54-9b23-30ba4005ce9d
     type: regular
     task:
-      id: '4'
+      id: bb868fc3-da14-4b54-9b23-30ba4005ce9d
       version: -1
       name: checkpoint-host-get
       description: ''
@@ -135,10 +135,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: c37c2ecc-5891-41a1-8645-ff36cd38dbd6
     type: condition
     task:
-      id: '5'
+      id: c37c2ecc-5891-41a1-8645-ff36cd38dbd6
       version: -1
       name: Verify Outputs
       type: condition
@@ -219,10 +219,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: fd9709cc-2aa3-4a05-91d7-7fb85914c97c
     type: regular
     task:
-      id: '6'
+      id: fd9709cc-2aa3-4a05-91d7-7fb85914c97c
       version: -1
       name: checkpoint-host-add
       description: ''
@@ -242,10 +242,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 923a6af9-ce04-4402-b085-e09454949c7e
     type: condition
     task:
-      id: '7'
+      id: 923a6af9-ce04-4402-b085-e09454949c7e
       version: -1
       name: Verify Outputs
       type: condition
@@ -326,10 +326,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: 593ab02a-34f4-4eca-bc2b-c919c634f721
     type: regular
     task:
-      id: '8'
+      id: 593ab02a-34f4-4eca-bc2b-c919c634f721
       version: -1
       name: checkpoint-host-update
       description: ''
@@ -349,10 +349,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: 6e859bff-7134-46f2-8974-3d7bee839a53
     type: condition
     task:
-      id: '9'
+      id: 6e859bff-7134-46f2-8974-3d7bee839a53
       version: -1
       name: Verify Outputs
       type: condition
@@ -433,10 +433,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: 33eff05b-105b-4395-bc0f-233b4c1afb3f
     type: regular
     task:
-      id: '10'
+      id: 33eff05b-105b-4395-bc0f-233b4c1afb3f
       version: -1
       name: checkpoint-host-delete
       description: ''
@@ -456,10 +456,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: ea135066-e7ce-4ba8-8261-5e60aefa97ff
     type: condition
     task:
-      id: '11'
+      id: ea135066-e7ce-4ba8-8261-5e60aefa97ff
       version: -1
       name: Verify Outputs
       type: condition
@@ -485,10 +485,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: 0fc75f1e-99d3-4eb3-ae4d-09d9361d1088
     type: regular
     task:
-      id: '12'
+      id: 0fc75f1e-99d3-4eb3-ae4d-09d9361d1088
       version: -1
       name: checkpoint-group-list
       description: ''
@@ -508,10 +508,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: 22d68ff0-0cc5-456a-8b2e-d01d6f43ae91
     type: condition
     task:
-      id: '13'
+      id: 22d68ff0-0cc5-456a-8b2e-d01d6f43ae91
       version: -1
       name: Verify Outputs
       type: condition
@@ -547,10 +547,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: 7b1d0ce2-b2b6-4ded-9675-573af20f578d
     type: regular
     task:
-      id: '14'
+      id: 7b1d0ce2-b2b6-4ded-9675-573af20f578d
       version: -1
       name: checkpoint-group-get
       description: ''
@@ -570,10 +570,10 @@ tasks:
     skipunavailable: false
   '15':
     id: '15'
-    taskid: '15'
+    taskid: ee6459dd-e899-41dd-bb33-b24ac7c27669
     type: condition
     task:
-      id: '15'
+      id: ee6459dd-e899-41dd-bb33-b24ac7c27669
       version: -1
       name: Verify Outputs
       type: condition
@@ -639,10 +639,10 @@ tasks:
     skipunavailable: false
   '16':
     id: 16
-    taskid: '16'
+    taskid: d61ad73e-dbbd-4c80-b0d2-cf299eab6811
     type: regular
     task:
-      id: '16'
+      id: d61ad73e-dbbd-4c80-b0d2-cf299eab6811
       version: -1
       name: checkpoint-group-add
       description: ''
@@ -662,10 +662,10 @@ tasks:
     skipunavailable: false
   '17':
     id: '17'
-    taskid: '17'
+    taskid: fa8a0723-81e3-4012-8c26-c533b330b344
     type: condition
     task:
-      id: '17'
+      id: fa8a0723-81e3-4012-8c26-c533b330b344
       version: -1
       name: Verify Outputs
       type: condition
@@ -736,10 +736,10 @@ tasks:
     skipunavailable: false
   '18':
     id: 18
-    taskid: '18'
+    taskid: 905bf064-8929-4345-b104-f9128decfe3c
     type: regular
     task:
-      id: '18'
+      id: 905bf064-8929-4345-b104-f9128decfe3c
       version: -1
       name: checkpoint-group-update
       description: ''
@@ -759,10 +759,10 @@ tasks:
     skipunavailable: false
   '19':
     id: '19'
-    taskid: '19'
+    taskid: 3c09d2e0-ad5f-4c4b-bb31-fab8f9c9c619
     type: condition
     task:
-      id: '19'
+      id: 3c09d2e0-ad5f-4c4b-bb31-fab8f9c9c619
       version: -1
       name: Verify Outputs
       type: condition
@@ -828,10 +828,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: 31ff88f8-814f-4874-8c72-7148da297b28
     type: regular
     task:
-      id: '20'
+      id: 31ff88f8-814f-4874-8c72-7148da297b28
       version: -1
       name: checkpoint-group-delete
       description: ''
@@ -851,10 +851,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: 23f75492-018c-4058-9935-8fb63e6f9ad1
     type: condition
     task:
-      id: '21'
+      id: 23f75492-018c-4058-9935-8fb63e6f9ad1
       version: -1
       name: Verify Outputs
       type: condition
@@ -880,10 +880,10 @@ tasks:
     skipunavailable: false
   '22':
     id: 22
-    taskid: '22'
+    taskid: 01caa9a1-55e4-4df9-9d96-79520e777ca2
     type: regular
     task:
-      id: '22'
+      id: 01caa9a1-55e4-4df9-9d96-79520e777ca2
       version: -1
       name: checkpoint-address-range-list
       description: ''
@@ -903,10 +903,10 @@ tasks:
     skipunavailable: false
   '23':
     id: '23'
-    taskid: '23'
+    taskid: 19a964c7-9059-4896-9c23-ff3d9202ea5b
     type: condition
     task:
-      id: '23'
+      id: 19a964c7-9059-4896-9c23-ff3d9202ea5b
       version: -1
       name: Verify Outputs
       type: condition
@@ -942,10 +942,10 @@ tasks:
     skipunavailable: false
   '24':
     id: 24
-    taskid: '24'
+    taskid: d2317312-d83b-4340-93c2-848e4f2fa11c
     type: regular
     task:
-      id: '24'
+      id: d2317312-d83b-4340-93c2-848e4f2fa11c
       version: -1
       name: checkpoint-address-range-add
       description: ''
@@ -965,10 +965,10 @@ tasks:
     skipunavailable: false
   '25':
     id: '25'
-    taskid: '25'
+    taskid: ec850ad4-001f-4e17-8447-0cc6d4fadf44
     type: condition
     task:
-      id: '25'
+      id: ec850ad4-001f-4e17-8447-0cc6d4fadf44
       version: -1
       name: Verify Outputs
       type: condition
@@ -1054,10 +1054,10 @@ tasks:
     skipunavailable: false
   '26':
     id: 26
-    taskid: '26'
+    taskid: d278cf3d-42d7-4ebf-b38b-675b78dc26f9
     type: regular
     task:
-      id: '26'
+      id: d278cf3d-42d7-4ebf-b38b-675b78dc26f9
       version: -1
       name: checkpoint-address-range-update
       description: ''
@@ -1077,10 +1077,10 @@ tasks:
     skipunavailable: false
   '27':
     id: '27'
-    taskid: '27'
+    taskid: 203f1092-dcd1-4554-9483-e920dcab4596
     type: condition
     task:
-      id: '27'
+      id: 203f1092-dcd1-4554-9483-e920dcab4596
       version: -1
       name: Verify Outputs
       type: condition
@@ -1161,10 +1161,10 @@ tasks:
     skipunavailable: false
   '28':
     id: 28
-    taskid: '28'
+    taskid: e55528aa-cac8-4c65-88c7-931194051a3e
     type: regular
     task:
-      id: '28'
+      id: e55528aa-cac8-4c65-88c7-931194051a3e
       version: -1
       name: checkpoint-address-range-delete
       description: ''
@@ -1184,10 +1184,10 @@ tasks:
     skipunavailable: false
   '29':
     id: '29'
-    taskid: '29'
+    taskid: 6792f9f0-1661-47a9-ac40-19bdde4d2617
     type: condition
     task:
-      id: '29'
+      id: 6792f9f0-1661-47a9-ac40-19bdde4d2617
       version: -1
       name: Verify Outputs
       type: condition
@@ -1213,10 +1213,10 @@ tasks:
     skipunavailable: false
   '30':
     id: 30
-    taskid: '30'
+    taskid: fc4a7ced-e5ca-44ba-b220-9ce7021ccfca
     type: regular
     task:
-      id: '30'
+      id: fc4a7ced-e5ca-44ba-b220-9ce7021ccfca
       version: -1
       name: checkpoint-threat-indicator-list
       description: ''
@@ -1236,10 +1236,10 @@ tasks:
     skipunavailable: false
   '31':
     id: '31'
-    taskid: '31'
+    taskid: 71baa2f6-5bc9-4269-8ea6-8692d5637cdc
     type: condition
     task:
-      id: '31'
+      id: 71baa2f6-5bc9-4269-8ea6-8692d5637cdc
       version: -1
       name: Verify Outputs
       type: condition
@@ -1275,10 +1275,10 @@ tasks:
     skipunavailable: false
   '32':
     id: 32
-    taskid: '32'
+    taskid: 4e7002fd-3a0a-4a91-a919-be3cccb83598
     type: regular
     task:
-      id: '32'
+      id: 4e7002fd-3a0a-4a91-a919-be3cccb83598
       version: -1
       name: checkpoint-threat-indicator-get
       description: ''
@@ -1298,10 +1298,10 @@ tasks:
     skipunavailable: false
   '33':
     id: '33'
-    taskid: '33'
+    taskid: 6fa7f00d-65ff-4eb4-bd08-fd8168138a60
     type: condition
     task:
-      id: '33'
+      id: 6fa7f00d-65ff-4eb4-bd08-fd8168138a60
       version: -1
       name: Verify Outputs
       type: condition
@@ -1367,10 +1367,10 @@ tasks:
     skipunavailable: false
   '34':
     id: 34
-    taskid: '34'
+    taskid: 1adfad93-23a6-4fe6-9f90-4065153aead7
     type: regular
     task:
-      id: '34'
+      id: 1adfad93-23a6-4fe6-9f90-4065153aead7
       version: -1
       name: checkpoint-threat-indicator-add
       description: ''
@@ -1390,10 +1390,10 @@ tasks:
     skipunavailable: false
   '35':
     id: '35'
-    taskid: '35'
+    taskid: 21cc7257-2563-4fcf-aa36-8d12eb6ef641
     type: condition
     task:
-      id: '35'
+      id: 21cc7257-2563-4fcf-aa36-8d12eb6ef641
       version: -1
       name: Verify Outputs
       type: condition
@@ -1419,10 +1419,10 @@ tasks:
     skipunavailable: false
   '36':
     id: 36
-    taskid: '36'
+    taskid: 641274d5-cf00-4880-aa71-edd923d0eb7c
     type: regular
     task:
-      id: '36'
+      id: 641274d5-cf00-4880-aa71-edd923d0eb7c
       version: -1
       name: checkpoint-threat-indicator-update
       description: ''
@@ -1442,10 +1442,10 @@ tasks:
     skipunavailable: false
   '37':
     id: '37'
-    taskid: '37'
+    taskid: 3e8061d8-1372-4fff-9fed-c4c8b83b6e48
     type: condition
     task:
-      id: '37'
+      id: 3e8061d8-1372-4fff-9fed-c4c8b83b6e48
       version: -1
       name: Verify Outputs
       type: condition
@@ -1516,10 +1516,10 @@ tasks:
     skipunavailable: false
   '38':
     id: 38
-    taskid: '38'
+    taskid: '1bbd7f74-1023-451f-bb0c-c2c27a08af9d'
     type: regular
     task:
-      id: '38'
+      id: '1bbd7f74-1023-451f-bb0c-c2c27a08af9d'
       version: -1
       name: checkpoint-address-range-get
       description: ''
@@ -1539,10 +1539,10 @@ tasks:
     skipunavailable: false
   '39':
     id: '39'
-    taskid: '39'
+    taskid: '8573e9f0-f75c-4e16-9d7b-b2569afe348d'
     type: condition
     task:
-      id: '39'
+      id: '8573e9f0-f75c-4e16-9d7b-b2569afe348d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1603,10 +1603,10 @@ tasks:
     skipunavailable: false
   '40':
     id: 40
-    taskid: '40'
+    taskid: '3fa0d3b5-4402-4d90-92c1-b32061717f08'
     type: regular
     task:
-      id: '40'
+      id: '3fa0d3b5-4402-4d90-92c1-b32061717f08'
       version: -1
       name: checkpoint-threat-indicator-delete
       description: ''
@@ -1626,10 +1626,10 @@ tasks:
     skipunavailable: false
   '41':
     id: '41'
-    taskid: '41'
+    taskid: 'f52cde32-caaf-4e63-98ec-6d867f519ed9'
     type: condition
     task:
-      id: '41'
+      id: 'f52cde32-caaf-4e63-98ec-6d867f519ed9'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1655,10 +1655,10 @@ tasks:
     skipunavailable: false
   '42':
     id: 42
-    taskid: '42'
+    taskid: '7dc937e7-c265-4710-988d-c63285603fd8'
     type: regular
     task:
-      id: '42'
+      id: '7dc937e7-c265-4710-988d-c63285603fd8'
       version: -1
       name: checkpoint-access-rule-list
       description: ''
@@ -1678,10 +1678,10 @@ tasks:
     skipunavailable: false
   '43':
     id: '43'
-    taskid: '43'
+    taskid: '5b42273e-c583-4fb1-a3d4-0a2ab4957f01'
     type: condition
     task:
-      id: '43'
+      id: '5b42273e-c583-4fb1-a3d4-0a2ab4957f01'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1712,10 +1712,10 @@ tasks:
     skipunavailable: false
   '44':
     id: 44
-    taskid: '44'
+    taskid: '58a9b23a-3a8f-4e2e-b325-e90327c2007a'
     type: regular
     task:
-      id: '44'
+      id: '58a9b23a-3a8f-4e2e-b325-e90327c2007a'
       version: -1
       name: checkpoint-access-rule-add
       description: ''
@@ -1735,10 +1735,10 @@ tasks:
     skipunavailable: false
   '45':
     id: '45'
-    taskid: '45'
+    taskid: '596f680a-ac8c-4873-a6c1-fb41ebb62e87'
     type: condition
     task:
-      id: '45'
+      id: '596f680a-ac8c-4873-a6c1-fb41ebb62e87'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1809,10 +1809,10 @@ tasks:
     skipunavailable: false
   '46':
     id: 46
-    taskid: '46'
+    taskid: 'a55a7513-8a23-4221-8abc-700ba96fee0a'
     type: regular
     task:
-      id: '46'
+      id: 'a55a7513-8a23-4221-8abc-700ba96fee0a'
       version: -1
       name: checkpoint-access-rule-update
       description: ''
@@ -1832,10 +1832,10 @@ tasks:
     skipunavailable: false
   '47':
     id: '47'
-    taskid: '47'
+    taskid: '343a9e97-3c75-41ad-8f08-a021acbe1e39'
     type: condition
     task:
-      id: '47'
+      id: '343a9e97-3c75-41ad-8f08-a021acbe1e39'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1931,10 +1931,10 @@ tasks:
     skipunavailable: false
   '48':
     id: 48
-    taskid: '48'
+    taskid: 'ad8d7ff6-fb21-4f98-b2f1-e19cc12c23fc'
     type: regular
     task:
-      id: '48'
+      id: 'ad8d7ff6-fb21-4f98-b2f1-e19cc12c23fc'
       version: -1
       name: checkpoint-access-rule-delete
       description: ''
@@ -1954,10 +1954,10 @@ tasks:
     skipunavailable: false
   '49':
     id: '49'
-    taskid: '49'
+    taskid: '29f5c6cf-f2bd-4ffc-95e6-e9b05403a06c'
     type: condition
     task:
-      id: '49'
+      id: '29f5c6cf-f2bd-4ffc-95e6-e9b05403a06c'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1983,10 +1983,10 @@ tasks:
     skipunavailable: false
   '50':
     id: 50
-    taskid: '50'
+    taskid: 'e98f8ab7-1833-4a74-b680-08c53214ed84'
     type: regular
     task:
-      id: '50'
+      id: 'e98f8ab7-1833-4a74-b680-08c53214ed84'
       version: -1
       name: checkpoint-application-site-list
       description: ''
@@ -2006,10 +2006,10 @@ tasks:
     skipunavailable: false
   '51':
     id: '51'
-    taskid: '51'
+    taskid: 'efc8f212-3ec0-4df9-a9a1-cede389092cd'
     type: condition
     task:
-      id: '51'
+      id: 'efc8f212-3ec0-4df9-a9a1-cede389092cd'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2045,10 +2045,10 @@ tasks:
     skipunavailable: false
   '52':
     id: 52
-    taskid: '52'
+    taskid: 'ac0013d7-1a7f-4cfe-9460-0ba071b30806'
     type: regular
     task:
-      id: '52'
+      id: 'ac0013d7-1a7f-4cfe-9460-0ba071b30806'
       version: -1
       name: checkpoint-application-site-add
       description: ''
@@ -2068,10 +2068,10 @@ tasks:
     skipunavailable: false
   '53':
     id: '53'
-    taskid: '53'
+    taskid: '662b9b30-6032-4999-913f-9c971a6f4efe'
     type: condition
     task:
-      id: '53'
+      id: '662b9b30-6032-4999-913f-9c971a6f4efe'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2147,10 +2147,10 @@ tasks:
     skipunavailable: false
   '54':
     id: 54
-    taskid: '54'
+    taskid: '5badf142-71bb-41e2-84a9-a3411d0b3bd9'
     type: regular
     task:
-      id: '54'
+      id: '5badf142-71bb-41e2-84a9-a3411d0b3bd9'
       version: -1
       name: checkpoint-application-site-update
       description: ''
@@ -2170,10 +2170,10 @@ tasks:
     skipunavailable: false
   '55':
     id: '55'
-    taskid: '55'
+    taskid: '567c1526-f646-4bfe-8e6d-cc6426633dc1'
     type: condition
     task:
-      id: '55'
+      id: '567c1526-f646-4bfe-8e6d-cc6426633dc1'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2239,10 +2239,10 @@ tasks:
     skipunavailable: false
   '56':
     id: 56
-    taskid: '56'
+    taskid: 'c982b42c-3c65-4f55-aaa7-5a6d07985e30'
     type: regular
     task:
-      id: '56'
+      id: 'c982b42c-3c65-4f55-aaa7-5a6d07985e30'
       version: -1
       name: checkpoint-application-site-delete
       description: ''
@@ -2262,10 +2262,10 @@ tasks:
     skipunavailable: false
   '57':
     id: '57'
-    taskid: '57'
+    taskid: '313ce5c2-50e3-434a-b4f4-28da26cf4620'
     type: condition
     task:
-      id: '57'
+      id: '313ce5c2-50e3-434a-b4f4-28da26cf4620'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2291,10 +2291,10 @@ tasks:
     skipunavailable: false
   '58':
     id: 58
-    taskid: '58'
+    taskid: 'afb927a5-e1c6-4ea2-8369-ba01aa73338f'
     type: regular
     task:
-      id: '58'
+      id: 'afb927a5-e1c6-4ea2-8369-ba01aa73338f'
       version: -1
       name: checkpoint-publish
       description: ''
@@ -2314,10 +2314,10 @@ tasks:
     skipunavailable: false
   '59':
     id: '59'
-    taskid: '59'
+    taskid: '091c3319-b254-4be4-9fc6-b0d36b9d5775'
     type: condition
     task:
-      id: '59'
+      id: '091c3319-b254-4be4-9fc6-b0d36b9d5775'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2343,10 +2343,10 @@ tasks:
     skipunavailable: false
   '60':
     id: 60
-    taskid: '60'
+    taskid: '016a4711-4c15-4f65-a47c-b4ffa362da99'
     type: regular
     task:
-      id: '60'
+      id: '016a4711-4c15-4f65-a47c-b4ffa362da99'
       version: -1
       name: checkpoint-install-policy
       description: ''
@@ -2366,10 +2366,10 @@ tasks:
     skipunavailable: false
   '61':
     id: '61'
-    taskid: '61'
+    taskid: '688f521c-fd7a-493b-b278-486d9ff5f307'
     type: condition
     task:
-      id: '61'
+      id: '688f521c-fd7a-493b-b278-486d9ff5f307'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2395,10 +2395,10 @@ tasks:
     skipunavailable: false
   '62':
     id: 62
-    taskid: '62'
+    taskid: '76821d92-7fba-4420-9117-118857152731'
     type: regular
     task:
-      id: '62'
+      id: '76821d92-7fba-4420-9117-118857152731'
       version: -1
       name: checkpoint-verify-policy
       description: ''
@@ -2418,10 +2418,10 @@ tasks:
     skipunavailable: false
   '63':
     id: '63'
-    taskid: '63'
+    taskid: 'd73d22a3-dd49-4c46-b1d9-a65b9a0af46d'
     type: condition
     task:
-      id: '63'
+      id: 'd73d22a3-dd49-4c46-b1d9-a65b9a0af46d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2447,10 +2447,10 @@ tasks:
     skipunavailable: false
   '64':
     id: 64
-    taskid: '64'
+    taskid: 'f053e2a1-4383-4f54-8ff2-1772463aa3dc'
     type: regular
     task:
-      id: '64'
+      id: 'f053e2a1-4383-4f54-8ff2-1772463aa3dc'
       version: -1
       name: checkpoint-show-task
       description: ''
@@ -2470,10 +2470,10 @@ tasks:
     skipunavailable: false
   '65':
     id: '65'
-    taskid: '65'
+    taskid: '89414c74-7939-4038-84df-4fd6c7e26231'
     type: condition
     task:
-      id: '65'
+      id: '89414c74-7939-4038-84df-4fd6c7e26231'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2519,10 +2519,10 @@ tasks:
     skipunavailable: false
   '66':
     id: 66
-    taskid: '66'
+    taskid: 'afddd6ce-3871-4659-a9c4-c4b49577795a'
     type: regular
     task:
-      id: '66'
+      id: 'afddd6ce-3871-4659-a9c4-c4b49577795a'
       version: -1
       name: checkpoint-login-and-get-session-id
       description: ''
@@ -2542,10 +2542,10 @@ tasks:
     skipunavailable: false
   '67':
     id: '67'
-    taskid: '67'
+    taskid: 'be742741-d062-4954-b754-810175d7c494'
     type: condition
     task:
-      id: '67'
+      id: 'be742741-d062-4954-b754-810175d7c494'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2571,10 +2571,10 @@ tasks:
     skipunavailable: false
   '68':
     id: 68
-    taskid: '68'
+    taskid: '6a03cf3c-93f9-41db-a66b-bd425920734f'
     type: regular
     task:
-      id: '68'
+      id: '6a03cf3c-93f9-41db-a66b-bd425920734f'
       version: -1
       name: checkpoint-logout
       description: ''
@@ -2594,10 +2594,10 @@ tasks:
     skipunavailable: false
   '69':
     id: 69
-    taskid: '69'
+    taskid: '707bda5a-0c14-49e8-83ee-e89d465d5ed4'
     type: regular
     task:
-      id: '69'
+      id: '707bda5a-0c14-49e8-83ee-e89d465d5ed4'
       version: -1
       name: checkpoint-packages-list
       description: ''
@@ -2617,10 +2617,10 @@ tasks:
     skipunavailable: false
   '70':
     id: '70'
-    taskid: '70'
+    taskid: '9aeeacbd-9d48-46ef-aed5-390fda9a56e8'
     type: condition
     task:
-      id: '70'
+      id: '9aeeacbd-9d48-46ef-aed5-390fda9a56e8'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2671,10 +2671,10 @@ tasks:
     skipunavailable: false
   '71':
     id: 71
-    taskid: '71'
+    taskid: 'e0492f0f-0f8e-46a8-b6bc-a14f2cac3507'
     type: regular
     task:
-      id: '71'
+      id: 'e0492f0f-0f8e-46a8-b6bc-a14f2cac3507'
       version: -1
       name: checkpoint-gateways-list
       description: ''
@@ -2694,10 +2694,10 @@ tasks:
     skipunavailable: false
   '72':
     id: '72'
-    taskid: '72'
+    taskid: '9bfffc10-bf75-4a29-859c-20b3bbf8f42e'
     type: condition
     task:
-      id: '72'
+      id: '9bfffc10-bf75-4a29-859c-20b3bbf8f42e'
       version: -1
       name: Verify Outputs
       type: condition
@@ -2763,10 +2763,10 @@ tasks:
     skipunavailable: false
   '73':
     id: '73'
-    taskid: '73'
+    taskid: 'ebb01544-b3b4-4ed6-b8e3-470a34c0c81c'
     type: title
     task:
-      id: '73'
+      id: 'ebb01544-b3b4-4ed6-b8e3-470a34c0c81c'
       version: -1
       name: Test Done
       type: title

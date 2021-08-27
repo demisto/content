@@ -1,17 +1,17 @@
 import base64
 import json
-import pytest
+import demistomock as demisto
 
-from EWSO365 import (
-    find_folders,
-    get_searchable_mailboxes,
-    GetSearchableMailboxes,
-    ExpandGroup,
-    get_expanded_group,
-    add_additional_headers,
-    handle_transient_files,
-    handle_html,
-)
+import pytest
+from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
+from exchangelib.attachments import AttachmentId, ItemAttachment
+from exchangelib.items import Item, Message
+from freezegun import freeze_time
+
+from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
+                     add_additional_headers, fetch_last_emails, find_folders,
+                     get_expanded_group, get_searchable_mailboxes, handle_html,
+                     handle_transient_files, parse_incident_from_item)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -156,6 +156,106 @@ class TestNormalCommands:
         assert expected == actual_ec
 
 
+MESSAGES = [
+    Message(subject='message1',
+            message_id='message1',
+            text_body='Hello World',
+            body='message1',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message2',
+            message_id='message2',
+            text_body='Hello World',
+            body='message2',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message3',
+            message_id='message3',
+            text_body='Hello World',
+            body='message3',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+
+]
+CASE_FIRST_RUN_NO_INCIDENT = (
+    {},
+    [],
+    {'lastRunTime': None, 'folderName': 'Inbox', 'ids': [], 'errorCounter': 0}
+)
+CASE_FIRST_RUN_FOUND_INCIDENT = (
+    {},
+    MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0}
+)
+CASE_SECOND_RUN_FOUND_ONE_INCIDENT = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': []}, MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
+    {'lastRunTime': '2021-07-14T13:05:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, MESSAGES,
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:],
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
+CASE_SECOND_RUN_NO_INCIDENTS = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
+
+CASES = [
+    CASE_FIRST_RUN_NO_INCIDENT,
+    CASE_FIRST_RUN_FOUND_INCIDENT,
+    CASE_SECOND_RUN_FOUND_ONE_INCIDENT,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN,
+    CASE_SECOND_RUN_NO_INCIDENTS
+]
+
+
+@pytest.mark.parametrize('current_last_run, messages, expected_last_run', CASES)
+def test_last_run(mocker, current_last_run, messages, expected_last_run):
+    """Check the fetch command.
+
+    Given:
+        - Last Run data including time and ids to be excluded.
+    When:
+        - Running fetch command.
+    Then:
+        - Validates the new Last Run new excluded IDs and last run time.
+    """
+
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            return messages
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = 1
+    client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = 'Inbox'
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_emails_as_incidents(client, current_last_run)
+    assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
+    assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
 HEADERS_PACKAGE = [
     ('', {}),
     ('header=value', {'header': 'value'}),
@@ -258,3 +358,150 @@ def test_handle_html(mocker, html_input, expected_output):
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
     assert handle_html(html_input) == expected_output
+
+
+@freeze_time('2021-05-23 13:18:14.901293+00:00')
+@pytest.mark.parametrize('since_datetime, filter_arg, expected_result',
+                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:08:14.901293+00:00')),
+                          ('2021-05-23 21:28:14.901293+00:00', 'datetime_received__gte',
+                           '2021-05-23 21:28:14.901293+00:00')
+                          ])
+def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
+    """
+    Given:
+        - First fetch timestamp - no last_run
+        - Not the first time fetching - last_run with a date
+
+    When:
+        - Fetching last emails
+
+    Then:
+        - Verify last_modified_time__gte is ten minutes earlier
+        - Verify datetime_received__gte according to the datetime received
+    """
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    mocker.patch.object(MockObject, 'filter')
+
+    fetch_last_emails(client, since_datetime=since_datetime)
+    assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
+
+
+@freeze_time('2021-05-23 18:28:14.901293+00:00')
+@pytest.mark.parametrize('max_fetch, expected_result',
+                         [(6, 5),
+                          (2, 2),
+                          (5, 5)])
+def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
+    """
+    Given:
+        - Max fetch is 6
+        - Max fetch is 2
+        - Max fetch is 5
+
+    When:
+        - Fetching last emails - need to make sure to return emails according to the max_fetch param.
+
+    Then:
+        - Return 5 emails (Cause we only have 5 emails)
+        - Return 2 emails
+        - Return 5 emails
+    """
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = max_fetch
+    client.get_folder_by_path = mock_get_folder_by_path
+
+    emails = fetch_last_emails(client, since_datetime='')
+    assert len(emails) == expected_result
+
+
+def test_parse_incident_from_item():
+    """
+    Given:
+        - Message item with attachment that contains non UTF-8 encoded char
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Parsing runs successfully
+        - Incidnet attachment is not empty
+    """
+    message = Message(
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=b'\xc400'),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    incident = parse_incident_from_item(message)
+    assert incident['attachment']
+
+
+def test_parse_incident_from_item_with_attachments():
+    """
+    Given:
+        - Message item with attachment that contains email attachments
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Parsing runs successfully
+    """
+    content = b'ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901;' \
+              b' d=microsoft.com; cv=none;b=ES/YXpFlV19rlN1iV+ORg5RzID8GPSQL' \
+              b'nUT26MNdeTzcQSwK679doIz5Avpv8Ps2H/aBkBamwRNOCJBkl7iCHyy+04yRj3ghikw3u/ufIFHi0sQ7QG95mO1PVPLibv9A=='
+
+    message = Message(
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=content, headers=[]),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    incident = parse_incident_from_item(message)
+    assert incident['attachment']

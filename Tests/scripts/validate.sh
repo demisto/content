@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CHECK_BACKWARD: $CHECK_BACKWARD CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION"
+echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION"
 
-if [[ $CIRCLE_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]];
-  then
-    demisto-sdk validate -a
-
-elif [ "${CHECK_BACKWARD}" = "true" ] ;
-  then
-     demisto-sdk validate -g --post-commit
-
-  else
-     demisto-sdk validate -g --post-commit --no-backward-comp
+if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+    demisto-sdk validate -a --post-commit --id-set --id-set-path "$ARTIFACTS_FOLDER/unified_id_set.json"
+elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
+    demisto-sdk validate -g --post-commit --id-set --id-set-path "$ARTIFACTS_FOLDER/id_set.json"
+else
+    demisto-sdk validate -g --post-commit --id-set --id-set-path "$ARTIFACTS_FOLDER/unified_id_set.json"
 fi

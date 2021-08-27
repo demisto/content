@@ -137,10 +137,10 @@ def camel_case_transformer(s):
     REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "CVE"
     """
 
-    str = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s)
-    if str in ['id', 'cve', 'arn']:
-        return str.upper()
-    return str.title()
+    transformed_string = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', str(s))
+    if transformed_string in ['id', 'cve', 'arn']:
+        return transformed_string.upper()
+    return transformed_string.title()
 
 
 def get_headers(name: str, data: list) -> list:

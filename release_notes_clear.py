@@ -8,7 +8,7 @@ from demisto_sdk.commands.common.constants import UNRELEASE_HEADER, INTEGRATIONS
     REPORTS_DIR, DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, INDICATOR_TYPES_DIR
 from demisto_sdk.commands.common.tools import server_version_compare, run_command, get_release_notes_file_path, \
     print_warning
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.common.legacy_git_tools import filter_changed_files
 from release_notes import LAYOUT_TYPE_TO_NAME
 
 
@@ -100,9 +100,8 @@ def main():
     date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
-    validate_manager = ValidateManager()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _, _, _ = validate_manager.filter_changed_files(change_log)
+    modified_files, added_files, _, _, _, _, _ = filter_changed_files(change_log)
 
     for file_path in get_changed_content_entities(modified_files, added_files):
         if not should_clear(file_path, args.server_version):

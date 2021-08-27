@@ -372,8 +372,8 @@ def main():
             password = args.get('password')
             mail_attribute = args.get('attribute-mail', 'mail')
             name_attribute = args.get('attribute-name', 'name')
-            pull_name = args.get('attribute-name-pull', True)
-            pull_mail = args.get('attribute-mail-pull', True)
+            pull_name = argToBoolean(args.get('attribute-name-pull', True))
+            pull_mail = argToBoolean(args.get('attribute-mail-pull', True))
             entry_result = client.authenticate_and_roles(username=username, password=password, pull_name=pull_name,
                                                          pull_mail=pull_mail, mail_attribute=mail_attribute,
                                                          name_attribute=name_attribute)

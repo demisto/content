@@ -23,7 +23,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| modelListStoreName | The name of the Demisto list to store the model. | phishing_model | Optional |
+| modelListStoreName | The name of the Cortex XSOAR list to store the model. | phishing_model | Optional |
 | emailTextKey | The incident key to extract email body text. | details | Optional |
 | emailSubjectKey | The incident key to extract email subject. | emailsubject | Optional |
 | emailTagKey | The incident key expression to extract email tag. | closeReason | Optional |
@@ -32,7 +32,7 @@ This playbook does not use any commands.
 | incidentsEvaluationQuery | The incidents query to fetch the test data for the model. | type:Phishing and created:>="7 days ago" | Optional |
 | maxIncidentsToFetchOnTraining | The maximum number of incidents to fetch while training the model. | 2000 | Optional |
 | isContextNeeded | Wether the context data needed to get email text\\subject\\tag value? | no | Optional |
-| historicalDataFileListName | The name of demisto list contains historical data samples for the algorithm. | - | Optional |
+| historicalDataFileListName | The name of Cortex XSOAR list contains historical data samples for the algorithm. | - | Optional |
 | hashData | The preform hash function to the words (to anonymize the data). Choose "yes" or "no". | no | Optional |
 
 ## Playbook Outputs
@@ -42,7 +42,7 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | DBotPredictPhishingEvaluation.F1 | The F1 score (0-1). | number |
 | DBotPredictPhishingEvaluation.Precision | The precision score (0-1). | number |
-| DBotTextClassifier.ListName | The model list name in Demisto. | unknown |
+| DBotTextClassifier.ListName | The model list name in Cortex XSOAR. | unknown |
 
 ## Playbook Image
 ---

@@ -1,7 +1,17 @@
 import json
 
-from Polygon import demisto, Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
+from Polygon import Client, ANALGIN_UPLOAD, ATTACH, FILE_TYPE, \
     HASH_REPUTATION
+import demistomock as demisto
+import pytest
+
+INTEGRATION_NAME = "Group-IB TDS Polygon"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+
 
 with open("test_data/args.json", "r") as f:
     data = json.load(f)
@@ -13,6 +23,9 @@ with open("test_data/args.json", "r") as f:
 
 with open("test_data/get_report.json", "r") as f:
     MOCKED_REPORT = json.load(f)
+
+with open("test_data/get_result.json", "r") as f:
+    MOCKED_REPORT_RESULT = json.load(f)
 
 with open("test_data/get_file_reputation.json", "r") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
@@ -97,17 +110,26 @@ def test_get_main_indicator(mocker):
 
 def test_get_packages_indicators(mocker):
     from Polygon import get_packages_indicators
-    results = get_packages_indicators(MOCKED_REPORT)
-    assert MOCKED_PACKAGES_INDICATORS == [r.to_context() for r in results]
+    results = get_packages_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_PACKAGES_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
 def test_get_network_indicators(mocker):
     from Polygon import get_network_indicators
-    results = get_network_indicators(MOCKED_REPORT)
-    assert MOCKED_NETWORK_INDICATORS == [r.to_context() for r in results]
+    results = get_network_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_NETWORK_INDICATORS == [r['EntryContext'] for r in indicators_list]
 
 
 def test_get_monitor_indicators(mocker):
     from Polygon import get_monitor_indicators
-    results = get_monitor_indicators(MOCKED_REPORT)
-    assert MOCKED_MONITOR_INDICATORS == [r.to_context() for r in results]
+    results = get_monitor_indicators(MOCKED_REPORT_RESULT)
+    indicators_list = []
+    for command_result in results:
+        indicators_list.append(command_result.to_context())
+    assert MOCKED_MONITOR_INDICATORS == [r['EntryContext'] for r in indicators_list]

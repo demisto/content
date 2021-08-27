@@ -7,7 +7,7 @@ Adds the provided entries to the incident Evidence Board. The playbook, can be p
 | --- | --- |
 | Script Type | javascript |
 | Tags | Utility |
-| Demisto Version | 2.5.0+ |
+| Cortex XSOAR Version | 2.5.0+ |
 
 ## Inputs
 ---

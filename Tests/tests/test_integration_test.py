@@ -1,6 +1,6 @@
 import pytest
+
 from Tests.test_integration import __print_investigation_error
-from Tests.test_content import ParallelPrintsManager
 import demisto_client
 
 
@@ -24,11 +24,9 @@ def test_print_investigation_error(command, output, mocker):
     - Ensure message sent to print manager contains "pass word="123123!""
 
     """
-    prints_manager = ParallelPrintsManager(1)
     body = {'entries': [{'type': 4, 'parentContent': command, 'taskId': '12', 'contents': '2'}]}
     mocker.patch.object(demisto_client, "generic_request_func", return_value=[str(body), '200'])
-
+    logging_manager = mocker.MagicMock()
     client = demisto_client
-    __print_investigation_error(client, '', '', prints_manager)
-    prints_to_execute = prints_manager.threads_print_jobs[0]
-    assert prints_to_execute[2].message_to_print == output
+    __print_investigation_error(client, '', '', logging_manager)
+    logging_manager.error.assert_any_call(output)

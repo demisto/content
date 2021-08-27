@@ -1,0 +1,265 @@
+id: GoogleDrive-Test
+version: -1
+name: GoogleDrive-Test
+description: This playbook uses the Google Drive integration and tests the scenarios
+  of the various commands like google-drive-activity-list, google-drive-changes-list,
+  google-drive-create.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11925e94-4c19-4dc4-8852-9ca4ffff4ede
+    type: start
+    task:
+      id: 11925e94-4c19-4dc4-8852-9ca4ffff4ede
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 77de214f-8895-4a5f-8587-be3da6795725
+    type: regular
+    task:
+      id: 77de214f-8895-4a5f-8587-be3da6795725
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 373e1936-6872-465d-81cc-8a5cbe279456
+    type: regular
+    task:
+      id: 373e1936-6872-465d-81cc-8a5cbe279456
+      version: -1
+      name: google-drive-create
+      script: '|||google-drive-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hidden:
+        simple: "False"
+      name:
+        simple: New Test Drive
+      user_id:
+        simple: admin@demistodev.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0b5f0a27-e764-44c1-8176-96e5dbd30063
+    type: condition
+    task:
+      id: 0b5f0a27-e764-44c1-8176-96e5dbd30063
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleDrive.Drive.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleDrive.Drive.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b2ed9366-1108-40c9-8fb2-8014f845b165
+    type: regular
+    task:
+      id: b2ed9366-1108-40c9-8fb2-8014f845b165
+      version: -1
+      name: google-drive-changes-list
+      script: '|||google-drive-changes-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      drive_id: {}
+      fields: {}
+      include_corpus_removals: {}
+      include_items_from_all_drives: {}
+      include_permissions_for_view: {}
+      include_removed: {}
+      page_size:
+        simple: "1"
+      page_token:
+        simple: "1"
+      restrict_to_my_drive: {}
+      spaces: {}
+      supports_all_drives: {}
+      user_id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b6e0701c-e5d8-4874-8622-e8973991e23b
+    type: regular
+    task:
+      id: b6e0701c-e5d8-4874-8622-e8973991e23b
+      version: -1
+      name: google-drive-activity-list
+      script: '|||google-drive-activity-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action_detail_case_include: {}
+      action_detail_case_remove: {}
+      ancestor_name: {}
+      filter: {}
+      folder_name: {}
+      item_name: {}
+      page_token: {}
+      time_range: {}
+      user_id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a7e66c59-59e4-44da-8aff-7f157efa507f
+    type: title
+    task:
+      id: a7e66c59-59e4-44da-8aff-7f157efa507f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

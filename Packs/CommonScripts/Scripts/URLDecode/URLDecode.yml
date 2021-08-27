@@ -1,0 +1,29 @@
+commonfields:
+  id: URLDecode
+  version: -1
+name: URLDecode
+script: ''
+type: python
+subtype: python3
+tags:
+- transformer
+comment: |-
+  Converts
+  https:%2F%2Fexample.com
+  into
+  https://example.com
+enabled: true
+args:
+- name: value
+  required: true
+  description: 'The input url '
+outputs:
+- contextPath: DecodedURL
+  description: Parsed url as key/value
+  type: string
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+tests:
+- URLDecode-Test
+fromversion: 5.0.0

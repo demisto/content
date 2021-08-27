@@ -25,6 +25,7 @@ FLASHPOINT_PATHS = {
     'Post': 'Flashpoint.Forum.Post(val.PostId == obj.PostId)',
     'Site': 'Flashpoint.Forum.Site(val.SiteId == obj.SiteId)'
 }
+BRAND = 'Flashpoint'
 
 
 class Client:
@@ -42,15 +43,19 @@ class Client:
     :type proxies: ``dict``
     :param proxies: proxies dict for http request
 
+    :type create_relationships: ``bool``
+    :param create_relationships: True if integration will create relationships
+
     :return response of request
     :rtype ``dict``
     """
 
-    def __init__(self, api_key, url, verify, proxies):
+    def __init__(self, api_key, url, verify, proxies, create_relationships):
         self.url = url
         self.api_key = api_key
         self.verify = verify
         self.proxies = proxies
+        self.create_relationships = create_relationships
 
     def http_request(self, method, url_suffix, params=None):
         """
@@ -128,11 +133,12 @@ def parse_indicator_response(indicators):
     """
     events = []
     hrefs = []
+    attack_ids = []
     for indicator in indicators:
         hrefs.append(indicator.get('Attribute', {}).get('href', ''))
 
         event = indicator.get('Attribute', {}).get('Event', {})
-
+        attack_ids = event.get('attack_ids', [])
         tags_list = [tag for tag in event['Tags']]
         tags_value = ', '.join(tags_list)
 
@@ -144,7 +150,7 @@ def parse_indicator_response(indicators):
             'Tags': tags_value,
         })
 
-    return {'events': events, 'href': hrefs}
+    return {'events': events, 'href': hrefs, 'attack_ids': attack_ids}
 
 
 def parse_event_response(client, event, fpid, href):
@@ -225,7 +231,7 @@ def get_post_context(resp):
     return post_ec
 
 
-def reputation_operation_command(client, indicator, func):
+def reputation_operation_command(client, indicator, func, command_results=False):
     """
     Common method for reputation commands to accept argument as a comma-separated values and converted into list
     and call specific function for all values.
@@ -233,11 +239,15 @@ def reputation_operation_command(client, indicator, func):
     :param client: object of client class
     :param indicator: comma-separated values or single value
     :param func: reputation command function. i.e file_lookup, domain_lookup etc.
+    :param command_results: if the result of the func returns CommandResults object.
     :return: output of all value according to specified function.
     """
     args = argToList(indicator, ',')
     for arg in args:
-        return_outputs(*func(client, arg))
+        if command_results:
+            return_results(func(client, arg))
+        else:
+            return_outputs(*func(client, arg))
 
 
 def replace_key(dictionary, new_key, old_key):
@@ -292,21 +302,28 @@ def ip_lookup_command(client, ip):
         # Constructing FP Deeplink
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name=BRAND,
+            score=3,
+            malicious_description='Found in malicious indicators dataset'
 
-        dbot_context = {
-            'Indicator': ip,
-            'Type': 'ip',
-            'Vendor': 'Flashpoint',
-            'Score': 3
-        }
+        )
+        relationships = []
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=ip,
+                                           entity_a_type=FeedIndicatorType.IP,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        ip_context = {
-            'Address': ip,
-            'Malicious': {
-                'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
-            }
-        }
+        ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_ip_context = []
         for indicator in resp:
@@ -324,13 +341,16 @@ def ip_lookup_command(client, ip):
             }
             flashpoint_ip_context.append(event)
 
-        ec = {
-            'DBotScore': dbot_context,
-            outputPaths['ip']: ip_context,
-            FLASHPOINT_PATHS['IP']: flashpoint_ip_context
-        }
-
-        return hr, ec, resp
+        command_results = CommandResults(
+            outputs_prefix='Flashpoint.IP.Event',
+            outputs_key_field='Fpid',
+            outputs=flashpoint_ip_context,
+            readable_output=hr,
+            indicator=ip_ioc,
+            raw_response=resp,
+            relationships=relationships
+        )
+        return command_results
 
     else:
         # Search for IP in torrents
@@ -358,6 +378,11 @@ def ip_lookup_command(client, ip):
                     'Score': 2
                 }
             }
+            command_results = CommandResults(
+                outputs=ec,
+                readable_output=hr,
+                raw_response=resp,
+            )
         else:
             # Search for IP in Forums
             forum_search_url_suffix = '/forums/visits?ip_address=' + urllib.parse.quote(ip.encode('utf-8'))
@@ -383,6 +408,11 @@ def ip_lookup_command(client, ip):
                         'Score': 2
                     }
                 }
+                command_results = CommandResults(
+                    outputs=ec,
+                    readable_output=hr,
+                    raw_response=resp,
+                )
             else:
                 hr = '### Flashpoint IP address reputation for ' + ip + '\n'
                 hr += 'Reputation: Unknown\n\n'
@@ -394,8 +424,13 @@ def ip_lookup_command(client, ip):
                         'Score': 0
                     }
                 }
+                command_results = CommandResults(
+                    outputs=ec,
+                    readable_output=hr,
+                    raw_response=resp,
+                )
 
-        return hr, ec, resp
+        return command_results
 
 
 def domain_lookup_command(client, domain):
@@ -427,21 +462,28 @@ def domain_lookup_command(client, domain):
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=' + domain
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        dbot_context = {
-            'Indicator': domain,
-            'Type': 'domain',
-            'Vendor': 'Flashpoint',
-            'Score': 3
-        }
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=BRAND,
+            score=3,
+            malicious_description='Found in malicious indicators dataset'
 
-        domain_context = {
-            'Name': domain,
-            'Malicious': {
-                'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
-            }
+        )
+        relationships = []
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=domain,
+                                           entity_a_type=FeedIndicatorType.Domain,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        }
+        domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_domain_context = []
         for indicator in resp:
@@ -459,13 +501,16 @@ def domain_lookup_command(client, domain):
             }
             flashpoint_domain_context.append(event)
 
-        ec = {
-            'DBotScore': dbot_context,
-            outputPaths['domain']: domain_context,
-            FLASHPOINT_PATHS['Domain']: flashpoint_domain_context
-        }
-
-        return hr, ec, resp
+        command_results = CommandResults(
+            outputs_prefix='Flashpoint.Domain.Event',
+            outputs_key_field='Fpid',
+            outputs=flashpoint_domain_context,
+            readable_output=hr,
+            indicator=domain_ioc,
+            raw_response=resp,
+            relationships=relationships
+        )
+        return command_results
 
     else:
         hr = '### Flashpoint Domain reputation for ' + domain + '\n'
@@ -478,8 +523,13 @@ def domain_lookup_command(client, domain):
                 'Score': 0
             }
         }
+        command_results = CommandResults(
+            outputs=ec,
+            readable_output=hr,
+            raw_response=resp,
+        )
 
-        return hr, ec, resp
+        return command_results
 
 
 def filename_lookup_command(client, filename):
@@ -598,22 +648,28 @@ def url_lookup_command(client, url):
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        dbot_context = {
-            'Indicator': url,
-            'Type': 'url',
-            'Vendor': 'Flashpoint',
-            'Score': 3
-        }
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name=BRAND,
+            score=3,
+            malicious_description='Found in malicious indicators dataset'
+        )
 
-        url_context = {
-            'Name': url,
-            'Data': url,
-            'Malicious': {
-                'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
-            }
+        relationships = []
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=url,
+                                           entity_a_type=FeedIndicatorType.URL,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
 
-        }
+        url_ioc = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_url_context = []
         for indicator in resp:
@@ -631,13 +687,16 @@ def url_lookup_command(client, url):
             }
             flashpoint_url_context.append(event)
 
-        ec = {
-            'DBotScore': dbot_context,
-            outputPaths['url']: url_context,
-            FLASHPOINT_PATHS['Url']: flashpoint_url_context
-        }
-
-        return hr, ec, resp
+        command_results = CommandResults(
+            outputs_prefix='Flashpoint.URL.Event',
+            outputs_key_field='Fpid',
+            outputs=flashpoint_url_context,
+            readable_output=hr,
+            indicator=url_ioc,
+            raw_response=resp,
+            relationships=relationships
+        )
+        return command_results
 
     else:
         hr = '### Flashpoint URL reputation for ' + url + '\n'
@@ -650,8 +709,13 @@ def url_lookup_command(client, url):
                 'Score': 0
             }
         }
+        command_results = CommandResults(
+            outputs=ec,
+            readable_output=hr,
+            raw_response=resp,
+        )
 
-        return hr, ec, resp
+        return command_results
 
 
 def file_lookup_command(client, file):
@@ -686,6 +750,35 @@ def file_lookup_command(client, file):
 
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
+        dbot_score = Common.DBotScore(
+            indicator=file,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=BRAND,
+            score=3,
+            malicious_description='Found in malicious indicators dataset'
+        )
+
+        relationships = []
+        if client.create_relationships:
+            if events_details.get('attack_ids'):
+                for attack_id in events_details.get('attack_ids'):
+                    relationships.append(
+                        EntityRelationship(name='indicator-of',
+                                           entity_a=file,
+                                           entity_a_type=DBotScoreType.FILE,
+                                           entity_b=attack_id,
+                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                               'STIX Attack Pattern'),
+                                           brand=BRAND))
+
+        hash_type = get_hash_type(file)  # if file_hash found, has to be md5, sha1 or sha256
+        if hash_type == 'md5':
+            file_ioc = Common.File(md5=file, dbot_score=dbot_score, relationships=relationships)
+        elif hash_type == 'sha1':
+            file_ioc = Common.File(sha1=file, dbot_score=dbot_score, relationships=relationships)
+        else:
+            file_ioc = Common.File(sha256=file, dbot_score=dbot_score, relationships=relationships)
+
         flashpoint_file_context = []
         for indicator in resp:
             indicator = indicator.get("Attribute", {})
@@ -702,37 +795,16 @@ def file_lookup_command(client, file):
             }
             flashpoint_file_context.append(event)
 
-        dbot_context = [
-            {
-                'Indicator': file,
-                'Type': 'hash',
-                'Vendor': 'Flashpoint',
-                'Score': 3
-            },
-
-            {
-                'Indicator': file,
-                'Type': 'file',
-                'Vendor': 'Flashpoint',
-                'Score': 3
-            }
-        ]
-
-        file_context = {
-            indicator_type: file,
-            'Malicious': {
-                'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
-            }
-        }
-
-        ec = {
-            'DBotScore': dbot_context,
-            outputPaths['file']: file_context,
-            FLASHPOINT_PATHS['File']: flashpoint_file_context
-        }
-
-        return hr, ec, resp
+        command_results = CommandResults(
+            outputs_prefix='Flashpoint.File.Event',
+            outputs_key_field='Fpid',
+            outputs=flashpoint_file_context,
+            readable_output=hr,
+            indicator=file_ioc,
+            raw_response=resp,
+            relationships=relationships
+        )
+        return command_results
 
     else:
         hr = '### Flashpoint File reputation for ' + file + '\n'
@@ -755,8 +827,12 @@ def file_lookup_command(client, file):
 
                 ]
         }
-
-        return hr, ec, resp
+        command_results = CommandResults(
+            outputs=ec,
+            readable_output=hr,
+            raw_response=resp,
+        )
+        return command_results
 
 
 def email_lookup_command(client, email):
@@ -1429,13 +1505,14 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    params = demisto.params()
     api_key = get_apikey()
-    url = demisto.params()["url"]
-    verify_certificate = not demisto.params().get('insecure', False)
-
+    url = params["url"]
+    verify_certificate = not params.get('insecure', False)
+    create_relationships = argToBoolean(params.get('create_relationships', True))
     proxies = handle_proxy()
     try:
-        client = Client(api_key, url, verify_certificate, proxies)
+        client = Client(api_key, url, verify_certificate, proxies, create_relationships)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1444,11 +1521,11 @@ def main():
 
         elif demisto.command() == 'ip':
             ip = demisto.args()['ip']
-            reputation_operation_command(client, ip, ip_lookup_command)
+            reputation_operation_command(client, ip, ip_lookup_command, True)
 
         elif demisto.command() == 'domain':
             domain = demisto.args()['domain']
-            reputation_operation_command(client, domain, domain_lookup_command)
+            reputation_operation_command(client, domain, domain_lookup_command, True)
 
         elif demisto.command() == 'filename':
             filename = demisto.args()['filename']
@@ -1456,11 +1533,11 @@ def main():
 
         elif demisto.command() == 'url':
             url = demisto.args()['url']
-            reputation_operation_command(client, url, url_lookup_command)
+            reputation_operation_command(client, url, url_lookup_command, True)
 
         elif demisto.command() == 'file':
             file = demisto.args()['file']
-            reputation_operation_command(client, file, file_lookup_command)
+            reputation_operation_command(client, file, file_lookup_command, True)
 
         elif demisto.command() == 'email':
             email = demisto.args()['email']

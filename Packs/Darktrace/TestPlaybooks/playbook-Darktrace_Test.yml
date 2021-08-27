@@ -1,0 +1,807 @@
+id: Darktrace Test Playbook
+version: -1
+name: Darktrace Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 04d3dcab-c1d7-4b6f-8cf3-b22f85dc4ef3
+    type: start
+    task:
+      id: 04d3dcab-c1d7-4b6f-8cf3-b22f85dc4ef3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ad1b27f3-2fc0-4d55-84d0-b5cb1c817f4a
+    type: regular
+    task:
+      id: ad1b27f3-2fc0-4d55-84d0-b5cb1c817f4a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3ae7b648-7c21-4937-8cda-f751b2552a16
+    type: regular
+    task:
+      id: 3ae7b648-7c21-4937-8cda-f751b2552a16
+      version: -1
+      name: darktrace-get-breach
+      script: '|||darktrace-get-breach'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6b04fa70-6a1b-4dfb-8de6-83c1d7905d46
+    type: condition
+    task:
+      id: 6b04fa70-6a1b-4dfb-8de6-83c1d7905d46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.commentCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.did
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.macaddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.device.devicelabel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.model.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7c5af906-6e29-44e4-8afd-802d22d94e83
+    type: regular
+    task:
+      id: 7c5af906-6e29-44e4-8afd-802d22d94e83
+      version: -1
+      name: darktrace-get-comments
+      script: '|||darktrace-get-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9879ab06-926c-482d-85e5-4f1757188342
+    type: condition
+    task:
+      id: 9879ab06-926c-482d-85e5-4f1757188342
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.comments
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4a9d33b8-e10d-4e07-8664-d5343d2321f2
+    type: regular
+    task:
+      id: 4a9d33b8-e10d-4e07-8664-d5343d2321f2
+      version: -1
+      name: darktrace-acknowledge
+      script: '|||darktrace-acknowledge'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b0e53ae1-6474-4913-84cb-1432b4b227a0
+    type: condition
+    task:
+      id: b0e53ae1-6474-4913-84cb-1432b4b227a0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 11705644-4cd4-41e3-81e7-3244b3f497f1
+    type: regular
+    task:
+      id: 11705644-4cd4-41e3-81e7-3244b3f497f1
+      version: -1
+      name: darktrace-unacknowledge
+      script: '|||darktrace-unacknowledge'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 33ecf1fd-3385-46b6-857c-df7d4ad92bd4
+    type: condition
+    task:
+      id: 33ecf1fd-3385-46b6-857c-df7d4ad92bd4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.acknowledged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ModelBreach.pbid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 38aa5e62-9906-4128-8697-7c931a9ddd36
+    type: regular
+    task:
+      id: 38aa5e62-9906-4128-8697-7c931a9ddd36
+      version: -1
+      name: darktrace-list-similar-devices
+      script: '|||darktrace-list-similar-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      did:
+        simple: ${incident.darktracedeviceid}
+      max_results:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 4b328261-2195-4c30-8a55-e4a22e1e7d20
+    type: condition
+    task:
+      id: 4b328261-2195-4c30-8a55-e4a22e1e7d20
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.SimilarDevices.did
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.SimilarDevices.devices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7d84cede-ae74-4f4a-8e29-8234deda4def
+    type: regular
+    task:
+      id: 7d84cede-ae74-4f4a-8e29-8234deda4def
+      version: -1
+      name: darktrace-get-external-endpoint-details
+      script: '|||darktrace-get-external-endpoint-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      additional_info: {}
+      devices: {}
+      endpoint_type:
+        simple: IP
+      endpoint_value:
+        simple: 8.8.8.8
+      score: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ed25a21a-06df-4917-87d3-8b09ed15fd16
+    type: condition
+    task:
+      id: ed25a21a-06df-4917-87d3-8b09ed15fd16
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.ExternalEndpointDetails
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 05541877-7e47-4123-8987-2512960f2afe
+    type: regular
+    task:
+      id: 05541877-7e47-4123-8987-2512960f2afe
+      version: -1
+      name: darktrace-get-device-connection-info
+      script: '|||darktrace-get-device-connection-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      data_type:
+        simple: co
+      destination_did: {}
+      did:
+        simple: ${incident.darktracedeviceid}
+      external_domain: {}
+      full_device_details: {}
+      num_similar_devices: {}
+      show_all_graph_data: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 93da5f09-3208-4aa4-8fbf-594aff7cf2df
+    type: condition
+    task:
+      id: 93da5f09-3208-4aa4-8fbf-594aff7cf2df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.DeviceConnectionInfo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 5a84e1d9-12e3-4de5-8c84-4f8c56ea9df4
+    type: regular
+    task:
+      id: 5a84e1d9-12e3-4de5-8c84-4f8c56ea9df4
+      version: -1
+      name: darktrace-get-device-identity-info
+      script: '|||darktrace-get-device-identity-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      max_results: {}
+      order: {}
+      order_by: {}
+      query:
+        simple: '"label:test"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 422a5e52-3c9e-4750-8228-7842d8462a5b
+    type: condition
+    task:
+      id: 422a5e52-3c9e-4750-8228-7842d8462a5b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.DeviceIdentityInfo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 33b27ea4-5db4-4a8c-86cb-8cfc97d6dec0
+    type: regular
+    task:
+      id: 33b27ea4-5db4-4a8c-86cb-8cfc97d6dec0
+      version: -1
+      name: darktrace-get-entity-details
+      script: '|||darktrace-get-entity-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      max_results: {}
+      offset: {}
+      query:
+        simple: did=${incident.darktracedeviceid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: a4d10ca7-0ff0-4778-8f3d-b39797346236
+    type: condition
+    task:
+      id: a4d10ca7-0ff0-4778-8f3d-b39797346236
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Darktrace.EntityDetails
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 6d0ec650-761c-434d-81f0-c777891e9323
+    type: title
+    task:
+      id: 6d0ec650-761c-434d-81f0-c777891e9323
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3535,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Test playbook to validate outputs of commands

@@ -1,0 +1,10 @@
+{
+  "_kind": "tm:asm:policies:server-technologies:server-technologystate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies/server-technology-md5?ver=15.1.0",
+  "id": "server-technology-md5",
+  "lastUpdateMicros": 1600078718000000.0,
+  "serverTechnologyReference": {
+    "link": "https://localhost/mgmt/tm/asm/server-technologies/1234?ver=15.1.0",
+    "serverTechnologyName": "ASP"
+  }
+}

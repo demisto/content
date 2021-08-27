@@ -46,7 +46,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      custom-attributes: {}
+      custom-attributes:
+        simple: '{"company": "test"}'
       description: {}
       display-name:
         simple: Samurai Jack

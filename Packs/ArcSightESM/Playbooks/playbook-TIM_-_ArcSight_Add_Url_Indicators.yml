@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "1"
+    taskid: eceeb759-3757-4dea-b57b-56f1292aa665
     type: start
     task:
-      id: "1"
+      id: eceeb759-3757-4dea-b57b-56f1292aa665
       version: -1
       name: ""
       iscommand: false

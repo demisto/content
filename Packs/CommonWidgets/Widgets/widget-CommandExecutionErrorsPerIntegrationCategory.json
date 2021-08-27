@@ -1,0 +1,40 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "category"
+        ],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "showGraphValues": false,
+        "showOthers": true,
+        "tableColumns": [],
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "",
+        "yAxisLabel": ""
+    },
+    "query": "type:integration",
+    "modified": "2021-05-19T17:14:44.606202428Z",
+    "name": "Command execution errors per Integration Category",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "command-execution-errors-per-integration-category",
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": "Command execution errors per Integration Category"
+}

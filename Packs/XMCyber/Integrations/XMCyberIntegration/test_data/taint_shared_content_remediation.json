@@ -1,0 +1,63 @@
+[
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "b42b5ac8b2a93f32c00be81243bb26ed",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Remove write permissions for the following users to the specified shared folder"
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "4c15efed1e048d98c884f6b8041b27ab",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Use application whitelisting software (e.g AppLocker) to restrict password dumping tools"
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "7694cf8388fa03b21c66a44beccb88ae",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Prevent the credential from being stored in the machine memory. This usually happens due to interactive logins, whether its from the keyboard/mouse connected to the machine, RDP, or service account. Using Event Viewer Security logs and looking for 4624 and 4648 events can help identify the exact reason."
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "09a94bec89d1edbf0a6b807702d6538e",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Enable Protected Process Light for LSA"
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "b2faf8c84a405e4a666a66b6ee9e539e",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Implement Credential Guard to protect the LSA secrets"
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "08ea7cac520f020cc1d56a6e6b5aee63",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Block LLMNR (UDP port 5355) and NetBIOS (UDP port 137) traffic using endpoint security software on the following computers:"
+    },
+    {
+    "schemeDisplayName": "Remediation parameters",
+    "id": "effa94225bf20360e78558b66ce4ecf0",
+    "adviceType": "remediationAdvice",
+    "adviceTypeDisplayName": "Remediation",
+    "displayName": "Disable LLMNR (using local computer policy settings or by group policy) and NetBIOS (by changing each interface settings) on the the following computers:"
+    },
+    {
+    "displayName": "Protect shared folders by minimizing users who have write access.",
+    "id": "473c5252ca236b9a06ae3e82ea2ad520",
+    "adviceType": "bestPractice",
+    "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+    "displayName": "Use utilities that detect or mitigate common features used in exploitation, such as the Microsoft Enhanced Mitigation Experience Toolkit (EMET).",
+    "id": "fefb99dab5046d5a9a1a0273457fdc01",
+    "adviceType": "bestPractice",
+    "adviceTypeDisplayName": "Best Practice"
+    }
+    ]

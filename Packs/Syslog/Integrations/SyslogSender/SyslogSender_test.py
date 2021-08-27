@@ -37,7 +37,7 @@ def test_init_manager():
         'address': '127.0.0.1',
         'port': '514',
         'protocol': 'tcp',
-        'logging_level': 'INFO',
+        'priority': 'LOG_DEBUG',
         'facility': 'LOG_SYSLOG'
     }
 
@@ -48,7 +48,7 @@ def test_init_manager():
     assert manager.address == '127.0.0.1'
     assert manager.port == 514
     assert manager.protocol == 'tcp'
-    assert manager.logging_level == 20
+    assert manager.logging_level == 10
     assert manager.facility == 5
 
 
@@ -140,4 +140,29 @@ def test_send(mocker):
 
     # Assert
     assert send_args[0] == '1, eyy https://www.eizelulz.com:8443/#/WarRoom/727'
+    assert results == 'Message sent to Syslog successfully.'
+
+
+def test_send_with_non_default_log_level(mocker):
+    from SyslogSender import syslog_send_notification
+
+    # Set
+    mocker.patch.object(demisto, 'args', return_value={'message': 'eyy', 'level': 'DEBUG'})
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1, 'id': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'results')
+
+    mocker.patch.object(Logger, 'debug')
+    mocker.patch.object(Logger, 'info')  # This is the default log level
+
+    # Arrange
+    syslog_send_notification(Manager(), 1)
+    debug_send_args = Logger.debug.call_args[0]
+    info_send_args = Logger.info.call_args  # make sure nothing was sent in the info log level
+    results = demisto.results.call_args[0][0]
+
+    # Assert
+    assert debug_send_args[0] == '1, eyy https://www.eizelulz.com:8443/#/WarRoom/727'
+    assert not info_send_args
     assert results == 'Message sent to Syslog successfully.'

@@ -1,0 +1,33 @@
+category: Messaging
+commonfields:
+  id: RSS
+  version: -1
+configuration:
+- display: Feed URL
+  name: URL
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Simple RSS reader that can ingest new items as Incidents
+display: RSS
+name: RSS
+script:
+  dockerimage: demisto/feed-parser:1.0.0.14495
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0

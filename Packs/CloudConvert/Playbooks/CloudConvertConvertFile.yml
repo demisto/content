@@ -1,0 +1,614 @@
+id: CloudConvert - Convert File
+version: -1
+name: CloudConvert - Convert File
+description: Use this playbook to convert a file to the required format using CloudConvert.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f4d3108d-f097-433d-8048-697d7c307824
+    type: start
+    task:
+      id: f4d3108d-f097-433d-8048-697d7c307824
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 61954bf7-0d23-4b53-833b-ef80b01b2995
+    type: regular
+    task:
+      id: 61954bf7-0d23-4b53-833b-ef80b01b2995
+      version: -1
+      name: Upload The File To The Server
+      description: Upload the file.
+      script: '|||cloudconvert-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.entry_id
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.entry_id
+                iscontext: true
+      file_name: {}
+      url:
+        complex:
+          root: inputs.url
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.url
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: bcb3103e-7a24-43b1-88c3-5ff9a8195bf1
+    type: playbook
+    task:
+      id: bcb3103e-7a24-43b1-88c3-5ff9a8195bf1
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${CloudConvert.Task.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: cloudconvert-check-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CloudConvert.Task(val.status != 'finished').id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8b738b30-0849-4a76-838b-060509f5f1d6
+    type: regular
+    task:
+      id: 8b738b30-0849-4a76-838b-060509f5f1d6
+      version: -1
+      name: Convert The File
+      description: Convert the file to the required format.
+      script: '|||cloudconvert-convert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      output_format:
+        complex:
+          root: inputs.output_format
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: upload
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0542955c-ec8e-43c4-80f4-52f911077f8a
+    type: playbook
+    task:
+      id: 0542955c-ec8e-43c4-80f4-52f911077f8a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: convert
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: cloudconvert-check-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CloudConvert.Task(val.status!='finished').id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7f475e6b-c9f8-45c6-897a-54b2e4db0a04
+    type: regular
+    task:
+      id: 7f475e6b-c9f8-45c6-897a-54b2e4db0a04
+      version: -1
+      name: Download The File
+      description: Download the file
+      script: '|||cloudconvert-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      download_as:
+        complex:
+          root: inputs.download_via
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: convert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ca4d2dc7-1656-41a7-875f-835b9d1e5038
+    type: condition
+    task:
+      id: ca4d2dc7-1656-41a7-875f-835b9d1e5038
+      version: -1
+      name: 'Downloading To War Room Entry? '
+      description: Check if downloading to War Room entry.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.download_via
+            iscontext: true
+          right:
+            value:
+              simple: war_room_entry
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 4a40fdc4-207f-4394-86cd-61fdd68e7b1a
+    type: playbook
+    task:
+      id: 4a40fdc4-207f-4394-86cd-61fdd68e7b1a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: download
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: cloudconvert-check-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CloudConvert.Task(val.status!='finished').id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 34ee3436-c1e9-41d9-8730-ed9c4d00b17f
+    type: regular
+    task:
+      id: 34ee3436-c1e9-41d9-8730-ed9c4d00b17f
+      version: -1
+      name: Check Status - Used For Getting Finished Download Task's Data
+      description: Check the status of an operation. Use the 'create_war_room_entry'
+        argument to also create a War Room entry of the file when checking on a download
+        operation.
+      script: '|||cloudconvert-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      create_war_room_entry:
+        simple: "false"
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: download
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 6bd613f6-9cb0-4642-86ec-77cd1d535e70
+    type: regular
+    task:
+      id: 6bd613f6-9cb0-4642-86ec-77cd1d535e70
+      version: -1
+      name: Check Status - Used For Getting Finished Download Task's Data And Create
+        Entry
+      description: Check the status of an operation. Use the 'create_war_room_entry'
+        argument to also create a War Room entry of the file when checking on a download
+        operation.
+      script: '|||cloudconvert-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      create_war_room_entry:
+        simple: "true"
+      task_id:
+        complex:
+          root: CloudConvert.Task
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CloudConvert.Task.operation
+                iscontext: true
+              right:
+                value:
+                  simple: download
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 91d59754-4771-4c04-8b4c-dbe49afa7477
+    type: title
+    task:
+      id: 91d59754-4771-4c04-8b4c-dbe49afa7477
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6e7a08d8-833e-4adb-8d45-3b4872c1a613
+    type: condition
+    task:
+      id: 6e7a08d8-833e-4adb-8d45-3b4872c1a613
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: CloudConvert
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1875,
+        "width": 800,
+        "x": 240,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: The URL of the uploaded file. If an entry ID is supplied, do not use
+    this argument.
+  playbookInputQuery:
+- key: entry_id
+  value: {}
+  required: false
+  description: The entry ID of the uploaded file. If a URL is supplied, do not use
+    this argument.
+  playbookInputQuery:
+- key: output_format
+  value: {}
+  required: true
+  description: |
+    The required output format.
+  playbookInputQuery:
+- key: download_via
+  value: {}
+  required: true
+  description: |
+    The method for downloading the resulted file, URL or war_room_entry.
+  playbookInputQuery:
+outputs:
+- contextPath: CloudConvert.Task.result.files.url
+  description: Resulted file url
+  type: String
+- contextPath: CloudConvert.Task.result.files.filename
+  description: Resulted file name
+  type: String
+- contextPath: CloudConvert.Task.result.files.size
+  description: Resulted size of file
+  type: String
+- contextPath: CloudConvert.InfoFile
+  description: Resulted file details if exported as war room entry
+  type: string
+fromversion: 5.0.0
+tests:
+- CloudConvert-test

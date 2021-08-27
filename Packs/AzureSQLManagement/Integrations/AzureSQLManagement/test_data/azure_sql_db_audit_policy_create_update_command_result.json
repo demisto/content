@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "retentionDays": 5,
+        "auditActionsAndGroups": [
+            "FAILED_DATABASE_AUTHENTICATION_GROUP"
+        ],
+        "isAzureMonitorTargetEnabled": true,
+        "state": "Enabled",
+        "storageAccountSubscriptionId": "00000-0000-0000-0000-0000000"
+    },
+    "id": "/subscriptions/123456789/resourceGroups/integration/providers/Microsoft.Sql/servers/integration/databases/integration-db/auditingSettings/Default",
+    "name": "Default",
+    "type": "Microsoft.Sql/servers/databases/auditingSettings"
+}

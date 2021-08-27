@@ -87,11 +87,11 @@ script:
       required: true
       description: Query (Lucene syntax)
     - name: range
-      default: true
+      default: false
       description: Relative timeframe to search in. Default 300s
       defaultValue: "300"
     - name: limit
-      default: true
+      default: false
       description: Maximum number of messages to return. Default 20
       defaultValue: "20"
     - name: offset
@@ -131,7 +131,7 @@ script:
     - name: per_page
       description: how many per page (integer)
     - name: timerange
-      default: true
+      default: false
       description: Relative timerange to search in seconds
       defaultValue: "300"
     - name: sort_by
@@ -157,7 +157,7 @@ script:
         with format yyyy-MM-ddTHH:mm:ss.SSSZ (e.g. 2014-01-23T15:34:49.000Z) or yyyy-MM-dd
         HH:mm:ss.
     - name: limit
-      default: true
+      default: false
       description: Maximum number of messages to return.
       defaultValue: "20"
     - name: offset
@@ -183,7 +183,7 @@ script:
       description: Search results of Absolute search
       type: String
     description: Search with absolute times
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
   subtype: python3

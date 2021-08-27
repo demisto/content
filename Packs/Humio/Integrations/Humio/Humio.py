@@ -73,8 +73,14 @@ def test_module(client, headers=None):
 def humio_query(client, args, headers):
     data = {}
     data["queryString"] = args.get("queryString")
-    data["start"] = args.get("start")
-    data["end"] = args.get("end")
+    try:
+        data["start"] = int(args.get("start"))
+    except ValueError:
+        data["start"] = args.get("start")
+    try:
+        data["end"] = int(args.get("end"))
+    except ValueError:
+        data["end"] = args.get("end")
     data["isLive"] = args.get("isLive").lower() in ["true", "1", "t", "y", "yes"]
     data["timeZoneOffsetMinutes"] = int(args.get("timeZoneOffsetMinutes", 0))
     if args.get("arguments"):
@@ -301,7 +307,12 @@ def fetch_incidents(client, headers):
             ts = int(result.get("@timestamp", backup_ts))
             if ts > max_ts:
                 max_ts = ts
-        max_ts += 1
+
+        # Ensures that max_ts gets a reasonable value if no events were returned on first run
+        if (not response_data):
+            max_ts = backup_ts
+        else:
+            max_ts += 1
         demisto.setLastRun({"time": max_ts})
         return form_incindents(response_data)
     else:

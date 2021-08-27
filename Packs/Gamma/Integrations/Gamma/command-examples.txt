@@ -1,0 +1,3 @@
+!gamma-get-violation-list minimum_violation=998 limit=1
+!gamma-get-violation violation=998
+!gamma-update-violation violation=998 status=RESOLVED notes=deleted by user

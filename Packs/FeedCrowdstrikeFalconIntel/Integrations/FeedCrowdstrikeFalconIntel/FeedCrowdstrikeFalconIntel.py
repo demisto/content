@@ -17,7 +17,8 @@ class Client(BaseClient):
         self._client_id = params.get('client_id')
         self._client_secret = params.get('client_secret')
         self._verify_certificate = not demisto.params().get('insecure', False)
-        super().__init__(base_url="https://api.crowdstrike.com/", verify=self._verify_certificate,
+        self._server_url = params.get('server_url', "https://api.crowdstrike.com/")
+        super().__init__(base_url=self._server_url, verify=self._verify_certificate,
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
@@ -152,15 +153,15 @@ class Client(BaseClient):
         current_timestamp = datetime.timestamp(current_time)
         timestamp = str(int(current_timestamp))
         integration_context_to_set = {'last_modified_time': timestamp}
-        demisto.setIntegrationContext(integration_context_to_set)
+        set_feed_last_run(integration_context_to_set)
 
     def get_last_modified_time(self):
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_feed_last_run()
         if not integration_context:
             params = ''
             self.set_last_modified_time()
         else:
-            last_modified_time = demisto.getIntegrationContext()
+            last_modified_time = get_feed_last_run()
             relevant_time = int(last_modified_time['last_modified_time'])
             params = f"last_modified_date%3A%3E{relevant_time}"
             self.set_last_modified_time()

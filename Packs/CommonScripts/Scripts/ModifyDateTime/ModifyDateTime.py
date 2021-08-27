@@ -6,11 +6,13 @@ import dateparser
 from typing import Optional
 
 
-def apply_variation(original_datetime: Optional[datetime] = None, variation: str = None) -> Optional[datetime]:
+def apply_variation(original_datetime: datetime, variation: str) -> Optional[datetime]:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
+        new_time = new_time.replace(tzinfo=original_datetime.tzinfo)
     except Exception as err:
         return_error(f"Error adding variation to the date / time - {err}")
+
     return new_time
 
 
@@ -25,7 +27,7 @@ def main():
     variation = args.get('variation')
     new_time = apply_variation(original_datetime, variation)
     if isinstance(new_time, datetime):
-        demisto.results(new_time.isoformat())
+        return_results(new_time.isoformat())
     else:
         return_error('Invalid variation specified')
 

@@ -18,7 +18,7 @@ You need an API key for this integration.
 1. Log in to www.securityadvisor.io.
 2. Navigate to the __My Profile__ section or contact support@securityadvisor.io.
 
-## Configure SecurityAdvisor on Demisto
+## Configure SecurityAdvisor on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SecurityAdvisor.
@@ -32,7 +32,7 @@ You need an API key for this integration.
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. coach-end-user
 ### 1. Coach an end user

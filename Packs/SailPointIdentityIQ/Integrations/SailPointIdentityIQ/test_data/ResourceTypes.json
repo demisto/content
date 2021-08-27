@@ -1,0 +1,240 @@
+{
+    "totalResults": 12,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "schema": "urn:ietf:params:scim:schemas:core:2.0:User",
+            "endpoint": "/Users",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/User",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "User",
+            "description": "User Account",
+            "schemaExtensions": [
+                {
+                    "schema": "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+                    "required": true
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:User",
+                    "required": true
+                }
+            ],
+            "id": "User"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application",
+            "endpoint": "/Applications",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Application",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Application",
+            "description": "Application",
+            "id": "Application"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Account",
+            "endpoint": "/Accounts",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Account",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Account",
+            "description": "Account",
+            "schemaExtensions": [
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:SailPoint Verification SCIM Application:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:JDBC PAM Application:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:PAM Demodata:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:Active Directory:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:Human Resources:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:Oracle EBS:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:Mainframe:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:TRAKK:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:PRISM:account",
+                    "required": false
+                },
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:Enterprise Directory:account",
+                    "required": false
+                }
+            ],
+            "id": "Account"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement",
+            "endpoint": "/Entitlements",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Entitlement",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Entitlement",
+            "description": "Entitlement",
+            "id": "Entitlement"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Role",
+            "endpoint": "/Roles",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Role",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Role",
+            "description": "Role",
+            "id": "Role"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Workflow",
+            "endpoint": "/Workflows",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Workflow",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Workflow",
+            "description": "Workflow",
+            "id": "Workflow"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult",
+            "endpoint": "/TaskResults",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/TaskResult",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "TaskResult",
+            "description": "TaskResult",
+            "id": "TaskResult"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:ObjectConfig",
+            "endpoint": "/ObjectConfig",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/ObjectConfig",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "ObjectConfig",
+            "description": "ObjectConfig",
+            "id": "ObjectConfig"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult",
+            "endpoint": "/LaunchedWorkflows",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/LaunchedWorkflow",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "LaunchedWorkflow",
+            "description": "LaunchedWorkflow",
+            "schemaExtensions": [
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:LaunchedWorkflow",
+                    "required": true
+                }
+            ],
+            "id": "LaunchedWorkflow"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:PolicyViolation",
+            "endpoint": "/PolicyViolations",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/PolicyViolation",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "PolicyViolation",
+            "description": "PolicyViolation",
+            "id": "PolicyViolation"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:CheckedPolicyViolation",
+            "endpoint": "/CheckedPolicyViolations",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/CheckedPolicyViolation",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "CheckedPolicyViolation",
+            "description": "CheckedPolicyViolation",
+            "id": "CheckedPolicyViolation"
+        },
+        {
+            "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:Alert",
+            "endpoint": "/Alerts",
+            "meta": {
+                "location": "http://localhost:8088/iiq/scim/v2/ResourceTypes/Alert",
+                "resourceType": "ResourceType"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:core:2.0:ResourceType"
+            ],
+            "name": "Alert",
+            "description": "Alert",
+            "schemaExtensions": [
+                {
+                    "schema": "urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput",
+                    "required": true
+                }
+            ],
+            "id": "Alert"
+        }
+    ]
+}

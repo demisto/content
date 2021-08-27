@@ -1,0 +1,17 @@
+!ansible-tower-inventories-list page_number=1 page_size=50
+!ansible-tower-hosts-list inventory_id=1
+!ansible-tower-host-create host_name=example inventory_id=1
+!ansible-tower-host-delete host_id=25
+!ansible-tower-job-templates-list
+!ansible-tower-credentials-list
+!ansible-tower-job-launch job_template_id=5
+!ansible-tower-job-relaunch job_id=282
+!ansible-tower-job-cancel job_id=282
+!ansible-tower-job-status job_id=282
+!ansible-tower-job-stdout job_id=348
+!ansible-tower-job-events-list
+!ansible-tower-adhoc-command-launch credential_id=1 inventory_id=1 module_name=ping
+!ansible-tower-adhoc-command-relaunch command_id=236
+!ansible-tower-adhoc-command-cancel command_id=236
+!ansible-tower-adhoc-command-stdout command_id=236
+!ansible-tower-adhoc-command-status command_id=236

@@ -13,7 +13,7 @@ This integration was integrated and tested with Silverfort version 2.12.
 
 - Consume Silverfort user and server risk levels
 - Enrich the Silverfort risk engine and trigger MFA on risky entities
-## Configure Silverfort on Demisto
+## Configure Silverfort on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Silverfort.
@@ -32,7 +32,7 @@ This integration was integrated and tested with Silverfort version 2.12.
     2. In the Authentication Tokens section, click __Generate Token__.
     3. Copy the generated token and save it in a safe place.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### silverfort-get-user-risk
 ***
@@ -217,13 +217,3 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ok
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-

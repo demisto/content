@@ -1,0 +1,16 @@
+[file:README.md]
+ignore=RM104
+[file:incidentfield-Case_PAP.json]
+ignore=IF100
+
+[file:incidentfield-Case_Resolution_Status.json]
+ignore=IF100
+
+[file:incidentfield-Case_Status.json]
+ignore=IF100
+
+[file:incidentfield-Case_Summary.json]
+ignore=IF100
+
+[file:incidentfield-Case_TLP.json]
+ignore=IF100

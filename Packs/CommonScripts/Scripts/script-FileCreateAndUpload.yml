@@ -39,10 +39,10 @@ args:
 - name: filename
   default: true
   required: true
-  description: The name of the file to be created
+  description: The name of the file to be created.
 - name: data
-  description: input data to write to file
+  description: Input data to write to file.
 - name: entryId
-  description: Entry ID contents to write into file
+  description: Entry ID contents to write into file.
 scripttarget: 0
 fromversion: 5.0.0

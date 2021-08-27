@@ -1,0 +1,2750 @@
+id: Agari Message Remediation - Agari Phishing Defense
+version: -1
+name: Agari Message Remediation - Agari Phishing Defense
+description: Investigates Agari policy events by obtaining the original message and
+  attachments from the existing email integrations and remediates in Agari.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: be3da475-9f8d-4ec7-8f50-29409ec6649c
+    type: start
+    task:
+      id: be3da475-9f8d-4ec7-8f50-29409ec6649c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8387f110-b132-411d-8f0f-7e6357076463
+    type: condition
+    task:
+      id: 8387f110-b132-411d-8f0f-7e6357076463
+      version: -1
+      name: Is APD Global Message ID not empty?
+      description: Check if APD Global Message ID is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "33"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.APD Global Message ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2b82ffe9-342c-4080-8e14-713c6f7b6369
+    type: title
+    task:
+      id: 2b82ffe9-342c-4080-8e14-713c6f7b6369
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 5660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 24bbeb18-785a-480f-874e-0d1b726f665e
+    type: playbook
+    task:
+      id: 24bbeb18-785a-480f-874e-0d1b726f665e
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "5"
+    scriptarguments:
+      Email: {}
+      Email/cc: {}
+      Email/format: {}
+      Email/from:
+        complex:
+          root: EmailData
+          accessor: From
+      Email/headers:
+        complex:
+          root: EmailData
+          accessor: EmailHeaders
+      Email/html:
+        complex:
+          root: EmailData
+          accessor: HtmlBody
+      Email/subject:
+        complex:
+          root: EmailData
+          accessor: Subject
+      Email/text:
+        complex:
+          root: EmailData
+          accessor: TextBody
+      File:
+        complex:
+          root: File
+      GetOriginalEmail:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 99d4e6f0-0d09-4cfc-82bc-8950528e2741
+    type: playbook
+    task:
+      id: 99d4e6f0-0d09-4cfc-82bc-8950528e2741
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      description: |-
+        Extracts indicators from a file.
+        Supported file types:
+        - CSV
+        - PDF
+        - TXT
+        - HTM, HTML
+        - DOC, DOCX
+        - PPT
+        - PPTX
+        - RTF
+        - XLS
+        - XLSX
+        - XML
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 613a16bb-8408-4425-8e34-d491967b09d6
+    type: playbook
+    task:
+      id: 613a16bb-8408-4425-8e34-d491967b09d6
+      version: -1
+      name: Detonate File - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          accessor: EntryID
+      File:
+        complex:
+          root: File
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5bbdd92d-06e2-4156-8aff-f234e378e4e8
+    type: title
+    task:
+      id: 5bbdd92d-06e2-4156-8aff-f234e378e4e8
+      version: -1
+      name: Indicator Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 705c5360-53cf-4a14-8540-579021588fe9
+    type: title
+    task:
+      id: 705c5360-53cf-4a14-8540-579021588fe9
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: be2ed8e4-fba8-44f5-8c7c-0505f17b9184
+    type: condition
+    task:
+      id: be2ed8e4-fba8-44f5-8c7c-0505f17b9184
+      version: -1
+      name: Should the email be authenticated?
+      description: Whether the email should be authenticated using authenticityscore
+        of incident. This checks whether "AuthenticateEmail" output is set to "True"
+        and whether there are headers from an email to authenticate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AuthenticateEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: Headers
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 439af56d-b2c9-49ee-82b9-a04e6d5d3b97
+    type: title
+    task:
+      id: 439af56d-b2c9-49ee-82b9-a04e6d5d3b97
+      version: -1
+      name: Email Authenticity Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2d2b427f-15a5-4cfb-82bf-0d35654aa5d6
+    type: playbook
+    task:
+      id: 2d2b427f-15a5-4cfb-82bf-0d35654aa5d6
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: DBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: UpdatedEmailAuthenticity
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 77619b5f-6dab-4094-8835-c991f60153eb
+    type: regular
+    task:
+      id: 77619b5f-6dab-4094-8835-c991f60153eb
+      version: -1
+      name: Authenticate email
+      description: Checks the authenticity of an email based on the email's SPF, DMARC,
+        and DKIM.
+      scriptName: CheckEmailAuthenticity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      DKIM_override_fail: {}
+      DKIM_override_neutral: {}
+      DKIM_override_none: {}
+      DKIM_override_pass: {}
+      DKIM_override_permerror: {}
+      DKIM_override_policy: {}
+      DKIM_override_temperror: {}
+      DMARC_override_fail: {}
+      DMARC_override_none: {}
+      DMARC_override_pass: {}
+      DMARC_override_permerror: {}
+      DMARC_override_temperror: {}
+      SPF_override_fail: {}
+      SPF_override_neutral: {}
+      SPF_override_none: {}
+      SPF_override_pass: {}
+      SPF_override_permerror: {}
+      SPF_override_softfail: {}
+      SPF_override_temperror: {}
+      headers:
+        complex:
+          root: Email
+          accessor: Headers
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 646388fd-6bab-4cbf-8ed4-341813af8f7f
+    type: regular
+    task:
+      id: 646388fd-6bab-4cbf-8ed4-341813af8f7f
+      version: -1
+      name: Save authenticity check result to incident field
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      addcctoemail: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      apdadminrecipients: {}
+      apdalertdefinitionname: {}
+      apdattackclass: {}
+      apdattacktypes: {}
+      apdcreatedat: {}
+      apdenforcementaction: {}
+      apdenforcementstatus: {}
+      apdglobalmessageid: {}
+      apdinternalmessageid: {}
+      apdmatchedpolicies: {}
+      apdmessageauthenticationresults: {}
+      apdmessageauthenticityscore: {}
+      apdmessagedate: {}
+      apdmessagedetailsdate: {}
+      apdmessagedetailsfrom: {}
+      apdmessagedetailssubject: {}
+      apdmessagedetailsto: {}
+      apdmessagedetailstrustscore: {}
+      apdmessagedkimdtag: {}
+      apdmessagedomainreputation: {}
+      apdmessagedownloadlink: {}
+      apdmessagefrom: {}
+      apdmessagefromdomain: {}
+      apdmessagemailfrom: {}
+      apdmessageptrname: {}
+      apdmessagereplyto: {}
+      apdmessagereputation: {}
+      apdmessageriskreason: {}
+      apdmessagesbrs: {}
+      apdmessagesenderipaddress: {}
+      apdmessagesubject: {}
+      apdmessagetimestampms: {}
+      apdmessageto: {}
+      apdmessagetrustscore: {}
+      apdmessagetrustscoremax: {}
+      apdmessagetrustscoremin: {}
+      apdnotifiedoriginalrecipients: {}
+      apdpolicyaction: {}
+      apdpolicyenabled: {}
+      apdpolicyeventid: {}
+      apdsummary: {}
+      apdupdatedat: {}
+      app: {}
+      appendMultiSelect: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
+      blockedaction: {}
+      bmcremedyforceattachments: {}
+      bmcremedyforcebroadcast: {}
+      bmcremedyforcecategory: {}
+      bmcremedyforceclientaccount: {}
+      bmcremedyforceclientname: {}
+      bmcremedyforcecloseddate: {}
+      bmcremedyforceconfigurationitemasset: {}
+      bmcremedyforcecreateddate: {}
+      bmcremedyforcedescription: {}
+      bmcremedyforceduedate: {}
+      bmcremedyforceid: {}
+      bmcremedyforceimpact: {}
+      bmcremedyforcelastmodifieddate: {}
+      bmcremedyforcenotes: {}
+      bmcremedyforceopeneddate: {}
+      bmcremedyforceoutageend: {}
+      bmcremedyforceoutagestart: {}
+      bmcremedyforcequeue: {}
+      bmcremedyforcerequestdefinition: {}
+      bmcremedyforceresolution: {}
+      bmcremedyforcerespondeddate: {}
+      bmcremedyforceservice: {}
+      bmcremedyforceserviceoffering: {}
+      bmcremedyforceservicerequest: {}
+      bmcremedyforcestaff: {}
+      bmcremedyforcestatus: {}
+      bmcremedyforcetemplate: {}
+      bmcremedyforceurgency: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      chronicleassetsupportcontact: {}
+      chronicleautoblockentities: {}
+      chronicledbotscore: {}
+      chronicledomainname: {}
+      chroniclefirstseen: {}
+      chronicleiocingesttime: {}
+      chroniclelastseen: {}
+      chronicleskipentityisolation: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      code42alertdescription: {}
+      code42alertid: {}
+      code42alertname: {}
+      code42alertstate: {}
+      code42alerttimestamp: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      code42severity: {}
+      code42username: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      compliancenotes: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      displayname: {}
+      dnsname: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      dstports: {}
+      duoaccountstatus: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck:
+        complex:
+          root: UpdatedEmailAuthenticity
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Undetermined
+              toReplace:
+                value:
+                  simple: undetermined
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Pass
+              toReplace:
+                value:
+                  simple: pass
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Fail
+              toReplace:
+                value:
+                  simple: fail
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Suspicious
+              toReplace:
+                value:
+                  simple: suspicious
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      faeredescription: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      fs: {}
+      givenname: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledriveactivityaddedparents: {}
+      googledriveactivityaddedpermissions: {}
+      googledriveactivityassignedcurrentuser: {}
+      googledriveactivityassigneddeleteduser: {}
+      googledriveactivityassignedpersonname: {}
+      googledriveactivityassignedunknownuser: {}
+      googledriveactivityassignmentsubtype: {}
+      googledriveactivitycopiedfoldertype: {}
+      googledriveactivitycopieditemisfile: {}
+      googledriveactivitycopieditemname: {}
+      googledriveactivitycopieditemtitle: {}
+      googledriveactivitycopiedshareddrivename: {}
+      googledriveactivitycopiedshareddrivetitle: {}
+      googledriveactivitycreatednew: {}
+      googledriveactivitydeletetype: {}
+      googledriveactivitydlpchangetype: {}
+      googledriveactivityidentifiedas: {}
+      googledriveactivitymentionedusers: {}
+      googledriveactivitynewtitle: {}
+      googledriveactivityoldtitle: {}
+      googledriveactivitypostsubtype: {}
+      googledriveactivityreferencetype: {}
+      googledriveactivityremovedparents: {}
+      googledriveactivityremovedpermissions: {}
+      googledriveactivityrestoretype: {}
+      googledriveactivityrestrictionchanges: {}
+      googledriveactivitysuggestionsubtype: {}
+      googledriveactivitytargets: {}
+      googledriveactivityuploaded: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      graphplot: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworksdeceptionfamilies: {}
+      illusivenetworkseventsnumber: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      infinipointhostname: {}
+      infinipointpolicyid: {}
+      infinipointpolicyname: {}
+      internaladdresses: {}
+      investigationstage: {}
+      iotincidenturl: {}
+      irondefenseaggregationcriteria: {}
+      irondefensealertid: {}
+      irondefensealertids: {}
+      irondefenseanalystexpectation: {}
+      irondefenseanalystseverity: {}
+      irondefenseappdomains: {}
+      irondefensebytesin: {}
+      irondefensebytesout: {}
+      irondefensecategory: {}
+      irondefensecommentdetails: {}
+      irondefenseconfidence: {}
+      irondefensecreated: {}
+      irondefensedomesharedtime: {}
+      irondefensedometags: {}
+      irondefensedstentityattribute: {}
+      irondefensedstentityattributetype: {}
+      irondefensedstip: {}
+      irondefensedstnetworkid: {}
+      irondefensedstport: {}
+      irondefenseendtime: {}
+      irondefenseeventcount: {}
+      irondefenseeventid: {}
+      irondefensefirsteventcreated: {}
+      irondefensehighcognitivesystemdetails: {}
+      irondefenseirondomecategory: {}
+      irondefenseirondomeid: {}
+      irondefenseisblacklisted: {}
+      irondefenseiswhitelisted: {}
+      irondefenselasteventcreated: {}
+      irondefensemismatchdetails: {}
+      irondefenseprimaryappprotocol: {}
+      irondefenserawdataformat: {}
+      irondefensesecondaryappprotocol: {}
+      irondefenseseverity: {}
+      irondefenseseveritydetails: {}
+      irondefenseseveritymaliciousdetails: {}
+      irondefenseseveritysuspiciousdetails: {}
+      irondefensesrcentityattribute: {}
+      irondefensesrcentityattributetype: {}
+      irondefensesrcip: {}
+      irondefensesrcnetworkid: {}
+      irondefensestarttime: {}
+      irondefensestatus: {}
+      irondefensesubcategory: {}
+      irondefensetotalbytes: {}
+      irondefenseupdated: {}
+      irondefensevueurl: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      likelyimpact: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      loginattemptcount: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      malwarename: {}
+      managementnotification: {}
+      manageremail: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      niststage: {}
+      numberoflogsources: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskiqassetawssecuritygroupname: {}
+      riskiqassetcontact: {}
+      riskiqassetgcpfirewallname: {}
+      riskiqassetname: {}
+      riskiqassetoktazoneid: {}
+      riskiqassetowner: {}
+      riskiqassettype: {}
+      riskiqautoexcludewhitelistedipaddress: {}
+      riskiqautowhitelistipaddress: {}
+      riskiqskipmanualtasks: {}
+      riskiqsupportcontact: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachaffectedtargets: {}
+      safebreachaffectedtargetscount: {}
+      safebreachattackcount: {}
+      safebreachattackids: {}
+      safebreachinsightcategory: {}
+      safebreachinsightid: {}
+      safebreachinsightname: {}
+      safebreachinsightriskimpact: {}
+      safebreachlatestsimulation: {}
+      safebreachremediationaction: {}
+      safebreachremediationdata: {}
+      safebreachremediationdatacount: {}
+      safebreachremediationstatus: {}
+      safebreachresultslink: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      safebreachsimulationid: {}
+      safebreachsimulationnumber: {}
+      safebreachthreatgroups: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowrecordid: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowtablename: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      surname: {}
+      suspiciousactivityendtime: {}
+      suspiciousactivityid: {}
+      suspiciousactivityseverity: {}
+      suspiciousactivitystarttime: {}
+      suspiciousactivitystatus: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      userid: {}
+      username: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 907bb1e8-839e-403a-8de5-7f0db41434f2
+    type: regular
+    task:
+      id: 907bb1e8-839e-403a-8de5-7f0db41434f2
+      version: -1
+      name: Assign to analyst
+      description: |
+        Assign the incident to an analyst based on the analyst's organizational role.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
+      roles:
+        complex:
+          root: inputs.Role
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2b5a295e-53e9-40a1-849d-0e44ba37bd30
+    type: condition
+    task:
+      id: 2b5a295e-53e9-40a1-849d-0e44ba37bd30
+      version: -1
+      name: Is the email malicious?
+      description: Determines if the email is malicious based on the calculated severity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      Malicious:
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 9b69065f-fd7b-44bf-81b0-6061d67fd901
+    type: title
+    task:
+      id: 9b69065f-fd7b-44bf-81b0-6061d67fd901
+      version: -1
+      name: Undetermined
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: ee97ce07-73b3-46c6-8e52-952f2533e775
+    type: title
+    task:
+      id: ee97ce07-73b3-46c6-8e52-952f2533e775
+      version: -1
+      name: Email is Malicious
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c71b3432-1ca7-41a0-8633-52ae0518029d
+    type: regular
+    task:
+      id: c71b3432-1ca7-41a0-8633-52ae0518029d
+      version: -1
+      name: Manually review the incident
+      description: Review the incident to determine if the email that the user reported
+        is malicious.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: f5639230-5f9b-4a3b-8507-3a5423bc7bf1
+    type: condition
+    task:
+      id: f5639230-5f9b-4a3b-8507-3a5423bc7bf1
+      version: -1
+      name: Is the email malicious?
+      description: Is the email that the user reported malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "43"
+      "YES":
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d7db20ce-b62d-43fd-83ad-dfbd14859802
+    type: title
+    task:
+      id: d7db20ce-b62d-43fd-83ad-dfbd14859802
+      version: -1
+      name: Remeditation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 4710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: be601c32-73ea-4a28-86d4-85663a4247b7
+    type: title
+    task:
+      id: be601c32-73ea-4a28-86d4-85663a4247b7
+      version: -1
+      name: User Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 40a3f4f0-ce09-4c72-830c-91f137385aec
+    type: regular
+    task:
+      id: 40a3f4f0-ce09-4c72-830c-91f137385aec
+      version: -1
+      name: Store the email address of the reporting user
+      description: Store the email address of the user that reported the incident.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ReporterAddress
+      stringify: {}
+      value:
+        complex:
+          root: incident
+          accessor: apdmessagefrom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3ffb71b8-3c99-4cac-8502-26c94b0a495e
+    type: playbook
+    task:
+      id: 3ffb71b8-3c99-4cac-8502-26c94b0a495e
+      version: -1
+      name: Email Address Enrichment - Generic v2.1
+      description: |-
+        Enrich email addresses.
+        - Get information from Active Directory for internal addresses
+        - Get the domain-squatting reputation for external addresses
+      playbookName: Email Address Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      Domain:
+        complex:
+          root: incident
+          accessor: apdmessagefromdomain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: ReporterAddress
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: dcd1ed14-bccb-463f-8592-11358f8b3592
+    type: regular
+    task:
+      id: dcd1ed14-bccb-463f-8592-11358f8b3592
+      version: -1
+      name: Save reporter email address in field
+      description: Saves the email address of the reporter of the email, in an incident
+        field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      apdadminrecipients: {}
+      apdalertdefinitionname: {}
+      apdattackclass: {}
+      apdattacktypes: {}
+      apdcreatedat: {}
+      apdenforcementaction: {}
+      apdenforcementstatus: {}
+      apdglobalmessageid: {}
+      apdinternalmessageid: {}
+      apdmatchedpolicies: {}
+      apdmessageauthenticationresults: {}
+      apdmessageauthenticityscore: {}
+      apdmessagedate: {}
+      apdmessagedetailsdate: {}
+      apdmessagedetailsfrom: {}
+      apdmessagedetailssubject: {}
+      apdmessagedetailsto: {}
+      apdmessagedetailstrustscore: {}
+      apdmessagedkimdtag: {}
+      apdmessagedomainreputation: {}
+      apdmessagedownloadlink: {}
+      apdmessagefrom: {}
+      apdmessagefromdomain: {}
+      apdmessagemailfrom: {}
+      apdmessageptrname: {}
+      apdmessagereplyto: {}
+      apdmessagereputation: {}
+      apdmessageriskreason: {}
+      apdmessagesbrs: {}
+      apdmessagesenderipaddress: {}
+      apdmessagesubject: {}
+      apdmessagetimestampms: {}
+      apdmessageto: {}
+      apdmessagetrustscore: {}
+      apdmessagetrustscoremax: {}
+      apdmessagetrustscoremin: {}
+      apdnotifiedoriginalrecipients: {}
+      apdpolicyaction: {}
+      apdpolicyenabled: {}
+      apdpolicyeventid: {}
+      apdsummary: {}
+      apdupdatedat: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      chronicleassetsupportcontact: {}
+      chronicleautoblockentities: {}
+      chronicledbotscore: {}
+      chronicledomainname: {}
+      chroniclefirstseen: {}
+      chronicleiocingesttime: {}
+      chroniclelastseen: {}
+      chronicleskipentityisolation: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      googledriveactivityaddedparents: {}
+      googledriveactivityaddedpermissions: {}
+      googledriveactivityassignedcurrentuser: {}
+      googledriveactivityassigneddeleteduser: {}
+      googledriveactivityassignedpersonname: {}
+      googledriveactivityassignedunknownuser: {}
+      googledriveactivityassignmentsubtype: {}
+      googledriveactivitycopiedfoldertype: {}
+      googledriveactivitycopieditemisfile: {}
+      googledriveactivitycopieditemname: {}
+      googledriveactivitycopieditemtitle: {}
+      googledriveactivitycopiedshareddrivename: {}
+      googledriveactivitycopiedshareddrivetitle: {}
+      googledriveactivitycreatednew: {}
+      googledriveactivitydeletetype: {}
+      googledriveactivitydlpchangetype: {}
+      googledriveactivityidentifiedas: {}
+      googledriveactivitymentionedusers: {}
+      googledriveactivitynewtitle: {}
+      googledriveactivityoldtitle: {}
+      googledriveactivitypostsubtype: {}
+      googledriveactivityreferencetype: {}
+      googledriveactivityremovedparents: {}
+      googledriveactivityremovedpermissions: {}
+      googledriveactivityrestoretype: {}
+      googledriveactivityrestrictionchanges: {}
+      googledriveactivitysuggestionsubtype: {}
+      googledriveactivitytargets: {}
+      googledriveactivityuploaded: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      newtime: {}
+      numberoflogsources: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress:
+        complex:
+          root: ReporterAddress
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskiqassetawssecuritygroupname: {}
+      riskiqassetgcpfirewallname: {}
+      riskiqassetoktazoneid: {}
+      riskiqautoexcludewhitelistedipaddress: {}
+      riskiqautowhitelistipaddress: {}
+      riskiqsupportcontact: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      trapsid: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: a01dd461-cdb2-432b-8803-9c3a4abf1c56
+    type: playbook
+    task:
+      id: a01dd461-cdb2-432b-8803-9c3a4abf1c56
+      version: -1
+      name: Remediate Message - Agari Phishing Defense
+      description: Remediates a given message id.
+      playbookName: Remediate Message - Agari Phishing Defense
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      auto_remediation:
+        complex:
+          root: inputs.AutoRemeditaion
+      id:
+        complex:
+          root: inputs.APD Internal Message ID
+      remediate_action:
+        complex:
+          root: inputs.RemediateAction
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 9e7b01a9-e32b-4077-8323-a1929a6009ac
+    type: condition
+    task:
+      id: 9e7b01a9-e32b-4077-8323-a1929a6009ac
+      version: -1
+      name: Is User Enrichment enable?
+      description: Is User Enrichment (based on input) Enable?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEnrichmentEnable
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: daedbaeb-7dd3-4e54-8e9c-461ba8399843
+    type: playbook
+    task:
+      id: daedbaeb-7dd3-4e54-8e9c-461ba8399843
+      version: -1
+      name: Retrieve Email Data - Agari Phishing Defense
+      description: Retrieve Email Data from one of the Integrations of Gmail, Mail
+        Listener v2, EWS O365, Microsoft Graph Mail.
+      playbookName: Retrieve Email Data - Agari Phishing Defense
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Message Id:
+        complex:
+          root: inputs.APD Global Message ID
+      User Id:
+        complex:
+          root: inputs.User Id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: f0792a4c-fbdd-43a3-8bfd-6ad30f743964
+    type: condition
+    task:
+      id: f0792a4c-fbdd-43a3-8bfd-6ad30f743964
+      version: -1
+      name: Is APD Internal Message ID not empty?
+      description: Check if APD Internal Message ID is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.APD Internal Message ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 4850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 3b8c10b9-6fdc-42e0-8468-63d40db17cd7
+    type: condition
+    task:
+      id: 3b8c10b9-6fdc-42e0-8468-63d40db17cd7
+      version: -1
+      name: Is APD Message Trust Score not empty?
+      description: Is APD Message Trust Score not empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: apdmessagetrustscore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 6a69cc6b-1897-4df8-8725-16f0c977b17b
+    type: condition
+    task:
+      id: 6a69cc6b-1897-4df8-8725-16f0c977b17b
+      version: -1
+      name: Is APD Message Trust Score Untrusted, Suspicious or Trusted?
+      description: Is APD Message Trust Score Untrusted, Suspicious or Trusted?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Suspicious:
+      - "39"
+      Trusted:
+      - "40"
+      Untrusted:
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: Untrusted
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: apdmessagetrustscore
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: Suspicious
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: apdmessagetrustscore
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: apdmessagetrustscore
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    - label: Trusted
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: apdmessagetrustscore
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: b97cc4a9-0146-4244-8623-a72513356ab7
+    type: regular
+    task:
+      id: b97cc4a9-0146-4244-8623-a72513356ab7
+      version: -1
+      name: Set Email Authenticity variable to Fail
+      description: Set Email Authenticity variable to Fail
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: UpdatedEmailAuthenticity
+      stringify: {}
+      value:
+        simple: Fail
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 373eac64-8385-45ac-84e5-eae2469d6473
+    type: regular
+    task:
+      id: 373eac64-8385-45ac-84e5-eae2469d6473
+      version: -1
+      name: Set Email Authenticity variable to Suspicious
+      description: Set Email Authenticity variable to Suspicious
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: UpdatedEmailAuthenticity
+      stringify: {}
+      value:
+        simple: Suspicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 1698da71-7789-4be3-8cef-3c35726738cf
+    type: regular
+    task:
+      id: 1698da71-7789-4be3-8cef-3c35726738cf
+      version: -1
+      name: Set Email Authenticity variable to Pass
+      description: Set Email Authenticity variable to Pass
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UpdatedEmailAuthenticity
+      stringify: {}
+      value:
+        simple: Pass
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: b94f0aa8-6d36-49a1-8a25-79e57d6cfbe3
+    type: regular
+    task:
+      id: b94f0aa8-6d36-49a1-8a25-79e57d6cfbe3
+      version: -1
+      name: Set Email Authenticity variable to value generated by Authenticate Email
+      description: Set Email Authenticity variable to value generated by Authenticate
+        Email
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UpdatedEmailAuthenticity
+      stringify: {}
+      value:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 600ba820-7d2f-4553-8fba-c8aa06f9e299
+    type: playbook
+    task:
+      id: 600ba820-7d2f-4553-8fba-c8aa06f9e299
+      version: -1
+      name: Entity Enrichment - Phishing v2
+      playbookName: Entity Enrichment - Phishing v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: ec94a6b6-fb48-49ce-81ed-380ff00e4213
+    type: regular
+    task:
+      id: ec94a6b6-fb48-49ce-81ed-380ff00e4213
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_43_#default#": 0.16,
+      "20_22_Malicious": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5725,
+        "width": 3840,
+        "x": -1220,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: APD Global Message ID
+  value:
+    complex:
+      root: incident
+      accessor: apdglobalmessageid
+  required: true
+  description: Global Message Id obtained from the incident.
+  playbookInputQuery:
+- key: AuthenticateEmail
+  value:
+    simple: "True"
+  required: false
+  description: Whether the authenticity of the email should be verified, using Authenticity
+    Score.
+  playbookInputQuery:
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
+- key: Role
+  value:
+    simple: Administrator
+  required: false
+  description: The default role to assign the incident to.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "False"
+  required: false
+  description: Resolve IP addresses to hostnames (DNS).
+  playbookInputQuery:
+- key: AutoRemeditaion
+  value:
+    simple: "false"
+  required: false
+  description: Whether Automatic remediate message or not.
+  playbookInputQuery:
+- key: RemediateAction
+  value:
+    simple: move
+  required: false
+  description: Default action for remediation of message.
+  playbookInputQuery:
+- key: UserEnrichmentEnable
+  value:
+    simple: "True"
+  required: false
+  description: Flag for enabling User Enrichment.
+  playbookInputQuery:
+- key: User Id
+  value: {}
+  required: false
+  description: Id of User.
+  playbookInputQuery:
+- key: APD Internal Message ID
+  value:
+    complex:
+      root: incident
+      accessor: apdinternalmessageid
+  required: true
+  description: Internal Message Id obtained from the incident.
+  playbookInputQuery:
+outputs: []
+tests:
+- AgariPhishingDefense-Test
+fromversion: 5.0.0

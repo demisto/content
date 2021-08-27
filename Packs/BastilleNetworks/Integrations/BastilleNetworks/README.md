@@ -22,7 +22,7 @@ This integration was integrated and tested with Bastille Networks product versio
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bastille-get-device-events
 ***
@@ -65,9 +65,9 @@ Command to fetch device detection events
 | Bastille.DeviceEvent.device_info.user | String | User associated with device in the deployment | 
 | Bastille.DeviceEvent.device_info.model | String | Model associated with device in the deployment | 
 | Bastille.DeviceEvent.device_info.name | String | Name associated with device in the deployment | 
-| Bastille.DeviceEvent.first_seen.time_s | Number | Event first seen timestamp | 
+| Bastille.DeviceEvent.first_seen.time | Number | Event first seen timestamp | 
 | Bastille.DeviceEvent.first_seen.position | Unknown | Event first seen coordinates | 
-| Bastille.DeviceEvent.last_seen.time_s | Number | Event last seen timestamp | 
+| Bastille.DeviceEvent.last_seen.time | Number | Event last seen timestamp | 
 | Bastille.DeviceEvent.last_seen.position | Unknown | Event last seen coordinates | 
 
 
@@ -332,9 +332,9 @@ Command to fetch zone detection events
 | Bastille.ZoneEvent.device_info.user | String | User associated with device in the deployment | 
 | Bastille.ZoneEvent.device_info.model | String | Model associated with device in the deployment | 
 | Bastille.ZoneEvent.device_info.name | String | Name associated with device in the deployment | 
-| Bastille.ZoneEvent.first_seen.time_s | Number | Event first seen timestamp | 
+| Bastille.ZoneEvent.first_seen.time | Number | Event first seen timestamp | 
 | Bastille.ZoneEvent.first_seen.position | Unknown | Event first seen coordinates | 
-| Bastille.ZoneEvent.last_seen.time_s | Number | Event last seen timestamp | 
+| Bastille.ZoneEvent.last_seen.time | Number | Event last seen timestamp | 
 | Bastille.ZoneEvent.last_seen.position | Unknown | Event last seen coordinates | 
 
 

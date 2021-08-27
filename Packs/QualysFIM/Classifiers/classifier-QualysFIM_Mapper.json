@@ -1,0 +1,200 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "911866bd-bec1-4932-857b-eae56fac7e46",
+    "mapping": {
+        "Qualys-Fim": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Qualys-Fim Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Qualys-Fim Alert Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Qualys-Fim Approval Date": {
+                    "complex": null,
+                    "simple": "approvalDate"
+                },
+                "Qualys-Fim Approval Status": {
+                    "complex": null,
+                    "simple": "approvalStatus"
+                },
+                "Qualys-Fim Approval Type": {
+                    "complex": null,
+                    "simple": "approvalType"
+                },
+                "Qualys-Fim Assigned Date": {
+                    "complex": null,
+                    "simple": "assignDate"
+                },
+                "Qualys-Fim Changed Type": {
+                    "complex": null,
+                    "simple": "changeType"
+                },
+                "Qualys-Fim Comment": {
+                    "complex": null,
+                    "simple": "comment"
+                },
+                "Qualys-Fim Created By": {
+                    "complex": null,
+                    "simple": "createdBy.user.name"
+                },
+                "Qualys-Fim Created Date": {
+                    "complex": {
+                        "accessor": "date",
+                        "filters": [],
+                        "root": "createdBy",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Qualys-Fim Event Type": {
+                    "complex": null,
+                    "simple": "dispositionCategory"
+                },
+                "Qualys-Fim Last updated by": {
+                    "complex": null,
+                    "simple": "lastUpdatedBy.user.name"
+                },
+                "Qualys-Fim Query": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "filters",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "multi_line": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "dateTime\\:(.+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexExtractAll"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "]"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "["
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Qualys-Fim Reviewers": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reviewers",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            },
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Qualys-Fim Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "name",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Qualys FIM - "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+            }
+        }
+    },
+    "name": "QualysFIM Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

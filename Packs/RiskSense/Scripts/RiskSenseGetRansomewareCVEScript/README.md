@@ -6,7 +6,7 @@ This script is a helper script for the Ransomware Exposure - RiskSense playbook 
 | --- | --- |
 | Script Type | python3 |
 | Tags | RiskSense |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

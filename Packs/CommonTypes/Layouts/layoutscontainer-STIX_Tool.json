@@ -1,13 +1,314 @@
 {
-    "name": "STIX Tool",
-    "id": "STIX Tool",
     "group": "indicator",
-    "description": "",
+    "id": "STIX Tool",
     "indicatorsDetails": {
         "tabs": [
             {
-                "id": "main",
+                "hidden": false,
+                "id": "rsdogskmtv",
                 "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "d098c1a0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tooltypes",
+                                "height": 22,
+                                "id": "d271c760-b311-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "d58c74e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "killchainphases",
+                                "height": 22,
+                                "id": "d73542e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "d95f75e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "toolversion",
+                                "height": 22,
+                                "id": "ddb00b50-b311-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "df58b240-b311-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "e2f5af20-b311-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tool Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "rsdogskmtv-8a562750-b311-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "f8f69e60-b311-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "fababc90-b311-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-93f6e7e0-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-b413e230-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "rsdogskmtv-b9ca4930-b311-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "ec56a790-b311-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "b5b460e0-b313-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "id": "f3a67340-b311-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "b2b3a400-b313-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "listId": "rsdogskmtv-b9ca4930-b311-11eb-941c-e725acf1fbbc",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "rsdogskmtv-bbe44f90-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 6,
+                        "i": "rsdogskmtv-bf817380-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-c6078690-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "212099e0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tool Description",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "main",
+                "name": "(Deprecated)",
                 "sections": [
                     {
                         "columns": [
@@ -58,7 +359,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 11
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -81,11 +382,60 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "firstseen",
+                                "fieldId": "stixid",
                                 "height": 22,
-                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 0,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixtooltypes",
+                                "height": 22,
+                                "id": "e8d41d80-97a7-11eb-a8d1-098e2c945225",
+                                "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixaliases",
+                                "height": 22,
+                                "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixkillchainphases",
+                                "height": 22,
+                                "id": "f0e7ae60-97a7-11eb-a8d1-098e2c945225",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "8bfb8ee0-a819-11eb-8bae-034332f83c9b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixtoolversion",
+                                "height": 22,
+                                "id": "ee8d1c90-97a7-11eb-a8d1-098e2c945225",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -95,7 +445,7 @@
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
+                                "index": 6,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -103,67 +453,27 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixid",
+                                "fieldId": "firstseen",
                                 "height": 22,
-                                "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 2,
+                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 7,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "stixtooltypes",
-                                "height": 22,
-                                "id": "46140a10-d187-11ea-bbc9-9f0eaa3e1876",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixaliases",
-                                "height": 22,
-                                "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "stixtoolversion",
-                                "height": 22,
-                                "id": "8a5d1e50-d187-11ea-bbc9-9f0eaa3e1876",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stixkillchainphases",
-                                "height": 22,
-                                "id": "4d7ab920-d187-11ea-bbc9-9f0eaa3e1876",
-                                "index": 3,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Tool Details",
+                        "name": "STIX Tool Details",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 0,
                         "y": 0
                     },
                     {
-                        "h": 5,
+                        "h": 6,
                         "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
@@ -178,7 +488,7 @@
                         "y": 4
                     },
                     {
-                        "h": 5,
+                        "h": 3,
                         "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
@@ -190,7 +500,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -264,65 +574,11 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 1
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Actions",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
                         "y": 0
                     },
                     {
-                        "description": "",
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                        "items": [
-                            {
-                                "endCol": 1,
-                                "fieldId": "assigneduser",
-                                "height": 53,
-                                "id": "c78c26a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "assignedrole",
-                                "height": 53,
-                                "id": "c5ba4cd0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 1,
-                                "listId": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
-                                "sectionItemType": "field",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Assignee",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
-                    },
-                    {
                         "displayType": "ROW",
-                        "h": 7,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
@@ -343,68 +599,102 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Tool Description",
+                        "name": "STIX Tool Description",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
                         "y": 2
                     },
                     {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "sources-field",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "reliability",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "key": "First Seen By Source",
+                                "width": 153
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Last Seen By Source",
+                                "width": 200
+                            }
+                        ],
                         "h": 2,
-                        "i": "main-312dff40-dbd0-11ea-894b-59859b6b5482",
+                        "i": "main-3e18b0f0-979c-11eb-a8d1-098e2c945225",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Feed Related Indicators",
-                        "query": "FeedRelatedIndicatorsWidget",
-                        "queryType": "script",
+                        "name": "Sources Data",
                         "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 2,
-                        "x": 0,
-                        "y": 9
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "lkddep3o3f",
-                "name": "Additional Details",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
+                        "type": "sources",
+                        "w": 1,
+                        "x": 1,
                         "y": 0
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 9,
-                        "i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
-                        "items": null,
+                        "h": 3,
+                        "i": "main-979b5ae0-979e-11eb-a8d1-098e2c945225",
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Custom Details",
+                        "name": "Relationships",
                         "static": false,
-                        "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "main-5c108f50-a819-11eb-8bae-034332f83c9b",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "68f1d4e0-a819-11eb-8bae-034332f83c9b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "6ac81b80-a819-11eb-8bae-034332f83c9b",
+                                "index": 1,
+                                "listId": "main-5c108f50-a819-11eb-8bae-034332f83c9b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -414,20 +704,137 @@
     "indicatorsQuickView": {
         "tabs": [
             {
-                "id": "indicator-quick-view-info",
+                "hidden": false,
+                "id": "oqsrwrirwx",
                 "name": "Info",
                 "sections": [
                     {
-                        "displayType": "CARD",
+                        "displayType": "ROW",
                         "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "i": "indicator-quick-view-info-tags-section",
+                        "hideName": false,
+                        "i": "oqsrwrirwx-4382f050-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "64be2be0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tooltypes",
+                                "height": 22,
+                                "id": "66643ac0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "69d4d070-b312-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "killchainphases",
+                                "height": 22,
+                                "id": "6b9719e0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "6f4fb510-b312-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "toolversion",
+                                "height": 22,
+                                "id": "719b04a0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "7364ef30-b312-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "75ebe830-b312-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tool Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "oqsrwrirwx-490f8830-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "7cb82c00-b312-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tool Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "oqsrwrirwx-4f18ca20-b312-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "tags",
-                                "height": 53,
-                                "id": "indicator-quick-view-info-tags-field",
+                                "height": 22,
+                                "id": "7ec428a0-b312-11eb-941c-e725acf1fbbc",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -436,6 +843,103 @@
                                 "endCol": 2,
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
+                                "id": "80a592d0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "oqsrwrirwx-598a9650-b312-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "oqsrwrirwx-5d0edb10-b312-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 4,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "indicator-quick-view-info",
+                "name": "(Deprecated)",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-tags-section",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
                                 "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
                                 "index": 1,
                                 "sectionItemType": "field",
@@ -450,60 +954,46 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 4
                     },
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
                         "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 7
+                        "y": 6
                     },
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
                         "moved": false,
                         "name": "Comments",
                         "static": false,
                         "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 9
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
                         "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
-                                "index": 2,
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -511,17 +1001,19 @@
                                 "endCol": 2,
                                 "fieldId": "stixtooltypes",
                                 "height": 22,
-                                "id": "da5364f0-d187-11ea-bbc9-9f0eaa3e1876",
-                                "index": 3,
+                                "id": "517c1db0-97b7-11eb-9852-19a926060c76",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixaliases",
                                 "height": 22,
                                 "id": "28289290-d183-11ea-b1ee-39abdac77dba",
-                                "index": 4,
+                                "index": 2,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -529,17 +1021,48 @@
                                 "endCol": 2,
                                 "fieldId": "stixkillchainphases",
                                 "height": 22,
-                                "id": "e13812c0-d187-11ea-bbc9-9f0eaa3e1876",
-                                "index": 5,
+                                "id": "5bc68bc0-97b7-11eb-9852-19a926060c76",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "a9e9c250-a819-11eb-8bae-034332f83c9b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "stixtoolversion",
                                 "height": 22,
-                                "id": "e2f48fd0-d187-11ea-bbc9-9f0eaa3e1876",
+                                "id": "52f6afc0-97b7-11eb-9852-19a926060c76",
+                                "index": 5,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
                                 "index": 6,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -548,11 +1071,11 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Tool Details",
+                        "name": "STIX Tool Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -564,7 +1087,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "stixdescription",
-                                "height": 22,
+                                "height": 106,
                                 "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -575,17 +1098,20 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Tool Description",
+                        "name": "STIX Tool Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 2
                     }
                 ],
                 "type": "custom"
             }
         ]
     },
+    "name": "Tool",
+    "system": false,
+    "version": -1,
     "fromVersion": "6.0.0",
-    "version": -1
+    "description": ""
 }

@@ -1,0 +1,230 @@
+id: PAN-OS logging to Cortex Data Lake - Action Required
+inputs: []
+name: PAN-OS logging to Cortex Data Lake - Action Required
+description: This Playbook initiates the steps needed to investigate the PAN-OS logging
+  to Cortex Data Lake problems.
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 507c2f9a-4f81-4d2d-8664-45090798dc72
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 507c2f9a-4f81-4d2d-8664-45090798dc72
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Could you please investigate the connection to the Cortex Data Lake for the following equipments:
+
+        ${CDL.monitoring.FirewallsWithoutLogsSent}
+
+        You could use this documentation https://docs.paloaltonetworks.com/cortex/cortex-data-lake/cortex-data-lake-getting-started/get-started-with-cortex-data-lake/key.html as reference.
+
+        Please do not validate this task before the problem is fixed.
+      id: d273ae4f-6ad2-406a-8a9f-b0f2b3bd64ed
+      iscommand: false
+      name: FW connection issue with Cortex Data Lake - investigation required
+      type: regular
+      version: -1
+    taskid: d273ae4f-6ad2-406a-8a9f-b0f2b3bd64ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcbfde78-e71f-4bf1-81e6-312fa85a760d
+      iscommand: false
+      name: Problem solved
+      type: title
+      version: -1
+      description: ''
+    taskid: dcbfde78-e71f-4bf1-81e6-312fa85a760d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: Problem has been solved
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: 6b472e4e-4f3f-415c-866e-a7974003f2dd
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6b472e4e-4f3f-415c-866e-a7974003f2dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      columns: {}
+      data:
+        simple: ${CDL.monitoring}
+      title:
+        simple: List and status of monitored firewalls
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Convert an array to a nice table display. Usually, from the context.
+      id: 68bcbbf4-cb25-42a1-8769-65e63c5ed7f0
+      iscommand: false
+      name: Display to the war room the list of monitored devices
+      scriptName: ToTable
+      type: regular
+      version: -1
+    taskid: 68bcbbf4-cb25-42a1-8769-65e63c5ed7f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      frequency:
+        simple: "1"
+      key:
+        simple: CDL.monitoring.FirewallsWithoutLogsSent.[0]
+      timeout:
+        simple: "10"
+      value:
+        simple: .+
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook polls a context key to check if a specific value
+        exists.
+      id: d48d8981-e4db-45e1-8fe2-4536e8381f55
+      iscommand: false
+      name: Context Polling - Generic
+      playbookId: Context Polling - Generic
+      type: playbook
+      version: -1
+    taskid: d48d8981-e4db-45e1-8fe2-4536e8381f55
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

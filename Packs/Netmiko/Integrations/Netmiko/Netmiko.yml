@@ -1,0 +1,306 @@
+category: Utilities
+commonfields:
+  id: Netmiko
+  version: -1
+configuration:
+- display: Platform
+  name: platform
+  required: true
+  type: 0
+- display: Hostname
+  name: hostname
+  required: true
+  type: 0
+- display: Port
+  name: port
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+description: Multi-vendor library to simplify SSH connections to network devices.
+  Utilises the Python library Netmiko for connections. Supports SSH Key authentication
+  and username / password.
+display: Netmiko
+name: Netmiko
+script:
+  commands:
+  - arguments:
+    - description: Commands to run (provide a JSON array or commands delimited using
+        \n ).
+      name: cmds
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Requires "enable" to be run before commands are executed (default
+        is false)
+      name: require_enable
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Commands are config items (such as those used in Cisco devices)
+        (default is false)
+      name: isConfig
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether an exit argument is required after comamnds are executed
+        (default is false)
+      name: require_exit
+      predefined:
+      - "false"
+      - "true"
+    - defaultValue: q
+      description: Optional exit argument used to exit the terminal after commands
+        are executed (default is q)
+      name: exit_argument
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If true, the output in the war room is raw output (as seen in a
+        terminal) and not in JSON format (default is false)
+      name: raw_print
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If set to true, the context is not ouput. This is useful if the
+        command needs to be executed but the result of the command is not required
+        in context (default is false)
+      name: disable_context
+      predefined:
+      - "false"
+      - "true"
+    - description: If specified, it will override the target host specified in the
+        integration instrance.
+      name: override_host
+    - description: If specified, it will override the target port specified in the
+        integration instrance.
+      name: override_port
+    - auto: PREDEFINED
+      description: If specified, it will override the target platform specified in
+        the integration instrance.
+      name: override_platform
+      predefined:
+      - a10
+      - a10_ssh
+      - accedian
+      - accedian_ssh
+      - alcatel_aos
+      - alcatel_aos_ssh
+      - alcatel_sros
+      - alcatel_sros_ssh
+      - apresia_aeos
+      - apresia_aeos_ssh
+      - apresia_aeos_telnet
+      - arista_eos
+      - arista_eos_ssh
+      - arista_eos_telnet
+      - aruba_os
+      - aruba_os_ssh
+      - autodetect
+      - avaya_ers
+      - avaya_ers_ssh
+      - avaya_vsp
+      - avaya_vsp_ssh
+      - brocade_fastiron
+      - brocade_fastiron_ssh
+      - brocade_fastiron_telnet
+      - brocade_netiron
+      - brocade_netiron_ssh
+      - brocade_netiron_telnet
+      - brocade_nos
+      - brocade_nos_ssh
+      - brocade_vdx
+      - brocade_vdx_ssh
+      - brocade_vyos
+      - brocade_vyos_ssh
+      - calix_b6
+      - calix_b6_ssh
+      - calix_b6_telnet
+      - checkpoint_gaia
+      - checkpoint_gaia_ssh
+      - ciena_saos
+      - ciena_saos_ssh
+      - cisco_asa
+      - cisco_asa_ssh
+      - cisco_ios
+      - cisco_ios_serial
+      - cisco_ios_ssh
+      - cisco_ios_telnet
+      - cisco_nxos
+      - cisco_nxos_ssh
+      - cisco_s300
+      - cisco_s300_ssh
+      - cisco_tp
+      - cisco_tp_ssh
+      - cisco_wlc
+      - cisco_wlc_ssh
+      - cisco_xe
+      - cisco_xe_ssh
+      - cisco_xr
+      - cisco_xr_ssh
+      - cisco_xr_telnet
+      - cloudgenix_ion
+      - cloudgenix_ion_ssh
+      - coriant
+      - coriant_ssh
+      - dell_dnos6_telnet
+      - dell_dnos9
+      - dell_dnos9_ssh
+      - dell_force10
+      - dell_force10_ssh
+      - dell_isilon
+      - dell_isilon_ssh
+      - dell_os10
+      - dell_os10_ssh
+      - dell_os6
+      - dell_os6_ssh
+      - dell_os9
+      - dell_os9_ssh
+      - dell_powerconnect
+      - dell_powerconnect_ssh
+      - dell_powerconnect_telnet
+      - eltex
+      - eltex_ssh
+      - endace
+      - endace_ssh
+      - enterasys
+      - enterasys_ssh
+      - extreme
+      - extreme_ers
+      - extreme_ers_ssh
+      - extreme_exos
+      - extreme_exos_ssh
+      - extreme_exos_telnet
+      - extreme_netiron
+      - extreme_netiron_ssh
+      - extreme_netiron_telnet
+      - extreme_nos
+      - extreme_nos_ssh
+      - extreme_slx
+      - extreme_slx_ssh
+      - extreme_ssh
+      - extreme_telnet
+      - extreme_vdx
+      - extreme_vdx_ssh
+      - extreme_vsp
+      - extreme_vsp_ssh
+      - extreme_wing
+      - extreme_wing_ssh
+      - f5_linux
+      - f5_linux_ssh
+      - f5_ltm
+      - f5_ltm_ssh
+      - f5_tmsh
+      - f5_tmsh_ssh
+      - flexvnf
+      - flexvnf_ssh
+      - fortinet
+      - fortinet_ssh
+      - generic_termserver
+      - generic_termserver_ssh
+      - generic_termserver_telnet
+      - hp_comware
+      - hp_comware_ssh
+      - hp_comware_telnet
+      - hp_procurve
+      - hp_procurve_ssh
+      - hp_procurve_telnet
+      - huawei
+      - huawei_ssh
+      - huawei_telnet
+      - huawei_vrpv8
+      - huawei_vrpv8_ssh
+      - ipinfusion_ocnos
+      - ipinfusion_ocnos_ssh
+      - ipinfusion_ocnos_telnet
+      - juniper
+      - juniper_junos
+      - juniper_junos_ssh
+      - juniper_junos_telnet
+      - juniper_ssh
+      - keymile
+      - keymile_nos
+      - keymile_nos_ssh
+      - keymile_ssh
+      - linux
+      - linux_ssh
+      - mellanox
+      - mellanox_mlnxos
+      - mellanox_mlnxos_ssh
+      - mellanox_ssh
+      - mikrotik_routeros
+      - mikrotik_routeros_ssh
+      - mikrotik_switchos
+      - mikrotik_switchos_ssh
+      - mrv_lx
+      - mrv_lx_ssh
+      - mrv_optiswitch
+      - mrv_optiswitch_ssh
+      - netapp_cdot
+      - netapp_cdot_ssh
+      - netscaler
+      - netscaler_ssh
+      - oneaccess_oneos
+      - oneaccess_oneos_ssh
+      - oneaccess_oneos_telnet
+      - ovs_linux
+      - ovs_linux_ssh
+      - paloalto_panos
+      - paloalto_panos_ssh
+      - paloalto_panos_telnet
+      - pluribus
+      - pluribus_ssh
+      - quanta_mesh
+      - quanta_mesh_ssh
+      - rad_etx
+      - rad_etx_ssh
+      - rad_etx_telnet
+      - ruckus_fastiron
+      - ruckus_fastiron_ssh
+      - ruckus_fastiron_telnet
+      - terminal_server
+      - ubiquiti_edge
+      - ubiquiti_edge_ssh
+      - ubiquiti_edgeswitch
+      - ubiquiti_edgeswitch_ssh
+      - vyatta_vyos
+      - vyatta_vyos_ssh
+      - vyos
+      - vyos_ssh
+    - description: If specified, it will override the username specified in the integration
+        instrance.
+      name: override_username
+    - description: If specified, it will override the password specified in the integration
+        instrance.
+      name: override_password
+    description: Execute commands using Netmiko
+    execution: true
+    name: netmiko-cmds
+    outputs:
+    - contextPath: Netmiko.Command
+      description: The command that was executed.
+      type: string
+    - contextPath: Netmiko.DateTimeUTC
+      description: The datetime at which the command was executed (in UTC).
+      type: date
+    - contextPath: Netmiko.Hostname
+      description: The hostname on which the command was executed.
+      type: string
+    - contextPath: Netmiko.Output
+      description: The results of the command.
+      type: string
+  dockerimage: demisto/netmiko:1.0.0.15047
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,8 +1,8 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <hr>
-<p>Use the Cisco Stealthwatch Cloud integration to manage threats to your networks.</p>
-<p>This integration was integrated and tested with Cisco Stealthwatch Cloud v1.0.0.</p>
+<p>Use the Cisco Secure Cloud Analytics (Stealthwatch Cloud) integration to manage threats to your networks.</p>
+<p>This integration was integrated and tested with Cisco Secure Cloud Analytics (Stealthwatch Cloud) v1.0.0.</p>
 <h2>Use cases</h2>
 <hr>
 <ol>
@@ -10,7 +10,7 @@
 <li>Block domains (Blacklist)</li>
 <li>Update alerts</li>
 </ol>
-<h2>Configure Stealthwatch Cloud on Demisto</h2>
+<h2>Configure Cisco Secure Cloud Analytics (Stealthwatch Cloud) on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -31,7 +31,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_46121017251544340041243">Get information for an alert: sw-show-alert</a></li>
 <li><a href="#h_146688479731544340044713">Update an alert: sw-update-alert</a></li>

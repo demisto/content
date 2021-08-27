@@ -1,7 +1,7 @@
 {
  "id": "indicators-bad-activity",
  "version": -1,
- "name": "Bad Indicators Activity",
+ "name": "Malicious Indicators Activity",
  "dataType": "indicators",
  "widgetType": "line",
  "size": 1000,

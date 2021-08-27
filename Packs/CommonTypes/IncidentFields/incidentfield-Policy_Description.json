@@ -6,7 +6,8 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Microsoft CAS Alert"
+        "Microsoft CAS Alert",
+		"Tripwire File Change"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -32,7 +33,15 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"Prisma Cloud",
+		"GCP Compute Engine Misconfiguration",
+		"AWS CloudTrail Misconfiguration",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration",
+        "Microsoft CAS Alert",
+		"Tripwire File Change"
+	],
 	"threshold": 72,
 	"type": "longText",
 	"unmapped": false,

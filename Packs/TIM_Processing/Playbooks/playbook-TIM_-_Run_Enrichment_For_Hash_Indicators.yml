@@ -733,22 +733,22 @@ inputs:
 - key: EnrichBadIndicators
   value: {}
   required: false
-  description: Enter a value of True to enrich indicators whose reputation from the feed is bad.
+  description: Enter a value of true to enrich indicators whose reputation from the feed is bad.
   playbookInputQuery: null
 - key: EnrichGoodIndicators
   value: {}
   required: false
-  description: Enter a value of True to enrich indicators whose reputation from the feed is good.
+  description: Enter a value of true to enrich indicators whose reputation from the feed is good.
   playbookInputQuery: null
 - key: EnrichSuspiciousIndicators
   value: {}
   required: false
-  description: Enter a value of True to enrich indicators whose reputation from the feed is suspicious.
+  description: Enter a value of true to enrich indicators whose reputation from the feed is suspicious.
   playbookInputQuery: null
 - key: EnrichUnknownIndicators
   value: {}
   required: false
-  description: Enter a value of True to enrich indicators whose reputation from the feed is unknown.
+  description: Enter a value of true to enrich indicators whose reputation from the feed is unknown.
   playbookInputQuery: null
 outputs: []
 quiet: true

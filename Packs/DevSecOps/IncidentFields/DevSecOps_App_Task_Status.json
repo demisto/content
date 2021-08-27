@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsapptaskstatus",
+    "version": -1,
+    "modified": "2020-09-08T10:27:12.333526244+04:00",
+    "name": "DevSecOps App Task Status",
+    "ownerOnly": false,
+    "cliName": "devsecopsapptaskstatus",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

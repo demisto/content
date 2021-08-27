@@ -1,0 +1,999 @@
+id: OpenCTI Test
+version: -1
+name: OpenCTI Test
+description: test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4fea5773-8777-4852-8f04-6904d23e38fb
+    type: start
+    task:
+      id: 4fea5773-8777-4852-8f04-6904d23e38fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e1bffe06-a98d-4076-884d-820d73d87197
+    type: regular
+    task:
+      id: e1bffe06-a98d-4076-884d-820d73d87197
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 02f9dd89-9194-4825-8caf-9527de731ba9
+    type: regular
+    task:
+      id: 02f9dd89-9194-4825-8caf-9527de731ba9
+      version: -1
+      name: opencti-get-indicators
+      script: '|||opencti-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator_types:
+        simple: ALL
+      last_id: {}
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 632fc48a-f0ad-43c5-81c9-e40502a7058f
+    type: condition
+    task:
+      id: 632fc48a-f0ad-43c5-81c9-e40502a7058f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicators.IndicatorsList.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicators.IndicatorsList.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicators.IndicatorsList.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 248a0aba-7a19-4ab0-8c5b-af4fa3217e20
+    type: regular
+    task:
+      id: 248a0aba-7a19-4ab0-8c5b-af4fa3217e20
+      version: -1
+      name: opencti-indicator-delete
+      script: '|||opencti-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      id:
+        simple: ${OpenCTI.Indicator.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f7c3bfe5-9cf9-46ea-880a-f166e9c7b561
+    type: regular
+    task:
+      id: f7c3bfe5-9cf9-46ea-880a-f166e9c7b561
+      version: -1
+      name: opencti-indicator-field-update
+      script: '|||opencti-indicator-field-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      field:
+        simple: score
+      id:
+        simple: ${OpenCTI.Indicator.id}
+      value:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 53ddfa25-f24b-4b7a-806a-5c1bcb26e526
+    type: condition
+    task:
+      id: 53ddfa25-f24b-4b7a-806a-5c1bcb26e526
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7c46339a-2b25-435b-891b-bc80de02fea4
+    type: regular
+    task:
+      id: 7c46339a-2b25-435b-891b-bc80de02fea4
+      version: -1
+      name: opencti-indicator-create
+      description: Create new indicator.
+      script: '|||opencti-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      created_by:
+        simple: ${OpenCTI.Organization.id}
+      data:
+        simple: '{"value": "BadHost-TestPlaybook"}'
+      description:
+        simple: Test playbook bad hostname indicator
+      external_references_id:
+        simple: ${OpenCTI.externalReference.id}
+      label:
+        simple: testplaybook
+      label_id:
+        simple: ${OpenCTI.Label.id}
+      marking:
+        simple: TLP:GREEN
+      score:
+        simple: "70"
+      type:
+        simple: Host
+      value:
+        simple: BadHost-TestPlaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: abc3cb4f-5d22-4ca9-8cf4-6d15d683df94
+    type: condition
+    task:
+      id: abc3cb4f-5d22-4ca9-8cf4-6d15d683df94
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1758b875-b085-4c75-83e4-b841dabcd508
+    type: title
+    task:
+      id: 1758b875-b085-4c75-83e4-b841dabcd508
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 35b1d239-88c8-473c-814a-565158a1283f
+    type: regular
+    task:
+      id: 35b1d239-88c8-473c-814a-565158a1283f
+      version: -1
+      name: opencti-indicator-field-remove
+      description: Remove field from indicator. Avalible fields to remove - marking
+        defenition, label.
+      script: '|||opencti-indicator-field-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: label
+      id:
+        simple: ${OpenCTI.Indicator.id}
+      value:
+        simple: ${OpenCTI.Labels.LabelsList.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d605456e-ce31-4f76-8383-52a134992c9e
+    type: regular
+    task:
+      id: d605456e-ce31-4f76-8383-52a134992c9e
+      version: -1
+      name: opencti-indicator-field-add
+      description: Add field to indicator. Avalible fields to add - marking defenition,
+        label.
+      script: '|||opencti-indicator-field-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      field:
+        simple: label
+      id:
+        simple: ${OpenCTI.Indicator.id}
+      value:
+        simple: ${OpenCTI.Labels.LabelsList.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d3f97710-90d7-4ee9-811a-a676a5c08e1f
+    type: regular
+    task:
+      id: d3f97710-90d7-4ee9-811a-a676a5c08e1f
+      version: -1
+      name: opencti-organization-list
+      description: Get list of all organizations.
+      script: '|||opencti-organization-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 40bd4f72-9c28-4b2c-8728-053500abafc0
+    type: regular
+    task:
+      id: 40bd4f72-9c28-4b2c-8728-053500abafc0
+      version: -1
+      name: opencti-organization-create
+      description: Create organization.
+      script: '|||opencti-organization-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      description:
+        simple: test playbook organization
+      name:
+        simple: Test_Organization
+      reliability:
+        simple: B
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 4886c291-5b9f-4727-8006-e260bd6b2cc9
+    type: condition
+    task:
+      id: 4886c291-5b9f-4727-8006-e260bd6b2cc9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Organizations.OrganizationsList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Organizations.OrganizationsList.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 4c00ae48-06a8-4f4e-8083-20142c7ff045
+    type: condition
+    task:
+      id: 4c00ae48-06a8-4f4e-8083-20142c7ff045
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Organization.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "18":
+    id: "18"
+    taskid: 610d174f-ee03-4f54-8503-ffd30f8eb797
+    type: regular
+    task:
+      id: 610d174f-ee03-4f54-8503-ffd30f8eb797
+      version: -1
+      name: opencti-label-list
+      description: Get list of all labels.
+      script: '|||opencti-label-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "19":
+    id: "19"
+    taskid: 1c0f5425-38d8-4baf-8078-b167859f7c38
+    type: condition
+    task:
+      id: 1c0f5425-38d8-4baf-8078-b167859f7c38
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Labels.LabelsList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Labels.LabelsList.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "20":
+    id: "20"
+    taskid: 7eb819a9-5640-4bd3-8c77-1e27455de121
+    type: regular
+    task:
+      id: 7eb819a9-5640-4bd3-8c77-1e27455de121
+      version: -1
+      name: opencti-marking-definition-list
+      description: Get list of all marking definitions.
+      script: '|||opencti-marking-definition-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "21":
+    id: "21"
+    taskid: 341ffb86-b1e0-429c-8719-1f3f97a87fa4
+    type: condition
+    task:
+      id: 341ffb86-b1e0-429c-8719-1f3f97a87fa4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.MarkingDefinitions.MarkingDefinitionsList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.MarkingDefinitions.MarkingDefinitionsList.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "22":
+    id: "22"
+    taskid: 1fa3bd59-eccf-4457-860b-4a872135ff1f
+    type: regular
+    task:
+      id: 1fa3bd59-eccf-4457-860b-4a872135ff1f
+      version: -1
+      name: opencti-external-reference-create
+      description: Create external reference.
+      script: '|||opencti-external-reference-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      source_name:
+        simple: TestPlaybook
+      url:
+        simple: www.testplaybook.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "23":
+    id: "23"
+    taskid: 1f70e7ce-3e37-4644-8687-d395dea808aa
+    type: condition
+    task:
+      id: 1f70e7ce-3e37-4644-8687-d395dea808aa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.externalReference.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "26":
+    id: "26"
+    taskid: c8cccb97-d102-4e62-8cd7-f338ef09e03f
+    type: regular
+    task:
+      id: c8cccb97-d102-4e62-8cd7-f338ef09e03f
+      version: -1
+      name: opencti-label-create
+      description: Create label.
+      script: '|||opencti-label-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      name:
+        simple: testplaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "27":
+    id: "27"
+    taskid: 80f3cb4d-451c-4d96-8e43-47a437d71f97
+    type: condition
+    task:
+      id: 80f3cb4d-451c-4d96-8e43-47a437d71f97
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Label.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "28":
+    id: "28"
+    taskid: 3001f8cf-6aef-43bf-80cf-f017639a3c66
+    type: playbook
+    task:
+      id: 3001f8cf-6aef-43bf-80cf-f017639a3c66
+      version: -1
+      name: OpenCTI Create Indicator
+      playbookName: OpenCTI Create Indicator
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      created_by_id:
+        simple: ${OpenCTI.Organizations.OrganizationsList.id}
+      description:
+        simple: test description
+      external_reference_source_name:
+        simple: test _reference
+      external_reference_url:
+        simple: www.test.com
+      label_name:
+        simple: test-label
+      marking_definition_id:
+        simple: ${OpenCTI.MarkingDefinitions.MarkingDefinitionsList.id}
+      score:
+        simple: "90"
+      type:
+        simple: Domain
+      value:
+        simple: TestPlaybookIncidentCreate
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "29":
+    id: "29"
+    taskid: c58d486a-e491-4b0f-83da-ebce062b9509
+    type: regular
+    task:
+      id: c58d486a-e491-4b0f-83da-ebce062b9509
+      version: -1
+      name: opencti-indicator-delete
+      script: '|||opencti-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id:
+        simple: ${OpenCTI.Indicator.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "30":
+    id: "30"
+    taskid: 883b8689-147b-49ca-8c1c-2b5387d94f54
+    type: regular
+    task:
+      id: 883b8689-147b-49ca-8c1c-2b5387d94f54
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4585,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

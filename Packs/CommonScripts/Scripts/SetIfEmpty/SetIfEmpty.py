@@ -10,7 +10,13 @@ def get_value_to_set(args):
     if value is None or (apply_if_empty and is_value_empty(value)):
         value = args.get('defaultValue')
 
-    return encode_string_results(value)
+    if isinstance(value, list):
+        for i, item in enumerate(value):
+            value[i] = encode_string_results(item)
+
+        return value
+    else:
+        return encode_string_results(value)
 
 
 def is_value_empty(value):

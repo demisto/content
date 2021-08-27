@@ -228,7 +228,7 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "This Message is sent automatically via Coertex xSOAR following the PAN-OS Best Practice Assessment Playbook.\nThis message includes the following attached files:\n1. Best Practice Assessment - Executive Report \n2. Best Practice Assessment  - Failed Check Report  "
+        simple: "This Message is sent automatically via Cortex xSOAR following the PAN-OS Best Practice Assessment Playbook.\nThis message includes the following attached files:\n1. Best Practice Assessment - Executive Report \n2. Best Practice Assessment  - Failed Check Report."
       cc: {}
       htmlBody: {}
       replyTo: {}

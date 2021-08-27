@@ -1,19 +1,18 @@
 {
-  "DBotScore": {
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
     "Indicator": "http://123-fake-api.com",
     "Type": "url",
     "Vendor": "Flashpoint",
     "Score": 3
-  },
-  "URL(val.Data && val.Data == obj.Data)": {
-    "Name": "http://123-fake-api.com",
+  }],
+  "URL(val.Data && val.Data == obj.Data)": [{
     "Data": "http://123-fake-api.com",
     "Malicious": {
       "Vendor": "Flashpoint",
       "Description": "Found in malicious indicators dataset"
     }
-  },
-  "Flashpoint.URL.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+  }],
+  "Flashpoint.URL.Event(val.Fpid == obj.Fpid)": [
     {
       "Fpid": "hdjkfhdjkhfdjfhd",
       "EventDetails": {

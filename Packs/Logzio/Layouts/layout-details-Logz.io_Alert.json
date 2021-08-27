@@ -36,14 +36,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "logzioeventtype",
-                                "height": 24,
-                                "id": "5ecbae50-8f6f-11ea-84ab-0775758c8701",
-                                "index": 1,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "severity",
                                 "height": 24,
                                 "id": "incident-severity-field",

@@ -11,7 +11,7 @@
 <h2>Fetched Incidents Data</h2>
 <hr>
 <p><strong>name</strong>: Incident name<br><strong>label</strong>: "Starlight event"<br><strong>aella_eid</strong>: Aella event ID<br><strong>aella_event</strong>: Aella event name<br><strong>event_severity</strong>: Severity of the event</p>
-<h2>Configure Aella Starlight on Demisto</h2>
+<h2>Configure Aella Starlight on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -36,7 +36,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_61742644851535971799167">Get event details: aella-get-event</a></li>
 </ol>

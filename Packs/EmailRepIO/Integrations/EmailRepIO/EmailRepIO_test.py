@@ -1,11 +1,18 @@
 """EmailRepIO Integration for Cortex XSOAR - Unit Tests file"""
 from CommonServerPython import Common, DBotScoreType
+import demistomock as demisto
 
 import pytest
 import json
 import io
 
 TEST_EMAIL_ADDRESS = 'test@example.com'
+INTEGRATION_NAME = 'EmailRepIO'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 def util_load_json(path):

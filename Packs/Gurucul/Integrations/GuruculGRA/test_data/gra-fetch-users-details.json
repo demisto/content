@@ -1,0 +1,19 @@
+[
+  {
+    "firstName":"Jonathan",
+    "middleName":null,
+    "lastName":"Osterman01_NN",
+    "employeeId":"AB1234",
+    "riskScore":88,
+    "userRisk":88,
+    "department":"IT",
+    "email":"Jonathan.Osterman@abc.com",
+    "phone":"(91)-123-4567-890",
+    "location":"USA",
+    "manager":"Thor.Odinson01_NN",
+    "title":"Sr.Developer",
+    "joiningDate":"01/01/2017 12:47:00",
+    "exitDate":"12/31/2019 23:47:00",
+    "profilePicturePath":null
+  }
+]

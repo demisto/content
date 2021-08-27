@@ -1,0 +1,1827 @@
+{
+    "@xmlns:taxii_11": "http://taxii.mitre.org/messages/taxii_xml_binding-1.1",
+    "@xmlns:xmldsig": "http://www.w3.org/2000/09/xmldsig#",
+    "@message_id": "urn:uuid:1e8d4158-a8ba-47b7-be30-eed35c4eec3a",
+    "@in_response_to": "eb24f17c-52ff-4b6f-84cb-5204e9db033a",
+    "@collection_name": "AIS",
+    "@more": "false",
+    "@result_id": "urn:uuid:1e8d4158-a8ba-47b7-be30-eed35c4eec3a",
+    "@result_part_number": "1",
+    "taxii_11:Exclusive_Begin_Timestamp": "2020-11-02T21:01:25Z",
+    "taxii_11:Inclusive_End_Timestamp": "2020-11-03T00:01:25Z",
+    "taxii_11:Record_Count": "1",
+    "taxii_11:Message": "Here are the results that were requested.",
+    "taxii_11:Content_Block": [
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-33d175de-fb69-4b16-8bc5-172267c97956",
+                    "@timestamp": "2020-11-02T21:59:02Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "IB-20-10301 IOCs Related to Ransomware Operations Impacting Multiple Sectors",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "On October 30, 2020, Crowdstrike Threat Intelligence shared indicators of compromise (IOCs) with CISA that were associated with a threat actor they refer to as Wizard Spider. These IOCs are associated with TrickBot, Emotet/Geodo, and BazarLoader malware and have been used in support of ransomware operations. Much of this activity was observed from September to October 2020,  while some attacks dated back to April 2020.\n\nThis activity was reported in the Information Technology Sector and observed across multiple sectors.",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "GREEN"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": [
+                                    {
+                                        "stixCommon:Identity": {
+                                            "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                            "stix-ciq:Specification": {
+                                                "xpil:PartyName": {
+                                                    "xnl:OrganisationName": {
+                                                        "xnl:NameElement": "CISA"
+                                                    }
+                                                },
+                                                "xpil:Addresses": {
+                                                    "xpil:Address": {
+                                                        "xal:Country": {
+                                                            "xal:NameElement": {
+                                                                "@xal:NameCode": "US",
+                                                                "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                            }
+                                                        },
+                                                        "xal:AdministrativeArea": {
+                                                            "xal:NameElement": {
+                                                                "@xal:NameCode": "US-DC",
+                                                                "@xal:NameCodeType": "ISO_3166-2"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "xpil:OrganisationInfo": {
+                                                    "@xpil:IndustryType": "Government Facilities Sector"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "stixCommon:Tools": {
+                                            "cyboxCommon:Tool": {
+                                                "cyboxCommon:Metadata": {
+                                                    "cyboxCommon:Value": "AIS"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-02T21:56:37Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": [
+                            {
+                                "@id": "NCCIC:Indicator-c081bb74-f509-4534-87d9-246ff807aed2",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-b2fec527-6de9-449e-be3c-3807dbdca423",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-bb1109ba-9ac5-4e83-902e-f464c5ae053d",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "test.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-0a517121-40a0-46da-a813-54a950bf77cb",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-623f8175-15e1-47b7-8896-c5e857f37fce",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-5db654df-aca4-4402-80ce-cba926bbf5d2",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "example.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-f51aba7c-97f9-4787-85f3-1f888d28693e",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-0eae8d2c-1c43-40d6-a667-b495a11be888",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-0dc25084-8e31-49e4-bb46-3de8984a4bd7",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "something.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-3b237ddc-7acb-4b5a-910a-25369d9428ba",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-a9a18425-cb40-4fb5-81fa-e3ba47d88a04",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-481f78e2-0439-4ec5-86bd-1ed1ff62acc9",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "nothing.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-9c778344-944d-493e-b196-9f3f75f883a4",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-34498235-3ec5-43b8-b073-0a6cfe5d39f4",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-f271b01c-ac3e-4da6-a9eb-426b9786ed1a",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "everything.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-ba086ef5-ea53-4285-99cf-23cce83c0677",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-aecd5f74-d1eb-48f2-b062-014909ad57f1",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-3c810025-b9ea-49f0-b9e5-bb4c277a7304",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "anything.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-86b6bf83-5c8f-43da-ab09-14e71812ab20",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-60f09ff8-c520-4161-ae8a-643d9a8d40d4",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-f6fca737-136e-43f6-b0bf-f9a40fd14819",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "test4.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-30c7e150-602d-4686-8394-78e5194d2c9d",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-cb689210-9b75-4c26-b436-1b2e32bdc4f1",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-c52aa4f7-1b93-49f8-8c55-505c5683c608",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "test5.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-b8a6a702-7a1e-405e-add9-da6a1c70bca9",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-da0c9162-52dc-45d6-bee8-ce16713a7d5d",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-37f1f6d9-527c-412d-b1ab-8a25f6a51106",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "z56test.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-e1e9066a-459c-4c17-a863-3befedf442bd",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-c462c303-6906-40c1-8257-ab307f790240",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-458e168a-fa52-42c8-872e-31ac85d17f9a",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "z55test.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-a26bdc09-cda9-49e3-87ab-cb57c414e313",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-4aa5cad8-3f10-44a0-b162-3cb42ccc8e0f",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-764d8527-adec-4420-b230-4d5f35274c7c",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "x58test.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-ad825a35-1842-4671-ba68-e961982aadec",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-8ac583dd-3541-43b7-abec-b0e2c192593d",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-39605ac0-0a6b-4b14-afa0-d3e674c5fe5b",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "x59test.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-881f1a9a-7fdd-4f05-90c0-90f3e725592e",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-bf87662f-c57c-40e3-a0c7-4d702e43e5bc",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-b91d077b-5be9-433a-805d-dd5e80dcec9d",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "x57test.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-005821af-0afb-475f-aeed-32f3506d350d",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-b51ea9e0-c8f0-4944-be11-671a2248459a",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-cf67854d-1be7-4c3f-8523-8158a99681cd",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "onebulks.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-cbc7b89e-635f-47da-8a31-2a9de6106d10",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-29ea2d63-3f4c-4a66-bcac-8a0a81b217db",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-212a5a25-bc60-4b62-8eda-330214c35fe9",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "hotenlighten.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-892a7942-66bd-4825-b801-42467dafc720",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-11f5de99-0f47-4f74-ad7b-39b2e84a69e8",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-0ee02e9e-3beb-42d6-bc3c-93b1473c69d5",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "ds46x1.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-cd1ae290-829d-49eb-9a60-ef16962433bc",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-eb73ceba-9950-496c-bc62-d72c06669135",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-863bbe38-f324-4029-8852-9238bd121b03",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "ds47x1.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-ea5591df-0fa8-4e92-ba72-a96d7651e85f",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-5d93e094-02ae-4fda-9c8c-08cef8081edf",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-7101abfd-acc0-4d09-8f5b-bb260ebc33c6",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "qds45x1.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-d6415d58-bb2a-4de0-8bf2-1a7a2b878668",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-4fc0b8df-94e4-4b88-a1c1-a39d06786800",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-ed54d4ac-f504-4c83-b843-335fafba5b94",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "lkmf.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-7aa225c8-2b00-4b68-9002-b1bbf4a1da5e",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-37c16d34-122e-478e-8c58-63ce5735e321",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-3baeb5d8-c7f4-4b70-9b66-cdf9ec252f0e",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "uiyplk.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-d959c693-e64c-4016-9aad-06cc876a2a13",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-7b8670e9-b813-4cbb-aaf7-ec11ae77a726",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-3b429fc0-ad13-44e1-b551-a10a212a0f47",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "threav.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-74e878a9-99de-4e28-b4de-a37208429421",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-025d8111-5a86-4cd2-bb27-00cc7440032c",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-40917373-d7db-41fe-90d6-bd64c76c0545",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "oplkmf.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-2cfc7043-7e75-4b44-9e90-cf164773c252",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-1a0ed68d-b38e-4bf5-a59f-dcd1e9e61261",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-937c2434-e0a1-41c0-9d61-0e2dd3c9fb1d",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "lmnab.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-3521ca81-e9a7-4bb9-acef-08944f9e6106",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-cad639b4-df0d-4871-9087-919694c3d1a4",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-8e3ca139-bdd7-48b7-948c-8976e7921377",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "qvrw.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-01500a64-45d0-47e2-9043-d7b96869bc96",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-e7c9cc38-f868-43b5-a6a4-58da9c00da24",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-b277452a-2cdd-4272-b9fc-9b2331ca8514",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "hibuzes.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-b9159fed-ffd4-49ff-b513-6abdddb6c6a9",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-d3a4e741-5d4f-431c-a009-dbedd409d82b",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-b5783143-51d7-4959-9221-7f5670aee380",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "zebao.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-1d7ba91f-41cd-4982-a924-cab183e8e944",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-145b9788-dcbc-48ea-a0a0-263da153eca7",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-9f9bccd4-64af-402f-8985-6b221ee6914a",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "watoror.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-a7e44fe4-ec87-4812-9427-1a2687821081",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-a1890557-458d-40eb-9218-d646f777c7bf",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-22874370-82cc-43e8-a0f5-e0ec5a68090b",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "ds45x1.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-5ab11637-e711-4d55-9e88-dbf6cbf82c93",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-6ca72adf-1b6f-4835-9849-11b45dcde1b6",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-8015d2e7-7d33-4c0d-a4fe-0a67df30f97f",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "refvs.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-cc4c2fe4-9925-4ea5-b169-6ec0b0c358b9",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-0519a589-1196-40ca-a91a-4bc52d3318bd",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-c278f4b4-c0c0-4057-baab-19c069da48f8",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "hmiu.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-aa1ccb06-4ab2-4eb3-a51a-bc0f40b7010e",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-9d5b1fa1-9f62-471f-8e67-cd914622a71c",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-953b73b2-782f-4a96-9f5e-314d9680b382",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "zaxswder.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-f03c021f-83bf-4847-acde-fd9e565cb029",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-12c6c1cd-1671-40e2-9b77-1bfb8ef0cee2",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-a382d2e5-91eb-4dd3-be7c-d7193a036edc",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "dasvdbfgne.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-4d7193dc-6c7a-49d5-89ee-aa9e2ba4fb8c",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-e26b8c3f-f663-4198-b5eb-9b120fe4146b",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-a259fb3f-7857-47e6-bedb-88ca0bf3b342",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "dcv24te.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-b9e33604-11b3-4da6-bded-82eb965493e4",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-1bda20f4-9a7c-4bb6-b3ee-4b561b91797a",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-58077b69-7e45-4936-a487-d2d89fb89ba1",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "mugtre.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-9141e742-e74c-4e63-88e3-64fd98e02dcd",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-6d4d6d6e-df25-4436-9846-35a2dd0dae37",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-3fdb99cf-3a8e-4d6b-bd4d-f9ada48f4727",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "hunopk.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-b50a166d-a02c-4716-b290-3c0dc6d3d916",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-bbc37f7a-2640-4dd2-9088-10efcdc39bf4",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-106827ae-49e6-45bd-811e-0c72432d34cc",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "dghns.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-45d263af-c7ae-4736-8e43-dac20ea04557",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-3a046c75-861f-44be-a48f-ec563aedf6c8",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-4d7a8ab2-d9d2-4488-9be3-11a40a4878f2",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "numklo.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-ae70767a-5395-4d08-b883-60ee4ee8f8f9",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-f2f03793-8e2b-4cb2-95e7-0c55a1de9356",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-08898d5e-e1af-4467-a32f-675176bd46b6",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "sh78bug.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-bf9c0d7f-edc9-4258-8076-6b5171dfe300",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-f08e3e4a-e245-4f6c-889d-f327cb014db9",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-4ee27fb6-9f3b-4b9b-bd90-54c3c0381d57",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "gut45bg.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-c9955bbb-f612-4983-9539-1b679d510af7",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-f38ad802-8d86-42e8-a455-cd0996b1985f",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-f14c52f7-99c4-4f8e-b010-60513e634f87",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "vighik.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-6828fcfe-4b65-4fb6-8e8d-c2eb73b3fed1",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-0c0233cb-d64c-4cfd-841f-26a98f3ea6de",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-df4d41f3-b94e-4d44-b645-e8e293faea2e",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "doldig.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-417a8131-24ac-4c86-a6f3-51d401d252d6",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-688aec5b-cf29-4f43-9b16-340ac5f1e005",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-2862bba3-746a-42d1-97e3-2e0a60bb4a52",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "bigjamg.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-1cc15717-fc6a-45b6-8caa-e4afbb935a63",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-519d48a8-ae8e-400b-92ea-504cc8bc4a25",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-ddfb7423-4fa4-4d51-b128-2728d093737c",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "cntrhum.xyz"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-5c065822-c66a-4c07-804d-a158802625ac",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-6086d4fc-5c51-4904-a851-513bd53bb73f",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-56f8ff31-ea58-4175-800a-924dc5f9a08e",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "test3.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-5a131d4b-b034-4d33-9008-7eb97afdc553",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-efdb0b41-59ec-4b9f-93c0-2e00d56f72fd",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-d23c35ec-f85d-4a87-98b7-27f9873d3d19",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "mixcinc.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-1dfe366e-3f11-44e3-ab1a-d2e12f199262",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-72cd9c21-8682-45d4-9793-d7d9b9498d9d",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-06695ed8-efff-474e-8359-7270b80dc16c",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "titlecs.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-21a5bc03-28e3-44bf-b44a-57f8c642989c",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-43b3ac09-ec67-49b4-907e-c5aea6c878b3",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-2f48c330-3dca-4d96-81bb-e84cd93f4096",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "labelcs.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-6340628b-a2af-40ec-87a7-c8bfda688f54",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-5158228b-2430-4df4-ae0e-87382b9c827e",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-3d3433ac-8dcf-4c76-b40d-69ce847993e5",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "freedubcs.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-c37cfd12-dadc-4636-949e-9338c16b7b22",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-c2916e2e-d455-4a6d-a8cc-304edafaedde",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-9db47260-1b2c-4431-aecc-f90735856da2",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "nicknamec.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-620d0887-3ed6-447b-8e45-892a96811b7e",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-aa168578-f762-49b7-8d4c-f2881c00469e",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-b3495d78-ad27-44d4-b3b9-430e325d930c",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "bubl6g.com"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2020-04-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-ea77a380-731c-45a2-b96a-5aaa2cdbb7d7",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-0e950036-5255-4ed0-a2a7-1dcf6a66752b",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-b4fe016e-1ede-4432-af3a-fdc70d04da6d",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "sulionuili1.in"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-d3721dbd-868a-44ea-b959-12e1e047f914",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-84784367-bbee-4c94-93d5-2cb7e5a83670",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-402c7a74-c316-4fd5-bdb1-3c9994dd4606",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "dunujilis11r.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-471c0346-b281-4469-8a55-848977562568",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-de429ec6-2fd4-4d0e-894e-f6c678e2c29e",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-f406bc25-44c0-4bfb-9cad-d1e693b917a9",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "oohdojssks9uf.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-9ae1eafe-60c3-40c0-bcef-b30a0adb81ae",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-b824c2f0-a62f-4360-83c4-6f3e48339d4d",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-0c14bcb8-ed52-4d54-8f53-9e2947e7f086",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "nulikuliey.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-586752bd-9c17-46df-b760-f0d9c40414ae",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-91e249dc-777c-470f-a2bd-a57d882cdccc",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-75bfb504-4cbf-41b8-b925-c099a915795e",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "eseruuynli2.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            },
+                            {
+                                "@id": "NCCIC:Indicator-3f620299-efd5-44d3-b453-a850de7da345",
+                                "@timestamp": "2020-11-02T21:59:02Z",
+                                "@version": "2.0",
+                                "@xsi:type": "indicator:IndicatorType",
+                                "indicator:Type": {
+                                    "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                    "#text": "Domain Watchlist"
+                                },
+                                "indicator:Observable": {
+                                    "@id": "NCCIC:Observable-7cfa495c-3397-4638-83b6-d760f588fec6",
+                                    "cybox:Object": {
+                                        "@id": "NCCIC:Object-33e0d3c9-2b2a-4355-b498-304d58a6d9ad",
+                                        "cybox:Properties": {
+                                            "@type": "FQDN",
+                                            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+                                            "DomainNameObj:Value": {
+                                                "@condition": "Equals",
+                                                "#text": "ghjk78kjhb.net"
+                                            }
+                                        }
+                                    }
+                                },
+                                "indicator:Sightings": {
+                                    "@sightings_count": "1",
+                                    "indicator:Sighting": {
+                                        "@timestamp": "2011-06-01T00:00:00+00:00"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}

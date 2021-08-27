@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrenipintensity",
+    "closeForm": false,
+    "content": true,
+    "description": "Intensity represents the spam activity identified by Cyren Threat InDepth Intelligence. The higher the number, the higher the spam activity (number between 0-10).",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenipintensity",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren IP Intensity",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

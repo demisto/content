@@ -1,6 +1,6 @@
 Use the Google Cloud Platform whitelist integration to get indicators from the feed.
-This integration was integrated and tested with version xx of GCP Whitelist Feed
-## Configure GCP Whitelist Feed on Demisto
+
+## Configure GCP Whitelist Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GCP Whitelist Feed.
@@ -22,7 +22,7 @@ This integration was integrated and tested with version xx of GCP Whitelist Feed
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gcp-whitelist-get-indicators
 ***

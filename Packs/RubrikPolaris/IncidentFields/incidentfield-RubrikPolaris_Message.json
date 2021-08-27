@@ -1,0 +1,72 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikpolarismessage",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "analysis stage",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "message",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 900
+        },
+        {
+            "displayName": "severity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "severity",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 200
+        },
+        {
+            "displayName": "time",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "time",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 200
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": true,
+    "id": "incident_rubrikpolarismessage",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik Polaris Message",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": true,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

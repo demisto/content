@@ -1,11 +1,11 @@
 The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (whitelist, blacklist, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
 
 
-## Configure Office365 Feed on Demisto
+## Configure Office 365 Feed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Office365 Feed.
+2. Search for Office 365 Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Example** |
@@ -27,7 +27,7 @@ The Office 365 IP Address and URL web service is a read-only API provided by Mic
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed

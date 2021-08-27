@@ -1,0 +1,56 @@
+args:
+- default: false
+  description: List name.
+  isArray: false
+  name: listName
+  required: true
+  secret: false
+- default: false
+  description: Key.
+  isArray: false
+  name: keyName
+  required: true
+  secret: false
+- default: false
+  description: Key Value.
+  isArray: false
+  name: value
+  required: true
+  secret: false 
+- default: false
+  description: Append to key.
+  isArray: false
+  name: append
+  defaultValue: 'false'
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- default: false
+  description: Allow duplicates in array keys.
+  isArray: false
+  name: allowDups
+  defaultValue: 'false'
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+outputs: []
+comment: Adds/Replaces a key in key/value store backed by an XSOAR list.
+commonfields:
+  id: AddKeyToList
+  version: -1
+enabled: false
+name: AddKeyToList
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.13358
+fromversion: 5.0.0

@@ -1,0 +1,13 @@
+{
+  "eventId": "event-id-1",
+  "description": "This is a description",
+  "date": 1601145608054,
+  "sourceApplication": "source-app",
+  "severity": 3,
+  "items": [],
+  "insights": [
+    {
+      "name": "insight-1"
+    }
+  ]
+}

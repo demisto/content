@@ -1,5 +1,3 @@
-from typing import Dict
-
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -17,6 +15,7 @@ class Client(BaseClient):
         self._params = {'api_key': api_key}
         self.name = 'ThreatVault'
 
+    @logger
     def antivirus_signature_get_request(self, sha256: str = '', signature_id: str = '') -> dict:
         """Get antivirus signature by sending a GET request.
 
@@ -35,6 +34,7 @@ class Client(BaseClient):
 
         return self._http_request(method='GET', url_suffix=suffix, params=self._params)
 
+    @logger
     def dns_signature_get_request(self, dns_signature_id: str) -> dict:
         """Get DNS signature by sending a GET request.
 
@@ -46,6 +46,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/threatvault/dns/signature/{dns_signature_id}',
                                   params=self._params)
 
+    @logger
     def antispyware_get_by_id_request(self, signature_id: str) -> dict:
         """Get DNS signature by sending a GET request.
 
@@ -57,6 +58,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/threatvault/ips/signature/{signature_id}',
                                   params=self._params)
 
+    @logger
     def ip_geo_get_request(self, ip_: str) -> dict:
         """Get IP geolocation by sending a GET request.
 
@@ -67,6 +69,7 @@ class Client(BaseClient):
         """
         return self._http_request(method='GET', url_suffix=f'/ip/{ip_}/geolocation', params=self._params)
 
+    @logger
     def search_request(self, path: str, from_: int, to_: int, signature_name: str = '', domain_name: str = '',
                        vendor: str = '', cve: str = '') -> dict:
         """Initiate a search by sending a POST request.
@@ -110,6 +113,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=f'/threatvault/{path}/search', params=self._params,
                                   json_data=data)
 
+    @logger
     def signature_search_results_request(self, search_type: str, search_request_id: str) -> dict:
         """Get signature search results by sending a GET request.
 
@@ -180,7 +184,8 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 sha256=sha256,
                 dbot_score=dbot_score
             )
-            readable_output = tableToMarkdown(name=f"SHA256 {sha256} Antivirus reputation:", t=response, removeNull=True)
+            readable_output = tableToMarkdown(name=f"SHA256 {sha256} Antivirus reputation:", t=response,
+                                              removeNull=True)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
                 response = {}
@@ -453,7 +458,7 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def signature_search_results(client: Client, args: dict) -> CommandResults:
+def signature_search_results(client: Client, args: dict):
     """Retrieve signature search results.
 
     Args:
@@ -466,27 +471,32 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
     search_request_id = str(args.get('search_request_id', ''))
     search_type = str(args.get('search_type', ''))
 
-    response = client.signature_search_results_request(search_type, search_request_id)
+    try:
+        response = client.signature_search_results_request(search_type, search_request_id)
 
-    outputs = response
-    outputs.update({'search_request_id': search_request_id})
-    if response.get('status') == 'submitted':  # search was not completed
-        readable_output = f'Search {search_request_id} is still in progress.'
-    else:
-        headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
-                   'firstReleaseTime', 'latestReleaseTime']
-        outputs.update({'status': 'completed'})
-        title = f'Signature search are showing {outputs.get("page_count")} of {outputs.get("total_count")} results:'
-        readable_output = tableToMarkdown(name=title, t=outputs.get('signatures'),
-                                          headers=headers, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix=f'{client.name}.Search',
-        outputs_key_field='search_request_id',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=response
-    )
+        outputs = response
+        outputs.update({'search_request_id': search_request_id})
+        if response.get('status') == 'submitted':  # search was not completed
+            readable_output = f'Search {search_request_id} is still in progress.'
+        else:
+            headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
+                       'firstReleaseTime', 'latestReleaseTime']
+            outputs.update({'status': 'completed'})
+            title = f'Signature search are showing {outputs.get("page_count")} of {outputs.get("total_count")} results:'
+            readable_output = tableToMarkdown(name=title, t=outputs.get('signatures'),
+                                              headers=headers, removeNull=True)
+        return CommandResults(
+            outputs_prefix=f'{client.name}.Search',
+            outputs_key_field='search_request_id',
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    except Exception as err:
+        if 'Not Found' in str(err):
+            return_warning(f'Search request ID {search_request_id} was not found.')
+        else:
+            raise
 
 
 def test_module(client: Client, *_) -> str:
@@ -507,14 +517,15 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    api_key = params.get('api_key')
+    auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
+
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
 
     try:
         command = demisto.command()
         LOG(f'Command being called is {demisto.command()}')
-        client = Client(api_key=api_key, verify=verify, proxy=proxy)
+        client = Client(api_key=auto_focus_key_retriever.key, verify=verify, proxy=proxy)
         commands = {
             'threatvault-antivirus-signature-get': antivirus_signature_get,
             'file': file_command,

@@ -1,0 +1,219 @@
+id: Audit Log - Test
+version: -1
+name: Audit Log - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f74bcfd6-0360-4f6a-81d1-33af672d231b
+    type: start
+    task:
+      id: f74bcfd6-0360-4f6a-81d1-33af672d231b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 624a1f4f-b347-498e-8af9-57d9c025c2cf
+    type: regular
+    task:
+      id: 624a1f4f-b347-498e-8af9-57d9c025c2cf
+      version: -1
+      name: o365-auditlog-search
+      description: Use the o365-search-auditlog command to search the unified audit
+        log. This log contains events from Exchange Online, SharePoint Online, OneDrive
+        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        Microsoft 365 services. You can search for all events in a specified date
+        range, or you can filter the results based on specific criteria, such as the
+        user who performed the action, the action, or the target object.
+      script: MicrosoftPolicyAndComplianceAuditLog|||o365-auditlog-search
+      type: regular
+      iscommand: true
+      brand: MicrosoftPolicyAndComplianceAuditLog
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      end_date: {}
+      free_text: {}
+      ip_addresses: {}
+      operations: {}
+      record_type: {}
+      result_size: {}
+      start_date: {}
+      user_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 345d02e7-5fdd-4046-82ef-dd26575b6303
+    type: condition
+    task:
+      id: 345d02e7-5fdd-4046-82ef-dd26575b6303
+      version: -1
+      name: Validate anything inside
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: O365AuditLog
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8ff43f3e-0218-4775-875e-ab15affebd0e
+    type: title
+    task:
+      id: 8ff43f3e-0218-4775-875e-ab15affebd0e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0203058d-0d1d-4db3-8515-627675fc851c
+    type: regular
+    task:
+      id: 0203058d-0d1d-4db3-8515-627675fc851c
+      version: -1
+      name: Print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not find any log. It may not be an error, but it can be.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c4715295-f59c-4c71-8986-0090328932ab
+    type: regular
+    task:
+      id: c4715295-f59c-4c71-8986-0090328932ab
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: Test playbook of Microsoft Policy And Compliance (Audit Log)

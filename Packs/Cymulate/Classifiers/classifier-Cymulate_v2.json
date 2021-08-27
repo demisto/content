@@ -1,0 +1,29 @@
+{
+ "name": "Cymulate_v2 - Classification",
+ "id": "Cymulate_v2",
+ "defaultIncidentType": "Cymulate",
+ "description": "",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "module",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "keyTypeMap": {
+  "Immediate Threats Intelligence": "Cymulate Immediate Threats"
+ },
+ "version": -1
+}

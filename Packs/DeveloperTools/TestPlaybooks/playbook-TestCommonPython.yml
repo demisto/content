@@ -1,23 +1,28 @@
 id: TestCommonPython
-version: -1
+inputs: []
 name: TestCommonPython
-fromversion: 5.0.0
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 67f91b5c-676d-44de-8ac6-0d9109d14b5e
-    type: start
-    task:
-      id: 67f91b5c-676d-44de-8ac6-0d9109d14b5e
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d618fa1-d481-4d14-86d5-9de3e3fc0f48
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7d618fa1-d481-4d14-86d5-9de3e3fc0f48
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -25,28 +30,30 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: 3a812c78-5b25-451d-85ec-71de7f652877
-    type: regular
-    task:
-      id: 3a812c78-5b25-451d-85ec-71de7f652877
-      version: -1
-      name: Test DQ
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: DQ
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 257cb253-59ee-4216-8511-4f4c2f57b3c5
+      iscommand: false
+      name: Test DQ
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 257cb253-59ee-4216-8511-4f4c2f57b3c5
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -54,29 +61,31 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
-    taskid: 80929835-0e99-4369-86cb-3c6034af8ddc
-    type: regular
-    task:
-      id: 80929835-0e99-4369-86cb-3c6034af8ddc
-      version: -1
-      name: Test MarkDown
-      description: Tests for common functions createEntry and TableToMarkDown
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: MD
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Tests for common functions createEntry and TableToMarkDown
+      id: 59de3f2e-6d20-4e46-8a44-c3699883067c
+      iscommand: false
+      name: Test MarkDown
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 59de3f2e-6d20-4e46-8a44-c3699883067c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -84,29 +93,31 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "4":
     id: "4"
-    taskid: 931fe0c2-1686-43ef-8be5-3071f203672d
-    type: regular
-    task:
-      id: 931fe0c2-1686-43ef-8be5-3071f203672d
-      version: -1
-      name: Test XML JSON relations
-      description: 'Tests for common functions xml2json and json2xml '
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: XML
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Tests for common functions xml2json and json2xml '
+      id: a5900a06-4299-40e6-8980-76203aeac577
+      iscommand: false
+      name: Test XML JSON relations
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: a5900a06-4299-40e6-8980-76203aeac577
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -114,30 +125,33 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
-    taskid: a3463a8b-4734-432a-8395-5c4ced7adc5e
-    type: regular
-    task:
-      id: a3463a8b-4734-432a-8395-5c4ced7adc5e
-      version: -1
-      name: Test tableToMarkdown
-      description: Tests underscoreToCamelCase and tableToMarkDown with and without headerTransform
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "21"
+    note: false
+    quietmode: 0
     scriptarguments:
       extend-context: {}
       test_type:
         simple: TBLMD
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Tests underscoreToCamelCase and tableToMarkDown with and without
+        headerTransform
+      id: d8c61477-1071-47d5-8a7a-f5d3cdaa96a3
+      iscommand: false
+      name: Test tableToMarkdown
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: d8c61477-1071-47d5-8a7a-f5d3cdaa96a3
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -145,28 +159,30 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
-    taskid: 7683113e-0151-4493-817a-802d4fce4a9a
-    type: regular
-    task:
-      id: 7683113e-0151-4493-817a-802d4fce4a9a
-      version: -1
-      name: Test hash function
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: HASH
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1e31131-d53d-42c7-80a1-2dc6cede76e1
+      iscommand: false
+      name: Test hash function
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: c1e31131-d53d-42c7-80a1-2dc6cede76e1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -174,28 +190,30 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
-    taskid: 9dbffe84-d13f-4a2d-8364-4e9c90b8f852
-    type: regular
-    task:
-      id: 9dbffe84-d13f-4a2d-8364-4e9c90b8f852
-      version: -1
-      name: Test date_to_timestamp
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: DATE_TO_TIMESTAMP
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ffcfcf94-70eb-4076-8bec-74f2ccb293ab
+      iscommand: false
+      name: Test date_to_timestamp
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: ffcfcf94-70eb-4076-8bec-74f2ccb293ab
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -203,28 +221,30 @@ tasks:
           "y": 1420
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "9":
     id: "9"
-    taskid: 746a932a-da61-4b5b-8f71-5056d2479636
-    type: regular
-    task:
-      id: 746a932a-da61-4b5b-8f71-5056d2479636
-      version: -1
-      name: Test camelize
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: CAMELIZE
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 071d40c1-c50b-428e-8fa5-56f118000580
+      iscommand: false
+      name: Test camelize
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 071d40c1-c50b-428e-8fa5-56f118000580
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -232,28 +252,30 @@ tasks:
           "y": 1245
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "10":
     id: "10"
-    taskid: 32394264-161b-413d-8231-e0f3e4f925c5
-    type: regular
-    task:
-      id: 32394264-161b-413d-8231-e0f3e4f925c5
-      version: -1
-      name: Test PascalToSpace
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: PASCAL_TO_SPACE
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 105aa294-1836-490a-824a-022c87907c84
+      iscommand: false
+      name: Test PascalToSpace
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 105aa294-1836-490a-824a-022c87907c84
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -261,28 +283,30 @@ tasks:
           "y": 1595
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "11":
     id: "11"
-    taskid: e52dc335-411a-4edc-8ee3-946d3d959ea8
-    type: regular
-    task:
-      id: e52dc335-411a-4edc-8ee3-946d3d959ea8
-      version: -1
-      name: Test return_outputs
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "12"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: RETURN_OUTPUTS
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 02318cea-3d48-40c3-8feb-150cf290ea70
+      iscommand: false
+      name: Test return_outputs
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 02318cea-3d48-40c3-8feb-150cf290ea70
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -290,35 +314,37 @@ tasks:
           "y": 1770
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "12":
-    id: "12"
-    taskid: 00f8b309-68bb-4a6d-8f1c-3d1857f6bf61
-    type: condition
-    task:
-      id: 00f8b309-68bb-4a6d-8f1c-3d1857f6bf61
-      version: -1
-      name: check if context contain foo
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: foo
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: foo1
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 785f26ee-2e2c-4398-8161-96cedd6eda45
+      iscommand: false
+      name: check if context contain foo
+      type: condition
+      version: -1
+    taskid: 785f26ee-2e2c-4398-8161-96cedd6eda45
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -326,53 +352,60 @@ tasks:
           "y": 1945
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "13":
     id: "13"
-    taskid: 7f3909b3-e4dc-4969-8355-b6e4305151b9
-    type: title
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 7f3909b3-e4dc-4969-8355-b6e4305151b9
-      version: -1
+      brand: ""
+      id: 3c77779b-2430-4195-8e98-50ed1a88aadd
+      iscommand: false
       name: Test Success
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
+      version: -1
+    taskid: 3c77779b-2430-4195-8e98-50ed1a88aadd
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2470
+          "x": 730,
+          "y": 2500
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "16":
     id: "16"
-    taskid: 92e95e7d-8911-4c7e-8600-7b30cccca5b6
-    type: regular
-    task:
-      id: 92e95e7d-8911-4c7e-8600-7b30cccca5b6
-      version: -1
-      name: Test append_context
-      scriptName: TestPYCommonServer
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "17"
       - "18"
       - "19"
       - "20"
+    note: false
+    quietmode: 0
     scriptarguments:
       test_type:
         simple: APPEND_CONTEXT
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7662b108-3851-40f1-8258-9d0453bfc7d2
+      iscommand: false
+      name: Test append_context
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 7662b108-3851-40f1-8258-9d0453bfc7d2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -380,32 +413,34 @@ tasks:
           "y": 2120
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: empty_string_key
+          operator: isExists
+      label: "yes"
     id: "17"
-    taskid: 2dad6aee-3f11-4d62-86fc-2cbcf6ef5730
-    type: condition
-    task:
-      id: 2dad6aee-3f11-4d62-86fc-2cbcf6ef5730
-      version: -1
-      name: check if context contain empty_string_key
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "13"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: empty_string_key
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 37f2fedb-9644-4299-83cb-59bc6fcbf035
+      iscommand: false
+      name: check if context contain empty_string_key
+      type: condition
+      version: -1
+    taskid: 37f2fedb-9644-4299-83cb-59bc6fcbf035
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -413,32 +448,34 @@ tasks:
           "y": 2295
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: empty_list_key
+          operator: isExists
+      label: "yes"
     id: "18"
-    taskid: 7129b9b2-1c32-4f63-8650-38bb396a298f
-    type: condition
-    task:
-      id: 7129b9b2-1c32-4f63-8650-38bb396a298f
-      version: -1
-      name: check if context contain empty_list_key
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "13"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: empty_list_key
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2e3bd7d-a414-44d6-852a-73b083cfd97f
+      iscommand: false
+      name: check if context contain empty_list_key
+      type: condition
+      version: -1
+    taskid: f2e3bd7d-a414-44d6-852a-73b083cfd97f
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -446,35 +483,37 @@ tasks:
           "y": 2295
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "19":
-    id: "19"
-    taskid: 5bcec91f-cc73-4b19-8dab-f180a65d67b5
-    type: condition
-    task:
-      id: 5bcec91f-cc73-4b19-8dab-f180a65d67b5
-      version: -1
-      name: check if context contain zero_key and its value is 0
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: zero_key
-            iscontext: true
+          operator: containsGeneral
           right:
             value:
               simple: "0"
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 50af2bff-361d-4b7e-83cf-c7361a35d888
+      iscommand: false
+      name: check if context contain zero_key and its value is 0
+      type: condition
+      version: -1
+    taskid: 50af2bff-361d-4b7e-83cf-c7361a35d888
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -482,32 +521,34 @@ tasks:
           "y": 2295
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: none_key
+          operator: isNotExists
+      label: "yes"
     id: "20"
-    taskid: 9e91b016-0efd-4984-8ffa-48f7fc13c089
-    type: condition
-    task:
-      id: 9e91b016-0efd-4984-8ffa-48f7fc13c089
-      version: -1
-      name: check if context does not contain none_key
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "13"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: none_key
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 550afc2b-863d-4a85-86cd-6381fcd488e0
+      iscommand: false
+      name: check if context does not contain none_key
+      type: condition
+      version: -1
+    taskid: 550afc2b-863d-4a85-86cd-6381fcd488e0
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -515,26 +556,29 @@ tasks:
           "y": 2295
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "21":
     id: "21"
-    taskid: 3857d09f-bc71-4758-88cf-2234fc14a987
-    type: regular
-    task:
-      id: 3857d09f-bc71-4758-88cf-2234fc14a987
-      version: -1
-      name: CallTableToMarkdown encoding non-ascii chars
-      description: Tests that tableToMarkdown handles encoding of non-ascii chars in nested dicts (python 2)
-      scriptName: CallTableToMarkdown
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Tests that tableToMarkdown handles encoding of non-ascii chars
+        in nested dicts (python 2)
+      id: c204ab89-2883-4421-830f-1856b35679da
+      iscommand: false
+      name: CallTableToMarkdown encoding non-ascii chars
+      script: CallTableToMarkdown
+      type: regular
+      version: -1
+    taskid: c204ab89-2883-4421-830f-1856b35679da
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -542,20 +586,46 @@ tasks:
           "y": 1070
         }
       }
-    note: false
-    timertriggers: []
+  "22":
+    id: "22"
     ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      test_type:
+        simple: PY_WARNINGS
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Tests for common function dq
+      id: 26b1660b-bcae-4ca9-856a-5fe274c25956
+      iscommand: false
+      name: Test Python warnings
+      script: TestPYCommonServer
+      type: regular
+      version: -1
+    taskid: 26b1660b-bcae-4ca9-856a-5fe274c25956
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2640
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 2685,
         "width": 1670,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
+fromversion: 5.0.0

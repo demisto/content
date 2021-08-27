@@ -15,7 +15,7 @@ MOCK_FILE = 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f'  
 def test_ip(requests_mock):
     requests_mock.get(f'{SERVER_URL}/ip/{MOCK_IP}', json=IP_RESPONSE)
 
-    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True, reliability='C - Fairly reliable')
     args = {
         'ip': MOCK_IP
     }
@@ -27,7 +27,7 @@ def test_ip(requests_mock):
 def test_url(requests_mock):
     requests_mock.get(f'{SERVER_URL}/url/{MOCK_URL_SHA256}', json=URL_RESPONSE)
 
-    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True, reliability='C - Fairly reliable')
     args = {
         'url': MOCK_URL
     }
@@ -39,7 +39,7 @@ def test_url(requests_mock):
 def test_domain(requests_mock):
     requests_mock.get(f'{SERVER_URL}/hostname/{MOCK_DOMAIN}', json=DOMAIN_RESPONSE)
 
-    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True, reliability='C - Fairly reliable')
     args = {
         'domain': MOCK_DOMAIN
     }
@@ -51,7 +51,7 @@ def test_domain(requests_mock):
 def test_file(requests_mock):
     requests_mock.get(f'{SERVER_URL}/sample/{MOCK_FILE}', json=FILE_RESPONSE)
 
-    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True)
+    client = Client(url=SERVER_URL, use_ssl=True, use_proxy=True, reliability='C - Fairly reliable')
     args = {
         'file': MOCK_FILE
     }

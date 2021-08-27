@@ -1,0 +1,27 @@
+commonfields:
+  id: WaitForKey
+  version: -1
+name: WaitForKey
+script: ''
+type: python
+tags: []
+comment: 'A simple loop to inspect the context for a specific key. If the key is not
+  found after "iterations" loops, the script exits with a message. '
+enabled: true
+args:
+- name: context_key
+  required: true
+  description: The context key to wait for
+- name: iterations
+  required: true
+  default: true
+  description: The max number of iterations to loop before bailing.
+  defaultValue: "10"
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

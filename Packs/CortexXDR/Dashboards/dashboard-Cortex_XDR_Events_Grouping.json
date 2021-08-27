@@ -1,0 +1,179 @@
+{
+    "id": "Cortex XDR Events Grouping",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": null,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Cortex XDR Events Grouping",
+    "layout": [
+        {
+            "id": "8cc4ac20-b35a-11eb-9e54-7d1db5554075",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "8cc4ac20-b35a-11eb-9e54-7d1db5554075",
+            "w": 3,
+            "h": 4,
+            "widget": {
+                "id": "ccf4d070-47f3-4559-8563-a63240f17f74",
+                "version": 1,
+                "modified": "2021-05-12T19:45:01.180666801Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Grouping - Summary",
+                "prevName": "Cortex XDR Grouping - Summary",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "DBotGroupXDRIncidents",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "returnWidgetType": "summary",
+                    "tableColumns": [
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "cf432d50-b95f-11eb-bc3c-579f145ea812",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "cf432d50-b95f-11eb-bc3c-579f145ea812",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "c89bc765-50a9-479f-88e5-d256e09788c5",
+                "version": 1,
+                "modified": "2021-05-20T11:37:39.727893798Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Cortex XDR Grouping - Incidents",
+                "prevName": "Cortex XDR Grouping - Incidents",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "DBotGroupXDRIncidents",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "returnWidgetType": "incidents",
+                    "tableColumns": [
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "f59d1400-b970-11eb-83d5-2b88253a452b",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "f59d1400-b970-11eb-83d5-2b88253a452b",
+            "w": 9,
+            "h": 4,
+            "widget": {
+                "id": "5827f988-df26-42a5-8c46-18b3af444702",
+                "version": 4,
+                "sequenceNumber": 16475647,
+                "primaryTerm": 5,
+                "modified": "2021-05-20T13:40:36.181876171Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Cortex XDR Groups - Scatter",
+                "prevName": "Cortex XDR Groups - Scatter",
+                "dataType": "scripts",
+                "widgetType": "scatter",
+                "query": "DBotGroupXDRIncidents",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "6.2.0",
+    "description": "",
+    "isPredefined": true
+}

@@ -88,14 +88,14 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
+                - - operator: inList
                     left:
                       value:
                         simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: QRadar
+                        simple: QRadar,QRadar_v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -104,7 +104,6 @@ tasks:
                     right:
                       value:
                         simple: active
-                accessor: brand
             iscontext: true
     view: |-
       {

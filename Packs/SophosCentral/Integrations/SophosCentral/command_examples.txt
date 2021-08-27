@@ -1,0 +1,29 @@
+!sophos-central-alert-list limit=50
+!sophos-central-alert-get alert_id=8e879165-81cb-4747-8608-1cc4e630a017
+!sophos-central-alert-action action=clearThreat alert_id=8e879165-81cb-4747-8608-1cc4e630a017 message=testmessage
+!sophos-central-alert-search category=general product=endpoint
+!sophos-central-endpoint-list
+!sophos-central-endpoint-scan endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b
+!sophos-central-endpoint-tamper-get endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b
+!sophos-central-endpoint-tamper-update enabled=true endpoint_id=6e9567ea-bb50-40c5-9f12-42eb308e4c9b
+!sophos-central-allowed-item-list page=1 page_size=50
+!sophos-central-allowed-item-get allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c
+!sophos-central-allowed-item-add comment="hello world1" item_type=path path=/root/helloaworld/12
+!sophos-central-allowed-item-update allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c comment=changedcomment
+!sophos-central-allowed-item-delete allowed_item_id=b2148cc0-6ee8-440e-9c4b-cd5486b36c3c
+!sophos-central-blocked-item-list page=1 page_size=50
+!sophos-central-blocked-item-get blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b
+!sophos-central-blocked-item-add comment="hello 2world" item_type=sha256 sha256=CAF4DB9B3191E6E693CE938BD74FAB37AEE71372C8A034F5040362D8C69E4DE4
+!sophos-central-blocked-item-delete blocked_item_id=9b44086b-95bd-43e5-b84b-82b91725f02b
+!sophos-central-scan-exclusion-list
+!sophos-central-scan-exclusion-get exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2
+!sophos-central-scan-exclusion-add exclusion_type=path value=avsdfasdfaa
+!sophos-central-scan-exclusion-update exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2
+!sophos-central-scan-exclusion-delete exclusion_id=6868151e-4eac-4d0a-8985-5db9bff9d6f2
+!sophos-central-exploit-mitigation-list
+!sophos-central-exploit-mitigation-get mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded
+!sophos-central-exploit-mitigation-add path=testestesteset
+!sophos-central-exploit-mitigation-update mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded path=changed
+!sophos-central-exploit-mitigation-delete mitigation_id=ff9d87d0-c944-4ca5-9f76-c5efd1f89ded
+!sophos-central-detected-exploit-list
+!sophos-central-detected-exploit-get detected_exploit_id=ff9dc6d1-c444-4a23-1a76-c5efd1f89ded

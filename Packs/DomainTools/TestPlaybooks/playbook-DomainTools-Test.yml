@@ -8,7 +8,7 @@ tasks:
     taskid: bad2969a-5982-4b6c-8779-ca9a99bdd7a3
     type: start
     task:
-      id: dc716525-69b4-4fb6-86ce-9c055c8a003b
+      id: bad2969a-5982-4b6c-8779-ca9a99bdd7a3
       version: -1
       name: ""
       iscommand: false
@@ -34,7 +34,7 @@ tasks:
     taskid: 6371c740-eb1b-4c28-8ee9-e77fb47eead0
     type: regular
     task:
-      id: 39979d6c-defb-4807-8a06-ebaec33272d2
+      id: 6371c740-eb1b-4c28-8ee9-e77fb47eead0
       version: -1
       name: domain
       description: Retrieve domain information.
@@ -73,7 +73,7 @@ tasks:
     taskid: ba882500-aab2-4646-88e3-da32a213f062
     type: regular
     task:
-      id: 5c81e87d-7d25-4ebf-8d73-0b8a1823dd42
+      id: ba882500-aab2-4646-88e3-da32a213f062
       version: -1
       name: domainSearch
       description: Search for domain based on the given parameters
@@ -119,7 +119,7 @@ tasks:
     taskid: ae705492-8b7b-4d99-812c-86f53ca76e79
     type: regular
     task:
-      id: c52efc3c-ec22-4634-81de-edc85dc8945b
+      id: ae705492-8b7b-4d99-812c-86f53ca76e79
       version: -1
       name: reverseIP
       description: Reverse loopkup of an IP address
@@ -153,7 +153,7 @@ tasks:
     taskid: d9e18086-72e5-455e-85f9-e164c7361c57
     type: regular
     task:
-      id: 19026af1-30a1-404d-860c-6a3f89fd2fc0
+      id: d9e18086-72e5-455e-85f9-e164c7361c57
       version: -1
       name: reverseNameServer
       description: Reverse nameserver lookup
@@ -186,7 +186,7 @@ tasks:
     taskid: ee38441b-519c-4abd-83e9-e1649586d8e9
     type: regular
     task:
-      id: a5eb5171-a7cf-469f-8ab9-c53ae7fe58d2
+      id: ee38441b-519c-4abd-83e9-e1649586d8e9
       version: -1
       name: reverseWhois
       description: Reverse lookup of whois information
@@ -222,7 +222,7 @@ tasks:
     taskid: b3e43752-581b-4e45-89d4-0bb1a368f873
     type: regular
     task:
-      id: dfe9534f-47bb-4cfa-8f2c-5c3055f23c62
+      id: b3e43752-581b-4e45-89d4-0bb1a368f873
       version: -1
       name: whois
       description: Provides registration details about a domain
@@ -256,7 +256,7 @@ tasks:
     taskid: ec017acd-72b8-464e-819d-f462c7235848
     type: regular
     task:
-      id: 0bfbee83-52ee-4953-83ce-4e882b884b48
+      id: ec017acd-72b8-464e-819d-f462c7235848
       version: -1
       name: whoisHistory
       description: Display a history of whois for a given domain
@@ -288,7 +288,7 @@ tasks:
     taskid: 53e37c43-1878-4202-8fde-73169feda097
     type: regular
     task:
-      id: 9498a299-eb58-4de3-88ee-eaa18aa8f059
+      id: 53e37c43-1878-4202-8fde-73169feda097
       version: -1
       name: domainProfile
       script: DomainTools|||domainProfile
@@ -316,7 +316,7 @@ tasks:
     taskid: bb88ce6b-449b-4b13-8f37-714d8ec7ef00
     type: regular
     task:
-      id: f6a44854-f2ef-4701-87b0-844bfbcddd4a
+      id: bb88ce6b-449b-4b13-8f37-714d8ec7ef00
       version: -1
       name: NotInContextVerification
       description: "Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. \n"
@@ -352,7 +352,7 @@ tasks:
     taskid: ed8d44b3-1d78-4742-8c19-f22b28774ce2
     type: regular
     task:
-      id: 5ee9e46c-4ebf-479d-8bee-fcd692b21c3b
+      id: ed8d44b3-1d78-4742-8c19-f22b28774ce2
       version: -1
       name: VerifyContext
       description: |-
@@ -391,7 +391,7 @@ tasks:
     taskid: d9e7a7b8-b60b-4320-852b-87cd2f95332d
     type: regular
     task:
-      id: 3b1771e0-269f-4265-8aa0-f1624e9d6f09
+      id: d9e7a7b8-b60b-4320-852b-87cd2f95332d
       version: -1
       name: VerifyContext
       description: |-
@@ -431,7 +431,7 @@ tasks:
     taskid: 3526f92a-8178-4570-8705-d33a30a020fb
     type: regular
     task:
-      id: 2c10ac99-3d91-4d32-8371-a75b6ee8f3a8
+      id: 3526f92a-8178-4570-8705-d33a30a020fb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -464,7 +464,7 @@ tasks:
     taskid: d98b0628-03a1-4385-8b3d-7a873f15b170
     type: regular
     task:
-      id: 55f6b9e2-2bf3-4887-8b81-351048e93a5b
+      id: d98b0628-03a1-4385-8b3d-7a873f15b170
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -497,7 +497,7 @@ tasks:
     taskid: fff8667a-9b97-4e06-8414-92eb7b5ac28d
     type: regular
     task:
-      id: 061d81a7-c464-460e-8091-3e8bda2ae1f1
+      id: fff8667a-9b97-4e06-8414-92eb7b5ac28d
       version: -1
       name: VerifyContext
       description: |-
@@ -536,7 +536,7 @@ tasks:
     taskid: 87742482-bc50-4d88-8d85-c1815a2548e2
     type: regular
     task:
-      id: a0b7dbf2-7ece-4bef-88f9-94f95cb58f4a
+      id: 87742482-bc50-4d88-8d85-c1815a2548e2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -569,7 +569,7 @@ tasks:
     taskid: c5d52242-1d53-40a9-898f-6f25af8cdd04
     type: regular
     task:
-      id: 37d5552c-9514-453b-85f2-610072811cae
+      id: c5d52242-1d53-40a9-898f-6f25af8cdd04
       version: -1
       name: VerifyContext
       description: |-
@@ -609,7 +609,7 @@ tasks:
     taskid: 644da17e-12c1-4a5c-8c6b-e25107b37143
     type: regular
     task:
-      id: 02f3be5d-d1f9-49a2-8494-59610e7a63ba
+      id: 644da17e-12c1-4a5c-8c6b-e25107b37143
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -642,7 +642,7 @@ tasks:
     taskid: 9cac1186-7035-4bce-8893-4a31df021249
     type: regular
     task:
-      id: d2b54462-856d-497a-84ac-790363e502af
+      id: 9cac1186-7035-4bce-8893-4a31df021249
       version: -1
       name: VerifyContext
       description: |-
@@ -682,7 +682,7 @@ tasks:
     taskid: cea27d70-919d-49e4-8637-5f8494dafea1
     type: regular
     task:
-      id: 7cd08f5e-dc4e-4e26-8955-0d5186130321
+      id: cea27d70-919d-49e4-8637-5f8494dafea1
       version: -1
       name: VerifyContext
       description: |-
@@ -722,7 +722,7 @@ tasks:
     taskid: 678126d4-919b-47a6-89d2-373b261f6b3f
     type: regular
     task:
-      id: 9de893f2-66c0-4558-8aa5-3b7500f0161b
+      id: 678126d4-919b-47a6-89d2-373b261f6b3f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -755,7 +755,7 @@ tasks:
     taskid: af1766bf-5f37-443d-815d-b73740debb8c
     type: regular
     task:
-      id: 53886492-764c-4657-8404-2f954d70e3eb
+      id: af1766bf-5f37-443d-815d-b73740debb8c
       version: -1
       name: VerifyContext
       description: |-
@@ -794,7 +794,7 @@ tasks:
     taskid: 43de1ec9-a52e-4293-8d45-42d71f5eb363
     type: regular
     task:
-      id: f0a7ad25-2897-4a21-8fba-406c039a70ba
+      id: 43de1ec9-a52e-4293-8d45-42d71f5eb363
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -827,7 +827,7 @@ tasks:
     taskid: 5bc0841d-c0c6-4982-8741-9b6df3e80b08
     type: regular
     task:
-      id: f0129c08-511c-4bc0-8fd1-93cccfb19fb6
+      id: 5bc0841d-c0c6-4982-8741-9b6df3e80b08
       version: -1
       name: VerifyContext
       description: |-
@@ -866,7 +866,7 @@ tasks:
     taskid: aeb65b22-780c-45d9-8c2b-cf35610ce4ed
     type: regular
     task:
-      id: dbd1627a-19a1-4dff-85aa-9e92891f67fa
+      id: aeb65b22-780c-45d9-8c2b-cf35610ce4ed
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -899,7 +899,7 @@ tasks:
     taskid: 9fe0fe6c-0fdb-44e9-8d7f-4cefb13c5e69
     type: regular
     task:
-      id: e9b3ab17-9df2-4494-8910-e99100c336e2
+      id: 9fe0fe6c-0fdb-44e9-8d7f-4cefb13c5e69
       version: -1
       name: VerifyContext
       description: |-
@@ -938,7 +938,7 @@ tasks:
     taskid: b20355b6-52e2-43ad-8de9-5506c804cbe4
     type: regular
     task:
-      id: 4d3b46cf-8561-4d3b-885c-0b2162b65d48
+      id: b20355b6-52e2-43ad-8de9-5506c804cbe4
       version: -1
       name: DeleteContext
       description: Delete field from context

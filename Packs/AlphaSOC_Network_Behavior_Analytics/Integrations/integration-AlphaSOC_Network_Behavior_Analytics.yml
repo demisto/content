@@ -22,7 +22,8 @@ configuration:
   required: true
 - display: Ignore events below severity
   name: severity
-  defaultvalue: "3"
+  defaultvalue: "4"
+  additionalinfo: "AlphaSOC alert severity: (1) info, (2) low, (3) medium, (4) high, (5) critical"
   type: 0
   required: true
 - display: Include policy violations
@@ -127,7 +128,8 @@ script:
 
 
     function createAlertsURL(follow) {
-        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all';
+        var severity = getSeverityThereshold();
+        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all&minSeverity=' + severity;
     }
 
 

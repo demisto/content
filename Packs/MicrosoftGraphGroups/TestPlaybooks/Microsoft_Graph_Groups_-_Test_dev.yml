@@ -1,0 +1,79 @@
+id: Microsoft Graph Groups - Test dev
+version: -1
+name: Microsoft Graph Groups - Test dev
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ab07352e-31b7-4ec6-ac62-f90a0ea1c9a0
+    type: start
+    task:
+      id: ab07352e-31b7-4ec6-ac62-f90a0ea1c9a0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 497f9438-3b72-4b8f-a297-9538ae8594b1
+    type: regular
+    task:
+      id: 497f9438-3b72-4b8f-a297-9538ae8594b1
+      version: -1
+      name: set playbook to Microsoft Graph Groups - Test
+      description: set playbook for current incident to Microsoft Graph Groups - Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Microsoft Graph Groups - Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

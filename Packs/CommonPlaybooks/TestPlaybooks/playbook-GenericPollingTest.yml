@@ -1,0 +1,305 @@
+id: Generic Polling Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Generic Polling Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbb9cf87-bf38-47c4-877c-3b9ba37edefa
+    type: start
+    task:
+      id: cbb9cf87-bf38-47c4-877c-3b9ba37edefa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 34590bc7-e75d-4653-8545-f61fd6341a26
+    type: playbook
+    task:
+      id: 34590bc7-e75d-4653-8545-f61fd6341a26
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: arg1,arg2
+      AdditionalPollingCommandArgValues:
+        simple: test,test2
+      Ids:
+        simple: ${GP.Dummy.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: generic-polling-dummy-command
+      Timeout:
+        simple: "4"
+      dt:
+        simple: GP.Dummy(val.Status != 'Success').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b06df729-c969-43b0-8b31-750417284cb2
+    type: regular
+    task:
+      id: b06df729-c969-43b0-8b31-750417284cb2
+      version: -1
+      name: generic-polling-dummy-command
+      scriptName: generic-polling-dummy-command
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      arg1:
+        simple: test
+      arg2:
+        simple: test2
+      ids:
+        simple: LetersNumbersSign&85 space, קצת עברית,$%$$%%dd
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5dab89ca-4224-4cd3-81ac-1ffae03dce9e
+    type: regular
+    task:
+      id: 5dab89ca-4224-4cd3-81ac-1ffae03dce9e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 748f408d-f39a-46fc-8046-71000732f322
+    type: regular
+    task:
+      id: 748f408d-f39a-46fc-8046-71000732f322
+      version: -1
+      name: setList
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listData:
+        simple: ' '
+      listName:
+        simple: pending_ids
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f2de7a3b-e6d4-4650-8719-59dba61e6b24
+    type: regular
+    task:
+      id: f2de7a3b-e6d4-4650-8719-59dba61e6b24
+      version: -1
+      name: generic-polling-dummy-command
+      scriptName: generic-polling-dummy-command
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      arg1:
+        simple: test
+      arg2:
+        simple: test2
+      ids:
+        simple: ${GP.Dummy.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ab2503be-bb34-48b1-8531-a14739e279b6
+    type: condition
+    task:
+      id: ab2503be-bb34-48b1-8531-a14739e279b6
+      version: -1
+      name: Check statuses
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GP.Dummy(val.Status != 'Success').ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b4006311-3aa4-4a8e-8c73-1be18d6a88aa
+    type: title
+    task:
+      id: b4006311-3aa4-4a8e-8c73-1be18d6a88aa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

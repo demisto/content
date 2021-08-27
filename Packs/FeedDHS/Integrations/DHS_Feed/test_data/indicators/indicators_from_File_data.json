@@ -1,0 +1,203 @@
+[
+    {
+        "@id": "NCCIC:Indicator-f2951703-085f-4178-b019-42c78e5c973f",
+        "@timestamp": "2020-11-02T23:16:09Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Type": {
+            "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+            "#text": "File Hash Watchlist"
+        },
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-e8d220c0-40e3-4de6-beeb-3977114fab2b",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-3b257942-8986-4c12-a27e-6b6a84850894",
+                "cybox:Properties": {
+                    "@xsi:type": "FileObj:FileObjectType",
+                    "FileObj:Hashes": {
+                        "cyboxCommon:Hash": [
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA1"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "0908223025ce9084c4f201ee40785283c332d7eb"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "MD5"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "c683b6c027d4eb776095ac54a739c09e"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA256"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "3a3c52d5445dab4d6c6260f2acc95595b0bfaeef50b364d9372c7c294f1625f0"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA512"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "7a69b028d42bd0a2b29e8ffec5a962d04f58e2b940893bf747bb76244500ee792b74a516adc781430451c33796744e8be882f03afbc29aa8106994bb562298ec"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-5d6a23ab-d15a-42f7-9330-ba43e7f1a9f4",
+        "@timestamp": "2020-11-02T23:16:19Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Type": {
+            "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+            "#text": "File Hash Watchlist"
+        },
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-c221ded4-5361-44c6-bd64-8e6ed7b3ac88",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-3df890c0-6bee-497f-b66f-f20a1c6aa018",
+                "cybox:Properties": {
+                    "@xsi:type": "FileObj:FileObjectType",
+                    "FileObj:Hashes": {
+                        "cyboxCommon:Hash": [
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA1"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "0a2fc4fc0a479b60366ee65dd40608ce8862cd36"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "MD5"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "1ca54d2ef13a14b5267b5a09c0822e03"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA256"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "a61384f8f61764324b0c5a89a889edd578352da3e609e9f5bc8727eb7c9f81f9"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA512"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "c12149c60f3f2b6c9707d15e37a59c40bfdaaa70a02be4f7bd864f49b69d93e31e862a39b50d3f388ef57f6d89ae1d7bc6115286a0226d427ee7e32c2bb12707"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-0d9490bd-c2a5-4c68-aff2-da5d1ad7b253",
+        "@timestamp": "2020-11-02T23:16:29Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Type": {
+            "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+            "#text": "File Hash Watchlist"
+        },
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-b8474107-97b8-4d78-b847-c860e574e451",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-6074f40b-0d25-4d3b-99f4-e660e06341fb",
+                "cybox:Properties": {
+                    "@xsi:type": "FileObj:FileObjectType",
+                    "FileObj:Hashes": {
+                        "cyboxCommon:Hash": [
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA1"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "0c3d7914730486974a62209cc05315fac3faaf11"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "MD5"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "d474afd6115220d997ea6c954e0ce490"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA256"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "b82306bff5554d30fe80572f32380e88543a5676a75a0f424e2bf9e18eb47180"
+                                }
+                            },
+                            {
+                                "cyboxCommon:Type": {
+                                    "@condition": "Equals",
+                                    "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                    "#text": "SHA512"
+                                },
+                                "cyboxCommon:Simple_Hash_Value": {
+                                    "@condition": "Equals",
+                                    "#text": "99ec6a4ae21d2c84bac45f936a7f2b9686a38eb98e359eec73541267316fae675d539335da990fd3d68c34729d5c7b32a83187c950417fae44456170696db437"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

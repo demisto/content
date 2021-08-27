@@ -1,0 +1,30 @@
+{
+    "id": "incident_carbonblackesalertseverity",
+    "version": -1,
+    "name": "Carbon Black ES Alert Severity",
+    "ownerOnly": false,
+    "description": "The Carbon Black ES Alert Severity",
+    "cliName": "carbonblackesalertseverity",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

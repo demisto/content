@@ -1,0 +1,32 @@
+{
+ "closeForm": false,
+ "cliName": "mitretactics",
+ "neverSetAsRequired": false,
+ "threshold": 72,
+ "id": "indicator_mitretactics",
+ "group": 2,
+ "isReadOnly": false,
+ "system": false,
+ "content": true,
+ "unsearchable": false,
+ "version": -1,
+ "unmapped": false,
+ "hidden": false,
+ "type": "shortText",
+ "editForm": true,
+ "associatedToAll": false,
+ "associatedTypes": [
+  "File",
+  "URL",
+  "IP"
+ ],
+ "caseInsensitive": true,
+ "useAsKpi": false,
+ "locked": false,
+ "name": "Mitre Tactics",
+ "ownerOnly": false,
+ "required": false,
+ "modified": "2019-07-29T10:37:51.866939952Z",
+ "sla": 0,
+ "fromVersion": "5.5.0"
+}

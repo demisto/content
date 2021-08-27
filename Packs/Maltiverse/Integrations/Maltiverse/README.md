@@ -8,7 +8,7 @@ This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
 3. Calculate DBot Score for indicators.
 
 
-## Configure Maltiverse on Demisto
+## Configure Maltiverse on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -16,13 +16,14 @@ This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __API Key__
+    * __Source Reliability__: Reliability of the source providing the intelligence data. The default value is C - Fairly reliable.  
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ip
 2. domain

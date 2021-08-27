@@ -8,10 +8,10 @@ fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
-    taskid: "1"
+    taskid: 1dbb6661-592f-4989-a712-afb1d3125c5b
     type: start
     task:
-      id: "1"
+      id: 1dbb6661-592f-4989-a712-afb1d3125c5b
       version: -1
       name: ""
       iscommand: false

@@ -79,7 +79,7 @@
 					},
 					"simple": ""
 				},
-				"PhoneNumber": {
+				"Phone Number": {
 					"complex": {
 						"accessor": "",
 						"filters": [],

@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cyrensourcetags",
+    "closeForm": false,
+    "content": true,
+    "description": "The Cyren Source Tag marks if the indicator has been imported explicitly from a feed or if it has been imported as related indicator found in the indicator relationships.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrensourcetags",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Source Tags",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "primary",
+        "related"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,17 @@
+{
+    "name": "ParseYAML",
+    "description": "Parses a YAML string and loads into context",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Clay Curtis",
+    "url": "",
+    "email": "",
+    "created": "2021-03-11T16:53:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "clay584"
+    ]
+}

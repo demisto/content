@@ -8,7 +8,7 @@ tasks:
     taskid: b75c9325-1847-4451-8216-551e33f9b4c7
     type: start
     task:
-      id: 94a71756-6d5e-4a89-8052-1f08c5fa4e31
+      id: b75c9325-1847-4451-8216-551e33f9b4c7
       version: -1
       name: ""
       iscommand: false
@@ -34,7 +34,7 @@ tasks:
     taskid: 40912ef2-6a78-4b92-86a3-bb70f3edb09c
     type: regular
     task:
-      id: b7cbf292-f8c0-420d-8145-ae6dfc3256f3
+      id: 40912ef2-6a78-4b92-86a3-bb70f3edb09c
       version: -1
       name: get all registered domains of NSM
       script: McAfee NSM|||nsm-get-domains
@@ -65,7 +65,7 @@ tasks:
     taskid: cb374045-048e-4349-857d-fc9b0445a4f4
     type: regular
     task:
-      id: 244e68f1-5059-47f1-893c-c11856b699de
+      id: cb374045-048e-4349-857d-fc9b0445a4f4
       version: -1
       name: Get a specific domain information
       script: McAfee NSM|||nsm-get-domains
@@ -103,7 +103,7 @@ tasks:
     taskid: e0b8702d-f4e4-43bd-891f-cfa059798b84
     type: regular
     task:
-      id: 2c6334be-ae5f-47a0-8fad-08ebcf866846
+      id: e0b8702d-f4e4-43bd-891f-cfa059798b84
       version: -1
       name: Get IPS Policies
       script: McAfee NSM|||nsm-get-ips-policies
@@ -134,7 +134,7 @@ tasks:
     taskid: 80b80fb8-ab11-4283-85f5-fec4bd4814aa
     type: regular
     task:
-      id: 8be26751-b32a-49ed-8590-8744ba7bc6a7
+      id: 80b80fb8-ab11-4283-85f5-fec4bd4814aa
       version: -1
       name: Get a specific IPS Policy information
       script: McAfee NSM|||nsm-get-ips-policy-details
@@ -165,7 +165,7 @@ tasks:
     taskid: dc56df34-5e61-4534-80d3-57e88be41939
     type: regular
     task:
-      id: 66a1fa38-2b7f-474e-8fb0-57679409e755
+      id: dc56df34-5e61-4534-80d3-57e88be41939
       version: -1
       name: Get Alerts from last 5 minutes
       script: McAfee NSM|||nsm-get-alerts
@@ -201,7 +201,7 @@ tasks:
     taskid: 4bf362c9-6cb5-4c46-8622-f6b9eef7e3b0
     type: regular
     task:
-      id: d302ee89-0de1-4b75-8ad8-8a99152d63ef
+      id: 4bf362c9-6cb5-4c46-8622-f6b9eef7e3b0
       version: -1
       name: Get Alerts from custom time with filtering
       script: McAfee NSM|||nsm-get-alerts
@@ -240,7 +240,7 @@ tasks:
     taskid: 80975f60-94d7-4947-8f28-ca4559e86b2c
     type: regular
     task:
-      id: 4427ceb2-a02d-4c4b-8103-5255038ea0d7
+      id: 80975f60-94d7-4947-8f28-ca4559e86b2c
       version: -1
       name: Set Alerts as Acknowledged
       script: McAfee NSM|||nsm-update-alerts
@@ -283,7 +283,7 @@ tasks:
     taskid: 852704c6-0df9-4eda-8163-293d2f19a663
     type: regular
     task:
-      id: 44f2fcdd-a70f-4f4c-8012-05719f5d17d8
+      id: 852704c6-0df9-4eda-8163-293d2f19a663
       version: -1
       name: Set Alerts back as Unacknowledged
       script: McAfee NSM|||nsm-update-alerts
@@ -326,7 +326,7 @@ tasks:
     taskid: d18e53e7-1924-4534-8dbe-4e2ea1366412
     type: regular
     task:
-      id: 16fb9736-b93e-4ba5-8c30-084f7c9a9d55
+      id: d18e53e7-1924-4534-8dbe-4e2ea1366412
       version: -1
       name: Get all sensors info
       script: McAfee NSM|||nsm-get-sensors
@@ -357,7 +357,7 @@ tasks:
     taskid: 489e64ba-9dd2-4aaf-8a70-7c50905fd966
     type: regular
     task:
-      id: 7dd879be-4186-4501-849d-8bef44dd38d4
+      id: 489e64ba-9dd2-4aaf-8a70-7c50905fd966
       version: -1
       name: Get sensors info from all domains
       script: McAfee NSM|||nsm-get-sensors

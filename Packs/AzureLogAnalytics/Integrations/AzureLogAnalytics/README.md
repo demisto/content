@@ -54,7 +54,7 @@ To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and *
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-log-analytics-execute-query
 ***
@@ -70,6 +70,7 @@ Executes an Analytics query for data.
 | --- | --- | --- |
 | query | The query to execute. | Required | 
 | timespan | The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to any timespans specified in the query expression. | Optional | 
+| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
 
 
 #### Context Output

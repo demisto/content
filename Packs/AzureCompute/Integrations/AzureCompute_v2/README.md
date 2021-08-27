@@ -17,12 +17,13 @@ For more details about the authentication used in this integration, see <a href=
     <ul>
       <li>Microsoft.Compute/virtualMachines/*</li>
       <li>Microsoft.Network/networkInterfaces/read</li>
+      <li>Microsoft.Resources/subscriptions/resourceGroups/read</li>
     </ul> </li>
-    <li>Select the Azure Secruity Center application.</li>
+    <li>Select the Azure Compute application.</li>
   </ul>
 </li>
 </ul>
-<h2>Configure Azure Compute v2 on Demisto</h2>
+<h2>Configure Azure Compute v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -51,7 +52,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
   <p>
-    You can execute these commands from the Demisto CLI, as part of an automation,
+    You can execute these commands from the Cortex XSOAR CLI, as part of an automation,
     or in a playbook. After you successfully execute a command, a DBot message
     appears in the War Room with the command details.
   </p>

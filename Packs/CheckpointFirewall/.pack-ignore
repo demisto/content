@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104,RM106
+
+[file:CheckPointFirewall_v2.yml]
+ignore=BA108,BA109

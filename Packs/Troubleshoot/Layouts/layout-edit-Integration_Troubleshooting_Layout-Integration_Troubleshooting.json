@@ -1,0 +1,103 @@
+{
+ "kind": "edit",
+ "layout": {
+  "id": "Integration Troubleshooting Layout",
+  "name": "Integration Troubleshooting Layout",
+  "version": -1,
+  "kind": "edit",
+  "typeId": "Integration Troubleshooting",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_reminder",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_details",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "To use the Troubleshooting Incident, you must have a configured [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-demisto-rest-api-integration)",
+    "fields": [
+     {
+      "fieldId": "incident_troubleshoottype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_instancename",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_runwithinsecure",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_commandline",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Troubleshooting",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "fromVersion": "5.0.0",
+ "toVersion": "5.9.9",
+ "typeId": "Integration Troubleshooting",
+ "version": -1,
+ "description": ""
+}

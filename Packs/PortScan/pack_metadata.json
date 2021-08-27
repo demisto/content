@@ -2,7 +2,7 @@
     "name": "Port Scan",
     "description": "Port scans are a hacker favorite. This Content Pack automates IP and hostname enrichment, blocks malicious domains, blocks affected ports, and more.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1,0 +1,30 @@
+{
+  "Type": 1,
+  "ContentsFormat": "text",
+  "Contents": {
+    "public_tag_name": "Anon015b57.MYNEWTAGNAME",
+    "tag_name": "MYNEWTAGNAME",
+    "customer_name": "",
+    "source": "Palo Alto Networks - InfoSec-Synack Tesing<h1>xxx</h1>",
+    "tag_definition_scope": "public",
+    "tag_definition_status": "disabled",
+    "tag_class": "actor",
+    "count": 108737,
+    "lasthit": "2021-02-11 22:31:51",
+    "description": "<h1>xxx</h1>"
+  },
+  "EntryContext": {
+    "AutoFocus.Tag(val.ID == obj.ID)": {
+      "PublicTagName": "Anon015b57.MYNEWTAGNAME",
+      "TagName": "MYNEWTAGNAME",
+      "CustomerName": "",
+      "Source": "Palo Alto Networks - InfoSec-Synack Tesing<h1>xxx</h1>",
+      "TagDefinitionScope": "public",
+      "TagDefinitionStatus": "disabled",
+      "TagClass": "actor",
+      "Count": 108737,
+      "Lasthit": "2021-02-11 22:31:51",
+      "Description": "<h1>xxx</h1>"
+    }
+  },
+  "HumanReadable": "### Tag Anon015b57.MYNEWTAGNAME details:\n|Count|Customer Name|Description|Lasthit|Public Tag Name|Source|Tag Class|Tag Definition Scope|Tag Definition Status|Tag Name|\n|---|---|---|---|---|---|---|---|---|---|\n| 108737 |  | <h1>xxx</h1> | 2021-02-11 22:31:51 | Anon015b57.MYNEWTAGNAME | Palo Alto Networks - InfoSec-Synack Tesing<h1>xxx</h1> | actor | public | disabled | MYNEWTAGNAME |\n"}

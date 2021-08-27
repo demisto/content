@@ -1,0 +1,22 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Proofpoint TAP Classifier",
+    "keyTypeMap": {
+        "clicks blocked": "Proofpoint TAP - Click Blocked",
+        "clicks permitted": "Proofpoint TAP - Click Permitted",
+        "messages blocked": "Proofpoint TAP - Message Blocked",
+        "messages delivered": "Proofpoint TAP - Message Delivered"
+    },
+    "name": "Proofpoint TAP Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

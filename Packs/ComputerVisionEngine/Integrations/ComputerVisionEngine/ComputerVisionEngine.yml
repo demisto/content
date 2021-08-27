@@ -1,0 +1,55 @@
+category: Utilities
+commonfields:
+  id: Computer Vision Engine
+  version: -1
+configuration: []
+description: |-
+  This integration is processing images or movies and detects objects on them by using Machine Learning.
+  It is using OpenCV with:
+  YOLO COCO
+display: Computer Vision Engine
+name: Computer Vision Engine
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Image EntryID
+      isArray: false
+      name: entryid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0.5'
+      description: minimum probability to filter weak detections
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0.3'
+      description: threshold when applying non-maxima suppression
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Detect objects on an picture using the yolo-coco ML
+    execution: false
+    name: yolo-coco-process-image
+    outputs:
+    - contextPath: ComputerVision
+      description: The key holds down the information about detected objects in the
+        picture
+      type: Unknown
+  dockerimage: demisto/yolo-coco:1.0.0.15530
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

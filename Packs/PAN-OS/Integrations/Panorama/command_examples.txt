@@ -98,3 +98,8 @@ not_running_this!panorama-get-ssl-decryption-rules
 !panorama-create-url-filtering-best-practice-profile profile_name=test
 !panorama-create-file-blocking-best-practice-profile profile_name=test
 !panorama-create-wildfire-best-practice-profile profile_name=test
+!panorama-show-user-id-interfaces-config
+!panorama-list-configured-user-id-agents
+!panorama-show-zones-config
+!panorama-upload-content-update-file entryID="32@14183" category="content"
+!panorama-install-file-content-update version_name="panupv2-all-contents-8322-6317" category="content" skip_validity_check="yes"

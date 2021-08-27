@@ -17,10 +17,12 @@ outputs:
   type: string
 script: '-'
 subtype: python3
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.9.1.15759
 system: false
 tags:
 - Utility
 timeout: '0'
 type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

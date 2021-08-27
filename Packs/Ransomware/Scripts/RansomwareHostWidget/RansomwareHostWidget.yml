@@ -1,0 +1,19 @@
+comment: Entry widget that returns the number of affectefd hosts in a Post Intrusion
+  Ransomware incident.
+commonfields:
+  id: RansomwareHostWidget
+  version: -1
+dockerimage: demisto/python3:3.9.2.17246
+enabled: true
+name: RansomwareHostWidget
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

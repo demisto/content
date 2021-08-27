@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Dict, Tuple, List
 
 import requests
+from CommonServerUserPython import *
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,6 +20,7 @@ class LightPanoramaClient(BaseClient):
     This is a client for Panorama API, used by integration commands to issue requests to Panorama API,
      not the BPA service.
     '''
+
     def __init__(self, server, port, api_key, verify, proxy):
         if port is None:
             super().__init__(server + '/', verify)
@@ -99,7 +100,8 @@ class Client(BaseClient):
         response = self._http_request('GET', 'documentation/', proxies=self.proxies)
         return response
 
-    def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle) -> Dict:
+    def submit_task_request(self, running_config, system_info, license_info, system_time, generate_zip_bundle,
+                            timeout) -> Dict:
         data = {
             'xml': running_config,
             'system_info': system_info,
@@ -108,7 +110,7 @@ class Client(BaseClient):
             'generate_zip_bundle': generate_zip_bundle
         }
 
-        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies)
+        response = self._http_request('POST', 'create/', data=data, proxies=self.proxies, timeout=timeout)
         return response
 
     def get_results_request(self, task_id: str):
@@ -120,21 +122,34 @@ class Client(BaseClient):
         return response
 
 
-def filter_doc(doc: Dict) -> Dict:
-    clone = doc.copy()
-    del clone['complexity']
-    del clone['effort']
-    return clone
+def create_output(doc: dict):
+    doc_output = {}
+    for key in doc.keys():
+        doc_output[string_to_context_key(key)] = doc.get(key)
+    return doc_output
 
 
-def get_documentation_command(client: Client) -> Tuple[str, Dict, Dict]:
+def get_documentation_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw = client.get_documentation_request()
     if not raw:
         raise Exception('Failed getting documentation from BPA')
-    filtered_docs = [filter_doc(doc) for doc in raw]
-
-    entry_context = {'PAN-OS-BPA.Documentation': filtered_docs}
-    human_readable = tableToMarkdown('BPA documentation', filtered_docs)
+    filter_by_ids = args.get('doc_ids')
+    if filter_by_ids:
+        output = []
+        old_output = []  # keep old output format in order to not break backwards compatibility
+        id_list = filter_by_ids.split(',')
+        for doc in raw:
+            if str(doc.get('doc_id')) in id_list:
+                output.append(create_output(doc))
+                old_output.append(doc)
+    else:
+        output = [create_output(doc) for doc in raw]
+        old_output = raw
+    entry_context = {
+        'PAN-OS-BPA.Documentation.Document': output,
+        'PAN-OS-BPA.Documentation': old_output  # Keep old output path in order to not break backwards compatibility.
+    }
+    human_readable = tableToMarkdown('BPA documentation', output)
 
     return human_readable, entry_context, raw
 
@@ -149,7 +164,9 @@ def submit_task_command(client: Client, panorama: LightPanoramaClient, args: Dic
         raise Exception('Failed getting response from Panorama')
 
     generate_zip_bundle = args.get('generate_zip_bundle')
-    raw = client.submit_task_request(running_config, system_info, license_info, system_time, generate_zip_bundle)
+    timeout = int(args.get('timeout', '120'))
+    raw = client.submit_task_request(running_config, system_info, license_info, system_time, generate_zip_bundle,
+                                     timeout)
     task_id = raw.get('task_id', '')
 
     human_readable = f'Submitted BPA job ID: {task_id}'
@@ -174,6 +191,8 @@ def get_checks_from_feature(feature, feature_name, category):
 
 def get_results_command(client: Client, args: Dict):
     task_id = args.get('task_id', '')
+    filter_by_check_id = args.get('check_id', '').split(',') if args.get('check_id') else []
+    filter_by_check_name = args.get('check_name', '').split(',') if args.get('check_name') else []
     raw: Dict = client.get_results_request(task_id)
     status = raw.get('status')
     results = raw.get('results', {})
@@ -200,6 +219,9 @@ def get_results_command(client: Client, args: Dict):
                 checks = get_checks_from_feature(feature_contents[0], feature_name, category_name)
                 if exclude_passed_checks:
                     job_checks.extend([check for check in checks if not check.get('check_passed')])
+                elif filter_by_check_id or filter_by_check_name:
+                    job_checks.extend([check for check in checks if str(check.get('check_id')) in filter_by_check_id
+                                       or check.get('check_name') in filter_by_check_name])
                 else:
                     job_checks.extend(checks)
 
@@ -254,7 +276,7 @@ def main():
         elif command == 'pan-os-bpa-get-job-results':
             return_outputs(*get_results_command(client, demisto.args()))
         elif command == 'pan-os-get-documentation':
-            return_outputs(*get_documentation_command(client))
+            return_outputs(*get_documentation_command(client, demisto.args()))
         elif command == 'test-module':
             return_outputs(*test_module(client, panorama))
         else:

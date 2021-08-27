@@ -1,0 +1,25 @@
+{
+    "value": [
+        {
+            "name": "Port_8080",
+            "id": "some_id",
+            "etag": "123",
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "properties": {
+                "provisioningState": "Succeeded",
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "8080",
+                "sourceAddressPrefix": "10.0.0.0/24",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        }
+    ]
+}

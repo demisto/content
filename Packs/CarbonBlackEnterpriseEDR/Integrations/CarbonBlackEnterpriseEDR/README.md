@@ -3,7 +3,7 @@
 
 VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
 
-## Configure VMware Carbon Black Enterprise EDR on Demisto
+## Configure VMware Carbon Black Enterprise EDR on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ \> __Integrations__ \> __Servers & Services__.
@@ -24,7 +24,7 @@ VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident re
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. cb-eedr-alert-workflow-update
 2. cb-eedr-device-quarantine
@@ -1767,7 +1767,7 @@ RBAC Permissions Required - org.search.events: READ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| process_guid | The process GUID to search. | Optional | 
+| process_guid | The process GUID to search. Must be focused on a single process. | Optional | 
 | event_type | The event type to search. | Optional | 
 | limit | The maximum number of rows to return. Default is 20. | Optional | 
 | query | A free-style query. For example, "process_name:svchost.exe". | Optional | 

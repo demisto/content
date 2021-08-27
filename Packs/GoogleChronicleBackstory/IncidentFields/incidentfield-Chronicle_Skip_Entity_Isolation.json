@@ -1,0 +1,33 @@
+{
+ "id": "incident_chronicleskipentityisolation",
+ "version": -1,
+ "modified": "2020-09-22T11:13:51.167740227+05:30",
+ "name": "Chronicle Skip Entity Isolation",
+ "ownerOnly": false,
+ "description": "Skip the isolation of entities. Select 'Yes' to skip isolation process of the entities, 'No' otherwise.",
+ "cliName": "chronicleskipentityisolation",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "",
+  "Yes",
+  "No"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedToAll": true,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

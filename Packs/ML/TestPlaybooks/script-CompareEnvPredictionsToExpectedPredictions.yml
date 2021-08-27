@@ -1,0 +1,37 @@
+commonfields:
+  id: CompareEnvPredictionsToExpectedPredictions
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CompareEnvPredictionsToExpectedPredictions
+script: |-
+  import pandas as pd
+  input_data = demisto.args()['input']
+  res = demisto.getFilePath(input_data)
+  file_path = res['path']
+  df = pd.read_csv(file_path).fillna('')
+  df = df.dropna()
+  wrong_predictions_ids= []
+  df = df[df['Error'] == '']
+  for index, row in df.iterrows():
+      [target_pred, target_prob] = json.loads(row['name'])
+      if target_pred != row['Prediction'] or abs(target_prob-row['Probability']) > 10**-4:
+          wrong_predictions_ids.append(row['id'])
+  message = '{}/{} correct predictions. '.format(len(df)- len(wrong_predictions_ids), len(df))
+  if len(wrong_predictions_ids) > 0:
+      message += 'Wrong predictions:\n {}'.format('\n'.join([str(id_) for id_ in wrong_predictions_ids]))
+  return_outputs(message, {'CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched': len(wrong_predictions_ids)== 0})
+type: python
+tags: []
+enabled: true
+args:
+- name: input
+  required: true
+outputs:
+- contextPath: CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/ml:1.0.0.20606
+runas: DBotWeakRole
+fromversion: 5.5.0

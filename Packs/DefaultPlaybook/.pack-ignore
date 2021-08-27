@@ -1,2 +1,5 @@
 [file:Default.yml]
 ignore=BA101
+
+[file:pack_metadata.json]
+ignore=PA125

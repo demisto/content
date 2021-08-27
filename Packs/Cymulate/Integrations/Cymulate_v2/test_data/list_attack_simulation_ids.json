@@ -1,0 +1,23 @@
+{
+  "data":
+  [
+    {
+      "ID": "id_12345",
+      "Timestamp": "2021-03-01T10:15:58.230Z",
+      "Agent": "LAPTOP-1",
+      "Template": "Cy Group"
+    },
+    {
+      "ID": "id_6789",
+      "Timestamp": "2021-02-25T16:56:33.871Z",
+      "Agent": "LAPTOP-2",
+      "Template": "Cy Group"
+    },
+    {
+      "ID": "id_3",
+      "Timestamp": "2021-02-23T11:00:50.988Z",
+      "Agent": "info@cymulate.com",
+      "Template": "Cy Group"
+    }
+  ]
+}

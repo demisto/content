@@ -1,0 +1,52 @@
+{
+    "responseCode": 0,
+    "limit": 0,
+    "offset": 0,
+    "count": 0,
+    "size": 0,
+    "metaData": {},
+    "messages": [
+        {
+            "message": "string",
+            "messageTemplate": "string",
+            "type": "FIELD_ERROR",
+            "field": "string",
+            "parameter": {},
+            "timestamp": 0
+        }
+    ],
+    "data": [
+        {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "addedTimestamp": 0,
+            "addedByUser": {
+                "id": 0,
+                "customerID": 0,
+                "customer": {
+                    "id": 0,
+                    "name": "string",
+                    "shortName": "string",
+                    "domain": {
+                        "id": 0,
+                        "name": "string"
+                    }
+                },
+                "domain": {
+                    "id": 0,
+                    "name": "string"
+                },
+                "userName": "string",
+                "name": "string",
+                "type": "user"
+            },
+            "name": "string",
+            "mimeType": "string",
+            "flags": [
+                "DELETED"
+            ],
+            "size": 0,
+            "originEmailAddress": "string",
+            "addedTime": "string"
+        }
+    ]
+}

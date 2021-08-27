@@ -1,0 +1,19 @@
+{
+ "defaultIncidentType": "Email Communication",
+ "description": "Classifies EWS email messages.",
+ "feed": false,
+ "id": "0cc88f85-97b7-452e-839c-b58daf0bcf8d",
+ "keyTypeMap": {
+  "High": "Email Communication",
+  "Low": "Email Communication",
+  "Normal": "Email Communication"
+ },
+ "name": "EWS - Classifier - Email Communication",
+ "transformer": {
+  "complex": null,
+  "simple": "importance"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

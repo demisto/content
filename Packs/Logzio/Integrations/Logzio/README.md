@@ -1572,8 +1572,6 @@ Your Logz.io account type should be PRO or above.
 ### 2. logzio-get-logs-by-event-id
 ---
 Fetches the logs that triggered a security event in Logz.io Cloud SIEM
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `logzio-get-logs-by-event-id`

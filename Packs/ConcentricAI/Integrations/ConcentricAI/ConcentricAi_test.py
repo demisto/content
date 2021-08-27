@@ -63,6 +63,7 @@ def test_test_module(requests_mock):
 
 
 def test_fetch_incidents(requests_mock):
+    # given : Mock response and arguments needed for the given call
     from ConcentricAI import fetch_incidents
     loginClient, queryClient = setup()
     last_run: dict = {}
@@ -70,12 +71,14 @@ def test_fetch_incidents(requests_mock):
     fetch_time = '3 days'
     mock_response = util_load_json('test_data/mock_incident.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
+    # when : Actual function call
     _, new_incidents = fetch_incidents(loginClient, queryClient, last_run, max_results, fetch_time)
     t = datetime.fromtimestamp(int('1600114903415') / 1000)
     inced_time = t.strftime('%Y-%m-%dT%H:%M:%SZ')
     rawJson = '{"cid": "8f4619ebc927276a5908db0e46be2e7da14df3bd", "rule_name": "risk1,risk3", ' \
               '"service": "sharepoint", "name": "file-name-1", "file-path": "file-path", ' \
               '"owner": ["joe@company.com"], "risk": "high", "risk_timestamp": "1600114903415"}'
+    # then : Assert values of the incident populated.
     assert new_incidents == [
         {
             'name': 'file-name-1',
@@ -87,36 +90,58 @@ def test_fetch_incidents(requests_mock):
 
 
 def test_fetch_file_information(requests_mock):
+    # given : Mock response and arguments needed for the given call
     from ConcentricAI import fetch_file_information
     loginClient, queryClient = setup()
     path = 'path'
     name = 'file-name-1'
     mock_response = util_load_json('test_data/mock_file_information.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
+    # when : Actual function call
     result = fetch_file_information(loginClient, queryClient, path, name)
+    # then : Assert values of the Output prefix
     assert result.outputs_prefix == 'ConcentricAI.FileInfo'
     assert result.outputs_key_field == 'ownerDetails'
     assert result.outputs == mock_response['output']
 
 
 def test_get_users_overview(requests_mock):
-
+    # given : Mock response and arguments needed for the given call
     from ConcentricAI import get_users_overview
     loginClient, queryClient = setup()
     mock_response = util_load_json('test_data/mock_user_overview.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     max_users = '10'
+    # when : Actual function call
     result = get_users_overview(loginClient, queryClient, max_users)
+    # then : Assert values of the Output prefix
     assert result.outputs_prefix == 'ConcentricAI.UserInfo'
     assert result.outputs_key_field == 'info'
 
 
 def test_get_user_details(requests_mock):
+    # given : Mock response and arguments needed for the given call
     from ConcentricAI import get_user_details
     loginClient, queryClient = setup()
     mock_response = util_load_json('test_data/mock_user_details.json')
     requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
     user = 'joe'
+    # when : Actual function call
     result = get_user_details(loginClient, queryClient, user)
+    # then : Assert values of the Output prefix
     assert result.outputs_prefix == 'ConcentricAI.UserDetails'
+    assert result.outputs_key_field == 'info'
+
+
+def test_get_file_sharing_details(requests_mock):
+    # given : Mock response and arguments needed for the given call
+    from ConcentricAI import get_file_sharing_details
+    loginClient, queryClient = setup()
+    mock_response = util_load_json('test_data/mock_file_permissions.json')
+    requests_mock.post('https://mock-url.com/graphql-third-party', json=mock_response['response'])
+    cid = 'lsknadkl12312'
+    # when : Actual function call
+    result = get_file_sharing_details(loginClient, queryClient, cid)
+    # then : Assert values of the Output prefix
+    assert result.outputs_prefix == 'ConcentricAI.FileSharingInfo'
     assert result.outputs_key_field == 'info'

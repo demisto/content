@@ -11,10 +11,10 @@ For more details about the authentication used in this integration, see [Microso
 * DeviceManagementRBAC.ReadWrite.All - Application
 * DeviceManagementServiceConfig.ReadWrite.All - Application
 
-## Configure Microsoft Graph Device Management on Cortex XSOAR
+## Configure Microsoft Endpoint Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Graph Device Management.
+2. Search for Microsoft Endpoint Manager.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -35,6 +35,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get managed devices
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 
@@ -43,84 +45,84 @@ Get managed devices
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphDeviceManagement.Device.ID | String | The ID of the managed device | 
-| MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device | 
-| MSGraphDeviceManagement.Device.Name | String | Name of the device | 
-| MSGraphDeviceManagement.Device.ManagedDeviceOwnerType | String | Ownership of the device. Possible values are unknown, company, personal. | 
-| MSGraphDeviceManagement.Device.ActionResults.actionName | String | Action name | 
-| MSGraphDeviceManagement.Device.ActionResults.ActionState | String | State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported | 
-| MSGraphDeviceManagement.Device.ActionResults.StartDateTime | Date | Time the action was initiated | 
-| MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime | Date | Time the action state was last updated | 
-| MSGraphDeviceManagement.Device.EnrolledDateTime | Date | Enrollment time of the device | 
-| MSGraphDeviceManagement.Device.LastSyncDateTime | Date | The date and time that the device last completed a successful sync with Intune. | 
-| MSGraphDeviceManagement.Device.OperatingSystem | String | Operating system of the device. Windows, iOS, etc. | 
-| MSGraphDeviceManagement.Device.ComplianceState | String | Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager | 
-| MSGraphDeviceManagement.Device.JailBroken | String | whether the device is jail broken or rooted. | 
-| MSGraphDeviceManagement.Device.ManagementAgent | String | Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController. | 
-| MSGraphDeviceManagement.Device.OSVersion | String | Operating system version of the device. | 
-| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync Id of the device. | 
-| MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. | 
-| MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. | 
-| MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device | 
-| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. | 
-| MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name | 
-| MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. | 
-| MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. | 
-| MSGraphDeviceManagement.Device.IsSupervised | Boolean | Device supervised status | 
-| MSGraphDeviceManagement.Device.IsEncrypted | Boolean | Device encryption status | 
-| MSGraphDeviceManagement.Device.UserPrincipalName | String | Device user principal name | 
-| MSGraphDeviceManagement.Device.Model | String | Model of the device | 
-| MSGraphDeviceManagement.Device.Manufacturer | String | Manufacturer of the device | 
-| MSGraphDeviceManagement.Device.IMEI | String | IMEI of the device | 
-| MSGraphDeviceManagement.Device.SerialNumber | String | Serial number of the device | 
-| MSGraphDeviceManagement.Device.PhoneNumber | String | Phone number of the device | 
-| MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel | String | Android security patch level of the device | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory | Boolean | Whether inventory is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps | Boolean | Whether modern application is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess | Boolean | Whether resource access is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration | Boolean | Whether device configuration is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy | Boolean | Whether compliance policy is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness | Boolean | Whether Windows Update for Business is managed by Intune | 
-| MSGraphDeviceManagement.Device.WiFiMacAddress | String | Wi\-Fi MAC | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The Timestamp of the last update. | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The DateTime when device was evaluated or issued to MDM | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.resetCount | Number | The number of times a PC device has hibernated or resumed | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.restartCount | Number | The number of times a PC device has rebooted | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus | String | On or Off of BitLocker Drive Encryption | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion | String | The version of the Boot Manager | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot | String | When Secure Boot is enabled, the core components must have the correct cryptographic signatures | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging | String | When bootDebugging is enabled, the device is used in development and testing | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging | String | When operatingSystemKernelDebugging is enabled, the device is used in development and testing | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity | String | When code integrity is enabled, code execution is restricted to integrity verified code | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.testSigning | String | When test signing is allowed, the device does not enforce signature validation during boot | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.safeMode, | String | Safe mode is a troubleshooting option for Windows that starts your computer in a limited state | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE | String | Operating system running with limited services that is used to prepare a computer for Windows | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection | String | ELAM provides protection for the computers in your network when they start up | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode | String | VSM is a container that protects high value assets from a compromised kernel | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm | String | Informational attribute that identifies the HASH algorithm that was used by TPM | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.pcr0 | String | The measurement that is captured in PCR\[0\] | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint | String | Fingerprint of the Custom Secure Boot Configuration Policy | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy | String | The Code Integrity policy that is controlling the security of the boot environment | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo | String | The Boot Revision List that was loaded during initial boot on the attested device | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo | String | The Operating System Revision List that was loaded during initial boot on the attested device | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo | String | This attribute appears if DHA\-Service detects an integrity issue | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus | String | This attribute indicates if DHA is supported for the device | 
-| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber Carrier | 
-| MSGraphDeviceManagement.Device.MEID | String | MEID | 
-| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total Storage in Bytes | 
-| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free Storage in Bytes | 
-| MSGraphDeviceManagement.Device.ManagedDeviceName | String | Automatically generated name to identify a device. Can be overwritten to a user friendly name. | 
-| MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. | 
+| MSGraphDeviceManagement.Device.ID | String | The ID of the managed device |
+| MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device |
+| MSGraphDeviceManagement.Device.Name | String | Name of the device |
+| MSGraphDeviceManagement.Device.ManagedDeviceOwnerType | String | Ownership of the device. Possible values are unknown, company, personal. |
+| MSGraphDeviceManagement.Device.ActionResults.actionName | String | Action name |
+| MSGraphDeviceManagement.Device.ActionResults.ActionState | String | State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported |
+| MSGraphDeviceManagement.Device.ActionResults.StartDateTime | Date | Time the action was initiated |
+| MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime | Date | Time the action state was last updated |
+| MSGraphDeviceManagement.Device.EnrolledDateTime | Date | Enrollment time of the device |
+| MSGraphDeviceManagement.Device.LastSyncDateTime | Date | The date and time that the device last completed a successful sync with Intune. |
+| MSGraphDeviceManagement.Device.OperatingSystem | String | Operating system of the device. Windows, iOS, etc. |
+| MSGraphDeviceManagement.Device.ComplianceState | String | Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager |
+| MSGraphDeviceManagement.Device.JailBroken | String | whether the device is jail broken or rooted. |
+| MSGraphDeviceManagement.Device.ManagementAgent | String | Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController. |
+| MSGraphDeviceManagement.Device.OSVersion | String | Operating system version of the device. |
+| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync Id of the device. |
+| MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. |
+| MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. |
+| MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device |
+| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. |
+| MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name |
+| MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. |
+| MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. |
+| MSGraphDeviceManagement.Device.IsSupervised | Boolean | Device supervised status |
+| MSGraphDeviceManagement.Device.IsEncrypted | Boolean | Device encryption status |
+| MSGraphDeviceManagement.Device.UserPrincipalName | String | Device user principal name |
+| MSGraphDeviceManagement.Device.Model | String | Model of the device |
+| MSGraphDeviceManagement.Device.Manufacturer | String | Manufacturer of the device |
+| MSGraphDeviceManagement.Device.IMEI | String | IMEI of the device |
+| MSGraphDeviceManagement.Device.SerialNumber | String | Serial number of the device |
+| MSGraphDeviceManagement.Device.PhoneNumber | String | Phone number of the device |
+| MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel | String | Android security patch level of the device |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory | Boolean | Whether inventory is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps | Boolean | Whether modern application is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess | Boolean | Whether resource access is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration | Boolean | Whether device configuration is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy | Boolean | Whether compliance policy is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness | Boolean | Whether Windows Update for Business is managed by Intune |
+| MSGraphDeviceManagement.Device.WiFiMacAddress | String | Wi\-Fi MAC |
+| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The Timestamp of the last update. |
+| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The DateTime when device was evaluated or issued to MDM |
+| MSGraphDeviceManagement.Device.HealthAttestationState.resetCount | Number | The number of times a PC device has hibernated or resumed |
+| MSGraphDeviceManagement.Device.HealthAttestationState.restartCount | Number | The number of times a PC device has rebooted |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus | String | On or Off of BitLocker Drive Encryption |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion | String | The version of the Boot Manager |
+| MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot | String | When Secure Boot is enabled, the core components must have the correct cryptographic signatures |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging | String | When bootDebugging is enabled, the device is used in development and testing |
+| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging | String | When operatingSystemKernelDebugging is enabled, the device is used in development and testing |
+| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity | String | When code integrity is enabled, code execution is restricted to integrity verified code |
+| MSGraphDeviceManagement.Device.HealthAttestationState.testSigning | String | When test signing is allowed, the device does not enforce signature validation during boot |
+| MSGraphDeviceManagement.Device.HealthAttestationState.safeMode, | String | Safe mode is a troubleshooting option for Windows that starts your computer in a limited state |
+| MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE | String | Operating system running with limited services that is used to prepare a computer for Windows |
+| MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection | String | ELAM provides protection for the computers in your network when they start up |
+| MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode | String | VSM is a container that protects high value assets from a compromised kernel |
+| MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm | String | Informational attribute that identifies the HASH algorithm that was used by TPM |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.pcr0 | String | The measurement that is captured in PCR\[0\] |
+| MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint | String | Fingerprint of the Custom Secure Boot Configuration Policy |
+| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy | String | The Code Integrity policy that is controlling the security of the boot environment |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo | String | The Boot Revision List that was loaded during initial boot on the attested device |
+| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo | String | The Operating System Revision List that was loaded during initial boot on the attested device |
+| MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo | String | This attribute appears if DHA\-Service detects an integrity issue |
+| MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus | String | This attribute indicates if DHA is supported for the device |
+| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber Carrier |
+| MSGraphDeviceManagement.Device.MEID | String | MEID |
+| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total Storage in Bytes |
+| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free Storage in Bytes |
+| MSGraphDeviceManagement.Device.ManagedDeviceName | String | Automatically generated name to identify a device. Can be overwritten to a user friendly name. |
+| MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. |
 
 
 #### Command Example
@@ -174,6 +176,8 @@ Get managed devices
 ***
 Check the device with Intune, immediately receive pending actions and policies
 
+##### Required Permissions
+DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
@@ -182,7 +186,7 @@ Check the device with Intune, immediately receive pending actions and policies
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 #### Context Output
 
@@ -202,6 +206,8 @@ There is no context output for this command.
 ***
 Disable the lost mode of the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -210,7 +216,7 @@ Disable the lost mode of the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -231,6 +237,8 @@ There is no context output for this command.
 ***
 Gets the GPS location of a device (iOS only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -239,7 +247,7 @@ Gets the GPS location of a device (iOS only)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -260,6 +268,8 @@ There is no context output for this command.
 ***
 Immediately reboots the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PrivilegedOperations.All
 
 #### Base Command
 
@@ -268,7 +278,7 @@ Immediately reboots the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -289,6 +299,8 @@ There is no context output for this command.
 ***
 Immideately shuts down the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -297,7 +309,7 @@ Immideately shuts down the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -318,6 +330,8 @@ There is no context output for this command.
 ***
 Removes the activation lock (iOS devices only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -326,7 +340,7 @@ Removes the activation lock (iOS devices only)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -347,6 +361,8 @@ There is no context output for this command.
 ***
 Remove the device from intune management
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -355,7 +371,7 @@ Remove the device from intune management
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -376,6 +392,8 @@ There is no context output for this command.
 ***
 Resets the passcode for the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -384,7 +402,7 @@ Resets the passcode for the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -405,6 +423,8 @@ There is no context output for this command.
 ***
 Lock the device, to unlock the user will have to use the passcode
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -413,7 +433,7 @@ Lock the device, to unlock the user will have to use the passcode
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -434,6 +454,8 @@ There is no context output for this command.
 ***
 Request a remote access via TeamViewer
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
@@ -442,7 +464,7 @@ Request a remote access via TeamViewer
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -463,6 +485,8 @@ There is no context output for this command.
 ***
 Recovers the passcode from the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -471,7 +495,7 @@ Recovers the passcode from the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -492,6 +516,8 @@ There is no context output for this command.
 ***
 logs out the current user on a shared iPad device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -500,7 +526,7 @@ logs out the current user on a shared iPad device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -521,6 +547,8 @@ There is no context output for this command.
 ***
 deletes a user that you select from the local cache on a shared iPad device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -529,8 +557,8 @@ deletes a user that you select from the local cache on a shared iPad device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_principal_name | The principal name of the user to be deleted. | Required | 
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| user_principal_name | The principal name of the user to be deleted. | Required |
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -550,6 +578,8 @@ There is no context output for this command.
 ***
 Forece update windows defender signatures
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -558,7 +588,7 @@ Forece update windows defender signatures
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -579,6 +609,8 @@ There is no context output for this command.
 ***
 removes any apps that are installed on a PC running Windows 10. it helps remove pre-installed (OEM) apps that are typically installed with a new PC
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -587,8 +619,8 @@ removes any apps that are installed on a PC running Windows 10. it helps remove 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| keep_user_data | Whether to keep the user's data or not. (Default is set to true) | Optional | 
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| keep_user_data | Whether to keep the user's data or not. (Default is set to true) | Optional |
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -609,6 +641,8 @@ There is no context output for this command.
 ***
 Scans the device with windows defender (windows devices only)
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -617,8 +651,8 @@ Scans the device with windows defender (windows devices only)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| quick_scan | Whether to peformn quick scan or not. (Default is set to true) | Optional | 
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| quick_scan | Whether to peformn quick scan or not. (Default is set to true) | Optional |
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -637,6 +671,8 @@ There is no context output for this command.
 ***
 restores a device to its factory default settings
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All, DeviceManagementManagedDevices.ReadWrite.All
 
 #### Base Command
 
@@ -645,10 +681,10 @@ restores a device to its factory default settings
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| keep_enrollment_data | Whether to keep enrollment data or not. (Default is set to true) | Optional | 
-| keep_user_data | Whether to keep the user's data or not. (Default is set to true) | Optional | 
-| mac_os_unlock_code | The MacOS unlock code. | Optional | 
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| keep_enrollment_data | Whether to keep enrollment data or not. (Default is set to true) | Optional |
+| keep_user_data | Whether to keep the user's data or not. (Default is set to true) | Optional |
+| mac_os_unlock_code | The MacOS unlock code. | Optional |
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -669,6 +705,8 @@ There is no context output for this command.
 ***
 Updates the windows account of the device
 
+##### Required Permissions
+DeviceManagementManagedDevices.PriviligedOperation.All
 
 #### Base Command
 
@@ -677,13 +715,13 @@ Updates the windows account of the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_initiation_protocal_address | SIP address | Required | 
-| exchange_server | Exchenge servier adddress | Required | 
-| calendar_sync_enabled | Whether to enable calendar sync or not. (Default is set to false) | Optional | 
-| password_rotation_enabled | Whether to enable password rotation or not. (Default is set to false) | Optional | 
-| device_account_password | The device account password. | Required | 
-| device_account_email | The device account email. | Required | 
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required | 
+| session_initiation_protocal_address | SIP address | Required |
+| exchange_server | Exchenge servier adddress | Required |
+| calendar_sync_enabled | Whether to enable calendar sync or not. (Default is set to false) | Optional |
+| password_rotation_enabled | Whether to enable password rotation or not. (Default is set to false) | Optional |
+| device_account_password | The device account password. | Required |
+| device_account_email | The device account email. | Required |
+| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -704,6 +742,8 @@ There is no context output for this command.
 ***
 List of managed devices
 
+##### Required Permissions
+DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
 
 #### Base Command
 
@@ -712,84 +752,84 @@ List of managed devices
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of managed devices to fetch. | Optional | 
+| limit | The number of managed devices to fetch. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphDeviceManagement.Device.ID | String | The ID of the managed device | 
-| MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device | 
-| MSGraphDeviceManagement.Device.Name | String | Name of the device | 
-| MSGraphDeviceManagement.Device.ManagedDeviceOwnerType | String | Ownership of the device. Possible values are unknown, company, personal. | 
-| MSGraphDeviceManagement.Device.ActionResults.actionName | String | Action name | 
-| MSGraphDeviceManagement.Device.ActionResults.ActionState | String | State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported | 
-| MSGraphDeviceManagement.Device.ActionResults.StartDateTime | Date | Time the action was initiated | 
-| MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime | Date | Time the action state was last updated | 
-| MSGraphDeviceManagement.Device.EnrolledDateTime | Date | Enrollment time of the device | 
-| MSGraphDeviceManagement.Device.LastSyncDateTime | Date | The date and time that the device last completed a successful sync with Intune. | 
-| MSGraphDeviceManagement.Device.OperatingSystem | String | Operating system of the device. Windows, iOS, etc. | 
-| MSGraphDeviceManagement.Device.ComplianceState | String | Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager | 
-| MSGraphDeviceManagement.Device.JailBroken | String | whether the device is jail broken or rooted. | 
-| MSGraphDeviceManagement.Device.ManagementAgent | String | Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController. | 
-| MSGraphDeviceManagement.Device.OSVersion | String | Operating system version of the device. | 
-| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync Id of the device. | 
-| MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. | 
-| MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. | 
-| MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device | 
-| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. | 
-| MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name | 
-| MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. | 
-| MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. | 
-| MSGraphDeviceManagement.Device.IsSupervised | Boolean | Device supervised status | 
-| MSGraphDeviceManagement.Device.IsEncrypted | Boolean | Device encryption status | 
-| MSGraphDeviceManagement.Device.UserPrincipalName | String | Device user principal name | 
-| MSGraphDeviceManagement.Device.Model | String | Model of the device | 
-| MSGraphDeviceManagement.Device.Manufacturer | String | Manufacturer of the device | 
-| MSGraphDeviceManagement.Device.IMEI | String | IMEI of the device | 
-| MSGraphDeviceManagement.Device.SerialNumber | String | Serial number of the device | 
-| MSGraphDeviceManagement.Device.PhoneNumber | String | Phone number of the device | 
-| MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel | String | Android security patch level of the device | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory | Boolean | Whether inventory is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps | Boolean | Whether modern application is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess | Boolean | Whether resource access is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration | Boolean | Whether device configuration is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy | Boolean | Whether compliance policy is managed by Intune | 
-| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness | Boolean | Whether Windows Update for Business is managed by Intune | 
-| MSGraphDeviceManagement.Device.WiFiMacAddress | String | Wi\-Fi MAC | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The Timestamp of the last update. | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The DateTime when device was evaluated or issued to MDM | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.resetCount | Number | The number of times a PC device has hibernated or resumed | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.restartCount | Number | The number of times a PC device has rebooted | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus | String | On or Off of BitLocker Drive Encryption | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion | String | The version of the Boot Manager | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot | String | When Secure Boot is enabled, the core components must have the correct cryptographic signatures | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging | String | When bootDebugging is enabled, the device is used in development and testing | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging | String | When operatingSystemKernelDebugging is enabled, the device is used in development and testing | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity | String | When code integrity is enabled, code execution is restricted to integrity verified code | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.testSigning | String | When test signing is allowed, the device does not enforce signature validation during boot | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.safeMode, | String | Safe mode is a troubleshooting option for Windows that starts your computer in a limited state | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE | String | Operating system running with limited services that is used to prepare a computer for Windows | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection | String | ELAM provides protection for the computers in your network when they start up | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode | String | VSM is a container that protects high value assets from a compromised kernel | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm | String | Informational attribute that identifies the HASH algorithm that was used by TPM | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion | String | The security version number of the Boot Application | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.pcr0 | String | The measurement that is captured in PCR\[0\] | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint | String | Fingerprint of the Custom Secure Boot Configuration Policy | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy | String | The Code Integrity policy that is controlling the security of the boot environment | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo | String | The Boot Revision List that was loaded during initial boot on the attested device | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo | String | The Operating System Revision List that was loaded during initial boot on the attested device | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo | String | This attribute appears if DHA\-Service detects an integrity issue | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus | String | This attribute indicates if DHA is supported for the device | 
-| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber Carrier | 
-| MSGraphDeviceManagement.Device.MEID | String | MEID | 
-| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total Storage in Bytes | 
-| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free Storage in Bytes | 
-| MSGraphDeviceManagement.Device.ManagedDeviceName | String | Automatically generated name to identify a device. Can be overwritten to a user friendly name. | 
-| MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. | 
+| MSGraphDeviceManagement.Device.ID | String | The ID of the managed device |
+| MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device |
+| MSGraphDeviceManagement.Device.Name | String | Name of the device |
+| MSGraphDeviceManagement.Device.ManagedDeviceOwnerType | String | Ownership of the device. Possible values are unknown, company, personal. |
+| MSGraphDeviceManagement.Device.ActionResults.actionName | String | Action name |
+| MSGraphDeviceManagement.Device.ActionResults.ActionState | String | State of the action. Possible values are none, pending, canceled, active, done, failed, notSupported |
+| MSGraphDeviceManagement.Device.ActionResults.StartDateTime | Date | Time the action was initiated |
+| MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime | Date | Time the action state was last updated |
+| MSGraphDeviceManagement.Device.EnrolledDateTime | Date | Enrollment time of the device |
+| MSGraphDeviceManagement.Device.LastSyncDateTime | Date | The date and time that the device last completed a successful sync with Intune. |
+| MSGraphDeviceManagement.Device.OperatingSystem | String | Operating system of the device. Windows, iOS, etc. |
+| MSGraphDeviceManagement.Device.ComplianceState | String | Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager |
+| MSGraphDeviceManagement.Device.JailBroken | String | whether the device is jail broken or rooted. |
+| MSGraphDeviceManagement.Device.ManagementAgent | String | Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController. |
+| MSGraphDeviceManagement.Device.OSVersion | String | Operating system version of the device. |
+| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync Id of the device. |
+| MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. |
+| MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. |
+| MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device |
+| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. |
+| MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name |
+| MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. |
+| MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. |
+| MSGraphDeviceManagement.Device.IsSupervised | Boolean | Device supervised status |
+| MSGraphDeviceManagement.Device.IsEncrypted | Boolean | Device encryption status |
+| MSGraphDeviceManagement.Device.UserPrincipalName | String | Device user principal name |
+| MSGraphDeviceManagement.Device.Model | String | Model of the device |
+| MSGraphDeviceManagement.Device.Manufacturer | String | Manufacturer of the device |
+| MSGraphDeviceManagement.Device.IMEI | String | IMEI of the device |
+| MSGraphDeviceManagement.Device.SerialNumber | String | Serial number of the device |
+| MSGraphDeviceManagement.Device.PhoneNumber | String | Phone number of the device |
+| MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel | String | Android security patch level of the device |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory | Boolean | Whether inventory is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps | Boolean | Whether modern application is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess | Boolean | Whether resource access is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration | Boolean | Whether device configuration is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy | Boolean | Whether compliance policy is managed by Intune |
+| MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness | Boolean | Whether Windows Update for Business is managed by Intune |
+| MSGraphDeviceManagement.Device.WiFiMacAddress | String | Wi\-Fi MAC |
+| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The Timestamp of the last update. |
+| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The DateTime when device was evaluated or issued to MDM |
+| MSGraphDeviceManagement.Device.HealthAttestationState.resetCount | Number | The number of times a PC device has hibernated or resumed |
+| MSGraphDeviceManagement.Device.HealthAttestationState.restartCount | Number | The number of times a PC device has rebooted |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus | String | On or Off of BitLocker Drive Encryption |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion | String | The version of the Boot Manager |
+| MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot | String | When Secure Boot is enabled, the core components must have the correct cryptographic signatures |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging | String | When bootDebugging is enabled, the device is used in development and testing |
+| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging | String | When operatingSystemKernelDebugging is enabled, the device is used in development and testing |
+| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity | String | When code integrity is enabled, code execution is restricted to integrity verified code |
+| MSGraphDeviceManagement.Device.HealthAttestationState.testSigning | String | When test signing is allowed, the device does not enforce signature validation during boot |
+| MSGraphDeviceManagement.Device.HealthAttestationState.safeMode, | String | Safe mode is a troubleshooting option for Windows that starts your computer in a limited state |
+| MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE | String | Operating system running with limited services that is used to prepare a computer for Windows |
+| MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection | String | ELAM provides protection for the computers in your network when they start up |
+| MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode | String | VSM is a container that protects high value assets from a compromised kernel |
+| MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm | String | Informational attribute that identifies the HASH algorithm that was used by TPM |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion | String | The security version number of the Boot Application |
+| MSGraphDeviceManagement.Device.HealthAttestationState.pcr0 | String | The measurement that is captured in PCR\[0\] |
+| MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint | String | Fingerprint of the Custom Secure Boot Configuration Policy |
+| MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy | String | The Code Integrity policy that is controlling the security of the boot environment |
+| MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo | String | The Boot Revision List that was loaded during initial boot on the attested device |
+| MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo | String | The Operating System Revision List that was loaded during initial boot on the attested device |
+| MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo | String | This attribute appears if DHA\-Service detects an integrity issue |
+| MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus | String | This attribute indicates if DHA is supported for the device |
+| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber Carrier |
+| MSGraphDeviceManagement.Device.MEID | String | MEID |
+| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total Storage in Bytes |
+| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free Storage in Bytes |
+| MSGraphDeviceManagement.Device.ManagedDeviceName | String | Automatically generated name to identify a device. Can be overwritten to a user friendly name. |
+| MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. |
 
 
 #### Command Example

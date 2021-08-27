@@ -1,5 +1,6 @@
 Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-This integration was integrated and tested with version xx of Palo Alto Networks Threat Vault
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+
 ## Configure Palo Alto Networks Threat Vault on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,7 +15,7 @@ This integration was integrated and tested with version xx of Palo Alto Networks
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### threatvault-antivirus-signature-get
 ***
@@ -384,8 +385,12 @@ Check IP location.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | The IP address. | 
-| IP.Geo.Country | unknown | The country of the IP address. | 
+| IP.Address | String | The IP address. | 
+| IP.Geo.Country | String | The country of the IP address. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 
 
 #### Command Example

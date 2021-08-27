@@ -540,6 +540,9 @@ outputs:
 - contextPath: Panorama.Monitor.Logs.URLCategoryList
   description: A list of the URL filtering categories that the firewall used to enforce policy.
   type: string
+- contextPath: Panorama.Monitor.Logs.Vsys
+  description: Vsys on the firewall that generated the log.
+  type: string
 - contextPath: Panorama.Monitor.JobID
   description: Job ID of the log query.
 - contextPath: Panorama.Monitor.Status

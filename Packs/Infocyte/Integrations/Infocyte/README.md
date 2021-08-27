@@ -19,7 +19,7 @@ This integration was integrated and tested with version 3008.0.1.2800 of Infocyt
 
 1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### infocyte-scan-host
 ***
@@ -287,7 +287,7 @@ Gets status of an Infocyte task (scan, response action, etc.)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Infocyte.Task.userTaskId | string | Task id used with infocyte\-get\-taskstatus. This id is returned from any async command/task. | 
-| Infocyte.Scan.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas. | 
+| Infocyte.Task.scanId | string | Infocyte id used to look up the data associated with a specific scan, collection, or action. scanIds are returned by infocyte\-get\-taskstatus and is present in all job\-based data schemas. | 
 | Infocyte.Task.type | string | Task type (SCAN or RESPONSE) | 
 | Infocyte.Task.progress | number | Percent completed | 
 | Infocyte.Task.message | string | Message regarding the current status | 

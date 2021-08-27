@@ -1,7 +1,7 @@
 #Digital Guardian ARC Watchlist Integration
 This integration was integrated and tested with version 2.11.0 of Digital Guardian ARC
 
-## Configure Digital Guardian on Demisto
+## Configure Digital Guardian on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Digital Guardian.
@@ -18,7 +18,7 @@ This integration was integrated and tested with version 2.11.0 of Digital Guardi
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### digitalguardian-add-watchlist-entry
 ***

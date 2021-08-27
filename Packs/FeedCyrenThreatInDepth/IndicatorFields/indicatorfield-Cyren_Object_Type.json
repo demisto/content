@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrenobjecttype",
+    "closeForm": false,
+    "content": true,
+    "description": "IP version identified by Cyren Threat InDepth Intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenobjecttype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Object Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -88,8 +88,8 @@ def test_poll_field_from_root_with_regex_success(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field exists."
-    assert result[2]['exists'] is True
+    assert result.readable_output in "The field exists."
+    assert result.outputs['exists'] is True
 
 
 def test_poll_field_from_root_with_regex_failure(mocker):
@@ -110,8 +110,8 @@ def test_poll_field_from_root_with_regex_failure(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field does not exist."
-    assert result[2]['exists'] is False
+    assert result.readable_output in "The field does not exist."
+    assert result.outputs['exists'] is False
 
 
 def test_poll_field_from_root_without_regex_success(mocker):
@@ -131,8 +131,8 @@ def test_poll_field_from_root_without_regex_success(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field exists."
-    assert result[2]['exists'] is True
+    assert result.readable_output in "The field exists."
+    assert result.outputs['exists'] is True
 
 
 def test_poll_missing_field_in_root(mocker):
@@ -151,8 +151,8 @@ def test_poll_missing_field_in_root(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field does not exist."
-    assert result[2]['exists'] is False
+    assert result.readable_output in "The field does not exist."
+    assert result.outputs['exists'] is False
 
 
 # ---------- Incident with customFields entry -------------------
@@ -176,8 +176,8 @@ def test_poll_field_from_custom_fields_with_regex_success(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field exists."
-    assert result[2]['exists'] is True
+    assert result.readable_output in "The field exists."
+    assert result.outputs['exists'] is True
 
 
 def test_poll_field_from_custom_fields_with_regex_failure(mocker):
@@ -198,8 +198,8 @@ def test_poll_field_from_custom_fields_with_regex_failure(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field does not exist."
-    assert result[2]['exists'] is False
+    assert result.readable_output in "The field does not exist."
+    assert result.outputs['exists'] is False
 
 
 def test_poll_field_from_custom_fields_without_regex_success(mocker):
@@ -219,8 +219,8 @@ def test_poll_field_from_custom_fields_without_regex_success(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field exists."
-    assert result[2]['exists'] is True
+    assert result.readable_output in "The field exists."
+    assert result.outputs['exists'] is True
 
 
 def test_poll_missing_field_in_custom_fields(mocker):
@@ -240,5 +240,5 @@ def test_poll_missing_field_in_custom_fields(mocker):
 
     result = poll_field(args)
 
-    assert result[0] in "The field does not exist."
-    assert result[2]['exists'] is False
+    assert result.readable_output in "The field does not exist."
+    assert result.outputs['exists'] is False

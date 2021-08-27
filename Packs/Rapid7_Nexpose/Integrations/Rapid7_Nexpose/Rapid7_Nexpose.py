@@ -6,7 +6,6 @@ import re
 import requests
 import json
 
-
 RANGE_OPERATORS = ['in-range', 'is-between', 'not-in-range']
 YEAR_IN_MINUTES = 525600
 MONTH_IN_MINUTES = 43800
@@ -1040,59 +1039,127 @@ def create_assets_report_command():
     assets = str(demisto.args()['assets']).split(',')
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
+    report_format = demisto.args().get('format') or 'pdf'
+    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
 
     scope = {
         'assets': assets
     }
-
     report_id = create_report(scope, name, template, report_format)
+    instance_id = generate_report(report_id)
+    context = {
+        'Name': name,
+        'ID': report_id,
+        'InstanceID': instance_id,
+        'Format': report_format,
+    }
+    hr = tableToMarkdown('Report Information', context)
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(10)
+            return download_report(report_id, instance_id, name, report_format)
+        except Exception as err:
+            # If we received 404 it could mean that the report generation process has not finished yet. in that case
+            # we'll return the report's info to enable users to query for the report's status and download it.
+            if '404' not in str(err):
+                raise
 
-    if report_id is None:
-        return 'Could not retrieve report'
-
-    return download_report(report_id, name, report_format)
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix='Nexpose.Report',
+        outputs=context,
+        outputs_key_field=['ID', 'InstanceID'],
+    )
 
 
 def create_sites_report_command():
+    """
+    The create report process is divided to the following steps:
+    1. Configures a new report for generation.
+    2. Generates a configured report and returns the instance identifier of the report.
+    3. Checks the status of the report generation process.
+    4. Downloads the report.
+    """
     sites = str(demisto.args()['sites']).split(',')
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
-
+    report_format = demisto.args().get('format') or 'pdf'
+    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
     scope = {
         'sites': sites
     }
 
     report_id = create_report(scope, name, template, report_format)
+    instance_id = generate_report(report_id)
+    context = {
+        'Name': name,
+        'ID': str(report_id),
+        'InstanceID': str(instance_id),
+        'Format': report_format,
+    }
+    hr = tableToMarkdown('Report Information', context)
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(10)
+            return download_report(report_id, instance_id, name, report_format)
+        except Exception as err:
+            # If we received 404 it could mean that the report generation process has not finished yet. in that case
+            # we'll return the report's info to enable users to query for the report's status and download it.
+            if '404' not in str(err):
+                raise
 
-    if report_id is None:
-        return 'Could not retrieve report'
-
-    return download_report(report_id, name, report_format)
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix='Nexpose.Report',
+        outputs=context,
+        outputs_key_field=['ID', 'InstanceID'],
+    )
 
 
 def create_scan_report_command():
     scan = demisto.args()['scan']
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
+    report_format = demisto.args().get('format') or 'pdf'
+    download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
     scope = {
         'scan': scan
     }
 
     report_id = create_report(scope, name, template, report_format)
+    instance_id = generate_report(report_id)
+    context = {
+        'Name': name,
+        'ID': report_id,
+        'InstanceID': instance_id,
+        'Format': report_format,
+    }
+    hr = tableToMarkdown('Report Information', context)
+    if download_immediately:
+        try:
+            # Wait for the report to be completed
+            time.sleep(10)
+            return download_report(report_id, instance_id, name, report_format)
+        except Exception as err:
+            # If we received 404 it could mean that the report generation process has not finished yet. in that case
+            # we'll return the report's info to enable users to query for the report's status and download it.
+            if '404' not in str(err):
+                raise
 
-    if report_id is None:
-        return 'Could not retrieve report'
-
-    return download_report(report_id, name, report_format)
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix='Nexpose.Report',
+        outputs=context,
+        outputs_key_field=['ID', 'InstanceID'],
+    )
 
 
 def create_report(scope, name, template, report_format):
-    if template is None:
+    if not template:
         templates = get_report_templates()
-        if (templates is None or len(templates) == 0 or 'resources' not in templates):
+        if not templates or 'resources' not in templates:
             return 'No templates found'
         template = templates['resources'][0]['id']
     for i, (k, v) in enumerate(scope.items()):
@@ -1110,29 +1177,56 @@ def create_report(scope, name, template, report_format):
     }
 
     result = send_request(path, 'post', body=body)
-    return result['id'] if 'id' in result else None
+    return result.get('id')
 
 
-def download_report(report_id, name, report_format):
-    # Generate the report
-    path = 'reports/' + str(report_id) + ' /generate'
+def generate_report(report_id):
+    path = 'reports/{}/generate'.format(report_id)
     instance = send_request(path, 'post')
-    if (instance is None):
+    if not instance.get('id'):
         return 'Failed to generate report'
+    return instance['id']
 
+
+def download_report(report_id, instance_id, name, report_format):
+    path = 'reports/{}/history/{}/output'.format(report_id, instance_id)
     headers = {
         'Accept': 'application/json',
         'Accept-Encoding': 'gzip, deflate, br'
     }
 
-    # Wait for the report to be completed
-    time.sleep(10)
-
-    # Download
-    path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'
     report = send_request(path, headers=headers, is_file=True)
 
     return fileResult(name + '.' + report_format, report, entryTypes['entryInfoFile'])
+
+
+def download_report_command():
+    report_id = demisto.args()['report_id']
+    instance_id = demisto.args()['instance_id']
+    name = demisto.args().get('name', 'report ' + str(datetime.now()))
+    report_format = demisto.args().get('format', 'pdf')
+
+    return download_report(report_id, instance_id, name, report_format)
+
+
+def get_generate_report_status_command():
+    report_id = demisto.args()['report_id']
+    instance_id = demisto.args()['instance_id']
+    path = 'reports/{}/history/{}'.format(report_id, instance_id)
+    result = send_request(path)
+    context = {
+        'ID': report_id,
+        'InstanceID': instance_id,
+        'Status': result.get('status', 'unknown'),
+    }
+    hr = tableToMarkdown('Report Generation Status', context)
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix='Nexpose.Report',
+        outputs=context,
+        outputs_key_field=['ID', 'InstanceID'],
+        raw_response=result,
+    )
 
 
 def start_assets_scan_command():
@@ -1257,7 +1351,7 @@ def stop_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully stopped the scan',
+        'HumanReadable': 'Successfully stopped the scan',
     }
 
     return entry
@@ -1272,7 +1366,7 @@ def pause_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully paused the scan',
+        'HumanReadable': 'Successfully paused the scan',
     }
 
     return entry
@@ -1287,7 +1381,7 @@ def resume_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully resumed the scan',
+        'HumanReadable': 'Successfully resumed the scan',
     }
 
     return entry
@@ -1306,43 +1400,47 @@ def main():
         SESSION = login()
         if demisto.command() == 'test-module':
             get_assets(limit=1)
-            demisto.results('ok')
+            return_results('ok')
         if demisto.command() == 'nexpose-get-assets':
-            demisto.results(get_assets_command())
+            return_results(get_assets_command())
         if demisto.command() == 'nexpose-get-asset':
-            demisto.results(get_asset_command())
+            return_results(get_asset_command())
         if demisto.command() == 'nexpose-get-asset-vulnerability':
-            demisto.results(get_asset_vulnerability_command())
+            return_results(get_asset_vulnerability_command())
         if demisto.command() == 'nexpose-search-assets':
-            demisto.results(search_assets_command())
+            return_results(search_assets_command())
         if demisto.command() == 'nexpose-get-scan':
-            demisto.results(get_scan_command())
+            return_results(get_scan_command())
         if demisto.command() == 'nexpose-get-sites':
-            demisto.results(get_sites_command())
+            return_results(get_sites_command())
         if demisto.command() == 'nexpose-get-report-templates':
-            demisto.results(get_report_templates_command())
+            return_results(get_report_templates_command())
         if demisto.command() == 'nexpose-create-assets-report':
-            demisto.results(create_assets_report_command())
+            return_results(create_assets_report_command())
         if demisto.command() == 'nexpose-create-sites-report':
-            demisto.results(create_sites_report_command())
+            return_results(create_sites_report_command())
         if demisto.command() == 'nexpose-create-scan-report':
-            demisto.results(create_scan_report_command())
+            return_results(create_scan_report_command())
+        if demisto.command() == 'nexpose-get-report-status':
+            return_results(get_generate_report_status_command())
+        if demisto.command() == 'nexpose-download-report':
+            return_results(download_report_command())
         if demisto.command() == 'nexpose-start-site-scan':
-            demisto.results(start_site_scan_command())
+            return_results(start_site_scan_command())
         if demisto.command() == 'nexpose-start-assets-scan':
-            demisto.results(start_assets_scan_command())
+            return_results(start_assets_scan_command())
         if demisto.command() == 'nexpose-create-site':
-            demisto.results(create_site_command())
+            return_results(create_site_command())
         if demisto.command() == 'nexpose-delete-site':
-            demisto.results(delete_site_command())
+            return_results(delete_site_command())
         if demisto.command() == 'nexpose-stop-scan':
-            demisto.results(stop_scan_command())
+            return_results(stop_scan_command())
         if demisto.command() == 'nexpose-pause-scan':
-            demisto.results(pause_scan_command())
+            return_results(pause_scan_command())
         if demisto.command() == 'nexpose-resume-scan':
-            demisto.results(resume_scan_command())
+            return_results(resume_scan_command())
         if demisto.command() == 'nexpose-get-scans':
-            demisto.results(get_scans_command())
+            return_results(get_scans_command())
     except Exception as e:
         LOG(e)
         LOG.print_log(False)

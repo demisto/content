@@ -1,0 +1,51 @@
+[
+    {
+        "brand": "EWS v2",
+        "category": "Messaging",
+        "defaultIgnored": "false",
+        "state": "active",
+        "name": "EWS v2_instance_1"
+    },
+    {
+        "brand": "Elasticsearch v2",
+        "category": "Database",
+        "defaultIgnored": "false",
+        "state": "active",
+        "name": "Elasticsearch v2_instance_1"
+    },
+    {
+        "brand": "Rapid7 Nexpose",
+        "category": "Vulnerability Management",
+        "defaultIgnored": "false",
+        "state": "active",
+        "name": "Rapid7 Nexpose_instance_1"
+    },
+    {
+        "brand": "activedir-login",
+        "category": "Messaging",
+        "defaultIgnored": "false",
+        "state": "active",
+        "name": "ad-login"
+    },
+    {
+        "brand": "activedir",
+        "category": "Data Enrichment & Threat Intelligence",
+        "defaultIgnored": "false",
+        "state": "disabled",
+        "name": "ad-query"
+    },
+    {
+        "brand": "d2",
+        "category": "Endpoint",
+        "defaultIgnored": "false",
+        "state": "disabled",
+        "name": "d2"
+    },
+    {
+        "brand": "splunk",
+        "category": "Analytics & SIEM",
+        "defaultIgnored": "false",
+        "state": "disabled",
+        "name": "splunk"
+    }
+]

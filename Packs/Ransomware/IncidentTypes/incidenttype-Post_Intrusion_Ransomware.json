@@ -1,0 +1,22 @@
+{
+    "autorun": false,
+    "color": "#64B5F6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Post Intrusion Ransomware",
+    "layout": "Post Intrusion Ransomware",
+    "locked": false,
+    "name": "Post Intrusion Ransomware",
+    "playbookId": "Post Intrusion Ransomware Investigation",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

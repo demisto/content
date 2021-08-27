@@ -40,7 +40,9 @@ ARGS = {
 
 @pytest.fixture
 def client():
-    return mock.Mock()
+    mocked_client = mock.Mock()
+    mocked_client.region = "General"
+    return mocked_client
 
 
 def return_error(error):
@@ -454,17 +456,6 @@ def test_gcb_assets_command_failure_with_uri_empty_response(client):
     assert response == expected_response
 
 
-def test_gcb_assets_command_invalid_date(client):
-    """
-    When query for invalid start date in gcb-assets command it should raise ValueError.
-    """
-    from GoogleChronicleBackstory import gcb_assets_command
-
-    with pytest.raises(ValueError) as error:
-        gcb_assets_command(client, {'artifact_value': SUCCESS_ASSET_NAME, 'start_time': '2020-02-08'})
-    assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
-
-
 def test_get_artifact_type():
     """
     When valid artifact pass in get_artifact_type function then it should pass else raise ValueError
@@ -500,30 +491,18 @@ def test_validate_date():
     from GoogleChronicleBackstory import validate_start_end_date
     from datetime import datetime, timedelta
 
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date('2020-01-30')
-    assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
-
     next_date = (datetime.utcnow() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     with pytest.raises(ValueError) as error:
-        validate_start_end_date('200000-01-31T00:00:00Z')
+        validate_start_end_date('11111', next_date)
     assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
 
     with pytest.raises(ValueError) as error:
-        validate_start_end_date(next_date)
-    assert str(error.value) == "Invalid start time, can not be greater than current UTC time"
+        validate_start_end_date('11eee11', next_date)
+    assert str(error.value) == "Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
 
     with pytest.raises(ValueError) as error:
-        validate_start_end_date('2020-01-15T00:00:00Z', '2020-01-30')
+        validate_start_end_date(next_date, "december")
     assert str(error.value) == "Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z"
-
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date('2020-01-15T00:00:00Z', next_date)
-    assert str(error.value) == "Invalid end time, can not be greater than current UTC time"
-
-    with pytest.raises(ValueError) as error:
-        validate_start_end_date('2020-01-15T00:00:00Z', '2020-01-10T00:00:00Z')
-    assert str(error.value) == "End time must be later than Start time"
 
 
 def test_fetch_incident_success_with_no_param_no_alerts(client):
@@ -615,6 +594,7 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
         'first_fetch': '4 days',
         'max_fetch': 20,
         'incident_severity': 'ALL',
+        'time_window': '60',
         'backstory_alert_type': 'Assets with alerts'
     }
 
@@ -791,7 +771,7 @@ def test_gcb_list_alert_when_no_alert_found(mocker, client):
     mocker.patch.object(demisto, 'command', return_value='gcb-list-alerts')
 
     hr, ec, events = gcb_list_alerts_command(client, param)
-    assert hr == '### Security Alert(s):No Records Found'
+    assert hr == '### Security Alert(s): No Records Found'
     assert not ec
     assert not events
     assert client.http_client.request.called
@@ -2093,3 +2073,1011 @@ def test_list_events_command(client):
     hr, ec, json_data = gcb_list_events_command(client, {})
     assert ec == {}
     assert hr == 'No Events Found'
+
+
+def test_list_detections_command(client):
+    from GoogleChronicleBackstory import gcb_list_detections_command
+
+    args = {'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f', 'detection_start_time': '2019-10-17T00:00:00Z',
+            'detection_end_time': '2 days ago'}
+
+    with open("./TestData/list_detections_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("./TestData/list_detections_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("./TestData/list_detections_hr.md", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_detections_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+    # Test command when no detections found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_list_detections_command(client, args)
+    assert ec == {}
+    assert hr == 'No Detections Found'
+
+
+def test_validate_and_parse_list_detections_args():
+    from GoogleChronicleBackstory import validate_and_parse_list_detections_args
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'page_size': 'dummy'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'page_size': '100000'})
+
+    assert str(e.value) == 'Page size should be in the range from 1 to 1000.'
+
+    invalid_start_time_error_message = 'Invalid start time. Some supported formats are ISO date format and relative' \
+                                       ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_start_time': 'December 2019'})
+
+    assert str(e.value) == invalid_start_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_start_time': '6'})
+
+    assert str(e.value) == invalid_start_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_start_time': '-5'})
+
+    assert str(e.value) == invalid_start_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_start_time': '645.08'})
+
+    assert str(e.value) == invalid_start_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_start_time': '-325.21'})
+
+    assert str(e.value) == invalid_start_time_error_message
+
+    invalid_end_time_error_message = 'Invalid end time. Some supported formats are ISO date format and relative' \
+                                     ' time. e.g. 2019-10-17T00:00:00Z, 3 days'
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_end_time': 'December 2019'})
+
+    assert str(e.value) == invalid_end_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_end_time': '6'})
+
+    assert str(e.value) == invalid_end_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_end_time': '-5'})
+
+    assert str(e.value) == invalid_end_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_end_time': '645.08'})
+
+    assert str(e.value) == invalid_end_time_error_message
+
+    with pytest.raises(ValueError) as e:
+        validate_and_parse_list_detections_args(args={'rule_id': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f',
+                                                      'detection_end_time': '-325.21'})
+
+    assert str(e.value) == invalid_end_time_error_message
+
+
+def validate_duplicate_incidents(incidents):
+    """
+    internal method used in test_gcb_fetch_incident_success_with_alerts_with_incident_identifiers
+    """
+    assert len(incidents) == 1
+
+
+def test_gcb_fetch_incident_success_with_alerts_with_incident_identifiers(mocker, client):
+    """
+    Check the fetched incident in case duplicate asset alerts are fetched in next iteration.
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'max_fetch': 20,
+        'incident_severity': None,
+        'backstory_alert_type': 'Assets with alerts',
+        'time_window': '45'
+    }
+    with open("./TestData/gcb_alerts_response.txt") as f:
+        gcb_alert_sample = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        gcb_alert_sample
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_duplicate_incidents)
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={
+                            'start_time': "2020-01-29T14:13:20Z",
+                            'assets_alerts_identifiers': [
+                                '6a1b7ffcbb7a0fb51bd4bebfbbbbb0e094c8e7543dd64858354d486d0288798d',
+                                'bccf9ae7dbfdc1fcaea98fe4043fa3f20f5c4f38a71bad062c8b2d849d79bed8']})
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_generate_delayed_start_time():
+    """
+    Check if the start time is delayed according to user input
+    """
+    from GoogleChronicleBackstory import generate_delayed_start_time
+
+    start_time = '2020-01-29T14:13:20Z'
+    delayed_start_time = generate_delayed_start_time('45', start_time)
+    assert delayed_start_time == '2020-01-29T13:28:20.000000Z'
+
+
+def test_validate_parameter_failure_invalid_time_window_values():
+    """
+    When time window configuration parameter has invalid value then it should raise ValueError
+    """
+    from GoogleChronicleBackstory import validate_configuration_parameters
+    invalid_time_window = {
+        'service_account_credential': '{"key":"value"}',
+        'max_fetch': '10'
+    }
+
+    invalid_time_window_error_message = 'Time window(in minutes) should be in the numeric range from 1 to 60.'
+    with pytest.raises(ValueError) as e:
+        invalid_time_window['time_window'] = 'sad'
+        validate_configuration_parameters(invalid_time_window)
+
+    assert str(e.value) == invalid_time_window_error_message
+
+    with pytest.raises(ValueError) as e:
+        invalid_time_window['time_window'] = '90'
+        validate_configuration_parameters(invalid_time_window)
+
+    assert str(e.value) == invalid_time_window_error_message
+
+    with pytest.raises(ValueError) as e:
+        invalid_time_window['time_window'] = '-1'
+        validate_configuration_parameters(invalid_time_window)
+
+    assert str(e.value) == invalid_time_window_error_message
+
+
+def validate_detection_incident(incidents):
+    """
+    internal method used in test_fetch_incident_success_with_param_alerts
+    """
+    assert incidents
+
+    for incident in incidents:
+        assert incident['name']
+        assert incident['rawJSON']
+
+
+def test_fetch_incident_detection_when_1st_sync_n_data_less_thn_max_fetch_and_ids_is_1(client, mocker):
+    """
+    case when 2 detections with no-NT.
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 5,
+        'backstory_alert_type': 'Detection Alerts',
+        'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
+    }
+
+    with open("TestData/fetch_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_detection_incident)
+
+    fetch_incidents(client, param)
+    assert client.http_client.request.call_count == 1
+
+
+def validate_last_run__whn_last_pull(last_run):
+    """
+    internal method used in test_fetch_incident_success_with_param_alerts
+    """
+    assert last_run
+    assert not last_run.get("rule_first_fetched_time")
+    assert not last_run.get("detection_to_process")
+    assert not last_run.get("detection_to_pull")
+    assert not last_run.get("pending_rule_or_version_id")
+
+
+def validate_last_run_wth_dtc_to_pull(last_run):
+    """
+    internal method used in test_fetch_incident_success_with_param_alerts
+    """
+    assert last_run
+    assert last_run.get("rule_first_fetched_time")
+    assert not last_run.get("detection_to_process")
+    assert last_run.get("detection_to_pull")
+    assert not last_run.get("pending_rule_or_version_id")
+
+
+def validate_detections_case_2_iteration_1(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_2
+    """
+    assert len(incidents) == 5
+
+
+def validate_detections_case_2_iteration_2(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_2
+    """
+    assert len(incidents) == 2
+
+
+def test_fetch_incident_detection_case_2(client, mocker):
+    """
+    max_fetch =5
+    1Id return 5, with NT
+    1Id on 2nd call return 2, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 5,
+        'backstory_alert_type': 'Detection Alerts',
+        'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
+    }
+
+    with open("TestData/fetch_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    with open("TestData/fetch_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    mock_response_2 = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+
+    client.http_client.request.side_effect = [mock_response_5, mock_response_2]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_2_iteration_1)
+
+    mocker.patch.object(demisto, 'setLastRun', new=validate_last_run_wth_dtc_to_pull)
+
+    fetch_incidents(client, param)
+
+    mocker.patch.object(demisto, 'setLastRun', new=validate_last_run__whn_last_pull)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_2_iteration_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def validate_detections_case_3_iteration_1(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_3
+    """
+    assert len(incidents) == 3
+
+
+def validate_detections_case_3_iteration_2(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_3
+    """
+    assert len(incidents) == 2
+
+
+@mock.patch('GoogleChronicleBackstory.get_detections')
+@mock.patch('demistomock.error')
+def test_no_duplicate_rule_id_on_detection_to_pull_exception(mock_error, mock_build, client):
+    """
+    Demo test for get_max_fetch_detections
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+
+    mock_build.side_effect = ValueError('123')
+    z = ['123', '456']
+    mock_error.return_value = {}
+    for o in range(5):
+        x, y, z, w = get_max_fetch_detections(client, '12', '23', 5,
+                                              [{'id': '123',
+                                                'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
+                                               {'id': '1234',
+                                                'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]},
+                                               {'id': '12345',
+                                                'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
+                                              {'rule_id': '456',
+                                               'next_page_token': 'foorbar'},
+                                              z, '', {})
+
+    assert z == ['123', '456']
+
+
+def test_fetch_incident_detection_case_3(client, mocker):
+    """
+    1Id return 2, with no NT
+    2Id return 3, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 3,
+        'backstory_alert_type': 'Detection Alerts',
+        'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631091_146879001, '
+                                  'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631092_146879002'
+    }
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("TestData/fetch_detection_size_2.json") as f:
+        get_detection_json_size_2 = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json_size_2
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_2, mock_response_size_3]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_3_iteration_1)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': '2020-11-20T12:00:00Z',
+        'detection_to_process': [{'id': '123', 'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
+                                 {'id': '1234', 'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]}],
+        'detection_to_pull': {},
+        'pending_rule_or_version_id_with_alert_state': {'rule_id': [], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_3_iteration_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+@mock.patch('GoogleChronicleBackstory.get_detections')
+def test_detection_to_pull_is_empty_when_2nd_rule_returns_data_with_no_next_token(mock_build, client):
+    """
+    case - rule_1 has 5 records, rule_2 has 2 records
+    max_fetch - 3
+    Assumption : On 1st call we pulled rule_1 - 3 indicators with detection_to_pull(next_token, rule_id)
+    On 2nd call we have next_token and rule_id for rule_1 that contains 2 records. This will pull 2 records
+    for rule_1 and 2 records for rule_2 and complete the fetch-incident cycle since we don't have any rule to process
+    test_detection_to_pull_is_empty
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections, get_detections
+    import io
+
+    with io.open("TestData/fetch_detection_size_2.json", mode='r', encoding='utf-8') as f:
+        get_detection_json_size_2 = json.loads(f.read())
+
+    mock_build.return_value = ('p', get_detection_json_size_2)
+    z = ['456']
+
+    x, y, z, w = get_max_fetch_detections(client, 'st_dummy', 'et_dummy', 3,
+                                          [],
+                                          {'rule_id': '123',
+                                           'next_page_token': 'foorbar'},
+                                          z, '', {})
+
+    assert len(x) == 4
+    assert y == {}
+    assert z == []
+    # Making sure that get_detections called 2 times.
+    assert get_detections.call_count == 2
+
+
+@mock.patch('GoogleChronicleBackstory.validate_response')
+def test_when_detection_to_pull_is_not_empty_and_return_empty_result(mock_validate_response, client):
+    """
+    - case when detection_to_pull is not empty and api return empty response with 200 status
+      then logic should pop next rule and set detection_to_pull empty
+    - Issue reported - 27/04/2021, cfd-992
+    - Debug Log of customer shows 11 HTTP streams (one stream per one rule id)
+      simultaneously (within the same minute) which then gives a 429 error if more are attempted.
+
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections, validate_response
+
+    mock_validate_response.return_value = {}
+    z = ['rule_2', 'rule_3']
+    x, y, z, w = get_max_fetch_detections(client, 'st_dummy', 'et_dummy', 5,
+                                          [],
+                                          {'rule_id': 'rule_1',
+                                           'next_page_token': 'foorbar'},
+                                          z, '', {})
+
+    assert z == []
+    assert y == {}
+    assert len(x) == 0
+    # Making sure that validate_response called 3 times.
+    assert validate_response.call_count == 3
+
+
+@mock.patch('demistomock.error')
+def test_429_or_500_error_with_max_attempts_60(mock_error, client):
+    """
+    case :   rule_1 - 429 error 30 times, return 3 records
+             rule_2 - 500 error 60 times
+             rule_3 - 500 error 1 times, return 3 records
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+    mock_error.return_value = {}
+    mock_response_with_429_error = (Response(dict(status=429)),
+                                    '{"error": {}}')
+
+    mock_response_with_500_error = (Response(dict(status=500)),
+                                    '{"error": {}}')
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_with_429_error] * 30 + [mock_response_size_3] + [
+        mock_response_with_500_error] * 61 + [mock_response_size_3]
+    pending_rule_or_version_id = ['rule_2', 'rule_3']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'foorbar'}
+    simple_backoff_rules = {}
+    for i in range(93):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+            client,
+            'st_dummy',
+            'et_dummy', 5,
+            [],
+            detection_to_pull,
+            pending_rule_or_version_id,
+            '', simple_backoff_rules)
+
+    assert client.http_client.request.call_count == 93
+
+
+@mock.patch('demistomock.error')
+def test_400_and_404_error(mock_error, client):
+    """
+    case : rule_1 ok, rule_2 throw 400, rule_3 ok, rule_5 throw 404, rule_5 ok
+    """
+    from GoogleChronicleBackstory import get_max_fetch_detections
+
+    mock_error.return_value = {}
+    mock_response_with_400_error = (Response(dict(status=400)),
+                                    '{"error": {}}')
+
+    mock_response_with_404_error = (Response(dict(status=404)),
+                                    '{"error": {}}')
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_with_400_error,
+                                              mock_response_size_3, mock_response_with_404_error,
+                                              mock_response_size_3]
+
+    pending_rule_or_version_id = ['rule_2', 'rule_3', 'rule_4', 'rule_5']
+    detection_to_pull = {'rule_id': 'rule_1', 'next_page_token': 'foorbar'}
+
+    simple_backoff_rules = {}
+    for i in range(5):
+        detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+            client,
+            'st_dummy',
+            'et_dummy', 15,
+            [],
+            detection_to_pull,
+            pending_rule_or_version_id,
+            '', simple_backoff_rules)
+
+
+def validate_detections_case_4_iteration_1_and_2(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_4
+    """
+    assert len(incidents) == 5
+
+
+def validate_detections_case_4_iteration_3(incidents):
+    """
+    internal method used in test_fetch_incident_detection_case_4
+    """
+    assert len(incidents) == 3
+
+
+def test_fetch_incident_detection_case_4(client, mocker):
+    """
+    1Id return 3, with no NT
+    2Id return 5, with NT
+    2Id return 2, with no NT
+    3Id return 3, with no NT
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 5,
+        'backstory_alert_type': 'Detection Alerts',
+        'fetch_detection_by_ids': '123, 456, 789'
+    }
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("TestData/fetch_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response_size_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    with open("TestData/fetch_detection_size_2.json") as f:
+        get_detection_json = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_size_5, mock_response_size_2,
+                                              mock_response_size_3]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_1_and_2)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': '2020-11-20T12:00:00Z',
+        'rule_first_fetched_time': '2020-11-20T12:00:01Z',
+        'detection_to_process': [{'id': '123', 'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
+                                 {'id': '1234', 'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]},
+                                 {'id': '12345', 'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
+        'detection_to_pull': {'rule_id': '456',
+                              'next_page_token': 'foorbar'},
+        'pending_rule_or_version_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_1_and_2)
+    fetch_incidents(client, param)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_4_iteration_3)
+    mock_last_run_2 = {
+        'start_time': '2020-11-20T12:00:00Z',
+        'rule_first_fetched_time': '2020-11-20T12:00:01Z',
+        'detection_to_process': [],
+        'detection_to_pull': {},
+        'pending_rule_or_version_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def validate_detections_case_5_iteration_1_2_3(incidents):
+    assert len(incidents) == 5
+
+
+def test_fetch_incident_detection_case_5(client, mocker):
+    """
+    1Id return 3, with no NT
+    2Id return 5, with NT
+    2Id return 2, with no NT
+    3Id return 5, with NT
+
+    3 + 2
+    (3) + 2
+
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 5,
+        'fetch_detection_by_ids': '123, 456, 789',
+        'backstory_alert_type': 'Detection Alerts'
+    }
+
+    with open("TestData/fetch_detection_size_3.json") as f:
+        get_detection_json_size_3 = f.read()
+
+    mock_response_size_3 = (
+        Response(dict(status=200)),
+        get_detection_json_size_3
+    )
+
+    with open("TestData/fetch_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response_size_5 = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+
+    with open("TestData/fetch_detection_size_2.json") as f:
+        get_detection_json = f.read()
+
+    mock_response_size_2 = (
+        Response(dict(status=200)),
+        get_detection_json
+    )
+
+    client.http_client.request.side_effect = [mock_response_size_3, mock_response_size_5, mock_response_size_2,
+                                              mock_response_size_5]
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+
+    fetch_incidents(client, param)
+    mock_last_run = {
+        'start_time': '2020-11-20T12:00:00Z',
+        'detection_to_process': [{'id': '123', 'detection': [{'ruleVersion': '3423', 'ruleName': 'SampleRule'}]},
+                                 {'id': '1234', 'detection': [{'ruleVersion': '342', 'ruleName': 'SampleRule'}]},
+                                 {'id': '12345', 'detection': [{'ruleVersion': '34', 'ruleName': 'SampleRule'}]}],
+        'detection_to_pull': {'rule_id': '456',
+                              'next_page_token': 'foorbar'},
+        'pending_rule_or_version_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+    fetch_incidents(client, param)
+    mocker.patch.object(demisto, 'incidents', new=validate_detections_case_5_iteration_1_2_3)
+    mock_last_run_2 = {
+        'start_time': '2020-11-20T12:00:00Z',
+        'detection_to_process': [],
+        'detection_to_pull': {},
+        'pending_rule_or_version_id_with_alert_state': {'rule_id': ['789'], 'alert_state': ''}
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_2)
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def validate_duplicate_detections(incidents):
+    """
+    internal method used in test_gcb_fetch_incident_success_with_detections_with_incident_identifiers
+    """
+    assert len(incidents) == 3
+
+
+def test_gcb_fetch_incident_success_with_detections_with_incident_identifiers(mocker, client):
+    """
+    Check the fetched incident in case duplicate detections are fetched in next iteration.
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '3 days',
+        'max_fetch': 5,
+        'backstory_alert_type': 'Detection Alerts',
+        'fetch_detection_by_ids': 'ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000'
+    }
+
+    with open("TestData/fetch_detection_size_5_NT.json") as f:
+        get_detection_json_size_5 = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        get_detection_json_size_5
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_duplicate_detections)
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={
+                            'start_time': "2020-01-29T14:13:20Z",
+                            'detection_identifiers': [{'id': 'de_e6abfcb5-1b85-41b0-b64c-695b32504361',
+                                                       'ruleVersion': 'ru_e6abfcb5-1b85-41b0-b64c-695b32'
+                                                                      '50436f@v_1602631093_146879000'},
+                                                      {'id': 'de_e6abfcb5-1b85-41b0-b64c-695b32504362',
+                                                       'ruleVersion': 'ru_e6abfcb5-1b85-41b0-b64c-695b32'
+                                                                      '50436f@v_1602631093_146879000'}]})
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def validate_user_alert_incident(incidents):
+    """
+    internal method used in test_fetch_user_alert_incident_success_with_param_alerts
+    """
+    assert len(incidents) == 3
+    for incident in incidents:
+        assert incident['name']
+        assert incident['rawJSON']
+        raw_json = json.loads(incident['rawJSON'])
+        assert raw_json['FirstSeen']
+        assert raw_json['LastSeen']
+        assert raw_json['Occurrences']
+        assert raw_json['Alerts']
+        assert raw_json['User']
+        assert raw_json['AlertName']
+
+
+def test_fetch_user_alert_incident_success_with_param_and_alerts_when_executed_1st_time(mocker, client):
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'first_fetch': '4 days',
+        'max_fetch': 20,
+        'time_window': '60',
+        'backstory_alert_type': 'User alerts'
+    }
+
+    with open("./TestData/gcb_alerts_response.txt") as f:
+        gcb_alert_sample = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        gcb_alert_sample
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_user_alert_incident)
+
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_gcb_user_alert_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, client):
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'max_fetch': 20,
+        'backstory_alert_type': 'User alerts'
+    }
+    with open("./TestData/gcb_alerts_response.txt") as f:
+        gcb_alert_sample = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        gcb_alert_sample
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_user_alert_incident)
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'start_time': "2020-01-29T14:13:20+00:00"})
+
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_gcb_fetch_incident_user_alert_success_with_alerts_with_incident_identifiers(mocker, client):
+    """
+    Check the fetched incident in case duplicate user alerts are fetched in next iteration.
+    """
+    from GoogleChronicleBackstory import fetch_incidents
+
+    param = {
+        'max_fetch': 20,
+        'backstory_alert_type': 'User alerts',
+        'time_window': '45'
+    }
+    with open("./TestData/gcb_alerts_response.txt") as f:
+        gcb_alert_sample = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        gcb_alert_sample
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'incidents', new=validate_duplicate_incidents)
+    mocker.patch.object(demisto, 'command', return_value='gcb-fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={
+                            'start_time': "2020-01-29T14:13:20Z",
+                            'user_alerts_identifiers': [
+                                '21a03d1fa2ce7e342534447e947a94b9f9f0ccfc57e96e86ca56a0074b646852',
+                                '32ac16aa49a087d751644d78ee37d61399f474889a963d017643dd6f566f6c0f']})
+    fetch_incidents(client, param)
+    assert client.http_client.request.called
+
+
+def test_gcb_list_user_alert_with_no_arg_supplied_success(mocker, client):
+    """Should return hr, ec and events when multiple events are responded"""
+    from GoogleChronicleBackstory import gcb_list_alerts_command
+    param = {
+        "alert_type": "User Alerts"
+    }
+
+    mock_response = (
+        Response(dict(status=200)),
+        get_hr_gcb_alerts()
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'command', return_value='gcb-list-alerts')
+
+    hr, ec, events = gcb_list_alerts_command(client, param)
+    assert hr
+    assert ec
+    with open("./TestData/user_alerts_ec.json") as f:
+        expected_ec = json.load(f)
+
+    assert ec == expected_ec
+    assert events
+    assert client.http_client.request.called
+
+
+def test_gcb_list_user_alert_when_no_alert_found(mocker, client):
+    """should display 'No Record Found' message when empty but 200 status is responded."""
+    from GoogleChronicleBackstory import gcb_list_alerts_command
+    param = {
+        "alert_type": "User Alerts"
+    }
+
+    mock_response = (
+        Response(dict(status=200)),
+        b'{}'
+    )
+    client.http_client.request.return_value = mock_response
+    mocker.patch.object(demisto, 'command', return_value='gcb-list-alerts')
+
+    hr, ec, events = gcb_list_alerts_command(client, param)
+    assert hr == '### User Alert(s): No Records Found'
+    assert not ec
+    assert not events
+    assert client.http_client.request.called
+
+
+def test_list_rules_command(client):
+    """
+    When valid response comes in gcb-list-rules command it should respond with result.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    args = {'page_size': '2',
+            'page_token': 'foobar_page_token'}
+
+    with open("./TestData/list_rules_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("./TestData/list_rules_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    with open("./TestData/list_rules_hr.txt", "r") as f:
+        dummy_hr = f.read()
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args)
+
+    assert ec == dummy_ec
+    assert hr == dummy_hr
+
+    # Test command when no rules found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_list_rules_command(client, args)
+    assert ec == {}
+    assert hr == 'No Rules Found'
+
+
+def test_get_rules():
+    """
+    Internal method used in gcb-list-rules command.
+    """
+    from GoogleChronicleBackstory import get_rules
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': 'dummy'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '100000'})
+
+    assert str(e.value) == 'Page size should be in the range from 1 to 1000.'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '-5'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'page_size': '0'})
+
+    assert str(e.value) == 'Page size must be a non-zero numeric value'
+
+    with pytest.raises(ValueError) as e:
+        get_rules(client, args={'live_rule': 'dummy'})
+
+    assert str(e.value) == 'Live rule should be true or false.'
+
+
+def test_gcb_list_rules_live_rule_argument_true(client):
+    """
+     Test gcb_list_rules command when live_rule argument is true.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    with open("./TestData/list_rules_live_rule_true.json", "r") as f:
+        response_true = f.read()
+
+    with open("./TestData/list_rules_live_rule_true_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+    mock_response = (
+        Response(dict(status=200)),
+        response_true
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args={'live_rule': 'true'})
+
+    assert ec == dummy_ec
+
+
+def test_gcb_list_rules_live_rule_argument_false(client):
+    """
+     Test gcb_list_rules command when live_rule argument is false.
+    """
+    from GoogleChronicleBackstory import gcb_list_rules_command
+
+    with open("./TestData/list_rules_live_rule_false.json", "r") as f:
+        response_false = f.read()
+
+    with open("./TestData/list_rules_live_rule_false_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+    mock_response = (
+        Response(dict(status=200)),
+        response_false
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_rules_command(client, args={'live_rule': 'false'})
+
+    assert ec == dummy_ec

@@ -1,0 +1,474 @@
+id: SMB_v2-Test
+version: -1
+name: SMB_v2-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9e25ff71-dc03-4a3c-807f-05524b7b2444
+    type: start
+    task:
+      id: 9e25ff71-dc03-4a3c-807f-05524b7b2444
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a461c6aa-2ec8-4c2f-8145-160a59746554
+    type: regular
+    task:
+      id: a461c6aa-2ec8-4c2f-8145-160a59746554
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 65af145a-2bb1-4d10-8012-7c5570d49372
+    type: regular
+    task:
+      id: 65af145a-2bb1-4d10-8012-7c5570d49372
+      version: -1
+      name: List *Shared* Directory
+      description: Returns a list containing the names of the entries in the directory
+        given by path.
+      script: '|||smb-directory-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hostname: {}
+      password: {}
+      path:
+        simple: Shared
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2155a892-c11d-476d-80ed-2653ebd28dd2
+    type: condition
+    task:
+      id: 2155a892-c11d-476d-80ed-2653ebd28dd2
+      version: -1
+      name: Checks Whether *Tests* Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: SMB.Path.Directories
+            iscontext: true
+          right:
+            value:
+              simple: Tests
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3e382a4c-0c75-4103-8497-b3013d9df16c
+    type: regular
+    task:
+      id: 3e382a4c-0c75-4103-8497-b3013d9df16c
+      version: -1
+      name: Create Directory
+      description: Creates a new directory under the given path.
+      script: '|||smb-directory-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      hostname: {}
+      password: {}
+      path:
+        simple: Shared/Tests
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 2ac733bf-0659-4141-8133-75af29cfb6a2
+    type: regular
+    task:
+      id: 2ac733bf-0659-4141-8133-75af29cfb6a2
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      data:
+        simple: Test file for TPB
+      entryId: {}
+      filename:
+        simple: test.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 175f4927-e09f-4318-844a-c660704aa5fc
+    type: regular
+    task:
+      id: 175f4927-e09f-4318-844a-c660704aa5fc
+      version: -1
+      name: Upload a File - EntryID
+      description: Uploads a file to the server.
+      script: '|||smb-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      content: {}
+      entryID:
+        simple: ${File.EntryID}
+      file_path:
+        simple: Shared/Tests/test.txt
+      hostname: {}
+      password: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 19db290b-2be3-4cb4-836e-22c777f3e1b0
+    type: regular
+    task:
+      id: 19db290b-2be3-4cb4-836e-22c777f3e1b0
+      version: -1
+      name: Remove File
+      description: Removes a file from the server.
+      script: '|||smb-file-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      file_path:
+        simple: Shared/Tests/test.txt
+      hostname: {}
+      password: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5724a6f8-1529-451e-8e2a-700cd2b8d348
+    type: regular
+    task:
+      id: 5724a6f8-1529-451e-8e2a-700cd2b8d348
+      version: -1
+      name: Remove Directory
+      description: Removes a directory from the given path.
+      script: '|||smb-directory-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      hostname: {}
+      password: {}
+      path:
+        simple: Shared/Tests
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d1404f74-e874-41e2-8038-3777ad818726
+    type: regular
+    task:
+      id: d1404f74-e874-41e2-8038-3777ad818726
+      version: -1
+      name: List *Shared* Directory
+      description: Returns a list containing the names of the entries in the directory
+        given by path.
+      script: '|||smb-directory-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      hostname: {}
+      password: {}
+      path:
+        simple: Shared
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 01fb28e4-a400-48e3-8775-fa08445cee5a
+    type: regular
+    task:
+      id: 01fb28e4-a400-48e3-8775-fa08445cee5a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: c14cf660-a267-442d-817f-887d1413380c
+    type: condition
+    task:
+      id: c14cf660-a267-442d-817f-887d1413380c
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: SMB.Path.Directories
+            iscontext: true
+          right:
+            value:
+              simple: Tests
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c538c3ed-8266-4535-832f-fcae2f7d2acf
+    type: title
+    task:
+      id: c538c3ed-8266-4535-832f-fcae2f7d2acf
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

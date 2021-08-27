@@ -1,0 +1,1512 @@
+{
+    "data": [
+        {
+            "activityStatus": "Inactive",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "JypYnKg0_meyR2WtxRqeIA==",
+                    "assetType": "Certificate",
+                    "displayName": "*.testcorp123.works",
+                    "id": "2d2767ad-ec6f-3b2d-9538-18056ef52ca6"
+                }
+            ],
+            "assigneeUsername": "Unassigned",
+            "businessUnits": [
+                {
+                    "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+                    "name": "testcorp123 Dev"
+                }
+            ],
+            "category": "Attack Surface Reduction",
+            "certificate": {
+                "formattedIssuerOrg": "DigiCert",
+                "id": "272a589c-a834-3e67-b247-65adc51a9e20",
+                "issuer": "C=US,O=DigiCert Inc,CN=DigiCert SHA2 Secure Server CA",
+                "issuerAlternativeNames": "",
+                "issuerCountry": "US",
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "DigiCert SHA2 Secure Server CA",
+                "issuerOrg": "DigiCert Inc",
+                "issuerOrgUnit": null,
+                "issuerState": null,
+                "md5Hash": "JypYnKg0_meyR2WtxRqeIA==",
+                "pemSha1": "rMiALc5fxhKyD2mGrVBJLTclRL4=",
+                "pemSha256": "afSkSR18l1DqXLvo37_ChJBHuLhhOn1ZtUoU2KHXQXw=",
+                "publicKey": "publickey",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyBits": 2048,
+                "publicKeyModulus": "c9859b1157326ce16b1b7ee0a24114f12e5b66d48c37f91c5c1dba970c1df267e2baddb171b56a47da66fbd14ed3678a586ab8f3751fd6392e9afb4fec320f74e5989e5547d2b65e68125ed724829752d941c9f65c0fa714acb79970d330eb0ff45a5e7d00e3876397d4cacc83f2bb1e9ab2db998506cbc28cec00830c7d89799182693c790042b174299068495101affc483d3541463d88f52c9d3ab4dc6edf9e168b8f0179e3af282438100066127ef307f9ba22d7ac649090a9bc3c16060fc3c823fff964f653efbc95be2d11b0939755586a383f5a1be9b1a479bd0d6c9b85a771c37bd2fb620891ef1983f7eff4e11cd0b02f830f98831d6f63846b21e7",
+                "publicKeyRsaExponent": 65537,
+                "publicKeySpki": "WVaIjtpKykB5JCvWilzVgGndC2gXmduC1-ux9aq0erE=",
+                "serialNumber": "8413462932023986612168381042988701447",
+                "signatureAlgorithm": "SHA256withRSA",
+                "subject": "C=US,ST=California,L=Cupertino,O=testcorp123\\, Inc,CN=*.testcorp123.works",
+                "subjectAlternativeNames": "*.testcorp123.works testcorp123.works",
+                "subjectCountry": "US",
+                "subjectEmail": null,
+                "subjectLocality": "Cupertino",
+                "subjectName": "*.testcorp123.works",
+                "subjectOrg": "testcorp123\\\\, Inc",
+                "subjectOrgUnit": null,
+                "subjectState": "California",
+                "validNotAfter": "2020-11-25T12:00:00Z",
+                "validNotBefore": "2018-09-18T00:00:00Z",
+                "version": "3"
+            },
+            "created": "2020-09-28T17:55:57.610230Z",
+            "domain": null,
+            "headline": "Certificate with Wildcard Domain at 192.0.2.76:443",
+            "helpText": "There is a problem with the certificate.",
+            "id": "62089967-7b41-3d49-a21d-d12753d8fd91",
+            "initialEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "272a589c-a834-3e67-b247-65adc51a9e20",
+                    "issuer": "C=US,O=DigiCert Inc,CN=DigiCert SHA2 Secure Server CA",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "DigiCert SHA2 Secure Server CA",
+                    "issuerOrg": "DigiCert Inc",
+                    "issuerOrgUnit": null,
+                    "issuerState": null,
+                    "md5Hash": "JypYnKg0_meyR2WtxRqeIA==",
+                    "pemSha1": "rMiALc5fxhKyD2mGrVBJLTclRL4=",
+                    "pemSha256": "afSkSR18l1DqXLvo37_ChJBHuLhhOn1ZtUoU2KHXQXw=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c9859b1157326ce16b1b7ee0a24114f12e5b66d48c37f91c5c1dba970c1df267e2baddb171b56a47da66fbd14ed3678a586ab8f3751fd6392e9afb4fec320f74e5989e5547d2b65e68125ed724829752d941c9f65c0fa714acb79970d330eb0ff45a5e7d00e3876397d4cacc83f2bb1e9ab2db998506cbc28cec00830c7d89799182693c790042b174299068495101affc483d3541463d88f52c9d3ab4dc6edf9e168b8f0179e3af282438100066127ef307f9ba22d7ac649090a9bc3c16060fc3c823fff964f653efbc95be2d11b0939755586a383f5a1be9b1a479bd0d6c9b85a771c37bd2fb620891ef1983f7eff4e11cd0b02f830f98831d6f63846b21e7",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "WVaIjtpKykB5JCvWilzVgGndC2gXmduC1-ux9aq0erE=",
+                    "serialNumber": "8413462932023986612168381042988701447",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "C=US,ST=California,L=Cupertino,O=testcorp123\\, Inc,CN=*.testcorp123.works",
+                    "subjectAlternativeNames": "*.testcorp123.works testcorp123.works",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": "Cupertino",
+                    "subjectName": "*.testcorp123.works",
+                    "subjectOrg": "testcorp123\\\\, Inc",
+                    "subjectOrgUnit": null,
+                    "subjectState": "California",
+                    "validNotAfter": "2020-11-25T12:00:00Z",
+                    "validNotBefore": "2018-09-18T00:00:00Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "ntivs5r51_Lk1LqFpZUfNA==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": false,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "",
+                    "httpAuthenticationRealm": "",
+                    "httpHeaders": [
+                        {
+                            "name": "Accept-Ranges",
+                            "value": "bytes"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "1268"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html; charset=utf-8"
+                        },
+                        {
+                            "name": "Last-Modified",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "XSRF-TOKEN=ggFHDKZo/1t2gfdAAKeaIFwaM0bdi3nsthcIec6OVKNu3o/ki0KI8qppifnSn7xN8OFq8MkRQzhwhmBQQfzjZF2X2vc1sFjEgKhuZMtDLVVLnvcD5JMtKrrlrY9JmRwJ0izkX5BwcFDOXjTfv95dHhzcqZr9Ap9F8y0arU47Fp0=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=xxxxxxxxxx; includeSubDomains"
+                        },
+                        {
+                            "name": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "name": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "name": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        }
+                    ],
+                    "httpStatusCode": "200",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": ""
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "6dc2f5aa-4691-3ced-b60e-6f44fc2f43d1",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "192.0.2.76",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "37c808b5-13f8-3225-850f-5d619f12b8c4",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "MissingCacheControlHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingContentSecurityPolicyHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingPublicKeyPinsHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-09-22T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "ip": "192.0.2.76",
+            "issueType": {
+                "id": "WildcardCertificate",
+                "name": "Wildcard Certificate"
+            },
+            "latestEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "272a589c-a834-3e67-b247-65adc51a9e20",
+                    "issuer": "C=US,O=DigiCert Inc,CN=DigiCert SHA2 Secure Server CA",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "DigiCert SHA2 Secure Server CA",
+                    "issuerOrg": "DigiCert Inc",
+                    "issuerOrgUnit": null,
+                    "issuerState": null,
+                    "md5Hash": "JypYnKg0_meyR2WtxRqeIA==",
+                    "pemSha1": "rMiALc5fxhKyD2mGrVBJLTclRL4=",
+                    "pemSha256": "afSkSR18l1DqXLvo37_ChJBHuLhhOn1ZtUoU2KHXQXw=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c9859b1157326ce16b1b7ee0a24114f12e5b66d48c37f91c5c1dba970c1df267e2baddb171b56a47da66fbd14ed3678a586ab8f3751fd6392e9afb4fec320f74e5989e5547d2b65e68125ed724829752d941c9f65c0fa714acb79970d330eb0ff45a5e7d00e3876397d4cacc83f2bb1e9ab2db998506cbc28cec00830c7d89799182693c790042b174299068495101affc483d3541463d88f52c9d3ab4dc6edf9e168b8f0179e3af282438100066127ef307f9ba22d7ac649090a9bc3c16060fc3c823fff964f653efbc95be2d11b0939755586a383f5a1be9b1a479bd0d6c9b85a771c37bd2fb620891ef1983f7eff4e11cd0b02f830f98831d6f63846b21e7",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "WVaIjtpKykB5JCvWilzVgGndC2gXmduC1-ux9aq0erE=",
+                    "serialNumber": "8413462932023986612168381042988701447",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "C=US,ST=California,L=Cupertino,O=testcorp123\\, Inc,CN=*.testcorp123.works",
+                    "subjectAlternativeNames": "*.testcorp123.works testcorp123.works",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": "Cupertino",
+                    "subjectName": "*.testcorp123.works",
+                    "subjectOrg": "testcorp123\\\\, Inc",
+                    "subjectOrgUnit": null,
+                    "subjectState": "California",
+                    "validNotAfter": "2020-11-25T12:00:00Z",
+                    "validNotBefore": "2018-09-18T00:00:00Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "ntivs5r51_Lk1LqFpZUfNA==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": false,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "",
+                    "httpAuthenticationRealm": "",
+                    "httpHeaders": [
+                        {
+                            "name": "Accept-Ranges",
+                            "value": "bytes"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "1268"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html; charset=utf-8"
+                        },
+                        {
+                            "name": "Last-Modified",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "XSRF-TOKEN=ggFHDKZo/1t2gfdAAKeaIFwaM0bdi3nsthcIec6OVKNu3o/ki0KI8qppifnSn7xN8OFq8MkRQzhwhmBQQfzjZF2X2vc1sFjEgKhuZMtDLVVLnvcD5JMtKrrlrY9JmRwJ0izkX5BwcFDOXjTfv95dHhzcqZr9Ap9F8y0arU47Fp0=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=xxxxxxxxxx; includeSubDomains"
+                        },
+                        {
+                            "name": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "name": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "name": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        }
+                    ],
+                    "httpStatusCode": "200",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": ""
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "6dc2f5aa-4691-3ced-b60e-6f44fc2f43d1",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "192.0.2.76",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "37c808b5-13f8-3225-850f-5d619f12b8c4",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "MissingCacheControlHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingContentSecurityPolicyHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingPublicKeyPinsHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-09-22T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "modified": "2020-11-26T10:52:14.799736Z",
+            "portNumber": 443,
+            "portProtocol": "TCP",
+            "priority": "Medium",
+            "progressStatus": "New",
+            "providers": [
+                {
+                    "id": "AWS",
+                    "name": "Amazon Web Services"
+                }
+            ]
+        },
+        {
+            "activityStatus": "Inactive",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "master-test13.clarence.lab.testcorpdomain2.com",
+                    "assetType": "Domain",
+                    "displayName": "master-test13.clarence.lab.testcorpdomain2.com",
+                    "id": "5c13a922-52fe-3f74-b2a1-d3a53e63d581"
+                },
+                {
+                    "assetKey": "lmxDpXDMOqOpCcz2MnvdfA==",
+                    "assetType": "Certificate",
+                    "displayName": "*.clarence.lab.testcorpdomain2.com",
+                    "id": "f9dc1c1f-3fa9-33c2-a9c2-c0b05b6b2a9f"
+                }
+            ],
+            "assigneeUsername": "Unassigned",
+            "businessUnits": [
+                {
+                    "id": "29428567-27c7-4cad-b5ed-e10bb42ff2b5",
+                    "name": "BU2 Prod"
+                }
+            ],
+            "category": "Attack Surface Reduction",
+            "certificate": {
+                "formattedIssuerOrg": "Let's Encrypt",
+                "id": "966c43a5-70cc-3aa3-a909-ccf6327bdd7c",
+                "issuer": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+                "issuerAlternativeNames": "",
+                "issuerCountry": "US",
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "Let's Encrypt Authority X3",
+                "issuerOrg": "Let's Encrypt",
+                "issuerOrgUnit": null,
+                "issuerState": null,
+                "md5Hash": "lmxDpXDMOqOpCcz2MnvdfA==",
+                "pemSha1": "91WoWezv6rpgVbR3JfVYoa91i4A=",
+                "pemSha256": "KX5MqvZllELHnPEJcuqJNZibnvQ2rY5OdIkDfzFpx0Y=",
+                "publicKey": "publickey",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyBits": 2048,
+                "publicKeyModulus": "c3442a59465ff03598249510924a3ef34d6acc1c3ada17c3c88e1e3741aa9cf94c21d2529f49caaacf3a1482612ca69e0a320a6d2a3399c0070f8d562a2e857eae8db24bcd4df56261a2f91070b135ee5a4209860d2a5a73d724e49399e6846f561ed1851cea690e75026a0a44cd8211c45619745677f63c71408bd51c14b63b04c11f231c9ac14e4bcc1beb577e7cc080844cd8a1809c75f45fe64edafc03e67ffa64026f9421811ba5344db0d234e00221d59fc02b813b28d4742bce6c0fa66b49e8b672b7595fbb7aab35ddb9e2be7c1757e801fc2d2195269a148fad084af8198db602f26aedfc1bf907f5c2cfbdf3d00cbe75924df8d47ea166f08fabc5",
+                "publicKeyRsaExponent": 65537,
+                "publicKeySpki": "OZjn8NMMUYwAoCKb6kB8Hx4ymukgPCSsFB4BBh1siGM=",
+                "serialNumber": "403024102160246841371796659770100783505996",
+                "signatureAlgorithm": "SHA256withRSA",
+                "subject": "CN=*.clarence.lab.testcorpdomain2.com",
+                "subjectAlternativeNames": "*.clarence.lab.testcorpdomain2.com",
+                "subjectCountry": null,
+                "subjectEmail": null,
+                "subjectLocality": null,
+                "subjectName": "*.clarence.lab.testcorpdomain2.com",
+                "subjectOrg": null,
+                "subjectOrgUnit": null,
+                "subjectState": null,
+                "validNotAfter": "2020-07-19T16:17:07Z",
+                "validNotBefore": "2020-04-20T16:17:07Z",
+                "version": "3"
+            },
+            "created": "2020-09-28T17:55:57.610230Z",
+            "domain": "master-test13.clarence.lab.testcorpdomain2.com",
+            "headline": "Software Development Environment at master-test13.clarence.lab.testcorpdomain2.com:443",
+            "helpText": "Development environments should not be visible on the public Internet.",
+            "id": "6295b21f-f2e5-3189-9d6d-338cb129014c",
+            "initialEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "966c43a5-70cc-3aa3-a909-ccf6327bdd7c",
+                    "issuer": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "Let's Encrypt Authority X3",
+                    "issuerOrg": "Let's Encrypt",
+                    "issuerOrgUnit": null,
+                    "issuerState": null,
+                    "md5Hash": "lmxDpXDMOqOpCcz2MnvdfA==",
+                    "pemSha1": "91WoWezv6rpgVbR3JfVYoa91i4A=",
+                    "pemSha256": "KX5MqvZllELHnPEJcuqJNZibnvQ2rY5OdIkDfzFpx0Y=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c3442a59465ff03598249510924a3ef34d6acc1c3ada17c3c88e1e3741aa9cf94c21d2529f49caaacf3a1482612ca69e0a320a6d2a3399c0070f8d562a2e857eae8db24bcd4df56261a2f91070b135ee5a4209860d2a5a73d724e49399e6846f561ed1851cea690e75026a0a44cd8211c45619745677f63c71408bd51c14b63b04c11f231c9ac14e4bcc1beb577e7cc080844cd8a1809c75f45fe64edafc03e67ffa64026f9421811ba5344db0d234e00221d59fc02b813b28d4742bce6c0fa66b49e8b672b7595fbb7aab35ddb9e2be7c1757e801fc2d2195269a148fad084af8198db602f26aedfc1bf907f5c2cfbdf3d00cbe75924df8d47ea166f08fabc5",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "OZjn8NMMUYwAoCKb6kB8Hx4ymukgPCSsFB4BBh1siGM=",
+                    "serialNumber": "403024102160246841371796659770100783505996",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "CN=*.clarence.lab.testcorpdomain2.com",
+                    "subjectAlternativeNames": "*.clarence.lab.testcorpdomain2.com",
+                    "subjectCountry": null,
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "*.clarence.lab.testcorpdomain2.com",
+                    "subjectOrg": null,
+                    "subjectOrgUnit": null,
+                    "subjectState": null,
+                    "validNotAfter": "2020-07-19T16:17:07Z",
+                    "validNotBefore": "2020-04-20T16:17:07Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "CertificateAdvertisementConfiguration",
+                    "validWhenScanned": false
+                },
+                "discoveryType": "Direct",
+                "domain": "master-test13.clarence.lab.testcorpdomain2.com",
+                "evidenceType": "ScanEvidence",
+                "exposureId": "4c7a2293-ab09-36b5-8e73-b11db1215d51",
+                "exposureType": "CERTIFICATE_CHAIN",
+                "geolocation": null,
+                "ip": "203.0.113.135",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "c98d5625-3571-345e-b75c-dc7f3fbd53fe",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "DevelopmentEnvironment",
+                            "reason": "{\"banners\":[],\"domains\":[\"master-test13.clarence.lab.testcorpdomain2.com\"]}"
+                        },
+                        {
+                            "name": "ExpiredWhenScannedCertificate",
+                            "reason": "{\"validWhenScanned\":false}"
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":false}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-08-29T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "ip": "203.0.113.135",
+            "issueType": {
+                "id": "DevelopmentEnvironment",
+                "name": "Development Environment"
+            },
+            "latestEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "966c43a5-70cc-3aa3-a909-ccf6327bdd7c",
+                    "issuer": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "Let's Encrypt Authority X3",
+                    "issuerOrg": "Let's Encrypt",
+                    "issuerOrgUnit": null,
+                    "issuerState": null,
+                    "md5Hash": "lmxDpXDMOqOpCcz2MnvdfA==",
+                    "pemSha1": "91WoWezv6rpgVbR3JfVYoa91i4A=",
+                    "pemSha256": "KX5MqvZllELHnPEJcuqJNZibnvQ2rY5OdIkDfzFpx0Y=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c3442a59465ff03598249510924a3ef34d6acc1c3ada17c3c88e1e3741aa9cf94c21d2529f49caaacf3a1482612ca69e0a320a6d2a3399c0070f8d562a2e857eae8db24bcd4df56261a2f91070b135ee5a4209860d2a5a73d724e49399e6846f561ed1851cea690e75026a0a44cd8211c45619745677f63c71408bd51c14b63b04c11f231c9ac14e4bcc1beb577e7cc080844cd8a1809c75f45fe64edafc03e67ffa64026f9421811ba5344db0d234e00221d59fc02b813b28d4742bce6c0fa66b49e8b672b7595fbb7aab35ddb9e2be7c1757e801fc2d2195269a148fad084af8198db602f26aedfc1bf907f5c2cfbdf3d00cbe75924df8d47ea166f08fabc5",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "OZjn8NMMUYwAoCKb6kB8Hx4ymukgPCSsFB4BBh1siGM=",
+                    "serialNumber": "403024102160246841371796659770100783505996",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "CN=*.clarence.lab.testcorpdomain2.com",
+                    "subjectAlternativeNames": "*.clarence.lab.testcorpdomain2.com",
+                    "subjectCountry": null,
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "*.clarence.lab.testcorpdomain2.com",
+                    "subjectOrg": null,
+                    "subjectOrgUnit": null,
+                    "subjectState": null,
+                    "validNotAfter": "2020-07-19T16:17:07Z",
+                    "validNotBefore": "2020-04-20T16:17:07Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "9EVvOnc_m1pg_VVbA04GvQ==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": true,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "Basic",
+                    "httpAuthenticationRealm": "Authentication Required",
+                    "httpHeaders": [
+                        {
+                            "name": "Server",
+                            "value": "nginx/1.15.10"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "180"
+                        },
+                        {
+                            "name": "Connection",
+                            "value": "keep-alive"
+                        },
+                        {
+                            "name": "WWW-Authenticate",
+                            "value": "Basic realm=\"Authentication Required\""
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=15724800; includeSubDomains"
+                        }
+                    ],
+                    "httpStatusCode": "401",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": "nginx/1.15.10"
+                },
+                "discoveryType": "Direct",
+                "domain": "master-test13.clarence.lab.testcorpdomain2.com",
+                "evidenceType": "ScanEvidence",
+                "exposureId": "027249a5-f631-3b3b-9ff2-7ca414a77665",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "203.0.113.135",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "c98d5625-3571-345e-b75c-dc7f3fbd53fe",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "DevelopmentEnvironment",
+                            "reason": "{\"banners\":[],\"domains\":[\"master-test13.clarence.lab.testcorpdomain2.com\"]}"
+                        },
+                        {
+                            "name": "ExpiredWhenScannedCertificate",
+                            "reason": "{\"validWhenScanned\":false}"
+                        },
+                        {
+                            "name": "ServerSoftware",
+                            "reason": "{\"serverSoftware\":\"nginx/1.15.10\"}"
+                        },
+                        {
+                            "name": "WebLogin",
+                            "reason": null
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":false}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-09-18T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "modified": "2020-11-26T04:50:38.565423Z",
+            "portNumber": 443,
+            "portProtocol": "TCP",
+            "priority": "Medium",
+            "progressStatus": "New",
+            "providers": [
+                {
+                    "id": "Google",
+                    "name": "Google"
+                }
+            ]
+        },
+        {
+            "activityStatus": "Inactive",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "mgU8OhfTZzbNWJF77wYK7g==",
+                    "assetType": "Certificate",
+                    "displayName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "id": "e49088b6-056d-341c-9bb0-0e32925f1c39"
+                }
+            ],
+            "assigneeUsername": "Unassigned",
+            "businessUnits": [
+                {
+                    "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+                    "name": "testcorp123 Dev"
+                },
+                {
+                    "id": "29428567-27c7-4cad-b5ed-e10bb42ff2b5",
+                    "name": "BU2 Prod"
+                }
+            ],
+            "category": "Attack Surface Reduction",
+            "certificate": {
+                "formattedIssuerOrg": "Corporation 123",
+                "id": "9a053c3a-17d3-3736-8d58-917bef060aee",
+                "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                "issuerAlternativeNames": "",
+                "issuerCountry": "US",
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                "issuerOrg": "Corporation 123",
+                "issuerOrgUnit": "Business Unit 1",
+                "issuerState": null,
+                "md5Hash": "mgU8OhfTZzbNWJF77wYK7g==",
+                "pemSha1": "xEhpv16XyWXUbY67doN2gz0HGg0=",
+                "pemSha256": "m_2pHXcrEenIn9Kd7hCunG9YiAU90L-OWAVrsLONuQM=",
+                "publicKey": "publickey",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyBits": 4096,
+                "publicKeyModulus": "c4d4d98d945ebfccbaaf6b449106e6955c5f381771e619c3de32a0eb561fb122fba542ba7d444b682c4fd4e66e34acdfce2f51b30e45520ad2f8fb6d2062f6154c251305151dcde0ad6b40cb445f15a60ba4376b76af7f217fcfef87c82670ae449fba814bdc7fe1685845903c8261ae49078f16e2e131b999202717812d1a7866b413153290b513154abf8c3b1e60bfa908c444e1e13fc868e3e985508c60eaa34855b6fec85bda99638d5306a91fa67fd06c4bc14de001aa4592bb28f54b0f6a169854fc5ec0b070e042abeab7290ce7b479f8774fa5e3d72af3df2595f27c81d23896ffda7b30d2e1c47a8cc17760b00cd2425f5927b218a94e63d26788e8100bc4f531e030d96d15646d9362f0719c6746026c194fe76766cfefa494e9e4178ad984b3a08c75e4e8d32edc08b2c24bf2995944f1181be2f2cd114e0db35eabf1c8df7532c7bf14eb67dec7bd4e1c138fe15335cf60a8fd5573d24447978e4069cfce4153452273f78961bab2e8213e4446014bc3f152290fbc675a557ce80695da6060d88482533f6a8fbf3e1824bc7753daa66e66ffdc413576e69fe971c6c5a97fca9a2080af25c2803f9c499d1be963ba5bbd485723c44032634c086131813ea735b0075ed0dbd03fa7d6c758f6114da19ec3a471275b6046c0cf325549034cccf3ff860bd920ef91a410d1b251ebc4379d3df611cbeea65f25cdc277",
+                "publicKeyRsaExponent": 65537,
+                "publicKeySpki": "EAyHgus0mzM_GR-_-pYFxtry_jGV8wEG7HWIhTlBH8I=",
+                "serialNumber": "1040",
+                "signatureAlgorithm": "SHA512withRSA",
+                "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                "subjectAlternativeNames": "",
+                "subjectCountry": "US",
+                "subjectEmail": null,
+                "subjectLocality": null,
+                "subjectName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                "subjectOrg": "Corporation 123",
+                "subjectOrgUnit": "Business Unit 1",
+                "subjectState": null,
+                "validNotAfter": "2030-04-17T09:14:21Z",
+                "validNotBefore": "2020-04-17T09:14:21Z",
+                "version": "3"
+            },
+            "created": "2020-09-28T17:55:57.610230Z",
+            "domain": null,
+            "headline": "Certificate with Long Expiration Time at 198.51.100.238:8443",
+            "helpText": "There is a problem with the certificate.",
+            "id": "62a4bfb9-4107-3a9c-9c2f-e3bb9c2f27e9",
+            "initialEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "9a053c3a-17d3-3736-8d58-917bef060aee",
+                    "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "issuerOrg": "Corporation 123",
+                    "issuerOrgUnit": "Business Unit 1",
+                    "issuerState": null,
+                    "md5Hash": "mgU8OhfTZzbNWJF77wYK7g==",
+                    "pemSha1": "xEhpv16XyWXUbY67doN2gz0HGg0=",
+                    "pemSha256": "m_2pHXcrEenIn9Kd7hCunG9YiAU90L-OWAVrsLONuQM=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 4096,
+                    "publicKeyModulus": "c4d4d98d945ebfccbaaf6b449106e6955c5f381771e619c3de32a0eb561fb122fba542ba7d444b682c4fd4e66e34acdfce2f51b30e45520ad2f8fb6d2062f6154c251305151dcde0ad6b40cb445f15a60ba4376b76af7f217fcfef87c82670ae449fba814bdc7fe1685845903c8261ae49078f16e2e131b999202717812d1a7866b413153290b513154abf8c3b1e60bfa908c444e1e13fc868e3e985508c60eaa34855b6fec85bda99638d5306a91fa67fd06c4bc14de001aa4592bb28f54b0f6a169854fc5ec0b070e042abeab7290ce7b479f8774fa5e3d72af3df2595f27c81d23896ffda7b30d2e1c47a8cc17760b00cd2425f5927b218a94e63d26788e8100bc4f531e030d96d15646d9362f0719c6746026c194fe76766cfefa494e9e4178ad984b3a08c75e4e8d32edc08b2c24bf2995944f1181be2f2cd114e0db35eabf1c8df7532c7bf14eb67dec7bd4e1c138fe15335cf60a8fd5573d24447978e4069cfce4153452273f78961bab2e8213e4446014bc3f152290fbc675a557ce80695da6060d88482533f6a8fbf3e1824bc7753daa66e66ffdc413576e69fe971c6c5a97fca9a2080af25c2803f9c499d1be963ba5bbd485723c44032634c086131813ea735b0075ed0dbd03fa7d6c758f6114da19ec3a471275b6046c0cf325549034cccf3ff860bd920ef91a410d1b251ebc4379d3df611cbeea65f25cdc277",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "EAyHgus0mzM_GR-_-pYFxtry_jGV8wEG7HWIhTlBH8I=",
+                    "serialNumber": "1040",
+                    "signatureAlgorithm": "SHA512withRSA",
+                    "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "subjectAlternativeNames": "",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "subjectOrg": "Corporation 123",
+                    "subjectOrgUnit": "Business Unit 1",
+                    "subjectState": null,
+                    "validNotAfter": "2030-04-17T09:14:21Z",
+                    "validNotBefore": "2020-04-17T09:14:21Z",
+                    "version": "3"
+                },
+                "cipherSuite": null,
+                "configuration": {
+                    "_type": "CertificateAdvertisementConfiguration",
+                    "validWhenScanned": true
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "7ba38e0b-f0f5-3ba6-8f00-ea74025ed74b",
+                "exposureType": "CERTIFICATE_ADVERTISEMENT",
+                "geolocation": null,
+                "ip": "198.51.100.238",
+                "portNumber": 8443,
+                "portProtocol": "TCP",
+                "serviceId": "0d833039-0aa2-31a1-88e7-17b1dd9a9b6d",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "LongExpirationCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        },
+                        {
+                            "name": "PanOsDevice",
+                            "reason": "{\"manufacturer\":\"Palo Alto Networks\",\"model\":\"PAN-OS Device\"}"
+                        },
+                        {
+                            "name": "SelfSignedCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-08-29T00:00:00Z",
+                "tlsVersion": null
+            },
+            "ip": "198.51.100.238",
+            "issueType": {
+                "id": "LongExpirationCertificate",
+                "name": "Long Validity Certificate"
+            },
+            "latestEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "9a053c3a-17d3-3736-8d58-917bef060aee",
+                    "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "issuerOrg": "Corporation 123",
+                    "issuerOrgUnit": "Business Unit 1",
+                    "issuerState": null,
+                    "md5Hash": "mgU8OhfTZzbNWJF77wYK7g==",
+                    "pemSha1": "xEhpv16XyWXUbY67doN2gz0HGg0=",
+                    "pemSha256": "m_2pHXcrEenIn9Kd7hCunG9YiAU90L-OWAVrsLONuQM=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 4096,
+                    "publicKeyModulus": "c4d4d98d945ebfccbaaf6b449106e6955c5f381771e619c3de32a0eb561fb122fba542ba7d444b682c4fd4e66e34acdfce2f51b30e45520ad2f8fb6d2062f6154c251305151dcde0ad6b40cb445f15a60ba4376b76af7f217fcfef87c82670ae449fba814bdc7fe1685845903c8261ae49078f16e2e131b999202717812d1a7866b413153290b513154abf8c3b1e60bfa908c444e1e13fc868e3e985508c60eaa34855b6fec85bda99638d5306a91fa67fd06c4bc14de001aa4592bb28f54b0f6a169854fc5ec0b070e042abeab7290ce7b479f8774fa5e3d72af3df2595f27c81d23896ffda7b30d2e1c47a8cc17760b00cd2425f5927b218a94e63d26788e8100bc4f531e030d96d15646d9362f0719c6746026c194fe76766cfefa494e9e4178ad984b3a08c75e4e8d32edc08b2c24bf2995944f1181be2f2cd114e0db35eabf1c8df7532c7bf14eb67dec7bd4e1c138fe15335cf60a8fd5573d24447978e4069cfce4153452273f78961bab2e8213e4446014bc3f152290fbc675a557ce80695da6060d88482533f6a8fbf3e1824bc7753daa66e66ffdc413576e69fe971c6c5a97fca9a2080af25c2803f9c499d1be963ba5bbd485723c44032634c086131813ea735b0075ed0dbd03fa7d6c758f6114da19ec3a471275b6046c0cf325549034cccf3ff860bd920ef91a410d1b251ebc4379d3df611cbeea65f25cdc277",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "EAyHgus0mzM_GR-_-pYFxtry_jGV8wEG7HWIhTlBH8I=",
+                    "serialNumber": "1040",
+                    "signatureAlgorithm": "SHA512withRSA",
+                    "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "subjectAlternativeNames": "",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "temp-2004-1-mkl-lab-testcorpdomain2-com",
+                    "subjectOrg": "Corporation 123",
+                    "subjectOrgUnit": "Business Unit 1",
+                    "subjectState": null,
+                    "validNotAfter": "2030-04-17T09:14:21Z",
+                    "validNotBefore": "2020-04-17T09:14:21Z",
+                    "version": "3"
+                },
+                "cipherSuite": null,
+                "configuration": {
+                    "_type": "CertificateAdvertisementConfiguration",
+                    "validWhenScanned": true
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "7ba38e0b-f0f5-3ba6-8f00-ea74025ed74b",
+                "exposureType": "CERTIFICATE_ADVERTISEMENT",
+                "geolocation": null,
+                "ip": "198.51.100.238",
+                "portNumber": 8443,
+                "portProtocol": "TCP",
+                "serviceId": "0d833039-0aa2-31a1-88e7-17b1dd9a9b6d",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "LongExpirationCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        },
+                        {
+                            "name": "PanOsDevice",
+                            "reason": "{\"manufacturer\":\"Palo Alto Networks\",\"model\":\"PAN-OS Device\"}"
+                        },
+                        {
+                            "name": "SelfSignedCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-10-05T00:00:00Z",
+                "tlsVersion": null
+            },
+            "modified": "2020-11-26T11:03:38.846420Z",
+            "portNumber": 8443,
+            "portProtocol": "TCP",
+            "priority": "Medium",
+            "progressStatus": "New",
+            "providers": [
+                {
+                    "id": "Google",
+                    "name": "Google"
+                }
+            ]
+        },
+        {
+            "activityStatus": "Inactive",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "5wkmYjxH1RM-jVELqoHbag==",
+                    "assetType": "Certificate",
+                    "displayName": "*.dev.testcorp123.live",
+                    "id": "08f938f9-449a-32b2-bf7b-536bae8d1877"
+                }
+            ],
+            "assigneeUsername": "Unassigned",
+            "businessUnits": [
+                {
+                    "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+                    "name": "testcorp123 Dev"
+                }
+            ],
+            "category": "Attack Surface Reduction",
+            "certificate": {
+                "formattedIssuerOrg": "Amazon",
+                "id": "e7092662-3c47-3513-be8d-510baa81db6a",
+                "issuer": "C=US,O=Amazon,OU=Server CA 1B,CN=Amazon",
+                "issuerAlternativeNames": "",
+                "issuerCountry": "US",
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "Amazon",
+                "issuerOrg": "Amazon",
+                "issuerOrgUnit": "Server CA 1B",
+                "issuerState": null,
+                "md5Hash": "5wkmYjxH1RM-jVELqoHbag==",
+                "pemSha1": "GTygc6GMGr2wnQeHZ-S0Vj7ST1o=",
+                "pemSha256": "QqsjXZe-vlzY_Oubjb7nhopdF-IA-ktH_8FTJ1zUiD0=",
+                "publicKey": "publickey",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyBits": 2048,
+                "publicKeyModulus": "c9a3beee32c12f2262fd1d14dce6836e025337b0aaa3a578bf1f9b4856b50c436725c2d3fa2adfd5c74c88fa0862f8cb18df1dd40e20caf087afd7e754b142538a48dfbcb0d9ea36be8eba9cbc9db9372eb4dc875518d64e2fd0d6c1c75c172e64bfeaa2b053bf06129b859edab94adf20385d0e7899ba668e0a3e8bf9a4f92bf09ad613164eeabc2f1061ee3d86fdb2a3b65a5d7cb5a3efe9f5e5d224bd114d444a8a346ecd6b483cb0f994d95d8795e372522fa94526a8fd84a57655e27fa64729f1f902ba1b6d13eb57647bea208fba89921e0bb33bf03670d5c43da0506fb2c81382ca295a4bac0ff4cbccb8b4bb20e281af8a06ed183a878e8366c8ad95",
+                "publicKeyRsaExponent": 65537,
+                "publicKeySpki": "PRPhvw_5Ydln2wnLA5By1tY7KyJEdvUwBD6vyIs2w30=",
+                "serialNumber": "10068152135337932824449473818974465169",
+                "signatureAlgorithm": "SHA256withRSA",
+                "subject": "CN=*.dev.testcorp123.live",
+                "subjectAlternativeNames": "*.dev.testcorp123.live",
+                "subjectCountry": null,
+                "subjectEmail": null,
+                "subjectLocality": null,
+                "subjectName": "*.dev.testcorp123.live",
+                "subjectOrg": null,
+                "subjectOrgUnit": null,
+                "subjectState": null,
+                "validNotAfter": "2021-05-28T12:00:00Z",
+                "validNotBefore": "2020-04-28T00:00:00Z",
+                "version": "3"
+            },
+            "created": "2020-09-28T17:55:58.077836Z",
+            "domain": null,
+            "headline": "Certificate with Wildcard Domain at 192.0.2.200:443",
+            "helpText": "There is a problem with the certificate.",
+            "id": "a4091781-373c-36c4-b928-c57e55f514f0",
+            "initialEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "e7092662-3c47-3513-be8d-510baa81db6a",
+                    "issuer": "C=US,O=Amazon,OU=Server CA 1B,CN=Amazon",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "Amazon",
+                    "issuerOrg": "Amazon",
+                    "issuerOrgUnit": "Server CA 1B",
+                    "issuerState": null,
+                    "md5Hash": "5wkmYjxH1RM-jVELqoHbag==",
+                    "pemSha1": "GTygc6GMGr2wnQeHZ-S0Vj7ST1o=",
+                    "pemSha256": "QqsjXZe-vlzY_Oubjb7nhopdF-IA-ktH_8FTJ1zUiD0=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c9a3beee32c12f2262fd1d14dce6836e025337b0aaa3a578bf1f9b4856b50c436725c2d3fa2adfd5c74c88fa0862f8cb18df1dd40e20caf087afd7e754b142538a48dfbcb0d9ea36be8eba9cbc9db9372eb4dc875518d64e2fd0d6c1c75c172e64bfeaa2b053bf06129b859edab94adf20385d0e7899ba668e0a3e8bf9a4f92bf09ad613164eeabc2f1061ee3d86fdb2a3b65a5d7cb5a3efe9f5e5d224bd114d444a8a346ecd6b483cb0f994d95d8795e372522fa94526a8fd84a57655e27fa64729f1f902ba1b6d13eb57647bea208fba89921e0bb33bf03670d5c43da0506fb2c81382ca295a4bac0ff4cbccb8b4bb20e281af8a06ed183a878e8366c8ad95",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "PRPhvw_5Ydln2wnLA5By1tY7KyJEdvUwBD6vyIs2w30=",
+                    "serialNumber": "10068152135337932824449473818974465169",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "CN=*.dev.testcorp123.live",
+                    "subjectAlternativeNames": "*.dev.testcorp123.live",
+                    "subjectCountry": null,
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "*.dev.testcorp123.live",
+                    "subjectOrg": null,
+                    "subjectOrgUnit": null,
+                    "subjectState": null,
+                    "validNotAfter": "2021-05-28T12:00:00Z",
+                    "validNotBefore": "2020-04-28T00:00:00Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "Xg60DkTq8d7C-0VuA1DhDg==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": false,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "",
+                    "httpAuthenticationRealm": "",
+                    "httpHeaders": [
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html; charset=utf-8"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "1268"
+                        },
+                        {
+                            "name": "Connection",
+                            "value": "keep-alive"
+                        },
+                        {
+                            "name": "Accept-Ranges",
+                            "value": "bytes"
+                        },
+                        {
+                            "name": "Last-Modified",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "XSRF-TOKEN=mDkA2YtElDwihQlM3XNNyQnb6hFu6Uji71+H4CrvHo0rQ+QNiBtFTGbYe8Rsx2eorVrUgbR7wZ5CYgIjRoA/TNmz8ZwGko9RtCKgTb9062c//HfjXiTXMk6EEv2SUI6oNuYUb9s5oPGG+dmu68VVTIALNZWsMN3Yh74dLRg+/H8=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=xxxxxxxxxx; includeSubDomains"
+                        },
+                        {
+                            "name": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "name": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "name": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        }
+                    ],
+                    "httpStatusCode": "200",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": ""
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "e0d23567-ba59-3bf4-a955-dd71bba1bfef",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "192.0.2.200",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "a7677af2-ef29-385f-965e-db65dc7efba4",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "MissingCacheControlHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingContentSecurityPolicyHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingPublicKeyPinsHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-09-23T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "ip": "192.0.2.200",
+            "issueType": {
+                "id": "WildcardCertificate",
+                "name": "Wildcard Certificate"
+            },
+            "latestEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "e7092662-3c47-3513-be8d-510baa81db6a",
+                    "issuer": "C=US,O=Amazon,OU=Server CA 1B,CN=Amazon",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "Amazon",
+                    "issuerOrg": "Amazon",
+                    "issuerOrgUnit": "Server CA 1B",
+                    "issuerState": null,
+                    "md5Hash": "5wkmYjxH1RM-jVELqoHbag==",
+                    "pemSha1": "GTygc6GMGr2wnQeHZ-S0Vj7ST1o=",
+                    "pemSha256": "QqsjXZe-vlzY_Oubjb7nhopdF-IA-ktH_8FTJ1zUiD0=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 2048,
+                    "publicKeyModulus": "c9a3beee32c12f2262fd1d14dce6836e025337b0aaa3a578bf1f9b4856b50c436725c2d3fa2adfd5c74c88fa0862f8cb18df1dd40e20caf087afd7e754b142538a48dfbcb0d9ea36be8eba9cbc9db9372eb4dc875518d64e2fd0d6c1c75c172e64bfeaa2b053bf06129b859edab94adf20385d0e7899ba668e0a3e8bf9a4f92bf09ad613164eeabc2f1061ee3d86fdb2a3b65a5d7cb5a3efe9f5e5d224bd114d444a8a346ecd6b483cb0f994d95d8795e372522fa94526a8fd84a57655e27fa64729f1f902ba1b6d13eb57647bea208fba89921e0bb33bf03670d5c43da0506fb2c81382ca295a4bac0ff4cbccb8b4bb20e281af8a06ed183a878e8366c8ad95",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "PRPhvw_5Ydln2wnLA5By1tY7KyJEdvUwBD6vyIs2w30=",
+                    "serialNumber": "10068152135337932824449473818974465169",
+                    "signatureAlgorithm": "SHA256withRSA",
+                    "subject": "CN=*.dev.testcorp123.live",
+                    "subjectAlternativeNames": "*.dev.testcorp123.live",
+                    "subjectCountry": null,
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "*.dev.testcorp123.live",
+                    "subjectOrg": null,
+                    "subjectOrgUnit": null,
+                    "subjectState": null,
+                    "validNotAfter": "2021-05-28T12:00:00Z",
+                    "validNotBefore": "2020-04-28T00:00:00Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "Xg60DkTq8d7C-0VuA1DhDg==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": false,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "",
+                    "httpAuthenticationRealm": "",
+                    "httpHeaders": [
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html; charset=utf-8"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "1268"
+                        },
+                        {
+                            "name": "Connection",
+                            "value": "keep-alive"
+                        },
+                        {
+                            "name": "Accept-Ranges",
+                            "value": "bytes"
+                        },
+                        {
+                            "name": "Last-Modified",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "XSRF-TOKEN=lZ2PZGM8qbU2pyRpgDc4+CL7bLlW1XsYfHtbqRKLIw0AxSxJplFdlJvdzzTEf1grQBzzKtFZhvRxPlSt7yXnE3zlgxa/TtzGRABYPFzzE7aGN9jiC4RuEUMXEtlQNAlFy7Z6nq89O/2guGSGS2nQk/kD/4DSPVpxwWCyDYcPp6I=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=xxxxxxxxxx; includeSubDomains"
+                        },
+                        {
+                            "name": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "name": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "name": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        }
+                    ],
+                    "httpStatusCode": "200",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": ""
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "e0d23567-ba59-3bf4-a955-dd71bba1bfef",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "192.0.2.200",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "a7677af2-ef29-385f-965e-db65dc7efba4",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "MissingCacheControlHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingContentSecurityPolicyHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingPublicKeyPinsHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "WildcardCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-09-27T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "modified": "2020-11-26T05:24:13.704932Z",
+            "portNumber": 443,
+            "portProtocol": "TCP",
+            "priority": "Medium",
+            "progressStatus": "New",
+            "providers": [
+                {
+                    "id": "AWS",
+                    "name": "Amazon Web Services"
+                }
+            ]
+        },
+        {
+            "activityStatus": "Active",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "ShPgOBDeWIfmuo8YWHRCPg==",
+                    "assetType": "Certificate",
+                    "displayName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                    "id": "35f16142-18e2-3fa6-96c0-e79d2a5c72e6"
+                }
+            ],
+            "assigneeUsername": "Unassigned",
+            "businessUnits": [
+                {
+                    "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+                    "name": "testcorp123 Dev"
+                }
+            ],
+            "category": "Attack Surface Reduction",
+            "certificate": {
+                "formattedIssuerOrg": "Corporation 123",
+                "id": "4a13e038-10de-3887-a6ba-8f185874423e",
+                "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                "issuerAlternativeNames": "",
+                "issuerCountry": "US",
+                "issuerEmail": null,
+                "issuerLocality": null,
+                "issuerName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                "issuerOrg": "Corporation 123",
+                "issuerOrgUnit": "Business Unit 1",
+                "issuerState": null,
+                "md5Hash": "ShPgOBDeWIfmuo8YWHRCPg==",
+                "pemSha1": "BEJxBFq6bLyRB1liZZerArHz1t8=",
+                "pemSha256": "JggM2rPA2Tvrlre8X7QwLOd4HjhPGmu2_MOvAwoAn3M=",
+                "publicKey": "publickey",
+                "publicKeyAlgorithm": "RSA",
+                "publicKeyBits": 4096,
+                "publicKeyModulus": "fb70fab8c891335cc7252537994839c13f0f6d2c50de3c9633621174b1235d25450f6f7a02ae14845b6559e4d808c4497a613b07e07b870619b6e92b7a6cbe5974ec559d69f460870bdef41a647f5c6c05eced9eb380a4114314e1dd4b794670e7c25493a95077a5723a0db2d071a934f29ac9e937bf0a6683516eec462a9fe1ae894c72672913960f21e8c03f73f8ea8a77e4de7ed1974b9690cd0137b585c23f4dc070a262f50c5cc87843aa740f33a7c0516e5a73eb068fbddc306c18ddc0631e65ca196b011122f74c0a350af01b61e6122dabc0bae7054fb7223924d0dc0a1d0fa7eca1c6339d7b6a6f6a4ba0450ba5f3579d0cd4d785d251bb03809d571244cc31ac8226014d6512f1b3e367fcf589f0d8a5623a3e85d1587de389166575ddf3504997d1061bbf97f6040b136afb2ff48e131e206943fac494522705d558d463a23251292619472c1cc8fe6b114b04730a96da7848755ede8caa241251aee87b6ac33c533eabea10377a84772a8754644d271f6216b90aa9fe74c9a39f20ff79918f8cd8d212223f2aa9022c603552f84b03c9bcd8d50785a1464a5b80647a023b7adf1ec2061062e56906dfdfba29b50671649398161d9d42e7800e6d0f1bcb8c947680bd68733aebe7c3ca7ba271118f23c167292f1fd080b5e05c65894e4db6f220e249be17d45d3554dfab005255c1332eaaef392a0c764dc658af",
+                "publicKeyRsaExponent": 65537,
+                "publicKeySpki": "HRT9oCUMvNaHmBaBnlbpwp8rfNienj7Icej3IlRv2fY=",
+                "serialNumber": "1079",
+                "signatureAlgorithm": "SHA512withRSA",
+                "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                "subjectAlternativeNames": "",
+                "subjectCountry": "US",
+                "subjectEmail": null,
+                "subjectLocality": null,
+                "subjectName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                "subjectOrg": "Corporation 123",
+                "subjectOrgUnit": "Business Unit 1",
+                "subjectState": null,
+                "validNotAfter": "2030-08-02T16:31:37Z",
+                "validNotBefore": "2020-08-02T16:31:37Z",
+                "version": "3"
+            },
+            "created": "2020-09-28T17:55:58.077836Z",
+            "domain": null,
+            "headline": "Certificate with Long Expiration Time at 198.51.100.232:443",
+            "helpText": "There is a problem with the certificate.",
+            "id": "a41ceb18-72f6-3335-a791-98afacd8da5b",
+            "initialEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": null,
+                    "id": "4a13e038-10de-3887-a6ba-8f185874423e",
+                    "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                    "issuerOrg": "Corporation 123",
+                    "issuerOrgUnit": "Business Unit 1",
+                    "issuerState": null,
+                    "md5Hash": "ShPgOBDeWIfmuo8YWHRCPg==",
+                    "pemSha1": "BEJxBFq6bLyRB1liZZerArHz1t8=",
+                    "pemSha256": "JggM2rPA2Tvrlre8X7QwLOd4HjhPGmu2_MOvAwoAn3M=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 4096,
+                    "publicKeyModulus": "fb70fab8c891335cc7252537994839c13f0f6d2c50de3c9633621174b1235d25450f6f7a02ae14845b6559e4d808c4497a613b07e07b870619b6e92b7a6cbe5974ec559d69f460870bdef41a647f5c6c05eced9eb380a4114314e1dd4b794670e7c25493a95077a5723a0db2d071a934f29ac9e937bf0a6683516eec462a9fe1ae894c72672913960f21e8c03f73f8ea8a77e4de7ed1974b9690cd0137b585c23f4dc070a262f50c5cc87843aa740f33a7c0516e5a73eb068fbddc306c18ddc0631e65ca196b011122f74c0a350af01b61e6122dabc0bae7054fb7223924d0dc0a1d0fa7eca1c6339d7b6a6f6a4ba0450ba5f3579d0cd4d785d251bb03809d571244cc31ac8226014d6512f1b3e367fcf589f0d8a5623a3e85d1587de389166575ddf3504997d1061bbf97f6040b136afb2ff48e131e206943fac494522705d558d463a23251292619472c1cc8fe6b114b04730a96da7848755ede8caa241251aee87b6ac33c533eabea10377a84772a8754644d271f6216b90aa9fe74c9a39f20ff79918f8cd8d212223f2aa9022c603552f84b03c9bcd8d50785a1464a5b80647a023b7adf1ec2061062e56906dfdfba29b50671649398161d9d42e7800e6d0f1bcb8c947680bd68733aebe7c3ca7ba271118f23c167292f1fd080b5e05c65894e4db6f220e249be17d45d3554dfab005255c1332eaaef392a0c764dc658af",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "HRT9oCUMvNaHmBaBnlbpwp8rfNienj7Icej3IlRv2fY=",
+                    "serialNumber": "1079",
+                    "signatureAlgorithm": "SHA512withRSA",
+                    "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                    "subjectAlternativeNames": "",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                    "subjectOrg": "Corporation 123",
+                    "subjectOrgUnit": "Business Unit 1",
+                    "subjectState": null,
+                    "validNotAfter": "2030-08-02T16:31:37Z",
+                    "validNotBefore": "2020-08-02T16:31:37Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "CertificateAdvertisementConfiguration",
+                    "validWhenScanned": true
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "eddecb8a-998e-377e-aec8-aa348d0831e0",
+                "exposureType": "CERTIFICATE_CHAIN",
+                "geolocation": null,
+                "ip": "198.51.100.232",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "110b74d1-f0f1-3c8c-bbe1-7ae9dc2851de",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "LongExpirationCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        },
+                        {
+                            "name": "PanOsDevice",
+                            "reason": "{\"manufacturer\":\"Palo Alto Networks\",\"model\":\"PAN-OS Device\"}"
+                        },
+                        {
+                            "name": "SelfSignedCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-08-30T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "ip": "198.51.100.232",
+            "issueType": {
+                "id": "LongExpirationCertificate",
+                "name": "Long Validity Certificate"
+            },
+            "latestEvidence": {
+                "certificate": {
+                    "formattedIssuerOrg": "Corporation 123",
+                    "id": "4a13e038-10de-3887-a6ba-8f185874423e",
+                    "issuer": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                    "issuerAlternativeNames": "",
+                    "issuerCountry": "US",
+                    "issuerEmail": null,
+                    "issuerLocality": null,
+                    "issuerName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                    "issuerOrg": "Corporation 123",
+                    "issuerOrgUnit": "Business Unit 1",
+                    "issuerState": null,
+                    "md5Hash": "ShPgOBDeWIfmuo8YWHRCPg==",
+                    "pemSha1": "BEJxBFq6bLyRB1liZZerArHz1t8=",
+                    "pemSha256": "JggM2rPA2Tvrlre8X7QwLOd4HjhPGmu2_MOvAwoAn3M=",
+                    "publicKey": "publickey",
+                    "publicKeyAlgorithm": "RSA",
+                    "publicKeyBits": 4096,
+                    "publicKeyModulus": "fb70fab8c891335cc7252537994839c13f0f6d2c50de3c9633621174b1235d25450f6f7a02ae14845b6559e4d808c4497a613b07e07b870619b6e92b7a6cbe5974ec559d69f460870bdef41a647f5c6c05eced9eb380a4114314e1dd4b794670e7c25493a95077a5723a0db2d071a934f29ac9e937bf0a6683516eec462a9fe1ae894c72672913960f21e8c03f73f8ea8a77e4de7ed1974b9690cd0137b585c23f4dc070a262f50c5cc87843aa740f33a7c0516e5a73eb068fbddc306c18ddc0631e65ca196b011122f74c0a350af01b61e6122dabc0bae7054fb7223924d0dc0a1d0fa7eca1c6339d7b6a6f6a4ba0450ba5f3579d0cd4d785d251bb03809d571244cc31ac8226014d6512f1b3e367fcf589f0d8a5623a3e85d1587de389166575ddf3504997d1061bbf97f6040b136afb2ff48e131e206943fac494522705d558d463a23251292619472c1cc8fe6b114b04730a96da7848755ede8caa241251aee87b6ac33c533eabea10377a84772a8754644d271f6216b90aa9fe74c9a39f20ff79918f8cd8d212223f2aa9022c603552f84b03c9bcd8d50785a1464a5b80647a023b7adf1ec2061062e56906dfdfba29b50671649398161d9d42e7800e6d0f1bcb8c947680bd68733aebe7c3ca7ba271118f23c167292f1fd080b5e05c65894e4db6f220e249be17d45d3554dfab005255c1332eaaef392a0c764dc658af",
+                    "publicKeyRsaExponent": 65537,
+                    "publicKeySpki": "HRT9oCUMvNaHmBaBnlbpwp8rfNienj7Icej3IlRv2fY=",
+                    "serialNumber": "1079",
+                    "signatureAlgorithm": "SHA512withRSA",
+                    "subject": "C=US,O=Corporation 123,OU=Business Unit 1,CN=ip-172-31-8-217.eu-west-3.compute.internal",
+                    "subjectAlternativeNames": "",
+                    "subjectCountry": "US",
+                    "subjectEmail": null,
+                    "subjectLocality": null,
+                    "subjectName": "ip-172-31-8-217.eu-west-3.compute.internal",
+                    "subjectOrg": "Corporation 123",
+                    "subjectOrgUnit": "Business Unit 1",
+                    "subjectState": null,
+                    "validNotAfter": "2030-08-02T16:31:37Z",
+                    "validNotBefore": "2020-08-02T16:31:37Z",
+                    "version": "3"
+                },
+                "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                "configuration": {
+                    "_type": "WebServerConfiguration",
+                    "applicationServerSoftware": "",
+                    "certificateId": "zUxxFqUGrINfRgwX2kFCDA==",
+                    "hasApplicationServerSoftware": false,
+                    "hasServerSoftware": false,
+                    "hasUnencryptedLogin": false,
+                    "htmlPasswordAction": "",
+                    "htmlPasswordField": "",
+                    "httpAuthenticationMethod": "",
+                    "httpAuthenticationRealm": "",
+                    "httpHeaders": [
+                        {
+                            "name": "Accept-Ranges",
+                            "value": "bytes"
+                        },
+                        {
+                            "name": "Content-Length",
+                            "value": "658"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "text/html; charset=utf-8"
+                        },
+                        {
+                            "name": "Last-Modified",
+                            "value": "xxxxxxxxxx"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "XSRF-TOKEN=k8jLFJHcwd88S3pgVvkVdwlm34JWyJ/WX9B7h6EhBikAZOeLOBTCWfVmPANx7mOLjm/rEl1su/oh0KEdflkFbfE8TG4eHNBnkU7XXAHSNXFwiQ/tQTkOcAEgf2ZHBFqSrjk3sCx7C0IHDS8HR4GrNrKp0qQa1iIaIqXZtkjm57A=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Set-Cookie",
+                            "value": "inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Path=/; Expires=xxxxxxxxxx; Max-Age=31536000; Secure; SameSite=Lax"
+                        },
+                        {
+                            "name": "Strict-Transport-Security",
+                            "value": "max-age=xxxxxxxxxx; includeSubDomains"
+                        },
+                        {
+                            "name": "X-Content-Type-Options",
+                            "value": "nosniff"
+                        },
+                        {
+                            "name": "X-Frame-Options",
+                            "value": "DENY"
+                        },
+                        {
+                            "name": "X-Xss-Protection",
+                            "value": "1; mode=block"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "xxxxxxxxxx"
+                        }
+                    ],
+                    "httpStatusCode": "200",
+                    "isLoadBalancer": false,
+                    "loadBalancer": "",
+                    "loadBalancerPool": "",
+                    "serverSoftware": ""
+                },
+                "discoveryType": "Direct",
+                "domain": null,
+                "evidenceType": "ScanEvidence",
+                "exposureId": "eef03fd5-f301-3800-9f9f-0267df835e22",
+                "exposureType": "HTTP_SERVER",
+                "geolocation": null,
+                "ip": "198.51.100.232",
+                "portNumber": 443,
+                "portProtocol": "TCP",
+                "serviceId": "110b74d1-f0f1-3c8c-bbe1-7ae9dc2851de",
+                "serviceProperties": {
+                    "serviceProperties": [
+                        {
+                            "name": "HttpServer",
+                            "reason": "{\"applicationServerSoftware\":\"\",\"serverSoftware\":\"\",\"loadBalancer\":\"\",\"loadBalancerPool\":\"\",\"htmlPasswordField\":\"\",\"htmlPasswordAction\":\"\",\"httpAuthenticationMethods\":[],\"httpAuthenticationRealm\":\"\",\"httpHeaders\":[{\"name\":\"Accept-Ranges\",\"value\":\"bytes\"},{\"name\":\"Content-Length\",\"value\":\"658\"},{\"name\":\"Content-Type\",\"value\":\"text/html; charset=utf-8\"},{\"name\":\"Last-Modified\",\"value\":\"Wed, 11 Nov 2020 10:21:20 GMT\"},{\"name\":\"Set-Cookie\",\"value\":\"XSRF-TOKEN=k8jLFJHcwd88S3pgVvkVdwlm34JWyJ/WX9B7h6EhBikAZOeLOBTCWfVmPANx7mOLjm/rEl1su/oh0KEdflkFbfE8TG4eHNBnkU7XXAHSNXFwiQ/tQTkOcAEgf2ZHBFqSrjk3sCx7C0IHDS8HR4GrNrKp0qQa1iIaIqXZtkjm57A=; Path=/; Expires=Thu, 25 Nov 2021 03:15:32 GMT; Max-Age=31536000; Secure; SameSite=Lax\"},{\"name\":\"Set-Cookie\",\"value\":\"inc-term=eyJzaW5ndWxhciI6ImluY2lkZW50Iiwic2luZ3VsYXJDYXBpdGFsIjoiSW5jaWRlbnQiLCJwbHVyYWwiOiJpbmNpZGVudHMiLCJwbHVyYWxDYXBpdGFsIjoiSW5jaWRlbnRzIn0=; Path=/; Expires=Thu, 25 Nov 2021 03:15:32 GMT; Max-Age=31536000; Secure; SameSite=Lax\"},{\"name\":\"Strict-Transport-Security\",\"value\":\"max-age=10886400000000000; includeSubDomains\"},{\"name\":\"X-Content-Type-Options\",\"value\":\"nosniff\"},{\"name\":\"X-Frame-Options\",\"value\":\"DENY\"},{\"name\":\"X-Xss-Protection\",\"value\":\"1; mode=block\"},{\"name\":\"Date\",\"value\":\"Wed, 25 Nov 2020 03:15:32 GMT\"}],\"httpStatusCode\":200,\"certificateId\":\"ShPgOBDeWIfmuo8YWHRCPg==\"}"
+                        },
+                        {
+                            "name": "LongExpirationCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        },
+                        {
+                            "name": "MissingCacheControlHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingContentSecurityPolicyHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "MissingPublicKeyPinsHeader",
+                            "reason": null
+                        },
+                        {
+                            "name": "PanOsDevice",
+                            "reason": "{\"manufacturer\":\"Palo Alto Networks\",\"model\":\"PAN-OS Device\"}"
+                        },
+                        {
+                            "name": "SelfSignedCertificate",
+                            "reason": "{\"validWhenScanned\":true}"
+                        }
+                    ]
+                },
+                "timestamp": "2020-11-25T00:00:00Z",
+                "tlsVersion": "TLS 1.2"
+            },
+            "modified": "2020-11-26T05:24:13.704932Z",
+            "portNumber": 443,
+            "portProtocol": "TCP",
+            "priority": "Medium",
+            "progressStatus": "New",
+            "providers": [
+                {
+                    "id": "AWS",
+                    "name": "Amazon Web Services"
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "prev": null
+    },
+    "meta": {
+        "totalCount": 5
+    }
+}

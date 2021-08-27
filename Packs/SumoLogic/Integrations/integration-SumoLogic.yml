@@ -217,7 +217,7 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), true,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
             var currentFetch = lastRun.time;
@@ -238,17 +238,34 @@ script:
                 }
             }
 
-            if (params.fetchRecords && s.records) {
-                for (var i=0; i<s.records.length; i++) {
-                    var incident = {name: 'Incident from SumoLogic',
-                        details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
-                    var props = Object.getOwnPropertyNames(s.records[i]);
-                    for (var j=0; j<props.length; j++) {
-                        if (props[j] !== '_raw') {
-                            incident.labels.push({type: props[j], value: s.records[i][props[j]]});
+            if (params.fetchRecords) {
+                var updatedCurrentFetch = currentFetch;
+                if (s.records) {
+                    for (var i=0; i<s.records.length; i++) {
+                        var incident = {name: 'Incident from SumoLogic',
+                            details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
+                        var props = Object.getOwnPropertyNames(s.records[i]);
+                        for (var j=0; j<props.length; j++) {
+                            if (props[j] !== '_raw') {
+                                incident.labels.push({type: props[j], value: s.records[i][props[j]]});
+                            }
                         }
+                        var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
+                        var recordDateEpoch = Math.ceil(recordDate);
+                        if (recordDateEpoch >= updatedCurrentFetch){
+                            updatedCurrentFetch = recordDateEpoch + 1
+                        }
+                        incidents.push(incident);
                     }
-                    incidents.push(incident);
+                }
+
+                // if no records were fetched, then we set the currentFetch to (now time - 1 minute) as in
+                // later runs we could send a big query with old timestamp that could cause a timeout
+                // we are setting to (now - 1 minute) to avoid missing events
+                if (updatedCurrentFetch === currentFetch) {
+                    currentFetch = now - (60 * 1000);
+                } else {
+                    currentFetch = updatedCurrentFetch;
                 }
             }
             setLastRun({time: currentFetch});
@@ -308,7 +325,7 @@ script:
       description: Return results starting at this offset. should be int - by default is 0
       defaultValue: "0"
     - name: timezone
-      description: The time zone if from/to is not in milliseconds. Default is UTC. See this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article for a list of time zone codes.
+      description: The time zone if from/to is not in milliseconds. Default is UTC. Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of time zone codes.
       defaultValue: UTC
     - name: maxTimeToWaitForResults
       description: Maximum amount of time (in minutes) to wait for the search to complete. Default is 10 minutes.

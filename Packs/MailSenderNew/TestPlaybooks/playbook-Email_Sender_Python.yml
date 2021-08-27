@@ -187,7 +187,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -245,10 +246,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5d18e77f-c6bc-4172-86da-f7ae813360f1
+    taskid: 05bcc6ea-dd45-47da-8bc1-9a14f7fa9a66
     type: regular
     task:
-      id: 5d18e77f-c6bc-4172-86da-f7ae813360f1
+      id: 05bcc6ea-dd45-47da-8bc1-9a14f7fa9a66
       version: -1
       name: Delete email list from context
       description: |-
@@ -284,10 +285,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 832fe995-8180-4257-8feb-b99eaecb55dc
+    taskid: 012ebacf-1f8f-4222-81a8-a5242b1e8b27
     type: regular
     task:
-      id: 832fe995-8180-4257-8feb-b99eaecb55dc
+      id: 012ebacf-1f8f-4222-81a8-a5242b1e8b27
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -303,7 +304,9 @@ tasks:
         simple: Testmail.ID
       stringify: {}
       value:
-        simple: ${Gmail.ID}
+        complex:
+          root: Gmail
+          accessor: ID
     separatecontext: false
     view: |-
       {
@@ -387,10 +390,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
+    taskid: c0c41e02-8f0a-4655-840e-c5105b6cfa59
     type: regular
     task:
-      id: aa89c1d1-00e5-4c96-8a55-35e487bd2b4e
+      id: c0c41e02-8f0a-4655-840e-c5105b6cfa59
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -404,7 +407,9 @@ tasks:
     scriptarguments:
       format: {}
       message-id:
-        simple: ${Testmail.ID}
+        complex:
+          root: Testmail
+          accessor: ID
       user-id:
         simple: yarden@demistodev.com
     separatecontext: false
@@ -422,10 +427,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 49200cf0-da80-45ec-829e-9685467b041c
+    taskid: 40a841f8-94e1-4427-8071-e7cd4b5803f1
     type: condition
     task:
-      id: 49200cf0-da80-45ec-829e-9685467b041c
+      id: 40a841f8-94e1-4427-8071-e7cd4b5803f1
       version: -1
       name: Check for attachments
       type: condition
@@ -492,7 +497,7 @@ tasks:
       id: b8a35408-9973-4275-819a-0948bddf0a3f
       version: -1
       name: Email found without attachment
-      script: RaiseError
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -520,7 +525,7 @@ tasks:
       id: 032246da-2987-4a48-877d-062017d41cd9
       version: -1
       name: Test failed
-      script: RaiseError
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -617,7 +622,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -710,10 +716,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 1342069a-edf9-4c67-8376-0cb349064271
+    taskid: 73edebbd-4acc-4924-8b7f-01857c44ae97
     type: regular
     task:
-      id: 1342069a-edf9-4c67-8376-0cb349064271
+      id: 73edebbd-4acc-4924-8b7f-01857c44ae97
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -724,9 +730,12 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
+      additionalHeader: {}
       attachCIDs: {}
       attachIDs:
-        simple: ${File.EntryID}
+        complex:
+          root: File
+          accessor: EntryID
       attachNames:
         simple: attach.txt
       bcc: {}
@@ -734,6 +743,7 @@ tasks:
         simple: this is a test by playbook
       cc: {}
       htmlBody: {}
+      raw_message: {}
       replyTo: {}
       subject:
         simple: special test via playbook (2)
@@ -964,10 +974,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: bb7aab29-94d4-488a-8f69-9c003f9f34c0
+    taskid: ec7d6f57-7294-412d-8073-4fe119e0cc7f
     type: regular
     task:
-      id: bb7aab29-94d4-488a-8f69-9c003f9f34c0
+      id: ec7d6f57-7294-412d-8073-4fe119e0cc7f
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -983,7 +993,9 @@ tasks:
         simple: Testmail.ID
       stringify: {}
       value:
-        simple: ${Gmail.[0].ID}
+        complex:
+          root: Gmail
+          accessor: ID
     separatecontext: false
     view: |-
       {
@@ -1035,10 +1047,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
+    taskid: efa59f65-ee55-4396-8c76-eef7ffc22097
     type: regular
     task:
-      id: 6fdd80e3-1a3f-4b8d-866e-6226a786ea8b
+      id: efa59f65-ee55-4396-8c76-eef7ffc22097
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -1052,7 +1064,9 @@ tasks:
     scriptarguments:
       format: {}
       message-id:
-        simple: ${Testmail.ID}
+        complex:
+          root: Testmail
+          accessor: ID
       user-id:
         simple: yarden@demistodev.com
     separatecontext: false
@@ -1147,7 +1161,7 @@ tasks:
       id: d74d1676-2c9d-4a2c-8051-48eebb8b06fc
       version: -1
       name: Email found without attachment
-      script: RaiseError
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -1335,7 +1349,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1436,7 +1451,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works OR mockpoc@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1498,7 +1514,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1560,7 +1577,8 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works subject:special test via playbook after:'
+                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                    subject:special test via playbook after:'
               suffix: {}
       subject: {}
       to: {}
@@ -1628,6 +1646,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {

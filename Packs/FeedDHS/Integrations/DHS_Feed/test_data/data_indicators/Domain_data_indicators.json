@@ -1,0 +1,1066 @@
+[
+    {
+        "value": "test.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "test.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "example.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "example.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "something.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "something.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "nothing.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "nothing.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "everything.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "everything.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "anything.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "anything.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "test4.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "test4.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "test5.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "test5.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "z56test.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "z56test.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "z55test.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "z55test.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "x58test.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "x58test.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "x59test.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "x59test.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "x57test.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "x57test.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "onebulks.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "onebulks.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "hotenlighten.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "hotenlighten.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "ds46x1.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "ds46x1.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "ds47x1.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "ds47x1.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "qds45x1.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "qds45x1.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "lkmf.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "lkmf.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "uiyplk.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "uiyplk.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "threav.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "threav.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "oplkmf.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "oplkmf.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "lmnab.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "lmnab.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "qvrw.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "qvrw.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "hibuzes.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "hibuzes.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "zebao.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "zebao.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "watoror.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "watoror.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "ds45x1.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "ds45x1.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "refvs.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "refvs.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "hmiu.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "hmiu.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "zaxswder.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "zaxswder.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "dasvdbfgne.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "dasvdbfgne.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "dcv24te.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "dcv24te.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "mugtre.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "mugtre.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "hunopk.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "hunopk.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "dghns.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "dghns.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "numklo.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "numklo.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "sh78bug.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "sh78bug.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "gut45bg.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "gut45bg.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "vighik.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "vighik.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "doldig.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "doldig.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "bigjamg.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "bigjamg.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "cntrhum.xyz",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "cntrhum.xyz"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "test3.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "test3.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "mixcinc.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "mixcinc.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "titlecs.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "titlecs.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "labelcs.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "labelcs.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "freedubcs.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "freedubcs.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "nicknamec.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "nicknamec.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "bubl6g.com",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "bubl6g.com"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "sulionuili1.in",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "sulionuili1.in"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "dunujilis11r.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "dunujilis11r.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "oohdojssks9uf.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "oohdojssks9uf.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "nulikuliey.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "nulikuliey.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "eseruuynli2.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "eseruuynli2.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "ghjk78kjhb.net",
+        "type": "Domain",
+        "rawJson": {
+            "@type": "FQDN",
+            "@xsi:type": "DomainNameObj:DomainNameObjectType",
+            "DomainNameObj:Value": {
+                "@condition": "Equals",
+                "#text": "ghjk78kjhb.net"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    }
+]

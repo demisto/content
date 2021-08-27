@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "rows": [
+    {
+      "_fromV550": "t",
+      "_identifier": "1",
+      "_labels": [
+        "Metrics",
+        "Harddisk",
+        "Usage"
+      ],
+      "_offset": 89550,
+      "_type_ip": "device_ip",
+      "_type_num": "log_ts col_ts use free used sig_id total _offset _identifier",
+      "_type_str": "msg col_type device_name collected_at device_ip source_name _tz mount_point norm_id label device type _fromV550 repo_name logpoint_name",
+      "_tz": "Europe/Brussels",
+      "col_ts": 1516417445,
+      "col_type": "filesystem",
+      "collected_at": "DKCNTLPO01",
+      "device": "/dev/mapper/LogPoint--vg-root",
+      "device_ip": "127.0.0.1",
+      "device_name": "localhost",
+      "free": "312498",
+      "log_ts": 1516413843,
+      "logpoint_name": "DKCNTLPO01",
+      "mount_point": "/",
+      "msg": "2018-01-20_03:04:03 Metrics; Hard Disk Usage; mountpoint=/; device=/dev/mapper/LogPoint-- vg-root; type=ext4; total=3765158 MB; use=87.6%; used=3299556 MB; free=312498 MB",
+      "norm_id": "LogPoint",
+      "repo_name": "_logpoint",
+      "sig_id": "10509",
+      "source_name": "/opt/immune/var/log/system_metrics/system_metrics.log",
+      "total": "3765158",
+      "type": "ext4",
+      "use": "87.6",
+      "used": "3299556"
+    }
+  ]
+}

@@ -1,0 +1,720 @@
+id: Search Endpoint by CVE - Generic
+version: -1
+name: Search Endpoint by CVE - Generic
+description: Hunt for assets with a given CVE using available tools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3cc9f67a-3dcb-4793-8ac2-fbbeac13430c
+    type: start
+    task:
+      id: 3cc9f67a-3dcb-4793-8ac2-fbbeac13430c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fe3f943e-ee9d-4e14-8d38-acd5029ebbb9
+    type: condition
+    task:
+      id: fe3f943e-ee9d-4e14-8d38-acd5029ebbb9
+      version: -1
+      name: Is there CVE?
+      description: Checks if there is a CVE in the playbook input
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CVE_ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5c6efc1c-e322-4f05-875b-e1e9410adf25
+    type: title
+    task:
+      id: 5c6efc1c-e322-4f05-875b-e1e9410adf25
+      version: -1
+      name: Search CVE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "7"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 776c24cb-8546-4e9c-81f7-cfd2dc6c4727
+    type: title
+    task:
+      id: 776c24cb-8546-4e9c-81f7-cfd2dc6c4727
+      version: -1
+      name: Rapid7 Nexpose
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 70b1a735-db7c-4d65-8b8f-ac8f1eaa212f
+    type: condition
+    task:
+      id: 70b1a735-db7c-4d65-8b8f-ac8f1eaa212f
+      version: -1
+      name: Is Rapid7 Nexpose enabled?
+      description: 'Checks if Rapid7 Nexpose is enabled '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Rapid7 Nexpose
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 14333e5c-cb15-4a68-8445-2b05472229e1
+    type: regular
+    task:
+      id: 14333e5c-cb15-4a68-8445-2b05472229e1
+      version: -1
+      name: 'Search CVE with Rapid7 Nexpose '
+      description: Returns all assets for which you have access that match the given
+        search criteria.
+      tags:
+      - autoCVEsearch
+      script: Rapid7 Nexpose|||nexpose-search-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hostNameIs: {}
+      ipAddressIs: {}
+      limit: {}
+      match: {}
+      query: {}
+      riskScoreHigherThan: {}
+      siteIdIn: {}
+      sort: {}
+      vulnerabilityTitleContains:
+        complex:
+          root: inputs.CVE_ID
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Breached Compromised Hosts
+      output:
+        complex:
+          root: Nexpose
+          accessor: Asset
+          transformers:
+          - operator: ConvertToSingleElementArray
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3314e9aa-4546-49ca-809a-e441b344f5f2
+    type: condition
+    task:
+      id: 3314e9aa-4546-49ca-809a-e441b344f5f2
+      version: -1
+      name: Is Kennav2 enabled?
+      description: 'Checks if KennaV2 is enabled '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Kennav2
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4dcb3885-0d0e-4dd8-8a6d-744a3c57b9b8
+    type: title
+    task:
+      id: 4dcb3885-0d0e-4dd8-8a6d-744a3c57b9b8
+      version: -1
+      name: Kennav2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8a816485-5157-4566-8336-291b4f7fa4d0
+    type: regular
+    task:
+      id: 8a816485-5157-4566-8336-291b4f7fa4d0
+      version: -1
+      name: Search CVE with Kenna
+      description: Searches for vulnerabilities in Kenna.
+      tags:
+      - autoCVEsearch
+      script: '|||kenna-search-vulnerabilities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.CVE_ID
+      limit: {}
+      min-score: {}
+      status: {}
+      to_context: {}
+      top-priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ae99de5a-7c26-4cf6-87fc-d004af1cb212
+    type: title
+    task:
+      id: ae99de5a-7c26-4cf6-87fc-d004af1cb212
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: cffb6924-0a75-4ed9-89d3-33944c6d31b2
+    type: condition
+    task:
+      id: cffb6924-0a75-4ed9-89d3-33944c6d31b2
+      version: -1
+      name: Found results?
+      description: If found Assets with the given CVE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Kenna
+                accessor: Vulnerabilities
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 5dc657f4-1a09-4466-87e0-c4e6aa568d3c
+    type: regular
+    task:
+      id: 5dc657f4-1a09-4466-87e0-c4e6aa568d3c
+      version: -1
+      name: Get hostname from assetID
+      description: Searches for assets.
+      script: '|||kenna-search-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      hostname: {}
+      id:
+        complex:
+          root: Kenna.Vulnerabilities
+          accessor: AssetID
+      limit: {}
+      min-score: {}
+      tags: {}
+      to_context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Breached Compromised Hosts
+      output:
+        complex:
+          root: Kenna
+          accessor: Assets
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 536cbf27-e426-49ec-8746-d74a6912cf81
+    type: title
+    task:
+      id: 536cbf27-e426-49ec-8746-d74a6912cf81
+      version: -1
+      name: RiskSense
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 44395589-60e0-4dd1-893b-15b0aad442c3
+    type: condition
+    task:
+      id: 44395589-60e0-4dd1-893b-15b0aad442c3
+      version: -1
+      name: 'Is RiskSense Enabled? '
+      description: 'Checks if RiskSense is enabled '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskSense
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 126fda72-2bab-4baf-8d62-6995d6b9a270
+    type: playbook
+    task:
+      id: 126fda72-2bab-4baf-8d62-6995d6b9a270
+      version: -1
+      name: CVE Exposure - RiskSense
+      playbookName: CVE Exposure - RiskSense
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      CVES:
+        complex:
+          root: inputs.CVE_ID
+      TagName:
+        simple: FireEye RedTeam tools
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 38fa22d3-111a-4edb-8e4b-407af0cc699b
+    type: regular
+    task:
+      id: 38fa22d3-111a-4edb-8e4b-407af0cc699b
+      version: -1
+      name: Set results to Endpoint context
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Endpoint
+      stringify: {}
+      value:
+        complex:
+          root: RiskSense
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: RiskSense
+                iscontext: true
+          accessor: Host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 97583f7a-e6b3-4662-86be-7e267e2539ac
+    type: regular
+    task:
+      id: 97583f7a-e6b3-4662-86be-7e267e2539ac
+      version: -1
+      name: Set results to Endpoint context
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint
+      stringify: {}
+      value:
+        complex:
+          root: Kenna
+          accessor: Assets
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_yes": 0.68,
+      "11_9_#default#": 0.1,
+      "14_9_#default#": 0.1,
+      "1_2_yes": 0.16,
+      "1_9_#default#": 0.1,
+      "4_9_#default#": 0.1,
+      "6_9_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1695,
+        "width": 1810,
+        "x": -20,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: CVE_ID
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: Kenna.Assets
+  description: Compromised Assets from Kenna
+  type: unknown
+- contextPath: Nexpose.Asset
+  description: Compromised Assets from Nexpose
+  type: unknown
+- contextPath: Endpoint
+  description: Global compromised Assets
+  type: unknown
+tests:
+- No tests
+fromversion: 5.5.0

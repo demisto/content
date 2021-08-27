@@ -24,7 +24,7 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
                           'The response from the server did not contain the expected content.'
 
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
-                    'AssigneeEmail', 'Labels', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
+                    'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
                     'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated', 'Etag']
 
@@ -35,14 +35,15 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 
 class Client:
-    def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy):
+    def __init__(self, self_deployed: bool, refresh_token: str, auth_and_token_url: str, enc_key: str,
+                 redirect_uri: str, auth_code: str, subscription_id: str, resource_group_name: str, workspace_name: str,
+                 verify: bool, proxy: bool):
 
         tenant_id = refresh_token if self_deployed else ''
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
-            f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
-            f'{workspace_name}/providers/Microsoft.SecurityInsights'
+                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
+                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,
@@ -94,7 +95,11 @@ class Client:
 def format_date(date):
     if not date:
         return None
-    return dateparser.parse(date).strftime(DATE_FORMAT)
+    return dateparser.parse(date).strftime(DATE_FORMAT)  # type:ignore
+
+
+def str_to_bool(str_bool):
+    return str_bool.lower() == 'true'
 
 
 def incident_data_to_demisto_format(inc_data):
@@ -110,8 +115,8 @@ def incident_data_to_demisto_format(inc_data):
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
         'Label': [{
-            'Name': label.get('name'),
-            'Type': label.get('type')
+            'Name': label.get('labelName'),
+            'Type': label.get('labelType')
         } for label in properties.get('labels', [])],
         'FirstActivityTimeUTC': format_date(properties.get('firstActivityTimeUtc')),
         'LastActivityTimeUTC': format_date(properties.get('lastActivityTimeUtc')),
@@ -130,36 +135,53 @@ def incident_data_to_demisto_format(inc_data):
     return formatted_data
 
 
-def get_update_incident_request_data(client, args):
+def get_update_incident_request_data(client: Client, args: Dict[str, str]):
     # Get Etag and other mandatory properties (title, severity, status) for update_incident command
-    _, _, result = get_incident_by_id_command(client, args)
+    _, _, fetched_incident_data = get_incident_by_id_command(client, args)
 
     title = args.get('title')
     description = args.get('description')
     severity = args.get('severity')
     status = args.get('status')
+    classification = args.get('classification')
+    classification_reason = args.get('classification_reason')
+    assignee_email = args.get('assignee_email')
+    labels = argToList(args.get('labels', ''))
 
     if not title:
-        title = result.get('properties', {}).get('title')
+        title = demisto.get(fetched_incident_data, 'properties.title')
     if not description:
-        description = result.get('properties', {}).get('description')
+        description = demisto.get(fetched_incident_data, 'properties.description')
     if not severity:
-        severity = result.get('properties', {}).get('severity')
+        severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
-        status = result.get('properties', {}).get('status')
+        status = demisto.get(fetched_incident_data, 'properties.status')
+    if not assignee_email:
+        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
 
-    inc_data = {
-        'etag': result.get('etag'),
+    existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
+    if not labels:  # not provided as arg
+        labels_formatted = existing_labels
+
+    else:
+        labels_formatted = [{"labelName": label, "labelType": "User"}
+                            for label in argToList(labels) if label]  # labels can not be blank
+    incident_data = {
+        'etag': fetched_incident_data.get('etag'),
         'properties': {
             'title': title,
             'description': description,
             'severity': severity,
-            'status': status
+            'status': status,
+            'classification': classification,
+            'classificationReason': classification_reason,
+            'labels': labels_formatted,
+            'owner': {'email': assignee_email}
         }
     }
-    remove_nulls_from_dictionary(inc_data['properties'])
+    remove_nulls_from_dictionary(incident_data['properties'])
 
-    return inc_data
+    return incident_data
 
 
 def comment_data_to_demisto_format(comment_data, inc_id):
@@ -296,7 +318,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
     )
 
 
-def update_incident_command(client, args):
+def update_incident_command(client: Client, args: Dict[str, Any]):
     inc_id = args.get('incident_id')
 
     inc_data = get_update_incident_request_data(client, args)
@@ -405,26 +427,57 @@ def incident_add_comment_command(client, args):
 
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    url_suffix = f'entities/{entity_id}'
+    expand_entity_information = str_to_bool(args.get('expand_entity_information'))
 
-    result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
+    if not expand_entity_information:
+        url_suffix = f'entities/{entity_id}'
 
-    flattened_result = flatten_entity_attributes(result)
+        result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
 
-    readable_output = tableToMarkdown(f'Entity {entity_id} details',
-                                      flattened_result,
-                                      removeNull=True,
-                                      headerTransform=pascalToSpace)
+        flattened_result = flatten_entity_attributes(result)
 
-    outputs = {
-        'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
-    }
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          flattened_result,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
 
-    return (
-        readable_output,
-        outputs,
-        result
-    )
+        outputs = {
+            'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
+    else:
+        # This expansion_id is written according to -
+        # https://techcommunity.microsoft.com/t5/azure-sentinel/get-entities-for-a-sentinel-incidient-by-api/m-p/1422643
+
+        expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
+        url_suffix = f'entities/{entity_id}/expand'
+        data = {
+            "expansionId": expansion_id
+        }
+
+        result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+
+        result_value = result.get('value', {})
+        result_entities = result_value.get('entities', [])
+        readable_output = tableToMarkdown(f'Entity {entity_id} details',
+                                          result_entities,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+
+        outputs = {
+            'AzureSentinel.Entity(val.id === obj.id)': result_entities
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result
+        )
 
 
 def list_entity_relations_command(client, args):
@@ -582,7 +635,6 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(

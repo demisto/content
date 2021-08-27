@@ -1,0 +1,4 @@
+!aws-lambda-list-functions
+!aws-lambda-get-function functionName="test_echo"
+!aws-lambda-get-account-settings
+!aws-lambda-invoke functionName="test_echo" logType="Tail" payload="{\"value\":\"test\"}"

@@ -12,22 +12,22 @@ description: |-
   - Blocks IPs associated with the malware
   - Isolates the attacking endpoint
   - Allows manual blocking of ports that were used for host login following the port scan
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7c46d5ad-2e77-4213-8d84-4de23934ce23
     type: start
     task:
       id: 7c46d5ad-2e77-4213-8d84-4de23934ce23
       version: -1
-      name: ''
+      name: ""
+      description: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -49,13 +49,13 @@ tasks:
       id: 8277520e-1e78-403a-8914-018cd06cc1f3
       version: -1
       name: Triage
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '92'
+      - "92"
     separatecontext: false
     view: |-
       {
@@ -77,22 +77,22 @@ tasks:
       id: dd99e02f-59f3-403d-86ed-0c56428cd7ad
       version: -1
       name: Check if attacker is internal or external
-      description: Uses an automated script to determine if the IP used in the incident is in one of the ranges provided.
+      description: Uses an automated script to determine if the IP used in the incident
+        is in one of the ranges provided.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       ip:
         complex:
           root: AttackerIPs
           transformers:
           - operator: uniq
-      ipRanges:
-        simple: ${inputs.InternalIPRanges}
+      ipRanges: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -120,10 +120,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -165,10 +165,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -210,12 +210,12 @@ tasks:
         host following the port scan.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '87'
-      'yes':
-      - '34'
+      - "87"
+      "yes":
+      - "34"
     separatecontext: false
     view: |-
       {
@@ -237,14 +237,14 @@ tasks:
       id: 5ade44c2-fea8-45bf-81fd-a1f00699998a
       version: -1
       name: Block ports used for exploitation on the scanned host
-      description: Manually block the port/s associated with vulnerable services
-        or that allowed the attacker to gain unauthorized access to the target machine.
+      description: Manually block the port/s associated with vulnerable services or
+        that allowed the attacker to gain unauthorized access to the target machine.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -270,10 +270,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       append: {}
       key:
@@ -311,10 +311,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -367,19 +367,19 @@ tasks:
       id: 8cbe42bf-2e02-4201-8a2a-10d019de3b5f
       version: -1
       name: Detection
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '93'
+      - "93"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1060
+          "y": 1270
         }
       }
     note: false
@@ -399,10 +399,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -441,10 +441,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -472,27 +472,27 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 55653c88-b81f-4477-84ad-c0b928f57b61
+    taskid: c233bda6-bc73-4094-89bf-d7c8d15315c0
     type: condition
     task:
-      id: 55653c88-b81f-4477-84ad-c0b928f57b61
+      id: c233bda6-bc73-4094-89bf-d7c8d15315c0
       version: -1
       name: Was there a case of lateral movement following the scan?
       description: Checks whether there was a lateral movement alert that came after
         the port scan alert.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '60'
-      'yes':
-      - '86'
+      - "60"
+      "yes":
+      - "86"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: LateralMovementFirstDatetime
@@ -510,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1820
+          "y": 1980
         }
       }
     note: false
@@ -531,11 +531,11 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '50'
-      - '51'
+      - "50"
+      - "97"
     scriptarguments:
       append: {}
       key:
@@ -571,13 +571,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append:
-        simple: 'false'
+        simple: "false"
       key:
         simple: PortScanFirstDatetime
       stringify: {}
@@ -603,7 +603,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
@@ -632,13 +632,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append:
-        simple: 'false'
+        simple: "false"
       key:
         simple: LateralMovementFirstDatetime
       stringify: {}
@@ -664,15 +664,15 @@ tasks:
             args:
               index:
                 value:
-                  simple: '0'
+                  simple: "0"
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2520,
-          "y": 890
+          "x": 2750,
+          "y": 1070
         }
       }
     note: false
@@ -691,10 +691,10 @@ tasks:
       description: Manually investigate endpoints infected with the malware.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -720,16 +720,16 @@ tasks:
         hash of the malware associated with this incident.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '61'
-      'yes':
-      - '72'
-      - '62'
+      - "61"
+      "yes":
+      - "72"
+      - "62"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -752,28 +752,28 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 7cf215e5-3e44-4611-8896-763e0008e031
+    taskid: e02d1a26-fc02-47af-8409-b98f7206acb0
     type: playbook
     task:
       id: e02d1a26-fc02-47af-8409-b98f7206acb0
       version: -1
       name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
-        \ a multipurpose playbook used for hunting and threat detection. The playbook\
-        \ receives inputs based on hashes, IP addresses, or domain names provided\
-        \ manually or from outputs by other playbooks. \nWith the received indicators,\
-        \ the playbook leverages Palo Alto Cortex data received by products such as\
-        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
-        \ to that specific hash. \nThe output provided by the playbook facilitates\
-        \ pivoting searches for possibly affected hosts, IP addresses, or users."
+      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is
+        a multipurpose playbook used for hunting and threat detection. The playbook
+        receives inputs based on hashes, IP addresses, or domain names provided manually
+        or from outputs by other playbooks. \nWith the received indicators, the playbook
+        leverages Palo Alto Cortex data received by products such as Traps, Analytics
+        and Pan-OS to search for IP addresses and hosts related to that specific hash.
+        \nThe output provided by the playbook facilitates pivoting searches for possibly
+        affected hosts, IP addresses, or users."
       playbookName: PANW - Hunting and threat detection by indicator type V2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '54'
-      - '67'
+      - "54"
+      - "67"
     scriptarguments:
       IPAddresses: {}
       InternalRange:
@@ -792,7 +792,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'true'
+                  simple: "true"
               ignorecase: true
             - operator: isNotEqualString
               left:
@@ -808,7 +808,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
@@ -831,13 +831,13 @@ tasks:
       id: 94865e07-4176-494c-815b-36d6e15aee37
       version: -1
       name: Containment & Remediation
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '94'
+      - "94"
     separatecontext: false
     view: |-
       {
@@ -869,10 +869,10 @@ tasks:
       playbookName: Calculate Severity - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '81'
+      - "81"
     scriptarguments:
       Account:
         complex:
@@ -900,7 +900,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
@@ -923,17 +923,18 @@ tasks:
       id: 564342aa-8759-4b57-81c9-f8251f7362b7
       version: -1
       name: Save involved hostnames to endpoint objects
-      description: Saves hostnames related to this incident in the Endpoint.Hostname context key.
+      description: Saves hostnames related to this incident in the Endpoint.Hostname
+        context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '52'
+      - "52"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: Endpoint.Hostname
       stringify: {}
@@ -969,10 +970,10 @@ tasks:
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '60'
+      - "60"
     scriptarguments:
       assignBy:
         simple: random
@@ -989,7 +990,7 @@ tasks:
       {
         "position": {
           "x": 140,
-          "y": 2315
+          "y": 2475
         }
       }
     note: false
@@ -1009,15 +1010,15 @@ tasks:
         incident was configured in the RoleForEscalation playbook input.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '65'
-      'yes':
-      - '63'
+      - "65"
+      "yes":
+      - "63"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1029,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 140,
-          "y": 2140
+          "y": 2300
         }
       }
     note: false
@@ -1048,16 +1049,16 @@ tasks:
       description: Manually assign the incident to an analyst of a higher tier.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '60'
+      - "60"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -280,
-          "y": 2315
+          "y": 2475
         }
       }
     note: false
@@ -1078,10 +1079,10 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       append: {}
       key:
@@ -1123,15 +1124,15 @@ tasks:
         incident was found related to any external IP addresses.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '61'
-      'yes':
-      - '68'
+      - "61"
+      "yes":
+      - "68"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -1160,19 +1161,19 @@ tasks:
       id: da2051e1-6927-4981-8029-bb62d9aa8b3b
       version: -1
       name: Can the external IPs be blocked automatically?
-      description: Checks whether the external IPs associated with the malware's SHA256 hash
-        can be blocked automatically.
+      description: Checks whether the external IPs associated with the malware's SHA256
+        hash can be blocked automatically.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '69'
-      'yes':
-      - '70'
+      - "69"
+      "yes":
+      - "70"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1182,7 +1183,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'true'
+              simple: "true"
           ignorecase: true
     view: |-
       {
@@ -1207,10 +1208,10 @@ tasks:
       description: Manually block external IPs associated with the malware infection.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -1243,15 +1244,15 @@ tasks:
       playbookName: Block IP - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     scriptarguments:
       AutoCommit:
-        simple: 'No'
+        simple: "No"
       CustomBlockRule:
-        simple: 'True'
+        simple: "True"
       DAG: {}
       EDLServerIP: {}
       IP:
@@ -1267,7 +1268,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
@@ -1290,14 +1291,14 @@ tasks:
       id: 4aa93eea-6c1f-4581-836b-0fdbe9add734
       version: -1
       name: Block File - Generic v2
+      description: ""
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: true
     view: |-
       {
@@ -1323,15 +1324,15 @@ tasks:
         be blocked automatically using various EDR integrations.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '73'
-      'yes':
-      - '71'
+      - "73"
+      "yes":
+      - "71"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1341,7 +1342,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
     view: |-
       {
@@ -1367,10 +1368,10 @@ tasks:
         EDR integrations.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -1396,15 +1397,15 @@ tasks:
         whether any mail sender integrations are enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '48'
-      'yes':
-      - '76'
+      - "48"
+      "yes":
+      - "76"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1455,7 +1456,7 @@ tasks:
       {
         "position": {
           "x": 170,
-          "y": 1460
+          "y": 1620
         }
       }
     note: false
@@ -1476,10 +1477,10 @@ tasks:
       script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '48'
+      - "48"
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -1512,7 +1513,7 @@ tasks:
       {
         "position": {
           "x": 170,
-          "y": 1640
+          "y": 1800
         }
       }
     note: false
@@ -1532,15 +1533,15 @@ tasks:
         and the IsolateEndpointAutomatically input is set to True.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '78'
-      'yes':
-      - '84'
+      - "78"
+      "yes":
+      - "84"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1554,7 +1555,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
       - - operator: isExists
           left:
@@ -1596,10 +1597,10 @@ tasks:
         the endpoint was not specified in the WhitelistedHostnames playbook input.
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -1628,10 +1629,10 @@ tasks:
       playbookName: Isolate Endpoint - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     scriptarguments:
       EndpointId:
         complex:
@@ -1657,7 +1658,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
@@ -1680,26 +1681,25 @@ tasks:
       id: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
       version: -1
       name: Sync XDR event
-      description: Syncs a single incident between Demisto and XDR. This script 
-        uses the xdr-get-incident-extra-data command and outputs to the context the
-        entire incident JSON. When the incident is updated in XDR, the Demisto incident
-        will be updated accordingly. When an incident
-        is updated in Demisto, the script executes the xdr-update-incident command
-        and update the incident in XDR.
+      description: Syncs a single incident between Demisto and XDR. This script uses
+        the xdr-get-incident-extra-data command and outputs to the context the entire
+        incident JSON. When the incident is updated in XDR, the Demisto incident will
+        be updated accordingly. When an incident is updated in Demisto, the script
+        executes the xdr-update-incident command and update the incident in XDR.
       scriptName: XDRSyncScript
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '40'
-      - '46'
-      - '37'
-      - '45'
-      - '15'
-      - '24'
-      - '49'
-      - '66'
+      - "40"
+      - "46"
+      - "37"
+      - "45"
+      - "15"
+      - "24"
+      - "49"
+      - "66"
     scriptarguments:
       alert_count: {}
       assigned_user_mail: {}
@@ -1713,7 +1713,7 @@ tasks:
           root: incident
           accessor: xdrincidentid
       interval:
-        simple: '5'
+        simple: "5"
       low_severity_alert_count: {}
       med_severity_alert_count: {}
       notes: {}
@@ -1757,10 +1757,10 @@ tasks:
       scriptName: StopScheduledTask
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '82'
+      - "82"
     scriptarguments:
       taskID:
         complex:
@@ -1793,10 +1793,10 @@ tasks:
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '83'
+      - "83"
     scriptarguments:
       assigned_user_mail: {}
       assigned_user_pretty_name: {}
@@ -1837,7 +1837,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '96'
+      - "96"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -1874,10 +1874,10 @@ tasks:
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '95'
+      - "95"
     scriptarguments:
       alias_name: {}
       dist_name: {}
@@ -1920,19 +1920,19 @@ tasks:
       id: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
       version: -1
       name: Exploitation
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '64'
+      - "64"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 140,
-          "y": 2010
+          "y": 2170
         }
       }
     note: false
@@ -1948,13 +1948,13 @@ tasks:
       id: 0818dc59-3276-4a92-86b3-20a0c006774c
       version: -1
       name: Port Blocking Unneeded
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -1976,13 +1976,13 @@ tasks:
       id: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
       version: -1
       name: Port Blocking
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     separatecontext: false
     view: |-
       {
@@ -2004,13 +2004,13 @@ tasks:
       id: 43adfaa6-26d4-4f0b-8429-90088ffa1094
       version: -1
       name: Malware Hunting
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '59'
+      - "59"
     separatecontext: false
     view: |-
       {
@@ -2032,13 +2032,13 @@ tasks:
       id: 887a43af-e9fe-4c60-85ca-611d319676f0
       version: -1
       name: Host Isolation
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '77'
+      - "77"
     separatecontext: false
     view: |-
       {
@@ -2060,14 +2060,14 @@ tasks:
       id: 9f4c3903-549c-4273-8a45-b98e203a2dc3
       version: -1
       name: IP Enrichment - Internal - Generic v2
+      description: ""
       playbookName: IP Enrichment - Internal - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '48'
+      - "48"
     scriptarguments:
       IP:
         complex:
@@ -2078,18 +2078,18 @@ tasks:
         complex:
           root: inputs.InternalIPRanges
       ResolveIP:
-        simple: 'True'
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
       {
         "position": {
           "x": 730,
-          "y": 1460
+          "y": 1620
         }
       }
     note: false
@@ -2112,7 +2112,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '80'
+      - "80"
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -2418,8 +2418,8 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '91'
-      - '75'
+      - "91"
+      - "75"
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -2717,7 +2717,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1190
+          "y": 1410
         }
       }
     note: false
@@ -2741,9 +2741,9 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '88'
-      - '89'
-      - '90'
+      - "88"
+      - "89"
+      - "90"
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -3041,14 +3041,15 @@ tasks:
       id: 1fc18b5e-5f11-47f6-8f94-f8bad97fc719
       version: -1
       name: Save XDR endpoints
-      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context key.
+      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context
+        key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '79'
+      - "79"
     scriptarguments:
       append: {}
       key:
@@ -3081,16 +3082,66 @@ tasks:
       id: 0dfd512e-ddfc-40ab-879c-301b55822d1a
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 470,
           "y": 4550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 40036b5f-2d29-4c29-80a7-9f8cdd508a94
+    type: condition
+    task:
+      id: 40036b5f-2d29-4c29-80a7-9f8cdd508a94
+      version: -1
+      name: Was there a lateral movement alert?
+      description: Checks whether one of the received alerts is a lateral movement
+        alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IncidentAlerts
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: IncidentAlerts.category
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Lateral Movement
+                accessor: detection_timestamp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 890
         }
       }
     note: false
@@ -3120,7 +3171,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4595,
-        "width": 4690,
+        "width": 4920,
         "x": -1790,
         "y": 20
       }
@@ -3132,33 +3183,39 @@ inputs:
   required: false
   description: A list of comma-separated ports that should not be blocked even if
     used in an attack.
+  playbookInputQuery: null
 - key: BlockAttackerIP
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether attacking IPs should be automatically blocked using firewalls.
+  playbookInputQuery: null
 - key: WhitelistedHostnames
   value:
     simple: AdminPC
   required: false
   description: A list of comma-separated hostnames that should not be isolated even
     if used in an attack.
+  playbookInputQuery: null
 - key: EmailAddressesToNotify
   value: {}
   required: false
   description: A list of comma-separated values of email addresses that should receive
     a notification about compromised hosts.
+  playbookInputQuery: null
 - key: CriticalUsernames
   value: {}
   required: false
   description: A list of comma-separated names of critical users in the organization.
     This will affect the calculated severity of the incident.
+  playbookInputQuery: null
 - key: IsolateEndpointAutomatically
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to automatically isolate endpoints, or opt for manual user
     approval. True means isolation will be done automatically.
+  playbookInputQuery: null
 - key: InternalIPRanges
   value: {}
   required: false
@@ -3167,35 +3224,41 @@ inputs:
     "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
     will use default list provided in the IsIPInRanges script (the known IPv4 private
     address ranges).'
+  playbookInputQuery: null
 - key: CriticalHostnames
   value:
     simple: AdminPC
   required: false
   description: A list of comma-separated names of critical endpoints in the organization.
     This will affect the calculated severity of the incident.
+  playbookInputQuery: null
 - key: RoleForEscalation
   value: {}
   required: false
   description: The name of the Demisto role of the users that the incident can be
     escalated to in case of developments like lateral movement.
+  playbookInputQuery: null
 - key: BlockMaliciousFiles
   value:
-    simple: 'False'
+    simple: "False"
   required: false
   description: Whether to automatically block malicious files involved with the incident
     across all endpoints in the organization.
+  playbookInputQuery: null
 - key: CriticalADGroups
   value:
     simple: admins
   required: false
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
+  playbookInputQuery: null
 - key: OnCall
   value:
-    simple: false
+    simple: "false"
   required: false
   description: Set to true to assign only the users that are currently on shift.
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
 tests:
-  - no test
+- no test

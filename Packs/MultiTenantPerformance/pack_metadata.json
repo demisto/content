@@ -1,0 +1,17 @@
+{
+    "name": "Multi-Tenant Performance",
+    "description": "Provides monitoring information for Multi-Tenant hosts and HA groups. It includes information like CPU, disk, and memory usage, as well as the number of Docker containers being used.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "serverMinVersion": "6.1.0",
+    "email": "",
+    "created": "2020-11-16T13:00:19Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

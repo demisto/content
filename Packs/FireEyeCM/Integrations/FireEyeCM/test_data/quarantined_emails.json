@@ -1,0 +1,42 @@
+[
+    {
+        "appliance_id": "appliance_id",
+        "completed_at": "2021-02-14T09:42:48",
+        "email_uuid": "uuid",
+        "from": "test@malicious.net",
+        "message_id": "queue-id@no-message-id",
+        "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
+        "queue_id": "queue_id",
+        "subject": "test"
+    },
+    {
+        "appliance_id": "appliance_id",
+        "completed_at": "2021-02-14T09:43:56",
+        "email_uuid": "uuid",
+        "from": "test@malicious.net",
+        "message_id": "queue-id@no-message-id",
+        "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
+        "queue_id": "queue_id",
+        "subject": "test"
+    },
+    {
+        "appliance_id": "appliance_id",
+        "completed_at": "2021-02-14T09:45:59",
+        "email_uuid": "uuid",
+        "from": "test@malicious.net",
+        "message_id": "queue-id@no-message-id",
+        "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
+        "queue_id": "queue_id",
+        "subject": "test"
+    },
+    {
+        "appliance_id": "appliance_id",
+        "completed_at": "2021-02-14T09:53:34",
+        "email_uuid": "uuid",
+        "from": "test@malicious.net",
+        "message_id": "queue-id@no-message-id",
+        "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
+        "queue_id": "queue_id",
+        "subject": "test"
+    }
+]

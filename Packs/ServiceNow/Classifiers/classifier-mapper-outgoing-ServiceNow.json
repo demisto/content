@@ -12,14 +12,6 @@
 					"complex": null,
 					"simple": "servicenowcategory"
 				},
-				"child_incidents": {
-					"complex": null,
-					"simple": "childincidentscount"
-				},
-				"close_notes": {
-					"complex": null,
-					"simple": "closeNotes"
-				},
 				"closed_at": {
 					"complex": {
 						"accessor": "",
@@ -263,10 +255,6 @@
 				"subcategory": {
 					"complex": null,
 					"simple": "subcategory"
-				},
-				"sys_created_on": {
-					"complex": null,
-					"simple": "created"
 				},
 				"urgency": {
 					"complex": null,

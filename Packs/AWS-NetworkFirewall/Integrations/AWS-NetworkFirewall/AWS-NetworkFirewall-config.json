@@ -1,0 +1,89 @@
+{
+  "aws-network-firewall-associate-firewall-policy": {
+    "context_extraction_string": "AWS-NetworkFirewall.AssociationResults.FirewallPolicy(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-associate-subnets": {
+    "context_extraction_string": "AWS-NetworkFirewall.AssociationResults.Subnets(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-create-firewall": {
+    "context_extraction_string": "AWS-NetworkFirewall.Firewall(val.Firewall.FirewallArn === obj.Firewall.FirewallArn)': response"
+  },
+  "aws-network-firewall-create-firewall-policy": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallPolicy(val.FirewallPolicyResponse.FirewallPolicyArn === obj.FirewallPolicyResponse.FirewallPolicyArn)': response"
+  },
+  "aws-network-firewall-create-rule-group": {
+    "context_extraction_string": "AWS-NetworkFirewall.RuleGroup(val.RuleGroupResponse.RuleGroupArn === obj.RuleGroupResponse.RuleGroupArn)': response"
+  },
+  "aws-network-firewall-delete-firewall": {
+    "context_extraction_string": "AWS-NetworkFirewall.Firewall(val.Firewall.FirewallArn === obj.Firewall.FirewallArn)': response"
+  },
+  "aws-network-firewall-delete-firewall-policy": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallPolicy(val.FirewallPolicyResponse.FirewallPolicyArn === obj.FirewallPolicyResponse.FirewallPolicyArn)': response"
+  },
+  "aws-network-firewall-delete-resource-policy": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-delete-rule-group": {
+    "context_extraction_string": "AWS-NetworkFirewall.RuleGroup(val.RuleGroupResponse.RuleGroupArn === obj.RuleGroupResponse.RuleGroupArn)': response"
+  },
+  "aws-network-firewall-describe-firewall": {
+    "context_extraction_string": "AWS-NetworkFirewall.Firewall(val.Firewall.FirewallArn === obj.Firewall.FirewallArn)': response"
+  },
+  "aws-network-firewall-describe-firewall-policy": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallPolicy(val.FirewallPolicyResponse.FirewallPolicyArn === obj.FirewallPolicyResponse.FirewallPolicyArn)': response"
+  },
+  "aws-network-firewall-describe-logging-configuration": {
+    "context_extraction_string": "AWS-NetworkFirewall.Logging(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-describe-resource-policy": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-describe-rule-group": {
+    "context_extraction_string": "AWS-NetworkFirewall.RuleGroup(val.RuleGroupResponse.RuleGroupArn === obj.RuleGroupResponse.RuleGroupArn)': response"
+  },
+  "aws-network-firewall-disassociate-subnets": {
+    "context_extraction_string": "AWS-NetworkFirewall.AssociationResults.Subnets(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-list-firewall-policies": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallPolicies(val.Arn === obj.Arn)': response.get('FirewallPolicies')"
+  },
+  "aws-network-firewall-list-firewalls": {
+    "context_extraction_string": "AWS-NetworkFirewall.Firewalls(val.FirewallArn === obj.FirewallArn)': response.get('Firewalls')"
+  },
+  "aws-network-firewall-list-rule-groups": {
+    "context_extraction_string": "AWS-NetworkFirewall.RuleGroups(val.Arn === obj.Arn)': response.get('RuleGroups')"
+  },
+  "aws-network-firewall-list-tags-for-resource": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-put-resource-policy": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-tag-resource": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-untag-resource": {
+    "context_extraction_string": null
+  },
+  "aws-network-firewall-update-firewall-delete-protection": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallAttributes(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-update-firewall-description": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallAttributes(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-update-firewall-policy": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallPolicy(val.FirewallPolicyResponse.FirewallPolicyArn === obj.FirewallPolicyResponse.FirewallPolicyArn)': response"
+  },
+  "aws-network-firewall-update-firewall-policy-change-protection": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallAttributes(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-update-logging-configuration": {
+    "context_extraction_string": "AWS-NetworkFirewall.Logging(val.FirewallArn === obj.FirewallArn)': response"
+  },
+  "aws-network-firewall-update-rule-group": {
+    "context_extraction_string": "AWS-NetworkFirewall.RuleGroup(val.RuleGroupResponse.RuleGroupArn === obj.RuleGroupResponse.RuleGroupArn)': response"
+  },
+  "aws-network-firewall-update-subnet-change-protection": {
+    "context_extraction_string": "AWS-NetworkFirewall.FirewallAttributes(val.FirewallArn === obj.FirewallArn)': response"
+  }
+}

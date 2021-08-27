@@ -1,5 +1,5 @@
 ## Overview
-Use CrowdStrike Falcon Streaming v2 integration to connect to CrowdStrike Falcon stream and fetch events as incidents to demisto.
+Use CrowdStrike Falcon Streaming v2 integration to connect to CrowdStrike Falcon stream and fetch events as incidents to Cortex XSOAR.
 
 
 ## Define CrowdStrike API client
@@ -9,7 +9,7 @@ Follow [this article](https://www.crowdstrike.com/blog/tech-center/get-access-fa
 
 The required scope is Event streams.
 
-## Configure CrowdStrike Falcon Streaming v2 on Demisto
+## Configure CrowdStrike Falcon Streaming v2 on Cortex XSOAR
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for CrowdStrike Falcon Streaming v2
 3. Click __Add instance__ to create and configure a new integration instance.
@@ -20,6 +20,7 @@ The required scope is Event streams.
     * __Application ID__
     * __Event type to fetch__
     * __Offset to fetch events from__
+    * __Stream client read timeout__
     * __Incident type__
     * __Store sample events for mapping__
     * __Trust any certificate (not secure)__

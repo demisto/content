@@ -1,0 +1,67 @@
+{
+  "protocol": "http",
+  "createdBy": "GUI",
+  "dynamicFlows": [
+    
+  ],
+  "html5CrossOriginRequestsEnforcement": {
+    "enforcementMode": "disabled"
+  },
+  "_kind": "tm:asm:policies:urls:urlstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/urls/url-md5?ver=15.1.0",
+  "inClassification": false,
+  "methodsOverrideOnUrlCheck": false,
+  "method": "*",
+  "id": "url-md5",
+  "mandatoryBody": false,
+  "isAllowed": true,
+  "flowsToThisUrlCheck": false,
+  "name": "/new_url",
+  "lastUpdateMicros": 1599581125000000.0,
+  "description": "This is a description",
+  "parameterReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/0000/urls/url-md5/parameters?ver=15.1.0",
+    "isSubCollection": true
+  },
+  "attackSignaturesCheck": true,
+  "signatureOverrides": [
+    
+  ],
+  "clickjackingProtection": false,
+  "type": "explicit",
+  "performStaging": false,
+  "urlContentProfiles": [
+    {
+      "headerValue": "*",
+      "headerName": "*",
+      "headerOrder": "default",
+      "type": "apply-value-and-content-signatures"
+    },
+    {
+      "headerValue": "*form*",
+      "headerName": "Content-Type",
+      "headerOrder": "1",
+      "type": "form-data"
+    },
+    {
+      "contentProfileReference": {
+        "link": "https://localhost/mgmt/tm/asm/policies/0000/json-profiles/1111?ver=15.1.0",
+        "name": "Default"
+      },
+      "headerValue": "*json*",
+      "headerName": "Content-Type",
+      "headerOrder": "2",
+      "type": "json"
+    },
+    {
+      "contentProfileReference": {
+        "link": "https://localhost/mgmt/tm/asm/policies/0000/xml-profiles/2222?ver=15.1.0",
+        "name": "Default"
+      },
+      "headerValue": "*xml*",
+      "headerName": "Content-Type",
+      "headerOrder": "3",
+      "type": "xml"
+    }
+  ]
+}

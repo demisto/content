@@ -1,0 +1,236 @@
+[
+  {
+    "sortValues": [
+      1613379949980
+    ],
+    "data": {
+      "dateTime": "2021-02-15T09:05:49.980+0000",
+      "fullPath": "C:\\Windows\\System32\\WaaSAssessment.dll",
+      "severity": 4,
+      "profiles": [
+        {
+          "name": "test_01",
+          "rules": [
+            {
+              "severity": 4,
+              "number": 1,
+              "name": "System32",
+              "description": "",
+              "section": "None",
+              "id": "bd760834-5bce-41ab-9ab4-47d8da94a145",
+              "type": "directory"
+            }
+          ],
+          "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
+          "type": "WINDOWS",
+          "category": {
+            "name": "PCI",
+            "id": "2dab5022-2fdd-11e7-93ae-92361f002671"
+          }
+        }
+      ],
+      "type": "File",
+      "changedAttributes": [
+        1
+      ],
+      "platform": "WINDOWS",
+      "oldContent": "None",
+      "processedTime": "2021-02-15T09:05:53.800+0000",
+      "actor": {
+        "process": "poqexec.exe",
+        "processID": 8932,
+        "imagePath": "C:\\Windows\\System32\\poqexec.exe",
+        "userName": "NT AUTHORITY\\SYSTEM",
+        "userID": "S-1-5-18"
+      },
+      "newContent": "None",
+      "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+      "name": "WaaSAssessment.dll",
+      "action": "Security",
+      "id": "99b92968-8f3a-3626-8d56-345a6d891546",
+      "asset": {
+        "agentId": "b1caea93-0d21-4343-801c-92009f036c79",
+        "interfaces": [
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "04:33:C2:64:45:B5",
+            "address": "10.0.0.12",
+            "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "02:50:41:00:00:01",
+            "address": "1.1.1.1",
+            "interfaceName": "PANGP Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "00:15:5D:D2:66:CB",
+            "address": "1.1.1.1",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "00:15:5D:CE:FC:42",
+            "address": "1.1.1.1",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+          },
+          {
+            "hostname": "",
+            "macAddress": "00:15:5D:CE:FC:42",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+          },
+          {
+            "hostname": "",
+            "macAddress": "00:15:5D:D2:66:CB",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "04:33:C2:64:45:B5",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+          }
+        ],
+        "lastCheckedIn": "2021-02-14T09:31:47.000Z",
+        "created": "2021-01-10T11:58:40.980+0000",
+        "hostId": "15855913",
+        "operatingSystem": "Microsoft Windows 10 Pro 10.0.18363 64-bit N/A Build 18363",
+        "tags": [
+          "78801867",
+          "78721806"
+        ],
+        "assetType": "HOST",
+        "system": {
+          "lastBoot": "2021-02-14T09:31:47.000Z"
+        },
+        "ec2": "None",
+        "lastLoggedOnUser": ".\\Gill",
+        "netbiosName": "DESKTOP-F16FQS2",
+        "name": "DESKTOP-F16FQS2",
+        "agentVersion": "1.1.1.1",
+        "updated": "2021-01-10T11:58:40.980+0000"
+      },
+      "incidentId": "None",
+      "class": "Disk"
+    }
+  },
+  {
+    "sortValues": [
+      1613379949980
+    ],
+    "data": {
+      "dateTime": "2021-02-15T09:05:49.980+0000",
+      "fullPath": "C:\\Windows\\System32\\WaaSMedicCapsule.dll",
+      "severity": 4,
+      "profiles": [
+        {
+          "name": "test_01",
+          "rules": [
+            {
+              "severity": 4,
+              "number": 1,
+              "name": "System32",
+              "description": "",
+              "section": "None",
+              "id": "bd760834-5bce-41ab-9ab4-47d8da94a145",
+              "type": "directory"
+            }
+          ],
+          "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
+          "type": "WINDOWS",
+          "category": {
+            "name": "PCI",
+            "id": "2dab5022-2fdd-11e7-93ae-92361f002671"
+          }
+        }
+      ],
+      "type": "File",
+      "changedAttributes": "None",
+      "platform": "WINDOWS",
+      "oldContent": "None",
+      "processedTime": "2021-02-15T09:05:53.880+0000",
+      "actor": {
+        "process": "poqexec.exe",
+        "processID": 8932,
+        "imagePath": "C:\\Windows\\System32\\poqexec.exe",
+        "userName": "NT AUTHORITY\\SYSTEM",
+        "userID": "S-1-5-18"
+      },
+      "newContent": "None",
+      "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+      "name": "WaaSMedicCapsule.dll",
+      "action": "Delete",
+      "id": "2def519b-e1a1-3171-988a-91b75dac2fe4",
+      "asset": {
+        "agentId": "b1caea93-0d21-4343-801c-92009f036c79",
+        "interfaces": [
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "04:33:C2:64:45:B5",
+            "address": "10.0.0.12",
+            "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "02:50:41:00:00:01",
+            "address": "1.1.1.1",
+            "interfaceName": "PANGP Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "00:15:5D:D2:66:CB",
+            "address": "1.1.1.1",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "00:15:5D:CE:FC:42",
+            "address": "1.1.1.1",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+          },
+          {
+            "hostname": "",
+            "macAddress": "00:15:5D:CE:FC:42",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+          },
+          {
+            "hostname": "",
+            "macAddress": "00:15:5D:D2:66:CB",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+          },
+          {
+            "hostname": "DESKTOP-F16FQS2",
+            "macAddress": "04:33:C2:64:45:B5",
+            "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+            "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+          }
+        ],
+        "lastCheckedIn": "2021-02-14T09:31:47.000Z",
+        "created": "2021-01-10T11:58:40.980+0000",
+        "hostId": "15855913",
+        "operatingSystem": "Microsoft Windows 10 Pro 10.0.18363 64-bit N/A Build 18363",
+        "tags": [
+          "78801867",
+          "78721806"
+        ],
+        "assetType": "HOST",
+        "system": {
+          "lastBoot": "2021-02-14T09:31:47.000Z"
+        },
+        "ec2": "None",
+        "lastLoggedOnUser": ".\\Gill",
+        "netbiosName": "DESKTOP-F16FQS2",
+        "name": "DESKTOP-F16FQS2",
+        "agentVersion": "1.1.1.1",
+        "updated": "2021-01-10T11:58:40.980+0000"
+      },
+      "incidentId": "None",
+      "class": "Disk"
+    }
+  }
+]

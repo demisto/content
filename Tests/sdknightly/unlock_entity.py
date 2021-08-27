@@ -2,7 +2,7 @@ import argparse
 
 import demisto_client
 
-from Tests.tools import update_server_configuration
+from demisto_sdk.commands.test_content.tools import update_server_configuration
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unlocks an integration, script or a playbook in Cortex XSOAR.")

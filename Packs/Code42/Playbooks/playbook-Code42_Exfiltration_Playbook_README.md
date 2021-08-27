@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | JiraProject | Jira Project for created incident ticket | Security | Optional |
 | JiraType | Type of Jira ticket to create | Investigation | Optional |
-| JiraSummary | Summary to use with Jira ticket creation | Code42 Security Alert for Demisto Incident ${incident.id} | Optional |
+| JiraSummary | Summary to use with Jira ticket creation | Code42 Security Alert for Cortex XSOAR Incident ${incident.id} | Optional |
 | ContainHostsMax | Maximum number of network hosts to contain. | 2 | Optional |
 | DemistoInstanceURL | URL of Demisto instance for emails. | https://example.com/ | Optional |
 

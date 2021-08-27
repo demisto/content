@@ -157,14 +157,6 @@
                                 "id": "3f916f10-a2ef-11e9-a74b-a79deb2f5d2a",
                                 "index": 5,
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "signatureoriginalname",
-                                "height": 24,
-                                "id": "40a3c970-a2ef-11e9-a74b-a79deb2f5d2a",
-                                "index": 6,
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,

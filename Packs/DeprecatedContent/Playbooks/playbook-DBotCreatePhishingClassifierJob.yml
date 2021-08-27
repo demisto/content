@@ -184,3 +184,4 @@ outputs: []
 fromversion: 5.0.0
 tests:
 - No tests
+deprecated: true

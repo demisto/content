@@ -129,7 +129,7 @@ def command_results(
 ) -> CommandResults:  # noqa: F821, F405
     """Parse assets into CommandResults."""
     api_name = api_obj.__class__.__name__
-    aql = api_obj._LAST_GET["filter"]
+    aql = api_obj.LAST_GET.get("filter")
 
     results = [parse_asset(asset=asset) for asset in assets]
 

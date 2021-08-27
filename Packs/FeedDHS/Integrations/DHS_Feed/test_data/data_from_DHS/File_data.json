@@ -1,0 +1,592 @@
+{
+    "@xmlns:taxii_11": "http://taxii.mitre.org/messages/taxii_xml_binding-1.1",
+    "@xmlns:xmldsig": "http://www.w3.org/2000/09/xmldsig#",
+    "@message_id": "urn:uuid:1e8d4158-a8ba-47b7-be30-eed35c4eec3a",
+    "@in_response_to": "eb24f17c-52ff-4b6f-84cb-5204e9db033a",
+    "@collection_name": "AIS",
+    "@more": "false",
+    "@result_id": "urn:uuid:1e8d4158-a8ba-47b7-be30-eed35c4eec3a",
+    "@result_part_number": "1",
+    "taxii_11:Exclusive_Begin_Timestamp": "2020-11-02T21:01:25Z",
+    "taxii_11:Inclusive_End_Timestamp": "2020-11-03T00:01:25Z",
+    "taxii_11:Record_Count": "15",
+    "taxii_11:Message": "Here are the results that were requested.",
+    "taxii_11:Content_Block": [
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-346d09b5-44cc-4717-aeda-81b5c5df06fc",
+                    "@timestamp": "2020-11-02T23:16:09Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "ReversingLabs @ 2020-11-02T23:09:44",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "STIX Data Description",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "GREEN"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Reversing Labs"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-MA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Other"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-02T23:16:07Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": {
+                            "@id": "NCCIC:Indicator-f2951703-085f-4178-b019-42c78e5c973f",
+                            "@timestamp": "2020-11-02T23:16:09Z",
+                            "@version": "2.0",
+                            "@xsi:type": "indicator:IndicatorType",
+                            "indicator:Type": {
+                                "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                "#text": "File Hash Watchlist"
+                            },
+                            "indicator:Observable": {
+                                "@id": "NCCIC:Observable-e8d220c0-40e3-4de6-beeb-3977114fab2b",
+                                "cybox:Object": {
+                                    "@id": "NCCIC:Object-3b257942-8986-4c12-a27e-6b6a84850894",
+                                    "cybox:Properties": {
+                                        "@xsi:type": "FileObj:FileObjectType",
+                                        "FileObj:Hashes": {
+                                            "cyboxCommon:Hash": [
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA1"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "0908223025ce9084c4f201ee40785283c332d7eb"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "MD5"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "c683b6c027d4eb776095ac54a739c09e"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA256"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "3a3c52d5445dab4d6c6260f2acc95595b0bfaeef50b364d9372c7c294f1625f0"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA512"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "7a69b028d42bd0a2b29e8ffec5a962d04f58e2b940893bf747bb76244500ee792b74a516adc781430451c33796744e8be882f03afbc29aa8106994bb562298ec"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-670a445c-2984-420f-b9b7-c7b68ab46b40",
+                    "@timestamp": "2020-11-02T23:16:19Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "ReversingLabs @ 2020-11-02T23:09:43",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "STIX Data Description",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "GREEN"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Reversing Labs"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-MA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Other"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-02T23:16:18Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": {
+                            "@id": "NCCIC:Indicator-5d6a23ab-d15a-42f7-9330-ba43e7f1a9f4",
+                            "@timestamp": "2020-11-02T23:16:19Z",
+                            "@version": "2.0",
+                            "@xsi:type": "indicator:IndicatorType",
+                            "indicator:Type": {
+                                "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                "#text": "File Hash Watchlist"
+                            },
+                            "indicator:Observable": {
+                                "@id": "NCCIC:Observable-c221ded4-5361-44c6-bd64-8e6ed7b3ac88",
+                                "cybox:Object": {
+                                    "@id": "NCCIC:Object-3df890c0-6bee-497f-b66f-f20a1c6aa018",
+                                    "cybox:Properties": {
+                                        "@xsi:type": "FileObj:FileObjectType",
+                                        "FileObj:Hashes": {
+                                            "cyboxCommon:Hash": [
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA1"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "0a2fc4fc0a479b60366ee65dd40608ce8862cd36"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "MD5"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "1ca54d2ef13a14b5267b5a09c0822e03"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA256"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "a61384f8f61764324b0c5a89a889edd578352da3e609e9f5bc8727eb7c9f81f9"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA512"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "c12149c60f3f2b6c9707d15e37a59c40bfdaaa70a02be4f7bd864f49b69d93e31e862a39b50d3f388ef57f6d89ae1d7bc6115286a0226d427ee7e32c2bb12707"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "taxii_11:Content_Binding": {
+                "@binding_id": "urn:stix.mitre.org:xml:1.1.1"
+            },
+            "taxii_11:Content": {
+                "stix:STIX_Package": {
+                    "@id": "NCCIC:STIX_Package-053a329e-13db-4cfd-9184-a16c16aac4e9",
+                    "@timestamp": "2020-11-02T23:16:29Z",
+                    "@version": "1.1.1",
+                    "@xsi:schemaLocation": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2 http://cybox.mitre.org/XMLSchema/objects/Win_Registry_Key/2.1/Win_Registry_Key_Object.xsd http://cybox.mitre.org/objects#PortObject-2 http://cybox.mitre.org/XMLSchema/objects/Port/2.1/Port_Object.xsd http://stix.mitre.org/TTP-1 http://stix.mitre.org/XMLSchema/ttp/1.1.1/ttp.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsAssertionsType.v2.xsd http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2 http://www.us-cert.gov/sites/default/files/STIX_Namespace/AIS_Bundle_Marking_1.1.1_v1.0.xsd http://cybox.mitre.org/objects#LinkObject-1 http://cybox.mitre.org/XMLSchema/objects/Link/1.1/Link_Object.xsd http://cybox.mitre.org/objects#CustomObject-1 http://cybox.mitre.org/XMLSchema/objects/Custom/1.1/Custom_Object.xsd http://cybox.mitre.org/objects#DNSQueryObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Query/2.1/DNS_Query_Object.xsd http://cybox.mitre.org/objects#FileObject-2 http://cybox.mitre.org/XMLSchema/objects/File/2.1/File_Object.xsd http://stix.mitre.org/ExploitTarget-1 http://stix.mitre.org/XMLSchema/exploit_target/1.1.1/exploit_target.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd http://data-marking.mitre.org/Marking-1 http://stix.mitre.org/XMLSchema/data_marking/1.1.1/data_marking.xsd http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1 http://stix.mitre.org/XMLSchema/extensions/identity/ciq_3.0/1.1.1/ciq_3.0_identity.xsd http://stix.mitre.org/common-1 http://stix.mitre.org/XMLSchema/common/1.1.1/stix_common.xsd http://cybox.mitre.org/objects#DomainNameObject-1 http://cybox.mitre.org/XMLSchema/objects/Domain_Name/1.0/Domain_Name_Object.xsd http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 http://stix.mitre.org/XMLSchema/extensions/marking/tlp/1.1.1/tlp_marking.xsd http://cybox.mitre.org/objects#HostnameObject-1 http://cybox.mitre.org/XMLSchema/objects/Hostname/1.0/Hostname_Object.xsd http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.1.1/stix_core.xsd http://cybox.mitre.org/default_vocabularies-2 http://cybox.mitre.org/XMLSchema/default_vocabularies/2.1/cybox_default_vocabularies.xsd http://cybox.mitre.org/common-2 http://cybox.mitre.org/XMLSchema/common/2.1/cybox_common.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_ISAMarkingsType.v2.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.1.1/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#URIObject-2 http://cybox.mitre.org/XMLSchema/objects/URI/2.1/URI_Object.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.1.1/indicator.xsd http://cybox.mitre.org/objects#EmailMessageObject-2 http://cybox.mitre.org/XMLSchema/objects/Email_Message/2.1/Email_Message_Object.xsd http://cybox.mitre.org/objects#SocketAddressObject-1 http://cybox.mitre.org/XMLSchema/objects/Socket_Address/1.1/Socket_Address_Object.xsd http://cybox.mitre.org/objects#MutexObject-2 http://cybox.mitre.org/XMLSchema/objects/Mutex/2.1/Mutex_Object.xsd http://cybox.mitre.org/objects#NetworkConnectionObject-2 http://cybox.mitre.org/XMLSchema/objects/Network_Connection/2.1/Network_Connection_Object.xsd urn:edm:edh:cyber:v3 http://www.us-cert.gov/sites/default/files/STIX_Namespace/local_SD-EDH_Profile_Cyber.v3.xsd http://stix.mitre.org/CourseOfAction-1 http://stix.mitre.org/XMLSchema/course_of_action/1.1.1/course_of_action.xsd http://cybox.mitre.org/objects#HTTPSessionObject-2 http://cybox.mitre.org/XMLSchema/objects/HTTP_Session/2.1/HTTP_Session_Object.xsd http://cybox.mitre.org/cybox-2 http://cybox.mitre.org/XMLSchema/core/2.1/cybox_core.xsd http://cybox.mitre.org/objects#DNSRecordObject-2 http://cybox.mitre.org/XMLSchema/objects/DNS_Record/2.1/DNS_Record_Object.xsd",
+                    "@xmlns:indicator": "http://stix.mitre.org/Indicator-2",
+                    "@xmlns:AddressObj": "http://cybox.mitre.org/objects#AddressObject-2",
+                    "@xmlns:NetworkConnectionObj": "http://cybox.mitre.org/objects#NetworkConnectionObject-2",
+                    "@xmlns:DNSRecordObj": "http://cybox.mitre.org/objects#DNSRecordObject-2",
+                    "@xmlns:edh2": "urn:edm:edh:cyber:v3",
+                    "@xmlns:CISCP": "http://us-cert.gov/ciscp",
+                    "@xmlns:stixVocabs": "http://stix.mitre.org/default_vocabularies-1",
+                    "@xmlns:PortObj": "http://cybox.mitre.org/objects#PortObject-2",
+                    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                    "@xmlns:EmailMessageObj": "http://cybox.mitre.org/objects#EmailMessageObject-2",
+                    "@xmlns:DNSQueryObj": "http://cybox.mitre.org/objects#DNSQueryObject-2",
+                    "@xmlns:stix-ciq": "http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1",
+                    "@xmlns:DomainNameObj": "http://cybox.mitre.org/objects#DomainNameObject-1",
+                    "@xmlns:NCCIC": "http://www.us-cert.gov",
+                    "@xmlns:xal": "urn:oasis:names:tc:ciq:xal:3",
+                    "@xmlns:xpil": "urn:oasis:names:tc:ciq:xpil:3",
+                    "@xmlns:WinRegistryKeyObj": "http://cybox.mitre.org/objects#WinRegistryKeyObject-2",
+                    "@xmlns:edh2cyberMarking": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:CustomObj": "http://cybox.mitre.org/objects#CustomObject-1",
+                    "@xmlns:stix": "http://stix.mitre.org/stix-1",
+                    "@xmlns:HTTPSessionObj": "http://cybox.mitre.org/objects#HTTPSessionObject-2",
+                    "@xmlns:AIS": "http://www.us-cert.gov/STIXMarkingStructure#AISConsentMarking-2",
+                    "@xmlns:cyboxCommon": "http://cybox.mitre.org/common-2",
+                    "@xmlns:cyboxVocabs": "http://cybox.mitre.org/default_vocabularies-2",
+                    "@xmlns:et": "http://stix.mitre.org/ExploitTarget-1",
+                    "@xmlns:stixCommon": "http://stix.mitre.org/common-1",
+                    "@xmlns:ttp": "http://stix.mitre.org/TTP-1",
+                    "@xmlns:marking": "http://data-marking.mitre.org/Marking-1",
+                    "@xmlns:MutexObj": "http://cybox.mitre.org/objects#MutexObject-2",
+                    "@xmlns:coa": "http://stix.mitre.org/CourseOfAction-1",
+                    "@xmlns:tlpMarking": "http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1",
+                    "@xmlns:isa": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsType.v2.xsd",
+                    "@xmlns:HostnameObj": "http://cybox.mitre.org/objects#HostnameObject-1",
+                    "@xmlns:xnl": "urn:oasis:names:tc:ciq:xnl:3",
+                    "@xmlns:SocketAddressObj": "http://cybox.mitre.org/objects#SocketAddressObject-1",
+                    "@xmlns:FileObj": "http://cybox.mitre.org/objects#FileObject-2",
+                    "@xmlns:URIObj": "http://cybox.mitre.org/objects#URIObject-2",
+                    "@xmlns:LinkObj": "http://cybox.mitre.org/objects#LinkObject-1",
+                    "@xmlns:cybox": "http://cybox.mitre.org/cybox-2",
+                    "@xmlns:edh2cyberMarkingAssert": "http://www.us-cert.gov/sites/default/files/STIX_Namespace/ISAMarkingsAssertionsType.v2.xsd",
+                    "stix:STIX_Header": {
+                        "stix:Title": "ReversingLabs @ 2020-11-02T23:09:46",
+                        "stix:Package_Intent": {
+                            "@xsi:type": "stixVocabs:PackageIntentVocab-1.0",
+                            "#text": "Indicators"
+                        },
+                        "stix:Description": "STIX Data Description",
+                        "stix:Handling": {
+                            "marking:Marking": {
+                                "marking:Controlled_Structure": "//node() | //@*",
+                                "marking:Marking_Structure": {
+                                    "@xsi:type": "AIS:AISMarkingStructure",
+                                    "AIS:Not_Proprietary": {
+                                        "@CISA_Proprietary": "false",
+                                        "AIS:AISConsent": {
+                                            "@consent": "EVERYONE"
+                                        },
+                                        "AIS:TLPMarking": {
+                                            "@color": "GREEN"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "stix:Information_Source": {
+                            "stixCommon:Contributing_Sources": {
+                                "stixCommon:Source": {
+                                    "stixCommon:Identity": {
+                                        "@xsi:type": "stix-ciq:CIQIdentity3.0InstanceType",
+                                        "stix-ciq:Specification": {
+                                            "xpil:PartyName": {
+                                                "xnl:OrganisationName": {
+                                                    "xnl:NameElement": "Reversing Labs"
+                                                }
+                                            },
+                                            "xpil:Addresses": {
+                                                "xpil:Address": {
+                                                    "xal:Country": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US",
+                                                            "@xal:NameCodeType": "ISO_3166-1_alpha-2"
+                                                        }
+                                                    },
+                                                    "xal:AdministrativeArea": {
+                                                        "xal:NameElement": {
+                                                            "@xal:NameCode": "US-MA",
+                                                            "@xal:NameCodeType": "ISO_3166-2"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "xpil:OrganisationInfo": {
+                                                "@xpil:IndustryType": "Other"
+                                            }
+                                        }
+                                    },
+                                    "stixCommon:Tools": {
+                                        "cyboxCommon:Tool": {
+                                            "cyboxCommon:Metadata": {
+                                                "cyboxCommon:Value": "AIS"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "stixCommon:Time": {
+                                "cyboxCommon:Produced_Time": "2020-11-02T23:16:28Z"
+                            }
+                        }
+                    },
+                    "stix:Indicators": {
+                        "stix:Indicator": {
+                            "@id": "NCCIC:Indicator-0d9490bd-c2a5-4c68-aff2-da5d1ad7b253",
+                            "@timestamp": "2020-11-02T23:16:29Z",
+                            "@version": "2.0",
+                            "@xsi:type": "indicator:IndicatorType",
+                            "indicator:Type": {
+                                "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0",
+                                "#text": "File Hash Watchlist"
+                            },
+                            "indicator:Observable": {
+                                "@id": "NCCIC:Observable-b8474107-97b8-4d78-b847-c860e574e451",
+                                "cybox:Object": {
+                                    "@id": "NCCIC:Object-6074f40b-0d25-4d3b-99f4-e660e06341fb",
+                                    "cybox:Properties": {
+                                        "@xsi:type": "FileObj:FileObjectType",
+                                        "FileObj:Hashes": {
+                                            "cyboxCommon:Hash": [
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA1"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "0c3d7914730486974a62209cc05315fac3faaf11"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "MD5"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "d474afd6115220d997ea6c954e0ce490"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA256"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "b82306bff5554d30fe80572f32380e88543a5676a75a0f424e2bf9e18eb47180"
+                                                    }
+                                                },
+                                                {
+                                                    "cyboxCommon:Type": {
+                                                        "@condition": "Equals",
+                                                        "@xsi:type": "cyboxVocabs:HashNameVocab-1.0",
+                                                        "#text": "SHA512"
+                                                    },
+                                                    "cyboxCommon:Simple_Hash_Value": {
+                                                        "@condition": "Equals",
+                                                        "#text": "99ec6a4ae21d2c84bac45f936a7f2b9686a38eb98e359eec73541267316fae675d539335da990fd3d68c34729d5c7b32a83187c950417fae44456170696db437"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

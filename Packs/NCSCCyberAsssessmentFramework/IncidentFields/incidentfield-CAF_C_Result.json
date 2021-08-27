@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "NCSC CAF Assessment"
+ ],
+ "caseInsensitive": true,
+ "cliName": "cafcresult",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_cafcresult",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "CAF C Result",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "script": "NCSCFieldProtection",
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "markdown",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

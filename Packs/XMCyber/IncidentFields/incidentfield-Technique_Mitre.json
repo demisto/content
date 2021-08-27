@@ -1,0 +1,61 @@
+{
+ "id": "incident_techniquemitre",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-26T16:28:47.957122695Z",
+ "name": "Technique Mitre",
+ "ownerOnly": false,
+ "cliName": "techniquemitre",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "name",
+   "displayName": "name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 258,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "link",
+   "displayName": "link",
+   "type": "url",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72
+}

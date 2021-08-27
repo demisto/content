@@ -18,7 +18,7 @@ def parse_data(failed_commands):
         for command in top_commands:
             random_number = random.randint(0, 16777215)
             hex_number = str(hex(random_number))  # convert to hexadecimal
-            color = '#' + hex_number[2:]  # remove 0x and prepend '#'
+            color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
 
             command_widget_data = {
                 "data": [
@@ -64,8 +64,8 @@ def main():
                             0
                         ],
                         "groups": None,
-                        "name": "N\A",
-                        "label": "N\A",
+                        "name": "N/A",
+                        "label": "N/A",
                         "color": "rgb(255, 23, 68)"
                     },
                 ],

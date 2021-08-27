@@ -1940,14 +1940,6 @@ script:
     - name: package_name
       required: true
       description: File name for recent uploaded package.
-    - name: os_type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - osx
-      - windows
-      - linux
-      description: OS type for desired update.
     - name: query
       description: Free text search on Agent's network computer name, IP & Mac addresses, Domain and Group name, and agent version (contains).
     - name: created_at__lt
@@ -2047,7 +2039,7 @@ script:
       - windows
       - android
       - linux
-      description: Agent of specific os type.
+      description: OS type for desired update.
     - name: machine_type__in
       description: Agent of specific machine type (contains).
     - name: domain__in

@@ -1,0 +1,314 @@
+id: List Cisco Stealthwatch Security Events
+version: -1
+name: List Cisco Stealthwatch Security Events
+description: This playbook lists security events and returns the results to the context.
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+    type: start
+    task:
+      id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+      version: -1
+      name: ""
+      description: Start of the playbook.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 75b286fc-4477-4267-8a03-a79de51db5aa
+    type: playbook
+    task:
+      id: 75b286fc-4477-4267-8a03-a79de51db5aa
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: tenant_id
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.tenant_id}
+      Ids:
+        simple: ${CiscoStealthwatch.SecurityEventStatus.id}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: cisco-stealthwatch-list-security-events-status
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: CiscoStealthwatch.SecurityEventStatus(val.percentComplete.indexof('100')==0).id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+    type: title
+    task:
+      id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+      version: -1
+      name: Done
+      description: Playbook is done.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a8b2bf9c-7b4a-41a8-8a4f-ee76977ba683
+    type: condition
+    task:
+      id: a8b2bf9c-7b4a-41a8-8a4f-ee76977ba683
+      version: -1
+      name: Is search completed?
+      description: Checks whether the search is completed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: CiscoStealthwatch.SecurityEventStatus.percentComplete
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6d2099c6-fc03-418b-8d99-63e20e848d50
+    type: regular
+    task:
+      id: 6d2099c6-fc03-418b-8d99-63e20e848d50
+      version: -1
+      name: cisco-stealthwatch-list-security-events-initialize
+      description: Initialize listing security events for a domain (called Tenant
+        on the API).
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-initialize
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      end_time: {}
+      start_time: {}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+      time_range:
+        simple: ${inputs.time_range}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f47572d3-fd0c-4b51-86c1-3db195ff12af
+    type: regular
+    task:
+      id: f47572d3-fd0c-4b51-86c1-3db195ff12af
+      version: -1
+      name: cisco-stealthwatch-list-security-events-status
+      description: List security events status.
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-status
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      search_id:
+        simple: ${CiscoStealthwatch.SecurityEventStatus.id}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: bbe619ad-2f54-44a1-8a9f-73007aa0fe83
+    type: regular
+    task:
+      id: bbe619ad-2f54-44a1-8a9f-73007aa0fe83
+      version: -1
+      name: cisco-stealthwatch-list-security-events-results
+      description: List security events results. Use this command after the search
+        job completes.
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-results
+      type: regular
+      iscommand: true
+      brand: Cisco Stealthwatch
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "5"
+      search_id:
+        simple: ${CiscoStealthwatch.SecurityEventStatus.id}
+      tenant_id:
+        simple: ${inputs.tenant_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: timeout
+  value:
+    simple: "600"
+  required: false
+  description: The amount of time to wait before a timeout occurs (in minutes).
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (in minutes).
+  playbookInputQuery: null
+- key: range
+  value:
+    simple: 0-20
+  required: false
+  description: Range of results to return (e.g., 0-20).
+  playbookInputQuery: null
+- key: tenant_id
+  value:
+    simple: "102"
+  required: true
+  description: Tenant ID represents the domain on Cisco Stealthwatch.
+  playbookInputQuery: null
+- key: time_range
+  value:
+    simple: 1 month ago
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: CiscoStealthwatch.SecurityEventResults
+  description: The results of the search.
+sourceplaybookid: QRadarFullSearch
+tests:
+ -  No tests

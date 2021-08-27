@@ -1,8 +1,11 @@
 [file:PhishLabsIOC_EIR.yml]
-ignore=IN126
+ignore=IN126,BA108,BA109
 
 [file:PhishLabsIOC_DRP.yml]
-ignore=IN126
+ignore=IN126,BA108,BA109
 
 [file:PhishLabsIOC.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM104

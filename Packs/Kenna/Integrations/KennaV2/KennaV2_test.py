@@ -1,11 +1,11 @@
 import pytest
 
 from KennaV2 import parse_response, search_vulnerabilities, get_connectors, Client, \
-    search_fixes, search_assets, get_asset_vulnerabilities
+    search_fixes, search_assets, get_asset_vulnerabilities, get_connector_runs
 from Tests_Data.ExpectedResult import VULNERABILITIES_SEARCH_EXPECTED, GET_CONNECTORS_EXPECTED, SEARCH_FIXES_EXPECTED, \
-    SEARCH_ASSETS_EXPECTED, GET_ASSETS_VULNERABILITIES_EXPECTED
+    SEARCH_ASSETS_EXPECTED, GET_ASSETS_VULNERABILITIES_EXPECTED, GET_CONNECTOR_RUNS_EXPECTED
 from Tests_Data.RawData import VULNERABILITIES_SEARCH_RESPONSE, GET_CONNECTORS_RESPONSE, SEARCH_FIXES_RESPONSE, \
-    SEARCH_ASSETS_RESPONSE, GET_ASSETS_VULNERABILITIES_RESPONSE
+    SEARCH_ASSETS_RESPONSE, GET_ASSETS_VULNERABILITIES_RESPONSE, GET_CONNECTOR_RUNS_RESPONSE
 
 
 def test_parse_response():
@@ -36,6 +36,7 @@ def test_parse_response():
     (search_assets, {"to_context": "True"}, SEARCH_ASSETS_RESPONSE, SEARCH_ASSETS_EXPECTED),
     (get_asset_vulnerabilities, {'id': '3', "to_context": "True"}, GET_ASSETS_VULNERABILITIES_RESPONSE,
      GET_ASSETS_VULNERABILITIES_EXPECTED),
+    (get_connector_runs, {"to_context": "True"}, GET_CONNECTOR_RUNS_RESPONSE, GET_CONNECTOR_RUNS_EXPECTED)
 ])
 def test_commands(command, args, response, expected_result, mocker):
     client = Client('https://api.kennasecurity.com', 'api', True, True)

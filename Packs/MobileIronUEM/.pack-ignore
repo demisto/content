@@ -1,0 +1,14 @@
+[file:MobileIronCLOUD.yml]
+ignore=IN126,DS107
+
+[file:MobileIronCORE.yml]
+ignore=IN126,DS107
+
+[file:README.md]
+ignore=RM106
+
+[file:MobileIron_Cloud_Incident_Action_Playbook.yml]
+ignore=BA110
+
+[file:MobileIron_Core_Incident_Action_Playbook.yml]
+ignore=BA110

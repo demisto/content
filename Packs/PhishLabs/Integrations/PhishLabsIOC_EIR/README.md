@@ -18,7 +18,7 @@
     <li>Email Threat Intelligence</li>
 </ul>
 
-<h2>Configure PhishLabs IOC EIR on Demisto</h2>
+<h2>Configure PhishLabs IOC EIR on Cortex XSOAR</h2>
 <ol>
     <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
         &nbsp;<strong>Servers &amp; Services</strong>.
@@ -30,6 +30,7 @@
             <li><strong>Name</strong>: a textual name for the integration instance.</li>
             <li><strong>Server URL (e.g. https://example.net)</strong></li>
             <li><strong>User</strong></li>
+            <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is B - Usually reliable)</li>
             <li><strong>Fetch incidents</strong></li>
             <li><strong>First fetch timestamp ( e.g., 12 hours, 7 days)</strong></li>
             <li><strong>Fetch limit</strong></li>
@@ -90,7 +91,7 @@
 
 <h2>Commands</h2>
 <p>
-    You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+    You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
     After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -514,12 +515,6 @@
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. phishlabs-ioc-eir-get-incident-by-id</h3>

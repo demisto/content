@@ -1,0 +1,116 @@
+{
+ "id": "incident_googledriveactivityremovedparents",
+ "version": -1,
+ "modified": "2020-09-17T15:37:44.599393509+05:30",
+ "name": "Google Drive Activity Removed Parents",
+ "ownerOnly": false,
+ "description": "The removed parent object(s).",
+ "cliName": "googledriveactivityremovedparents",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Drive Activity"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "driveitemname",
+   "displayName": "Drive Item Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "driveitemtitle",
+   "displayName": "Drive Item Title",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "driveitemisdrivefile",
+   "displayName": "Drive Item Is Drive File",
+   "type": "boolean",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "driveitemfoldertype",
+   "displayName": "Drive Item Folder Type",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "drivename",
+   "displayName": "Drive Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "drivetitle",
+   "displayName": "Drive Title",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

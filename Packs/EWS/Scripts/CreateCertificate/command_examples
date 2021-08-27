@@ -1,0 +1,1 @@
+CreateCertificate days=365 password=<Will-Prompt-After-Enter> country=FR friendly_name=MyCertificate

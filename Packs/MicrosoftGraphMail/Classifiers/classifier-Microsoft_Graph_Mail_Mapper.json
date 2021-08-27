@@ -1,0 +1,309 @@
+{
+    "description": "Maps incoming Microsoft Graph Mail phishing email message fields.",
+    "feed": false,
+    "id": "Microsoft Graph Mail Mapper",
+    "mapping": {
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Attachment Count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Attachments",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment Extension": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "."
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Body Format": {
+                    "complex": null,
+                    "simple": "BodyType"
+                },
+                "Email CC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Cc",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email From": {
+                    "complex": null,
+                    "simple": "From"
+                },
+                "Email HTML": {
+                    "complex": null,
+                    "simple": "Body"
+                },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": "Headers"
+                },
+                "Email Message ID": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Message-ID"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "Headers",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Received": {
+                    "complex": null,
+                    "simple": "received_representing.email_address"
+                },
+                "Email Reply To": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Return-Path"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "Headers",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Return Path": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Return-Path"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "Headers",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Sender IP": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "X-Originating-IP"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "chars": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "[]"
+                                        }
+                                    }
+                                },
+                                "operator": "StripChars"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Size": {
+                    "complex": null,
+                    "simple": "size"
+                },
+                "Email Subject": {
+                    "complex": null,
+                    "simple": "Subject"
+                },
+                "Email To": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "To",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email To Count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "To",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Microsoft Graph Mail Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

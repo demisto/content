@@ -1,6 +1,7 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, \
+    remove_duplicate_indicators
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -32,49 +33,58 @@ def test_get_indicator_type(indicator_type, csv_item, answer):
 
 
 build_iterator_answer_domain = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_domain_glob = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '*domaintools.com',
         'Risk': '92',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_ip = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '192.168.1.1',
         'Risk': '50',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_hash = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '52483514f07eb14570142f6927b77deb7b4da99f',
         'Algorithm': 'SHA-1',
         'Risk': '0',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_url = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'www.securityadvisor.io',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
+]
+
+build_iterator_no_evidence_details_value = [
+    [{
+        'EvidenceDetails': None,
+        'Name': '192.168.1.1',
+        'Risk': '50',
+        'RiskString': '4/37'
+    }]
 ]
 
 GET_INDICATOR_INPUTS = [
@@ -82,7 +92,8 @@ GET_INDICATOR_INPUTS = [
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
-    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL')
+    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP')
 ]
 
 
@@ -93,7 +104,8 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
         'indicator_type': indicator_type,
         'limit': 1
     }
-    mocker.patch('FeedRecordedFuture.Client.build_iterator', return_value=build_iterator_answer)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
     hr, _, entry_result = get_indicators_command(client, args)
     assert entry_result[0]['Value'] == value
     assert entry_result[0]['Type'] == type
@@ -147,9 +159,40 @@ def test_feed_tags(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
-    mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
-    )
-    indicators = fetch_indicators_command(client, 'ip')
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
+    indicators = next(fetch_indicators_command(client, 'ip'))
     assert tags == indicators[0]['fields']['tags']
+
+
+def test_remove_duplicate_indicators():
+    """
+        Given:
+            - Indicators list with duplicate indicators values ("test" and "TEST" are considered duplicates)
+        When:
+            - Calling the remove_duplicate_indicators method
+        Then:
+            - Validate the list returned from the method does not contain indicators with the same value
+    """
+    indicators_list_with_duplicates = [
+        {
+            'value': 'test',
+            'type': 'test type 1',
+        },
+        {
+            'value': 'test',
+            'type': 'test type 2',
+        },
+        {
+            'value': 'TEST',
+            'type': 'test type 3',
+        },
+    ]
+
+    non_duplicates_list = remove_duplicate_indicators(indicators_list_with_duplicates)
+    assert non_duplicates_list == [
+        {
+            'value': 'test',
+            'type': 'test type 1',
+        }
+    ]

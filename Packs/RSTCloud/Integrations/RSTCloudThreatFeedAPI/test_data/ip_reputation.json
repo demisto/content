@@ -1,0 +1,57 @@
+{
+   "ioc_value": "118.243.83.70",
+   "fseen":1600214400,
+   "lseen":1604966400,
+   "collect":1605052800,
+   "tags":{
+      "str":[
+         "c2",
+         "generic"
+      ],
+      "codes":[
+         0,
+         8
+      ]
+   },
+   "asn":{
+      "num":4685,
+      "firstip":{
+         "netv4":"118.243.0.0",
+         "num":"1995636736"
+      },
+      "lastip":{
+         "netv4":"118.243.255.255",
+         "num":"1995702271"
+      },
+      "cloud":"",
+      "domains":12100,
+      "org":"Asahi Net",
+      "isp":"ASAHINET"
+   },
+   "geo":{
+      "city":"Shibuya",
+      "country":"Japan",
+      "region":"Tokyo"
+   },
+   "related":{
+      "domains":[
+         
+      ]
+   },
+   "score":{
+      "total":28,
+      "src":70.71,
+      "tags":0.89,
+      "frequency":0.45
+   },
+   "fp":{
+      "alarm":"false",
+      "descr":""
+   },
+   "threat":[
+      "emotet"
+   ],
+   "id":"7b72e456-adb4-3555-b298-32b57807d0e8",
+   "title":"RST Threat feed. IOC: 118.243.83.70",
+   "description":"IOC with tags: c2, generic. Related threats: emotet"
+}

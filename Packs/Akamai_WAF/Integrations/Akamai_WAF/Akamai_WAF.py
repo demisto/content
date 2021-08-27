@@ -39,14 +39,21 @@ class Client(BaseClient):
         Returns:
             Response dictionary
         """
-        return self.get_network_lists()
+        return self.get_network_lists(extended=False, include_elements=False)
 
-    def get_network_lists(self, search: str = None, list_type: str = None) -> dict:
+    def get_network_lists(self,
+                          search: str = None,
+                          list_type: str = None,
+                          extended: bool = True,
+                          include_elements: bool = True,
+                          ) -> dict:
         """
             Get network lists
         Args:
             search: Only list items that match the specified substring in any network list’s name or list of items.
             list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+            extended: Whether to return extended details in the response
+            include_elements: Whether to return all list items.
 
         Returns:
             Json response as dictionary
@@ -54,8 +61,8 @@ class Client(BaseClient):
         params = {
             "search": search,
             "listType": list_type,
-            "extended": True,
-            "includeElements": True
+            "extended": extended,
+            "includeElements": include_elements,
         }
         return self._http_request(method='GET',
                                   url_suffix='/network-list/v2/network-lists',
@@ -272,20 +279,28 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 
 
 @logger
-def get_network_lists_command(client: Client, search: str = None, list_type: str = None) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+def get_network_lists_command(
+        client: Client,
+        search: str = None,
+        list_type: str = None,
+        extended: str = 'true',
+        include_elements: str = 'true',
+) -> Tuple[object, dict, Union[List, Dict]]:
     """Get network lists
 
     Args:
         client: Client object with request
         search: Only list items that match the specified substring in any network list’s name or list of items.
         list_type: Filters the output to lists of only the given type of network lists if provided, either IP or GEO.
+        extended: Whether to return extended details in the response
+        include_elements: Whether to return all list items.
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: Dict = client.get_network_lists(search=search,
-                                                  list_type=list_type)
+    raw_response: Dict = client.get_network_lists(
+        search=search, list_type=list_type, extended=(extended == 'true'), include_elements=(include_elements == 'true')
+    )
     if raw_response:
         title = f'{INTEGRATION_NAME} - network lists'
         entry_context, human_readable_ec = get_network_lists_ec(raw_response.get('networkLists'))

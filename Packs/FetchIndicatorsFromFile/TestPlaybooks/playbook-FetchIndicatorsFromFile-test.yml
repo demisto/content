@@ -373,6 +373,21 @@ tasks:
           right:
             value:
               simple: IP
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Domain
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
     view: |-
       {
         "position": {
@@ -522,6 +537,21 @@ tasks:
           right:
             value:
               simple: not an indicator
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Domain
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Name
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
     view: |-
       {
         "position": {

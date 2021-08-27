@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:Exchange2016_Compliance.yml]
+ignore=BA108,BA109

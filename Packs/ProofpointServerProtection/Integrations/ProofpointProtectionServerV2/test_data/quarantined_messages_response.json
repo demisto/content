@@ -1,0 +1,37 @@
+{
+	"count" : 2,
+	"records" : [
+		{
+			"processingserver" : "...",
+			"date" : "2020-01-15 20:00:00",
+			"subject" : "Loan",
+			"messageid" : "YATQ2LPCWC3MFA2YUTDH.448380834@example.net",
+			"folder" : "Quarantine",
+			"size" : "6496",
+			"rcpts" : [
+				"foo@bar.com"
+			],
+			"from" : "john@doe.com",
+			"spamscore" : "100",
+			"guid" : "lR_SjEF1Llfn9gML8YZzpVPUukjXQcPO",
+			"host_ip" : "[10.54.40.3] [10.54.40.3]",
+			"localguid" : "6:6:239"
+		},
+		{
+			"processingserver" : "...",
+			"date" : "2020-01-22 10:00:18",
+			"subject" : "Loan",
+			"messageid" : "TLW25LKOCDR72DBE06JF.221045479@email1.example.com",
+			"folder" : "Quarantine",
+			 "size" : "6143",
+			"rcpts" : [
+				"user@test.com"
+			],
+			"from" : "john@doe.com",
+			"spamscore" : "100",
+			"guid" : "edlp0pU9YXkWB5nmat91i9HUl7J-K-ep",
+			"host_ip" : "[10.12.40.4] [10.12.40.4]",
+			"localguid" : "6:6:4"
+		}
+	]
+}

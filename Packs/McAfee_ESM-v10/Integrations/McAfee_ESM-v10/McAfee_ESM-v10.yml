@@ -59,7 +59,7 @@ configuration:
   name: timezone
   required: false
   type: 0
-description: Deprecated. We recommend using McAfee ESM v2 instead.
+description: Deprecated. Use the McAfee ESM v2 integration instead.
 display: McAfee ESM v10 and v11 (Deprecated)
 name: McAfee ESM-v10
 script:
@@ -711,6 +711,7 @@ script:
   script: '-'
   type: python
   subtype: python2
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - No tests
 fromversion: 5.0.0

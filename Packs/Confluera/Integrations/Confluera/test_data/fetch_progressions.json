@@ -1,0 +1,90 @@
+[
+  {
+    "agentId": "prod_0_17_.agent-17",
+    "attackId": 7124733,
+    "containsAnchor": "false",
+    "fingerprint": "df8519f5bbe6a8503c4b63da7a569cb1a1d51cd2d5784301e8d6dcec1950c93f",
+    "hostTimeInfoMap": {
+      "prod_0_17_.agent-17": 1618122605017392000
+    },
+    "lastIocSeenTime": 1618125575564836600,
+    "lastIocSeenTimeInternal": 0,
+    "lastMitigatedTime": 0,
+    "local": "true",
+    "mitigateTime": 1618125575564836600,
+    "numberOfDetections": 2,
+    "numberOfHosts": 1,
+    "numberOfLateralMovements": 0,
+    "riskMomentum": 0,
+    "riskScore": 6,
+    "startTime": 1618122605017392000,
+    "state": "ACTIVE",
+    "trailIdHash": "prod_0_17_.agent-17:339738705",
+    "trailRiskHistInfoList": [
+      {
+        "agentId": "prod_0_17_.agent-17",
+        "scoreContribution": 0,
+        "seenTime": 1618122605017392000,
+        "trailId": "339738705"
+      },
+      {
+        "agentId": "prod_0_17_.agent-17",
+        "scoreContribution": 5,
+        "seenTime": 1618125575564836600,
+        "trailId": "339738705"
+      }
+    ],
+    "trailTacticSet": [
+      "discovery",
+      "exfiltration"
+    ],
+    "trailTechniqueSet": [
+      "T1046",
+      "T1048"
+    ]
+  },
+  {
+    "agentId": "prod_0_27_.agent-27",
+    "attackId": 6977718,
+    "containsAnchor": "true",
+    "fingerprint": "73bb36f06ffc5917ac3399baa99b833583ba4b3b6d44fa9ce68da2ed1c374ecf",
+    "hostTimeInfoMap": {
+      "prod_0_27_.agent-27": 1617982165439958500
+    },
+    "lastIocSeenTime": 1617987480554035200,
+    "lastIocSeenTimeInternal": 0,
+    "lastMitigatedTime": 0,
+    "local": true,
+    "mitigateTime": 1617987480554035200,
+    "numberOfDetections": 13,
+    "numberOfHosts": 1,
+    "numberOfLateralMovements": 1,
+    "riskMomentum": 0,
+    "riskScore": 10,
+    "startTime": 1617982165439958500,
+    "state": "ACTIVE",
+    "trailIdHash": "prod_0_27_.agent-27:1082130441",
+    "trailRiskHistInfoList": [
+      {
+        "agentId": "prod_0_27_.agent-27",
+        "scoreContribution": 0,
+        "seenTime": 1617982165439958500,
+        "trailId": "1082130441"
+      },
+      {
+        "agentId": "prod_0_27_.agent-27",
+        "scoreContribution": 10,
+        "seenTime": 1617986780899034000,
+        "trailId": "1082130441"
+      }
+    ],
+    "trailTacticSet": [
+      "execution",
+      "privilege_escalation",
+      "lateral_movement"
+    ],
+    "trailTechniqueSet": [
+      "T1166"
+    ]
+  }
+]

@@ -257,8 +257,10 @@ inputs:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: 'Values of the additional arguments for the polling command, for example:
-    (value1,value2,...).'
+  description: |-
+    Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. 
+    If so, please add "Using" to the value. 
+    The polling command will then take the instance name as the instance to use. 
   playbookInputQuery:
 outputs: []
 tests:

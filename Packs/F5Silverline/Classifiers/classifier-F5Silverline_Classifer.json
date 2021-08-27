@@ -1,0 +1,52 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "fff43e29-36aa-41a4-82e4-20bc8f9e5a00",
+    "keyTypeMap": {
+        "ipi": "F5 Silverline Threat Intelligence Events",
+        "irule": "F5 Silverline iRule Events",
+        "l7ddos": "F5 Silverline L7 DDoS Events",
+        "waf": "F5 Silverline WAF Events"
+    },
+    "name": "F5 Silverline Classifer",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "message",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "type="
+                            }
+                        }
+                    },
+                    "operator": "substringFrom"
+                },
+                {
+                    "args": {
+                        "to": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": ","
+                            }
+                        }
+                    },
+                    "operator": "substringTo"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

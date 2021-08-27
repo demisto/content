@@ -1,0 +1,463 @@
+id: SolarStorm Activity Behavior Hunting playbook
+version: -1
+name: SolarStorm Activity Behavior Hunting playbook
+description: "This manual playbook should be used as a sub-playbook in the 'SolarStorm and SUNBURST Hunting and Response' playbook and it helps you hunt for suspicious behavior related to SolarStorm activity.\
+  \ \n\nSources:\n- https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html\n\
+  - https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/\n- https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e12ceb8c-018b-4a48-806a-4443ee22b71e
+    type: start
+    task:
+      id: e12ceb8c-018b-4a48-806a-4443ee22b71e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ba7bc759-073e-40eb-818f-86f1cfd84944
+    type: title
+    task:
+      id: ba7bc759-073e-40eb-818f-86f1cfd84944
+      version: -1
+      name: SUNBURST Backdoor Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 3092bd2a-d3b0-48e4-8d87-2a6b9166d94f
+    type: regular
+    task:
+      id: 3092bd2a-d3b0-48e4-8d87-2a6b9166d94f
+      version: -1
+      name: Search SUNBURST DNS queries
+      description: The malicious DLL will be loaded by the legitimate SolarWinds.BusinessLayerHost.exe
+        or SolarWinds.BusinessLayerHostx64.exe files (depending on system configuration)
+        and the malware will attempt to resolve a subdomain of avsvmcloud[.]com. The
+        DNS response will return a CNAME record that points to a Command and Control
+        (C2) domain.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3cb0834d-20a2-4fab-81b2-a1ba262337cd
+    type: regular
+    task:
+      id: 3cb0834d-20a2-4fab-81b2-a1ba262337cd
+      version: -1
+      name: Search the malicious DLL
+      description: |-
+        Search for the malicious DLL **SolarWinds.Orion.Core.BusinessLayer.dll**.
+        The DLL is a SolarWinds digitally-signed component of the Orion software framework that contains a backdoor that communicates via HTTP to third party servers.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 9b57152c-17f7-4c70-813f-dabd9cc66693
+    type: regular
+    task:
+      id: 9b57152c-17f7-4c70-813f-dabd9cc66693
+      version: -1
+      name: Search for Cobalt Strike Alerts
+      description: Look at alerts and incidents that have a SolarWinds binary attached
+        to them or any alerts related to Cobalt Strike, as these attackers have been
+        seen using the framework.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 406e7ccd-d893-473e-81d1-20d534f2064b
+    type: title
+    task:
+      id: 406e7ccd-d893-473e-81d1-20d534f2064b
+      version: -1
+      name: Hunt Behavior SolarStorm Activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c0048ab6-752a-4e17-8707-13900e51778a
+    type: regular
+    task:
+      id: c0048ab6-752a-4e17-8707-13900e51778a
+      version: -1
+      name: 'Search for files dropped from the infected SolarWinds process'
+      description: |-
+        Example XDR Query:
+        lowercase(actor_process_image_name) = “solarwinds.businesslayerhost*.exe” and
+        action_file_extension in (“dll”, “exe”, “sys”, “msi”, “scr”, “ocx”, “cmd”, “bat”,
+        “ps1”, “vba”, “vbs”, “com”, “cpl”, “bin”, “vbe”)| fields
+        causality_actor_process_image_path, actor_process_image_path, agent_hostname,
+        action_file_path, action_file_name|dedup causality_actor_process_image_path,
+        actor_process_image_path, agent_hostname, action_file_name
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 28389aa4-3d1a-4cec-89fb-951ad02b906f
+    type: regular
+    task:
+      id: 28389aa4-3d1a-4cec-89fb-951ad02b906f
+      version: -1
+      name: SolarWinds process accessing non-SolarWinds domains
+      description: |-
+        Example XDR command query:
+        dataset = xdr_data|
+        filter event_type = NETWORK  and
+        lowercase(actor_process_image_name) = "solarwinds.businesslayerhost*.exe" and
+        action_external_hostname not contains "solarwinds.com" and action_external_hostname
+        != "*.local" | fields causality_actor_process_image_path, actor_process_image_path,
+        agent_hostname, action_remote_ip, action_external_hostname|dedup
+        causality_actor_process_image_path, actor_process_image_path, agent_hostname, action_remote_ip, action_external_hostname
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 14979ec8-1a90-451d-8f52-e27dc797363a
+    type: regular
+    task:
+      id: 14979ec8-1a90-451d-8f52-e27dc797363a
+      version: -1
+      name: Search the infected SolarWinds process running WMI queries
+      description: |-
+        XDR example query:
+        dataset = xdr_data|filter event_type = RPC_CALL and
+        lowercase(actor_process_image_name) = "solarwinds.businesslayerhost*.exe" and
+        action_rpc_interface_name = "IWbemServices"|fields agent_hostname,
+        action_rpc_func_str_call_fields
+
+        Splunk query example:
+        index=* sourcetype=XmlWinEventLog:Microsoft-WindowsSysmon/Operational EventCode=1 Image=*wmic*
+        CommandLine=*node* CommandLine="*process call create*"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 7be578db-8cfb-4e02-8738-c9a83171943a
+    type: regular
+    task:
+      id: 7be578db-8cfb-4e02-8738-c9a83171943a
+      version: -1
+      name: Search for modifying or creating a service by the process
+      description: |-
+        Look for the infected SolarWinds process modifying or creating a service.
+        XDR example query:
+        dataset = xdr_data|filter event_type = REGISTRY and
+        lowercase(actor_process_image_name) = "solarwinds.businesslayerhost*.exe" and
+        action_registry_key_name = "HKEY_LOCAL_MACHINE\SYSTEM\*\Services\*" | fields
+        causality_actor_process_image_path, actor_process_image_path, agent_hostname,
+        action_registry_key_name, action_registry_value_name, action_registry_data |dedup
+        causality_actor_process_image_path, actor_process_image_path, agent_hostname,
+        action_registry_key_name, action_registry_value_name, action_registry_data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 3e5b5cf7-32bb-4928-8a0e-3d8e902de79e
+    type: regular
+    task:
+      id: 3e5b5cf7-32bb-4928-8a0e-3d8e902de79e
+      version: -1
+      name: 'Search backdoor DLLs which initiated network connections '
+      description: |-
+       Hunt for backdoor DLLs that initiated network connections and look for any suspicious connection that involves DGA domains.
+        XDR example query:
+        dataset = xdr_data
+        | filter (event_type = NETWORK or event_type = STORY) and
+        lowercase(actor_process_image_name) contains "solarwinds.businesslayerhost"
+        | filter action_external_hostname not contains "solarwinds" and
+        action_external_hostname not contains ".local"
+        | fields agent_hostname, agent_id, actor_process_instance_id,
+        actor_process_image_name, action_external_hostname, dst_action_external_hostname,
+        dns_query_name
+        | join (dataset = xdr_data
+               | filter event_sub_type = LOAD_IMAGE_MODULE and
+                                           action_module_sha256 in
+        ("019085a76ba7126fff22770d71bd901c325fc68ac55aa743327984e89f4b0134",
+        "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+        "ce77d116a074dab7a22a0fd4f2c1ab475f16eec42e1ded3c0b0aa8211fe858d6")
+                                           and lowercase(actor_process_image_name) contains
+        "solarwinds.businesslayerhost"
+               | fields agent_hostname, agent_id, actor_process_instance_id,
+        actor_process_image_name, action_module_sha256, action_module_path) as modules
+               modules.actor_process_instance_id = actor_process_instance_id and
+        modules.agent_id = agent_id
+               | fields agent_hostname, agent_id, actor_process_instance_id,
+        actor_process_image_name, action_module_sha256, action_module_path,
+        action_external_hostname, dst_action_external_hostname, dns_query_name
+               | dedup agent_hostname, agent_id, actor_process_instance_id,
+        actor_process_image_name, action_module_path, action_external_hostname,
+        dst_action_external_hostname, dns_query_name
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 1244240b-1d33-4714-84b9-7f78c31266c6
+    type: regular
+    task:
+      id: 1244240b-1d33-4714-84b9-7f78c31266c6
+      version: -1
+      name: Search for known backdoor named pipe
+      description: "Hunt based on the known backdoor named pipe.\n - XDR example query:\n\
+        dataset = xdr_data\n| filter action_file_device_type = 1 and action_file_name\
+        \ != null and\nlowercase(actor_process_image_name) contains \"solarwinds.businesslayerhost\"\
+        \n| filter action_file_name = \"583da945-62af-10e8-4902-a8f205c72b2e\"\n|\
+        \ fields agent_hostname, actor_process_instance_id, actor_process_image_name,\n\
+        action_file_name\n| dedup actor_process_instance_id, actor_process_image_name,\
+        \ action_file_name\n\n- Sysmon with Splunk exmaple query:\nindex=windows sourcetype=\"\
+        XmlWinEventLog:Microsoft-Windows-Sysmon/Operational\" \n(EventCode=17 OR EventCode=18)\
+        \ PipeName=583da945-62af-10e8-4902-a8f205c72b2e"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: c8d75c55-e9f1-4808-8272-4c027f784e3b
+    type: title
+    task:
+      id: c8d75c55-e9f1-4808-8272-4c027f784e3b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 930,
+        "x": 640,
+        "y": 600
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

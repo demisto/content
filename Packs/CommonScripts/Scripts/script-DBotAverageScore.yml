@@ -4,6 +4,9 @@ commonfields:
 name: DBotAverageScore
 script: >
   var scores = dq(invContext, 'DBotScore(val.Indicator && val.Score)');
+  if (!(Array.isArray(scores))) {
+      scores = [scores]
+  }
 
   var s = {};
 
@@ -20,7 +23,7 @@ script: >
       return {Indicator: ind, Score: sum / s[ind].length};
   });
 
-  return {Type: entryTypes.note, Contents: avg, ContentsFormat: formats.json, HumanReadable: 'Scores average calculated', EntryContext: {DBotAvgScore: avg}};
+  return {Type: entryTypes.note, Contents: avg, ContentsFormat: formats.json, HumanReadable: 'Scores average calculated', EntryContext: {'DBotAvgScore(val.Indicator == obj.Indicator)': avg}};
 type: javascript
 comment: Calculates average score for each indicator from context
 tags:
@@ -33,3 +36,5 @@ outputs:
 enabled: true
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- DbotAverageScore-Test

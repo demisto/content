@@ -1,5 +1,10 @@
 This is the Palo Alto Networks IoT integration (previously Zingbox).
-This integration was integrated and tested with the Banff release of Palo Alto Networks IoT
+This integration was integrated and tested with the Banff release of Palo Alto Networks IoT.
+
+## Get your Palo Alto Networks IoT Access Keys
+This integration requires that API access be configured.
+To obtain the **Access Key ID** and **Secret Access Key**, refer to the [Palo Alto Networks IoT API User Guide](https://docs.paloaltonetworks.com/iot/iot-security-api-reference/iot-security-api-overview/get-started-with-the-iot-security-api.html).
+
 ## Configure Palo Alto Networks IoT on Cortex XSOAR
 
 1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers & Services**.
@@ -24,7 +29,7 @@ This integration was integrated and tested with the Banff release of Palo Alto N
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iot-security-get-device
 ***

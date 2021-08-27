@@ -1,0 +1,2 @@
+!crowdstrike-indicators-list limit=3
+!crowdstrike-reset-fetch-indicators

@@ -1,0 +1,810 @@
+id: Abuse Inbox Management Protection
+version: -1
+name: Abuse Inbox Management Protection
+description: Analyzes the URLs, domains, and IPs in suspicious emails, reported by end users, 
+  and returns a binary verdict (malicious or benign) and forensic information including 
+  screenshot of attack page, threat name and type, threat status, and first/last seen date
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc691b11-378b-47ef-8dd6-b624edeb39bb
+    type: start
+    task:
+      id: fc691b11-378b-47ef-8dd6-b624edeb39bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 91b74e86-6bca-45d6-888a-f9b07844606b
+    type: title
+    task:
+      id: 91b74e86-6bca-45d6-888a-f9b07844606b
+      version: -1
+      name: Extract All the Indicators (Domains, IPs, URLs)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d97762b0-0b9a-4ead-81fd-1ae76d1c5766
+    type: regular
+    task:
+      id: d97762b0-0b9a-4ead-81fd-1ae76d1c5766
+      version: -1
+      name: Extract All Indicators from the Incident
+      description: Extract all indicators according to server indicators configuration
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${inputs.content}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 804e3a2b-673b-42bf-83a3-559e2b1fc8a6
+    type: condition
+    task:
+      id: 804e3a2b-673b-42bf-83a3-559e2b1fc8a6
+      version: -1
+      name: Are There Any Domains and IPs Indicators Found?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtractedIndicators.Domain
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: ExtractedIndicators.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d63dd337-d729-431f-859e-c2da3c189fc2
+    type: condition
+    task:
+      id: d63dd337-d729-431f-859e-c2da3c189fc2
+      version: -1
+      name: Is SlashNext Phishing IR Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: SlashNext Phishing Incident Response
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7406a569-74d6-4e47-8e1b-128b67760237
+    type: regular
+    task:
+      id: 7406a569-74d6-4e47-8e1b-128b67760237
+      version: -1
+      name: Request SlashNext Phishing IR Quota Status
+      description: Queries the SlashNext cloud database and retrieves the details
+        of API quota.
+      script: SlashNext Phishing Incident Response|||slashnext-api-quota
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d17ee466-63c8-4514-8d3d-3ef70cce6574
+    type: condition
+    task:
+      id: d17ee466-63c8-4514-8d3d-3ef70cce6574
+      version: -1
+      name: Is SlashNext Phishing IR Quota Available?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "1"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.Quota.RemainingQuota
+            iscontext: true
+          right:
+            value:
+              simple: Unlimited
+        - operator: greaterThan
+          left:
+            value:
+              simple: SlashNext.Quota.RemainingQuota
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isFalse
+          left:
+            value:
+              simple: SlashNext.Quota.IsExpired
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9096c7e8-7d9a-427d-8f29-a5e6b6e17ee0
+    type: title
+    task:
+      id: 9096c7e8-7d9a-427d-8f29-a5e6b6e17ee0
+      version: -1
+      name: Log Evidence
+      description: |
+        Retrieves the current date and time.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3466b25e-ca01-4723-8d9f-a723ee1d1845
+    type: title
+    task:
+      id: 3466b25e-ca01-4723-8d9f-a723ee1d1845
+      version: -1
+      name: SlashNext Phishing IR Integraion Availability and Status
+      description: |
+        Retrieves the current date and time.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8afd056e-40fb-4685-8541-14f3a680157e
+    type: regular
+    task:
+      id: 8afd056e-40fb-4685-8541-14f3a680157e
+      version: -1
+      name: Request SlashNext Phishing IR Host Reputation
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a host.
+      script: SlashNext Phishing Incident Response|||slashnext-host-reputation
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      host:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+          - operator: splitAndTrim
+            args:
+              delimiter: {}
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.IP
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 15d292a8-0ed9-4029-8aca-7d2ea66be3e6
+    type: title
+    task:
+      id: 15d292a8-0ed9-4029-8aca-7d2ea66be3e6
+      version: -1
+      name: Get Host (IP, Domain) Reputation from SlashNext
+      description: |
+        Retrieves the current date and time.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 113feb5a-384e-4a3c-8292-808d72dae05b
+    type: condition
+    task:
+      id: 113feb5a-384e-4a3c-8292-808d72dae05b
+      version: -1
+      name: No Intel Found on the Host from SlashNext Phishing IR?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.IP.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Unrated, No Intel Found
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.Domain.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Unrated, No Intel Found
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8c1aa55a-4794-4ae8-8a83-aeab9137aedb
+    type: title
+    task:
+      id: 8c1aa55a-4794-4ae8-8a83-aeab9137aedb
+      version: -1
+      name: Get URL Scan from SlashNext
+      description: |
+        Retrieves the current date and time.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 6a57511b-24e4-45a9-8c5a-b9dcfab89051
+    type: regular
+    task:
+      id: 6a57511b-24e4-45a9-8c5a-b9dcfab89051
+      version: -1
+      name: Request SlashNext Phishing IR Blocking URL Scan
+      description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
+        in a blocking mode. If the specified URL already exists in the cloud database,
+        scan result will be returned immediately. If not, this command will submit
+        a URL scan request and wait for the scan to finish. The scan may take up to
+        60 seconds to finish.
+      script: SlashNext Phishing Incident Response|||slashnext-url-scan-sync
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      extended_info:
+        simple: "false"
+      timeout:
+        simple: "180"
+      url:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+          - operator: splitAndTrim
+            args:
+              delimiter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 591af8f3-68e8-4418-8842-292bce1be9c8
+    type: regular
+    task:
+      id: 591af8f3-68e8-4418-8842-292bce1be9c8
+      version: -1
+      name: Request Received Email Snapshot
+      description: Converts the body of an email to an image file or a PDF file.
+      script: Rasterize|||rasterize-email
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      height: {}
+      htmlBody:
+        simple: ${inputs.email}
+      offline: {}
+      type: {}
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e3abec00-ca02-427a-8085-495aaee21a60
+    type: regular
+    task:
+      id: e3abec00-ca02-427a-8085-495aaee21a60
+      version: -1
+      name: Request SlashNext Phishing IR Host Report
+      description: Queries the SlashNext Cloud database and retrieves a detailed report
+        for a host and associated URL.
+      script: SlashNext Phishing Incident Response|||slashnext-host-report
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      host:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+          - operator: splitAndTrim
+            args:
+              delimiter: {}
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.IP
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fbb500fd-5b25-4037-8cf3-2e77c0f928af
+    type: title
+    task:
+      id: fbb500fd-5b25-4037-8cf3-2e77c0f928af
+      version: -1
+      name: Get Host (IP, Domain) Report from SlashNext
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f829c5a4-62ca-4259-8219-1a7607831326
+    type: title
+    task:
+      id: f829c5a4-62ca-4259-8219-1a7607831326
+      version: -1
+      name: Get URL Scan Report from SlashNext
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 95712e9f-c8ed-4d28-88ee-2b333be41857
+    type: regular
+    task:
+      id: 95712e9f-c8ed-4d28-88ee-2b333be41857
+      version: -1
+      name: Request SlashNext Phishing IR URL Scan Report
+      description: Retrieves the results of a URL scan against a previous scan request.
+        If the scan is finished, results will be returned immediately; otherwise the
+        message "check back later" will be returned.
+      script: SlashNext Phishing Incident Response|||slashnext-scan-report
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      extended_info:
+        simple: "true"
+      scanid:
+        complex:
+          root: SlashNext
+          accessor: URL.ScanID
+          transformers:
+          - operator: uniq
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: N/A
+          - operator: splitAndTrim
+            args:
+              delimiter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: f3976cd3-e09c-48be-8514-11723c027cf1
+    type: regular
+    task:
+      id: f3976cd3-e09c-48be-8514-11723c027cf1
+      version: -1
+      name: Log Evidence for Review
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      desc: {}
+      description: {}
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      occurred: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 51af295f-19a2-439d-8543-3b3e848bb671
+    type: title
+    task:
+      id: 51af295f-19a2-439d-8543-3b3e848bb671
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_yes": 0.51,
+      "11_16_#default#": 0.64,
+      "3_10_yes": 0.44,
+      "4_5_yes": 0.4,
+      "6_1_yes": 0.38,
+      "6_7_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2685,
+        "width": 1310,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: content
+  value:
+    simple: ${incident.details}
+  required: true
+  description: Email/Message content to be scanned by SlashNext Phishing Incident
+    Response
+  playbookInputQuery:
+- key: email
+  value:
+    simple: ${incident.labels.Email/html}
+  required: true
+  description: Received email HTML for logging evidence
+  playbookInputQuery:
+outputs:
+- contextPath: SlashNext.IP
+  description: Complete IP Enrichment Data Returned by SlashNext
+  type: unknown
+- contextPath: SlashNext.Domain
+  description: Complete Domain Enrichment Data Returned by SlashNext
+  type: unknown
+- contextPath: SlashNext.URL
+  description: Complete URL Enrichment Data Returned by SlashNext
+  type: unknown
+tests:
+- SlashNextPhishingIncidentResponse-Test
+fromversion: 6.0.0

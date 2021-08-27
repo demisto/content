@@ -1,0 +1,17 @@
+{
+ "defaultIncidentType": "Email Communication",
+ "description": "Classifies Gmail email messages.",
+ "feed": false,
+ "id": "83d66f08-42b4-4ca6-8145-99bcf7c6b8e5",
+ "keyTypeMap": {
+  "Gmail": "Email Communication"
+ },
+ "name": "Gmail - Classifier - Email Communication",
+ "transformer": {
+  "complex": null,
+  "simple": "Type"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

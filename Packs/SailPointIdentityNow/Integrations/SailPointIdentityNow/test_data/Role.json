@@ -1,0 +1,29 @@
+{
+    "accessProfiles": [
+        {
+            "id": "2c9180846ff9c50201700becb01e00db",
+            "name": "Basic"
+        }
+    ],
+    "accessProfileCount": 1,
+    "description": "Basic Users",
+    "created": "2020-02-03T16:38:47Z",
+    "modified": "2020-02-03T16:40:42Z",
+    "synced": "2021-01-29T05:30:10.289Z",
+    "enabled": true,
+    "requestable": true,
+    "requestCommentsRequired": false,
+    "owner": {
+        "email": "adam.kennedy@sailpoint.com",
+        "type": "IDENTITY",
+        "id": "2c91808363f06ad80163fb690fae55b8",
+        "name": "adam.kennedy"
+    },
+    "id": "2c9180846ff9c50201700beb2e9000da",
+    "name": "Basic",
+    "pod": "stg-uswest",
+    "org": "sailpoint-idn",
+    "tags": null,
+    "_type": "role",
+    "type": "role"
+}

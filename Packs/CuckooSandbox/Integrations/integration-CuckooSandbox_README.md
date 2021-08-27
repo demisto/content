@@ -15,7 +15,7 @@
 <li>Analyze files and URLs in a safe environment (sandbox)</li>
 <li>View Cuckoo's tasks and machines</li>
 </ul>
-<h2>Configure Cuckoo Sandbox on Demisto</h2>
+<h2>Configure Cuckoo Sandbox on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cuckoo Sandbox.</li>
@@ -32,7 +32,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_4691429048921543479084695">Create a task from a file: cuckoo-create-task-from-file</a></li>
 <li><a href="#h_8399443619771543479089826">Get a task report: cuckoo-get-task-report</a></li>
@@ -253,6 +253,50 @@
 <tr>
 <td style="width: 302.703125px;">Cuckoo.Task.Monitor</td>
 <td style="width: 417.296875px;">Monitor of the reported task</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha1</td>
+<td style="width: 417.296875px;">The SHA1 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.name</td>
+<td style="width: 417.296875px;">The file name.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.type</td>
+<td style="width: 417.296875px;">The file type.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha256</td>
+<td style="width: 417.296875px;">The SHA256 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.urls</td>
+<td style="width: 417.296875px;">Related URLs of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.crc32</td>
+<td style="width: 417.296875px;">The CRC32 of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.path</td>
+<td style="width: 417.296875px;">The file path.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.ssdeep</td>
+<td style="width: 417.296875px;">The ssdeep of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.size</td>
+<td style="width: 417.296875px;">The size of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.sha512</td>
+<td style="width: 417.296875px;">The SHA512 hash of the file.</td>
+</tr>
+<tr>
+<td style="width: 302.703125px;">Cuckoo.Task.FileInfo.md5</td>
+<td style="width: 417.296875px;">The MD5 hash of the file.</td>
 </tr>
 </tbody>
 </table>

@@ -15,7 +15,7 @@ def parse_data(instances_category):
     for instance in top_instances:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
-        color = '#' + hex_number[2:]  # remove 0x and prepend '#'
+        color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
 
         instance_widget_data = {
             "data": [
@@ -60,8 +60,8 @@ def main():
                             0
                         ],
                         "groups": None,
-                        "name": "N\A",
-                        "label": "N\A",
+                        "name": "N/A",
+                        "label": "N/A",
                         "color": "rgb(255, 23, 68)"
                     },
                 ],
@@ -71,7 +71,7 @@ def main():
             }
         }
 
-    demisto.results(data)
+    return_results(data)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

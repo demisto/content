@@ -1,0 +1,211 @@
+{
+    "description": "Maps incoming QSS SOC Monitoring cases fields.",
+    "feed": false,
+    "id": "QSS Mapper",
+    "mapping": {
+        "QSS SOC Monitoring": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "QSS Case Acknowledged": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "acknowledged",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Assets": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "QSS Case Assignee": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assignee",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Created By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Creation Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case False Positive": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "false_positive",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case IOCs": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "iocs",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "QSS Case Last Update": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "last_update",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Notes": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "notes",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Number": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reference",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Sub Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case TLP": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tlp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Case Title": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "QSS Custom Attribute": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "custom_attributes",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "QSS Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

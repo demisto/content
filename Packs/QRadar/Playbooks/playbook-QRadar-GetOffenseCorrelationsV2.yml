@@ -1,35 +1,48 @@
 id: QRadar - Get offense correlations v2
 version: -1
 name: QRadar - Get offense correlations v2
-description: "Run on a QRadar offense to get more information:\n\n* Get all correlations\
-  \ relevant to the offense\n* Get all logs relevant to the correlations (not done\
-  \ by default - set \"GetCorrelationLogs\" to \"True\")\n\nInputs:\n* GetCorrelationLogs\
-  \ (default: False)\n* MaxLogsCount (default: 20)"
-starttaskid: '0'
+fromversion: 5.0.0
+description: |-
+  Run on a QRadar offense to get more information:
+
+  * Get all correlations relevant to the offense
+  * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
+
+  Inputs:
+  * GetCorrelationLogs (default: False)
+  * MaxLogsCount (default: 20)
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: db9fb0e9-591e-47b6-89e6-58e12e0a4b87
     type: start
     task:
       id: db9fb0e9-591e-47b6-89e6-58e12e0a4b87
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "25"
+      - "26"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": -440
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 5fa964a0-5f5e-49eb-8a3d-bce2813adaf6
     type: condition
     task:
@@ -38,16 +51,16 @@ tasks:
       name: Is CRE inserted correctly?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '2'
-      'true':
-      - '5'
+      - "2"
+      "true":
+      - "5"
     separatecontext: false
     conditions:
-    - label: 'true'
+    - label: "true"
       condition:
       - - operator: inList
           left:
@@ -57,14 +70,20 @@ tasks:
           right:
             value:
               simple: OnlyCRE,OnlyNotCRE, All
-    view: "{\n  \"position\": {\n    \"x\": 60,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 9adcf948-d938-4fc1-8da2-ec3d45741b5a
     type: title
     task:
@@ -73,17 +92,23 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -130,\n    \"y\": 1810\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1810
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 24b8da32-7dac-49c3-8114-138c7de88afb
     type: title
     task:
@@ -92,20 +117,26 @@ tasks:
       name: Get offense information
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 295,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 295,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 9c2dff46-d226-4772-830d-23aa0f91373b
     type: condition
     task:
@@ -114,16 +145,16 @@ tasks:
       name: Should query for the correlations' logs?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '2'
-      'true':
-      - '19'
+      - "2"
+      "true":
+      - "19"
     separatecontext: false
     conditions:
-    - label: 'true'
+    - label: "true"
       condition:
       - - operator: isEqualString
           left:
@@ -133,25 +164,31 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'True'
+              simple: "True"
           ignorecase: true
       - - operator: isExists
           left:
             value:
               simple: ${QRadar.Correlation.QID}
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 1390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1390
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '7':
-    id: '7'
-    taskid: 0954988f-ec0d-4627-8a69-61e1bce81464
+  "7":
+    id: "7"
+    taskid: c6cdc0aa-a2df-41e1-849b-efdaa8442288
     type: playbook
     task:
-      id: 0954988f-ec0d-4627-8a69-61e1bce81464
+      id: c6cdc0aa-a2df-41e1-849b-efdaa8442288
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -159,36 +196,47 @@ tasks:
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       headers: {}
       interval:
-        simple: '1'
+        simple: "1"
       query_expression:
-        simple: "SELECT *,\n\"CRE Name\" AS \"CREName\",\n\"CRE Description\" AS \"\
-          CREDescription\",\nCATEGORYNAME(highlevelcategory) AS \"Category\"\n${QRadar.AdditionalFields}\n\
-          FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE(${inputs.ID})\nLIMIT\
-          \ ${inputs.MaxCorrelationCount}\nSTART '${inputs.StartTime}'"
+        simple: |-
+          SELECT *,
+          "CRE Name" AS "CREName",
+          "CRE Description" AS "CREDescription",
+          CATEGORYNAME(highlevelcategory) AS "Category"
+          ${QRadar.AdditionalFields}
+          FROM events WHERE "CRE NAME" IS NULL AND INOFFENSE(${inputs.ID})
+          LIMIT ${inputs.MaxCorrelationCount}
+          START '${Time}'
       range: {}
       timeout:
-        simple: '600'
+        simple: "600"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: cdf5cb18-1412-480a-8fb4-da287c2fdd02
     type: regular
     task:
@@ -198,16 +246,16 @@ tasks:
       scriptName: ChangeContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       capitalize:
-        simple: 'True'
+        simple: "True"
       inplace:
-        simple: 'False'
+        simple: "False"
       input:
         simple: ${QRadar.Search.Result.events}
       input_key:
@@ -220,14 +268,20 @@ tasks:
         simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
           "category": "CategoryID", "starttime": "StartTime"}'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 387.5,\n    \"y\": 1215\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: a886a3db-ef29-417f-8319-344f42e9bfe0
     type: condition
     task:
@@ -236,16 +290,16 @@ tasks:
       name: is All or OnlyCRE
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '10'
-      'true':
-      - '7'
+      - "10"
+      "true":
+      - "7"
     separatecontext: false
     conditions:
-    - label: 'true'
+    - label: "true"
       condition:
       - - operator: inList
           left:
@@ -256,14 +310,20 @@ tasks:
           right:
             value:
               simple: All,OnlyCRE
-    view: "{\n  \"position\": {\n    \"x\": 150,\n    \"y\": 880\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 880
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 3e3d2932-bc72-4848-82cb-24fdb5927955
     type: condition
     task:
@@ -272,16 +332,16 @@ tasks:
       name: is All or OnlyNotCRE
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '10'
-      'true':
-      - '13'
+      - "10"
+      "true":
+      - "13"
     separatecontext: false
     conditions:
-    - label: 'true'
+    - label: "true"
       condition:
       - - operator: inList
           left:
@@ -291,18 +351,24 @@ tasks:
           right:
             value:
               simple: All,OnlyNotCRE
-    view: "{\n  \"position\": {\n    \"x\": 612.5,\n    \"y\": 880\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 880
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '13':
-    id: '13'
-    taskid: 1cc583c9-863c-48ec-88b4-90e131df6b00
+  "13":
+    id: "13"
+    taskid: 7f2ab0ca-d773-43f7-8937-cc3e6a10d395
     type: playbook
     task:
-      id: 1cc583c9-863c-48ec-88b4-90e131df6b00
+      id: 7f2ab0ca-d773-43f7-8937-cc3e6a10d395
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -310,59 +376,70 @@ tasks:
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       headers: {}
       interval:
-        simple: '1'
+        simple: "1"
       query_expression:
-        simple: "SELECT *,\n\"CRE Name\" AS \"CREName\",\n\"CRE Description\" AS \"\
-          CREDescription\",\nCATEGORYNAME(highlevelcategory) AS \"Category\"\n${QRadar.AdditionalFields}\n\
-          FROM events WHERE \"CRE NAME\" IS NULL AND INOFFENSE(${inputs.ID})\nLIMIT\
-          \ ${inputs.MaxCorrelationCount}\nSTART '${inputs.StartTime}'"
+        simple: |-
+          SELECT *,
+          "CRE Name" AS "CREName",
+          "CRE Description" AS "CREDescription",
+          CATEGORYNAME(highlevelcategory) AS "Category"
+          ${QRadar.AdditionalFields}
+          FROM events WHERE "CRE NAME" IS NULL AND INOFFENSE(${inputs.ID})
+          LIMIT ${inputs.MaxCorrelationCount}
+          START '${Time}'
       range: {}
       timeout:
-        simple: '600'
+        simple: "600"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 640,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '19':
-    id: '19'
-    taskid: c70a8cd7-e6ac-4d7a-8aae-d322d9d3d248
+  "19":
+    id: "19"
+    taskid: 45781b40-c44a-4358-835c-ba331f2ac457
     type: playbook
     task:
-      id: c70a8cd7-e6ac-4d7a-8aae-d322d9d3d248
+      id: 45781b40-c44a-4358-835c-ba331f2ac457
       version: -1
       name: QRadarCorrelationLog
-      description: This playbook get the correlation logs of multiple QIDs.
+      description: This playbook retrieves the correlation logs of multiple QIDs.
       playbookName: QRadarCorrelationLog
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       GetOnlyCREEvents:
         simple: ${inputs.GetOnlyCREEvents}
       MaxLogsCount:
-        simple: '20'
+        simple: "20"
       OffenseID:
         simple: ${inputs.ID}
       OffenseStartTime:
-        simple: ${inputs.StartTime}
+        simple: ${Time}
       QID:
         complex:
           root: ${QRadar
@@ -380,17 +457,23 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 1600\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     taskid: 3ea301ec-88ce-4a87-8205-55ab4af1153a
     type: regular
     task:
@@ -401,11 +484,11 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
-      - '12'
+      - "11"
+      - "12"
     scriptarguments:
       append: {}
       key:
@@ -433,14 +516,20 @@ tasks:
                 value:
                   simple: '"'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 295,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 295,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: e610fb0b-a75f-4925-83ad-7fdbaa169d0a
     type: condition
     task:
@@ -449,45 +538,254 @@ tasks:
       name: Are there additional fields
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '11'
-      - '12'
-      'true':
-      - '23'
+      - "11"
+      - "12"
+      "true":
+      - "23"
     separatecontext: false
     conditions:
-    - label: 'true'
+    - label: "true"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Fields
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 295,\n    \"y\": 515\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 295,
+          "y": 515
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"6_2_#default#\": 0.8\n  },\n  \"paper\"\
-  : {\n    \"dimensions\": {\n      \"height\": 1825,\n      \"width\": 1150,\n  \
-  \    \"x\": -130,\n      \"y\": 50\n    }\n  }\n}"
+  "25":
+    id: "25"
+    taskid: 0876b8fd-d1a3-4519-8310-e0e8973cf071
+    type: condition
+    task:
+      id: 0876b8fd-d1a3-4519-8310-e0e8973cf071
+      version: -1
+      name: Is Qradar v1 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 3f254d5a-a5f6-4dc5-8f00-fc777a1e9efe
+    type: condition
+    task:
+      id: 3f254d5a-a5f6-4dc5-8f00-fc777a1e9efe
+      version: -1
+      name: Is QRadar v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 5b063e09-3b47-41c8-8e21-ad3042a3258c
+    type: regular
+    task:
+      id: 5b063e09-3b47-41c8-8e21-ad3042a3258c
+      version: -1
+      name: Set timestamp to epoch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: inputs.StartTime
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3999e34f-ff50-40da-8d9a-8e9b9660d3ae
+    type: regular
+    task:
+      id: 3999e34f-ff50-40da-8d9a-8e9b9660d3ae
+      version: -1
+      name: Set timestamp
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: inputs.StartTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_2_#default#": 0.8
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2315,
+        "width": 1620,
+        "x": -600,
+        "y": -440
+      }
+    }
+  }
 inputs:
 - key: GetCorrelationLogs
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: When set to "True", retrieves all of the offense's correlations logs
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: MaxLogsCount
   value:
-    simple: '20'
+    simple: "20"
   required: false
   description: 'Maximum number of log entires to query from QRadar (default: 20)'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ID
   value:
     complex:
@@ -495,7 +793,7 @@ inputs:
       accessor: labels.id
   required: true
   description: 'The QRadar offense ID '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: StartTime
   value:
     complex:
@@ -503,25 +801,26 @@ inputs:
       accessor: labels.start_time
   required: true
   description: The QRadar offense start time
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: GetOnlyCREEvents
   value:
     simple: All
   required: false
-  description: "If value \"OnlyCRE\" get only events made by CRE.\nValues can be \"\
-    OnlyCRE\", \"OnlyNotCRE\", \"All\"."
-  playbookInputQuery:
+  description: |-
+    If value "OnlyCRE" get only events made by CRE.
+    Values can be "OnlyCRE", "OnlyNotCRE", "All".
+  playbookInputQuery: null
 - key: MaxCorrelationCount
   value:
-    simple: '100'
+    simple: "100"
   required: false
   description: 'Maximum number of correlations to query from QRadar (default: 100)'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Fields
   value: {}
   required: false
   description: A comma-separated list of extra fields to get from each event.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: QRadar.Correlation.StartTime
   description: The correlation start time
@@ -567,7 +866,6 @@ outputs:
   description: The log's magnitude
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
-sourceplaybookid: 'QRadar - Get offense correlations '
-fromversion: 5.0.0
 tests:
-- test playbook - QRadarCorreltaions
+- test playbook - QRadarCorrelations
+- test playbook - QRadarCorrelations For V2

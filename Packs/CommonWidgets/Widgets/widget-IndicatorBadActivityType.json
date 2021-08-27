@@ -1,7 +1,7 @@
 {
  "id": "indicators-bad-activity-type",
  "version": -1,
- "name": "Bad Indicators Activity by Type",
+ "name": "Malicious Indicators Activity by Type",
  "dataType": "indicators",
  "widgetType": "line",
  "query": "reputation:bad",
@@ -21,7 +21,8 @@
   "groupBy": [
    "calculatedTime(d)",
    "type"
-  ]
+  ],
+  "timeFrame": "days"
  },
  "description": "",
  "fromVersion": "5.0.0"

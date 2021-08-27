@@ -1,0 +1,30 @@
+{
+    "id": "incident_carbonblackesiocid",
+    "version": -1,
+    "name": "Carbon Black ES IOC Id",
+    "ownerOnly": false,
+    "description": "The identifier of the IOC that cause the hit",
+    "cliName": "carbonblackesiocid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

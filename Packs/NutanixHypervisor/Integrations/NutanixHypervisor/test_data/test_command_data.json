@@ -1,0 +1,411 @@
+{
+  "nutanix-fetch-incidents": {
+    "suffix": "alerts",
+    "response": {
+      "metadata": "a few rows containing meta data about the request",
+      "entities": [
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140001",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140002",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.Alerts",
+      "outputs_key_field": "id",
+      "outputs": [
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140001",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136,
+          "last_occurrence": "2021-01-15T13:55:24.821136+00:00",
+          "created_time": "2021-01-15T13:55:24.821136+00:00"
+        },
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140002",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914,
+          "last_occurrence": "2021-01-12T14:01:58.147914+00:00",
+          "created_time": "2021-01-12T14:01:58.147914+00:00"
+        }
+      ]
+    },
+    "args": {}
+  },
+  "nutanix-hypervisor-hosts-list": {
+    "suffix": "hosts",
+    "response": {
+      "metadata": "a few rows containing meta data about the request",
+      "entities": [
+        {
+          "disk_hardware_configs": {
+            "1": {
+              "serial_number": "drive-scsi0-0-0-0",
+              "disk_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1z",
+              "disk_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+              "location": 1,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": true,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            },
+            "2": {
+              "serial_number": "drive-scsi0-0-0-1",
+              "disk_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1z",
+              "disk_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+              "location": 2,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": false,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            },
+            "3": null,
+            "4": null,
+            "5": null,
+            "6": null,
+            "7": null,
+            "8": null,
+            "9": null,
+            "10": null,
+            "11": null,
+            "12": null,
+            "13": null,
+            "14": null,
+            "15": null,
+            "16": null,
+            "17": null,
+            "18": null,
+            "19": null,
+            "20": null,
+            "21": null,
+            "22": null,
+            "23": null,
+            "24": null,
+            "25": null,
+            "26": null
+          },
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "35zc012e-n41d-32ab-9ce2-a96583755e8y",
+          "num_cpu_cores": 8,
+          "num_cpu_threads": 8,
+          "num_cpu_sockets": 2,
+          "cpu_frequency_in_hz": 2095000000,
+          "cpu_capacity_in_hz": 16760000000,
+          "memory_capacity_in_bytes": 33722204160,
+          "details": "many details about the host",
+          "stats": {},
+          "usage_stats": {}
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.Host",
+      "outputs_key_field": "uuid",
+      "readable_output": "### Nutanix Hosts List\n|cpu_capacity_in_hz|cpu_frequency_in_hz|details|memory_capacity_in_bytes|num_cpu_cores|num_cpu_sockets|num_cpu_threads|service_vmid|uuid|\n|---|---|---|---|---|---|---|---|---|\n| 16760000000 | 2095000000 | many details about the host | 33722204160 | 8 | 2 | 8 | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 35zc012e-n41d-32ab-9ce2-a96583755e8y |\n",
+      "outputs": [
+        {
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "35zc012e-n41d-32ab-9ce2-a96583755e8y",
+          "num_cpu_cores": 8,
+          "num_cpu_threads": 8,
+          "num_cpu_sockets": 2,
+          "details": "many details about the host"
+        }
+      ]
+    },
+    "args": {
+      "verbose": "true"
+    }
+  },
+  "nutanix-hypervisor-vms-list": {
+    "suffix": "vms",
+    "response": {
+      "metadata": "a few rows containing meta data about the request",
+      "entities": [
+        {
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "35zc012e-n41d-32ab-9ce2-a96583755e8y",
+          "num_cores_per_vcpu": 2,
+          "num_vcpus": 2,
+          "power_state": "on",
+          "timezone": "UTC",
+          "details": "many details about the virtual machine"
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.VM",
+      "outputs_key_field": "uuid",
+      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 156 |\n",
+      "outputs": [
+        {
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "35zc012e-n41d-32ab-9ce2-a96583755e8y",
+          "num_cores_per_vcpu": 2,
+          "num_vcpus": 2,
+          "power_state": "on",
+          "timezone": "UTC",
+          "details": "many details about the virtual machine"
+        }
+      ]
+    },
+    "args": {
+    }
+  },
+  "nutanix-hypervisor-vm-powerstatus-change": {
+    "suffix": "vms/z4b8bfa5-bb52-4d09-924e-6c436aa333c7/set_power_state",
+    "response": {
+      "task_uuid": 123123
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.VMPowerStatus",
+      "outputs_key_field": "task_uuid",
+      "readable_output": null,
+      "outputs": {
+        "task_uuid": 123123
+      }
+    },
+    "args": {
+      "vm_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
+    }
+  },
+  "nutanix-hypervisor-task-results-get": {
+    "suffix": "tasks/poll",
+    "response": {
+      "completed_tasks_info": [
+        {
+          "uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "meta_request": {
+            "method_name": "VmChangePowerState"
+          },
+          "meta_response": {
+            "error_code": 0
+          },
+          "operation_type": "VmChangePowerState",
+          "percentage_complete": 100,
+          "progress_status": "Succeeded"
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.Task",
+      "outputs_key_field": "uuid",
+      "readable_output": "### Nutanix Hypervisor Tasks Status\n|Task ID|Progress Status|\n|---|---|\n| z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | Succeeded |\n",
+      "outputs": [
+        {
+          "uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "meta_request": {
+            "method_name": "VmChangePowerState"
+          },
+          "meta_response": {
+            "error_code": 0
+          },
+          "operation_type": "VmChangePowerState",
+          "percentage_complete": 100,
+          "progress_status": "Succeeded"
+        }
+      ]
+    },
+    "args": {
+      "task_ids": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
+    }
+  },
+  "nutanix-hypervisor-alerts-list": {
+    "suffix": "alerts",
+    "response": {
+      "metadata": "a few rows containing meta data about the request",
+      "entities": [
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140001",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140002",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.Alerts",
+      "outputs_key_field": "id",
+      "readable_output": "### Nutanix Alert List\n|acknowledged|alert_type_uuid|auto_resolved|check_id|created_time_stamp_in_usecs|details|id|last_occurrence_time_stamp_in_usecs|resolved|\n|---|---|---|---|---|---|---|---|---|\n| true | A140001 | false | z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds | 1610718924821136 | many details about the alert | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 1610718924821136 | true |\n| true | A140002 | false | z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds | 1610460118147914 | many details about the alert | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 1610460118147914 | true |\n",
+      "outputs": [
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140001",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136,
+          "last_occurrence": "2021-01-15T13:55:24.821136+00:00",
+          "created_time": "2021-01-15T13:55:24.821136+00:00"
+        },
+        {
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "alert_type_uuid": "A140002",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914,
+          "last_occurrence": "2021-01-12T14:01:58.147914+00:00",
+          "created_time": "2021-01-12T14:01:58.147914+00:00"
+        }
+      ]
+    },
+    "args": {
+      "verbose": "true"
+    }
+  },
+  "nutanix-hypervisor-alert-acknowledge": {
+    "suffix": "alerts/123123/acknowledge",
+    "response": {
+      "id": 123123,
+      "successful": true,
+      "message": "message about acknowledge"
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.AcknowledgedAlerts",
+      "outputs_key_field": "id",
+      "readable_output": null,
+      "outputs": {
+        "id": 123123,
+        "successful": true,
+        "message": "message about acknowledge"
+      }
+    },
+    "args": {
+      "alert_id": 123123
+    }
+  },
+  "nutanix-hypervisor-alert-resolve": {
+    "suffix": "alerts/123123/resolve",
+    "response": {
+      "id": 123123,
+      "successful": true,
+      "message": "message about acknowledge"
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.ResolvedAlerts",
+      "outputs_key_field": "id",
+      "readable_output": null,
+      "outputs": {
+        "id": 123123,
+        "successful": true,
+        "message": "message about acknowledge"
+      }
+    },
+    "args": {
+      "alert_id": 123123
+    }
+  },
+  "nutanix-hypervisor-alerts-acknowledge-by-filter": {
+    "suffix": "alerts/acknowledge",
+    "response": {
+      "num_successful_updates": 1,
+      "num_failed_updates": 0,
+      "alert_status_list": {
+        "id": "123123",
+        "message": "",
+        "successful": true
+      }
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.AcknowledgedFilterAlerts",
+      "readable_output": null,
+      "outputs": {
+        "num_successful_updates": 1,
+        "num_failed_updates": 0
+      }
+    },
+    "args": {}
+  },
+  "nutanix-hypervisor-alerts-resolve-by-filter": {
+    "suffix": "alerts/resolve",
+    "response": {
+      "num_successful_updates": 1,
+      "num_failed_updates": 0,
+      "alert_status_list": {
+        "id": "123123",
+        "message": "",
+        "successful": true
+      }
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.ResolvedFilterAlerts",
+      "readable_output": null,
+      "outputs": {
+        "num_successful_updates": 1,
+        "num_failed_updates": 0
+      }
+    },
+    "args": {}
+  }
+}

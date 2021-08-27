@@ -1,10 +1,24 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import zlib
 import pyshark
 from datetime import datetime
 import re
+import sys
+import traceback
+try:
+    from StringIO import StringIO  # for Python 2
+except ImportError:
+    from io import StringIO  # for Python 3
+
+serr = sys.stderr
+sys.stderr = StringIO()
+
+''' GLOBAL VARIABLES '''
+LIMIT = ""
+START = ""
+LIMIT_DATA = 0
+ALLOWED_CONTENT_TYPES: tuple = ()
 
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
@@ -368,38 +382,51 @@ def get_markdown_output(http_flows):
     return markdown_result
 
 
-if __name__ == "builtins":
-    # Parse the arguments
-    pcap_file_path_in_container, pcap_entry_id = get_entry_from_args()
-    pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
-    LIMIT = demisto.args()["limit"]
-    START = demisto.args()["start"]
-    LIMIT_DATA = int(demisto.args()["limitData"])
+def main():
+    try:
+        ''' GLOBAL VARIABLES '''
+        global LIMIT, START, LIMIT_DATA, ALLOWED_CONTENT_TYPES
+        LIMIT = demisto.args().get("limit")
+        START = demisto.args().get("start")
+        LIMIT_DATA = int(demisto.args().get("limitData"))
+        if "allowedContentTypes" not in demisto.args():
+            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
+                                     "application/xml", "application/xhtml+xml",
+                                     "application/ld+json", "application/javascript",
+                                     "multipart/alternative", "application/x-www-form-urlencoded")
+        else:
+            ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
 
-    if "allowedContentTypes" not in demisto.args():
-        ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
-                                 "application/xml", "application/xhtml+xml",
-                                 "application/ld+json", "application/javascript",
-                                 "multipart/alternative", "application/x-www-form-urlencoded")
-    else:
-        ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
+        # Parse the arguments
+        pcap_file_path_in_container, pcap_entry_id = get_entry_from_args()
+        pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
 
-    # Work on the pcap file and return a result
-    http_flows = get_http_flows(pcap_file_path_in_container)
+        # Work on the pcap file and return a result
+        http_flows = get_http_flows(pcap_file_path_in_container)
 
-    # Cut results according to the user args (times 2, because we are working on pairs of requests and responses).
-    if START:
-        http_flows = http_flows[int(START):]
-    if LIMIT:
-        http_flows = http_flows[:int(LIMIT)]
+        # Cut results according to the user args (times 2, because we are working on pairs of requests and responses).
+        if START:
+            http_flows = http_flows[int(START):]
+        if LIMIT:
+            http_flows = http_flows[:int(LIMIT)]
 
-    # Format and get output representation of the flows
-    formatted_http_flows = format_http_flows(http_flows, PYSHARK_RES_TO_DEMISTO, LIMIT_DATA, ALLOWED_CONTENT_TYPES)
-    markdown_output = get_markdown_output(formatted_http_flows)
-    context_output = formatted_http_flows
+        # Format and get output representation of the flows
+        formatted_http_flows = format_http_flows(http_flows, PYSHARK_RES_TO_DEMISTO, LIMIT_DATA, ALLOWED_CONTENT_TYPES)
+        markdown_output = get_markdown_output(formatted_http_flows)
+        context_output = formatted_http_flows
 
-    # Profit, send the output
-    demisto.results({"Type": entryTypes["note"],
-                     "ContentsFormat": formats["markdown"],
-                     "Contents": markdown_output,
-                     "EntryContext": {"PcapHTTPFlows": context_output}})
+        # Profit, send the output
+        demisto.results({"Type": entryTypes["note"],
+                         "ContentsFormat": formats["markdown"],
+                         "Contents": markdown_output,
+                         "EntryContext": {"PcapHTTPFlows": context_output}})
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+    finally:
+        sys.stderr = serr
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

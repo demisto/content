@@ -1,0 +1,4 @@
+!iam-disable-user user-profile=`{"email": "testdemisto@paloaltonetworks.com", "username": "Demisto"}` using="Atlassian IAM_instance_1"
+!iam-get-user user-profile=`{"email": "test@paloaltonetworks.com", "username": "testDemisto"}` using="Atlassian IAM_instance_1"
+!iam-create-user user-profile=`{"email": "testatlas@paloaltonetworks.com", "username": "testatlas@paloaltonetworks.com"}` using="Atlassian IAM_instance_1"
+!iam-update-user user-profile=`{"email": "testatlas@paloaltonetworks.com", "username": "testatlas@paloaltonetworks.com", "title": "Manager"}` using="Atlassian IAM_instance_1"

@@ -10,7 +10,7 @@
  },
  "isPredefined": true,
  "version": -1,
- "category": "utility",
+ "category": "utilities",
  "widgetType": "text",
  "params": {
   "text": "Place your text here.."

@@ -1,5 +1,5 @@
 ADD_USER_CONTEXT = {
-  "CyberArkPAS.Users(val.id == obj.id)": {
+  "CyberArkPAS.Users(val.id && val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -58,7 +58,7 @@ ADD_USER_CONTEXT = {
 }
 
 UPDATE_USER_CONTEXT = {
-  "CyberArkPAS.Users(val.id == obj.id)": {
+  "CyberArkPAS.Users(val.id && val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -117,7 +117,7 @@ UPDATE_USER_CONTEXT = {
 }
 
 GET_USERS_CONTEXT = {
-  "CyberArkPAS.Users(val.id == obj.id)": [
+  "CyberArkPAS.Users(val.id && val.id == obj.id)": [
     {
       "componentUser": False,
       "id": 2,
@@ -163,7 +163,7 @@ GET_USERS_CONTEXT = {
 }
 
 ADD_SAFE_CONTEXT = {
-  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName && val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -176,7 +176,7 @@ ADD_SAFE_CONTEXT = {
 }
 
 UPDATE_SAFE_CONTEXT = {
-  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName && val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "UpdatedSafe",
     "Location": "\\",
@@ -189,7 +189,7 @@ UPDATE_SAFE_CONTEXT = {
 }
 
 GET_SAFE_BY_NAME_CONTEXT = {
-  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName && val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -202,7 +202,7 @@ GET_SAFE_BY_NAME_CONTEXT = {
 }
 
 GET_LIST_SAFES_CONTEXT = {
-  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": [
+  "CyberArkPAS.Safes(val.SafeName && val.SafeName == obj.SafeName)": [
     {
       "Description": "",
       "Location": "\\",
@@ -311,7 +311,7 @@ ADD_SAFE_MEMBER_CONTEXT = {
 }
 
 UPDATE_SAFE_MEMBER_CONTEXT = {
-  "CyberArkPAS.Safes.Members(val.TestUser == obj.TestUser)": {
+  "CyberArkPAS.Safes.Members(val.TestUser && val.TestUser == obj.TestUser)": {
     "MemberName": "TestUser",
     "MembershipExpirationDate": "",
     "Permissions": [
@@ -405,7 +405,7 @@ UPDATE_SAFE_MEMBER_CONTEXT = {
 }
 
 LIST_SAFE_MEMBER_CONTEXT = {
-  "CyberArkPAS.Safes.Members(val.MemberName == obj.MemberName)": [
+  "CyberArkPAS.Safes.Members(val.MemberName && val.MemberName == obj.MemberName)": [
     {
       "IsExpiredMembershipEnable": False,
       "IsPredefinedUser": True,
@@ -471,7 +471,7 @@ LIST_SAFE_MEMBER_CONTEXT = {
 }
 
 ADD_ACCOUNT_CONTEXT = {
-  "CyberArkPAS.Accounts(val.id == obj.id)": {
+  "CyberArkPAS.Accounts(val.id && val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -489,7 +489,7 @@ ADD_ACCOUNT_CONTEXT = {
 }
 
 UPDATE_ACCOUNT_CONTEXT = {
-  "CyberArkPAS.Accounts(val.id == obj.id)": {
+  "CyberArkPAS.Accounts(val.id && val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -507,7 +507,7 @@ UPDATE_ACCOUNT_CONTEXT = {
 }
 
 GET_ACCOUNT_CONTEXT = {
-  'CyberArkPAS.Accounts(val.id == obj.id)': {'categoryModificationTime': 1597581174, 'id': '11_1',
+  'CyberArkPAS.Accounts(val.id && val.id == obj.id)': {'categoryModificationTime': 1597581174, 'id': '11_1',
                                              'name': 'Operating System-UnixSSH', 'address': 'address',
                                              'userName': 'firecall2', 'platformId': 'UnixSSH',
                                              'safeName': 'Linux Accounts', 'secretType': 'password',
@@ -520,7 +520,7 @@ GET_ACCOUNT_CONTEXT = {
                                              'createdTime': 1595431869}}
 
 GET_LIST_ACCOUNT_CONTEXT = {
-  "CyberArkPAS.Accounts(val.id == obj.id)": [
+  "CyberArkPAS.Accounts(val.id && val.id == obj.id)": [
     {
       "address": "string",
       "categoryModificationTime": 1594569595,

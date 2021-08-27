@@ -1,0 +1,1065 @@
+id: TrustwaveSEG-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: TrustwaveSEG-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4a57c53f-3601-486a-802a-511982967640
+    type: start
+    task:
+      id: 4a57c53f-3601-486a-802a-511982967640
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 06d7e200-1d63-4f51-82ed-6d5244411a4c
+    type: regular
+    task:
+      id: 06d7e200-1d63-4f51-82ed-6d5244411a4c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9a993895-5a96-4f16-8de6-c49c641837d7
+    type: regular
+    task:
+      id: 9a993895-5a96-4f16-8de6-c49c641837d7
+      version: -1
+      name: trustwave-seg-get-version
+      script: '|||trustwave-seg-get-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 290a84ae-76db-4646-8246-c6d9a68c16de
+    type: condition
+    task:
+      id: 290a84ae-76db-4646-8246-c6d9a68c16de
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Version.configVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Version.productVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Version.rpcInterfaceVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 05dd9f8e-38e2-4d18-8792-7adc0b8d691f
+    type: regular
+    task:
+      id: 05dd9f8e-38e2-4d18-8792-7adc0b8d691f
+      version: -1
+      name: trustwave-seg-automatic-config-backup-list
+      script: '|||trustwave-seg-automatic-config-backup-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 79d6f0a2-4239-433b-85f0-fbf8e834649f
+    type: condition
+    task:
+      id: 79d6f0a2-4239-433b-85f0-fbf8e834649f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.AutomaticBackupConfig.filename
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 89cb2ebb-d324-4b05-8bcb-c717dc203d48
+    type: regular
+    task:
+      id: 89cb2ebb-d324-4b05-8bcb-c717dc203d48
+      version: -1
+      name: trustwave-seg-automatic-config-backup-restore
+      script: '|||trustwave-seg-automatic-config-backup-restore'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      dkim_password: {}
+      include_dkim: {}
+      name:
+        simple: ${TrustwaveSEG.AutomaticBackupConfig.[0].filename}
+      timeout:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: af859cc9-f44d-44cb-82f4-63267480da9d
+    type: condition
+    task:
+      id: af859cc9-f44d-44cb-82f4-63267480da9d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.AutomaticBackupRestore.reason
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a41b0b10-9418-4ace-8e5e-14eac94e1f18
+    type: regular
+    task:
+      id: a41b0b10-9418-4ace-8e5e-14eac94e1f18
+      version: -1
+      name: trustwave-seg-automatic-config-backup-run
+      script: '|||trustwave-seg-automatic-config-backup-run'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      dkim_password: {}
+      include_dkim: {}
+      timeout:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 69773c84-4995-4b2b-89c3-a031334ffdbb
+    type: condition
+    task:
+      id: 69773c84-4995-4b2b-89c3-a031334ffdbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.AutomaticBackupRun.backupName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.AutomaticBackupRun.reason
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 858906ff-463d-424f-8033-a763cf1dec87
+    type: regular
+    task:
+      id: 858906ff-463d-424f-8033-a763cf1dec87
+      version: -1
+      name: trustwave-seg-list-alerts
+      script: '|||trustwave-seg-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 06598205-8685-4c41-8296-713e4d860d8b
+    type: condition
+    task:
+      id: 06598205-8685-4c41-8296-713e4d860d8b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Alert.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 53242d10-72c3-4319-8e26-864aa924bede
+    type: regular
+    task:
+      id: 53242d10-72c3-4319-8e26-864aa924bede
+      version: -1
+      name: trustwave-seg-statistics
+      script: '|||trustwave-seg-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      end_time: {}
+      start_time: {}
+      time_range:
+        simple: 1 day ago
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ed949cf4-aaf1-47ee-80cb-725b6f1617cf
+    type: condition
+    task:
+      id: ed949cf4-aaf1-47ee-80cb-725b6f1617cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: TrustwaveSEG.Statistics.maliciousUrls
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: TrustwaveSEG.Statistics.msgsBlendedThreats
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: TrustwaveSEG.Statistics.msgsIn
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: fddeb391-58da-45c6-85fd-e4f481926e46
+    type: regular
+    task:
+      id: fddeb391-58da-45c6-85fd-e4f481926e46
+      version: -1
+      name: trustwave-seg-list-servers
+      script: '|||trustwave-seg-list-servers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: f0dd5079-1196-4492-8a87-c526e2485241
+    type: condition
+    task:
+      id: f0dd5079-1196-4492-8a87-c526e2485241
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Server.serverId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d7110c13-f765-4465-898d-b8422b57f047
+    type: regular
+    task:
+      id: d7110c13-f765-4465-898d-b8422b57f047
+      version: -1
+      name: trustwave-seg-get-server
+      script: '|||trustwave-seg-get-server'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      server_id:
+        simple: ${TrustwaveSEG.Server.serverId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: a381cc51-32b8-4fca-807d-3783a2ae4ed2
+    type: condition
+    task:
+      id: a381cc51-32b8-4fca-807d-3783a2ae4ed2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Server.serverId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: ce237de8-597e-495c-8639-10268a818403
+    type: regular
+    task:
+      id: ce237de8-597e-495c-8639-10268a818403
+      version: -1
+      name: trustwave-seg-list-classifications
+      script: '|||trustwave-seg-list-classifications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: be1d49d2-34aa-4fc0-8a1b-2e9e81e96945
+    type: condition
+    task:
+      id: be1d49d2-34aa-4fc0-8a1b-2e9e81e96945
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Classification.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Classification.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 369f65ec-78c4-488b-87bc-af04d6aab796
+    type: regular
+    task:
+      id: 369f65ec-78c4-488b-87bc-af04d6aab796
+      version: -1
+      name: trustwave-seg-list-quarantine-folders
+      script: '|||trustwave-seg-list-quarantine-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 191bbd36-0946-4a62-892a-1a703cad6e62
+    type: condition
+    task:
+      id: 191bbd36-0946-4a62-892a-1a703cad6e62
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Folder.folderId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Folder.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 47bbd94c-62ee-4a3f-8acb-01e144804fcb
+    type: regular
+    task:
+      id: 47bbd94c-62ee-4a3f-8acb-01e144804fcb
+      version: -1
+      name: trustwave-seg-list-quarantine-folders-with-day-info
+      script: '|||trustwave-seg-list-quarantine-folders-with-day-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b7b53fff-4c6a-4765-8bfb-89ae5e3e93f5
+    type: condition
+    task:
+      id: b7b53fff-4c6a-4765-8bfb-89ae5e3e93f5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Folder.folderId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5ac97415-1879-494b-8346-15e499f0ef51
+    type: regular
+    task:
+      id: 5ac97415-1879-494b-8346-15e499f0ef51
+      version: -1
+      name: trustwave-seg-list-day-info-by-quarantine-folder
+      script: '|||trustwave-seg-list-day-info-by-quarantine-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      folder_id:
+        simple: "1007"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 8e676291-7cb9-47e2-81ae-051f4200c7ec
+    type: condition
+    task:
+      id: 8e676291-7cb9-47e2-81ae-051f4200c7ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: TrustwaveSEG.DayInfo.numFiles
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 8e84e3fe-6876-4b5c-890e-a1e22117028d
+    type: regular
+    task:
+      id: 8e84e3fe-6876-4b5c-890e-a1e22117028d
+      version: -1
+      name: trustwave-seg-find-quarantine-message
+      script: '|||trustwave-seg-find-quarantine-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      block_number: {}
+      classification: {}
+      end_time: {}
+      folder_id: {}
+      forwards: {}
+      from_user: {}
+      max_rows:
+        simple: "1"
+      max_size: {}
+      message_name: {}
+      min_size: {}
+      search_blank_subject: {}
+      search_history: {}
+      start_time: {}
+      subject: {}
+      time_range:
+        simple: 100 days ago
+      to_domain: {}
+      to_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 8c44012d-22c6-4dcd-8291-775944f5af32
+    type: condition
+    task:
+      id: 8c44012d-22c6-4dcd-8291-775944f5af32
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Message.blockNumber
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TrustwaveSEG.Message.recipient
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 5b3f3660-cb41-4b35-8410-03857aa79681
+    type: regular
+    task:
+      id: 5b3f3660-cb41-4b35-8410-03857aa79681
+      version: -1
+      name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
+      script: '|||trustwave-seg-spiderlabs-forward-quarantine-message-as-spam'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      block_number:
+        simple: "106098471075840"
+      edition:
+        simple: 607ef9ae0000
+      folder_id:
+        simple: "1006"
+      is_spam:
+        simple: "true"
+      message_name:
+        simple: B607ef9ac0000
+      recipient:
+        simple: test@example.com
+      server_id:
+        simple: "1"
+      spam_report_message:
+        simple: '"This is a spam"'
+      spam_report_notification_from_address:
+        simple: '"This is a spam"'
+      time_logged:
+        simple: "1618934189"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 5ba7094c-af87-4fa5-85e6-4f4947a766d7
+    type: title
+    task:
+      id: 5ba7094c-af87-4fa5-85e6-4f4947a766d7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

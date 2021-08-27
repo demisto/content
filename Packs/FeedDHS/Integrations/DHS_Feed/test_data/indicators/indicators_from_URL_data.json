@@ -1,0 +1,32 @@
+[
+    {
+        "@id": "NCCIC:Indicator-19fa92e7-d378-4d4c-8a9a-9a540a371929",
+        "@timestamp": "2020-10-30T14:33:06Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-c53a4d53-c444-4e92-9ed5-bc05ebb0ec08",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-a5743b86-412a-4840-940f-29fd1ff564a3",
+                "cybox:Properties": {
+                    "@type": "URL",
+                    "@xsi:type": "URIObj:URIObjectType",
+                    "URIObj:Value": {
+                        "#text": "http://t.com/hud-file/New/Error.php",
+                        "@condition": "Equals"
+                    }
+                }
+            }
+        },
+        "indicator:Sightings": {
+            "@sightings_count": "1",
+            "indicator:Sighting": {
+                "@timestamp": "2020-10-26T00:00:00+00:00"
+            }
+        },
+        "indicator:Type": {
+            "#text": "URL Watchlist",
+            "@xsi:type": "stixVocabs:IndicatorTypeVocab-1.0"
+        }
+    }
+]

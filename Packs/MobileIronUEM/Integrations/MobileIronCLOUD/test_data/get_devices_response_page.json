@@ -1,0 +1,353 @@
+{
+    "errors": null,
+    "result": {
+        "totalCount": 3,
+        "searchResults": [
+            {
+                "id": 1000000,
+                "guid": "00000000-710f-4a39-0000-5b41a0a4304d",
+                "mdmChannelId": "c38c4784-0000-0000-0000-eb5eb1a6e1f6",
+                "phoneNumber": null,
+                "deviceModel": "VirtualBox",
+                "deviceName": "WINDEV2006EVAL",
+                "platformType": "WINDOWS_PHONE",
+                "platformVersion": "10.0",
+                "osBuildVersion": "10.0.19041.329",
+                "lastCheckin": 1596024109907,
+                "registrationState": "RETIRE_PENDING",
+                "displayName": "Windows User",
+                "firstName": "Windows",
+                "lastName": "User",
+                "uid": "test@email.com",
+                "emailAddress": "test@email.com",
+                "clientVersion": null,
+                "manufacturer": "Manu GMBH",
+                "imei": null,
+                "imei2": null,
+                "imsi": "Not Present",
+                "locatorServiceEnabled": false,
+                "meid": null,
+                "wifiMacAddress": "00:00:00:10:01:00",
+                "wifiMacAddressForInventory": null,
+                "systemUpdateInformation": null,
+                "serialNumber": null,
+                "altSerialNumber": null,
+                "cellularTechnology": "device__p_cellular_technology",
+                "currentCarrierNetwork": "Not Present",
+                "subscriberCarrierNetwork": "UNKNOWN",
+                "locale": "en-us",
+                "ownershipType": "UNKNOWN",
+                "complianceState": false,
+                "roaming": false,
+                "supervised": null,
+                "udid": "4322ASD1SAD234FDJSDFDASDFSDFDSA",
+                "clientLastCheckin": null,
+                "iccid": null,
+                "currentMcc": null,
+                "currentMnc": null,
+                "subscriberMcc": null,
+                "subscriberMnc": null,
+                "prettyModel": "VBOX",
+                "policyViolationCount": 1,
+                "latitude": null,
+                "longitude": null,
+                "locationLastCapturedAt": null,
+                "lastRegistrationTime": 1595948218128,
+                "lostModeEnabled": null,
+                "multiUser": null,
+                "maxResidentUsers": null,
+                "clientDeviceIdentifier": null,
+                "availableCapacity": null,
+                "totalCapacity": 129.489,
+                "clusterIdentifier": "CLOUD",
+                "deviceSource": "CLOUD",
+                "quarantined": false,
+                "jailbroken": false,
+                "passcodeCompliant": null,
+                "passcodeCompliantWithProfiles": null,
+                "blocked": false,
+                "locationStatusDetail": null,
+                "androidBuildFingerprint": null,
+                "androidBuildId": null,
+                "androidZebraPatchLevel": null,
+                "androidSystemUpdateStatus": null,
+                "salesCode": null,
+                "firmwareVersion": null,
+                "uptime": null,
+                "androidWorkContainerEnabled": false,
+                "androidWorkUid": null,
+                "androidManagedByGoogle": false,
+                "fcmEnabled": false,
+                "actionExceptionCodes": [],
+                "violatedPolicies": [
+                    "Out of Contact"
+                ],
+                "supportLockMessage": false,
+                "ownerId": 324018450,
+                "kioskState": "NOT_CONFIGURED",
+                "customAttributes": {
+                    "attrs": {}
+                },
+                "easDeviceIdentifiers": [
+                    "1AB48A4801E38F2BF7A44CA1145B95B5",
+                    "null"
+                ],
+                "appEasIdentifiers": [
+                    "null"
+                ],
+                "androidDeviceOwnerModeEnabled": false,
+                "windowsDeviceType": "WINDOWS_DESKTOP",
+                "secureAppsStatus": null,
+                "secureAppsEncryptionStatus": null,
+                "secureAppsEncryptionMode": null,
+                "tpmSpecificationVersion": null,
+                "bridgeVersion": null,
+                "bridgeDeviceDataLastCapturedAt": null,
+                "lastHotfixId": "KB4561600",
+                "lastHotfixInstalledOn": 1592204400000,
+                "mamOnly": false,
+                "authOnly": false,
+                "ipAddress": null,
+                "depEnrolled": false,
+                "depEligible": false,
+                "mobileThreatDefenseGeneralStatus": "NA",
+                "antiPhishingGeneralStatus": "NA",
+                "samsungEfotaCapable": false,
+                "currentCountryName": null,
+                "currentCountryCode": null,
+                "homeCountryName": null,
+                "homeCountryCode": null,
+                "userPreferenceCSVHeader": null,
+                "dmPartitionId": 33533,
+                "dmPartitionName": "Default Space",
+                "entityName": "WINDEV2006EVAL"
+            },
+            {
+                "id": 1000001,
+                "guid": "02fdc9d7-0000-0000-0000-1b3d96158fb9",
+                "mdmChannelId": "a1e13a01-0000-0000-0000-1e2ebeb8bdd6",
+                "phoneNumber": "",
+                "deviceModel": "Pixel",
+                "deviceName": null,
+                "platformType": "ANDROID",
+                "platformVersion": "10",
+                "osBuildVersion": "QP1A.191005.007.A3",
+                "lastCheckin": 1600797224252,
+                "registrationState": "RETIRED",
+                "displayName": "Android AppConnect",
+                "firstName": "Android",
+                "lastName": "AppConnect",
+                "uid": "test1@email.com",
+                "emailAddress": "test1@email.com",
+                "clientVersion": "1.0.0",
+                "manufacturer": "Google",
+                "imei": "",
+                "imei2": "",
+                "imsi": "",
+                "locatorServiceEnabled": false,
+                "meid": "",
+                "wifiMacAddress": "00:37:00:00:00:00",
+                "wifiMacAddressForInventory": null,
+                "systemUpdateInformation": null,
+                "serialNumber": "",
+                "altSerialNumber": "",
+                "cellularTechnology": "device__p_cellular_technology",
+                "currentCarrierNetwork": "unknown",
+                "subscriberCarrierNetwork": "UNKNOWN",
+                "locale": "en_US",
+                "ownershipType": "UNKNOWN",
+                "complianceState": false,
+                "roaming": false,
+                "supervised": null,
+                "udid": null,
+                "clientLastCheckin": 1600797224252,
+                "iccid": "",
+                "currentMcc": "0",
+                "currentMnc": "0",
+                "subscriberMcc": "0",
+                "subscriberMnc": "0",
+                "prettyModel": "Pixel",
+                "policyViolationCount": 1,
+                "latitude": null,
+                "longitude": null,
+                "locationLastCapturedAt": null,
+                "lastRegistrationTime": 1600691602527,
+                "lostModeEnabled": null,
+                "multiUser": null,
+                "maxResidentUsers": null,
+                "clientDeviceIdentifier": "000000d9fdea5316c0d7f9adbc0e7a0c1f64511dbf9a00d12da26ec78eb00000",
+                "availableCapacity": 20.300531,
+                "totalCapacity": 33.554432,
+                "clusterIdentifier": "CLOUD",
+                "deviceSource": "CLOUD",
+                "quarantined": false,
+                "jailbroken": false,
+                "passcodeCompliant": null,
+                "passcodeCompliantWithProfiles": true,
+                "blocked": false,
+                "locationStatusDetail": null,
+                "androidBuildFingerprint": "",
+                "androidBuildId": "",
+                "androidZebraPatchLevel": "",
+                "androidSystemUpdateStatus": "UNKNOWN",
+                "salesCode": "",
+                "firmwareVersion": "",
+                "uptime": 367793680,
+                "androidWorkContainerEnabled": false,
+                "androidWorkUid": null,
+                "androidManagedByGoogle": false,
+                "fcmEnabled": false,
+                "actionExceptionCodes": [],
+                "violatedPolicies": [
+                    "Out of Contact"
+                ],
+                "supportLockMessage": false,
+                "ownerId": 345947550,
+                "kioskState": "NOT_CONFIGURED",
+                "customAttributes": {
+                    "attrs": {}
+                },
+                "easDeviceIdentifiers": [
+                    "null"
+                ],
+                "appEasIdentifiers": [
+                    "null"
+                ],
+                "androidDeviceOwnerModeEnabled": false,
+                "windowsDeviceType": null,
+                "secureAppsStatus": "TRUE",
+                "secureAppsEncryptionStatus": "TRUE",
+                "secureAppsEncryptionMode": "AES_256",
+                "tpmSpecificationVersion": null,
+                "bridgeVersion": null,
+                "bridgeDeviceDataLastCapturedAt": null,
+                "lastHotfixId": null,
+                "lastHotfixInstalledOn": null,
+                "mamOnly": false,
+                "authOnly": false,
+                "ipAddress": null,
+                "depEnrolled": false,
+                "depEligible": false,
+                "mobileThreatDefenseGeneralStatus": "NA",
+                "antiPhishingGeneralStatus": "NA",
+                "samsungEfotaCapable": false,
+                "currentCountryName": null,
+                "currentCountryCode": null,
+                "homeCountryName": null,
+                "homeCountryCode": null,
+                "userPreferenceCSVHeader": null,
+                "dmPartitionId": 33533,
+                "dmPartitionName": "Default Space",
+                "entityName": "ANDROID-Pixel-"
+            }
+        ],
+        "offset": 0,
+        "limit": 10,
+        "queryTime": 62,
+        "facetedResults": {
+            "LAST_HOTFIX_ID": {
+                "kb4561600": 1
+            },
+            "SUBSCRIBERCARRIERNETWORK": {
+                "Telekom.de": 1,
+                "UNKNOWN": 3
+            },
+            "AUTHONLY": {
+                "false": 4
+            },
+            "ANDROIDWORKPROFILEONCOMPANYOWNEDDEVICEENABLED": {
+                "false": 4
+            },
+            "ANDROIDDEVICEOWNERMODEENABLED": {
+                "false": 4
+            },
+            "PRETTYMODEL": {
+                "innotek GmbH: VirtualBox": 2,
+                "iPhone 6S": 1,
+                "Pixel": 1
+            },
+            "REGISTRATIONSTATE": {
+                "RETIRE_PENDING": 1,
+                "ACTIVE": 1,
+                "RETIRED": 2
+            },
+            "DEVICESOURCE": {
+                "cloud": 4
+            },
+            "MULTIUSER": {
+                "false": 4
+            },
+            "ACCOUNTENABLED": {
+                "true": 4
+            },
+            "ANDROIDWORKPROFILEENABLED": {
+                "false": 4
+            },
+            "KIOSKSTATE": {
+                "not_configured": 4
+            },
+            "ANDROIDSECURITYPATCHLEVEL": {
+                "2019-10-06": 1
+            },
+            "JAILBROKEN": {
+                "false": 4
+            },
+            "PLATFORMTYPE": {
+                "IOS": 1,
+                "ANDROID": 1,
+                "WINDOWS_PHONE": 2
+            },
+            "OWNERSHIPTYPE": {
+                "UNKNOWN": 4
+            },
+            "ANDROIDSAFETYNETATTESTATIONTYPE": {
+                "unknown": 4
+            },
+            "ANDROIDWORKDEVICEOWNERWITHWORKPROFILEENABLED": {
+                "false": 4
+            },
+            "COMPLIANCESTATE": {
+                "false": 4
+            },
+            "MOBILE_THREAT_DEFENSE_GENERAL_STATUS": {
+                "NA": 4
+            },
+            "SUPERVISED": {
+                "false": 4
+            },
+            "ANTIPHISHINGGENERALSTATUS": {
+                "NA": 4
+            },
+            "SECUREAPPSSTATUS": {
+                "true": 1
+            },
+            "MAMONLY": {
+                "false": 4
+            },
+            "ANDROIDMANAGEDBYGOOGLE": {
+                "false": 4
+            },
+            "ACCOUNTGROUP": {
+                "children user group": 1,
+                "all users": 4,
+                "android appconnect": 1
+            },
+            "ANDROIDWORKENABLED": {
+                "false": 4
+            },
+            "OSBUILDVERSION": {
+                "QP1A.191005.007.A3": 1,
+                "10.0.19041.264": 1,
+                "17B111": 1,
+                "10.0.19041.329": 1
+            },
+            "ROAMING": {
+                "false": 4
+            },
+            "LOSTMODEENABLED": {
+                "false": 4
+            }
+        },
+        "totalUnfilteredResultCount": 0
+    }
+}

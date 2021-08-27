@@ -1,0 +1,140 @@
+{
+    "domain": "google.com",
+    "web": {
+        "domain": "google.com",
+        "rank": 1,
+        "url": "https://www.google.com/?gws_rd=ssl",
+        "ip": "172.217.14.196",
+        "date": "2021-01-26T01:33:56.129Z",
+        "length": 192888,
+        "server": "gws",
+        "encoding": "utf8",
+        "title": "Google",
+        "description": "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.",
+        "email": "example@example.com",
+        "links": [
+            "about.google"
+        ]
+    },
+    "dns": {
+        "domain": "google.com",
+        "a": [
+            "172.217.14.238"
+        ],
+        "aaaa": [
+            "2607:f8b0:400a:803::200e"
+        ],
+        "mx": [
+            "10 aspmx.l.google.com.",
+            "20 alt1.aspmx.l.google.com.",
+            "30 alt2.aspmx.l.google.com.",
+            "40 alt3.aspmx.l.google.com.",
+            "50 alt4.aspmx.l.google.com."
+        ],
+        "ns": [
+            "ns1.google.com.",
+            "ns2.google.com.",
+            "ns3.google.com.",
+            "ns4.google.com."
+        ]
+    },
+    "ipinfo": {
+        "172.217.14.196": {
+            "city": "Seattle",
+            "region": "Washington",
+            "country": "US",
+            "loc": "47.6062,-122.3321",
+            "postal": "98111",
+            "timezone": "America/Los_Angeles",
+            "asn": {
+                "asn": "AS15169",
+                "name": "Google LLC",
+                "domain": "google.com",
+                "route": "172.217.14.0/24",
+                "type": "business"
+            }
+        },
+        "172.217.14.238": {
+            "city": "Seattle",
+            "region": "Washington",
+            "country": "US",
+            "loc": "47.6062,-122.3321",
+            "postal": "98111",
+            "timezone": "America/Los_Angeles",
+            "asn": {
+                "asn": "AS15169",
+                "name": "Google LLC",
+                "domain": "google.com",
+                "route": "172.217.14.0/24",
+                "type": "business"
+            }
+        },
+        "2607:f8b0:400a:803::200e": {
+            "city": "Mountain View",
+            "region": "California",
+            "country": "US",
+            "loc": "37.4056,-122.0775",
+            "postal": "94043",
+            "timezone": "America/Los_Angeles",
+            "asn": {
+                "asn": "AS15169",
+                "name": "Google LLC",
+                "domain": "google.com",
+                "route": "2607:f8b0:400a::/48",
+                "type": "business"
+            }
+        }
+    },
+    "related": {
+        "ip": [
+            {
+                "value": "172.217.14.196",
+                "count": 123993
+            },
+            {
+                "value": "172.217.14.238",
+                "count": 94689
+            },
+            {
+                "value": "2607:f8b0:400a:803::200e",
+                "count": 585
+            }
+        ],
+        "asn": [
+            {
+                "value": "AS15169",
+                "count": 51782915
+            }
+        ],
+        "ns": [
+            {
+                "value": "google.com",
+                "count": 141664
+            }
+        ],
+        "mx": [
+            {
+                "value": "google.com",
+                "count": 13815108
+            }
+        ],
+        "email": [
+            {
+                "value": "example@example.com",
+                "count": 1483
+            }
+        ],
+        "backlinks": [
+            {
+                "value": "google.com",
+                "count": 8638260
+            }
+        ],
+        "redirects": [
+            {
+                "value": "google.com",
+                "count": 943992
+            }
+        ]
+    }
+}

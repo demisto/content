@@ -11,12 +11,13 @@ These parameters support the following integration commands:
 mimecast-login -> fetches new access key & secret key
 mimecast-discover -> lists supported auth types of user
 mimecast-refresh-token -> refreshes the validity duration of access key & secret key (3 days)
-<li>2. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key & Secret Key.</li>
+<li>2. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key, and Secret
+ Key. For detailed information about creating these fields, please refer to the <a href="https://integrations.mimecast.com/documentation/api-overview/authentication-and-authorization/" target="_self">Mimecast Documentation</a>.</li>
 <li>3. Fetch Incidents - the integration has the ability to fetch 3 types of incidents: url, attachment & impersonation.
 In order to activate them first tick "fetch incidents" box, then tick the relevant boxes for each fetch type you want.
 </ul><h2>Fetch Incidents</h2>
 <p>Populate this section with Fetch incidents data</p>
-<h2>Configure MimecastV2 on Demisto</h2>
+<h2>Configure MimecastV2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -48,7 +49,7 @@ In order to activate them first tick "fetch incidents" box, then tick the releva
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -257,14 +258,6 @@ In order to activate them first tick "fetch incidents" box, then tick the releva
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-list-blocked-sender-policies">2. mimecast-list-blocked-sender-policies</h3>
 <hr>
@@ -369,14 +362,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-get-policy">3. mimecast-get-policy</h3>
 <hr>
@@ -492,14 +477,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-create-policy">4. mimecast-create-policy</h3>
 <hr>
@@ -645,14 +622,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-delete-policy">5. mimecast-delete-policy</h3>
 <hr>
@@ -723,14 +692,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-manage-sender">6. mimecast-manage-sender</h3>
 <hr>
@@ -826,14 +787,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-list-managed-url">7. mimecast-list-managed-url</h3>
 <hr>
@@ -935,15 +888,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-create-managed-url">8. mimecast-create-managed-url</h3>
 <hr>
 <p>Create a managed URL on Mimecast</p>
@@ -1069,15 +1013,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-list-messages">9. mimecast-list-messages</h3>
 <hr>
 <p>Get a list of messages for a given user</p>
@@ -1193,14 +1128,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-get-attachment-logs">10. mimecast-get-attachment-logs</h3>
 <hr>
@@ -1326,14 +1253,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-get-url-logs">11. mimecast-get-url-logs</h3>
 <hr>
@@ -1469,14 +1388,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-get-impersonation-logs">12. mimecast-get-impersonation-logs</h3>
 <hr>
@@ -1647,14 +1558,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-url-decode">13. mimecast-url-decode</h3>
 <hr>
@@ -1730,14 +1633,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-discover">14. mimecast-discover</h3>
 <hr>
@@ -1791,14 +1686,6 @@ There are no input arguments for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-refresh-token">15. mimecast-refresh-token</h3>
 <hr>
@@ -1820,14 +1707,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-login">16. mimecast-login</h3>
 <hr>
@@ -1849,15 +1728,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-get-message">17. mimecast-get-message</h3>
 <hr>
 <p>Get the contents or metadata of a given message</p>
@@ -2068,14 +1938,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="mimecast-download-attachments">18. mimecast-download-attachments</h3>
 <hr>
@@ -2187,15 +2049,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-find-groups">19. mimecast-find-groups</h3>
 <hr>
 <p>Returns the list of groups according to the specified query.</p>
@@ -2300,15 +2153,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-get-group-members">20. mimecast-get-group-members</h3>
 <hr>
 <p>Returns the members list for the specified group.</p>
@@ -2408,15 +2252,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-add-group-member">21. mimecast-add-group-member</h3>
 <hr>
 <p>Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.</p>
@@ -2501,15 +2336,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-remove-group-member">22. mimecast-remove-group-member</h3>
 <hr>
 <p>Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.</p>
@@ -2594,15 +2420,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-create-group">23. mimecast-create-group</h3>
 <hr>
 <p>Creates a new Mimecast group.</p>
@@ -2702,15 +2519,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-update-group">24. mimecast-update-group</h3>
 <hr>
 <p>Updates an existing Mimecast group.</p>
@@ -2800,15 +2608,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-create-remediation-incident">25. mimecast-create-remediation-incident</h3>
 <hr>
 <p>Creates a new Mimecast remediation incident.</p>
@@ -2968,15 +2767,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-get-remediation-incident">26. mimecast-get-remediation-incident</h3>
 <hr>
 <p>Returns a Mimecast remediation incident.</p>
@@ -3116,15 +2906,6 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
 <h3 id="mimecast-search-file-hash">27. mimecast-search-file-hash</h3>
 <hr>
 <p>Searches for one or more file hashes in the account. Maximum is 100.</p>

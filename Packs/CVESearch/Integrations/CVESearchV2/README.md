@@ -9,7 +9,7 @@ This integration was integrated and tested with CVE Search (Version 2.1).
 2. Getting the latest published cve's 
 ---
 
-## Configure CVE Search on Demisto
+## Configure CVE Search on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -21,7 +21,7 @@ This integration was integrated and tested with CVE Search (Version 2.1).
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. cve-latest
 2. cve
@@ -29,8 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. cve-latest
 ---
 Retruns the latest updated CVEs.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `cve-latest`

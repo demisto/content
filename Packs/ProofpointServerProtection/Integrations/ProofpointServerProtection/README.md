@@ -4,7 +4,7 @@ Use the Proofpoint Protection Server integration to manage your email security a
 
 This integration was integrated and tested with version 8.11.12 of Proofpoint Protection Server.
 
-Users must be assigned to the admin role to use this integration.
+Users must be assigned to the **podadmin** role to use this integration.
 
 This integration does not support SAML protocol for authentication.
 
@@ -15,7 +15,7 @@ This integration does not support SAML protocol for authentication.
 3. Manage quarantined messages and folder.
 
 
-## Configure Proofpoint Protection Server on Demisto
+## Configure Proofpoint Protection Server on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -32,7 +32,7 @@ This integration does not support SAML protocol for authentication.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. proofpoint-download-email
 2. proofpoint-quarantine-messages
@@ -54,7 +54,7 @@ Download email message by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Email message ID to download. | Required |  
+| message_id | The GUID of the email message to download. | Required |  
 
 
 ##### Context Output

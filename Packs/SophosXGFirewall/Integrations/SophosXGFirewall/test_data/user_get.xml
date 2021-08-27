@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <User transactionid="">
+    <Username>unitestuser2</Username>
+    <Name>unitest3</Name>
+    <Password passwordform="encrypt">F5A7EFCF49F10328D7198A1968618B38</Password>
+    <Description/>
+    <UserType>User</UserType>
+    <EmailList>
+      <EmailID>test@test.test</EmailID>
+    </EmailList>
+    <Group>Guest Group</Group>
+    <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
+    <AccessTimePolicy>Allowed all the time</AccessTimePolicy>
+    <DataTransferPolicy>100 MB Total Data Transfer policy</DataTransferPolicy>
+    <QoSPolicy>High Guarantee User</QoSPolicy>
+    <SSLVPNPolicy>No Policy Applied</SSLVPNPolicy>
+    <ClientlessPolicy>No Policy Applied</ClientlessPolicy>
+    <Status>Active</Status>
+    <L2TP>Disable</L2TP>
+    <PPTP>Disable</PPTP>
+    <CISCO>Disable</CISCO>
+    <QuarantineDigest>Disable</QuarantineDigest>
+    <MACBinding>0</MACBinding>
+    <LoginRestriction>UserGroupNode</LoginRestriction>
+    <ScheduleForApplianceAccess>All The Time</ScheduleForApplianceAccess>
+    <LoginRestrictionForAppliance/>
+    <IsEncryptCert>Disable</IsEncryptCert>
+    <SimultaneousLoginsGlobal>Enable</SimultaneousLoginsGlobal>
+  </User>
+</Response>

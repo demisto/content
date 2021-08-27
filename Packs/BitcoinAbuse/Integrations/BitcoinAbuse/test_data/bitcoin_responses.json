@@ -1,0 +1,10 @@
+{
+  "failure": {
+    "response": "Server could not process your request",
+    "success": false
+  },
+  "success": {
+    "response": "Uploaded address successfully",
+    "success": true
+  }
+}

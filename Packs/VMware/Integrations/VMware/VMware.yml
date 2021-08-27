@@ -1,0 +1,254 @@
+category: IT Services
+commonfields:
+  id: VMware
+  version: -1
+configuration:
+- display: Server URL (i.e., 192.168.0.1:30022)
+  name: url
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: VMware vCenter server is a centralized management application that lets
+  you manage virtual machines and ESXi hosts centrally.
+display: VMware
+name: VMware
+script:
+  commands:
+  - arguments: []
+    description: Returns all virtual machines on a system.
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.State
+      description: VM State (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      related: ''
+    name: vmware-get-vms
+    outputs:
+    - contextPath: VMWare.Name
+      description: VM name.
+      type: String
+    - contextPath: VMWare.Template
+      description: true if template, else false.
+      type: bool
+    - contextPath: VMWare.Path
+      description: Path to VM.
+      type: String
+    - contextPath: VMWare.Guest
+      description: Guest full name.
+      type: String
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.IP
+      description: VM IP address.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+    - contextPath: VMWare.HostName
+      description: Host name of VM.
+      type: String
+    - contextPath: VMWare.MACAddress
+      description: MAC address of VM.
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to be powered on.
+      name: vm-uuid
+      required: true
+    description: Powers on a powered-off or suspended virtual machine.
+    execution: true
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      related: ''
+    name: vmware-poweron
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to be powered on.
+      name: vm-uuid
+      required: true
+    description: Powers off a powered-on or suspended virtual machine.
+    execution: true
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      related: ''
+    name: vmware-poweroff
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to reboot.
+      name: vm-uuid
+      required: true
+    description: Reboots a powered-on virtual machine.
+    execution: true
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      related: ''
+    name: vmware-hard-reboot
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to be suspended.
+      name: vm-uuid
+      required: true
+    description: Suspends a powered-on virtual machine.
+    execution: true
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.State
+      description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
+      related: ''
+    name: vmware-suspend
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.State
+      description: VM state (i.e,. poweredOn, poweredOff, suspended, HardRebooted).
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to reboot.
+      name: vm-uuid
+      required: true
+    description: Issues a command to the guest operating system asking it to perform
+      a reboot.
+    name: vmware-soft-reboot
+  - arguments:
+    - description: VM UUID of virtual machine to take snapshot of.
+      name: vm-uuid
+      required: true
+    - description: Snapshot name.
+      name: name
+    - description: Snapshot description.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: Snapshot the virtual machine's memory. Default is "True".
+      name: memory
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Quiesce guest file system (needs VMWare Tools installed). Default is "False".
+      name: quiesce
+      predefined:
+      - 'true'
+      - 'false'
+    description: Creates VM snapshot
+    name: vmware-create-snapshot
+  - arguments:
+    - description: Snapshot name to revert to.
+      name: snapshot-name
+      required: true
+    - description: VM UUID of virtual machine to revert snapshot.
+      name: vm-uuid
+      required: true
+    description: Reverts VM to snapshot.
+    execution: true
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.Snapshot
+      description: Name of the snapshot reverted to.
+      related: ''
+    name: vmware-revert-snapshot
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.Snapshot
+      description: Name of the snapshot reverted to.
+      type: String
+  - arguments:
+    - description: VM UUID of virtual machine to get events of.
+      name: vm-uuid
+      required: true
+    - defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
+      description: Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent).
+      name: event-type
+    description: Gets events of VM.
+    name: vmware-get-events
+  - arguments:
+    - description: VM UUID of virtual machine to change NIC state.
+      name: vm-uuid
+      required: true
+    - auto: PREDEFINED
+      description: New state of the NIC to be changed.
+      name: nic-state
+      predefined:
+      - connect
+      - disconnect
+      - delete
+      required: true
+    - description: Number of the NIC to be changed.
+      name: nic-number
+      required: true
+    description: Changes the state of a VM NIC.
+    important:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      related: ''
+    - contextPath: VMWare.NICState
+      description: VM NIC state (i.e., connected, disconnected, delete).
+      related: ''
+    name: vmware-change-nic-state
+    outputs:
+    - contextPath: VMWare.UUID
+      description: VM instance UUID.
+      type: String
+    - contextPath: VMWare.NICState
+      description: VM NIC state (i.e., connected, disconnected, delete).
+      type: String
+  dockerimage: demisto/vmware:1.0-alpine
+  runonce: false
+  script: ''
+  subtype: python2
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

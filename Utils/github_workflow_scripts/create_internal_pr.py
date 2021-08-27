@@ -19,9 +19,10 @@ def main():
     1. Creates new PR.
         A) Uses body of merged external PR as the body of the new PR.
         B) Uses base branch of merged external PR as head branch of the new PR to master.
-        C) Adds 'docs-approved' label if it was on the merged external PR, otherwise assigns 'kirbles19' as a reviewer.
+        C) Adds 'docs-approved' label if it was on the merged external PR.
         D) Requests review from the same users as on the merged external PR.
-        E) Assigns the same users as on the merged external PR.
+        E) Labels the PR with the "Contribution" label.
+        F) Assigns the same users as on the merged external PR.
 
     Will use the following env vars:
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
@@ -43,6 +44,9 @@ def main():
     merged_pr_url = merged_pr.html_url
     body = f'## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n'
     title = merged_pr.title
+    if '## Contributor' not in merged_pr.body:
+        merged_pr_author = merged_pr.user.login
+        body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
     body += merged_pr.body
     base_branch = 'master'
     head_branch = merged_pr.base.ref
@@ -54,9 +58,11 @@ def main():
     if docs_approved_label in labels:
         pr.add_to_labels(docs_approved_label)
         print(f'{t.cyan}"docs-approved" label added{t.normal}')
-    else:
-        pr.add_to_assignees('kirbles19')
-        print(f'{t.cyan}"kirbles19" user assigned{t.normal}')
+
+    # Add 'Contribution' Label to PR
+    contribution_label = 'Contribution'
+    pr.add_to_labels(contribution_label)
+    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
 
     merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()
@@ -67,7 +73,7 @@ def main():
     print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
 
     # assign same users as in the merged PR
-    assignees = [assignee.login for assignee in merged_pr.assignees if assignee.login != 'kirbles19']
+    assignees = [assignee.login for assignee in merged_pr.assignees]
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')
 

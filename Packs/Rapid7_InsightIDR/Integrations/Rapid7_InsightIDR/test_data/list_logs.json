@@ -1,0 +1,54 @@
+{
+    "logs": [
+      {
+        "logsets_info": [
+          {
+            "id": "ecca4c14-338d-4452-b842-5fca8c86b9cb",
+            "links": [
+              {
+                "href": "https://us.rest.logs.insight.rapid7.com/management/logsets/0f5e4d20-fef3-4b91-b4c2-c2573466bbdd",
+                "rel": "Self"
+              }
+            ],
+            "name": "MyLogSet"
+          }
+        ],
+        "name": "MyLog",
+        "user_data": {
+          "le_agent_filename": "/var/log/anaconda.log",
+          "le_agent_follow": "true"
+        },
+        "tokens": [],
+        "source_type": "AGENT",
+        "token_seed": null,
+        "structures": [],
+        "id": "4e6dadf9-961e-48f4-82cf-452de78eb217"
+      },
+      {
+        "logsets_info": [
+          {
+            "id": "7162e19e-3711-4f63-9833-d042f5c70f85",
+            "links": [
+              {
+                "href": "https://us.rest.logs.insight.rapid7.com/management/logsets/3aa5da13-3bb6-4457-ab6c-0d6b01ec892d",
+                "rel": "Self"
+              }
+            ],
+            "name": "MyOtherLogSet"
+          }
+        ],
+        "name": "MyOtherLog",
+        "user_data": {
+          "le_agent_filename": "",
+          "le_agent_follow": "false"
+        },
+        "tokens": [
+          "70347838-87d8-43f7-82cc-fb6f63623893"
+        ],
+        "source_type": "TOKEN",
+        "token_seed": null,
+        "structures": [],
+        "id": "7a70d526-b69f-4030-904f-62dfd25d8d03"
+      }
+    ]
+  }

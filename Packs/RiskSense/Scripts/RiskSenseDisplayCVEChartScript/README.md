@@ -5,7 +5,7 @@ Display bar chart based on cves count and trending cves count with the different
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

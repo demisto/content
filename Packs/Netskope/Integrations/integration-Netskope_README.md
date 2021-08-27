@@ -7,7 +7,7 @@
 <li>Netskope tenant URL</li>
 <li>Tenant API token</li>
 </ul>
-<h2>Configure the Netskope Integration on Demisto</h2>
+<h2>Configure the Netskope Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Netskope.</li>
@@ -27,7 +27,7 @@
 <li>Click <strong>Test</strong> to validate the URLs and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_14972060461528040126380">Get Netskope events: netskope-events</a></li>
 <li><a href="#h_491251660251528040135707">Get Netskope alerts: netskope-alerts</a></li>

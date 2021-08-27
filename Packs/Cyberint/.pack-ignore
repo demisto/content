@@ -1,0 +1,7 @@
+[file:classifier-mapper-incoming-CyberInt.json]
+ignore=BA101
+[file:incidentfield-Cyberint_CyberInt_Alert_ID.json]
+ignore=IF100
+
+[file:incidentfield-Cyberint_CyberInt_Ticket_ID.json]
+ignore=IF100

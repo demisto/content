@@ -1,5 +1,4 @@
-import pytest
-from XSOARmirroring import get_mapping_fields_command, arg_to_int
+from XSOARmirroring import get_mapping_fields_command
 
 
 def generate_dummy_client():
@@ -63,31 +62,13 @@ def test_mirroring(mocker):
     response = get_mapping_fields_command(client).extract_mapping()
     assert len(response) == 3
     assert 'Default Mapping' in str(response)
-    parsed_response = {}
-    for mapping in response:
-        parsed_response.update(mapping)
-    assert parsed_response['Default Mapping'] == {
+    assert response['Default Mapping'] == {
         'cliName1': 'field1 - type1'
     }
-    assert parsed_response['test'] == {
+    assert response['test'] == {
         'cliName1': 'field1 - type1',
         'cliName2': 'field2 - type2'
     }
-    assert parsed_response['Something'] == {
+    assert response['Something'] == {
         'cliName1': 'field1 - type1'
     }
-
-
-def test_arg_to_int():
-    """
-    Given
-        - argument representation
-    When
-        - The argument is None and required
-    Then
-        - Get value error
-    """
-    with pytest.raises(ValueError) as ex:
-        arg_to_int(None, 'test', True)
-        assert 'missing' in str(ex).lower()
-        assert 'test' in str(ex).lower()

@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "microsoft365defenderstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_microsoft365defenderstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Microsoft 365 Defender Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

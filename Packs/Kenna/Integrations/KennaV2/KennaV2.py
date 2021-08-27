@@ -1,8 +1,7 @@
 from typing import List, Tuple, Dict, Any, Optional, Callable
-
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -49,8 +48,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
 
     def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
-                     data: Optional[dict] = None) -> Dict[str, Any]:
-
+                     data: Optional[dict] = None):
         """Connects to api and Returns response.
            Args:
                message: The HTTP message, for example: GET, POST, and so on
@@ -192,6 +190,92 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
             'Kenna.ConnectorsList(val.ID === obj.ID)': context_list
         }
         human_readable_markdown = tableToMarkdown('Kenna Connectors', human_readable, removeNull=True)
+    else:
+        human_readable_markdown = "no connectors in get response."
+
+    return human_readable_markdown, context, connectors
+
+
+def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Get Connector Runs command.
+    Args:
+        client:  Client which connects to api
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    connector_id = str(args.get("connector_id"))
+    url_suffix = f'/connectors/{connector_id}/connector_runs'
+    human_readable = []
+    context: Dict[str, Any] = {}
+    connectors: List[Dict[str, Any]] = client.http_request(message='GET', suffix=url_suffix)
+    if connectors:
+        actual_keys = [
+            "id", "start_time",
+            "end_time", "success",
+            "total_payload_count",
+            "processed_palyoad_count",
+            "failed_payload_count",
+            "processed_assets_count",
+            "assets_with_tags_reset_count",
+            "processed_scanner_vuln_count",
+            "updated_scanner_vuln_count",
+            "created_scanner_vuln_count",
+            "closed_scanner_vuln_count",
+            "autoclosed_scanner_vuln_count",
+            "reopened_scanner_vuln_count",
+            "closed_vuln_count",
+            "autoclosed_vuln_count",
+            "reopened_vuln_count"
+        ]
+        wanted_keys = [
+            "ID", "StartTime",
+            "EndTime", "Success",
+            "TotalPayload",
+            "ProcessedPayload",
+            "FailedPayload",
+            "ProcessedAssets",
+            "AssetsWithTagsReset",
+            "ProcessedScannerVulnerabilities",
+            "UpdatedScannerVulnerabilities",
+            "CreatedScannerVulnerabilities",
+            "ClosedScannerVulnerabilities",
+            "AutoclosedScannerVulnerabilities",
+            "ReopenedScannerVulnerabilities",
+            "ClosedVulnerabilities",
+            "AutoclosedVulnerabilities",
+            "ReopenedVulnerabilities"
+        ]
+
+        context_list = parse_response(connectors, wanted_keys, actual_keys)
+
+        for connector in connectors:
+            curr_dict = {
+                "ID": connector.get("id"),
+                "StartTime": connector.get("start_time"),
+                "EndTime": connector.get("end_time"),
+                "Success": connector.get("success"),
+                "TotalPayload": connector.get("total_payload_count"),
+                "ProcessedPayload": connector.get("total_payload_count"),
+                "FailedPayload": connector.get("failed_payload_count"),
+                "ProcessedAssets": connector.get("processed_assets_count"),
+                "AssetsWithTagsReset": connector.get("assets_with_tags_reset_count"),
+                "ProcessedScannerVulnerabilities": connector.get("processed_scanner_vuln_count"),
+                "UpdatedScannerVulnerabilities": connector.get("updated_scanner_vuln_count"),
+                "CreatedScannerVulnerabilities": connector.get("created_scanner_vuln_count"),
+                "ClosedScannerVulnerabilities": connector.get("closed_scanner_vuln_count"),
+                "AutoclosedScannerVulnerabilities": connector.get("autoclosed_scanner_vuln_count"),
+                "ReopenedScannerVulnerabilities": connector.get("reopened_scanner_vuln_count"),
+                "ClosedVulnerabilities": connector.get("closed_vuln_count"),
+                "AutoclosedVulnerabilities": connector.get("closed_vuln_count"),
+                "ReopenedVulnerabilities": connector.get("reopened_vuln_count")
+            }
+            human_readable.append(curr_dict)
+        context = {
+            'Kenna.ConnectorRunsList(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Kenna Connector Runs', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no connectors in get response."
 
@@ -493,6 +577,7 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
+        'kenna-get-connector-runs': get_connector_runs
     }
 
     try:

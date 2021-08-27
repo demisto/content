@@ -4,9 +4,18 @@ echo "starting to install packs ..."
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
 
-echo "starting configure_and_install_packs ..."
-PREVIOUS_JOB_NUMBER=$(cat create_instances_build_num.txt)
+EXTRACT_FOLDER=$(mktemp -d)
 
-python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CIRCLE_BRANCH" --build_number "$PREVIOUS_JOB_NUMBER"
+if [[ ! -f "$GCS_MARKET_KEY" ]]; then
+    echo "GCS_MARKET_KEY not set aborting pack installation!"
+    exit 1
+fi
+
+gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+echo "Auth loaded successfully."
+
+echo "starting configure_and_install_packs ..."
+
+python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER"
 
 exit $RETVAL

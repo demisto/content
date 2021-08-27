@@ -1,10 +1,5 @@
 {
-  "DBotScore": [{
-    "Indicator": "test_scan_dummy_file",
-    "Type": "hash",
-    "Vendor": "Flashpoint",
-    "Score": 3
-  },
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
     {
       "Indicator": "test_scan_dummy_file",
       "Type": "file",
@@ -12,14 +7,14 @@
       "Score": 3
     }
   ],
-  "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+  "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [{
     "SHA256": "test_scan_dummy_file",
     "Malicious": {
       "Vendor": "Flashpoint",
       "Description": "Found in malicious indicators dataset"
     }
-  },
-  "Flashpoint.File.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+  }],
+  "Flashpoint.File.Event(val.Fpid == obj.Fpid)": [
     {
       "SHA256": "test_scan_dummy_file",
       "EventDetails": {

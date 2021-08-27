@@ -367,20 +367,6 @@ INDICATOR_QUERY = 'type:IP and sourceBrands:"Bambenek Consulting Feed"' \
                   ' sourcetimestamp:<="2020-02-20T11:32:32 +0000"'
 
 
-def test_get_https_hostname(mocker):
-    from TAXIIServer import get_https_hostname
-    # Set
-    mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
-
-    host_name = 'demistoserver.works'
-
-    # Arrange
-    host_name = get_https_hostname(host_name)
-
-    # Assert
-    assert host_name == 'demistoserver.works/instance/execute/eyy'
-
-
 def test_find_indicators_by_time_frame(mocker):
     import datetime
     import pytz
@@ -435,3 +421,33 @@ def test_validate_indicators(indicator):
 
     # Assert
     assert sdv.validate_xml(tree)
+
+
+@pytest.mark.parametrize('request_headers, url_scheme, expected',
+                         [
+                             ({}, 'http', 'http://host:9000'),
+                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute/eyy')
+                         ]
+                         )
+def test_get_url(mocker, request_headers, url_scheme, expected):
+    """
+    Given:
+        - Case 1: Empty requests headers and http URL scheme
+        - Case 2: Request header which contain the X-Request-URI header and https URL scheme
+
+    When:
+        - Getting server URL address
+
+    Then:
+        - Case 1: Ensure server URL address contain the port and the http URL scheme
+        - Case 2: Ensure server URL address contain the /instance/execute endpoint and the https URL scheme
+    """
+    import TAXIIServer
+    taxii_server = TAXIIServer.TAXIIServer(
+        url_scheme='http', host='host', port=9000, collections={},
+        certificate='', private_key='', http_server=False, credentials={}
+    )
+    TAXIIServer.SERVER = taxii_server
+    if request_headers:
+        mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
+    assert taxii_server.get_url(request_headers) == expected

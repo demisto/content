@@ -2,6 +2,9 @@ from copy import deepcopy
 import pytest
 import SplunkPy as splunk
 import demistomock as demisto
+from CommonServerPython import *
+from datetime import timedelta, datetime
+
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -17,7 +20,6 @@ LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
            'ethernet1/2,ethernet1/1,forwardAll,2020/02/13 09:02:55,59460,1,62889,80,0,0,0x208000,tcp,alert,' \
            '"ushship.com/xed/config.bin",(9999),not-resolved,informational,client-to-server,' \
            '0,0x0,1.1.22.22-5.6.7.8,United States,0,text/html'
-
 
 RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"TimeStamp":"2019-10-15 13:30:08",' \
                    '"CATEGORY_1":"CONTACT","ASSOCIATEOID":"G2N2TJETBRAAX68V","HOST":' \
@@ -156,7 +158,6 @@ POSITIVE = {
     "NAS-Port-Type": "Ethernet"
 }
 
-
 # testing the ValueError and json sections
 RAW_JSON = '{"Test": "success"}'
 RAW_STANDARD = '"Test="success"'
@@ -182,6 +183,8 @@ def test_raw_to_dict():
     assert POSITIVE == character_check
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
+
+    assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {'drilldown_search': 'key IN (test1,test2)'}
 
 
 data_test_replace_keys = [
@@ -454,7 +457,6 @@ SPLUNK_RESULTS = [
     }
 ]
 
-
 EXPECTED_OUTPUT = {
     'This is the alert type': {
         "source": "This is the alert type",
@@ -468,3 +470,603 @@ EXPECTED_OUTPUT = {
 def test_create_mapping_dict():
     mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
     assert mapping_dict == EXPECTED_OUTPUT
+
+
+def test_fetch_notables(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_notables(service, enrich_notables=False)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"
+
+
+""" ========== Enriching Fetch Mechanism Tests ========== """
+
+
+@pytest.mark.parametrize('integration_context, output', [
+    ({splunk.INCIDENTS: ['incident']}, ['incident']),
+    ({splunk.INCIDENTS: []}, []),
+    ({}, [])
+])
+def test_fetch_incidents_for_mapping(integration_context, output, mocker):
+    """
+    Scenario: When a user configures a mapper using Fetch from Instance when the enrichment mechanism is working,
+     we save the ready incidents in the integration context.
+
+    Given:
+    - List of ready incidents
+    - An empty list of incidents
+    - An empty integration context object
+
+    When:
+    - fetch_incidents_for_mapping is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'incidents')
+    splunk.fetch_incidents_for_mapping(integration_context)
+    assert demisto.incidents.call_count == 1
+    assert demisto.incidents.call_args[0][0] == output
+
+
+def test_reset_enriching_fetch_mechanism(mocker):
+    """
+    Scenario: When a user is willing to reset the enriching fetch mechanism and start over.
+
+    Given:
+    - An integration context object with not empty Cache and incidents
+
+    When:
+    - reset_enriching_fetch_mechanism is called
+
+    Then:
+    - Check that the integration context does not contain this fields
+    """
+    integration_context = {
+        splunk.CACHE: "cache_string",
+        splunk.INCIDENTS: ['i1', 'i2'],
+        'wow': 'wow'
+    }
+    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
+    mocker.patch('SplunkPy.set_integration_context')
+    splunk.reset_enriching_fetch_mechanism()
+    assert integration_context == {'wow': 'wow'}
+
+
+@pytest.mark.parametrize('drilldown_creation_time, asset_creation_time, enrichment_timeout, output', [
+    (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+    ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
+])
+def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+    """
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
+     the data gathered so far.
+
+    Given:
+    - Two enrichments that none of them exceeds the timeout.
+    - An enrichment exceeding the timeout and one that does not exceeds the timeout.
+
+    When:
+    - is_enrichment_process_exceeding_timeout is called
+
+    Then:
+    - Return the expected result
+    """
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    notable = splunk.Notable({splunk.EVENT_ID: 'id'})
+    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
+
+
+INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
+INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
+
+
+@pytest.mark.parametrize('integration_context, incidents, output', [
+    ({}, [], []),
+    ({}, [INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
+])
+def test_store_incidents_for_mapping(integration_context, incidents, output):
+    """
+    Scenario: Store ready incidents in integration context, to be retrieved by a user configuring a mapper
+     and selecting "Fetch from instance" when the enrichment mechanism is working.
+
+    Given:
+    - An empty list of incidents
+    - A list of two incidents
+
+    When:
+    - store_incidents_for_mapping is called
+
+    Then:
+    - Return the expected result
+    """
+    splunk.store_incidents_for_mapping(incidents, integration_context)
+    assert integration_context.get(splunk.INCIDENTS, []) == output
+
+
+@pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
+    ({}, {}, False, "", ""),
+    ({"drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+      "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME)},
+     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
+    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
+])
+def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
+    """
+    Scenario: Trying to get the drilldown's timeframe from the notable's data
+
+    Given:
+    - An empty notable's data
+    - An notable's data that the info of the timeframe is in the raw field
+    - An notable's data that the info is in the data dict
+
+    When:
+    - get_drilldown_timeframe is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'info')
+    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
+    assert task_status == status
+    assert earliest_offset == earliest
+    assert latest_offset == latest
+
+
+@pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
+    ('field|s', {'field': '1'}, 'field', '1'),
+    ('field', {'field': '1'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1, value=2'}, 'field', '1'),
+    ('x', {'y': '2'}, '', '')
+])
+def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
+    """
+    Scenario: When building the drilldown search query, we search for the field in the raw search query
+     and search for its real name in the notable's data or in the notable's raw data.
+     We also ignore Splunk advanced syntax such as "|s, |h, ..."
+
+    Given:
+    - A raw field that has the same name in the notable's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's raw data
+    - A raw field that is not is the notable's data or in the notable's raw data
+
+    When:
+    - get_notable_field_and_value is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'error')
+    field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
+    assert field == expected_field
+    assert value == expected_value
+
+
+@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
+])
+def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+    """
+    Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
+     corresponding query part (key & value).
+
+    Given:
+    - A raw search query with fields both in the notable's data and in the notable's raw data
+    - A raw search query with fields in the notable's data that has more than one value
+    - A raw search query with fields that does not exist in the notable's data or in the notable's raw data
+
+    When:
+    - build_drilldown_search is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'error')
+    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+
+
+@pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
+    ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
+    ({'_raw': '1233, user=u1'}, 'user', ['user'], 'user="u1"'),
+    ({'user': ['u1', 'u2'], '_raw': '1321, src_user=u3'}, 'user', ['user', 'src_user'],
+     '(user="u1" OR user="u2" OR user="u3")'),
+    ({}, 'prefix', ['field'], '')
+])
+def test_get_fields_query_part(notable_data, prefix, fields, query_part):
+    """
+    Scenario: When building an enrichment search query, we search for values in the notable's data / notable's raw data
+     and fill them in the raw search query to create a searchable query.
+
+    Given:
+    - One field with multiple values, values in the data
+    - One field, value is in the raw data
+    - Two fields with multiple values, values in both the data and the raw data
+    - An empty notable data, field does not exists
+
+    When:
+    - get_fields_query_part is called
+
+    Then:
+    - Return the expected result
+    """
+    assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
+
+
+""" ========== Mirroring Mechanism Tests ========== """
+
+
+@pytest.mark.parametrize('last_update, demisto_params, splunk_time_timestamp', [
+    ('2021-02-22T18:39:47.753+00:00', {'timezone': '0'}, 1614019187.753),
+    ('2021-02-22T18:39:47.753+02:00', {'timezone': '+120'}, 1614019187.753),
+    ('2021-02-22T20:39:47.753+02:00', {'timezone': '0'}, 1614019187.753),
+    ('2021-02-09T16:41:30.589575+02:00', {}, '')
+])
+def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
+    """ Tests the conversion of the Demisto server time into timestamp in Splunk Server time
+
+    Given:
+        - The last update time in the Demisto server
+        - The timezone in the Splunk Server
+    When:
+        Converting the time in the Demisto server into timestamp in Splunk Server time
+    Then:
+        - Conversion is correct
+        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+    if demisto_params:
+        assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp
+    else:
+        error_msg = 'Cannot mirror incidents when timezone is not configured. Please enter the '
+        'timezone of the Splunk server being used in the integration configuration.'
+        with pytest.raises(Exception, match=error_msg):
+            splunk.get_last_update_in_splunk_time(last_update)
+
+
+def test_get_remote_data_command(mocker):
+    updated_notable = {'status': '1', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=False)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [{'status': '1'}]
+
+
+def test_get_remote_data_command_close_incident(mocker):
+    updated_notable = {'status': '5', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=True)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [
+        {'status': '5'},
+        {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
+
+
+def test_get_modified_remote_data_command(mocker):
+    updated_incidet_review = {'rule_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: [updated_incidet_review]
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_modified_remote_data_command(Service(), args)
+    results = demisto.results.call_args[0][0]['Contents']
+    assert demisto.results.call_count == 1
+    assert results == [updated_incidet_review['rule_id']]
+
+
+def test_edit_notable_event__failed_to_update(mocker, requests_mock):
+    """
+    Given
+    - notable event with id ID100
+
+    When
+    - updating the event with invalid owner 'dbot'
+    - the service should return error string message 'ValueError: Invalid owner value.'
+
+    Then
+    - ensure the error message parsed correctly and returned to the user
+    """
+    test_base_url = 'https://test.url.com:8089/'
+    test_token = 'token12345'
+    test_args = {
+        'eventIDs': 'ID100',
+        'owner': 'dbot'
+    }
+    mocker.patch.object(demisto, 'results')
+
+    requests_mock.post('{}services/notable_update'.format(test_base_url), json='ValueError: Invalid owner value.')
+
+    splunk.splunk_edit_notable_event_command(
+        base_url=test_base_url,
+        token=test_token,
+        auth_token=None,
+        args=test_args
+    )
+
+    assert demisto.results.call_count == 1
+    error_message = demisto.results.call_args[0][0]['Contents']
+    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
+
+
+@pytest.mark.parametrize('args, params, call_count, success', [
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
+     4, True)
+])
+def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
+
+    class Service:
+        def __init__(self):
+            self.token = 'fake_token'
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
+    requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
+    if not success:
+        mocker.patch.object(demisto, 'error')
+    assert splunk.update_remote_system_command(args, params, Service(), None) == args['remoteId']
+    assert demisto.debug.call_count == call_count
+    if not success:
+        assert demisto.error.call_count == 1
+
+
+NOTABLE = {
+    'rule_name': 'string', 'rule_title': 'string', 'security_domain': 'string', 'index': 'string',
+    'rule_description': 'string', 'risk_score': 'string', 'host': 'string',
+    'host_risk_object_type': 'string', 'dest_risk_object_type': 'string', 'dest_risk_score': 'string',
+    'splunk_server': 'string', '_sourcetype': 'string', '_indextime': 'string', '_time': 'string',
+    'src_risk_object_type': 'string', 'src_risk_score': 'string', '_raw': 'string', 'urgency': 'string',
+    'owner': 'string', 'info_min_time': 'string', 'info_max_time': 'string', 'comment': 'string',
+    'reviewer': 'string', 'rule_id': 'string', 'action': 'string', 'app': 'string',
+    'authentication_method': 'string', 'authentication_service': 'string', 'bugtraq': 'string',
+    'bytes': 'string', 'bytes_in': 'string', 'bytes_out': 'string', 'category': 'string', 'cert': 'string',
+    'change': 'string', 'change_type': 'string', 'command': 'string', 'comments': 'string',
+    'cookie': 'string', 'creation_time': 'string', 'cve': 'string', 'cvss': 'string', 'date': 'string',
+    'description': 'string', 'dest': 'string', 'dest_bunit': 'string', 'dest_category': 'string',
+    'dest_dns': 'string', 'dest_interface': 'string', 'dest_ip': 'string', 'dest_ip_range': 'string',
+    'dest_mac': 'string', 'dest_nt_domain': 'string', 'dest_nt_host': 'string', 'dest_port': 'string',
+    'dest_priority': 'string', 'dest_translated_ip': 'string', 'dest_translated_port': 'string',
+    'dest_type': 'string', 'dest_zone': 'string', 'direction': 'string', 'dlp_type': 'string',
+    'dns': 'string', 'duration': 'string', 'dvc': 'string', 'dvc_bunit': 'string', 'dvc_category': 'string',
+    'dvc_ip': 'string', 'dvc_mac': 'string', 'dvc_priority': 'string', 'dvc_zone': 'string',
+    'file_hash': 'string', 'file_name': 'string', 'file_path': 'string', 'file_size': 'string',
+    'http_content_type': 'string', 'http_method': 'string', 'http_referrer': 'string',
+    'http_referrer_domain': 'string', 'http_user_agent': 'string', 'icmp_code': 'string',
+    'icmp_type': 'string', 'id': 'string', 'ids_type': 'string', 'incident': 'string', 'ip': 'string',
+    'mac': 'string', 'message_id': 'string', 'message_info': 'string', 'message_priority': 'string',
+    'message_type': 'string', 'mitre_technique_id': 'string', 'msft': 'string', 'mskb': 'string',
+    'name': 'string', 'orig_dest': 'string', 'orig_recipient': 'string', 'orig_src': 'string',
+    'os': 'string', 'packets': 'string', 'packets_in': 'string', 'packets_out': 'string',
+    'parent_process': 'string', 'parent_process_id': 'string', 'parent_process_name': 'string',
+    'parent_process_path': 'string', 'password': 'string', 'payload': 'string', 'payload_type': 'string',
+    'priority': 'string', 'problem': 'string', 'process': 'string', 'process_hash': 'string',
+    'process_id': 'string', 'process_name': 'string', 'process_path': 'string', 'product_version': 'string',
+    'protocol': 'string', 'protocol_version': 'string', 'query': 'string', 'query_count': 'string',
+    'query_type': 'string', 'reason': 'string', 'recipient': 'string', 'recipient_count': 'string',
+    'recipient_domain': 'string', 'recipient_status': 'string', 'record_type': 'string',
+    'registry_hive': 'string', 'registry_key_name': 'string', 'registry_path': 'string',
+    'registry_value_data': 'string', 'registry_value_name': 'string', 'registry_value_text': 'string',
+    'registry_value_type': 'string', 'request_sent_time': 'string', 'request_payload': 'string',
+    'request_payload_type': 'string', 'response_code': 'string', 'response_payload_type': 'string',
+    'response_received_time': 'string', 'response_time': 'string', 'result': 'string',
+    'return_addr': 'string', 'rule': 'string', 'rule_action': 'string', 'sender': 'string',
+    'service': 'string', 'service_hash': 'string', 'service_id': 'string', 'service_name': 'string',
+    'service_path': 'string', 'session_id': 'string', 'sessions': 'string', 'severity': 'string',
+    'severity_id': 'string', 'sid': 'string', 'signature': 'string', 'signature_id': 'string',
+    'signature_version': 'string', 'site': 'string', 'size': 'string', 'source': 'string',
+    'sourcetype': 'string', 'src': 'string', 'src_bunit': 'string', 'src_category': 'string',
+    'src_dns': 'string', 'src_interface': 'string', 'src_ip': 'string', 'src_ip_range': 'string',
+    'src_mac': 'string', 'src_nt_domain': 'string', 'src_nt_host': 'string', 'src_port': 'string',
+    'src_priority': 'string', 'src_translated_ip': 'string', 'src_translated_port': 'string',
+    'src_type': 'string', 'src_user': 'string', 'src_user_bunit': 'string', 'src_user_category': 'string',
+    'src_user_domain': 'string', 'src_user_id': 'string', 'src_user_priority': 'string',
+    'src_user_role': 'string', 'src_user_type': 'string', 'src_zone': 'string', 'state': 'string',
+    'status': 'string', 'status_code': 'string', 'status_description': 'string', 'subject': 'string',
+    'tag': 'string', 'ticket_id': 'string', 'time': 'string', 'time_submitted': 'string',
+    'transport': 'string', 'transport_dest_port': 'string', 'type': 'string', 'uri': 'string',
+    'uri_path': 'string', 'uri_query': 'string', 'url': 'string', 'url_domain': 'string',
+    'url_length': 'string', 'user': 'string', 'user_agent': 'string', 'user_bunit': 'string',
+    'user_category': 'string', 'user_id': 'string', 'user_priority': 'string', 'user_role': 'string',
+    'user_type': 'string', 'vendor_account': 'string', 'vendor_product': 'string', 'vlan': 'string',
+    'xdelay': 'string', 'xref': 'string'
+}
+
+DRILLDOWN = {
+    'Drilldown': {
+        'action': 'string', 'app': 'string', 'authentication_method': 'string',
+        'authentication_service': 'string', 'bugtraq': 'string', 'bytes': 'string',
+        'bytes_in': 'string', 'bytes_out': 'string', 'category': 'string', 'cert': 'string',
+        'change': 'string', 'change_type': 'string', 'command': 'string', 'comments': 'string',
+        'cookie': 'string', 'creation_time': 'string', 'cve': 'string', 'cvss': 'string',
+        'date': 'string', 'description': 'string', 'dest': 'string', 'dest_bunit': 'string',
+        'dest_category': 'string', 'dest_dns': 'string', 'dest_interface': 'string',
+        'dest_ip': 'string', 'dest_ip_range': 'string', 'dest_mac': 'string',
+        'dest_nt_domain': 'string', 'dest_nt_host': 'string', 'dest_port': 'string',
+        'dest_priority': 'string', 'dest_translated_ip': 'string',
+        'dest_translated_port': 'string', 'dest_type': 'string', 'dest_zone': 'string',
+        'direction': 'string', 'dlp_type': 'string', 'dns': 'string', 'duration': 'string',
+        'dvc': 'string', 'dvc_bunit': 'string', 'dvc_category': 'string', 'dvc_ip': 'string',
+        'dvc_mac': 'string', 'dvc_priority': 'string', 'dvc_zone': 'string',
+        'file_hash': 'string', 'file_name': 'string', 'file_path': 'string',
+        'file_size': 'string', 'http_content_type': 'string', 'http_method': 'string',
+        'http_referrer': 'string', 'http_referrer_domain': 'string', 'http_user_agent': 'string',
+        'icmp_code': 'string', 'icmp_type': 'string', 'id': 'string', 'ids_type': 'string',
+        'incident': 'string', 'ip': 'string', 'mac': 'string', 'message_id': 'string',
+        'message_info': 'string', 'message_priority': 'string', 'message_type': 'string',
+        'mitre_technique_id': 'string', 'msft': 'string', 'mskb': 'string', 'name': 'string',
+        'orig_dest': 'string', 'orig_recipient': 'string', 'orig_src': 'string', 'os': 'string',
+        'packets': 'string', 'packets_in': 'string', 'packets_out': 'string',
+        'parent_process': 'string', 'parent_process_id': 'string',
+        'parent_process_name': 'string', 'parent_process_path': 'string', 'password': 'string',
+        'payload': 'string', 'payload_type': 'string', 'priority': 'string', 'problem': 'string',
+        'process': 'string', 'process_hash': 'string', 'process_id': 'string',
+        'process_name': 'string', 'process_path': 'string', 'product_version': 'string',
+        'protocol': 'string', 'protocol_version': 'string', 'query': 'string',
+        'query_count': 'string', 'query_type': 'string', 'reason': 'string',
+        'recipient': 'string', 'recipient_count': 'string', 'recipient_domain': 'string',
+        'recipient_status': 'string', 'record_type': 'string', 'registry_hive': 'string',
+        'registry_key_name': 'string', 'registry_path': 'string',
+        'registry_value_data': 'string', 'registry_value_name': 'string',
+        'registry_value_text': 'string', 'registry_value_type': 'string',
+        'request_payload': 'string', 'request_payload_type': 'string',
+        'request_sent_time': 'string', 'response_code': 'string',
+        'response_payload_type': 'string', 'response_received_time': 'string',
+        'response_time': 'string', 'result': 'string', 'return_addr': 'string', 'rule': 'string',
+        'rule_action': 'string', 'sender': 'string', 'service': 'string',
+        'service_hash': 'string', 'service_id': 'string', 'service_name': 'string',
+        'service_path': 'string', 'session_id': 'string', 'sessions': 'string',
+        'severity': 'string', 'severity_id': 'string', 'sid': 'string', 'signature': 'string',
+        'signature_id': 'string', 'signature_version': 'string', 'site': 'string',
+        'size': 'string', 'source': 'string', 'sourcetype': 'string', 'src': 'string',
+        'src_bunit': 'string', 'src_category': 'string', 'src_dns': 'string',
+        'src_interface': 'string', 'src_ip': 'string', 'src_ip_range': 'string',
+        'src_mac': 'string', 'src_nt_domain': 'string', 'src_nt_host': 'string',
+        'src_port': 'string', 'src_priority': 'string', 'src_translated_ip': 'string',
+        'src_translated_port': 'string', 'src_type': 'string', 'src_user': 'string',
+        'src_user_bunit': 'string', 'src_user_category': 'string', 'src_user_domain': 'string',
+        'src_user_id': 'string', 'src_user_priority': 'string', 'src_user_role': 'string',
+        'src_user_type': 'string', 'src_zone': 'string', 'state': 'string', 'status': 'string',
+        'status_code': 'string', 'subject': 'string', 'tag': 'string', 'ticket_id': 'string',
+        'time': 'string', 'time_submitted': 'string', 'transport': 'string',
+        'transport_dest_port': 'string', 'type': 'string', 'uri': 'string', 'uri_path': 'string',
+        'uri_query': 'string', 'url': 'string', 'url_domain': 'string', 'url_length': 'string',
+        'user': 'string', 'user_agent': 'string', 'user_bunit': 'string',
+        'user_category': 'string', 'user_id': 'string', 'user_priority': 'string',
+        'user_role': 'string', 'user_type': 'string', 'vendor_account': 'string',
+        'vendor_product': 'string', 'vlan': 'string', 'xdelay': 'string', 'xref': 'string'
+    }
+}
+
+ASSET = {
+    'Asset': {
+        'asset': 'string', 'asset_id': 'string', 'asset_tag': 'string', 'bunit': 'string',
+        'category': 'string', 'city': 'string', 'country': 'string', 'dns': 'string',
+        'ip': 'string', 'is_expected': 'string', 'lat': 'string', 'long': 'string', 'mac': 'string',
+        'nt_host': 'string', 'owner': 'string', 'pci_domain': 'string', 'priority': 'string',
+        'requires_av': 'string'
+    }
+}
+
+IDENTITY = {
+    'Identity': {
+        'bunit': 'string', 'category': 'string', 'email': 'string', 'endDate': 'string', 'first': 'string',
+        'identity': 'string', 'identity_tag': 'string', 'last': 'string', 'managedBy': 'string',
+        'nick': 'string', 'phone': 'string', 'prefix': 'string', 'priority': 'string',
+        'startDate': 'string', 'suffix': 'string', 'watchlist': 'string', 'work_city': 'string',
+        'work_lat': 'string', 'work_long': 'string'
+    }
+}
+
+
+def test_get_cim_mapping_field_command(mocker):
+    """ Scenario: When the mapping is based on Splunk CIM. """
+    mocker.patch.object(demisto, 'results')
+    splunk.get_cim_mapping_field_command()
+    fields = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert fields == {
+        'Notable Data': NOTABLE,
+        'Drilldown Data': DRILLDOWN,
+        'Asset Data': ASSET,
+        'Identity Data': IDENTITY
+    }
+
+
+def test_build_search_human_readable(mocker):
+    """
+    Given:
+        table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * comma-separated, space-separated
+            * support commas and spaces inside header values (if surrounded with parenthesis)
+
+    """
+    func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
+    results = [
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+    ]
+    args = {
+        'query': 'something | table ID "Header with space" header3 header_without_space '
+                 'comma,separated "Single,Header,with,Commas" | something else'
+    }
+    expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
+                        'comma', 'separated', 'Single,Header,with,Commas']
+
+    splunk.build_search_human_readable(args, results)
+    headers = func_patch.call_args[0][1]
+    assert headers == expected_headers

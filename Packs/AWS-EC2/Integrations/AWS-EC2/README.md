@@ -1,9 +1,12 @@
 Amazon Web Services Elastic Compute Cloud (EC2)
+
 For more information regarding the AWS EC2 service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html).
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - EC2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Servers `&` Services**.
 2. Search for AWS - EC2.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -15,12 +18,14 @@ For more information regarding the AWS EC2 service, please visit the official do
 | sessionDuration | Role Session Duration | False |
 | access_key | Access Key | False |
 | secret_key | Secret Key | False |
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+| retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. 
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. 
 After you successfully execute a command, a DBot message appears in the War Room with the command details. 
 All command, argument, and output descriptions are taken from the AWS documentation.
 
@@ -37,7 +42,7 @@ Describes one or more of your instances.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters.See documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters.See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | region | The AWS Region, if not specified the default region will be used | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume | Optional | 
@@ -1621,6 +1626,7 @@ Launches the specified number of instances using an AMI for which you have permi
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| host_id | The dedicated host ID. | Optional |
 
 
 #### Context Output
@@ -1723,7 +1729,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Sepreted by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
@@ -1750,7 +1756,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
@@ -1777,7 +1783,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
@@ -1804,7 +1810,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
@@ -2059,6 +2065,46 @@ Removes egress rule from a security group. To remove a rule, the values that you
 | cidrIp | The CIDR IPv4 address range. | Optional | 
 | ipProtocol | The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify all protocols. | Optional | 
 | sourceSecurityGroupName | The name of the source security group. The source security group must be in the same VPC. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### aws-ec2-revoke-security-group-egress-rule
+***
+(VPC only) Removes the specified egress rules from a security group for EC2-VPC. This action does not apply to security groups for use in EC2-Classic. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
+
+
+#### Base Command
+
+`aws-ec2-revoke-security-group-egress-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | The ID of the security group. | Required | 
+| IpPermissionsfromPort | The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsToPort | The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsIpProtocol | The IP protocol name (tcp, udp, icmp, icmpv6) or number. | Optional | 
+| IpRangesCidrIp | The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length. | Optional | 
+| IpRangesDescription | A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| Ipv6RangesCidrIp | The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length. | Optional | 
+| Ipv6RangesDescription | A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$* | Optional | 
+| PrefixListId | The ID of the prefix. | Optional | 
+| PrefixListIdDescription | A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsDescription | A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$* | Optional | 
+| UserIdGroupPairsGroupId | The ID of the security group. | Optional | 
+| UserIdGroupPairsGroupName | The name of the security group. In a request, use this parameter for a security group in EC2-Classic or a default VPC only. For a security group in a nondefault VPC, use the security group ID. For a referenced security group in another VPC, this value is not returned if the referenced security group is deleted. | Optional | 
+| UserIdGroupPairsPeeringStatus | The status of a VPC peering connection, if applicable. | Optional | 
+| UserIdGroupPairsUserId | The ID of an AWS account. For a referenced security group in another VPC, the account ID of the referenced security group is returned in the response. If the referenced security group is deleted, this value is not returned. [EC2-Classic] Required when adding or removing rules that reference a security group in another AWS account. | Optional | 
+| UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
+| UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -3019,3 +3065,75 @@ Creates a Traffic Mirror session.
 | AWS.EC2.TrafficMirrorSession.Tags.Key | String | The key of the tag. | 
 | AWS.EC2.TrafficMirrorSession.Tags.Value | String | The value of the tag. | 
 | AWS.EC2.TrafficMirrorSession.ClientToken | String | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | 
+
+
+### aws-ec2-allocate-hosts
+***
+Allocates a Dedicated Host to your account.
+
+
+#### Base Command
+
+`aws-ec2-allocate-hosts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| availability_zone | The Availability Zone in which to allocate the Dedicated Host. | Required | 
+| quantity | The number of Dedicated Hosts to allocate to your account with these parameters. | Required | 
+| auto_placement | Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. The default is "on". Possible values are: on, off. | Optional | 
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional | 
+| instance_type | Specifies the instance type to be supported by the Dedicated Hosts. If you specify an instance type, the Dedicated Hosts support instances of the specified instance type only. If you want the Dedicated Hosts to support multiple instance types in a specific instance family, omit this parameter and specify InstanceFamily instead. You cannot specify InstanceType and InstanceFamily in the same request. | Optional | 
+| instance_family | Specifies the instance family to be supported by the Dedicated Hosts. If you specify an instance family, the Dedicated Hosts support multiple instance types within that instance family. If you want the Dedicated Hosts to support a specific instance type only, omit this parameter and specify InstanceType instead. You cannot specify InstanceFamily and InstanceType in the same request. | Optional | 
+| host_recovery | Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. Possible values are: on, off. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Host.HostId | String | The ID of the allocated Dedicated Host. This is used to launch an instance onto a specific host. | 
+
+
+#### Command Example
+```!aws-ec2-allocate-hosts availability_zone="us-east-1b" quantity=1 instance_type="m5.large" ```
+
+#### Human Readable Output
+>### AWS EC2 Dedicated Host ID
+>|HostId|
+>|---|
+>| h-00548908djdsgfs|
+
+
+### aws-ec2-release-hosts
+***
+Release on demand dedicated host.
+
+
+#### Base Command
+
+`aws-ec2-release-hosts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | A comma-separated list of IDs of the Dedicated Hosts to release. | Required | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!aws-ec2-release-hosts host_id="h-00548908djdsgfs" ```
+
+#### Human Readable Output
+>The host was successfully released.

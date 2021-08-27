@@ -1,0 +1,29 @@
+[
+    {
+        "value": "test@test.com",
+        "type": "Email",
+        "rawJson": {
+            "@xsi:type": "EmailMessageObj:EmailMessageObjectType",
+            "EmailMessageObj:Header": {
+                "EmailMessageObj:From": {
+                    "@category": "e-mail",
+                    "AddressObj:Address_Value": {
+                        "#text": "test@test.com",
+                        "@condition": "Equals"
+                    }
+                },
+                "EmailMessageObj:Subject": {
+                    "#text": "320339814 CD and Payoff Clear to Close",
+                    "@condition": "Equals"
+                }
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    }
+]

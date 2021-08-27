@@ -1,35 +1,34 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import sys
-import traceback
-import json
-import os
-import hashlib
-from datetime import timedelta
-from cStringIO import StringIO
-import logging
-import warnings
-import subprocess
-import requests
 import email
-from requests.exceptions import ConnectionError
-from collections import deque
-
+import hashlib
+import subprocess
+import warnings
 from multiprocessing import Process
+
+import dateparser
 import exchangelib
-from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
-    ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest, ErrorIrresolvableConflict
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child
-from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
-    EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
-    Version, Folder, HTMLBody, Body, Build, ItemAttachment
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
+from CommonServerPython import *
+from cStringIO import StringIO
+from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
+                         Body, Build, Configuration, Credentials, EWSDateTime,
+                         EWSTimeZone, FileAttachment, Folder, HTMLBody,
+                         ItemAttachment, Version)
+from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
+                                ErrorInvalidIdMalformed,
+                                ErrorInvalidPropertyRequest,
+                                ErrorIrresolvableConflict, ErrorItemNotFound,
+                                ErrorMailboxMoveInProgress,
+                                ErrorMailboxStoreUnavailable,
+                                ErrorNameResolutionNoResults, RateLimitError,
+                                ResponseMessageError, TransportError)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.util import add_xml_child, create_element
+from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2016)
+from future import utils as future_utils
+from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
 reload(sys)
@@ -106,6 +105,9 @@ AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
+
+
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
@@ -905,16 +907,27 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-            last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
-            qs = qs.filter(datetime_received__gte=last_10_min)
+            tz = EWSTimeZone.timezone('UTC')
+            first_fetch_datetime = dateparser.parse(FETCH_TIME)
+            first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+            qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
+    result = []
+    exclude_ids = exclude_ids if exclude_ids else set()
+    demisto.debug('Exclude ID list: {}'.format(exclude_ids))
 
-    result = qs.all()
-    result = [x for x in result if isinstance(x, Message)]
-    if exclude_ids and len(exclude_ids) > 0:
-        exclude_ids = set(exclude_ids)
-        result = [x for x in result if x.message_id not in exclude_ids]
+    for item in qs:
+        try:
+            if isinstance(item, Message) and item.message_id not in exclude_ids:
+                result.append(item)
+                if len(result) >= MAX_FETCH:
+                    break
+        except ValueError as exc:
+            future_utils.raise_from(ValueError(
+                'Got an error when pulling incidents. You might be using the wrong exchange version.'
+            ), exc)
+    demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
     return result
 
 
@@ -944,7 +957,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': {header.name: header.value for header in item.headers},
+        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -1132,8 +1145,18 @@ def parse_incident_from_item(item, is_fetch):
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
-                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                          attached_email.items()]
+                                attached_email_headers = []
+                                for h, v in attached_email.items():
+                                    if not isinstance(v, str):
+                                        try:
+                                            v = str(v)
+                                        except:     # noqa: E722
+                                            demisto.debug('cannot parse the header "{}"'.format(h))
+                                            continue
+
+                                    v = ' '.join(map(str.strip, v.split('\r\n')))
+                                    attached_email_headers.append((h, v))
+
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
@@ -1189,6 +1212,16 @@ def parse_incident_from_item(item, is_fetch):
             except ErrorIrresolvableConflict:
                 time.sleep(0.5)
                 item.save()
+            except ValueError as e:
+                if item.subject and len(item.subject) > 255:
+                    demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
+                                  "cutting the subject.")
+                    sub_subject = "Length of subject greater than 255 characters. " \
+                                  "Partial subject: {}".format(item.subject[:180])
+                    item.subject = sub_subject
+                    item.save()
+                else:
+                    raise e
 
         incident['labels'] = labels
         incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
@@ -1205,17 +1238,19 @@ def parse_incident_from_item(item, is_fetch):
 
 def fetch_emails_as_incidents(account_email, folder_name):
     last_run = get_last_run()
+    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
 
     try:
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
         incident = {}  # type: Dict[Any, Any]
+        current_fetch_ids = set()
+
         for item in last_emails:
             if item.message_id:
-                ids.append(item.message_id)
+                current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 if incident:
                     incidents.append(incident)
@@ -1223,15 +1258,33 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 if len(incidents) >= MAX_FETCH:
                     break
 
-        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
-        if isinstance(last_run_time, EWSDateTime):
-            last_run_time = last_run_time.ewsformat()
+        demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
+        last_incident_run_time = incident.get("occurred", last_fetch_time)
+
+        # making sure both last fetch time and the time of last incident are the same type for comparing.
+        if isinstance(last_incident_run_time, EWSDateTime):
+            last_incident_run_time = last_incident_run_time.ewsformat()
+
+        if isinstance(last_fetch_time, EWSDateTime):
+            last_fetch_time = last_fetch_time.ewsformat()
+
+        debug_msg = '#### last_incident_time: {}({}). last_fetch_time: {}({}) ####'
+        demisto.debug(debug_msg.format(last_incident_run_time, type(last_incident_run_time),
+                                       last_fetch_time, type(last_fetch_time)))
+
+        # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
+        # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
+        if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
+            ids = current_fetch_ids
+        else:
+            ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
-            LAST_RUN_TIME: last_run_time,
+            LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: folder_name,
             LAST_RUN_IDS: list(ids),
-            ERROR_COUNTER: 0
+            ERROR_COUNTER: 0,
         }
 
         demisto.setLastRun(new_last_run)
@@ -1842,32 +1895,42 @@ def get_compliance_search(search_name, show_only_recipients):
     # Get search status
     stdout = stdout[len(PASSWORD):]
     stdout = stdout.split('\n', 1)  # type: ignore
+
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-        res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
-        entry = {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': stdout,
-            'ReadableContentsFormat': formats['markdown'],
-        }
-        if show_only_recipients == 'True':
-            res = filter(lambda x: int(x['Item count']) > 0, res)
+        if stdout[1] and stdout[1] != '{}':
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+            res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+            }
+            if show_only_recipients == 'True':
+                res = filter(lambda x: int(x['Item count']) > 0, res)
 
-            entry['EntryContext'] = {
-                'EWS.ComplianceSearch(val.Name == obj.Name)': {
-                    'Name': search_name,
-                    'Results': res
+                entry['EntryContext'] = {
+                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
+                        'Name': search_name,
+                        'Results': res
+                    }
                 }
+
+            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
+                                                     ['Location', 'Item count', 'Total size'])
+        else:
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': "The compliance search didn't return any results."
             }
 
-        entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
-                                                 ['Location', 'Item count', 'Total size'])
         results.append(entry)
-
     return results
 
 
@@ -1971,8 +2034,16 @@ def get_item_as_eml(item_id, target_mailbox=None):
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
-            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                      email_content.items()]
+            attached_email_headers = []
+            for h, v in email_content.items():
+                if not isinstance(v, str):
+                    try:
+                        v = str(v)
+                    except:     # noqa: E722
+                        demisto.debug('cannot parse the header "{}"'.format(h))
+
+                v = ' '.join(map(str.strip, v.split('\r\n')))
+                attached_email_headers.append((h, v))
             for header in item.headers:
                 if (header.name, header.value) not in attached_email_headers \
                         and header.name != 'Content-Type':
@@ -2187,21 +2258,25 @@ def process_main():
 
 
 def main():
-    handle_proxy()
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
-    # collector. `separate_process` flag will run the integration on a separate process that will prevent
-    # memory leakage.
-    separate_process = demisto.params().get("separate_process", False)
-    demisto.debug("Running as separate_process: {}".format(separate_process))
-    if separate_process:
-        try:
-            p = Process(target=process_main)
-            p.start()
-            p.join()
-        except Exception as ex:
-            demisto.error("Failed starting Process: {}".format(ex))
-    else:
-        sub_main()
+    try:
+        handle_proxy()
+        # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+        # collector. `separate_process` flag will run the integration on a separate process that will prevent
+        # memory leakage.
+        separate_process = demisto.params().get("separate_process", False)
+        demisto.debug("Running as separate_process: {}".format(separate_process))
+        if separate_process:
+            try:
+                p = Process(target=process_main)
+                p.start()
+                p.join()
+            except Exception as ex:
+                demisto.error("Failed starting Process: {}".format(ex))
+        else:
+            sub_main()
+    except Exception as exc:
+        return_error("Found error in EWSv2: {}".format(exc),
+                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins

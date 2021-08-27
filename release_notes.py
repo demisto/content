@@ -14,7 +14,7 @@ from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR,
 from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
     filter_packagify_changes, is_file_path_in_pack, \
     run_command, server_version_compare, old_get_release_notes_file_path, old_get_latest_release_notes_text, get_remote_file
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.common.legacy_git_tools import filter_changed_files
 
 CONTENT_LIB_PATH = "./"
 
@@ -634,7 +634,6 @@ def main():
     print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
-    validate_manager = ValidateManager()
     try:
         change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
     except RuntimeError:
@@ -647,7 +646,7 @@ def main():
                     'these steps will merge your branch with content master as a base.')
         sys.exit(1)
     else:
-        modified_files, added_files, removed_files, _, _ = validate_manager.filter_changed_files(change_log)
+        modified_files, added_files, removed_files, _, _, _ = filter_changed_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
 

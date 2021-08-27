@@ -1,0 +1,3602 @@
+id: playbook-F5_ASM-Test
+name: playbook-F5_ASM-Test
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  "0":
+    id: "0"
+    taskid: d848e140-ca65-429d-8fcc-a20206236a25
+    type: start
+    task:
+      id: d848e140-ca65-429d-8fcc-a20206236a25
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0c43fefc-ef0c-4354-8788-4d25f5fe67d7
+    type: regular
+    task:
+      id: 0c43fefc-ef0c-4354-8788-4d25f5fe67d7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 433df185-f50a-48fc-8f68-43d3fcf8f430
+    type: regular
+    task:
+      id: 433df185-f50a-48fc-8f68-43d3fcf8f430
+      version: -1
+      name: f5-asm-policy-list
+      script: '|||f5-asm-policy-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: test
+      items: {}
+      kind: {}
+      self_link: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4b7d539c-4ef7-4b38-8537-926a8592273e
+    type: condition
+    task:
+      id: 4b7d539c-4ef7-4b38-8537-926a8592273e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "107"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 37c0dbab-16e7-4536-89f4-0e9a8211af4b
+    type: regular
+    task:
+      id: 37c0dbab-16e7-4536-89f4-0e9a8211af4b
+      version: -1
+      name: f5-asm-policy-create
+      script: '|||f5-asm-policy-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      active: {}
+      allow:
+        simple: "true"
+      description:
+        simple: This is a test- playbook policy.
+      enforcement_mode:
+        simple: transparent
+      kind:
+        simple: security
+      name:
+        simple: PlaybookPolicy
+      parent: {}
+      protocol_independent:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6b4e1e58-eff7-48ae-8602-f18bee25e219
+    type: condition
+    task:
+      id: 6b4e1e58-eff7-48ae-8602-f18bee25e219
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.fullPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.versionDatetime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6b46d8e0-95ac-4584-8146-5f05a2b4cb7f
+    type: regular
+    task:
+      id: 6b46d8e0-95ac-4584-8146-5f05a2b4cb7f
+      version: -1
+      name: f5-asm-policy-apply
+      script: '|||f5-asm-policy-apply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: Test
+      policy_reference_link:
+        simple: ${f5.Policy.selfLink}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a6ac6346-9749-40c4-871d-bd4962c5d8e2
+    type: condition
+    task:
+      id: a6ac6346-9749-40c4-871d-bd4962c5d8e2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5bef1a1d-28b3-4aec-8bfb-ad048e1fc599
+    type: regular
+    task:
+      id: 5bef1a1d-28b3-4aec-8bfb-ad048e1fc599
+      version: -1
+      name: f5-asm-policy-export-file
+      script: '|||f5-asm-policy-export-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      filename:
+        simple: exported_file.xml
+      minimal: {}
+      policy_reference_link:
+        simple: ${f5.Policy.selfLink}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 13de73c6-019e-4edf-8137-28ab2ddbf327
+    type: condition
+    task:
+      id: 13de73c6-019e-4edf-8137-28ab2ddbf327
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e5275cff-208f-406b-8514-ffc5162d2911
+    type: regular
+    task:
+      id: e5275cff-208f-406b-8514-ffc5162d2911
+      version: -1
+      name: f5-asm-policy-methods-list
+      script: '|||f5-asm-policy-methods-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1a644376-f351-478f-8aa4-d54f3ca6a0f7
+    type: condition
+    task:
+      id: 1a644376-f351-478f-8aa4-d54f3ca6a0f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.actAsMethod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: dabaee95-bbaa-4c69-8652-3e1b40708d22
+    type: regular
+    task:
+      id: dabaee95-bbaa-4c69-8652-3e1b40708d22
+      version: -1
+      name: f5-asm-policy-file-types-list
+      script: '|||f5-asm-policy-file-types-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9e640004-8e0d-4af8-84f0-d83190a14e5c
+    type: condition
+    task:
+      id: 9e640004-8e0d-4af8-84f0-d83190a14e5c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9d312fa1-5eb0-4725-8b5d-b3a2a6749211
+    type: regular
+    task:
+      id: 9d312fa1-5eb0-4725-8b5d-b3a2a6749211
+      version: -1
+      name: f5-asm-policy-methods-add
+      script: '|||f5-asm-policy-methods-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      act_as_method:
+        simple: GET
+      new_method_name:
+        simple: TestPlaybookMethod
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 71f04651-ad77-46c1-83fd-2e9e903f3cbf
+    type: condition
+    task:
+      id: 71f04651-ad77-46c1-83fd-2e9e903f3cbf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.actAsMethod
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: def9575a-6000-44f9-8296-ef4dd964e9a7
+    type: regular
+    task:
+      id: def9575a-6000-44f9-8296-ef4dd964e9a7
+      version: -1
+      name: f5-asm-policy-methods-update
+      script: '|||f5-asm-policy-methods-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      act_as_method:
+        simple: POST
+      method_id:
+        simple: ${f5.PolicyMethods.id}
+      method_name: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 5bee5c7b-c620-4bc0-8673-120d2383ddf0
+    type: condition
+    task:
+      id: 5bee5c7b-c620-4bc0-8673-120d2383ddf0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.actAsMethod
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 51062718-8f97-470f-80ee-21350745ecb6
+    type: regular
+    task:
+      id: 51062718-8f97-470f-80ee-21350745ecb6
+      version: -1
+      name: f5-asm-policy-methods-delete
+      script: '|||f5-asm-policy-methods-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      method_id: {}
+      method_name:
+        simple: ${f5.PolicyMethods.name}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 668b3b62-61c3-44b3-8446-552cad116d55
+    type: condition
+    task:
+      id: 668b3b62-61c3-44b3-8446-552cad116d55
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.PolicyMethods.actAsMethod
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 89dd5c7a-68a4-4d19-85cd-18e7c653bbe5
+    type: regular
+    task:
+      id: 89dd5c7a-68a4-4d19-85cd-18e7c653bbe5
+      version: -1
+      name: f5-asm-policy-file-types-add
+      script: '|||f5-asm-policy-file-types-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      check_post_data_length:
+        simple: "true"
+      check_request_length:
+        simple: "true"
+      new_file_type:
+        simple: txt
+      perform_staging: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      post_data_length: {}
+      query_string_length: {}
+      response_check:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 1e0e49eb-78ed-41c7-8a5a-ab50f5f78bbb
+    type: condition
+    task:
+      id: 1e0e49eb-78ed-41c7-8a5a-ab50f5f78bbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.lastUpdateMicros
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.responseCheck
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 2136c9dd-5e08-4a13-8619-921ed1d55aa7
+    type: regular
+    task:
+      id: 2136c9dd-5e08-4a13-8619-921ed1d55aa7
+      version: -1
+      name: f5-asm-policy-file-types-update
+      script: '|||f5-asm-policy-file-types-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      check_post_data_length:
+        simple: "false"
+      check_request_length: {}
+      file_type_id:
+        simple: ${f5.FileType.id}
+      file_type_name: {}
+      perform_staging: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      post_data_length: {}
+      query_string_length: {}
+      response_check: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: fa2e5e37-6c23-4ce3-80db-1167fcfc52b6
+    type: condition
+    task:
+      id: fa2e5e37-6c23-4ce3-80db-1167fcfc52b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.lastUpdateMicros
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.responseCheck
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 2d87f8b5-d8ff-4406-8ef6-7a13e3af3771
+    type: regular
+    task:
+      id: 2d87f8b5-d8ff-4406-8ef6-7a13e3af3771
+      version: -1
+      name: f5-asm-policy-file-types-delete
+      script: '|||f5-asm-policy-file-types-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      file_type_id: {}
+      file_type_name:
+        simple: txt
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: fdeace83-c43d-449a-891d-2288d57339df
+    type: condition
+    task:
+      id: fdeace83-c43d-449a-891d-2288d57339df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.FileType.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: eba99e38-71cb-4920-80fb-bb9bafc1badb
+    type: regular
+    task:
+      id: eba99e38-71cb-4920-80fb-bb9bafc1badb
+      version: -1
+      name: f5-asm-policy-delete
+      script: '|||f5-asm-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 14200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: f5d3f2b2-74ac-4b33-8f0a-ca3575ccd1ec
+    type: condition
+    task:
+      id: f5d3f2b2-74ac-4b33-8f0a-ca3575ccd1ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.selfLink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: aca58087-e2c2-4b08-83b5-dab00a972bc9
+    type: regular
+    task:
+      id: aca58087-e2c2-4b08-83b5-dab00a972bc9
+      version: -1
+      name: f5-asm-policy-hostnames-list
+      script: '|||f5-asm-policy-hostnames-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: ec192afa-73f3-46fb-868d-895e371cbeae
+    type: condition
+    task:
+      id: ec192afa-73f3-46fb-868d-895e371cbeae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 237e79fe-f509-43c3-8c52-41ed0695ba19
+    type: regular
+    task:
+      id: 237e79fe-f509-43c3-8c52-41ed0695ba19
+      version: -1
+      name: f5-asm-policy-hostnames-add
+      script: '|||f5-asm-policy-hostnames-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      include_subdomains:
+        simple: "false"
+      name:
+        simple: TestPlaybookHostname
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: ef0d4565-ff8f-420d-81d6-28d3ab7ccf70
+    type: condition
+    task:
+      id: ef0d4565-ff8f-420d-81d6-28d3ab7ccf70
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 47472393-d28e-4811-8215-48ef5dfdcca8
+    type: regular
+    task:
+      id: 47472393-d28e-4811-8215-48ef5dfdcca8
+      version: -1
+      name: f5-asm-policy-hostnames-update
+      script: '|||f5-asm-policy-hostnames-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      hostname_id:
+        simple: ${f5.Hostname.id}
+      hostname_name: {}
+      include_subdomains:
+        simple: "true"
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 67e75101-646d-4780-8a67-d4a4f3402bd3
+    type: condition
+    task:
+      id: 67e75101-646d-4780-8a67-d4a4f3402bd3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.includeSubdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 93fe4928-d724-4c4f-8d88-c3d4735df85a
+    type: regular
+    task:
+      id: 93fe4928-d724-4c4f-8d88-c3d4735df85a
+      version: -1
+      name: f5-asm-policy-hostnames-delete
+      script: '|||f5-asm-policy-hostnames-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      hostname_id: {}
+      hostname_name:
+        simple: ${f5.Hostname.name}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 69a2ff28-99fb-4b9f-8509-81dbde745138
+    type: condition
+    task:
+      id: 69a2ff28-99fb-4b9f-8509-81dbde745138
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.includeSubdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Hostname.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: bfcda618-f298-4b4a-8681-5f66cbbb610f
+    type: regular
+    task:
+      id: bfcda618-f298-4b4a-8681-5f66cbbb610f
+      version: -1
+      name: f5-asm-policy-cookies-list
+      script: '|||f5-asm-policy-cookies-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 8a87368e-18d2-4b3b-84c4-d29c0f7d980c
+    type: condition
+    task:
+      id: 8a87368e-18d2-4b3b-84c4-d29c0f7d980c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.createdBy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: fc4ba44d-8d70-4cd2-806e-66f58c242130
+    type: regular
+    task:
+      id: fc4ba44d-8d70-4cd2-806e-66f58c242130
+      version: -1
+      name: f5-asm-policy-blocking-settings-list
+      script: '|||f5-asm-policy-blocking-settings-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      endpoint:
+        simple: violations
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 46cab373-d560-4fab-85b6-c6d4da0b76ae
+    type: condition
+    task:
+      id: 46cab373-d560-4fab-85b6-c6d4da0b76ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.kind
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.selfLink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.reference
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.lastUpdateMicros
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.block
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 997a8db8-9f42-4b61-8f2f-d589b1a1e98e
+    type: regular
+    task:
+      id: 997a8db8-9f42-4b61-8f2f-d589b1a1e98e
+      version: -1
+      name: f5-asm-policy-blocking-settings-update
+      script: '|||f5-asm-policy-blocking-settings-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      alarm:
+        simple: "true"
+      block:
+        simple: "true"
+      description:
+        simple: Bad unescape
+      enabled:
+        simple: "true"
+      endpoint:
+        simple: evasions
+      learn:
+        simple: "true"
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: b4dfa332-5298-4814-82f2-9c9aaa2056fb
+    type: condition
+    task:
+      id: b4dfa332-5298-4814-82f2-9c9aaa2056fb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.learn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.reference
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.lastUpdateMicros
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.alarm
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.BlockingSettings.block
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 86a90953-c51c-4b46-8ea9-61cc028dc62c
+    type: regular
+    task:
+      id: 86a90953-c51c-4b46-8ea9-61cc028dc62c
+      version: -1
+      name: f5-asm-policy-urls-list
+      script: '|||f5-asm-policy-urls-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: dd3d94af-92a4-4b2b-823e-c4bed8b7ec56
+    type: condition
+    task:
+      id: dd3d94af-92a4-4b2b-823e-c4bed8b7ec56
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: de4e429c-8002-4b8a-84a5-40911b9bb95e
+    type: regular
+    task:
+      id: de4e429c-8002-4b8a-84a5-40911b9bb95e
+      version: -1
+      name: f5-asm-policy-cookies-add
+      script: '|||f5-asm-policy-cookies-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      attack_signatures_check: {}
+      enforcement_type: {}
+      new_cookie_name:
+        simple: TestPlaybookCookie
+      parameter_type: {}
+      perform_staging: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: aa76eaa9-bbca-4304-83a4-b4de40acdfaf
+    type: condition
+    task:
+      id: aa76eaa9-bbca-4304-83a4-b4de40acdfaf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: c292f9f0-5ed4-4c9c-8990-0accf21456fa
+    type: regular
+    task:
+      id: c292f9f0-5ed4-4c9c-8990-0accf21456fa
+      version: -1
+      name: f5-asm-policy-urls-add
+      script: '|||f5-asm-policy-urls-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      clickjacking_protection: {}
+      description: {}
+      is_allowed:
+        simple: "true"
+      method: {}
+      name:
+        simple: TestPlaybookUrl
+      perform_staging: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      protocol:
+        simple: http
+      url_type:
+        simple: explicit
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 84cdb84b-a30e-4b6d-82e0-b35af386b9f3
+    type: condition
+    task:
+      id: 84cdb84b-a30e-4b6d-82e0-b35af386b9f3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: e75abaec-f62e-43a0-8401-e5a10dfb87a0
+    type: regular
+    task:
+      id: e75abaec-f62e-43a0-8401-e5a10dfb87a0
+      version: -1
+      name: f5-asm-policy-urls-update
+      script: '|||f5-asm-policy-urls-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      description: {}
+      mandatory_body: {}
+      perform_staging:
+        simple: "true"
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      url_id: {}
+      url_isreferrer: {}
+      url_name:
+        simple: ${f5.Url.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 77f278ff-01cd-40be-8743-b77cc943c3f8
+    type: condition
+    task:
+      id: 77f278ff-01cd-40be-8743-b77cc943c3f8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url..performStaging
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 59781a76-bcf9-4d7b-850e-811b95d0b2be
+    type: regular
+    task:
+      id: 59781a76-bcf9-4d7b-850e-811b95d0b2be
+      version: -1
+      name: f5-asm-policy-urls-delete
+      script: '|||f5-asm-policy-urls-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      url_id: {}
+      url_name:
+        simple: ${f5.Url.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 09c000f5-9f35-44dc-8083-a3bf2e5dee99
+    type: condition
+    task:
+      id: 09c000f5-9f35-44dc-8083-a3bf2e5dee99
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Url.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: e9e71221-3400-4215-89dc-76cb06cfbb56
+    type: regular
+    task:
+      id: e9e71221-3400-4215-89dc-76cb06cfbb56
+      version: -1
+      name: f5-asm-policy-cookies-update
+      script: '|||f5-asm-policy-cookies-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      attack_signatures_check: {}
+      cookie_id: {}
+      cookie_name:
+        simple: ${f5.Cookies.name}
+      enforcement_type: {}
+      parameter_type: {}
+      perform_staging:
+        simple: "true"
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 16f08588-0169-48c4-8333-b77d21403bda
+    type: condition
+    task:
+      id: 16f08588-0169-48c4-8333-b77d21403bda
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies..performStaging
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.createdBy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: e36682c2-760f-4bab-8ead-df0421b36f33
+    type: regular
+    task:
+      id: e36682c2-760f-4bab-8ead-df0421b36f33
+      version: -1
+      name: f5-asm-policy-cookies-delete
+      script: '|||f5-asm-policy-cookies-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      cookie_id: {}
+      cookie_name:
+        simple: ${f5.Cookies.name}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 0ddffe9f-2ba0-4b33-81d0-d65194d7fc8d
+    type: condition
+    task:
+      id: 0ddffe9f-2ba0-4b33-81d0-d65194d7fc8d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Cookies.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: e0f6a3a2-6dd1-49f0-8840-6e85eac5cc87
+    type: regular
+    task:
+      id: e0f6a3a2-6dd1-49f0-8840-6e85eac5cc87
+      version: -1
+      name: f5-asm-policy-whitelist-ips-list
+      script: '|||f5-asm-policy-whitelist-ips-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: ba8c92ad-1be6-4682-8ac8-e7d4a6ffb50c
+    type: condition
+    task:
+      id: ba8c92ad-1be6-4682-8ac8-e7d4a6ffb50c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipMask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.blockRequests
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.selfLink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: e993a342-ff27-48cf-8246-fe5bec19ba14
+    type: regular
+    task:
+      id: e993a342-ff27-48cf-8246-fe5bec19ba14
+      version: -1
+      name: f5-asm-policy-whitelist-ips-add
+      script: '|||f5-asm-policy-whitelist-ips-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      block_requests: {}
+      description: {}
+      ignore_brute_detection: {}
+      ignore_intelligence: {}
+      ignore_learning: {}
+      ip_address:
+        simple: 1.1.1.1
+      ip_mask: {}
+      never_log: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      trusted_by_builder: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: c88f92d8-2713-486c-8e09-3bfad9731c8d
+    type: condition
+    task:
+      id: c88f92d8-2713-486c-8e09-3bfad9731c8d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 3404806e-ff6f-4b33-8a2a-7db565dc4da7
+    type: regular
+    task:
+      id: 3404806e-ff6f-4b33-8a2a-7db565dc4da7
+      version: -1
+      name: f5-asm-policy-whitelist-ips-update
+      script: '|||f5-asm-policy-whitelist-ips-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      block_requests: {}
+      description: {}
+      ignore_brute_detection: {}
+      ignore_intelligence: {}
+      ignore_learning: {}
+      ip_address:
+        simple: ${f5.WhitelistIP.ipAddress}
+      ip_id: {}
+      never_log: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      trusted_by_builder: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 67442e40-9b64-4bb3-8806-e23a08ea895d
+    type: condition
+    task:
+      id: 67442e40-9b64-4bb3-8806-e23a08ea895d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipMask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.blockRequests
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 5b4219ef-451a-46a0-8349-1f9cb7e7927a
+    type: regular
+    task:
+      id: 5b4219ef-451a-46a0-8349-1f9cb7e7927a
+      version: -1
+      name: f5-asm-policy-whitelist-ips-delete
+      script: '|||f5-asm-policy-whitelist-ips-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      ip_address:
+        simple: ${f5.WhitelistIP.ipAddress}
+      ip_id: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 3068915e-bead-46ed-820e-81e38682e8ee
+    type: condition
+    task:
+      id: 3068915e-bead-46ed-820e-81e38682e8ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.ipMask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.blockRequests
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.WhitelistIP.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: f191a9e2-9235-4ce5-84ee-e494a14c030f
+    type: regular
+    task:
+      id: f191a9e2-9235-4ce5-84ee-e494a14c030f
+      version: -1
+      name: f5-asm-policy-parameters-list
+      script: '|||f5-asm-policy-parameters-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: f75be3a5-4f2b-4e85-8d67-e69d6f38d09a
+    type: condition
+    task:
+      id: f75be3a5-4f2b-4e85-8d67-e69d6f38d09a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.valueType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 9b05e37c-2edd-4f3f-8cb2-13c559da85e4
+    type: regular
+    task:
+      id: 9b05e37c-2edd-4f3f-8cb2-13c559da85e4
+      version: -1
+      name: f5-asm-policy-parameters-add
+      script: '|||f5-asm-policy-parameters-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      allow_empty:
+        simple: "true"
+      allow_repeated:
+        simple: "true"
+      mandatory:
+        simple: "true"
+      name:
+        simple: TestPlaybookParameter
+      param_location:
+        simple: any
+      param_type: {}
+      perform_staging:
+        simple: "true"
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      sensitive:
+        simple: "false"
+      value_type:
+        simple: xml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 295d7914-c77f-462e-83c5-3666ce84ef64
+    type: condition
+    task:
+      id: 295d7914-c77f-462e-83c5-3666ce84ef64
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.performStaging
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.valueType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.mandatory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 4d05aae3-5ad2-4c0c-80a7-590d88c954a2
+    type: regular
+    task:
+      id: 4d05aae3-5ad2-4c0c-80a7-590d88c954a2
+      version: -1
+      name: f5-asm-policy-parameters-update
+      script: '|||f5-asm-policy-parameters-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      allow_empty: {}
+      allow_repeated: {}
+      mandatory: {}
+      param_location: {}
+      parameter_id: {}
+      parameter_name:
+        simple: ${f5.Parameter.name}
+      perform_staging: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      sensitive: {}
+      value_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 00a63639-5277-4cef-8e61-0b1790c142db
+    type: condition
+    task:
+      id: 00a63639-5277-4cef-8e61-0b1790c142db
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.performStaging
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.valueType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.createdBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 6b66263c-5eb3-4d1b-8b54-98cffb989f43
+    type: regular
+    task:
+      id: 6b66263c-5eb3-4d1b-8b54-98cffb989f43
+      version: -1
+      name: f5-asm-policy-parameters-delete
+      script: '|||f5-asm-policy-parameters-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      parameter_id: {}
+      parameter_name:
+        simple: ${f5.Parameter.name}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: d4196bf4-2ed5-4362-84e3-13e9cd681392
+    type: condition
+    task:
+      id: d4196bf4-2ed5-4362-84e3-13e9cd681392
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Parameter.lastUpdateMicros
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 10814764-6561-4765-8b5c-a4254b6fcf20
+    type: regular
+    task:
+      id: 10814764-6561-4765-8b5c-a4254b6fcf20
+      version: -1
+      name: f5-asm-policy-gwt-profiles-list
+      script: '|||f5-asm-policy-gwt-profiles-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: f24b5896-6dfe-46d6-8818-038171f0096e
+    type: condition
+    task:
+      id: f24b5896-6dfe-46d6-8818-038171f0096e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: ff1365e7-5ed7-4150-846b-0b43065c7a42
+    type: regular
+    task:
+      id: ff1365e7-5ed7-4150-846b-0b43065c7a42
+      version: -1
+      name: f5-asm-policy-gwt-profiles-add
+      script: '|||f5-asm-policy-gwt-profiles-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      check_metachars: {}
+      check_signatures: {}
+      description:
+        simple: This is a description.
+      maximum_total_len: {}
+      maximum_value_len: {}
+      name:
+        simple: TestPlaybookGWT
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      tolerate_parsing_warnings: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 2f87f9b8-d189-439e-8533-a8aec1e1248f
+    type: condition
+    task:
+      id: 2f87f9b8-d189-439e-8533-a8aec1e1248f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: f5.GWTProfile.attackSignaturesCheck
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: f5.GWTProfile.metacharElementCheck
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 989962f3-9e29-4d58-8d5b-924204ecfe06
+    type: regular
+    task:
+      id: 989962f3-9e29-4d58-8d5b-924204ecfe06
+      version: -1
+      name: f5-asm-policy-gwt-profiles-update
+      script: '|||f5-asm-policy-gwt-profiles-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      check_metachars: {}
+      check_signatures: {}
+      description: {}
+      gwt_profile_id: {}
+      gwt_profile_name:
+        simple: ${f5.GWTProfile.name}
+      maximum_total_len: {}
+      maximum_value_len: {}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+      tolerate_parsing_warnings: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 2c9d9d83-4bb7-46a6-8070-020a8eada194
+    type: condition
+    task:
+      id: 2c9d9d83-4bb7-46a6-8070-020a8eada194
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: f5.GWTProfile.attackSignaturesCheck
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: f5.GWTProfile.metacharElementCheck
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: d6d97485-098b-45d3-8452-5cb3481865d0
+    type: regular
+    task:
+      id: d6d97485-098b-45d3-8452-5cb3481865d0
+      version: -1
+      name: f5-asm-policy-gwt-profiles-delete
+      script: '|||f5-asm-policy-gwt-profiles-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      gwt_profile_id: {}
+      gwt_profile_name:
+        simple: ${f5.GWTProfile.name}
+      policy_md5:
+        simple: ${f5.Policy.md5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: c6154dd2-def6-4b20-8fb3-5c1e6468ea78
+    type: condition
+    task:
+      id: c6154dd2-def6-4b20-8fb3-5c1e6468ea78
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.GWTProfile.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 562ac27e-fd22-4ce7-819d-6cb73355e51b
+    type: title
+    task:
+      id: 562ac27e-fd22-4ce7-819d-6cb73355e51b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: 730d18e0-1cb2-4964-8861-3cfea00c9892
+    type: regular
+    task:
+      id: 730d18e0-1cb2-4964-8861-3cfea00c9892
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: ac963d34-dbd5-4159-8c27-be7559f18db3
+    type: regular
+    task:
+      id: ac963d34-dbd5-4159-8c27-be7559f18db3
+      version: -1
+      name: f5-asm-get-policy-md5
+      script: '|||f5-asm-get-policy-md5'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      policy_name:
+        simple: ${f5.Policy.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: aa6820d9-1533-44d8-88b6-725420da8f36
+    type: condition
+    task:
+      id: aa6820d9-1533-44d8-88b6-725420da8f36
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: f5.Policy.md5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 14560,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

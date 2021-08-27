@@ -42,7 +42,7 @@
 </ul>
 <p> </p>
 <div class="cl-preview-section">
-<h2 id="configure-crowdstrike-falcon-sandbox-on-demisto">Configure CrowdStrike Falcon Sandbox on Demisto</h2>
+<h2 id="configure-crowdstrike-falcon-sandbox-on-demisto">Configure CrowdStrike Falcon Sandbox on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -67,7 +67,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -727,9 +727,7 @@
             "description": "Windows 7 32 bit", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 100, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -739,9 +737,7 @@
             "description": "Windows 7 32 bit (HWP Support)", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "This environment can process Hangul Word Processor (HWP) files", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 110, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -751,9 +747,7 @@
             "description": "Windows 7 64 bit", 
             "VMs_invalid": 0, 
             "groupicon": "windows", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 120, 
             "VMs_busy": 4, 
             "analysisMode": "KERNELMODE"
@@ -763,9 +757,7 @@
             "description": "Linux (Ubuntu 16.04, 64 bit)", 
             "VMs_invalid": 0, 
             "groupicon": "linux", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 300, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -775,9 +767,7 @@
             "description": "Android Static Analysis", 
             "VMs_invalid": 0, 
             "groupicon": "android", 
-            "description_long": "", 
             "architecture": "ANDROID", 
-            "is32bit": "false", 
             "ID": 200, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -789,9 +779,7 @@
             "description": "Windows 7 32 bit", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 100, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -801,9 +789,7 @@
             "description": "Windows 7 32 bit (HWP Support)", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "This environment can process Hangul Word Processor (HWP) files", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 110, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -813,9 +799,7 @@
             "description": "Windows 7 64 bit", 
             "VMs_invalid": 0, 
             "groupicon": "windows", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 120, 
             "VMs_busy": 4, 
             "analysisMode": "KERNELMODE"
@@ -825,9 +809,7 @@
             "description": "Linux (Ubuntu 16.04, 64 bit)", 
             "VMs_invalid": 0, 
             "groupicon": "linux", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 300, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -837,9 +819,7 @@
             "description": "Android Static Analysis", 
             "VMs_invalid": 0, 
             "groupicon": "android", 
-            "description_long": "", 
             "architecture": "ANDROID", 
-            "is32bit": "false", 
             "ID": 200, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"

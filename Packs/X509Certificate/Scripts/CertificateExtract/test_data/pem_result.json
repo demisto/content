@@ -1,0 +1,188 @@
+{
+  "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)": [
+    {
+      "SubjectDN": "CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US",
+      "SubjectAlternativeName": [
+        {
+          "Type": "dNSName",
+          "Value": "*.paloaltonetworks.com"
+        },
+        {
+          "Type": "dNSName",
+          "Value": "paloaltonetworks.com"
+        }
+      ],
+      "Name": [
+        "*.paloaltonetworks.com",
+        "paloaltonetworks.com"
+      ],
+      "IssuerDN": "CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US",
+      "SerialNumber": "19290688218337824112020565039390569720",
+      "ValidityNotBefore": "2020-10-23T00:00:00.000Z",
+      "ValidityNotAfter": "2021-11-21T23:59:59.000Z",
+      "SHA256": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+      "SHA1": "2392ea5cd4c2a61e51547570634ef887ab1942e9",
+      "MD5": "22769ae413997b86da4a0934072d9ed0",
+      "PublicKey": {
+        "Algorithm": "RSA",
+        "Length": 2048,
+        "Modulus": "ed:65:a2:06:73:7e:f3:f5:62:cb:a5:2f:87:a1:0b:d7:11:72:47:f5:f7:6d:ea:c9:07:81:20:3e:42:e4:a7:ca:63:b1:43:e8:b5:39:3f:c2:e9:07:21:38:ad:82:8c:5d:ae:65:27:de:e6:45:35:05:af:61:ef:ca:58:48:b7:2d:21:92:bd:cd:4c:02:0d:eb:df:e4:b7:4b:de:09:40:2c:32:9e:50:e7:7c:28:08:02:6a:54:ea:33:eb:1a:c1:3e:d3:98:e0:89:c9:fe:b8:a5:cc:8b:23:49:08:d6:84:22:81:15:9a:67:c4:ed:23:0c:46:ff:35:0e:75:84:af:8f:c3:4d:fc:d2:17:93:4a:c6:ec:1e:3c:1e:a1:45:11:f3:0d:14:9d:8d:e0:9f:0c:2b:fc:71:42:bc:91:0e:73:4d:52:0b:3e:2a:6f:15:25:77:51:86:d8:91:9c:6b:35:37:9d:d4:63:27:32:17:47:dd:c5:3e:4d:0e:d9:01:72:d0:f7:85:10:a2:8e:be:29:cb:84:7c:89:6c:4d:12:ae:29:22:14:77:d1:8c:ab:4e:84:b1:07:68:2d:4a:61:2f:19:91:68:7a:21:7b:43:a4:cd:1e:40:50:b2:7e:43:45:90:48:73:f7:40:b7:a9:b8:0c:60:4d:b0:a7:a1:8a:31:27",
+        "Exponent": 65537
+      },
+      "SPKISHA256": "94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9",
+      "Signature": {
+        "Algorithm": "sha256",
+        "Signature": "65a9757d84214146b4edfb26f8c3ff632a44eb141297e91cb39d861b3aca5e419048f0647b590457a392345dd065e957e35741ca12e1bb9d70bfced0209fc34ffe8cbc02633b2422645cfeff03e1909aa7f950ec687079749facaa5609050f7f4d56d199f1655d9df62ea30b3eb6c6ad282a960722b9a61b3fa6e9fcc5cf741e0ae1fed983e2c3a3421af16afa771ee5a4df205d8a9e7eab5b586f402645c9db5defab47326ae2164038b5f031470d4a704a0be48a60696f5ca799b02bc5be31940cf01d5287f2b74e3a5773bf7ecfd5e895ee2dbbbaae219263fc5d200db366766de9b36c34fc54f2cf725abad1b4a18e2f005ff2917da5c7163c48c5bf48b2"
+      },
+      "Extension": [
+        {
+          "OID": "2.5.29.35",
+          "Name": "authorityKeyIdentifier",
+          "Critical": false,
+          "Value": {
+            "KeyIdentifier": "0f80611c823161d52f28e78d4638b42ce1c6d9e2"
+          }
+        },
+        {
+          "OID": "2.5.29.14",
+          "Name": "subjectKeyIdentifier",
+          "Critical": false,
+          "Value": {
+            "Digest": "b34972bb12121b8851cd5564ff9656dcbca3f288"
+          }
+        },
+        {
+          "OID": "2.5.29.17",
+          "Name": "subjectAltName",
+          "Critical": false,
+          "Value": [
+            {
+              "Type": "dNSName",
+              "Value": "*.paloaltonetworks.com"
+            },
+            {
+              "Type": "dNSName",
+              "Value": "paloaltonetworks.com"
+            }
+          ]
+        },
+        {
+          "OID": "2.5.29.15",
+          "Name": "keyUsage",
+          "Critical": true,
+          "Value": {
+            "DigitalSignature": true,
+            "KeyEncipherment": true
+          }
+        },
+        {
+          "OID": "2.5.29.37",
+          "Name": "extendedKeyUsage",
+          "Critical": false,
+          "Value": {
+            "Usages": [
+              "serverAuth",
+              "clientAuth"
+            ]
+          }
+        },
+        {
+          "OID": "2.5.29.31",
+          "Name": "cRLDistributionPoints",
+          "Critical": false,
+          "Value": [
+            {
+              "FullName": [
+                {
+                  "Type": "uniformResourceIdentifier",
+                  "Value": "http://crl3.digicert.com/ssca-sha2-g7.crl"
+                }
+              ]
+            },
+            {
+              "FullName": [
+                {
+                  "Type": "uniformResourceIdentifier",
+                  "Value": "http://crl4.digicert.com/ssca-sha2-g7.crl"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "OID": "2.5.29.32",
+          "Name": "certificatePolicies",
+          "Critical": false,
+          "Value": [
+            {
+              "PolicyIdentifier": "2.16.840.1.114412.1.1",
+              "PolicyQualifiers": [
+                "https://www.digicert.com/CPS"
+              ]
+            },
+            {
+              "PolicyIdentifier": "2.23.140.1.2.2"
+            }
+          ]
+        },
+        {
+          "OID": "1.3.6.1.5.5.7.1.1",
+          "Name": "authorityInfoAccess",
+          "Critical": false,
+          "Value": [
+            {
+              "AccessMethod": "OCSP",
+              "AccessLocation": {
+                "Type": "uniformResourceIdentifier",
+                "Value": "http://ocsp.digicert.com"
+              }
+            },
+            {
+              "AccessMethod": "caIssuers",
+              "AccessLocation": {
+                "Type": "uniformResourceIdentifier",
+                "Value": "http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+              }
+            }
+          ]
+        },
+        {
+          "OID": "2.5.29.19",
+          "Name": "basicConstraints",
+          "Critical": false,
+          "Value": {
+            "CA": false
+          }
+        },
+        {
+          "OID": "1.3.6.1.4.1.11129.2.4.2",
+          "Name": "signedCertificateTimestampList",
+          "Critical": false,
+          "Value": [
+            {
+              "Version": 0,
+              "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+              "Timestamp": "2020-10-23T19:31:49.000Z",
+              "EntryType": "PreCertificate"
+            },
+            {
+              "Version": 0,
+              "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+              "Timestamp": "2020-10-23T19:31:49.000Z",
+              "EntryType": "PreCertificate"
+            }
+          ]
+        }
+      ],
+      "PEM": "-----BEGIN CERTIFICATE-----\nMIIGTDCCBTSgAwIBAgIQDoNAXFL2J8nabqEHq2q0+DANBgkqhkiG9w0BAQsFADBN\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMScwJQYDVQQDEx5E\naWdpQ2VydCBTSEEyIFNlY3VyZSBTZXJ2ZXIgQ0EwHhcNMjAxMDIzMDAwMDAwWhcN\nMjExMTIxMjM1OTU5WjB8MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5p\nYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExITAfBgNVBAoTGFBhbG8gQWx0byBOZXR3\nb3JrcywgSW5jLjEfMB0GA1UEAwwWKi5wYWxvYWx0b25ldHdvcmtzLmNvbTCCASIw\nDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAO1logZzfvP1YsulL4ehC9cRckf1\n923qyQeBID5C5KfKY7FD6LU5P8LpByE4rYKMXa5lJ97mRTUFr2HvylhIty0hkr3N\nTAIN69/kt0veCUAsMp5Q53woCAJqVOoz6xrBPtOY4InJ/rilzIsjSQjWhCKBFZpn\nxO0jDEb/NQ51hK+Pw0380heTSsbsHjweoUUR8w0UnY3gnwwr/HFCvJEOc01SCz4q\nbxUld1GG2JGcazU3ndRjJzIXR93FPk0O2QFy0PeFEKKOvinLhHyJbE0SrikiFHfR\njKtOhLEHaC1KYS8ZkWh6IXtDpM0eQFCyfkNFkEhz90C3qbgMYE2wp6GKMScCAwEA\nAaOCAvcwggLzMB8GA1UdIwQYMBaAFA+AYRyCMWHVLyjnjUY4tCzhxtniMB0GA1Ud\nDgQWBBSzSXK7EhIbiFHNVWT/llbcvKPyiDA3BgNVHREEMDAughYqLnBhbG9hbHRv\nbmV0d29ya3MuY29tghRwYWxvYWx0b25ldHdvcmtzLmNvbTAOBgNVHQ8BAf8EBAMC\nBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMGsGA1UdHwRkMGIwL6At\noCuGKWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9zc2NhLXNoYTItZzcuY3JsMC+g\nLaArhilodHRwOi8vY3JsNC5kaWdpY2VydC5jb20vc3NjYS1zaGEyLWc3LmNybDBM\nBgNVHSAERTBDMDcGCWCGSAGG/WwBATAqMCgGCCsGAQUFBwIBFhxodHRwczovL3d3\ndy5kaWdpY2VydC5jb20vQ1BTMAgGBmeBDAECAjB8BggrBgEFBQcBAQRwMG4wJAYI\nKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBGBggrBgEFBQcwAoY6\naHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMlNlY3VyZVNl\ncnZlckNBLmNydDAJBgNVHRMEAjAAMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA\n9lyUL9F3MCIUVBgIMJRWjuNNExkzv98MLyALzE7xZOMAAAF1VvIejQAABAMARzBF\nAiEA0LPqfi9QUBH7vM9hE/arP1u6yennWskAmnubqlDxArUCIBe4+zl6Erh5pmWL\n3rOFtwatvLUgCJkDdZgRunCYDdofAHUAXNxDkv7mq0VEsV6a1FbmEDf71fpH3KFz\nlLJe5vbHDsoAAAF1VvIe3AAABAMARjBEAiBzHxKX5bQY6bQ+s+uWEnq0FtxKLpY4\n52D7icU+AViJnQIga8MCsURYRXA9EydVR27eIvG5O96N/FgEY6YwS0ILEMswDQYJ\nKoZIhvcNAQELBQADggEBAGWpdX2EIUFGtO37JvjD/2MqROsUEpfpHLOdhhs6yl5B\nkEjwZHtZBFejkjRd0GXpV+NXQcoS4budcL/O0CCfw0/+jLwCYzskImRc/v8D4ZCa\np/lQ7GhweXSfrKpWCQUPf01W0ZnxZV2d9i6jCz62xq0oKpYHIrmmGz+m6fzFz3Qe\nCuH+2YPiw6NCGvFq+nce5aTfIF2Knn6rW1hvQCZFydtd76tHMmriFkA4tfAxRw1K\ncEoL5IpgaW9cp5mwK8W+MZQM8B1Sh/K3TjpXc79+z9Xole4tu7quIZJj/F0gDbNm\ndm3ps2w0/FTyz3JautG0oY4vAF/ykX2lxxY8SMW/SLI=\n-----END CERTIFICATE-----\n"
+    }
+  ],
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+    {
+      "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+      "Type": "certificate",
+      "Vendor": "X509Certificate",
+      "Score": 0
+    }
+  ]
+}
