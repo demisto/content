@@ -992,12 +992,13 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set, id_set: dict) -> set:
+def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
     """Filters out test playbooks, which are in .pack-ignore, from the given tests set
 
     Args:
         tests (set): Tests set to remove the tests to ignore from
         id_set (dict): The id set object
+        modified_packs (list): List of the modified packs
 
     Return:
          set: The filtered tests set
@@ -1005,7 +1006,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     ignored_tests_set = set()
     logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
-    for pack in content_packs:
+    for pack in modified_packs:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
@@ -1013,7 +1014,6 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
         logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
-        logging.info(f'FINALLY TEST - {tests}')
 
     return tests
 
@@ -1063,7 +1063,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
+def filter_tests(tests: set, id_set: json, modified_packs: list, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
@@ -1074,12 +1074,12 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
         remove_private_packs (bool): Whether to remove private packs
+        modified_packs: The modified packs.
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
-    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
-    logging.info(f'Tests without ignored - {tests_without_ignored}')
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set, modified_packs)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     if is_nightly:
@@ -1214,7 +1214,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = filter_installed_packs(packs_to_install)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set)
+    tests = filter_tests(tests, id_set, modified_packs)
 
     if not tests or changed_common:
         if not tests:
