@@ -106,7 +106,6 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
     # ArcSight stores Dates as timeStamps in the following keys, -> reformat into Date
     TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
-
     if depth < 10:
         if isinstance(d, list):
             return [decode_arcsight_output(d_, depth + 1) for d_ in d]
@@ -129,6 +128,8 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                 elif key in ['eventId', 'baseEventIds']:
                     d[key] = str(value)
                 elif isinstance(value, int) and value > 10000000000000000:
+                    # the platform rounds number larger than 10000000000000000
+                    # so we cast them to string to keep as is
                     d[key] = str(value)
     return d
 

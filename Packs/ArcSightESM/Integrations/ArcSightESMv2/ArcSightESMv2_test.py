@@ -150,14 +150,13 @@ def test_filtered():
 def test_get_case(mocker, requests_mock):
     """
     Given:
-        - Case with nested event field of type int
-        - fields_to_stringify argument set to test_int_number
+        - Case with nested event field of type int with large value in it (larger than 10000000000000000)
 
     When:
         - Running get-case command
 
     Then:
-        - Ensure the the value of the test_int_number field is a string
+        - Ensure the the value of the test_big_int_number field is a string
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
