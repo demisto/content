@@ -2210,7 +2210,7 @@ def blacklist_files_command(client, args):
     comment = args.get('comment')
 
     res = client.blacklist_files(hash_list=hash_list, comment=comment)
-    if res.get('err_extra') != "All hashes have already been added to the allow or block list":
+    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
         raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
