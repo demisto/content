@@ -1,0 +1,114 @@
+id: 958512cf-49f7-4978-8a0d-c8d4b5cecd66
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: FireMon Pre Change Assessment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
+    type: start
+    task:
+      id: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fd4a6a7b-6c45-4ab5-891b-4be842775762
+    type: title
+    task:
+      id: fd4a6a7b-6c45-4ab5-891b-4be842775762
+      version: -1
+      name: Close
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 98c76313-95f4-4891-8be9-17276d9d01fa
+    type: regular
+    task:
+      id: 98c76313-95f4-4891-8be9-17276d9d01fa
+      version: -1
+      name: pca
+      description: "PCA- Pre-Change Assessment is process of showing impact of created
+        devices changes in early stages before implementing changes to devices. \nWe
+        can check the PCA table in Review stage of Policy planner ticket."
+      script: FireMonSecurityManager|||pca
+      type: regular
+      iscommand: true
+      brand: FireMonSecurityManager
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: ${incident.action}
+      destinations:
+        simple: ${incident.destination}
+      device_group_id:
+        simple: ${incident.devicegroupid}
+      domain_id:
+        simple: ${incident.domainid}
+      services:
+        simple: ${incident.service}
+      sources:
+        simple: ${incident.source}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

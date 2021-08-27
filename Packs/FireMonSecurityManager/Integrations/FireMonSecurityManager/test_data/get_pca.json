@@ -1,0 +1,196 @@
+{
+    "requestId": "4d43a412-4cd7-4565-b3e7-2fbdcea3484b",
+    "pcaResult": {
+        "startDate": "2021-08-25T09:43:42+0000",
+        "endDate": "2021-08-25T09:43:50+0000",
+        "device": {
+            "id": 9,
+            "name": "FortiGate174",
+            "managementIp": "192.168.200.10",
+            "parents": [],
+            "children": [],
+            "securityConcernIndex": 2.41,
+            "devicePack": {
+                "type": "DEVICE_PACK",
+                "id": 47,
+                "artifactId": "fortinet_fortigate",
+                "groupId": "com.fm.sm.dp.fortinet_fortigate",
+                "version": "9.3.16",
+                "artifacts": [
+                    {
+                        "name": "layout.json",
+                        "checksum": "04015dc7764daf5ec08b200a335fe400"
+                    },
+                    {
+                        "name": "layout-modify-networkobj.json",
+                        "checksum": "f54002584bc1832a3ff430a2cf8a0508"
+                    },
+                    {
+                        "name": "layout-modify-secrule.json",
+                        "checksum": "b719e6d8eb2e45856a0952344203dd14"
+                    },
+                    {
+                        "name": "plugin.jar",
+                        "checksum": "94e60c64bd6e0087ba239d097c074110"
+                    },
+                    {
+                        "name": "dc.zip",
+                        "checksum": "439fd2e191d744cb5161e68803ea410f"
+                    }
+                ],
+                "buildDate": "2021-02-19T16:07:59+0000",
+                "deviceName": "FortiGate Firewall",
+                "deviceType": "FIREWALL",
+                "vendor": "Fortinet",
+                "collectionConfig": {
+                    "id": 22,
+                    "name": "default",
+                    "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                    "changeCriterion": [
+                        {
+                            "pattern": "msg=\\\"User\\s+(?<userName>\\S+)\\s+(?:changed|added|deleted).*?from\\s+(?<hostName>\\S+)\\\"",
+                            "timeoutSeconds": 20,
+                            "continueMatch": false,
+                            "parentUserName": "Fortimanager_Access",
+                            "retrieveOnMatch": true
+                        },
+                        {
+                            "pattern": "[U|u]ser=\\\"(?<userName>\\S+)\\\"\\s+ui=\\\".*?\\((?<hostName>\\d+.\\d+.\\d+.\\d+|[a-fA-F0-9:]+)\\)\\\"(?:,|\\s)*.+msg=.*?(?:Edit|changed|added|deleted)",
+                            "timeoutSeconds": 20,
+                            "continueMatch": false,
+                            "parentUserName": "Fortimanager_Access",
+                            "retrieveOnMatch": true
+                        },
+                        {
+                            "pattern": "[U|u]ser=\\\"(?<userName>\\S+)\\\"\\s+ui=\\\"(?:[^\\\"\\d]+)\\\"(?:,|\\s)*.+msg=.*?(?:Edit|changed|added|deleted)",
+                            "timeoutSeconds": 20,
+                            "continueMatch": false,
+                            "parentUserName": "Fortimanager_Access",
+                            "retrieveOnMatch": true
+                        },
+                        {
+                            "pattern": "type=event\\ssubtype=config.*?user=\\\"?(?<userName>\\S+(?<!\\\"))\\\"?\\sui=\\\"?(?<hostName>\\S+(?<!\\\"))\\\"?.*?cfg_attr=(?!(?:\\\"vdom))",
+                            "timeoutSeconds": 20,
+                            "continueMatch": false,
+                            "parentUserName": "Fortimanager_Access",
+                            "retrieveOnMatch": true
+                        },
+                        {
+                            "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                            "timeoutSeconds": 45,
+                            "continueMatch": false,
+                            "parentUserName": "Fortimanager_Access",
+                            "retrieveOnMatch": true
+                        }
+                    ],
+                    "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                    "usageCriterion": [
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )src=(?<src>\\S+) (?:\\S+=.+? )dst=(?<dst>\\S+).*?dst_port=(?<dstPort>\\d+) (?:\\S+=.+? )proto=(?<proto>\\d+) (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )src=(?<src>\\S+) (?:\\S+=.+? )dst=(?<dst>\\S+).*?dst_port=(?<dstPort>\\d+) (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+) (?:\\S+=.+? )proto=(?<proto>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )srcip=(?<src>\\S+) (?:\\S+=.+? )dstip=(?<dst>\\S+).*?dstport=(?<dstPort>\\d+) (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+) (?:\\S+=.+? )proto=(?<proto>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+) (?:\\S+=.+? )proto=(?<proto>\\d+) (?:\\S+=.+? )src=(?<src>\\S+) (?:\\S+=.+? )dst=(?<dst>\\S+) (?:\\S+=.+? )dst_port=(?<dstPort>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )srcip=(?<src>\\S+) (?:\\S+=.+? )dstip=(?<dst>\\S+) (?!dstport)(?:\\S+=.+? )policyid=(?<ruleNumber>\\d+) (?:\\S+=.+? )service=(?<svc>\\S+).*?proto=(?<proto>\\d+)",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic[, ](?:[^, ]+=.+?[, ])?srcip=(?<src>[^, ]+)[, ](?:[^, ]+=.+?[, ])dstip=(?<dst>[^, ]+)(?:(?!dstport).)*proto=(?<proto>\\d+)[, ](?:[^ ,]+=.+?[, ])policyid=(?<ruleNumber>\\d+)[, ](?:[^ ,]+=.+?[, ])service=(?:\\\")?(?<svc>[^,\"]+?)(?:\\\")?[, ](?:\\w+=).*",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic[, ](?:[^, ]+=.+?[, ])?srcip=(?<src>[^, ]+)[, ](?:[^, ]+=.+?[, ])dstip=(?<dst>[^, ]+)[, ]dstport=(?<dstPort>\\d+)[, ](?:[^, ]+=.+?[, ])proto=(?<proto>\\d+)[, ](?:[^, ]+=.+?[, ])policyid=(?<ruleNumber>\\d+)[, ](?:[^, ]+=.+?[, ])service=(?:\\\")?(?<svc>[^,\"]+?)(?:\\\")?[, ](?:\\w+=).*",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=traffic (?:\\S+=.+? )srcip=(?<src>\\S+) (?:\\S+=.+? )dstip=(?<dst>\\S+) (?:\\S+=.+? )(?:dstport=(?<dstPort>\\d+))? (?:\\S+=.+? )proto=(?<proto>\\d+) (?:\\S+=.+? )policyid=(?<ruleNumber>\\d+).*",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=\"?traffic\"? (?:\\S+=.+? )srcip=\"?(?<src>\\S+)\"? (?:\\S+=.+? )dstip=\"?(?<dst>\\S+)\"?.*?dstport=\"?(?<dstPort>\\d+)\"? (?:\\S+=.+?)proto=\"?(?<proto>\\d+)\"? (?:\\S+=.+? )policyid=\"?(?<ruleNumber>\\d+)\"?.+",
+                            "fields": [],
+                            "dynamicFields": []
+                        },
+                        {
+                            "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                            "fields": [],
+                            "dynamicFields": []
+                        }
+                    ],
+                    "createdDate": "2021-04-26T07:03:55+0000",
+                    "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                    "createdBy": "com.fm.platform.domain.User@68c8bf66",
+                    "lastModifiedBy": "com.fm.platform.domain.User@68c8bf66",
+                    "usageKeys": [
+                        "RULE_NUMBER"
+                    ],
+                    "activatedForDevicePack": false
+                },
+                "behaviorTranslator": "DstNatRoutePolicySrcNatBehavior",
+                "normalization": true,
+                "usage": true,
+                "change": true,
+                "usageSyslog": true,
+                "changeSyslog": true,
+                "active": false,
+                "supportsDiff": true,
+                "supportsManualRetrieval": true,
+                "implicitDrop": false,
+                "diffDynamicRoutes": false,
+                "automation": false,
+                "lookupNoIntfRoutes": true,
+                "automationCli": false,
+                "ssh": true,
+                "sharedNetworks": false,
+                "sharedServices": false,
+                "supportedTypes": [
+                    "USERS",
+                    "ZONES"
+                ],
+                "diffIgnorePatterns": [
+                    "^\\s*set\\s+((auth-)?password|passwd).*$",
+                    "^\\s*[+/=[[:alnum:]]+\\s*$",
+                    "^\\s*#.*$",
+                    "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                    "^\\s*DEK-Info.*$"
+                ],
+                "convertableTo": []
+            },
+            "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+            "gpcComputeDate": "1970-01-01T00:00:00+0000",
+            "gpcImplementDate": "1970-01-01T00:00:00+0000",
+            "state": "ACTIVE",
+            "managedType": "MANAGED",
+            "gpcStatus": "NOT_IMPORTED",
+            "updateMemberRuleDoc": false
+        },
+        "sciBefore": 1.92,
+        "sciAfter": 1.92,
+        "sciDelta": 0.0,
+        "deviceComplexityBefore": 0.4,
+        "deviceComplexityAfter": 0.4,
+        "deviceComplexityDelta": 0.0,
+        "controlFailureCount": 0,
+        "preChangeAssessmentControls": [],
+        "affectedRules": []
+    }
+}
