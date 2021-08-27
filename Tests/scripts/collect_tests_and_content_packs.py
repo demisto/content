@@ -1006,8 +1006,9 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
     ignored_tests_set = set()
     logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
-    for pack in modified_packs:
-        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+    for pack in content_packs:
+        if pack in modified_packs:
+            ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
         logging.info(f'IGNORED TEST SET - {ignored_tests_set}')
