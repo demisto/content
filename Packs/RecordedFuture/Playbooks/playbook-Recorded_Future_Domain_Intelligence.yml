@@ -316,7 +316,7 @@ tasks:
       registrarname: {}
       reportedby: {}
       reputation: {}
-      riskrules:
+      recordedfutureriskrules:
         simple: ${RecordedFuture.Domain.concatRules}
       service: {}
       sha1: {}

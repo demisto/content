@@ -10,7 +10,7 @@ from CommonServerUserPython import *
 
 
 def normalized_string(phrase: str) -> str:
-    """ Normalize columns or Grid to connected word in lower-case.
+    """ Normalize a string to flatcase (to match `cli name`).
 
     Args:
         phrase: Phrase to normalize.
@@ -22,9 +22,28 @@ def normalized_string(phrase: str) -> str:
         >>> normalized_string("TestWord")
         "testword"
         >>> normalized_string("hello_world")
-        "hello_world"
+        "helloworld"
     """
     return phrases_case.camel(phrase).replace("'", "").lower()
+
+
+def normalized_column_name(phrase: str) -> str:
+    """ Normalize columns or Grid to connected word in lowercase, to match the logic of stripToClumnName() from
+        the client's `strings.js` and the server logic.
+
+    Args:
+        phrase: Phrase to normalize.
+
+    Returns:
+        str: Normalized phrase.
+
+    Examples:
+        >>> normalized_string("Test Word!@#$%^&*()-=+")
+        "testword"
+        >>> normalized_string("hello🦦_world@")
+        "hello_world"
+    """
+    return re.sub(r'[^a-zA-Z\d_]', '', phrase).lower()
 
 
 def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
@@ -122,7 +141,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
 
 
 @logger
-def validate_entry_context(context_path, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+def validate_entry_context(context_path: str, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
             1. List[Dict[str, str/bool/int/float]]
@@ -277,8 +296,8 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
-    # Normalize columns to match connected words.
-    columns = [normalized_string(phrase) for phrase in columns]
+    # Change columns to all lower case (underscores allowed).
+    columns = [normalized_column_name(phrase) for phrase in columns]
     # Create new Table from the given context path.
     new_table: pd.DataFrame = build_grid(context_path=context_path,
                                          keys=keys,

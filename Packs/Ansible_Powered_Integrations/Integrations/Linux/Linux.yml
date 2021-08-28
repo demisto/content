@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Agentlesss Linux host management over SSH
-display: Linux
+description: Agentlesss Linux host management over SSH. Deprecated. Use Ansible Linux (in the Ansible Linux pack) instead.
+display: Ansible Linux (Deprecated)
 name: Linux
 script:
   commands:
@@ -6743,7 +6743,7 @@ script:
       name: attributes
     description: Downloads files from HTTP, HTTPS, or FTP to node
     name: linux-get-url
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -6751,3 +6751,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true
