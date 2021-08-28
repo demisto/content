@@ -997,10 +997,11 @@ def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
     for test_playbook_dict in test_playbooks_list:
         test_playbook_name = list(test_playbook_dict.keys())[0]
         test_playbook_path = test_playbook_dict[test_playbook_name].get('file_path')
+        test_playbook_pack = test_playbook_dict[test_playbook_name].get('pack')
 
-        if test_playbook_path == str(tpb_path):
+        if tpb_path in test_playbook_path:
             logging.info(f'Hello World {test_playbook_name}')
-            return test_playbook_name
+            return test_playbook_name, test_playbook_pack
 
 
 def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
@@ -1047,12 +1048,13 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
         file_name = item.get('file_name')
         if item.get('ignore_code') == 'auto-test':
             tests.add(file_name)
-            # given file is to be ignored, try to get its id directly from yaml
+
             for test in tests:
+                test_id, test_pack = get_test_playbook_id(test_playbooks, test)
                 logging.info(f'This is the test to ignore: {test}')
-                path = os.path.join('Packs', pack_name, 'TestPlaybooks', test)
+                path = os.path.join('Packs', test_pack, 'TestPlaybooks', test)
                 logging.info(f'This is the path for the test {path}')
-                test_id = get_test_playbook_id(test_playbooks, path)
+
                 logging.info(f'TEST ID: {test_id}')
                 ignored_tests_set.add(test_id)
                 # if os.path.isfile(os.path.abspath(path)):
