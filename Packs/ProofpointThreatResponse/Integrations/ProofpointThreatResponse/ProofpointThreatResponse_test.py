@@ -2,6 +2,7 @@ import pytest
 
 from CommonServerPython import *
 from ProofpointThreatResponse import (create_incident_field_context,
+                                      fetch_incidents_command,
                                       filter_incidents, get_emails_context,
                                       get_incident_command,
                                       get_incidents_batch_by_time_request,
@@ -390,3 +391,38 @@ def test_get_incident_command_expand_events_false(mocker, requests_mock):
     incident_result = results['EntryContext']['ProofPointTRAP.Incident(val.id === obj.id)'][0]
     assert not incident_result['events']
     assert incident_result['event_ids']
+
+
+def test_fetch_incidents(mocker, requests_mock):
+    base_url = 'https://server_url/'
+    alert_state = 'new'
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'params', return_value={
+        'states': [alert_state],
+    })
+    mocker.patch.object(demisto, 'getLastRun', return_value={
+        'last_fetch': {
+            alert_state: '',
+        },
+        'last_fetched_id': {
+            alert_state: '',
+        }
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'setLastRun')
+    requests_mock.get(f'{base_url}api/incidents', json=[
+        {
+            'id': 1,
+            'created_at': '2021-08-25T10:00:01Z',
+        },
+        {
+            'id': 2,
+            'created_at': '2021-08-25T10:00:00Z',
+        },
+    ])
+    fetch_incidents_command()
+    assert demisto.setLastRun.call_args[0][0] == {
+        'last_fetch': {'new': '2021-08-25T09:59:01Z'},
+        'last_fetched_incident_id': {'new': 1},
+    }

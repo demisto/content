@@ -559,8 +559,9 @@ def fetch_incidents_command():
         Fetches incidents from the ProofPoint API.
     """
     integration_params = demisto.params()
-    last_fetch = demisto.getLastRun().get('last_fetch', {})
-    last_fetched_id = demisto.getLastRun().get('last_fetched_incident_id', {})
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('last_fetch', {})
+    last_fetched_id = last_run.get('last_fetched_incident_id', {})
 
     fetch_delta = integration_params.get('fetch_delta', '6 hours')
     fetch_limit = integration_params.get('fetch_limit', '50')
@@ -603,8 +604,10 @@ def fetch_incidents_command():
     demisto.debug("End of current fetch function with last_fetch {} and last_fetched_id {}".format(str(last_fetch), str(
         last_fetched_id)))
 
-    demisto.setLastRun({'last_fetch': last_fetch})
-    demisto.setLastRun({'last_fetched_incident_id': last_fetched_id})
+    demisto.setLastRun({
+        'last_fetch': last_fetch,
+        'last_fetched_incident_id': last_fetched_id,
+    })
 
     demisto.info('extracted {} incidents'.format(len(incidents)))
 
