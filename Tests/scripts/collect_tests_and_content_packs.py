@@ -993,6 +993,14 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
+def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
+    for test_playbook_dict in test_playbooks_list:
+        test_playbook_name = list(test_playbook_dict.keys())[0]
+        test_playbook_path = test_playbook_dict[test_playbook_name]['file_path']
+        if test_playbook_path == tpb_path:
+            return test_playbook_name
+
+
 def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
     """
     Retrieve the skipped tests of a given pack, as detailed in the .pack-ignore file
@@ -1011,6 +1019,8 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
     ignored_tests_set = set()
     tests = set()
     ignore_list = []
+    id_set = tools.get_content_id_set()
+    test_playbooks = id_set['TestPlaybooks']
     if pack_name in modified_packs:
         logging.info(f'pack name: {pack_name}')
         pack_ignore_path = tools.get_pack_ignore_file_path(pack_name)
@@ -1042,12 +1052,15 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
                 logging.info(f'This is the test to ignore: {test}')
                 path = os.path.join('Packs', pack_name, 'TestPlaybooks', test)
                 logging.info(f'This is the path for the test {path}')
-                if os.path.isfile(path):
-                    logging.info('HERE')
-                    test_yaml = tools.get_yaml(path)
-                    logging.info(f'Test YML ID: {test_yaml["id"]}')
-                    if 'id' in test_yaml:
-                        ignored_tests_set.add(test_yaml['id'])
+                test_id = get_test_playbook_id(test_playbooks, path)
+                logging.info(f'TEST ID: {test_id}')
+                ignored_tests_set.add(test_id)
+                # if os.path.isfile(os.path.abspath(path)):
+                #     logging.info('HERE')
+                #     test_yaml = tools.get_yaml(path)
+                #     logging.info(f'Test YML ID: {test_yaml["id"]}')
+                #     if 'id' in test_yaml:
+                #         ignored_tests_set.add(test_yaml['id'])
     return ignored_tests_set
 
 
