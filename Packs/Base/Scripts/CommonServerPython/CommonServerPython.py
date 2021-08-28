@@ -6947,7 +6947,8 @@ if 'requests' in sys.modules:
 
         def __del__(self):
             try:
-                self._session.close()
+                if hasattr(self, '_session'):
+                    self._session.close()
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
