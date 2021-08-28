@@ -38,8 +38,8 @@ class Client:
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
-             'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
+             + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
     }
@@ -47,7 +47,7 @@ class Client:
     def __init__(self, params: Dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
-        self._headers: Dict = get_headers(params)
+        self._params = params
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
@@ -64,6 +64,11 @@ class Client:
         except json.decoder.JSONDecodeError as error:
             demisto.error(str(res.content))
             raise error
+
+    @property
+    def _headers(self):
+        # the header should be calculated at most 5 min before the request fired
+        return get_headers(self._params)
 
 
 def get_headers(params: Dict) -> Dict:
@@ -202,9 +207,13 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
         if vendors:
             xdr_ioc['vendors'] = vendors
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory')
+
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {})
         if threat_type:
-            xdr_ioc['class'] = threat_type
+            threat_type = threat_type[0] if isinstance(threat_type, list) else threat_type
+            threat_type = threat_type.get('threatcategory')
+            if threat_type:
+                xdr_ioc['class'] = threat_type
         if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
         return xdr_ioc
