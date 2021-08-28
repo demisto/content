@@ -397,7 +397,7 @@ def url_lookup(args):
             # since zscaler expects to recieve a URL without the protocol, we omit it in `lookup_request`
             # in the response, the URL is returned as it was sent, so we add back the protocol by replacing
             # the URL retruned with the one we got as an argument
-            if res_url in url:
+            if 'http://' + res_url in url or 'https://' + res_url in url:
                 data['url'] = url
         ioc_context = {'Address': data['url'], 'Data': data['url']}
         score = 1
