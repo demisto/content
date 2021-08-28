@@ -1032,7 +1032,7 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
             except MissingSectionHeaderError:
                 pass
 
-    logging.info('in here')
+    logging.info(f'This is the ignore list: {ignore_list}')
     for item in ignore_list:
         file_name = item.get('file_name')
         if item.get('ignore_code') == 'auto-test':
@@ -1041,9 +1041,11 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
             for test in tests:
                 logging.info(f'This is the test to ignore: {test}')
                 path = os.path.join('Packs', pack_name, 'TestPlaybooks', test)
-                logging.info(f'This is the path for the test')
+                logging.info(f'This is the path for the test {path}')
                 if os.path.isfile(path):
+                    logging.info('HERE')
                     test_yaml = tools.get_yaml(path)
+                    logging.info(f'Test YML ID: {test_yaml["id"]}')
                     if 'id' in test_yaml:
                         ignored_tests_set.add(test_yaml['id'])
     return ignored_tests_set
@@ -1062,11 +1064,9 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
     """
     logging.info(f'Modified packs: {modified_packs}')
     ignored_tests_set = set()
-    logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
     logging.info(f'Content packs: {content_packs}')
     for pack in modified_packs:
-        logging.info(f'First if pack: {pack}')
         ignored_tests_set.update(get_ignore_pack_skipped_tests(pack, modified_packs))
     for pack in content_packs:
         logging.info(f'Going over pack: {pack}')
