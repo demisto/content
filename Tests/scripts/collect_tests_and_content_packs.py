@@ -996,8 +996,12 @@ def get_modified_packs(files_string):
 def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
     for test_playbook_dict in test_playbooks_list:
         test_playbook_name = list(test_playbook_dict.keys())[0]
-        test_playbook_path = test_playbook_dict[test_playbook_name]['file_path']
+        test_playbook_data = test_playbook_dict[test_playbook_name]
+        test_playbook_path = test_playbook_data.get('file_path')
+        logging.info(f'Id set test playbook path: {test_playbook_path}')
+        logging.info(f'test playbook path: {tpb_path}')
         if test_playbook_path == tpb_path:
+            logging.info('ok')
             return test_playbook_name
 
 
