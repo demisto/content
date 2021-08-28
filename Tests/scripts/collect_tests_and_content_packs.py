@@ -993,77 +993,71 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
-    for test_playbook_dict in test_playbooks_list:
-        test_playbook_name = list(test_playbook_dict.keys())[0]
-        test_playbook_path = test_playbook_dict[test_playbook_name].get('file_path')
-        test_playbook_pack = test_playbook_dict[test_playbook_name].get('pack')
+# def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
+#     for test_playbook_dict in test_playbooks_list:
+#         test_playbook_name = list(test_playbook_dict.keys())[0]
+#         test_playbook_path = test_playbook_dict[test_playbook_name].get('file_path')
+#         test_playbook_pack = test_playbook_dict[test_playbook_name].get('pack')
+#
+#         if tpb_path in test_playbook_path:
+#             logging.info(f'Hello World {test_playbook_name}')
+#             return test_playbook_name, test_playbook_pack
 
-        if tpb_path in test_playbook_path:
-            logging.info(f'Hello World {test_playbook_name}')
-            return test_playbook_name, test_playbook_pack
 
-
-def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
-    """
-    Retrieve the skipped tests of a given pack, as detailed in the .pack-ignore file
-
-    expected ignored tests structure in .pack-ignore:
-        [file:playbook-Not-To-Run-Directly.yml]
-        ignore=auto-test
-
-    Arguments:
-        pack name (str): name of the pack
-
-    Returns:
-        ignored_tests_set (set[str]): set of ignored test ids
-
-    """
-    ignored_tests_set = set()
-    tests = set()
-    ignore_list = []
-    id_set = tools.get_content_id_set()
-    test_playbooks = id_set['TestPlaybooks']
-    if pack_name in modified_packs:
-        pack_ignore_path = tools.get_pack_ignore_file_path(pack_name)
-        if os.path.isfile(pack_ignore_path):
-            try:
-                # read pack_ignore using ConfigParser
-                config = ConfigParser(allow_no_value=True)
-                config.read(pack_ignore_path)
-
-                # go over every file in the config
-                for section in config.sections():
-                    if section.startswith("file:"):
-                        # given section is of type file
-                        file_name = section[5:]
-                        for key in config[section]:
-                            if key == 'ignore':
-                                # group ignore codes to a list
-                                ignore_list.append({'file_name': file_name, 'ignore_code': str(config[section][key])})
-            except MissingSectionHeaderError:
-                pass
-
-    for item in ignore_list:
-        file_name = item.get('file_name')
-        if item.get('ignore_code') == 'auto-test':
-            tests.add(file_name)
-
-            for test in tests:
-                test_id, test_pack = get_test_playbook_id(test_playbooks, test)
-                logging.info(f'This is the test to ignore: {test}')
-                path = os.path.join('Packs', test_pack, 'TestPlaybooks', test)
-                logging.info(f'This is the path for the test {path}')
-
-                logging.info(f'TEST ID: {test_id}')
-                ignored_tests_set.add(test_id)
-                # if os.path.isfile(os.path.abspath(path)):
-                #     logging.info('HERE')
-                #     test_yaml = tools.get_yaml(path)
-                #     logging.info(f'Test YML ID: {test_yaml["id"]}')
-                #     if 'id' in test_yaml:
-                #         ignored_tests_set.add(test_yaml['id'])
-    return ignored_tests_set
+# def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
+#     """
+#     Retrieve the skipped tests of a given pack, as detailed in the .pack-ignore file
+#
+#     expected ignored tests structure in .pack-ignore:
+#         [file:playbook-Not-To-Run-Directly.yml]
+#         ignore=auto-test
+#
+#     Arguments:
+#         pack name (str): name of the pack
+#
+#     Returns:
+#         ignored_tests_set (set[str]): set of ignored test ids
+#
+#     """
+#     ignored_tests_set = set()
+#     tests = set()
+#     ignore_list = []
+#     id_set = tools.get_content_id_set()
+#     test_playbooks = id_set['TestPlaybooks']
+#     if pack_name in modified_packs:
+#         pack_ignore_path = tools.get_pack_ignore_file_path(pack_name)
+#         if os.path.isfile(pack_ignore_path):
+#             try:
+#                 # read pack_ignore using ConfigParser
+#                 config = ConfigParser(allow_no_value=True)
+#                 config.read(pack_ignore_path)
+#
+#                 # go over every file in the config
+#                 for section in config.sections():
+#                     if section.startswith("file:"):
+#                         # given section is of type file
+#                         file_name = section[5:]
+#                         for key in config[section]:
+#                             if key == 'ignore':
+#                                 # group ignore codes to a list
+#                                 ignore_list.append({'file_name': file_name, 'ignore_code': str(config[section][key])})
+#             except MissingSectionHeaderError:
+#                 pass
+#
+#     for item in ignore_list:
+#         file_name = item.get('file_name')
+#         if item.get('ignore_code') == 'auto-test':
+#             tests.add(file_name)
+#
+#             for test in tests:
+#                 test_id, test_pack = get_test_playbook_id(test_playbooks, test)
+#                 logging.info(f'This is the test to ignore: {test}')
+#                 path = os.path.join('Packs', test_pack, 'TestPlaybooks', test)
+#                 logging.info(f'This is the path for the test {path}')
+#
+#                 logging.info(f'TEST ID: {test_id}')
+#                 ignored_tests_set.add(test_id)
+#     return ignored_tests_set
 
 
 def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
@@ -1077,20 +1071,15 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
     Return:
          set: The filtered tests set
     """
-    logging.info(f'Modified packs: {modified_packs}')
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
-    logging.info(f'Content packs: {content_packs}')
     for pack in modified_packs:
-        ignored_tests_set.update(get_ignore_pack_skipped_tests(pack, modified_packs))
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack, modified_packs))
     for pack in content_packs:
-        logging.info(f'Going over pack: {pack}')
-        test = get_ignore_pack_skipped_tests(pack, modified_packs)
-        logging.info(f'This is the test: {test}')
+        test = tools.get_ignore_pack_skipped_tests(pack, modified_packs)
         ignored_tests_set.update(test)
 
     if ignored_tests_set:
-        logging.info(f'IGNORED TEST SET - {ignored_tests_set}')
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
         logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
