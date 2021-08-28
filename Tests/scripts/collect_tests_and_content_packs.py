@@ -996,12 +996,10 @@ def get_modified_packs(files_string):
 def get_test_playbook_id(test_playbooks_list: list, tpb_path: str):
     for test_playbook_dict in test_playbooks_list:
         test_playbook_name = list(test_playbook_dict.keys())[0]
-        test_playbook_data = test_playbook_dict[test_playbook_name]
-        test_playbook_path = test_playbook_data.get('file_path')
-        logging.info(f'Id set test playbook path: {test_playbook_path}')
-        logging.info(f'test playbook path: {tpb_path}')
-        if test_playbook_path == tpb_path:
-            logging.info('ok')
+        test_playbook_path = test_playbook_dict[test_playbook_name].get('file_path')
+
+        if test_playbook_path == str(tpb_path):
+            logging.info(f'Hello World {test_playbook_name}')
             return test_playbook_name
 
 
@@ -1026,7 +1024,6 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
     id_set = tools.get_content_id_set()
     test_playbooks = id_set['TestPlaybooks']
     if pack_name in modified_packs:
-        logging.info(f'pack name: {pack_name}')
         pack_ignore_path = tools.get_pack_ignore_file_path(pack_name)
         if os.path.isfile(pack_ignore_path):
             try:
@@ -1046,7 +1043,6 @@ def get_ignore_pack_skipped_tests(pack_name: str, modified_packs) -> set:
             except MissingSectionHeaderError:
                 pass
 
-    logging.info(f'This is the ignore list: {ignore_list}')
     for item in ignore_list:
         file_name = item.get('file_name')
         if item.get('ignore_code') == 'auto-test':
