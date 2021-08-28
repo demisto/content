@@ -1003,6 +1003,7 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
     Return:
          set: The filtered tests set
     """
+    logging.info(f'Modified packs: {modified_packs}')
     ignored_tests_set = set()
     logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
