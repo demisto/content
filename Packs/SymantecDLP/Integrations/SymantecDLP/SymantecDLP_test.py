@@ -302,7 +302,7 @@ def test_fetch_incidents(mocker):
 
     When:
         - Fetching incidents
-    
+   
     Then:
         - Ensure last run is set as expected with the incident fetched
     """
