@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+# flake8: noqa: E501
 
 class Client:
     def __init__(self, params: Dict):
