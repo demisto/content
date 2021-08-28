@@ -9909,7 +9909,7 @@ def main():
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {command} command. Error: {str(e)}', e)
 
 
 from CrowdStrikeApiModule import *  # noqa: E402
