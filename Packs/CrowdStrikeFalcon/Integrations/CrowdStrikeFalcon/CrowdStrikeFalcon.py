@@ -2650,7 +2650,8 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get('resources')
     command_results: List[CommandResults] = []
-    if not host_groups: return command_results
+    if not host_groups:
+        return command_results
     for host_group in host_groups:
         command_results.append(CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                                               outputs_key_field='id',
@@ -2663,7 +2664,8 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
 def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
     response = delete_host_groups(host_group_ids)
     deleted_ids = response.get('resources')
-    readable = '\n'.join([f'host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids])
+    readable = '\n'.join([f'host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
+        if deleted_ids else ''
     return CommandResults(readable_output=readable)
 
 
