@@ -1,0 +1,206 @@
+id: 2aa3d3e6-0efd-4821-8b59-3a479ef5d09a
+inputs:
+- description: Salesforce Unique ID
+  key: salesforceId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Permission Set License Id
+  key: permissionSetLicenseId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Email to notify about errors in the provisioning process.
+  key: ITNotificationEmail
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Salesforce IAM - Assign Permission Set License
+outputs: []
+sourceplaybookid: 681196fe-1a54-4f06-8f2e-6d457cd0b35f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38a22096-3d3d-4139-80b5-630e97a85334
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 38a22096-3d3d-4139-80b5-630e97a85334
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      permission_set_license_id:
+        simple: ${inputs.permissionSetLicenseId}
+      user_id:
+        simple: ${inputs.salesforceId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assign permission set license
+      id: 9a08bdc2-2151-4c39-8f1d-55b5b5d44501
+      iscommand: true
+      name: Assign Permission Set License
+      script: '|||salesforce-assign-permission-set-license'
+      type: regular
+      version: -1
+    taskid: 9a08bdc2-2151-4c39-8f1d-55b5b5d44501
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SalesforceAssignPermissionSetLicense.success
+          operator: isTrue
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d8883448-aae5-409e-81f6-a1c99cac0698
+      iscommand: false
+      name: Permission Set License Assignment Success?
+      type: condition
+      version: -1
+    taskid: d8883448-aae5-409e-81f6-a1c99cac0698
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f6ee374-ca86-4116-8e2a-07becbfc9bbe
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 5f6ee374-ca86-4116-8e2a-07becbfc9bbe
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          Failed to assign permission set license for: ${incident.username} <br>
+          Error Message: ${SalesforceAssignPermissionSetLicense.errorMessage}<br>
+          Error Code: ${SalesforceAssignPermissionSetLicense.errorCode}
+      subject:
+        simple: '${incident.username}: Failed to assign SFDC Permission Set License'
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: 3f843aac-5c5e-4bdc-8de8-3a196deff646
+      iscommand: true
+      name: Send Email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 3f843aac-5c5e-4bdc-8de8-3a196deff646
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

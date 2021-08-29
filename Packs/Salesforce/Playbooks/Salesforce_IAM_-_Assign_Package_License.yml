@@ -1,0 +1,206 @@
+id: bad94c3c-7a2d-4a58-83e7-cfce8df54169
+inputs:
+- description: Salesforce Unique ID
+  key: salesforceId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Package License Id
+  key: packageLicenseId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Email to notify about errors in the provisioning process.
+  key: ITNotificationEmail
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Salesforce IAM - Assign Package License
+outputs: []
+sourceplaybookid: 681196fe-1a54-4f06-8f2e-6d457cd0b35f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70efcc93-ecc7-4ed7-829f-6940b9bbd093
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 70efcc93-ecc7-4ed7-829f-6940b9bbd093
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      package_license_id:
+        simple: ${inputs.packageLicenseId}
+      user_id:
+        simple: ${inputs.salesforceId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a package license.
+      id: 752a969b-3da1-464d-8747-181f7a6cb478
+      iscommand: true
+      name: Assign Package License
+      script: '|||salesforce-assign-package-license'
+      type: regular
+      version: -1
+    taskid: 752a969b-3da1-464d-8747-181f7a6cb478
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SalesforceAssignPackageLicense.success
+          operator: isTrue
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b9f486f5-cb41-4b1f-8e66-df220c5c0567
+      iscommand: false
+      name: Package License Assignment Success?
+      type: condition
+      version: -1
+    taskid: b9f486f5-cb41-4b1f-8e66-df220c5c0567
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e5a0863-8c93-4fae-8235-498af753c0d4
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 4e5a0863-8c93-4fae-8235-498af753c0d4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          Failed to assign package license for: ${incident.username} <br>
+          Error Message: ${SalesforceAssignPackageLicense.errorMessage}<br>
+          Error Code: ${SalesforceAssignPackageLicense.errorCode}
+      subject:
+        simple: '${incident.username}: Failed to assign SFDC Package License'
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: d6584138-be21-4970-8403-1ba4ffd3018b
+      iscommand: true
+      name: Send Email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: d6584138-be21-4970-8403-1ba4ffd3018b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,419 @@
+id: 40102808-670f-4424-81cd-de6437e79e85
+inputs:
+- description: Salesforce Unique ID
+  key: salesforceId
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Salesforce IAM - Post Deprovisioning
+outputs:
+- contextPath: IAM.Vendor
+  type: unknown
+sourceplaybookid: 681196fe-1a54-4f06-8f2e-6d457cd0b35f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e887b212-7b49-459a-8b42-5de31cb155c4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e887b212-7b49-459a-8b42-5de31cb155c4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 40
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Id
+                root: IAM.Vendor.PermissionSetAssignments
+          operator: isNotEmpty
+      label: "Yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8081b13b-58fd-483c-8561-1499bca7b21a
+      iscommand: false
+      name: Permission Sets Assigned?
+      type: condition
+      version: -1
+    taskid: 8081b13b-58fd-483c-8561-1499bca7b21a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c03938a1-b527-496f-8d2d-acb7aa405b16
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: c03938a1-b527-496f-8d2d-acb7aa405b16
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1390
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the assigned permission set
+      id: 3b9df4e6-2b73-45c5-8308-8cff6a712738
+      iscommand: true
+      name: Get Assigned Permission Sets
+      script: '|||salesforce-get-assigned-permission-set'
+      type: regular
+      version: -1
+    taskid: 3b9df4e6-2b73-45c5-8308-8cff6a712738
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 225
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      permission_set_assignment_id:
+        complex:
+          accessor: Id
+          root: IAM.Vendor.PermissionSetAssignments
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: To Delete Assigned Permission Set
+      id: fe7fe161-9f0b-4c4d-84ae-04cdfd406470
+      iscommand: true
+      name: Unassign Permission Sets
+      script: '|||salesforce-delete-assigned-permission-set'
+      type: regular
+      version: -1
+    taskid: fe7fe161-9f0b-4c4d-84ae-04cdfd406470
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 555
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get assigned permission set license
+      id: d3417037-18bb-4310-8c2e-6e8801ddfcfd
+      iscommand: true
+      name: Get Assigned Permission Set Licenses
+      script: '|||salesforce-get-assigned-permission-set-license'
+      type: regular
+      version: -1
+    taskid: d3417037-18bb-4310-8c2e-6e8801ddfcfd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 730
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Id
+                root: IAM.Vendor.PermissionSetLicenseAssignments
+          operator: isNotEmpty
+      label: "Yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 63fe97b7-e144-4fe6-8648-fcb3468aa6a7
+      iscommand: false
+      name: Permission Set Licenses Assigned?
+      type: condition
+      version: -1
+    taskid: 63fe97b7-e144-4fe6-8648-fcb3468aa6a7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      permission_set_assignment_license_id:
+        complex:
+          accessor: Id
+          root: IAM.Vendor.PermissionSetLicenseAssignments
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete assigned permission set license
+      id: f223e38a-a08c-4f99-837d-32020a7e253f
+      iscommand: true
+      name: Unassign Permission Set Licenses
+      script: '|||salesforce-delete-assigned-permission-set-license'
+      type: regular
+      version: -1
+    taskid: f223e38a-a08c-4f99-837d-32020a7e253f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 235,
+          "y": 1080
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        simple: ${inputs.salesforceId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get Assigned Package License
+      id: af94023c-1416-4495-8561-e5c715d92762
+      iscommand: true
+      name: Get Assigned Package Licenses
+      script: '|||salesforce-get-assigned-package-license'
+      type: regular
+      version: -1
+    taskid: af94023c-1416-4495-8561-e5c715d92762
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 730
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Id
+                root: IAM.Vendor.PackageLicenseAssignments
+          operator: isNotEmpty
+      label: "Yes"
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 134720e8-b277-4594-8cc2-0d02287b2cd2
+      iscommand: false
+      name: Package Licenses Assigned?
+      type: condition
+      version: -1
+    taskid: 134720e8-b277-4594-8cc2-0d02287b2cd2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_package_license_id:
+        complex:
+          accessor: Id
+          root: IAM.Vendor.PackageLicenseAssignments
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete Assigned Package License
+      id: e00008d4-0bef-44d7-8a72-d24a5302ce9e
+      iscommand: true
+      name: Unassign Package Licenses
+      script: '|||salesforce-delete-assigned-package-license'
+      type: regular
+      version: -1
+    taskid: e00008d4-0bef-44d7-8a72-d24a5302ce9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1080
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_6_Yes": 0.83
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1415,
+        "width": 985,
+        "x": 120,
+        "y": 40
+      }
+    }
+  }

@@ -1,0 +1,234 @@
+id: b12324a1-d668-482d-80eb-6c2b31255acf
+inputs:
+- description: Salesforce Unique ID
+  key: salesforceId
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Salesforce IAM - Unfreeze Account
+outputs:
+- contextPath: IAM.Vendor
+  type: unknown
+sourceplaybookid: 681196fe-1a54-4f06-8f2e-6d457cd0b35f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 504d410a-68d2-410c-82e2-f64486f64867
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 504d410a-68d2-410c-82e2-f64486f64867
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.success
+          operator: isTrue
+      label: "Yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a963b54-22e6-4618-8948-807dbdb98d34
+      iscommand: false
+      name: IsFrozen Call Success?
+      type: condition
+      version: -1
+    taskid: 7a963b54-22e6-4618-8948-807dbdb98d34
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f457db5-dde9-4f4c-8ffc-8633b64545e0
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 1f457db5-dde9-4f4c-8ffc-8633b64545e0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the user frozen status
+      id: 40ae9226-be25-4119-84f4-753b2d7aece0
+      iscommand: true
+      name: Get IsFrozen Status
+      script: '|||salesforce-get-user-isfrozen-status'
+      type: regular
+      version: -1
+    taskid: 40ae9226-be25-4119-84f4-753b2d7aece0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: IsFrozen
+                root: IAM.Vendor.UserIsfrozenStatus
+          operator: isTrue
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9bb7e703-64e9-4b36-8c63-8a992278ade4
+      iscommand: false
+      name: Is User account Frozen?
+      type: condition
+      version: -1
+    taskid: 9bb7e703-64e9-4b36-8c63-8a992278ade4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user_login_id:
+        complex:
+          accessor: Id
+          root: IAM.Vendor.UserIsfrozenStatus
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Unfreezes a user account.
+      id: 9095c564-6508-42f1-8c56-6857d1f575d5
+      iscommand: true
+      name: Unfreeze account
+      script: '|||salesforce-unfreeze-user-account'
+      type: regular
+      version: -1
+    taskid: 9095c564-6508-42f1-8c56-6857d1f575d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_3_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

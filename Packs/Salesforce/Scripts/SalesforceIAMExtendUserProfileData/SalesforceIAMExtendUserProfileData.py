@@ -175,8 +175,8 @@ def main():
             
             results = [
                 CommandResults(
-                    outputs_prefix='IAM.Vendor', 
-                    outputs_key_field='instanceName', 
+                    outputs_prefix='IAM.Vendor',
+                    outputs_key_field='instanceName',
                     outputs={
                         'email': email,
                         'action': 'SalesforceIAMExtendUserProfileData',

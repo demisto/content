@@ -1,0 +1,1385 @@
+description: Sync users into Salesforce.
+id: a870a46f-90fa-474c-896d-b2e4d654252e
+inputs:
+- description: Salesforce app instance name
+  key: salesforceInstance
+  playbookInputQuery: null
+  required: true
+  value:
+    complex:
+      accessor: app-provisioning-settings
+      root: lists
+      transformers:
+      - operator: ParseJSON
+      - args:
+          equalTo:
+            value:
+              simple: Salesforce
+          field:
+            value:
+              simple: app_name
+          getField:
+            value:
+              simple: instance_name
+          stringify:
+            value:
+              simple: "false"
+        operator: WhereFieldEquals
+- description: Email to notify about errors in the provisioning process.
+  key: ITNotificationEmail
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: ""
+  key: welcomeEmailBody
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "<p>Hi, \n<BR/><BR/> \nYour Salesforce account has been created successfully.
+      Please click on the link below and enter your network credentials to login to
+      Salesforce. \n<BR/><BR/>\nhttps://paloaltonetworks.my.salesforce.com\n<BR/><BR/>\nPlease
+      feel free to create a ticket with IT Services at https://panservicedesk.service-now.com/services,
+      if you have any questions or issues. \n<BR/><BR/>\nRegards,\n<BR/>Salesforce
+      Admin Team<BR/>"
+- description: Provisioning results from previous run.
+  key: PreviousRun
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Salesforce IAM - Sync User
+outputs:
+- contextPath: IAM.Vendor
+  description: Salesforce Provisioning Details
+  type: unknown
+sourceplaybookid: 3d654419-7293-448d-85b3-cf33f8ca8360
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7566cd03-91a4-4287-8204-40736a6de166
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7566cd03-91a4-4287-8204-40736a6de166
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 847.5,
+          "y": 50
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d9f1c14-67c4-4e18-8e2a-7c8514c06415
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 1d9f1c14-67c4-4e18-8e2a-7c8514c06415
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 2615
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "103"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      app_instance:
+        complex:
+          root: inputs.salesforceInstance
+      org_level_1:
+        complex:
+          accessor: orglevel1
+          root: incident
+      org_level_2:
+        complex:
+          accessor: orglevel2
+          root: incident
+      org_level_3:
+        complex:
+          accessor: orglevel3
+          root: incident
+      user_profile:
+        complex:
+          accessor: userprofile
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Reads the list "salesforce-provisioning-settings" and and updates
+        user profile information for IAM operations.
+      id: b95346e4-4307-4374-8a72-b6442a274f92
+      iscommand: false
+      name: Extend the user profile with Salesforce provisioning settings
+      script: SalesforceIAMExtendUserProfileData
+      type: regular
+      version: -1
+    taskid: b95346e4-4307-4374-8a72-b6442a274f92
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 847.5,
+          "y": 195
+        }
+      }
+  "61":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Salesforce.OrgUnit
+          operator: isNotEmpty
+      label: "yes"
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "99"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e7aa1c8-b274-452a-8321-b673d05765f5
+      iscommand: false
+      name: Is Org Unit configured for provisioning?
+      type: condition
+      version: -1
+    taskid: 8e7aa1c8-b274-452a-8321-b673d05765f5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 720
+        }
+      }
+  "65":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.type
+          operator: isEqualString
+          right:
+            value:
+              simple: IAM - Terminate User
+      label: "Yes"
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "61"
+      "Yes":
+      - "111"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5291cb2-02da-4d37-80db-cf360eb21d6b
+      iscommand: false
+      name: Should the user be terminated?
+      type: condition
+      version: -1
+    taskid: b5291cb2-02da-4d37-80db-cf360eb21d6b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 847.5,
+          "y": 545
+        }
+      }
+  "69":
+    id: "69"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 77f423f1-133d-448f-84b9-5b1cdd2969c9
+      iscommand: false
+      name: Deactivation Complete
+      type: title
+      version: -1
+    taskid: 77f423f1-133d-448f-84b9-5b1cdd2969c9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 2470
+        }
+      }
+  "70":
+    id: "70"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91102e08-8364-45e4-8649-12cd21270233
+      iscommand: false
+      name: Update Complete
+      type: title
+      version: -1
+    taskid: 91102e08-8364-45e4-8649-12cd21270233
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 2470
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 11102df9-c719-44a2-8c7d-44130e453ed4
+      iscommand: false
+      name: Create/enable Complete
+      type: title
+      version: -1
+    taskid: 11102df9-c719-44a2-8c7d-44130e453ed4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2470
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97ee7104-8e1c-4b3d-8f2c-b820af14761b
+      iscommand: false
+      name: No Rule Found. SFDC account not synced
+      type: title
+      version: -1
+    taskid: 97ee7104-8e1c-4b3d-8f2c-b820af14761b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "79":
+    id: "79"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "109"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ITNotificationEmail:
+        complex:
+          root: inputs.ITNotificationEmail
+      PreviousRun:
+        complex:
+          root: inputs.PreviousRun
+      packageLicences:
+        complex:
+          accessor: packageLicences
+          root: Salesforce.ProvisioningSettings
+      permissionSetLicences:
+        complex:
+          accessor: permissionSetLicences
+          root: Salesforce.ProvisioningSettings
+      permissionSets:
+        complex:
+          accessor: permissionSets
+          root: Salesforce.ProvisioningSettings
+      salesforceId:
+        complex:
+          accessor: id
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.id
+            operator: SetIfEmpty
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c2b5d66-e170-4ae7-84ee-adc830ef0ff8
+      iscommand: false
+      name: Post Provisioning Tasks
+      playbookId: 1b509870-e890-4c31-8bca-d025dfb3730d
+      type: playbook
+      version: -1
+    taskid: 3c2b5d66-e170-4ae7-84ee-adc830ef0ff8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1770
+        }
+      }
+  "82":
+    id: "82"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "69"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      salesforceId:
+        complex:
+          accessor: id
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.id
+            operator: SetIfEmpty
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c44727dc-d822-495b-877c-d3fb392225db
+      iscommand: false
+      name: Post Deprovisioning Tasks
+      playbookId: 40102808-670f-4424-81cd-de6437e79e85
+      type: playbook
+      version: -1
+    taskid: c44727dc-d822-495b-877c-d3fb392225db
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": 2295
+        }
+      }
+  "83":
+    id: "83"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "84"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        complex:
+          root: inputs.welcomeEmailBody
+      subject:
+        simple: Your Salesforce account was created
+      to:
+        complex:
+          accessor: email
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: f3fe028e-1d86-436f-829d-04be152a70a1
+      iscommand: true
+      name: Send Email to User
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: f3fe028e-1d86-436f-829d-04be152a70a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 2120
+        }
+      }
+  "84":
+    id: "84"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        complex:
+          accessor: id
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.id
+            operator: SetIfEmpty
+          - args:
+              prefix:
+                value:
+                  simple: 'Salesforce account was provisioned for user: ${incident.username}.
+                    ID: '
+              suffix:
+                iscontext: true
+            operator: concat
+      subject:
+        complex:
+          accessor: action
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.action
+            operator: SetIfEmpty
+          - args:
+              prefix:
+                value:
+                  simple: 'INFO: Salesforce account '
+              suffix:
+                value:
+                  simple: d
+            operator: concat
+      to:
+        complex:
+          accessor: ProvisioningSettings
+          root: Salesforce
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: emailNotificationList
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: ab621438-dc80-4be9-8043-ce3347401110
+      iscommand: true
+      name: Send Email to App Team
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: ab621438-dc80-4be9-8043-ce3347401110
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 2295
+        }
+      }
+  "86":
+    id: "86"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          Hi,<br/><br/>
+
+          Account not created/reactivated in Salesforce. No Matching rule found <br/><br/>
+
+          Incident: ${incident.id} <br/>
+          Username: ${incident.username} <br/>
+          Org Unit: ${Salesforce.OrgUnit} <br/>
+          Lookup Key: ${Salesforce.LookupKey} <br/><br/>
+      subject:
+        simple: 'Warning: Salesforce provisioning - no matching rule found'
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: fe24dd80-ef56-4c8f-81d1-d13c4185210d
+      iscommand: true
+      name: 'Send Email: No Matching SFDC Rule Found'
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: fe24dd80-ef56-4c8f-81d1-d13c4185210d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "88":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Salesforce.OrgUnit
+          operator: isEqualString
+          right:
+            value:
+              simple: sales
+      label: "yes"
+    id: "88"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "98"
+      "yes":
+      - "89"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b75a0b7-af42-4d6e-8b85-0e212bdd71c5
+      iscommand: false
+      name: Is Org Unit Sales?
+      type: condition
+      version: -1
+    taskid: 2b75a0b7-af42-4d6e-8b85-0e212bdd71c5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1835,
+          "y": 1595
+        }
+      }
+  "89":
+    id: "89"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "82"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      salesforceId:
+        complex:
+          accessor: id
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.id
+            operator: SetIfEmpty
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2eec8a6-3ae3-47fa-8ab4-8ee8dfdbc904
+      iscommand: false
+      name: Freeze Account
+      playbookId: f548aa32-1aed-4459-8d15-59aafb709788
+      type: playbook
+      version: -1
+    taskid: d2eec8a6-3ae3-47fa-8ab4-8ee8dfdbc904
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": 2120
+        }
+      }
+  "95":
+    id: "95"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      user-profile:
+        complex:
+          accessor: UserProfile
+          root: Salesforce
+      using:
+        complex:
+          root: inputs.salesforceInstance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      id: 7b0fbf8a-25ac-495c-8aa9-05841d23f87f
+      iscommand: true
+      name: Update the user in SFDC
+      script: '|||iam-update-user'
+      type: regular
+      version: -1
+    taskid: 7b0fbf8a-25ac-495c-8aa9-05841d23f87f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1420
+        }
+      }
+  "98":
+    id: "98"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "108"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      user-profile:
+        complex:
+          accessor: UserProfile
+          root: Salesforce
+      using:
+        complex:
+          root: inputs.salesforceInstance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Disable an active user.
+      id: 8f198102-401c-4c03-8875-48d377927e29
+      iscommand: true
+      name: Disable user in SFDC
+      script: '|||iam-disable-user'
+      type: regular
+      version: -1
+    taskid: 8f198102-401c-4c03-8875-48d377927e29
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1765,
+          "y": 1770
+        }
+      }
+  "99":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Salesforce.ProvisioningSettings
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Salesforce.ProvisioningSettings
+          operator: isNotEmpty
+      label: "yes"
+    id: "99"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "102"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 256857bf-8c4a-49f3-805e-b9c77f409254
+      iscommand: false
+      name: Match found in SalesforceProvisioningSettings?
+      type: condition
+      version: -1
+    taskid: 256857bf-8c4a-49f3-805e-b9c77f409254
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 900
+        }
+      }
+  "101":
+    id: "101"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "106"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      user-profile:
+        complex:
+          accessor: UserProfile
+          root: Salesforce
+      using:
+        complex:
+          root: inputs.salesforceInstance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a user.
+      id: 12355184-7dcd-46d9-8cf4-b0dc6ea487a2
+      iscommand: true
+      name: Create/enable the user in SFDC
+      script: '|||iam-create-user'
+      type: regular
+      version: -1
+    taskid: 12355184-7dcd-46d9-8cf4-b0dc6ea487a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1245
+        }
+      }
+  "102":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: inList
+          right:
+            value:
+              simple: create,enable
+      label: Created/Enabled
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: isEqualString
+          right:
+            value:
+              simple: update
+      label: Updated
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: active
+                root: GetUser
+          operator: isTrue
+      label: Active
+    id: "102"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "101"
+      Active:
+      - "95"
+      Created/Enabled:
+      - "110"
+      Updated:
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccfbdfb6-4330-4ded-89bf-4a18320adc43
+      iscommand: false
+      name: What is the status of the user?
+      type: condition
+      version: -1
+    taskid: ccfbdfb6-4330-4ded-89bf-4a18320adc43
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1070
+        }
+      }
+  "103":
+    id: "103"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "65"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: GetUser=
+      ignore-outputs:
+        simple: "true"
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      user-profile:
+        complex:
+          accessor: userprofile
+          root: incident
+      using:
+        complex:
+          root: inputs.salesforceInstance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves a single user resource.
+      id: 244e5d8b-f486-4752-8eac-afdcde2cebb9
+      iscommand: true
+      name: Get User in SFDC
+      script: '|||iam-get-user'
+      type: regular
+      version: -1
+    taskid: 244e5d8b-f486-4752-8eac-afdcde2cebb9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 847.5,
+          "y": 370
+        }
+      }
+  "106":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                root: IAM.Vendor
+          operator: isTrue
+      label: "Yes"
+    id: "106"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "Yes":
+      - "110"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a89ff7c4-99a1-4376-88ca-10a9014c909f
+      iscommand: false
+      name: Success?
+      type: condition
+      version: -1
+    taskid: a89ff7c4-99a1-4376-88ca-10a9014c909f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1420
+        }
+      }
+  "108":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                root: IAM.Vendor
+          operator: isTrue
+      label: "Yes"
+    id: "108"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "Yes":
+      - "89"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 131f34db-2e4e-413b-8ddf-f95e63e5f845
+      iscommand: false
+      name: Success?
+      type: condition
+      version: -1
+    taskid: 131f34db-2e4e-413b-8ddf-f95e63e5f845
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1765,
+          "y": 1945
+        }
+      }
+  "109":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: containsGeneral
+          right:
+            value:
+              simple: create
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: IAM.Vendor
+          operator: containsGeneral
+          right:
+            value:
+              simple: create
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                root: IAM.Vendor
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: SalesforceIAMExtendUserProfileData
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: SalesforceGetUserIsfrozenStatus
+                root: IAM.Vendor
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      label: User Was Created
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: containsGeneral
+          right:
+            value:
+              simple: enable
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: IAM.Vendor
+          operator: containsGeneral
+          right:
+            value:
+              simple: enable
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                root: IAM.Vendor
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: success
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: SalesforceIAMExtendUserProfileData
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: SalesforceGetUserIsfrozenStatus
+                root: IAM.Vendor
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      label: User Was Rehired
+    id: "109"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "71"
+      User Was Created:
+      - "83"
+      User Was Rehired:
+      - "84"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 93a08ac7-90f9-495d-860c-8231e21c9e91
+      iscommand: false
+      name: Was any action successful?
+      type: condition
+      version: -1
+    taskid: 93a08ac7-90f9-495d-860c-8231e21c9e91
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1945
+        }
+      }
+  "110":
+    id: "110"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "79"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      salesforceId:
+        complex:
+          accessor: id
+          root: inputs.PreviousRun
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: IAM.Vendor.id
+            operator: SetIfEmpty
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9f985127-59d2-43e6-8eaa-9412ed4d9e56
+      iscommand: false
+      name: Unfreeze Account
+      playbookId: b12324a1-d668-482d-80eb-6c2b31255acf
+      type: playbook
+      version: -1
+    taskid: 9f985127-59d2-43e6-8eaa-9412ed4d9e56
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1595
+        }
+      }
+  "111":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: active
+                root: GetUser
+          operator: isTrue
+      label: Active
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GetUser
+          operator: isEmpty
+      label: Does not exist
+    id: "111"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "89"
+      Active:
+      - "88"
+      Does not exist:
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af1e7297-c27f-4294-887d-34531560da13
+      iscommand: false
+      name: What is the status of the user?
+      type: condition
+      version: -1
+    taskid: af1e7297-c27f-4294-887d-34531560da13
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1835,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "102_110_Created/Enabled": 0.44,
+      "102_20_Updated": 0.12,
+      "108_20_#default#": 0.13,
+      "109_71_#default#": 0.48,
+      "111_20_Does not exist": 0.69,
+      "111_89_#default#": 0.48,
+      "61_20_#default#": 0.14,
+      "65_61_#default#": 0.53,
+      "88_89_yes": 0.32,
+      "99_102_yes": 0.19,
+      "99_86_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2630,
+        "width": 2390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

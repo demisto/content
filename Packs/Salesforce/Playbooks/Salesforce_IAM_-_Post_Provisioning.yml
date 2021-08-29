@@ -1,0 +1,385 @@
+id: 1b509870-e890-4c31-8bca-d025dfb3730d
+inputs:
+- description: salesforce Id
+  key: salesforceId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: permissionSetLicences
+  key: permissionSetLicences
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: permissionSets
+  key: permissionSets
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: packageLicences
+  key: packageLicences
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Email to notify about errors in the provisioning process.
+  key: ITNotificationEmail
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: A list of vendors that ran previously.
+  key: PreviousRun
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Salesforce IAM - Post Provisioning
+outputs:
+- contextPath: IAM.Vendor
+  type: unknown
+sourceplaybookid: 3d654419-7293-448d-85b3-cf33f8ca8360
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "76"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9f3b1e09-58a2-499a-882a-cd0b4bd4c7a0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9f3b1e09-58a2-499a-882a-cd0b4bd4c7a0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6a14f97-cd23-46e5-8551-a6e4f823fac7
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: e6a14f97-cd23-46e5-8551-a6e4f823fac7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "76":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.permissionSetLicences
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: SalesforceAssignPermissionSetLicense
+      label: "yes"
+    id: "76"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "77"
+      "yes":
+      - "80"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f9141f96-6cfe-45ff-871c-44f2fec1dd3e
+      iscommand: false
+      name: Should run Permission Set Licenses command?
+      type: condition
+      version: -1
+    taskid: f9141f96-6cfe-45ff-871c-44f2fec1dd3e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "77":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.packageLicences
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: SalesforceAssignPermissionSetLicense
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: containsGeneral
+          right:
+            value:
+              simple: SalesforceAssignPermissionSetLicense
+      label: Skip
+    id: "77"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      Skip:
+      - "78"
+      "yes":
+      - "79"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b22e9a79-6ffd-4a75-8ac8-4a14ee8be436
+      iscommand: false
+      name: Should run Assigned Package Licenses command?
+      type: condition
+      version: -1
+    taskid: b22e9a79-6ffd-4a75-8ac8-4a14ee8be436
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "78":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.permissionSets
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: action
+                root: inputs.PreviousRun
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: SalesforceAssignPermissionSetLicense
+      label: "yes"
+    id: "78"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "81"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3dc8dcfa-f19d-44d2-85bd-52290867d995
+      iscommand: false
+      name: Should run Assign Permission Sets command?
+      type: condition
+      version: -1
+    taskid: 3dc8dcfa-f19d-44d2-85bd-52290867d995
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 900
+        }
+      }
+  "79":
+    id: "79"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "78"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      package_license_id:
+        complex:
+          root: inputs.packageLicences
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a package license.
+      id: 26dca724-6741-4849-8c60-ac7b5e812f10
+      iscommand: true
+      name: Assign Package Licenses
+      script: '|||salesforce-assign-package-license'
+      type: regular
+      version: -1
+    taskid: 26dca724-6741-4849-8c60-ac7b5e812f10
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 730
+        }
+      }
+  "80":
+    id: "80"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "77"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      permission_set_license_id:
+        complex:
+          root: inputs.permissionSetLicences
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assign permission set license
+      id: a65cf6b9-bb0b-4dcc-8a57-ee61e9db0184
+      iscommand: true
+      name: Assign Permission Set Licenses
+      script: '|||salesforce-assign-permission-set-license'
+      type: regular
+      version: -1
+    taskid: a65cf6b9-bb0b-4dcc-8a57-ee61e9db0184
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 370
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      permission_set_id:
+        complex:
+          root: inputs.permissionSets
+      user_id:
+        complex:
+          root: inputs.salesforceId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a permission set for a user.
+      id: 4321733d-a77d-4647-891a-77585fe876b4
+      iscommand: true
+      name: Assign Permission Sets
+      script: '|||salesforce-assign-permission-set'
+      type: regular
+      version: -1
+    taskid: 4321733d-a77d-4647-891a-77585fe876b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "77_20_#default#": 0.38,
+      "77_78_Skip": 0.67
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 770,
+        "x": -40,
+        "y": 50
+      }
+    }
+  }

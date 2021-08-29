@@ -11,8 +11,7 @@ args:
 - description: The Salesforce IAM instance name.
   name: app_instance
   required: true
-comment: Reads the list "salesforce-provisioning-settings" and and updates user profile
-  information for IAM operations.
+comment: Reads the *salesforce-provisioning-settings* list and and extends the user profile with SFDC attributes.
 commonfields:
   id: SalesforceIAMExtendUserProfileData
   version: -1
@@ -69,6 +68,9 @@ outputs:
 - contextPath: IAM.Vendor.success
   description: If true, the command was executed successfully, otherwise false.
   type: boolean
+- contextPath: IAM.Vendor.action
+  description: The name of the automation.
+  type: string
 - contextPath: IAM.Vendor.brand
   description: Name of the integration.
   type: string
