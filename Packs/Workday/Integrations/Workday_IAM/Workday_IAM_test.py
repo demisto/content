@@ -5,7 +5,7 @@ import pytest
 
 from Workday_IAM import Client, fetch_incidents, LAST_DAY_OF_WORK_FIELD, EMPLOYMENT_STATUS_FIELD, \
     PREHIRE_FLAG_FIELD, REHIRED_EMPLOYEE_FIELD, AD_ACCOUNT_STATUS_FIELD, HIRE_DATE_FIELD, TERMINATION_TRIGGER_FIELD, \
-        CONVERSION_HIRE_FIELD, EMAIL_ADDRESS_FIELD, EMPLOYEE_ID_FIELD, REHIRE_USER_EVENT_TYPE, SOURCE_PRIORITY_FIELD
+    CONVERSION_HIRE_FIELD, EMAIL_ADDRESS_FIELD, EMPLOYEE_ID_FIELD, REHIRE_USER_EVENT_TYPE, SOURCE_PRIORITY_FIELD
 from test_data.event_results import events_result
 
 EVENT_RESULTS = events_result
@@ -267,7 +267,8 @@ def test_is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_
         ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 2}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
 
         # A conversion hire field is True - should return False
-        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', CONVERSION_HIRE_FIELD: True, SOURCE_PRIORITY_FIELD: 1}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', CONVERSION_HIRE_FIELD: True, SOURCE_PRIORITY_FIELD: 1}, 
+         {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
 
         # Active AD account and hire date did not exceed threshold date - should return True
         ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 1}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, True),
@@ -313,6 +314,7 @@ def test_is_update_event(workday_user, changed_fields, expected_result):
 def test_is_tufe_user(demisto_user, expected_result):
     from Workday_IAM import is_tufe_user
     assert is_tufe_user(demisto_user) == expected_result
+
 
 @pytest.mark.parametrize(
     'workday_user, demisto_user, expected_event_type',

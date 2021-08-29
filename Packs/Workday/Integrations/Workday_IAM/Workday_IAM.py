@@ -290,14 +290,14 @@ def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_ena
         (bool). True iff the event is an AD deactivation.
     """
     if not demisto_user \
-        or demisto_user.get(SOURCE_PRIORITY_FIELD) != source_priority \
-        or demisto_user.get(CONVERSION_HIRE_FIELD) is True:
+            or demisto_user.get(SOURCE_PRIORITY_FIELD) != source_priority \
+            or demisto_user.get(CONVERSION_HIRE_FIELD) is True:
         return False
-    
+
     if demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Enabled':
         if not has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
             demisto.debug(f'An Active Directory deactivation event was detected for user '
-                            f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
+                          f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
             return True
     return False
 
