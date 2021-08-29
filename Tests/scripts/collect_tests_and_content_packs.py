@@ -992,13 +992,13 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set, id_set: dict, modified_packs) -> set:
+def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     """Filters out test playbooks, which are in .pack-ignore, from the given tests set
 
     Args:
         tests (set): Tests set to remove the tests to ignore from
         id_set (dict): The id set object
-        modified_packs (list): List of the modified packs
+        modified_packs (set): List of the modified packs
 
     Return:
          set: The filtered tests set
