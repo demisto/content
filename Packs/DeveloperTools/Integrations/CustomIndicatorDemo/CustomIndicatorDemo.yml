@@ -23,5 +23,3 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.9.6.22912
 fromversion: 5.5.0
-tests:
-- playbook-CustomIndicatorDemo-test
