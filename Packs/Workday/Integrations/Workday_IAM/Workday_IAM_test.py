@@ -1,4 +1,3 @@
-from Packs.Workday.Integrations.Workday_IAM.Workday_IAM import SOURCE_PRIORITY_FIELD
 import demistomock as demisto  # noqa: F401
 import io
 import json
@@ -6,7 +5,7 @@ import pytest
 
 from Workday_IAM import Client, fetch_incidents, LAST_DAY_OF_WORK_FIELD, EMPLOYMENT_STATUS_FIELD, \
     PREHIRE_FLAG_FIELD, REHIRED_EMPLOYEE_FIELD, AD_ACCOUNT_STATUS_FIELD, HIRE_DATE_FIELD, TERMINATION_TRIGGER_FIELD, \
-        CONVERSION_HIRE_FIELD, EMAIL_ADDRESS_FIELD, EMPLOYEE_ID_FIELD, REHIRE_USER_EVENT_TYPE
+        CONVERSION_HIRE_FIELD, EMAIL_ADDRESS_FIELD, EMPLOYEE_ID_FIELD, REHIRE_USER_EVENT_TYPE, SOURCE_PRIORITY_FIELD
 from test_data.event_results import events_result
 
 EVENT_RESULTS = events_result
