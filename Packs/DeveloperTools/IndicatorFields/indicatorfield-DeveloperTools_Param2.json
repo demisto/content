@@ -1,10 +1,10 @@
 {
-    "id": "indicatorfield_DeveloperToolsParam2",
+    "id": "indicatorfield_developertoolsparam2",
     "version": -1,
     "modified": "2021-08-05T12:23:24.119509+03:00",
-    "name": "param2",
+    "name": "Developer Tools param2",
     "ownerOnly": false,
-    "cliName": "DeveloperToolsParam2",
+    "cliName": "developertoolsparam2",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
