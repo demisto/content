@@ -206,10 +206,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             json=json,
         )
     except requests.exceptions.RequestException as e:
-        demisto.debug(f'url is {url}')
-        demisto.debug(str(e))
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
-                     f' Exception is {str(e)}. USE_SSL is {USE_SSL}')
+                     f' Exception is {str(e)}.')
     try:
         valid_status_codes = {200, 201, 202, 204}
         # Handling a case when we want to return an entry for 404 status code.
