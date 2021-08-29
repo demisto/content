@@ -754,15 +754,8 @@ class OutputContext:
         }
 
 
-def verify_and_load_scim_data(scim):
-    scim = json.loads(scim)
-    if type(scim) != dict:
-        raise Exception("SCIM data is not a valid JSON")
-    return scim
-
-
 def get_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
