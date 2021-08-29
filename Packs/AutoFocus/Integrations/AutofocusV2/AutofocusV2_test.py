@@ -420,18 +420,19 @@ def test_convert_url_to_ascii_character(url, result):
 def test_search_url_command(requests_mock):
     from AutofocusV2 import search_url_command
 
-    mock_response = {'indicator':
-                         {'indicatorValue': 'www.こんにちは.com',
-                          'indicatorType': 'URL',
-                          'latestPanVerdicts': {'PAN_DB': 'BENIGN'}},
-                     'tags': []
-                     }
+    mock_response = {
+        'indicator': {
+            'indicatorValue': 'www.こんにちは.com',
+            'indicatorType': 'URL',
+            'latestPanVerdicts': {'PAN_DB': 'BENIGN'}
+        },
+        'tags': []
+    }
 
-    requests_mock.get(f'https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType=url&indicatorValue=www.xn'
-                      f'--28j2a3ar1p.com&includeTags=true', json=mock_response)
+    requests_mock.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType=url&indicatorValue=www.xn'
+                      '--28j2a3ar1p.com&includeTags=true', json=mock_response)
 
     result = search_url_command("www.こんにちは.com", 'B - Usually reliable', True)
 
     assert result[0].indicator.url == "www.こんにちは.com"
     assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
-
