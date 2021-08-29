@@ -1742,10 +1742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3074c082-19b6-49ca-8bc6-2fd44ed8a154
+    taskid: 6f2cc321-0b14-4b6c-8fff-ad38bde23d79
     type: regular
     task:
-      id: 3074c082-19b6-49ca-8bc6-2fd44ed8a154
+      id: 6f2cc321-0b14-4b6c-8fff-ad38bde23d79
       version: -1
       name: delete host groups (for resetting)
       description: Delete the requested host groups
@@ -1758,7 +1758,18 @@ tasks:
       - "45"
     scriptarguments:
       host_group_id:
-        simple: ${CrowdStrike.HostGroup.id}
+        complex:
+          root: CrowdStrike.HostGroup
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CrowdStrike.HostGroup.name
+                iscontext: true
+              right:
+                value:
+                  simple: test
+          accessor: id
     continueonerror: true
     separatecontext: false
     view: |-
@@ -2059,12 +2070,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: ecb6a99e-7414-41db-8fb5-7728d4e98f90
+    taskid: 97cf87b8-697f-4a2a-853d-eb27cf693b6d
     type: condition
     task:
-      id: ecb6a99e-7414-41db-8fb5-7728d4e98f90
+      id: 97cf87b8-697f-4a2a-853d-eb27cf693b6d
       version: -1
-      name: check empty
+      name: check if test in the list
       type: condition
       iscommand: false
       brand: ""
@@ -2077,10 +2088,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEmpty
+      - - operator: containsGeneral
           left:
             value:
-              simple: CrowdStrike.HostGroup
+              simple: test
+            iscontext: true
+          right:
+            value:
+              simple: CrowdStrike.HostGroup.name
             iscontext: true
     view: |-
       {
