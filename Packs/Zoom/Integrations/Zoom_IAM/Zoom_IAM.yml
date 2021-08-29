@@ -19,8 +19,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Allow disabling users
+- display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8

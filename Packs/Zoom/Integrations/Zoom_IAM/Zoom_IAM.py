@@ -4,6 +4,7 @@ from IAMApiModule import *
 import traceback
 import jwt
 import urllib3
+import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -25,9 +26,9 @@ class Client(BaseClient):
 
     def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False):
         super().__init__(base_url, verify, proxy)
-        self.api_key = api_key,
-        self.api_secret = api_secret,
-        self.access_token = get_jwt(api_key, api_secret),
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.access_token = get_jwt(api_key, api_secret)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -82,11 +83,11 @@ class Client(BaseClient):
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
+            return_empty_response=True,
             headers={'authorization': f'Bearer {self.access_token}',
                      'Accept': 'application/json',
                      'Content-Type': 'application/json',
                      },
-            return_empty_response=True,
         )
         # res is an empty response
         user_app_data = res
@@ -169,8 +170,8 @@ def get_jwt(api_key: str, api_secret: str) -> str:
     """
     Encode the JWT token given the api ket and secret
     """
-    now = time.time()
-    expire_time = int(now) + 5000
+    now = datetime.datetime.now()
+    expire_time = int(now.strftime('%s')) + 5000
     payload = {
         'iss': api_key,
         'exp': expire_time
@@ -198,8 +199,10 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 def test_module(client: Client):
     """ Tests connectivity with the client. """
-
-    client.test()
+    try:
+        client.test()
+    except Exception as e:
+        return_results(e)
     return_results('ok')
 
 
@@ -215,7 +218,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    is_disable_enabled = params.get("disable_user_enabled")
+    is_disable_enabled = params.get('disable-user-enabled')
 
     iam_command = IAMCommand(is_create_enabled=False,
                              is_enable_enabled=False,
@@ -225,7 +228,6 @@ def main():
                              mapper_in=mapper_in,
                              mapper_out=mapper_out,
                              )
-
     client = Client(
         base_url=BASE_URL,
         verify=verify_certificate,
@@ -250,7 +252,7 @@ def main():
         if command == 'test-module':
             test_module(client)
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
