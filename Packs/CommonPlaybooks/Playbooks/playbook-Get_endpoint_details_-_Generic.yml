@@ -1,5 +1,7 @@
 id: Get endpoint details - Generic
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Get endpoint details - Generic
 description: "This playbook uses the generic command !endpoint to retrieve details\
   \ on a specific endpoint.\nThis command currently supports the following integrations:\n\
@@ -44,7 +46,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -88,10 +90,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      hostname: {}
       id:
         simple: ${inputs.Endpoint_id}
-      ip: {}
     separatecontext: false
     view: |-
       {
@@ -116,7 +116,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -162,8 +162,6 @@ tasks:
     scriptarguments:
       hostname:
         simple: ${inputs.Endpoint_hostname}
-      id: {}
-      ip: {}
     separatecontext: false
     view: |-
       {
@@ -213,8 +211,10 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
+      '#default#':
+      - "5"
       "yes":
       - "7"
     separatecontext: false
@@ -229,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2950,
-          "y": 860
+          "x": 2840,
+          "y": 770
         }
       }
     note: false
@@ -255,16 +255,14 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      hostname: {}
-      id: {}
       ip:
         simple: ${inputs.Endpoint_ip}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2960,
-          "y": 1075
+          "x": 3110,
+          "y": 1005
         }
       }
     note: false
@@ -283,7 +281,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "9"
@@ -321,7 +319,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -369,7 +367,6 @@ tasks:
         simple: "true"
       key:
         simple: Endpoint.ID
-      stringify: {}
       value:
         simple: ${inputs.Endpoint_id}
     separatecontext: false
@@ -396,7 +393,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -415,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 1000
+          "y": 980
         }
       }
     note: false
@@ -434,7 +431,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -452,8 +449,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 1170
+          "x": 1820,
+          "y": 1210
         }
       }
     note: false
@@ -478,17 +475,15 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      append: {}
       key:
         simple: Endpoint.Hostname
-      stringify: {}
       value:
         simple: ${inputs.Endpoint_hostname}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2440,
+          "x": 1950,
           "y": 1450
         }
       }
@@ -508,7 +503,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "17"
@@ -526,8 +521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
-          "y": 1290
+          "x": 3110,
+          "y": 1210
         }
       }
     note: false
@@ -556,15 +551,14 @@ tasks:
         simple: "true"
       key:
         simple: Endpoint.IPAddress
-      stringify: {}
       value:
         simple: ${inputs.Endpoint_ip}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3920,
-          "y": 1720
+          "x": 3870,
+          "y": 1650
         }
       }
     note: false
@@ -583,7 +577,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -601,8 +595,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3420,
-          "y": 1480
+          "x": 3370,
+          "y": 1410
         }
       }
     note: false
@@ -610,6 +604,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -621,13 +616,13 @@ view: |-
       "1_3_#default#": 0.51,
       "3_4_yes": 0.46,
       "3_6_#default#": 0.5,
-      "6_7_yes": 0.57,
+      "6_7_yes": 0.46,
       "9_5_#default#": 0.26
     },
     "paper": {
       "dimensions": {
         "height": 1975,
-        "width": 3850,
+        "width": 3800,
         "x": 450,
         "y": 130
       }
