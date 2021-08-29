@@ -9,6 +9,8 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 <li>c_score and t_score fields changed to certainty and threat accordingly</li>
 </ul><h2>Fetch Incidents</h2>
 <p>You can Fetch only Detections with Greater/Equal Certainty score and Threat score</p>
+<h4>Notice</h4>
+<p>Currently Vectra's API does not return the detections in a sorted way, therefore you might experience issues with the fetch-incidents command.</p>
 <h2>Configure Vectra v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
