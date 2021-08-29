@@ -357,9 +357,11 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
         galaxy_indicator_type = galaxy_indicator['type']
         relationship_entity = EntityRelationship()
         relationship_indicator = relationship_entity.to_indicator()
+        relationships_indicators.append(relationship_indicator)
+        galaxy_indicator['relationship'] = relationship_indicator
 
     if relationships_indicators:
-        indicator_obj
+        indicator_obj['relationship'] = relationships_indicators
 
 
 def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
