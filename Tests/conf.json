@@ -3410,7 +3410,6 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Isolate and unisolate endpoint - test",
             "fromversion": "5.5.0",
-            "is_mockable": false
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
