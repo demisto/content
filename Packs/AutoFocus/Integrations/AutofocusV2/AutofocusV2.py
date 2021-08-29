@@ -965,7 +965,7 @@ def search_indicator(indicator_type, indicator_value):
                     'indicator': {
                         'indicatorType': indicator_type,
                         'indicatorValue': indicator_value,
-                        'latestPanVerdicts': {'PAN_DB': 'UNKNOWN'}
+                        'latestPanVerdicts': {'PAN_DB': 'UNKNOWN'},
                     }
                 }
             text_error = result.json()
