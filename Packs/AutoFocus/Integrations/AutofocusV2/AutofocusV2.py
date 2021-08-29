@@ -1554,6 +1554,7 @@ def search_url_command(url, reliability, create_relationships):
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+        autofocus_url_output = {k: v for k, v in autofocus_url_output.items() if v}
 
         tags = autofocus_url_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
