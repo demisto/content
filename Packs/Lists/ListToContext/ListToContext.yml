@@ -1,0 +1,26 @@
+args:
+- default: false
+  description: List name.
+  isArray: false
+  name: listName
+  required: true
+  secret: false
+comment: Store List Content to Context
+commonfields:
+  id: ListToContext
+  version: -1
+enabled: false
+name: ListToContext
+outputs:
+- contextPath: ListContent
+  description: List Content
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.5.21272
+fromversion: 5.5.0
