@@ -5,11 +5,11 @@ args:
   name: query
 comment: use jq to query a JSON object
 commonfields:
-  id: jq
+  id: JsonJq
   version: -1
 dockerimage: devdemisto/jq:1.0.0.24002
 enabled: true
-name: jq
+name: JsonJq
 outputs:
 - contextPath: JQ
   description: Extracted data from JQ
