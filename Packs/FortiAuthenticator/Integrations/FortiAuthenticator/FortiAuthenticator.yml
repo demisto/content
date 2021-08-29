@@ -36,11 +36,11 @@ script:
       - ldapusers
       required: true
     - name: email
-      description: The user's email that defined in the User Information on FortiAuthenticator.
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
     - name: username
-      description: The username that defined in the User Information on FortiAuthenticator.
+      description: The username that is defined in the User Information on FortiAuthenticator.
     - name: token_serial
-      description: The serial no. of assigned Token on FortiAuthenticator.
+      description: The serial no. of the assigned Token on FortiAuthenticator.
     name: fortiauthenticator-get-user
     description: Get the user details for specific user by email.
   - arguments:
@@ -61,9 +61,9 @@ script:
       - ldapusers
       required: true
     - name: email
-      description: The user's email that defined in the User Information on FortiAuthenticator.
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
     - name: username
-      description: The username that defined in the User Information on FortiAuthenticator.
+      description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
   dockerimage: demisto/python3:3.9.6.22912

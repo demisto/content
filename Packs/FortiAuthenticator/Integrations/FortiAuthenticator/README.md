@@ -45,10 +45,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
-| email | The user's email that defined in the User Information on FortiAuthenticator | Optional | 
-| username | The username that defined in the User Information on FortiAuthenticator | Optional | 
-| token_serial | The serial no. of assigned Token on FortiAuthenticator | Optional | 
-- Note: You need either email, username or token_serial input in order to get it works.
+| email | The user's email that is defined in the User Information on FortiAuthenticator | Optional | 
+| username | The username that is defined in the User Information on FortiAuthenticator | Optional | 
+| token_serial | The serial no. of the assigned Token on FortiAuthenticator | Optional | 
+- Note: You need either an email, username, or token_serial input in order for the command to work.
 
 #### Context Output
 | **Path** | **Type** | **Description** |
@@ -96,10 +96,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
-| email | The user's email that defined in the User Information on FortiAuthenticator | Optional | 
-| username | The username that defined in the User Information on FortiAuthenticator | Optional | 
+| email | The user's email that is defined in the User Information on FortiAuthenticator | Optional | 
+| username | The username that is defined in the User Information on FortiAuthenticator | Optional | 
 | active | Define user's active status:  false = Disabled, true = enabled | Required | 
-- Note: You need either email or username input in order to get it works.
+- Note: You need either an email or username input in order for the command to work.
 
 #### Context Output
 | **Path** | **Type** | **Description** |
