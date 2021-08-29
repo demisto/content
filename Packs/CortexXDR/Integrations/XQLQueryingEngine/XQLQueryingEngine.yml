@@ -1,11 +1,11 @@
 beta: false
 category: Endpoint
 commonfields:
-  id: Cortex XDR - XQL query engine
+  id: Cortex XDR - XQL Query Engine
   version: -1
 configuration:
 - defaultvalue: https://example.com/
-  display: Your server URL
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -13,6 +13,12 @@ configuration:
   display: API Key
   name: apikey
   required: true
+  type: 4
+- additionalinfo: The API Key ID to use for connection
+  display: API Key ID
+  hidden: false
+  name: apikey_id
+  required: false
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
@@ -22,22 +28,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The API Key ID to use for connection
-  display: API Key ID
-  hidden: false
-  name: apikey_id
-  required: false
-  type: 4
-description: Cortex XDR - XQL query engine enables you to run XQL queries on your
+description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your
   data sources using a series of APIs.
-display: Cortex XDR - XQL query engine
-name: Cortex XDR - XQL query engine
+display: Cortex XDR - XQL Query Engine
+name: Cortex XDR - XQL Query Engine
 script:
   commands:
   - arguments:
     - default: false
-      description: String of the XQL query (use the limit argument in order to limit
-        the number of results).
+      description: String of the XQL query. By default up to 100 results are returned, in order to get more results, enter a custom limit in the query.
       isArray: false
       name: query
       required: true
@@ -58,19 +57,6 @@ script:
       name: tenant_id
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: |-
-        String representing the type of response output. Valid values:
-        json (default)
-        csv
-      isArray: false
-      name: format
-      predefined:
-      - json
-      - csv
-      required: false
-      secret: false
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -79,11 +65,10 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Execute an XQL query and retrieve results of an executed XQL query API.
-      Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call Get XQL Query results Stream.
+      Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
     execution: false
     polling: true
-    name: xdr-xql-query
+    name: xdr-xql-generic-query
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
@@ -194,7 +179,7 @@ script:
     description: Retrieve the amount of query quota available and used.
     execution: false
     hidden: false
-    name: xdr-get-xql-quota
+    name: xdr-xql-get-quota
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.Quota.license_quota
       description: Amount of daily quota allocated to your tenant based on your license
@@ -217,11 +202,10 @@ script:
     deprecated: false
     description: |-
       Retrieve results of an executed XQL query API.
-      Maximum result set size is 1000. The API does not support pagination, therefore, you can set values to determine the result size limitation and how to wait for the results. To view response with greater than 1000 results you must call Get XQL Query results Stream.
     execution: false
     hidden: false
     polling: true
-    name: xdr-get-xql-query-results
+    name: xdr-xql-get-query-results
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.Status
       description: |-
@@ -355,11 +339,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -457,11 +441,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -586,11 +570,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -724,11 +708,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -855,11 +839,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -972,11 +956,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -1092,11 +1076,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -1239,11 +1223,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -1387,11 +1371,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -1535,11 +1519,11 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
       isArray: false
       name: limit
       required: false
-      defaultValue: 200
+      defaultValue: 100
       secret: false
     - default: false
       description: |-
@@ -1663,4 +1647,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.2.0
