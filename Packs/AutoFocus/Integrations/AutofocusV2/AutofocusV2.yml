@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AutoFocus V2
+  id: AutoFocus V2 test
   version: -1
 configuration:
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
@@ -30,7 +30,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Handle errors with 404 status code when searching indicators
+- display: Suppress errors for non found indicators
   name: handle_error
   required: false
   defaultvalue: true
@@ -47,8 +47,8 @@ configuration:
   type: 8
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus v2
-name: AutoFocus V2
+display: Palo Alto Networks AutoFocus v2 test
+name: AutoFocus V2 test
 script:
   commands:
   - arguments:
