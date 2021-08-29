@@ -22,7 +22,7 @@ function fail {
 
 # check_arguments
 # Check if the given arguments are valid
-function check_aarguments {
+function check_arguments {
   echo " Running - check_arguments"
 
   if [ -z "$content_branch_name" ]; then
@@ -33,15 +33,6 @@ function check_aarguments {
     fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required." "skip"
   fi
 
-  if [ -n "$production" ]; then
-    if [ -n "$force" ] || [ -n "$packs" ]; then
-      echo "Ignoring force and packs arguments."
-      packs=
-      force=
-    fi
-    echo "Uploading all the changed packs to production."
-  fi
-
   if [ -n "$force" ] && [ -z "$packs" ]; then
     fail "You must provide a csv list of packs to force upload." "skip"
   fi
@@ -50,6 +41,9 @@ function check_aarguments {
     fail "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
   fi
 
+  if [ -n "$production" ]; then
+    echo "Uploading to production bucket - ${production}."
+  fi
 }
 
 # copy_pack
@@ -502,8 +496,8 @@ cd "${CONTENT_PATH}" || fail
 
 check_arguments
 
-# If production or force flag is set - upload master branch
-if [ -n "$production" ] || [ -n "$force"]; then
+# If production flag is set - upload master branch
+if [ -n "$production" ]; then
   slack_channel="dmst-content-team"
   bucket="marketplace-dist"
 
