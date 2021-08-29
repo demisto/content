@@ -720,7 +720,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blacklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201),
+            ok_codes=(200, 201, 500,),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -2208,7 +2208,9 @@ def blacklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
 
-    client.blacklist_files(hash_list=hash_list, comment=comment)
+    res = client.blacklist_files(hash_list=hash_list, comment=comment)
+    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
+        raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
     return (
