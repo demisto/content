@@ -38,25 +38,25 @@
 					"complex": null,
 					"simple": "manageremail"
 				},
-				"C_PrimaryLanguage": {
+				"u_language": {
 					"complex": null,
-					"simple": "u_language"
+					"simple": "C_PrimaryLanguage"
 				},
-				"C_SecondaryLanguages": {
+				"u_secondary_language": {
 					"complex": null,
-					"simple": "u_secondary_language"
+					"simple": "C_SecondaryLanguages"
 				},
-				"Region": {
+				"u_clarizen_region": {
 					"complex": null,
-					"simple": "u_clarizen_region"
+					"simple": "Region"
 				},
-				"JobTitle": {
+				"u_role_clarizen_job_title": {
 					"complex": null,
-					"simple": "u_role_clarizen_job_title"
+					"simple": "JobTitle"
 				},
-				"C_Company": {
+				"u_clarizen_company": {
 					"complex": null,
-					"simple": "u_clarizen_company"
+					"simple": "C_Company"
 				}
 			}
 		},
@@ -91,25 +91,25 @@
 					"complex": null,
 					"simple": "username"
 				},
-				"C_PrimaryLanguage": {
+				"u_language": {
 					"complex": null,
-					"simple": "u_language"
+					"simple": "C_PrimaryLanguage"
 				},
-				"C_SecondaryLanguages": {
+				"u_secondary_language": {
 					"complex": null,
-					"simple": "u_secondary_language"
+					"simple": "C_SecondaryLanguages"
 				},
-				"Region": {
+				"u_clarizen_region": {
 					"complex": null,
-					"simple": "u_clarizen_region"
+					"simple": "Region"
 				},
-				"JobTitle": {
+				"u_role_clarizen_job_title": {
 					"complex": null,
-					"simple": "u_role_clarizen_job_title"
+					"simple": "JobTitle"
 				},
-				"C_Company": {
+				"u_clarizen_company": {
 					"complex": null,
-					"simple": "u_clarizen_company"
+					"simple": "C_Company"
 				}
 			}
 		}

@@ -20,7 +20,7 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None,  manager_email=None):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.username = auth[0]
         self.password = auth[1]
