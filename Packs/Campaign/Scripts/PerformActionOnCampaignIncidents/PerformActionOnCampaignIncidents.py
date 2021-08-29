@@ -99,7 +99,7 @@ def perform_take_ownership(ids, action):
     current_user_name = demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
 
     if not current_user_name:
-        return_error("Could not found The current user name.")
+        return_error("Could not find the current user.")
 
     set_incident_owners(ids, action, current_user_name)
 
