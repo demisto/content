@@ -3537,7 +3537,7 @@
         },
         {
             "integrations": "CustomIndicatorDemo",
-            "playbookID": "CustomIndicatorDemo-test"
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {

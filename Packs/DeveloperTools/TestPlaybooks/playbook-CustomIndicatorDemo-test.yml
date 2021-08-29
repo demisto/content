@@ -1,6 +1,6 @@
-id: CustomIndicatorDemo-test
+id: playbook-CustomIndicatorDemo-test
 version: -1
-name: CustomIndicatorDemo-test
+name: playbook-CustomIndicatorDemo-test
 starttaskid: "0"
 tasks:
   "0":
