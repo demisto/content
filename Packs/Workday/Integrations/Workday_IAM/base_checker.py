@@ -1,1 +1,0 @@
-/Users/dtavori/.pyenv/versions/3.9.5/lib/python3.9/site-packages/demisto_sdk/commands/lint/resources/pylint_plugins/base_checker.py
