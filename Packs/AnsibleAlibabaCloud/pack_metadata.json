@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT"],
-    "useCases": ["IT Services", "Asset Management"],
-    "keywords": ["Aliyun", "Alicloud"]
+    "useCases": [],
+    "keywords": ["Aliyun", "Alicloud", "Asset Management"]
 }
