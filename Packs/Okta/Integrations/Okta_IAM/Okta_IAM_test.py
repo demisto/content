@@ -492,10 +492,10 @@ SHOULD_DROP_EVENT_ARGS = [
     ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {}, False),
 
     # no user email in log entry - do not drop event
-    ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {'test@example.com': None}, False),
+    ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {'test@example.com': {'username': 'test'}}, False),
 
     # user email in both log entry and in xsoar - do not drop event
-    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': None}, False),
+    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}}, False),
 
     # user email in log entry but not in xsoar - drop event
     ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {}, True)
