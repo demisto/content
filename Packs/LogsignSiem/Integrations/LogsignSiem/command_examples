@@ -1,0 +1,2 @@
+!logsign-get-count-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"
+!logsign-get-columns-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"
