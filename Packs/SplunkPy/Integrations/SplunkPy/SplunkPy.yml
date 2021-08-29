@@ -787,4 +787,5 @@ tests:
 - SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0

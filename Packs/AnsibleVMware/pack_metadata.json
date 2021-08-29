@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT"],
-    "useCases": ["IT Services", "Asset Management"],
-    "keywords": ["vSphere", "ESXi"]
+    "useCases": [],
+    "keywords": ["vSphere", "ESXi", "Asset Management"]
 }
