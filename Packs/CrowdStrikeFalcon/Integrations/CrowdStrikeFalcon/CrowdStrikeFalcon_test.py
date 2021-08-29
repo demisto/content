@@ -2945,23 +2945,3 @@ def test_list_host_group_members(requests_mock):
     actual_results = load_json('test_data/expected_list_hostgroup_members_results.json')
     for actual_res, command_res in zip(actual_results, command_results):
         assert actual_res == command_res.outputs
-
-
-# def test_list_host_group(requests_mock):
-#     from CrowdStrikeFalcon import list_host_groups_command
-#     response = {
-#         "meta": {
-#             "query_time": 1.54e-7,
-#             "pagination": {
-#                 "offset": 0,
-#                 "limit": 100,
-#                 "total": 0
-#             },
-#             "trace_id": "fae1b6b4-8ae3-41b1-85d8-a6cd09cbfa58"
-#         },
-#         "errors": [],
-#         "resources": None
-#     }
-#     requests_mock.get('/devices/combined/host-groups/v1', json=response, status_code=200)
-#     list_host_groups_command(limit='50')
-#     print()
