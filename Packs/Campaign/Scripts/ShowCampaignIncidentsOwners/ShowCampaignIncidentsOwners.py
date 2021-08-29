@@ -25,8 +25,16 @@ def get_incident_owners(incident_ids) -> list:
         List of the incident owners.
     """
 
-    incident_owners = set([demisto.executeCommand("getIncidents", {'id': incident_id})
-                           [0]['Contents']['data'][0]['owner'] for incident_id in incident_ids])
+    res = demisto.executeCommand('GetIncidentsByQuery', {
+        'query': "id:({})".format(' '.join(incident_ids))
+    })
+
+    if isError(res):
+        return_error(f'Error occurred while trying to get incidents by query: {get_error(res)}')
+
+    incidents_from_query = json.loads(res[0]['Contents'])
+
+    incident_owners = set([incident['owner'] for incident in incidents_from_query])
     incident_owners.add(demisto.incident()["owner"])  # Add the campaign incident
     incident_owners_res = list(filter(lambda x: x, incident_owners))
 
@@ -45,7 +53,7 @@ def main():
 
         else:
             html_readable_output = "<div style='font-size:17px; text-align:center; padding: 50px;'> Incident Owners" \
-                                   "</br> <div style='font-size:17px;'> Owners Not Found </div></div>"
+                                   "</br> <div style='font-size:17px;'> No incident owners </div></div>"
 
         demisto.results({
             'ContentsFormat': formats['html'],
