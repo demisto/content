@@ -32,12 +32,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -gb|--bucket)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
-  else
-    _bucket=$2
-  fi
+  -gb|--bucket) _bucket="$2"
     shift
     shift;;
 
@@ -68,8 +63,6 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     echo "You must provide a csv list of packs to force upload."
     exit 1
 fi
-
-source Utils/gitlab_triggers/trigger_build_url.sh
 
 _variables="variables[BUCKET_UPLOAD]=true"
 if [ -n "$_force" ]; then
