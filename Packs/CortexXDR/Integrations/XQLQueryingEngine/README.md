@@ -274,7 +274,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >### Data Results
 >|Product|Time|Vendor|Action File Path|Action File Sha256|Actor Process File Create Time|Agent Hostname|Agent Id|Agent Ip Addresses|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
->| XDR agent | 2021-08-04T10:57:09.000Z | PANW | C:\Users\test1\test2 | Action File SHA | 2021-05-21T11:20:52.000Z | WIN10X64 | AgentID | 192.168.1.97 | 2021-08-04T11:01:08.000Z |
+>| XDR agent | 2021-08-04T10:57:09.000Z | PANW | C:\Users\test1\test2 | Action File SHA | 2021-05-21T11:20:52.000Z | WIN10X64 | AgentID | IP | 2021-08-04T11:01:08.000Z |
 
 
 
