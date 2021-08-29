@@ -95,17 +95,6 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     :param device_name: device name to search for in the DB.
     :return: List of matching devices for the given device.
     """
-    # url = urljoin(client._base_url, "/get_devices")
-    # payload = {
-    #     "vendor": args.get("vendor", ""),
-    #     "model": args.get("model", ""),
-    #     "series": args.get("series", ""),
-    #     "firmware_version": args.get("firmware_version", ""),
-    #     "version": VERSION
-    # }
-    # result = requests.request("POST", url, headers=client._headers, data=json.dumps(payload))
-
-
     result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""), series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
     resultJson = result.json()
     markdown = '## Found ' + str(len(resultJson)) + ' devices\n'
@@ -119,7 +108,7 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
 
 
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # url = urljoin(client._base_url, "/get_vulnerabilities")
+
     returnFields = str(args.get("return_fields", ['risk','cve'])).split(',')
     firmwareId= args.get("firmware_id", "")
     deviceId =  args.get("device_id", "")
@@ -129,7 +118,6 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
     sortField = args.get("sort_field", "risk")
 
     result = client.get_vulnerabities(firmwareId=firmwareId, deviceId=deviceId, pageSize=pageSize, page=page, sortField=sortField, sortOrder=sortOrder,returnFields=returnFields)
-    # result = requests.request("POST", url, headers=client._headers, data=json.dumps(payload))
     if len(result.json().get('code', '')) > 0:
         raise Exception(result.json().get('message'))
     resultJson = result.json()
