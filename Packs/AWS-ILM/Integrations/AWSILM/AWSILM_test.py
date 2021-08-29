@@ -449,16 +449,13 @@ class TestDeleteGroupCommand:
         args = {"scim": "{\"id\": \"1234\"}"}
 
         with requests_mock.Mocker() as m:
-            m.delete(f'{groupUri}1234', status_code=404, json={})
+            m.delete(f'{groupUri}1234', status_code=404, text="Group Not Found")
 
-            with requests_mock.Mocker() as m:
-                m.delete(f'{groupUri}1234', status_code=404, text="Group Not Found")
+            with pytest.raises(Exception) as e:
+                delete_group_command(client, args)
 
-                with pytest.raises(Exception) as e:
-                    delete_group_command(client, args)
-
-            assert e.value.res.status_code == 404
-            assert 'Group Not Found' in str(e.value)
+        assert e.value.res.status_code == 404
+        assert 'Group Not Found' in str(e.value)
 
     def test_delete_group__id_is_empty(self):
         client = mock_client()
