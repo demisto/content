@@ -1,0 +1,26 @@
+args:
+- default: false
+  description: List name.
+  isArray: false
+  name: listName
+  required: true
+  secret: false
+comment: Add a new Dictionary To List
+commonfields:
+  id: AddDictToList
+  version: -1
+enabled: false
+name: AddObjectToList
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.5.21272
+fromversion: 5.5.0
