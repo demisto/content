@@ -82,6 +82,11 @@ def startServer():
             try:
                 res = demisto.getFilePath(fileID)
                 file_path = res.get('path')
+                if file_path == '':
+                    demisto.debug(f'Failed to get markdown file {fileID}, empty filepath returned from xsoar')
+                    self.send_response(404)
+                    self.flush_headers()
+                    return
                 name = res.get('name')
                 try:
                     self.send_response(200)
