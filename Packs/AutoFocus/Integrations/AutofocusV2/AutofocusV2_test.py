@@ -421,7 +421,7 @@ def test_search_url_command(requests_mock):
     from AutofocusV2 import search_url_command
 
     mock_response = {'indicator':
-                         {'indicatorValue': 'www.xn--28j2a3ar1p.com',
+                         {'indicatorValue': 'www.こんにちは.com',
                           'indicatorType': 'URL',
                           'latestPanVerdicts': {'PAN_DB': 'BENIGN'}},
                      'tags': []
