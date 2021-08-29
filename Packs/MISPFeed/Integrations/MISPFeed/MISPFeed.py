@@ -286,7 +286,7 @@ def fetch_indicators(client: Client,
         update_indicator_fields(indicator_obj, tlp_color, raw_type)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
         indicators.extend(galaxy_indicators)
-        create_relationships(indicator_obj, galaxy_indicators)
+        create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
 
@@ -324,8 +324,14 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
     return galaxy_indicators
 
 
-def create_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
+def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
+    indicator_obj_type = indicator_obj['type']
+    relationships = []
+    for galaxy_indicator in galaxy_indicators:
+        galaxy_indicator_type = galaxy_indicator['type']
 
+    if relationships:
+        indicator_obj
 
 
 def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
