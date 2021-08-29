@@ -398,47 +398,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of snapshots to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: The offset number to begin listing snapshots.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The connection name.
-      isArray: false
-      name: connection-name
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns all snapshots of a single connection.
-    execution: false
-    name: tanium-tr-list-snapshots-by-connection
-    outputs:
-    - contextPath: Tanium.Snapshot.ConnectionName
-      description: The snapshot connection name.
-      type: String
-    - contextPath: Tanium.Snapshot.Error
-      description: The snapshot error message.
-      type: String
-    - contextPath: Tanium.Snapshot.ID
-      description: The snapshot id.
-      type: String
-    - contextPath: Tanium.Snapshot.Started
-      description: The date when the snapshot was created.
-      type: Date
-    - contextPath: Tanium.Snapshot.State
-      description: The current state of the snapshot.
-      type: String
-  - arguments:
-    - default: false
       description: The connection name.
       isArray: false
       name: connection-name
@@ -491,22 +450,40 @@ script:
       name: offset
       required: false
       secret: false
-    - default: false
-      description: The connection name.
-      isArray: false
-      name: connection-name
-      required: true
-      secret: false
     deprecated: false
     description: Returns all local snapshots of a single connection.
     execution: false
-    name: tanium-tr-list-local-snapshots-by-connection
+    name: tanium-tr-list-snapshots
     outputs:
-    - contextPath: Tanium.LocalSnapshot.ConnectionName
-      description: The snapshot connection name.
+    - contextPath: Tanium.Snapshot.size
+      description: The snapshot size.
       type: String
-    - contextPath: Tanium.LocalSnapshot.FileName
-      description: The snapshot file name.
+    - contextPath: Tanium.Snapshot.created
+      description: The snapshot creation date.
+      type: String
+    - contextPath: Tanium.Snapshot.completed
+      description: The snapshot completed date.
+      type: String
+    - contextPath: Tanium.Snapshot.name
+      description: The snapshot name.
+      type: String
+    - contextPath: Tanium.Snapshot.isUpload
+      description: Is the snapshot uplaod.
+      type: Boolean
+    - contextPath: Tanium.Snapshot.evidenceType
+      description: Evidence type.
+      type: String
+    - contextPath: Tanium.Snapshot.hostname
+      description: Hxstname of the snapshot.
+      type: String
+    - contextPath: Tanium.Snapshot.connectionId
+      description: The snapshot connection ID.
+      type: String
+    - contextPath: Tanium.Snapshot.recorderVersion
+      description: Recorder Version.
+      type: String
+    - contextPath: Tanium.Snapshot.uuid
+      description: The snapshot uuid.
       type: String
   - arguments:
     - default: false
@@ -552,67 +529,44 @@ script:
     execution: false
     name: tanium-tr-list-connections
     outputs:
-    - contextPath: Tanium.Connection.CreateTime
+    - contextPath: Tanium.Connection.id
+      description: The connection id.
+      type: String
+    - contextPath: Tanium.Connection.initiatedAt
       description: Time when the connection was first created.
       type: Date
-    - contextPath: Tanium.Connection.Name
-      description: The connection name.
+    - contextPath: Tanium.Connection.hostname
+      description: The connection hostname.
       type: String
-    - contextPath: Tanium.Connection.Remote
-      description: Whether it is a remote connection.
-      type: Boolean
-    - contextPath: Tanium.Connection.State
-      description: Current connection state. Can be "closed", "pending", "active",
-        "timeout", or "migrating".
+    - contextPath: Tanium.Connection.status
+      description: Current connection state.
       type: String
-    - contextPath: Tanium.Connection.Deleted
-      description: Whether the connection has been deleted.
-      type: Boolean
-    - contextPath: Tanium.Connection.DestionationType
-      description: The destionation type (computer_name or ip_address).
-      type: String
-    - contextPath: Tanium.Connection.DST
-      description: The connection's DST.
-      type: String
-    - contextPath: Tanium.Connection.OSName
+    - contextPath: Tanium.Connection.platform
       description: The connection's operating system.
       type: String
-  - arguments:
-    - default: false
-      description: The connection name.
-      isArray: false
-      name: connection-name
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns a connection object based on connection name.
-    execution: false
-    name: tanium-tr-get-connection-by-name
-    outputs:
-    - contextPath: Tanium.Connection.CreateTime
-      description: Time when the connection was first created.
-      type: Date
-    - contextPath: Tanium.Connection.Name
-      description: The connection name.
+    - contextPath: Tanium.Connection.ip
+      description: The connection's ip.
       type: String
-    - contextPath: Tanium.Connection.Remote
-      description: Whether it is a remote connection.
-      type: Boolean
-    - contextPath: Tanium.Connection.State
-      description: Current connection state. Can be "closed", "pending", "active",
-        "timeout", or "migrating".
+    - contextPath: Tanium.Connection.connectedAt
+      description: Time when the connection was connected.
       type: String
-    - contextPath: Tanium.Connection.Deleted
-      description: Whether the connection has been deleted.
-      type: Boolean
-    - contextPath: Tanium.Connection.DestionationType
-      description: The destionation type (computer_name or ip_address).
+    - contextPath: Tanium.Connection.message
+      description: The connection's message descriding the status.
       type: String
-    - contextPath: Tanium.Connection.DST
-      description: The connection's DST.
+    - contextPath: Tanium.Connection.personaId
+      description: The connection's ???????
       type: String
-    - contextPath: Tanium.Connection.OSName
-      description: The connection's operating system.
+    - contextPath: Tanium.Connection.clientId
+      description: The connection's ???????
+      type: String
+    - contextPath: Tanium.Connection.userId
+      description: The connection's ???????
+      type: String
+    - contextPath: Tanium.Connection.eid
+      description: The connection's ???????
+      type: String
+    - contextPath: Tanium.Connection.hasTools
+      description: The connection's ???????
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1362,44 +1316,26 @@ script:
     deprecated: false
     description: Returns a list of all available evidence in the system.
     execution: false
-    name: tanium-tr-list-evidence
+    name: tanium-tr-event-evidence-list
     outputs:
-    - contextPath: Tanium.Evidence.ID
-      description: The evidence ID.
-      type: Number
+    - contextPath: Tanium.Evidence.name
+      description: The evidence name.
+      type: String
+    - contextPath: Tanium.Evidence.uuid
+      description: The evidence UUID.
+      type: String
     - contextPath: Tanium.Evidence.CreatedAt
       description: Time when the process was created.
       type: Date
-    - contextPath: Tanium.Evidence.LastModified
-      description: The date that the file was last modified.
-      type: Date
-    - contextPath: Tanium.Evidence.User
-      description: The user of the evidence.
+    - contextPath: Tanium.Evidence.hostname
+      description: The evidence connection hostname.
       type: String
-    - contextPath: Tanium.Evidence.ConnectionName
-      description: The evidence connection name.
-      type: String
-    - contextPath: Tanium.Evidence.Type
+    - contextPath: Tanium.Evidence.evidenceType
       description: The evidence type.
       type: Number
-    - contextPath: Tanium.Evidence.ProcessTableId
-      description: The evidence process table ID.
+    - contextPath: Tanium.Evidence.size
+      description: The evidence size.
       type: Number
-    - contextPath: Tanium.Evidence.Timestamp
-      description: The evidence timestamp.
-      type: Date
-    - contextPath: Tanium.Evidence.Summary
-      description: The evidence summary.
-      type: String
-    - contextPath: Tanium.Evidence.Comments
-      description: The evidence comments.
-      type: String
-    - contextPath: Tanium.Evidence.Tags
-      description: The evidence tags.
-      type: String
-    - contextPath: Tanium.Evidence.Deleted
-      description: Whether the evident has been deleted.
-      type: Boolean
   - arguments:
     - default: false
       description: The ID of the evidence.

@@ -62,7 +62,7 @@ class Client(BaseClient):
 
         if res.status_code == 401:
             if self.api_token:
-                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
+                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the '\
                           'client is listed in the api_token_trusted_ip_address_list global setting.\n'
             else:
                 err_msg = ''
@@ -248,14 +248,12 @@ def init_commands_dict():
         'tanium-tr-get-alert-by-id': get_alert,
         'tanium-tr-alert-update-state': alert_update_state,
 
-        'tanium-tr-list-snapshots-by-connection': get_snapshots,
         'tanium-tr-create-snapshot': create_snapshot,
         'tanium-tr-delete-snapshot': delete_snapshot,
-        'tanium-tr-list-local-snapshots-by-connection': get_local_snapshots,
+        'tanium-tr-list-snapshots': list_snapshots,
         'tanium-tr-delete-local-snapshot': delete_local_snapshot,
 
         'tanium-tr-list-connections': get_connections,
-        'tanium-tr-get-connection-by-name': get_connection,
         'tanium-tr-create-connection': create_connection,
         'tanium-tr-delete-connection': delete_connection,
 
@@ -272,7 +270,7 @@ def init_commands_dict():
         'tanium-tr-get-process-tree': get_process_tree,
         'tanium-tr-get-process-timeline': get_process_timeline,
 
-        'tanium-tr-list-evidence': list_evidence,
+        'tanium-tr-event-evidence-list': list_evidence,
         'tanium-tr-get-evidence-by-id': get_evidence,
         'tanium-tr-create-evidence': create_evidence,
         'tanium-tr-delete-evidence': delete_evidence,
@@ -373,25 +371,6 @@ def evidence_type_number_to_name(num: int) -> str:
         name = 'Unknown'
     finally:
         return name
-
-
-def get_evidence_item(raw_item):
-    evidence_type = convert_to_int(raw_item.get('type'))
-    evidence_item = {
-        'ID': raw_item.get('id'),
-        'CreatedAt': raw_item.get('created'),
-        'UpdatedAt': raw_item.get('lastModified'),
-        'User': raw_item.get('user'),
-        'ConnectionName': raw_item.get('host'),
-        'Type': evidence_type_number_to_name(evidence_type) if evidence_type is not None else '',
-        'ProcessTableId': raw_item.get('sId'),
-        'Timestamp': raw_item.get('sTimestamp'),
-        'Summary': raw_item.get('summary'),
-        'Comments': raw_item.get('comments'),
-        'Tags': raw_item.get('tags'),
-        'Deleted': False
-    }
-    return {key: val for key, val in evidence_item.items() if val is not None}
 
 
 def get_process_event_item(raw_event):
@@ -589,26 +568,6 @@ def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
         snapshots.append({
             'ConnectionName': conn_name,
             'FileName': key,
-            'Deleted': False
-        })
-
-    return snapshots
-
-
-def get_snapshot_items(raw_snapshots, limit, offset, conn_name):
-    snapshots = []
-    host_snapshots = raw_snapshots.get(conn_name, {})
-    snapshot_keys = sorted(host_snapshots)
-    from_idx = min(offset, len(snapshot_keys))
-    to_idx = min(offset + limit, len(snapshot_keys))
-
-    for key in snapshot_keys[from_idx:to_idx]:
-        snapshots.append({
-            'ConnectionName': conn_name,
-            'ID': key,
-            'Started': host_snapshots[key].get('started', ''),
-            'State': host_snapshots[key].get('state', ''),
-            'Error': host_snapshots[key].get('error', ''),
             'Deleted': False
         })
 
@@ -1199,17 +1158,24 @@ def alert_update_state(client, data_args):
 ''' SANPSHOTS COMMANDS FUNCTIONS '''
 
 
-def get_snapshots(client, data_args):
+def list_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    conn_name = data_args.get('connection-name')
 
-    raw_response = client.do_request('GET', '/plugin/products/trace/snapshots/')
-    snapshots = get_snapshot_items(raw_response, limit, offset, conn_name)
+    params = assign_params(limit=limit, offset=offset)
+    raw_response = client.do_request(method='GET',
+                                     url_suffix='/plugin/products/threat-response/api/v1/snapshot',
+                                     params=params)
+    snapshots = raw_response.get('snapshots', [])
+
+    for snapshot in snapshots:
+        if created := snapshot.get('created'):
+            snapshot['created'] = timestamp_to_datestring(created)
+
     context = createContext(snapshots, removeNull=True)
-    headers = ['ID', 'ConnectionName', 'State', 'Started', 'Error']
-    outputs = {'Tanium.Snapshot(val.ID === obj.ID && val.ConnectionName === obj.ConnectionName)': context}
-    human_readable = tableToMarkdown(f'Snapshots for connection {conn_name}', snapshots, headers=headers,
+    headers = ['name', 'evidenceType', 'hostname', 'created']
+    outputs = {'Tanium.Snapshot(val.uuid === obj.uuid && val.connectionId === obj.connectionId)': context}
+    human_readable = tableToMarkdown('Snapshots:', snapshots, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1233,22 +1199,6 @@ def delete_snapshot(client, data_args):
     return f'Snapshot {snapshot_id} deleted successfully.', outputs, {}
 
 
-def get_local_snapshots(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
-    conn_name = data_args.get('connection-name')
-    raw_response = client.do_request('GET', '/plugin/products/trace/locals/')
-    snapshots = get_local_snapshot_items(raw_response, limit, offset, conn_name)
-    context = createContext(snapshots, removeNull=True)
-    outputs = {
-        'Tanium.LocalSnapshot(val.FileName === obj.FileName && val.ConnectionName === obj.ConnectionName)': context
-    }
-    headers = ['FileName', 'ConnectionName']
-    human_readable = tableToMarkdown(f'Local snapshots for connection {conn_name}', snapshots, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
-
-
 def delete_local_snapshot(client, data_args):
     connection_name = data_args.get('connection-name')
     file_name = data_args.get('file-name')
@@ -1267,41 +1217,24 @@ def delete_local_snapshot(client, data_args):
 def get_connections(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns/connect')
+    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns')
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))
 
     connections = raw_response[from_idx:to_idx]
+    for connection in connections:
+        if connected_at := connection.get('connectedAt'):
+            connection['connectedAt'] = timestamp_to_datestring(connected_at)
+        if initiated_at := connection.get('initiatedAt'):
+            connection['initiatedAt'] = timestamp_to_datestring(initiated_at)
 
     context = createContext(connections, removeNull=True)
-    outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    human_readable = tableToMarkdown('Connections', connections, headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
-
-
-def get_connection(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
-    raw_response = client.do_request('GET', '/plugin/products/trace/conns')
-    connection_raw_response: dict = {}
-    found = False
-    for conn in raw_response:
-        if conn.get('name') and conn['name'] == conn_name:
-            connection_raw_response = conn
-            found = True
-            break
-
-    if not found:  # Should not get here
-        return 'Connection not found.', {}, {}
-
-    connection = connection_raw_response
-
-    context = createContext(connection, removeNull=True)
-    outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OSName']
-    human_readable = tableToMarkdown('Connection information', connection, headers=headers,
+    outputs = {'Tanium.Connection(val.Hostname && val.Hostname === obj.Hostname)': context}
+    headers = ['status', 'hostname', 'message', 'ip', 'platform', 'connectedAt']
+    human_readable = tableToMarkdown('Connections', connections, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, connection_raw_response
+    return human_readable, outputs, raw_response
 
 
 def create_connection(client, data_args):
@@ -1745,22 +1678,23 @@ def list_evidence(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
     sort = data_args.get('sort')
-    params = {
-        'sort': sort,
-        'limit': limit,
-        'offset': offset
-    }
-    raw_response = client.do_request('GET', '/plugin/products/trace/evidence', params=params)
 
-    evidences = []
-    for item in raw_response:
-        evidence = get_evidence_item(item)
-        evidences.append(evidence)
+    params = assign_params(sort=sort)
+    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
+
+    from_idx = min(offset, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))
+    evidences = raw_response[from_idx:to_idx]
+    for item in evidences:
+        if created := item.get('createdAt'):
+            try:
+                item['createdAt'] = timestamp_to_datestring(created)
+            except ValueError:
+                pass
 
     context = createContext(evidences, removeNull=True)
-    outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Timestamp', 'ConnectionName', 'User', 'Summary', 'Type', 'CreatedAt', 'UpdatedAt',
-               'ProcessTableId', 'Comments', 'Tags']
+    outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
+    headers = ['name', 'evidenceType', 'hostname', 'createdAt', 'username']
     human_readable = tableToMarkdown('Evidence list', evidences, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1771,8 +1705,8 @@ def get_evidence(client, data_args):
     raw_response = client.do_request('GET', f'/plugin/products/trace/evidence/{evidence_id}')
     if not raw_response:
         raise DemistoException(f'Evidence {evidence_id} was not found.')
-    evidence = get_evidence_item(raw_response)
 
+    evidence = {}
     context = createContext(evidence, removeNull=True)
     outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Timestamp', 'Host', 'User', 'Summary', 'ConntectionID', 'Type', 'CreatedAt', 'UpdatedAt',
