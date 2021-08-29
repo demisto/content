@@ -2598,9 +2598,9 @@ def list_host_group_members_command(host_group_id: Optional[str] = None,
                                     limit: Optional[str] = None) -> List[CommandResults]:
     response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
-    command_results: List[CommandResults] = []
     if not devices:
-        return command_results
+        return [CommandResults(readable_output='No hosts are found')]
+    command_results: List[CommandResults] = []
     for single_device in devices:
         entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
         headers = list(SEARCH_DEVICE_KEY_MAP.values())
@@ -2647,9 +2647,9 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
         -> List[CommandResults]:
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get('resources')
-    command_results: List[CommandResults] = []
     if not host_groups:
-        return command_results
+        return [CommandResults(readable_output='No host groups are found')]
+    command_results: List[CommandResults] = []
     for host_group in host_groups:
         command_results.append(CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                                               outputs_key_field='id',

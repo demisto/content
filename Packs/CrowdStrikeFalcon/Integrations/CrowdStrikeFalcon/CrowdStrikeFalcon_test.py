@@ -2241,7 +2241,7 @@ class TestFetch:
             The `first_behavior_time` changes and no `offset` is added.
         """
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
-                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
+                                                                     '2020-09-04T09:16:10Z', 'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2945,3 +2945,23 @@ def test_list_host_group_members(requests_mock):
     actual_results = load_json('test_data/expected_list_hostgroup_members_results.json')
     for actual_res, command_res in zip(actual_results, command_results):
         assert actual_res == command_res.outputs
+
+
+# def test_list_host_group(requests_mock):
+#     from CrowdStrikeFalcon import list_host_groups_command
+#     response = {
+#         "meta": {
+#             "query_time": 1.54e-7,
+#             "pagination": {
+#                 "offset": 0,
+#                 "limit": 100,
+#                 "total": 0
+#             },
+#             "trace_id": "fae1b6b4-8ae3-41b1-85d8-a6cd09cbfa58"
+#         },
+#         "errors": [],
+#         "resources": None
+#     }
+#     requests_mock.get('/devices/combined/host-groups/v1', json=response, status_code=200)
+#     list_host_groups_command(limit='50')
+#     print()
