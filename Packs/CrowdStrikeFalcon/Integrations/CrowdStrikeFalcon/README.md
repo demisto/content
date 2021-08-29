@@ -2143,24 +2143,26 @@ Update a host group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The host group id. | Required | 
-| name | The name of the host. | Optional | 
-| description | Description of the host. | Optional | 
-| assignment_rule | The assignmet rule. | Optional | 
+| host_group_id | The ID of the host group. | Required | 
+| name | The name of the host group. | Optional | 
+| description | The description of the host group. | Optional | 
+| assignment_rule | The assignment rule. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The id of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
-| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
-| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
-| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
 
 
 #### Command Example
@@ -2204,10 +2206,10 @@ Get the list of host group members
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The host group id. | Optional | 
-| filter | Filter the result. | Optional | 
+| host_group_id | The ID of the host group. | Optional | 
+| filter | The query by which to filter the devices that belong to the host group. | Optional | 
 | offset | Page offset. | Optional | 
-| limit | Number of result in a page. Default is 50. | Optional | 
+| limit | Maximum number of results on a page. | Optional | 
 
 
 #### Context Output
@@ -2312,22 +2314,24 @@ Add host group members
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The host group id. | Required | 
-| host_ids | The id of the host. | Required | 
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands.(The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The id of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
-| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
-| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
-| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
 
 
 #### Command Example
@@ -2371,22 +2375,24 @@ Remove host group members
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The host group id. | Required | 
-| host_ids | The id of the host. | Required | 
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)| Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The id of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
-| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
-| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
-| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
 
 
 #### Command Example
@@ -2430,7 +2436,7 @@ Resolve incidents
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Incidents ids. | Required | 
+| ids | A comma-separated list of incident IDs. | Required | 
 | status | The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed". Possible values are: New, In Progress, Reopened, Closed. | Required | 
 
 
@@ -2447,7 +2453,7 @@ There is no context output for this command.
 >inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
 ### cs-falcon-list-host-groups
 ***
-List the host groups availible
+List the available host groups.
 
 
 #### Base Command
@@ -2457,23 +2463,23 @@ List the host groups availible
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the result. | Optional | 
+| filter | The query by which to filter the devices that belong to the host group. | Optional | 
 | offset | Page offset. | Optional | 
-| limit | Number of result in a page. Default is 50. | Optional | 
+| limit | Maximum number of results on a page. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The id of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
-| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
-| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
-| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime when the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime when the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
 
 #### Command Example
@@ -3026,7 +3032,7 @@ List the host groups availible
 
 ### cs-falcon-delete-host-groups
 ***
-Delete the requested host groups
+Delete the requested host groups.
 
 
 #### Base Command
@@ -3036,7 +3042,7 @@ Delete the requested host groups
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The ids of the host groups to be deleted. | Required | 
+| host_group_id | The ID of the host group to be deleted. | Required | 
 
 
 #### Context Output
