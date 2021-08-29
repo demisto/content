@@ -363,7 +363,7 @@ def main():
                     if hasattr(obs.object_.properties, "hashes"):
                         # File object
                         for digest in obs.object_.properties.hashes:
-                            if hasattr(digest, "simple_hash_value"):
+                            if hasattr(digest, "simple_hash_value") and digest.simple_hash_value:
                                 if isinstance(digest.simple_hash_value.value, list):
                                     for hash in digest.simple_hash_value.value:
                                         create_new_ioc(
