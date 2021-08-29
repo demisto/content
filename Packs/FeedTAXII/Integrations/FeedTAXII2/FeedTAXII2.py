@@ -77,7 +77,8 @@ def fetch_indicators_command(
     )
 
     # add filter for indicator types by default
-    filter_args = {"type": "indicator"}
+    # filter_args = {"type": "indicator"}
+    filter_args = {"type": "infrastructure"}
 
     if client.collection_to_fetch is None:
         # fetch all collections
@@ -137,7 +138,8 @@ def get_indicators_command(
     """
 
     # add filter for indicator types by default
-    filter_args = {"type": "indicator"}
+    # filter_args = {"type": "indicator"}
+    filter_args = {}
 
     limit = try_parse_integer(limit)
     if added_after:
