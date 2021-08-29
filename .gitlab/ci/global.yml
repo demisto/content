@@ -270,7 +270,11 @@
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
       gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
