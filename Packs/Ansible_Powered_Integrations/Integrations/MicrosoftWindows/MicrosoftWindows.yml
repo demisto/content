@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Agentless Windows host management over WinRM
-display: Microsoft Windows
+description: Agentless Windows host management over WinRM. Deprecated. Use Ansible Microsoft Windows (from the Ansible Microsoft Windows pack) instead.
+display: Ansible Microsoft Windows (Deprecated)
 name: MicrosoftWindows
 script:
   commands:
@@ -5314,3 +5314,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

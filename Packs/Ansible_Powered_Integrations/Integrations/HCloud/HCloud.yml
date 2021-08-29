@@ -14,8 +14,8 @@ configuration:
   name: endpoint
   required: true
   type: 0
-description: Manage your Hetzner Cloud environment
-display: HCloud
+description: Manage your Hetzner Cloud environment. Deprecated. Use the Ansible HCloud (from the Ansible Hetzner Cloud Pack) instead.
+display: Ansible HCloud (Deprecated)
 name: HCloud
 script:
   commands:
@@ -681,7 +681,7 @@ script:
       type: string
     - contextPath: HCloud.hcloud_volume_info.labels
       description: User-defined labels (key-value pairs)
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -689,3 +689,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true
