@@ -163,21 +163,66 @@ urllib3.disable_warnings()
 
 # CONSTANTS
 
-indicator_to_galaxy_relation = {
+indicator_to_galaxy_relation_dict: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+        DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
+        ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
     },
     ThreatIntel.ObjectsNames.MALWARE: {
-
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+        DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
     },
     ThreatIntel.ObjectsNames.TOOL: {
-
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+        DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
     },
     ThreatIntel.ObjectsNames.INTRUSION_SET: {
-
+        FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.RELATED_TO,
+        DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.ATTRIBUTED_TO,
     },
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: {
-
+        FeedIndicatorType.File: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.IP: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Domain: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.URL: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Email: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.RELATED_TO,
+        DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+        ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.MITIGATED_BY,
+        ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.RELATED_TO,
     }
 }
 
@@ -250,12 +295,6 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
         }
         return galaxy_map.get(galaxy_name, None)
     return None
-
-
-def get_indicator_to_galaxy_relation():
-
-
-def get_galaxy_to_indicator_relation():
 
 
 def test_module(client: Client) -> str:
@@ -352,13 +391,31 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
 
 def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
     indicator_obj_type = indicator_obj['type']
-    relationships_indicators= []
+    relationships_indicators = []
     for galaxy_indicator in galaxy_indicators:
         galaxy_indicator_type = galaxy_indicator['type']
-        relationship_entity = EntityRelationship()
-        relationship_indicator = relationship_entity.to_indicator()
-        relationships_indicators.append(relationship_indicator)
-        galaxy_indicator['relationship'] = relationship_indicator
+
+        indicator_to_galaxy_relation = indicator_to_galaxy_relation_dict[galaxy_indicator_type][indicator_obj_type]
+        galaxy_to_indicator_relation = EntityRelationship.Relationships.\
+            RELATIONSHIPS_NAMES[indicator_to_galaxy_relation]
+
+        indicator_relation = EntityRelationship(
+            name=indicator_to_galaxy_relation,
+            entity_a=indicator_obj['value'],
+            entity_a_type=indicator_obj_type,
+            entity_b=galaxy_indicator['value'],
+            entity_b_type=galaxy_indicator_type,
+            ).to_indicator()
+        galaxy_relation = EntityRelationship(
+            name=galaxy_to_indicator_relation,
+            entity_a=galaxy_indicator['value'],
+            entity_a_type=galaxy_indicator_type,
+            entity_b=indicator_obj['value'],
+            entity_b_type=indicator_obj_type,
+        ).to_indicator()
+
+        relationships_indicators.append(indicator_relation)
+        galaxy_indicator['relationship'] = galaxy_relation
 
     if relationships_indicators:
         indicator_obj['relationship'] = relationships_indicators
