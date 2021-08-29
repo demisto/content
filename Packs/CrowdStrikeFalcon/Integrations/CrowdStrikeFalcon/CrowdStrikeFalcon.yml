@@ -2157,7 +2157,7 @@ script:
       predefined:
         - static
         - dynamic
-      required: false
+      required: true
       secret: false
     - default: false
       description: Description of the host
