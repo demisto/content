@@ -1478,7 +1478,7 @@ class Pack(object):
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
                 PackFolders.GENERIC_TYPES.value: "GenericTypes",
                 PackFolders.LISTS.value: "list",
-                PackFolders.PREPROCESSING_RULE.value: "preprocessrule",
+                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
