@@ -1,5 +1,6 @@
+import pytest
 import requests_mock
-from OracleIAM import Client, main
+from OracleIAM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -30,6 +31,11 @@ APP_UPDATED_USER_OUTPUT = {
 
 }
 
+APP_GROUP_OUTPUT = {
+    "id": "1234",
+    "displayName": "The group name",
+}
+
 
 def mock_client():
     client = Client(base_url='https://test.com', headers={})
@@ -42,7 +48,7 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-class TestOracleIAM:
+class TestGetUserCommand:
     def test_get_user_command__existing_user(self):
         """
         Given:
@@ -132,6 +138,8 @@ class TestOracleIAM:
         assert outputs.get('errorCode') == 500
         assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR'
 
+
+class TestCreateUserCommand:
     def test_create_user_command__success(self):
         """
         Given:
@@ -194,6 +202,8 @@ class TestOracleIAM:
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
+
+class TestUpdateUserCommand:
     def test_update_user_command__non_existing_user(self):
         """
         Given:
@@ -285,6 +295,8 @@ class TestOracleIAM:
         assert outputs.get('details', {}).get('first_name') == 'new_mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'new_mock_last_name'
 
+
+class TestDisableUserCommand:
     def test_disable_user_command__non_existing_user(self):
         """
         Given:
@@ -312,35 +324,217 @@ class TestOracleIAM:
         assert outputs.get('skipped') is True
         assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
-    def test_get_mapping_fields_command(self, mocker):
-        """
-        Given:
-            - An app client object
-        When:
-            - User schema in the application contains the fields 'field1' and 'field2'
-            - Calling function get_mapping_fields_command
-        Then:
-            - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
-        """
-        import demistomock as demisto
-        mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com'})
-        mock_result = mocker.patch('OracleIAM.return_results')
 
-        schema = {
-            'attributes': [
-                {'name': 'field1', 'description': 'desc1'},
-                {'name': 'field2', 'description': 'desc2'},
-            ]
-        }
+def mock_get_access_token():
+    return 'mock token'
+
+
+class TestGetGroupCommand:
+    def test_get_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
 
         with requests_mock.Mocker() as m:
-            m.post('https://test.com/oauth2/v1/token', json={})
-            m.get('https://test.com/admin/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:User', json=schema)
+            m.get('https://test.com/admin/v1/Groups/1234', json=APP_GROUP_OUTPUT)
 
-            main()
+            get_group_command(client, args)
 
-        mapping = mock_result.call_args.args[0].extract_mapping()
+        assert mock_result.call_args.kwargs['outputs']['success'] is True
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+        assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
 
-        assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
-        assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+    def test_get_group__non_existing_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.get('https://test.com/admin/v1/Groups/1234', status_code=404, text='Group Not Found')
+
+            with pytest.raises(Exception) as e:
+                get_group_command(client, args)
+
+        assert e.value.res.status_code == 404
+        assert 'Group Not Found' in str(e.value)
+
+    def test_get_group__id_and_display_name_empty(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": {}}
+
+        with pytest.raises(Exception) as e:
+            get_group_command(client, args)
+
+        assert str(e.value) == 'You must supply either "id" or "displayName" in the scim data'
+
+    def test_get_group__display_name(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
+
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.get(
+                'https://test.com/admin/v1/Groups?filter=displayName eq "The+group+name"',
+                json={'totalResults': 1, 'Resources': [APP_GROUP_OUTPUT]},
+            )
+
+            get_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+        assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
+
+
+class TestCreateGroupCommand:
+    def test_create_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
+
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/admin/v1/Groups', status_code=201, json=APP_GROUP_OUTPUT)
+
+            create_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['success'] is True
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+        assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
+
+    def test_create_group__group_already_exist(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/admin/v1/Groups', status_code=400, text="Group already exist")
+
+            with pytest.raises(Exception) as e:
+                create_group_command(client, args)
+
+        assert e.value.res.status_code == 400
+        assert 'Group already exist' in str(e.value)
+
+    def test_create_group__display_name_empty(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{}"}
+
+        with pytest.raises(Exception) as e:
+            create_group_command(client, args)
+
+        assert str(e.value) == 'You must supply "displayName" of the group in the scim data'
+
+
+class TestUpdateGroupCommand:
+    def test_update_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}", "memberIdsToAdd": ["111111"], "memberIdsToDelete": ["222222"]}
+
+        with requests_mock.Mocker() as m:
+            m.patch('https://test.com/admin/v1/Groups/1234', status_code=200, json={})
+
+            update_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['success'] is True
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+
+    def test_update_group__nothing_to_update(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+
+        with pytest.raises(Exception) as e:
+            update_group_command(client, args)
+
+        assert str(e.value) == 'You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the scim data'
+
+
+class TestDeleteGroupCommand:
+    def test_delete_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.delete('https://test.com/admin/v1/Groups/1234', status_code=204, json={})
+
+            delete_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['success'] is True
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+
+    def test_delete_group__non_existing_group(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}"}
+
+        with requests_mock.Mocker() as m:
+            m.delete('https://test.com/admin/v1/Groups/1234', status_code=404, text="Group Not Found")
+
+            with pytest.raises(Exception) as e:
+                delete_group_command(client, args)
+
+        assert e.value.res.status_code == 404
+        assert 'Group Not Found' in str(e.value)
+
+    def test_delete_group__id_is_empty(self, mocker):
+        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+
+        client = mock_client()
+        args = {"scim": "{}"}
+
+        with pytest.raises(Exception) as e:
+            delete_group_command(client, args)
+
+        assert str(e.value) == 'You must supply "id" in the scim data'
+
+
+def test_get_mapping_fields_command(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - User schema in the application contains the fields 'field1' and 'field2'
+        - Calling function get_mapping_fields_command
+    Then:
+        - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com'})
+    mock_result = mocker.patch('OracleIAM.return_results')
+
+    schema = {
+        'attributes': [
+            {'name': 'field1', 'description': 'desc1'},
+            {'name': 'field2', 'description': 'desc2'},
+        ]
+    }
+
+    with requests_mock.Mocker() as m:
+        m.post('https://test.com/oauth2/v1/token', json={})
+        m.get('https://test.com/admin/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:User', json=schema)
+
+        main()
+
+    mapping = mock_result.call_args.args[0].extract_mapping()
+
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
