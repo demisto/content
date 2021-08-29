@@ -3535,6 +3535,10 @@
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {
