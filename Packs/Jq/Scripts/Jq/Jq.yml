@@ -5,7 +5,7 @@ args:
   name: query
 comment: use jq to query a JSON object
 commonfields:
-  id: c1127bfa-77b1-422c-8c34-4cd8639d0e0f
+  id: jq
   version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -15,7 +15,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-dockerimage: jq:1.0.0
+dockerimage: devdemisto/jq:1.0.0.24002
 enabled: true
 engineinfo: {}
 name: jq
