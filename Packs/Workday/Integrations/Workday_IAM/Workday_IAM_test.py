@@ -267,7 +267,7 @@ def test_is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_
         ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 2}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
 
         # A conversion hire field is True - should return False
-        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', CONVERSION_HIRE_FIELD: True, SOURCE_PRIORITY_FIELD: 1}, 
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', CONVERSION_HIRE_FIELD: True, SOURCE_PRIORITY_FIELD: 1},
          {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
 
         # Active AD account and hire date did not exceed threshold date - should return True
