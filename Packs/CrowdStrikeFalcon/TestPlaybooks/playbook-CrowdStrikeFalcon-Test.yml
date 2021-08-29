@@ -45,8 +45,11 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      add_to_context: {}
       brand_name:
         simple: CrowdstrikeFalcon
+      expect_data: {}
+      instance_name: {}
     separatecontext: false
     view: |-
       {
