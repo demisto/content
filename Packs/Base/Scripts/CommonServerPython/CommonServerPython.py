@@ -2485,6 +2485,13 @@ class Common(object):
             }
             return ret_value
 
+        def to_readable(self):
+            dbot_score_to_text = {0: 'Unknown',
+                                  1: 'Good',
+                                  2: 'Suspicious',
+                                  3: 'Bad'}
+            return dbot_score_to_text.get(self.score, 'Undefined')
+
     class CustomIndicator(Indicator):
 
         def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
@@ -6940,7 +6947,8 @@ if 'requests' in sys.modules:
 
         def __del__(self):
             try:
-                self._session.close()
+                if hasattr(self, '_session'):
+                    self._session.close()
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
