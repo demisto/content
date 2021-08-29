@@ -209,7 +209,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         demisto.debug(f'url is {url}')
         demisto.debug(str(e))
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
-                     f' Exception is {str(e)}')
+                     f' Exception is {str(e)}. USE_SSL is {USE_SSL}')
     try:
         valid_status_codes = {200, 201, 202, 204}
         # Handling a case when we want to return an entry for 404 status code.
@@ -1360,6 +1360,24 @@ def resolve_incident(ids: List[str], status: str):
     http_request(method='POST',
                  url_suffix='/incidents/entities/incident-actions/v1',
                  json=data)
+
+
+def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
+    params = {'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-groups/v1',
+                            params=params)
+    return response
+
+
+def delete_host_groups(host_group_ids: List[str]) -> Dict:
+    params = {'ids': host_group_ids}
+    response = http_request(method='DELETE',
+                            url_suffix='/devices/entities/host-groups/v1',
+                            params=params)
+    return response
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -2627,6 +2645,28 @@ def resolve_incident_command(ids: List[str], status: str):
     return CommandResults(readable_output=readable)
 
 
+def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
+        -> List[CommandResults]:
+    response = list_host_groups(filter, limit, offset)
+    host_groups = response.get('resources')
+    command_results: List[CommandResults] = []
+    if not host_groups: return command_results
+    for host_group in host_groups:
+        command_results.append(CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                                              outputs_key_field='id',
+                                              outputs=host_group,
+                                              raw_response=response)
+                               )
+    return command_results
+
+
+def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
+    response = delete_host_groups(host_group_ids)
+    deleted_ids = response.get('resources')
+    readable = '\n'.join([f'host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids])
+    return CommandResults(readable_output=readable)
+
+
 def test_module():
     try:
         get_token(new_token=True)
@@ -2649,11 +2689,12 @@ def main():
     command = demisto.command()
     args = demisto.args()
     try:
-        if command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents())
-        elif command == 'test-module':
+        if command == 'test-module':
             result = test_module()
             return_results(result)
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
@@ -2732,6 +2773,10 @@ def main():
             return_results(create_host_group_command(**args))
         elif command == 'cs-falcon-update-host-group':
             return_results(update_host_group_command(**args))
+        elif command == 'cs-falcon-list-host-groups':
+            return_results(list_host_groups_command(**args))
+        elif command == 'cs-falcon-delete-host-groups':
+            return_results(delete_host_groups_command(host_group_ids=argToList(args.get('host_group_id'))))
         elif command == 'cs-falcon-list-host-group-members':
             return_results(list_host_group_members_command(**args))
         elif command == 'cs-falcon-add-host-group-members':
