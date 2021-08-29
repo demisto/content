@@ -161,6 +161,26 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
+# CONSTANTS
+
+indicator_to_galaxy_relation = {
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
+        FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+    },
+    ThreatIntel.ObjectsNames.MALWARE: {
+
+    },
+    ThreatIntel.ObjectsNames.TOOL: {
+
+    },
+    ThreatIntel.ObjectsNames.INTRUSION_SET: {
+
+    },
+    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: {
+
+    }
+}
+
 
 class Client(BaseClient):
     def search_query(self, body: Dict[str, Any]) -> List:
@@ -230,6 +250,12 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
         }
         return galaxy_map.get(galaxy_name, None)
     return None
+
+
+def get_indicator_to_galaxy_relation():
+
+
+def get_galaxy_to_indicator_relation():
 
 
 def test_module(client: Client) -> str:
@@ -326,11 +352,13 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
 
 def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
     indicator_obj_type = indicator_obj['type']
-    relationships = []
+    relationships_indicators= []
     for galaxy_indicator in galaxy_indicators:
         galaxy_indicator_type = galaxy_indicator['type']
+        relationship_entity = EntityRelationship()
+        relationship_indicator = relationship_entity.to_indicator()
 
-    if relationships:
+    if relationships_indicators:
         indicator_obj
 
 
