@@ -547,23 +547,6 @@ def get_label_item(label):
         'UpdatedAt': label.get('updatedAt')}
 
 
-''' CONNECTIONS HELPER FUNCTIONS '''
-
-
-def get_connection_item(connection):
-    info = connection.get('info')
-    return {
-        'Name': connection.get('name'),
-        'State': info.get('state'),
-        'CreateTime': info.get('createTime'),
-        'DST': info.get('dst'),
-        'DestinationType': info.get('dstType'),
-        'Remote': info.get('remote'),
-        'OSName': connection.get('osName'),
-        'Deleted': False
-    }
-
-
 def validate_connection_name(client, arg_input):
     """ Tanium API's connection-name parameter is case sensitive - this function queries for the user input
     and returns the precise string to use in the API, or raises a ValueError if doesn't exist.
@@ -1284,20 +1267,16 @@ def delete_local_snapshot(client, data_args):
 def get_connections(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
-    raw_response = client.do_request('GET', '/plugin/products/trace/conns')
-    connections = []
+    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns/connect')
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))
 
-    for conn in raw_response[from_idx:to_idx]:
-        connections.append(get_connection_item(conn))
+    connections = raw_response[from_idx:to_idx]
 
     context = createContext(connections, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'DestinationType', 'OSName']
-    human_readable = tableToMarkdown('Connections', connections, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
+    human_readable = tableToMarkdown('Connections', connections, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
@@ -1315,7 +1294,7 @@ def get_connection(client, data_args):
     if not found:  # Should not get here
         return 'Connection not found.', {}, {}
 
-    connection = get_connection_item(connection_raw_response)
+    connection = connection_raw_response
 
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
