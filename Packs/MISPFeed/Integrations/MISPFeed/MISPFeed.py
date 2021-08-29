@@ -369,13 +369,13 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[s
     return indicator_obj
 
 
-def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str,Any]]:
-    tags = indicator_obj['rawJSON']['value'].get('Tag', None)
+def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    tags = indicator_obj['rawJSON']['value'].get('Tag', [])
     galaxy_indicators = []
     for tag in tags:
         tag_name = tag.get('name', None)
         if tag_name and get_galaxy_indicator_type(tag_name):
-            value_ = tag_name[tag_name.index('=\"') + 1: tag_name.index("-") - 1]
+            value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
             type_ = get_galaxy_indicator_type(tag_name)
             raw_data = {
                 'value': value_,
