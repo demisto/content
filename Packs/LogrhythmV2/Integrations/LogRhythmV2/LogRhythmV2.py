@@ -1676,8 +1676,8 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CasesList',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=cases,
         raw_response=cases
     )
@@ -1699,8 +1699,8 @@ def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseCreate',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -1724,8 +1724,8 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseUpdate',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -1743,8 +1743,8 @@ def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseUpdate',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -1765,11 +1765,13 @@ def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     else:
         hr = f'No evidences found for case {case_id}.'
 
+    ec = {'CaseID': case_id, 'Evidences': evidences}
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseUpdate',
-        outputs_key_field='',
-        outputs=evidences,
+        outputs_prefix='LogRhythm.CaseEvidence',
+        outputs_key_field='CaseID',
+        outputs=ec,
         raw_response=evidences
     )
 
@@ -1784,11 +1786,13 @@ def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> Com
 
     hr = tableToMarkdown(f'Alarms added as evidence to case {case_id} successfully', evidences, headerTransform=pascalToSpace)
 
+    ec = [{'CaseID': case_id, 'Evidences': evidences}]
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseAlarmEvidenceAdd',
-        outputs_key_field='',
-        outputs=evidences,
+        outputs_prefix='LogRhythm.AlarmEvidence',
+        outputs_key_field='CaseID',
+        outputs=ec,
         raw_response=evidences
     )
 
@@ -1799,16 +1803,18 @@ def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
     case_id = args.get('case_id')
     note = args.get('note')
 
-    response = client.case_note_evidence_add_request(case_id, note)
-    hr = tableToMarkdown(f'Note added as evidence to case {case_id} successfully', response,
+    evidences = client.case_note_evidence_add_request(case_id, note)
+    hr = tableToMarkdown(f'Note added as evidence to case {case_id} successfully', evidences,
                          headerTransform=pascalToSpace)
+
+    ec = [{'CaseID': case_id, 'Evidences': evidences}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseAlarmEvidenceAdd',
+        outputs_prefix='LogRhythm.NoteEvidence',
         outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs=ec,
+        raw_response=evidences
     )
 
     return command_results
@@ -1818,16 +1824,18 @@ def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
     case_id = args.get('case_id')
     entry_id = args.get('entryId')
 
-    response = client.case_file_evidence_add_request(case_id, entry_id)
-    hr = tableToMarkdown(f'File added as evidence to case {case_id} successfully', response,
+    evidences = client.case_file_evidence_add_request(case_id, entry_id)
+    hr = tableToMarkdown(f'File added as evidence to case {case_id} successfully', evidences,
                          headerTransform=pascalToSpace)
+
+    ec = [{'CaseID': case_id, 'Evidences': evidences}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseFileEvidenceAdd',
+        outputs_prefix='LogRhythm.FileEvidence',
         outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs=ec,
+        raw_response=evidences
     )
 
     return command_results
@@ -1876,8 +1884,8 @@ def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseTagsAdd',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -1894,8 +1902,8 @@ def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseTagsAdd',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Case',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -1935,11 +1943,14 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
     if collaborators:
         hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
 
+    ec = response.copy()
+    ec['CaseID'] = case_id
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseCollaboratorsList',
-        outputs_key_field='',
-        outputs=response,
+        outputs_prefix='LogRhythm.CaseCollaborator',
+        outputs_key_field='CaseID',
+        outputs=ec,
         raw_response=response
     )
 
@@ -1959,11 +1970,14 @@ def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> C
     if collaborators:
         hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
 
+    ec = response.copy()
+    ec['CaseID'] = case_id
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.CaseCollaboratorsList',
-        outputs_key_field='',
-        outputs=response,
+        outputs_prefix='LogRhythm.CaseCollaborator',
+        outputs_key_field='CaseID',
+        outputs=ec,
         raw_response=response
     )
 
@@ -2095,7 +2109,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
     max_items = args.get('max_items')
 
     raw_response = client.list_details_and_items_get_request(list_id, max_items)
-    response = raw_response
+    response = raw_response.copy()
     list_items = response.get('items')
     response.pop('items', None)
 
@@ -2105,8 +2119,8 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.ListDetailsAndItemsGet',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.ListDetails',
+        outputs_key_field='guid',
         outputs=raw_response,
         raw_response=raw_response
     )
@@ -2128,8 +2142,8 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.ListItemsAdd',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.ListItemsAdd',
+        outputs_key_field='guid',
         outputs=response,
         raw_response=response
     )
@@ -2151,8 +2165,8 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.ListItemsAdd',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.ListItemsRemove',
+        outputs_key_field='guid',
         outputs=response,
         raw_response=response
     )
@@ -2181,12 +2195,13 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    recipient, hash_, url, process_name, object_, ipaddress, max_message,
                                                    query_timeout, entity_id)
     task_id = response.get('TaskId')
+    ec = {'TaskId': task_id, 'StatusMessage': response.get('StatusMessage')}
 
     command_results = CommandResults(
         readable_output=f'New search query created, Task ID={task_id}',
         outputs_prefix='Logrhythm.Search.Task',
-        outputs_key_field='LogrhythmV2.ExecuteSearchQuery.TaskId',
-        outputs=response,
+        outputs_key_field='TaskId',
+        outputs=ec,
         raw_response=response
     )
 
@@ -2204,7 +2219,7 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
     if items:
         hr = tableToMarkdown(f'Search results for task {task_id}', items, headerTransform=pascalToSpace)
     else:
-        hr = f'No results, task status: {status}'
+        hr = f'Task status: {status}'
 
     ec = [{'TaskID': task_id, 'TaskStatus': status, 'Items': items}]
 
@@ -2242,8 +2257,8 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.AddHost',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Host',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )

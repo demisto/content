@@ -829,85 +829,85 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CasesList..id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CasesList..dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CasesList..dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CasesList..dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CasesList..owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CasesList..lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CasesList..dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CasesList..resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CasesList..resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CasesList..resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CasesList..collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CasesList..collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CasesList..collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
   - name: lr-case-create
     description: ''
@@ -945,85 +945,85 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseCreate.dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseCreate.dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseCreate.dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseCreate.owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseCreate.lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseCreate.dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseCreate.resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseCreate.resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseCreate.resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCreate.collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCreate.collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseCreate.collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
   - name: lr-case-update
     description: ''
@@ -1069,85 +1069,85 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseUpdate.dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseUpdate.dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseUpdate.dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseUpdate.owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseUpdate.lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseUpdate.dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseUpdate.resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseUpdate.resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseUpdate.resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseUpdate.collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseUpdate.collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseUpdate.collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
   - name: lr-case-status-change
     description: ''
@@ -1169,85 +1169,85 @@ script:
       - Resolved
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseStatusChange.dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseStatusChange.dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseStatusChange.dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseStatusChange.owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseStatusChange.lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseStatusChange.dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseStatusChange.resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseStatusChange.resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseStatusChange.resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseStatusChange.collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseStatusChange.collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseStatusChange.collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
   - name: lr-case-evidence-list
     description: ''
@@ -1281,74 +1281,53 @@ script:
       required: false
       isArray: false
     outputs:
+    - type: String
+      contextPath: LogRhythm.CaseEvidence.CaseID
+      description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..number
+      contextPath: LogRhythm.CaseEvidence.Evidences.number
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseEvidenceList..dateCreated
+      contextPath: LogRhythm.CaseEvidence.Evidences.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseEvidenceList..dateUpdated
+      contextPath: LogRhythm.CaseEvidence.Evidences.dateUpdated
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..createdBy.number
+      contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..createdBy.name
+      contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseEvidenceList..createdBy.disabled
+      contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..lastUpdatedBy.number
+      contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..lastUpdatedBy.name
+      contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseEvidenceList..lastUpdatedBy.disabled
+      contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..type
+      contextPath: LogRhythm.CaseEvidence.Evidences.type
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..status
+      contextPath: LogRhythm.CaseEvidence.Evidences.status
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseEvidenceList..statusMessage
+      contextPath: LogRhythm.CaseEvidence.Evidences.statusMessage
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..text
+      contextPath: LogRhythm.CaseEvidence.Evidences.text
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseEvidenceList..pinned
+      contextPath: LogRhythm.CaseEvidence.Evidences.pinned
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseEvidenceList..datePinned
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.alarmId
-      description: ''
-    - type: Date
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.alarmDate
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.alarmRuleId
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.alarmRuleName
-      description: ''
-    - type: Date
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.dateInserted
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.entityId
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.entityName
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.CaseEvidenceList..alarm.riskBasedPriorityMax
+      contextPath: LogRhythm.CaseEvidence.Evidences.datePinned
       description: ''
   - name: lr-case-alarm-evidence-add
     description: ''
@@ -1362,74 +1341,77 @@ script:
       required: true
       isArray: false
     outputs:
+    - type: String
+      contextPath: LogRhythm.AlarmEvidence.CaseID
+      description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..number
+      contextPath: LogRhythm.AlarmEvidence.Evidences.number
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..dateCreated
+      contextPath: LogRhythm.AlarmEvidence.Evidences.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..dateUpdated
+      contextPath: LogRhythm.AlarmEvidence.Evidences.dateUpdated
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..createdBy.number
+      contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..createdBy.name
+      contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..createdBy.disabled
+      contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..lastUpdatedBy.number
+      contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..lastUpdatedBy.name
+      contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..lastUpdatedBy.disabled
+      contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..type
+      contextPath: LogRhythm.AlarmEvidence.Evidences.type
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..status
+      contextPath: LogRhythm.AlarmEvidence.Evidences.status
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..statusMessage
+      contextPath: LogRhythm.AlarmEvidence.Evidences.statusMessage
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..text
+      contextPath: LogRhythm.AlarmEvidence.Evidences.text
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..pinned
+      contextPath: LogRhythm.AlarmEvidence.Evidences.pinned
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..datePinned
+      contextPath: LogRhythm.AlarmEvidence.Evidences.datePinned
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.alarmId
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.alarmDate
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmDate
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.alarmRuleId
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.alarmRuleName
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleName
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.dateInserted
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.dateInserted
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.entityId
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.entityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.entityName
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.entityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseAlarmEvidenceAdd..alarm.riskBasedPriorityMax
+      contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.riskBasedPriorityMax
       description: ''
   - name: lr-case-note-evidence-add
     description: ''
@@ -1443,50 +1425,53 @@ script:
       required: true
       isArray: false
     outputs:
+    - type: String
+      contextPath: LogRhythm.NoteEvidence.CaseID
+      description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.number
+      contextPath: LogRhythm.NoteEvidence.Evidences.number
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.dateCreated
+      contextPath: LogRhythm.NoteEvidence.Evidences.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.dateUpdated
+      contextPath: LogRhythm.NoteEvidence.Evidences.dateUpdated
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.createdBy.number
+      contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.createdBy.name
+      contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.createdBy.disabled
+      contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.lastUpdatedBy.number
+      contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.lastUpdatedBy.name
+      contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.lastUpdatedBy.disabled
+      contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.type
+      contextPath: LogRhythm.NoteEvidence.Evidences.type
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.status
+      contextPath: LogRhythm.NoteEvidence.Evidences.status
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.statusMessage
+      contextPath: LogRhythm.NoteEvidence.Evidences.statusMessage
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.text
+      contextPath: LogRhythm.NoteEvidence.Evidences.text
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.pinned
+      contextPath: LogRhythm.NoteEvidence.Evidences.pinned
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseNoteEvidenceAdd.datePinned
+      contextPath: LogRhythm.NoteEvidence.Evidences.datePinned
       description: ''
   - name: lr-case-file-evidence-add
     description: ''
@@ -1500,50 +1485,53 @@ script:
       required: true
       isArray: false
     outputs:
+    - type: String
+      contextPath: LogRhythm.FileEvidence.CaseID
+      description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.number
+      contextPath: LogRhythm.FileEvidence.Evidences.number
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.dateCreated
+      contextPath: LogRhythm.FileEvidence.Evidences.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.dateUpdated
+      contextPath: LogRhythm.FileEvidence.Evidences.dateUpdated
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.createdBy.number
+      contextPath: LogRhythm.FileEvidence.Evidences.createdBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.createdBy.name
+      contextPath: LogRhythm.FileEvidence.Evidences.createdBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.createdBy.disabled
+      contextPath: LogRhythm.FileEvidence.Evidences.createdBy.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.lastUpdatedBy.number
+      contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.lastUpdatedBy.name
+      contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.lastUpdatedBy.disabled
+      contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.type
+      contextPath: LogRhythm.FileEvidence.Evidences.type
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.status
+      contextPath: LogRhythm.FileEvidence.Evidences.status
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.statusMessage
+      contextPath: LogRhythm.FileEvidence.Evidences.statusMessage
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.text
+      contextPath: LogRhythm.FileEvidence.Evidences.text
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.pinned
+      contextPath: LogRhythm.FileEvidence.Evidences.pinned
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseFileEvidenceAdd.datePinned
+      contextPath: LogRhythm.FileEvidence.Evidences.datePinned
       description: ''
   - name: lr-case-evidence-delete
     description: ''
@@ -1591,91 +1579,91 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsAdd.dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsAdd.dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsAdd.dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsAdd.owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsAdd.lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsAdd.dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsAdd.resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsAdd.resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsAdd.resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsAdd.collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsAdd.tags.number
+      contextPath: LogRhythm.Case.tags.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsAdd.tags.text
+      contextPath: LogRhythm.Case.tags.text
       description: ''
   - name: lr-case-tags-remove
     description: ''
@@ -1690,85 +1678,85 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.id
+      contextPath: LogRhythm.Case.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.number
+      contextPath: LogRhythm.Case.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.externalId
+      contextPath: LogRhythm.Case.externalId
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsRemove.dateCreated
+      contextPath: LogRhythm.Case.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsRemove.dateUpdated
+      contextPath: LogRhythm.Case.dateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsRemove.dateClosed
+      contextPath: LogRhythm.Case.dateClosed
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.owner.number
+      contextPath: LogRhythm.Case.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.owner.name
+      contextPath: LogRhythm.Case.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsRemove.owner.disabled
+      contextPath: LogRhythm.Case.owner.disabled
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.lastUpdatedBy.number
+      contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.lastUpdatedBy.name
+      contextPath: LogRhythm.Case.lastUpdatedBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsRemove.lastUpdatedBy.disabled
+      contextPath: LogRhythm.Case.lastUpdatedBy.disabled
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.name
+      contextPath: LogRhythm.Case.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.status.name
+      contextPath: LogRhythm.Case.status.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.status.number
+      contextPath: LogRhythm.Case.status.number
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.priority
+      contextPath: LogRhythm.Case.priority
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.CaseTagsRemove.dueDate
+      contextPath: LogRhythm.Case.dueDate
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsRemove.resolution
+      contextPath: LogRhythm.Case.resolution
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsRemove.resolutionDateUpdated
+      contextPath: LogRhythm.Case.resolutionDateUpdated
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.CaseTagsRemove.resolutionLastUpdatedBy
+      contextPath: LogRhythm.Case.resolutionLastUpdatedBy
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.summary
+      contextPath: LogRhythm.Case.summary
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.entity.number
+      contextPath: LogRhythm.Case.entity.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.entity.name
+      contextPath: LogRhythm.Case.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.entity.fullName
+      contextPath: LogRhythm.Case.entity.fullName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseTagsRemove.collaborators.number
+      contextPath: LogRhythm.Case.collaborators.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseTagsRemove.collaborators.name
+      contextPath: LogRhythm.Case.collaborators.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseTagsRemove.collaborators.disabled
+      contextPath: LogRhythm.Case.collaborators.disabled
       description: ''
   - name: lr-tags-list
     description: ''
@@ -1814,23 +1802,26 @@ script:
       required: true
       isArray: false
     outputs:
-    - type: Number
-      contextPath: LogrhythmV2.CaseCollaboratorsList.owner.number
-      description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCollaboratorsList.owner.name
-      description: ''
-    - type: Boolean
-      contextPath: LogrhythmV2.CaseCollaboratorsList.owner.disabled
+      contextPath: LogRhythm.CaseCollaborator.CaseID
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCollaboratorsList.collaborators.number
+      contextPath: LogRhythm.CaseCollaborator.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCollaboratorsList.collaborators.name
+      contextPath: LogRhythm.CaseCollaborator.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseCollaboratorsList.collaborators.disabled
+      contextPath: LogRhythm.CaseCollaborator.owner.disabled
+      description: ''
+    - type: Number
+      contextPath: LogRhythm.CaseCollaborator.collaborators.number
+      description: ''
+    - type: String
+      contextPath: LogRhythm.CaseCollaborator.collaborators.name
+      description: ''
+    - type: Boolean
+      contextPath: LogRhythm.CaseCollaborator.collaborators.disabled
       description: ''
   - name: lr-case-collaborators-update
     description: ''
@@ -1848,23 +1839,26 @@ script:
       required: true
       isArray: false
     outputs:
-    - type: Number
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.owner.number
-      description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.owner.name
-      description: ''
-    - type: Boolean
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.owner.disabled
+      contextPath: LogRhythm.CaseCollaborator.CaseID
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.collaborators.number
+      contextPath: LogRhythm.CaseCollaborator.owner.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.collaborators.name
+      contextPath: LogRhythm.CaseCollaborator.owner.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.CaseCollaboratorsUpdate.collaborators.disabled
+      contextPath: LogRhythm.CaseCollaborator.owner.disabled
+      description: ''
+    - type: Number
+      contextPath: LogRhythm.CaseCollaborator.collaborators.number
+      description: ''
+    - type: String
+      contextPath: LogRhythm.CaseCollaborator.collaborators.name
+      description: ''
+    - type: Boolean
+      contextPath: LogRhythm.CaseCollaborator.collaborators.disabled
       description: ''
   - name: lr-entities-list
     description: ''
@@ -2238,91 +2232,91 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.listType
+      contextPath: LogRhythm.ListDetails.listType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.status
+      contextPath: LogRhythm.ListDetails.status
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.name
+      contextPath: LogRhythm.ListDetails.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.useContext
+      contextPath: LogRhythm.ListDetails.useContext
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.autoImportOption.enabled
+      contextPath: LogRhythm.ListDetails.autoImportOption.enabled
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.autoImportOption.usePatterns
+      contextPath: LogRhythm.ListDetails.autoImportOption.usePatterns
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.autoImportOption.replaceExisting
+      contextPath: LogRhythm.ListDetails.autoImportOption.replaceExisting
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.id
+      contextPath: LogRhythm.ListDetails.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.guid
+      contextPath: LogRhythm.ListDetails.guid
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.dateCreated
+      contextPath: LogRhythm.ListDetails.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.dateUpdated
+      contextPath: LogRhythm.ListDetails.dateUpdated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.revisitDate
+      contextPath: LogRhythm.ListDetails.revisitDate
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.readAccess
+      contextPath: LogRhythm.ListDetails.readAccess
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.writeAccess
+      contextPath: LogRhythm.ListDetails.writeAccess
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.restrictedRead
+      contextPath: LogRhythm.ListDetails.restrictedRead
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.entityName
+      contextPath: LogRhythm.ListDetails.entityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.entryCount
+      contextPath: LogRhythm.ListDetails.entryCount
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.needToNotify
+      contextPath: LogRhythm.ListDetails.needToNotify
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.doesExpire
+      contextPath: LogRhythm.ListDetails.doesExpire
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.owner
+      contextPath: LogRhythm.ListDetails.owner
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.listItemsCount
+      contextPath: LogRhythm.ListDetails.listItemsCount
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.displayValue
+      contextPath: LogRhythm.ListDetails.items.displayValue
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.expirationDate
+      contextPath: LogRhythm.ListDetails.items.expirationDate
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.isExpired
+      contextPath: LogRhythm.ListDetails.items.isExpired
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.isListItem
+      contextPath: LogRhythm.ListDetails.items.isListItem
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.isPattern
+      contextPath: LogRhythm.ListDetails.items.isPattern
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.listItemDataType
+      contextPath: LogRhythm.ListDetails.items.listItemDataType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.listItemType
+      contextPath: LogRhythm.ListDetails.items.listItemType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListDetailsAndItemsGet.items.value
+      contextPath: LogRhythm.ListDetails.items.value
       description: ''
   - name: lr-list-items-add
     description: ''
@@ -2337,67 +2331,67 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.listType
+      contextPath: LogRhythm.ListItemsAdd.listType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.status
+      contextPath: LogRhythm.ListItemsAdd.status
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.name
+      contextPath: LogRhythm.ListItemsAdd.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.useContext
+      contextPath: LogRhythm.ListItemsAdd.useContext
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.autoImportOption.enabled
+      contextPath: LogRhythm.ListItemsAdd.autoImportOption.enabled
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.autoImportOption.usePatterns
+      contextPath: LogRhythm.ListItemsAdd.autoImportOption.usePatterns
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.autoImportOption.replaceExisting
+      contextPath: LogRhythm.ListItemsAdd.autoImportOption.replaceExisting
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsAdd.id
+      contextPath: LogRhythm.ListItemsAdd.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.guid
+      contextPath: LogRhythm.ListItemsAdd.guid
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsAdd.dateCreated
+      contextPath: LogRhythm.ListItemsAdd.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsAdd.dateUpdated
+      contextPath: LogRhythm.ListItemsAdd.dateUpdated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsAdd.revisitDate
+      contextPath: LogRhythm.ListItemsAdd.revisitDate
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.readAccess
+      contextPath: LogRhythm.ListItemsAdd.readAccess
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.writeAccess
+      contextPath: LogRhythm.ListItemsAdd.writeAccess
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.restrictedRead
+      contextPath: LogRhythm.ListItemsAdd.restrictedRead
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsAdd.entityName
+      contextPath: LogRhythm.ListItemsAdd.entityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsAdd.entryCount
+      contextPath: LogRhythm.ListItemsAdd.entryCount
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.needToNotify
+      contextPath: LogRhythm.ListItemsAdd.needToNotify
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsAdd.doesExpire
+      contextPath: LogRhythm.ListItemsAdd.doesExpire
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsAdd.owner
+      contextPath: LogRhythm.ListItemsAdd.owner
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsAdd.listItemsCount
+      contextPath: LogRhythm.ListItemsAdd.listItemsCount
       description: ''
   - name: lr-list-items-remove
     description: ''
@@ -2412,67 +2406,67 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.listType
+      contextPath: LogRhythm.ListItemsRemove.listType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.status
+      contextPath: LogRhythm.ListItemsRemove.status
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.name
+      contextPath: LogRhythm.ListItemsRemove.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.useContext
+      contextPath: LogRhythm.ListItemsRemove.useContext
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.autoImportOption.enabled
+      contextPath: LogRhythm.ListItemsRemove.autoImportOption.enabled
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.autoImportOption.usePatterns
+      contextPath: LogRhythm.ListItemsRemove.autoImportOption.usePatterns
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.autoImportOption.replaceExisting
+      contextPath: LogRhythm.ListItemsRemove.autoImportOption.replaceExisting
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsRemove.id
+      contextPath: LogRhythm.ListItemsRemove.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.guid
+      contextPath: LogRhythm.ListItemsRemove.guid
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsRemove.dateCreated
+      contextPath: LogRhythm.ListItemsRemove.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsRemove.dateUpdated
+      contextPath: LogRhythm.ListItemsRemove.dateUpdated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListItemsRemove.revisitDate
+      contextPath: LogRhythm.ListItemsRemove.revisitDate
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.readAccess
+      contextPath: LogRhythm.ListItemsRemove.readAccess
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.writeAccess
+      contextPath: LogRhythm.ListItemsRemove.writeAccess
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.restrictedRead
+      contextPath: LogRhythm.ListItemsRemove.restrictedRead
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListItemsRemove.entityName
+      contextPath: LogRhythm.ListItemsRemove.entityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsRemove.entryCount
+      contextPath: LogRhythm.ListItemsRemove.entryCount
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.needToNotify
+      contextPath: LogRhythm.ListItemsRemove.needToNotify
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListItemsRemove.doesExpire
+      contextPath: LogRhythm.ListItemsRemove.doesExpire
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsRemove.owner
+      contextPath: LogRhythm.ListItemsRemove.owner
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListItemsRemove.listItemsCount
+      contextPath: LogRhythm.ListItemsRemove.listItemsCount
       description: ''
   - name: lr-execute-search-query
     description: ''
@@ -3499,20 +3493,11 @@ script:
       required: false
       isArray: false
     outputs:
-    - type: Number
-      contextPath: LogrhythmV2.ExecuteSearchQuery.StatusCode
+    - type: String
+      contextPath: Logrhythm.Search.Task.TaskId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ExecuteSearchQuery.StatusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.ExecuteSearchQuery.ResponseMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.ExecuteSearchQuery.TaskStatus
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.ExecuteSearchQuery.TaskId
+      contextPath: Logrhythm.Search.Task.StatusMessage
       description: ''
   - name: lr-get-query-result
     description: ''
@@ -3527,24 +3512,63 @@ script:
       isArray: false
       defaultValue: "50"
     outputs:
-    - type: Number
-      contextPath: LogrhythmV2.GetQueryResult.StatusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.GetQueryResult.StatusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.GetQueryResult.ResponseMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.GetQueryResult.TaskStatus
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.GetQueryResult.FilteredLogsCount
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.GetQueryResult.AllLogsCount
-      description: ''
+    - contextPath: Logrhythm.Search.Results.TaskStatus
+      description: Task status.
+      type: String
+    - contextPath: Logrhythm.Search.Results.TaskID
+      description: Task ID.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.originEntityId
+      description: Entity ID.
+      type: Number
+    - contextPath: Logrhythm.Search.Results.Items.impactedIp
+      description: Impacted IP.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
+      description: Classification name.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.logSourceName
+      description: Log source name.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.entityName
+      description: Entity name.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.normalDate
+      description: Date.
+      type: Date
+    - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
+      description: Vendor log message.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.priority
+      description: Log priority.
+      type: Number
+    - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
+      description: Sequence number.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.originHostId
+      description: Origin host ID.
+      type: Number
+    - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
+      description: Logrhythm rule ID.
+      type: Number
+    - contextPath: Logrhythm.Search.Results.Items.originIp
+      description: Origin IP.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
+      description: Logrhythm rule name.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
+      description: Log source host ID.
+      type: Number
+    - contextPath: Logrhythm.Search.Results.Items.originHost
+      description: Origin host.
+      type: String
+    - contextPath: Logrhythm.Search.Results.Items.logDate
+      description: Log date.
+      type: Date
+    - contextPath: Logrhythm.Search.Results.Items.classificationName
+      description: Log classification name.
+      type: String
   - name: lr-add-host
     description: ''
     arguments:
@@ -3661,46 +3685,46 @@ script:
       - Windows
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.AddHost.id
+      contextPath: LogRhythm.Host.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AddHost.entity.id
+      contextPath: LogRhythm.Host.entity.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.entity.name
+      contextPath: LogRhythm.Host.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.name
+      contextPath: LogRhythm.Host.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.riskLevel
+      contextPath: LogRhythm.Host.riskLevel
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.threatLevel
+      contextPath: LogRhythm.Host.threatLevel
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.threatLevelComments
+      contextPath: LogRhythm.Host.threatLevelComments
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.recordStatusName
+      contextPath: LogRhythm.Host.recordStatusName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.hostZone
+      contextPath: LogRhythm.Host.hostZone
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AddHost.location.id
+      contextPath: LogRhythm.Host.location.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.os
+      contextPath: LogRhythm.Host.os
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.AddHost.useEventlogCredentials
+      contextPath: LogRhythm.Host.useEventlogCredentials
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AddHost.osType
+      contextPath: LogRhythm.Host.osType
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AddHost.dateUpdated
+      contextPath: LogRhythm.Host.dateUpdated
       description: ''
   - name: endpoint
     description: 'Returns information about an endpoint.'
