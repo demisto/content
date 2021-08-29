@@ -1524,13 +1524,12 @@ def search_url_command(url, reliability, create_relationships):
     relationships = []
 
     for url_name in url_list:
-        # url_name = convert_url_to_ascii_character(url_name)
-
         raw_res = search_indicator('url', convert_url_to_ascii_character(url_name))
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
         indicator = raw_res.get('indicator')
+        indicator['indicatorValue'] = url_name
         raw_tags = raw_res.get('tags')
 
         score = calculate_dbot_score(indicator, indicator_type)
