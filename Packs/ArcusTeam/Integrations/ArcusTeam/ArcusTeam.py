@@ -18,14 +18,14 @@ VERSION = "1.0.0"
 
 
 class Client(BaseClient):
-    
-    
+
+
     def get_devices(self, vendor, model, series, firmware_version):
 
         return self._http_request(
             method='POST',
             url_suffix=f'/get_devices',
-            params={
+            json_data = {
                 "vendor": vendor,
                 "model": model,
                 "series": series,
@@ -33,14 +33,14 @@ class Client(BaseClient):
                 "version": VERSION
             }
         )
-    
+
     def get_vulnerabities(self, firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields):
 
 
         return self._http_request(
             method='POST',
             url_suffix=f'/get_vulnerabilities',
-            params = {
+            json_data = {
                     "firmwareId": firmwareId,
                     "version": VERSION,
                     "deviceId": deviceId,
@@ -96,14 +96,13 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     :return: List of matching devices for the given device.
     """
     result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""), series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
-    resultJson = result.json()
-    markdown = '## Found ' + str(len(resultJson)) + ' devices\n'
-    markdown += "".join(list(map(deviceToMarkdown, resultJson)))
+    markdown = '## Found ' + str(len(result)) + ' devices\n'
+    markdown += "".join(list(map(deviceToMarkdown, result)))
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="ArcusTeamDevices",
         outputs_key_field="",
-        outputs={'devices': resultJson},
+        outputs={'devices': result},
     )
 
 
@@ -118,17 +117,16 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
     sortField = args.get("sort_field", "risk")
 
     result = client.get_vulnerabities(firmwareId=firmwareId, deviceId=deviceId, pageSize=pageSize, page=page, sortField=sortField, sortOrder=sortOrder,returnFields=returnFields)
-    if len(result.json().get('code', '')) > 0:
-        raise Exception(result.json().get('message'))
-    resultJson = result.json()
-    resultJson['results'] = list(map(getEditIssue(returnFields), resultJson.get("results")))
+    if len(result.get('code', '')) > 0:
+        raise Exception(result.get('message'))
+    result['results'] = list(map(getEditIssue(returnFields), result.get("results")))
     markdown = '## Scan results\n'
 
-    if len(resultJson.get('results')) > 0:
+    if len(result.get('results')) > 0:
         markdown += tableToMarkdown(
-            'Number of CVE\'s found: ' + str(resultJson.get("max_items")),
-            resultJson.get('results'),
-            headers=list(resultJson.get('results')[0].keys())
+            'Number of CVE\'s found: ' + str(result.get("max_items")),
+            result.get('results'),
+            headers=list(result.get('results')[0].keys())
         )
     else:
         markdown += "No results"
@@ -137,7 +135,7 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=markdown,
         outputs_prefix="ArcusTeamVulnerabilities",
         outputs_key_field="",
-        outputs=result.json(),
+        outputs=result,
     )
 
 
