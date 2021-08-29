@@ -2664,8 +2664,8 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
 def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
     response = delete_host_groups(host_group_ids)
     deleted_ids = response.get('resources')
-    readable = '\n'.join([f'host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
-        if deleted_ids else ''
+    readable = '\n'.join([f'Host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
+        if deleted_ids else f'Host groups {host_group_ids} are not deleted'
     return CommandResults(readable_output=readable)
 
 
