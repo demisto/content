@@ -1,4 +1,4 @@
-Use this pack to create and manage AWS users and groups,
+Use this pack to create and manage AWS users and groups.
 
 ## What does this pack do?
 - Create an AWS user.

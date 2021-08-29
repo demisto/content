@@ -52,7 +52,7 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-class TestCURDCommands:
+class TestGetUserCommand:
     def test_get_user_command__existing_user(self):
         """
         Given:
@@ -138,6 +138,8 @@ class TestCURDCommands:
         assert outputs.get('errorCode') == 500
         assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR'
 
+
+class TestCreateUserCommand:
     def test_create_user_command__success(self):
         """
         Given:
@@ -199,6 +201,8 @@ class TestCURDCommands:
         assert outputs.get('details', {}).get('first_name') == 'new_mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'new_mock_last_name'
 
+
+class TestUpdateUserCommand:
     def test_update_user_command__non_existing_user(self):
         """
         Given:
@@ -288,6 +292,8 @@ class TestCURDCommands:
         assert outputs.get('details', {}).get('first_name') == 'new_mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'new_mock_last_name'
 
+
+class TestDisableUserCommand:
     def test_disable_user_command__non_existing_user(self):
         """
         Given:
@@ -316,7 +322,7 @@ class TestCURDCommands:
         assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
-class TestGroupCommands:
+class TestGetGroupCommand:
     def test_get_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
@@ -333,24 +339,24 @@ class TestGroupCommands:
     def test_get_group__non_existing_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
-        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
-            m.get(f'{groupUri}1234', status_code=404, json={'totalResults': 0, 'Resources': []})
+            m.get(f'{groupUri}1234', status_code=404, text='Group Not Found')
 
-            get_group_command(client, args)
+            with pytest.raises(Exception) as e:
+                get_group_command(client, args)
 
-        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
-        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
+        assert e.value.res.status_code == 404
+        assert 'Group Not Found' in str(e.value)
 
-    def test_get_group__id_and_display_name_empty(self, mocker):
+    def test_get_group__id_and_display_name_empty(self):
         client = mock_client()
         args = {"scim": "{}"}
 
-        with pytest.raises(DemistoException) as e:
+        with pytest.raises(Exception) as e:
             get_group_command(client, args)
 
-            assert str(e) == "You must supply either 'id' or 'displayName' in the scim data"
+        assert str(e.value) == "You must supply either 'id' or 'displayName' in the scim data"
 
     def test_get_group__display_name(self, mocker):
         client = mock_client()
@@ -364,6 +370,8 @@ class TestGroupCommands:
 
         assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
 
+
+class TestCreateGroupCommand:
     def test_create_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
@@ -379,16 +387,27 @@ class TestGroupCommands:
     def test_create_group__group_already_exist(self, mocker):
         client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
-        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
-            m.post(f'{groupUri}', status_code=400, json={"code": 400, "message": "Group already exist"})
+            m.post(f'{groupUri}', status_code=400, text="Group already exist")
 
+            with pytest.raises(Exception) as e:
+                create_group_command(client, args)
+
+        assert e.value.res.status_code == 400
+        assert 'Group already exist' in str(e.value)
+
+    def test_create_group__display_name_empty(self):
+        client = mock_client()
+        args = {"scim": "{}"}
+
+        with pytest.raises(Exception) as e:
             create_group_command(client, args)
 
-        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 400
-        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == "Group already exist"
+        assert str(e.value) == "You must supply 'displayName' of the group in the scim data"
 
+
+class TestUpdateGroupCommand:
     def test_update_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}", "memberIdsToAdd": ["111111"],
@@ -402,19 +421,17 @@ class TestGroupCommands:
 
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
 
-    # def test_update_group__nothing_to_update(self, mocker):
-    #     client = mock_client()
-    #     args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
-    #     mock_result = mocker.patch('AWSILM.CommandResults')
-    #
-    #     with requests_mock.Mocker() as m:
-    #         m.patch(f'{groupUri}1234', status_code=204, json={})
-    #
-    #         update_group_command(client, args)
-    #
-    #     assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
-    #     assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
+    def test_update_group__nothing_to_update(self):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
 
+        with pytest.raises(Exception) as e:
+            update_group_command(client, args)
+
+        assert str(e.value) == "You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments"
+
+
+class TestDeleteGroupCommand:
     def test_delete_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
@@ -430,15 +447,27 @@ class TestGroupCommands:
     def test_delete_group__non_existing_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
-        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
             m.delete(f'{groupUri}1234', status_code=404, json={})
 
+            with requests_mock.Mocker() as m:
+                m.delete(f'{groupUri}1234', status_code=404, text="Group Not Found")
+
+                with pytest.raises(Exception) as e:
+                    delete_group_command(client, args)
+
+            assert e.value.res.status_code == 404
+            assert 'Group Not Found' in str(e.value)
+
+    def test_delete_group__id_is_empty(self):
+        client = mock_client()
+        args = {"scim": "{}"}
+
+        with pytest.raises(Exception) as e:
             delete_group_command(client, args)
 
-        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
-        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == "Group Not Found"
+        assert str(e.value) == "The group id needs to be provided."
 
 
 def test_get_mapping_fields_command__runs_the_all_integration_flow(mocker):

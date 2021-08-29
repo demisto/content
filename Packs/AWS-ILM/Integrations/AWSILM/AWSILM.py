@@ -20,7 +20,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
         operation = {
             "op": "replace" if key in old_user_data.keys() else "add",
             "path": key,
-            "value": [value] if key in ("emails", "phoneNumbers", "address") else value
+            "value": [value] if key in ("emails", "phoneNumbers", "address") else value,
         }
         operations.append(operation)
 
@@ -54,7 +54,7 @@ class Client(BaseClient):
         :rtype: ``Optional[IAMUserAppData]``
         """
         params = {
-            'filter': f'userName eq "{user_name}"'  # I'm not sure email is always the user name.
+            'filter': f'userName eq "{user_name}"'
         }
 
         res = self._http_request(
@@ -193,55 +193,45 @@ class Client(BaseClient):
 
         return IAMUserAppData(user_id, username, is_active, res)
 
-    def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
-        if headers is None:
-            headers = self._headers
-        full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
-
-        res = requests.request(
-            method,
-            full_url,
-            verify=self._verify,
-            headers=headers,
-            params=params,
-            json=data,
-        )
-        return res
-
     def get_group_by_id(self, group_id):
-        return self.http_request(
+        return self._http_request(
             method='GET',
             url_suffix=groupUri + group_id,
+            resp_type='response',
         )
 
     def search_group(self, group_name):
         params = {
             'filter': f'displayName eq "{group_name}"'
         }
-        return self.http_request(
+        return self._http_request(
             method="GET",
             url_suffix=groupUri,
             params=params,
+            resp_type='response',
         )
 
     def create_group(self, data):
-        return self.http_request(
+        return self._http_request(
             method="POST",
             url_suffix=groupUri,
             data=data,
+            resp_type='response',
         )
 
     def update_group(self, group_id, data):
-        return self.http_request(
+        return self._http_request(
             method="PATCH",
             url_suffix=groupUri + group_id,
             data=data,
+            resp_type='response',
         )
 
     def delete_group(self, group_id):
-        return self.http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix=groupUri + group_id,
+            resp_type='response',
         )
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -333,8 +323,8 @@ class OutputContext:
 
     def __init__(self, success=None, active=None, id=None, iden=None, username=None, email=None, errorCode=None,
                  errorMessage=None, details=None, displayName=None, members=None):
-        self.instanceName = demisto.callingContext['context']['IntegrationInstance']
-        self.brand = demisto.callingContext['context']['IntegrationBrand']
+        self.instanceName = demisto.callingContext.get('context', {}).get('IntegrationInstance')
+        self.brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
         self.command = demisto.command().replace('-', '_').title().replace('_', '')
         self.success = success
         self.active = active
@@ -365,7 +355,7 @@ class OutputContext:
 
 def verify_and_load_scim_data(scim):
     scim = json.loads(scim)
-    if type(scim) != dict:
+    if not isinstance(scim, dict):
         raise Exception("SCIM data is not a valid JSON")
     return scim
 
@@ -387,7 +377,7 @@ def get_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not (group_id or group_name):
-        raise DemistoException("You must supply either 'id' or 'displayName' in the scim data")
+        raise Exception("You must supply either 'id' or 'displayName' in the scim data")
 
     if not group_id:
         res = client.search_group(group_name)
@@ -468,7 +458,7 @@ def create_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_name:
-        raise DemistoException("You must supply 'displayName' of the group in the scim data")
+        raise Exception("You must supply 'displayName' of the group in the scim data")
 
     res = client.create_group(scim)
     res_json = res.json()
@@ -501,16 +491,16 @@ def update_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_id:
-        raise DemistoException("You must supply 'id' in the scim data")
+        raise Exception("You must supply 'id' in the scim data")
 
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
 
     if member_ids_to_add == member_ids_to_delete is None:
-        raise DemistoException("You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments")
+        raise Exception("You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments")
 
     if member_ids_to_add:
-        if type(member_ids_to_add) != list:
+        if not isinstance(member_ids_to_add, list):
             member_ids_to_add = json.loads(member_ids_to_add)
 
         for member_id in member_ids_to_add:
@@ -538,7 +528,7 @@ def update_group_command(client, args):
                 )
 
     if member_ids_to_delete:
-        if type(member_ids_to_delete) is not list:
+        if not isinstance(member_ids_to_delete, list):
             member_ids_to_delete = json.loads(member_ids_to_delete)
         for member_id in member_ids_to_delete:
             operation = {
@@ -595,7 +585,7 @@ def delete_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_id:
-        raise DemistoException("The group id needs to be provided.")
+        raise Exception("The group id needs to be provided.")
 
     res = client.delete_group(group_id)
     if res.status_code == 204:
@@ -713,10 +703,7 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
-    except DemistoException as error:
-        return_error(str(error), error)
-
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 

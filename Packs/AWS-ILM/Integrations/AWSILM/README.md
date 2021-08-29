@@ -1,5 +1,5 @@
-An Identity and Access Management integration template.
-
+Integrate with AWS-ILM Identity Access Management service to execute CRUD (create, read, update, and delete) and group (create, get, update, and delete) operations for employee lifecycle processes.
+For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 ## Configure AWS-ILM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
