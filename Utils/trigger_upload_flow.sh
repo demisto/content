@@ -42,7 +42,7 @@ function check_arguments {
   fi
 
   if [ -n "$production" ]; then
-    echo "Uploading to production bucket - ${production}."
+    echo "Uploading to production bucket."
   fi
 }
 
