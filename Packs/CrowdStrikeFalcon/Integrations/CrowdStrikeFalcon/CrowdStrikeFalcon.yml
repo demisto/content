@@ -2144,7 +2144,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the host
+      description: The name of the host.
       isArray: false
       name: name
       required: true
@@ -2254,7 +2254,7 @@ script:
         type: Date
   - arguments:
     - default: false
-      description: The ID of the host group to be deleted.
+      description: A comma-separated list of the IDs of the host groups to be deleted.
       isArray: true
       name: host_group_id
       required: true
@@ -2288,7 +2288,7 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Update a host group
+    description: Update a host group.
     execution: false
     name: cs-falcon-update-host-group
     outputs:
@@ -2391,7 +2391,7 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Add host group members
+    description: Add host group members.
     execution: false
     name: cs-falcon-add-host-group-members
     outputs:
@@ -2436,7 +2436,7 @@ script:
         required: true
         secret: false
     deprecated: false
-    description: Remove host group members
+    description: Remove host group members.
     execution: false
     name: cs-falcon-remove-host-group-members
     outputs:
@@ -2475,7 +2475,7 @@ script:
         secret: false
       - auto: PREDEFINED
         default: false
-        description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed"
+        description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed".
         isArray: false
         name: status
         predefined:
@@ -2489,7 +2489,7 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
