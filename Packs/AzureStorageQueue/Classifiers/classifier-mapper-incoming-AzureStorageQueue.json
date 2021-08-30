@@ -1,71 +1,48 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "d773ccd8-f0db-4f77-8a05-34d22803f486",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"Azure Storage Queue Incident": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Azure Storage Queue Expiration Time": {
-					"complex": null,
-					"simple": "ExpirationTime"
-				},
-				"Azure Storage Queue Insertation Time": {
-					"complex": null,
-					"simple": "InsertionTime"
-				},
-				"Azure Storage Queue Message ID": {
-					"complex": null,
-					"simple": "MessageId"
-				},
-				"Azure Storage Queue Message Text": {
-					"complex": null,
-					"simple": "MessageText"
-				},
-				"Azure Storage Queue Next Visible Time": {
-					"complex": null,
-					"simple": "TimeNextVisible"
-				},
-				"Azure Storage Queue PopReceipt": {
-					"complex": null,
-					"simple": "PopReceipt"
-				},
-				"Azure Storage Queue Queue Name": {
-					"complex": null,
-					"simple": "queue_name"
-				},
-				"Azure Storage Queue QueueCount": {
-					"complex": null,
-					"simple": "DequeueCount"
-				}
-			}
-		}
-	},
-	"name": "Azure Storage Queue Mapper",
-	"nameRaw": "Azure Storage Queue Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Azure Storage Queue Mapper",
+    "mapping": {
+        "Azure Storage Queue Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Azure Storage Queue Expiration Time": {
+                    "complex": null,
+                    "simple": "ExpirationTime"
+                },
+                "Azure Storage Queue Insertation Time": {
+                    "complex": null,
+                    "simple": "InsertionTime"
+                },
+                "Azure Storage Queue Message ID": {
+                    "complex": null,
+                    "simple": "MessageId"
+                },
+                "Azure Storage Queue Message Text": {
+                    "complex": null,
+                    "simple": "MessageText"
+                },
+                "Azure Storage Queue Next Visible Time": {
+                    "complex": null,
+                    "simple": "TimeNextVisible"
+                },
+                "Azure Storage Queue PopReceipt": {
+                    "complex": null,
+                    "simple": "PopReceipt"
+                },
+                "Azure Storage Queue Queue Name": {
+                    "complex": null,
+                    "simple": "queue_name"
+                },
+                "Azure Storage Queue QueueCount": {
+                    "complex": null,
+                    "simple": "DequeueCount"
+                }
+            }
+        }
+    },
+    "name": "Azure Storage Queue Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

@@ -11,11 +11,11 @@ configuration:
   name: account_sas_token
   required: true
   type: 4
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -264,7 +264,7 @@ script:
     description: Delete an existing entity in a table.
     execution: false
     name: azure-storage-table-entity-delete
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: false
   longRunning: false
@@ -273,3 +273,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.0.1
+tests:
+- No tests (auto formatted)
