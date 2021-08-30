@@ -1,0 +1,191 @@
+category: IT Services
+commonfields:
+  id: AnsibleAlibabaCloud
+  version: -1
+configuration:
+- additionalinfo: Aliyun Cloud access key
+  display: Access Key
+  displaypassword: Access Secret Key
+  name: creds
+  required: true
+  type: 9
+- additionalinfo: Aliyun Cloud region
+  display: Region
+  name: alicloud_region
+  required: true
+  type: 0
+description: Manage Alibaba Cloud Elastic Compute Instances
+display: Ansible Alibaba Cloud
+fromversion: 6.0.0
+name: AnsibleAlibabaCloud
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: present
+      description: The state of the instance after operating.
+      name: state
+      predefined:
+      - present
+      - running
+      - stopped
+      - restarted
+      - absent
+    - description: Aliyun availability zone ID in which to launch the instance. If
+        it is not specified, it will be allocated by system automatically.
+      name: availability_zone
+    - description: Image ID used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: image_id
+    - description: Instance type used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: instance_type
+    - description: A list of security group IDs.
+      name: security_groups
+    - description: The subnet ID in which to launch the instances (VPC).
+      name: vswitch_id
+    - description: The name of ECS instance, which is a string of 2 to 128 Chinese
+        or English characters. It must begin with an uppercase/lowercase letter or
+        a Chinese character and can contain numerals, ".", "_" or "-". It cannot begin
+        with http:// or https://.
+      name: instance_name
+    - description: The description of ECS instance, which is a string of 2 to 256
+        characters. It cannot begin with http:// or https://.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: PayByBandwidth
+      description: Internet charge type of ECS instance.
+      name: internet_charge_type
+      predefined:
+      - PayByBandwidth
+      - PayByTraffic
+    - defaultValue: '200'
+      description: Maximum incoming bandwidth from the public network, measured in
+        Mbps (Megabits per second).
+      name: max_bandwidth_in
+    - defaultValue: '0'
+      description: Maximum outgoing bandwidth to the public network, measured in Mbps
+        (Megabits per second).
+      name: max_bandwidth_out
+    - description: Instance host name.
+      name: host_name
+    - description: The password to login instance. After rebooting instances, modified
+        password will take effect.
+      name: password
+    - auto: PREDEFINED
+      defaultValue: cloud_efficiency
+      description: Category of the system disk.
+      name: system_disk_category
+      predefined:
+      - cloud_efficiency
+      - cloud_ssd
+    - defaultValue: '40'
+      description: Size of the system disk, in GB. The valid values are 40~500.
+      name: system_disk_size
+    - description: Name of the system disk.
+      name: system_disk_name
+    - description: Description of the system disk.
+      name: system_disk_description
+    - defaultValue: '1'
+      description: The number of the new instance. An integer value which indicates
+        how many instances that match `count_tag` should be running. Instances are
+        either created or terminated based on this value.
+      name: count
+    - description: '`count` determines how many instances based on a specific tag
+        criteria should be present. This can be expressed in multiple ways and is
+        shown in the EXAMPLES section. The specified count_tag must already exist
+        or be passed in as the `instance_tags` option. If it is not specified, it
+        will be replaced by `instance_name`.'
+      name: count_tag
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Whether allocate a public ip for the new instance.
+      name: allocate_public_ip
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: PostPaid
+      description: The charge type of the instance.
+      name: instance_charge_type
+      predefined:
+      - PrePaid
+      - PostPaid
+    - defaultValue: '1'
+      description: 'The charge duration of the instance, in month. Required when `instance_charge_type=PrePaid`.
+
+        The valid value are [1-9, 12, 24, 36].'
+      name: period
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Whether automate renew the charge of the instance.
+      name: auto_renew
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      description: The duration of the automatic renew the charge of the instance.
+        Required when `auto_renew=True`.
+      name: auto_renew_period
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '6'
+      - '12'
+    - description: A list of instance ids. It is required when need to operate existing
+        instances. If it is specified, `count` will lose efficacy.
+      name: instance_ids
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Whether the current operation needs to be execute forcibly.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: A hash/dictionaries of instance tags, to add to the new instance
+        or for starting/stopping instance by tag. `{"key":"value"}`
+      name: instance_tags
+    - description: The name of key pair which is used to access ECS instance in SSH.
+      name: key_name
+    - description: User-defined data to customize the startup behaviors of an ECS
+        instance and to pass data into an ECS instance. It only will take effect when
+        launching the new ECS instances.
+      name: user_data
+    description: "Create, Start, Stop, Restart or Terminate an Instance in ECS. Add\
+      \ or Remove Instance to/from a Security Group.\n Further documentation available\
+      \ at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html"
+    name: ali-instance
+    outputs:
+    - contextPath: AlibabaCloud.AliInstance.instances
+      description: List of ECS instances
+      type: unknown
+    - contextPath: AlibabaCloud.AliInstance.ids
+      description: List of ECS instance IDs
+      type: unknown
+  - arguments:
+    - description: Aliyun availability zone ID in which to launch the instance
+      name: availability_zone
+    - description: A list of ECS instance names.
+      name: instance_names
+    - description: A list of ECS instance ids.
+      name: instance_ids
+    - description: A hash/dictionaries of instance tags. `{"key":"value"}`
+      name: instance_tags
+    description: "Gather information on instances of Alibaba Cloud ECS.\n Further\
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
+    name: ali-instance-info
+    outputs:
+    - contextPath: AlibabaCloud.AliInstanceInfo.instances
+      description: List of ECS instances
+      type: unknown
+    - contextPath: AlibabaCloud.AliInstanceInfo.ids
+      description: List of ECS instance IDs
+      type: unknown
+  dockerimage: demisto/ansible-runner:1.0.0.23806
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)

@@ -8,9 +8,8 @@ from operator import itemgetter
 from typing import Any, Dict, Tuple
 
 import dateparser
-import urllib3
-
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -1902,10 +1901,10 @@ def isolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1943,10 +1942,10 @@ def unisolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
@@ -2685,7 +2684,8 @@ def get_update_args(delta, inc_status):
     update_args = delta
     handle_outgoing_incident_owner_sync(update_args)
     handle_user_unassignment(update_args)
-    handle_outgoing_issue_closure(update_args, inc_status)
+    if update_args.get('closingUserId'):
+        handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 
