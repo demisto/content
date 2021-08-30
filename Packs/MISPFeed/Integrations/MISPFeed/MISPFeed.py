@@ -82,38 +82,49 @@ Client Class
 
 
 class Client(BaseClient):
-    def search_query(self, body: Dict[str, Any]) -> List:
-        result = []
+    def search_query(self, body: Dict[str, Any]) -> bytes:
+        """
+        Creates a request to MISP to get all attributes filtered by query in the body argument
+        Args:
+            body: Dictionary containing query to filter MISP attributes.
+        Returns: bytes representing the response from MISP API
+        """
         headers = {
             'Authorization': demisto.params().get('apikey'),
             "Accept": "application/json",
             'Content-Type': 'application/json'
         }
+        # TODO: change to demisto handle_http and check for wrong apikey
         response = requests.request("POST",
-                                    url=self._base_url + "attributes/restSearch",
+                                    url=f'{self._base_url}attributes/restSearch',
                                     headers=headers,
                                     data=json.dumps(body),
                                     verify=False)
-        try:
-            attributes = json.loads(response.content)['response']['Attribute']
-            for attribute in attributes:
-                if get_attribute_indicator_type(attribute):
-                    result.append({
-                        'value': attribute,
-                        'type': get_attribute_indicator_type(attribute),
-                        'raw_type': attribute['type'],
-                        'FeedURL': self._base_url,
-                    })
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
-        return result
+        return response.content
 
 
 """
 Helper Functions
 ----------------
 """
+
+
+def build_indicators_iterator(attributes_str: bytes, url: Optional[str]) -> List[Dict[str, Any]]:
+    indicators_iterator = []
+    try:
+        attributes_list: List[Dict[str, Any]] = json.loads(attributes_str)['response']['Attribute']
+        for attribute in attributes_list:
+            if get_attribute_indicator_type(attribute):
+                indicators_iterator.append({
+                    'value': attribute,
+                    'type': get_attribute_indicator_type(attribute),
+                    'raw_type': attribute['type'],
+                    'FeedURL': url,
+                })
+    except ValueError as err:
+        demisto.debug(str(err))
+        raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
+    return indicators_iterator
 
 
 def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
@@ -224,13 +235,15 @@ def fetch_indicators(client: Client,
                      attribute_type: List[str],
                      query: Optional[str],
                      tlp_color: Optional[str],
+                     url: Optional[str],
                      limit: int = -1) -> List[Dict]:
     if query:
         params_dict = clean_user_query(query)
     else:
         params_dict = build_params_dict(tags, attribute_type)
 
-    indicators_iterator = client.search_query(params_dict)
+    response = client.search_query(params_dict)
+    indicators_iterator = build_indicators_iterator(response, url)
     indicators = []
 
     if limit > 0:
@@ -376,8 +389,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
 
     attribute_type = argToList(args.get('attribute_type', ''))
-    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, limit)
-    human_readable = "Retrieved " + str(len(indicators)) + " indicators."
+    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
+    human_readable = f'Retrieved {str(len(indicators))} indicators.'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='Indicators',
@@ -400,7 +413,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
 
-    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color)
+    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color, params.get('url'))
     return indicators
 
 
