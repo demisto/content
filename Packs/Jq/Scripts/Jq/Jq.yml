@@ -7,7 +7,7 @@ comment: use jq to query a JSON object
 commonfields:
   id: JsonJq
   version: -1
-dockerimage: devdemisto/jq:1.0.0.24002
+dockerimage: demisto/jq:1.0.0.24021
 enabled: true
 name: JsonJq
 outputs:
