@@ -35,7 +35,7 @@ def get_incident_owners(incident_ids) -> list:
     incidents_from_query = json.loads(res[0]['Contents'])
 
     incident_owners = set([incident['owner'] for incident in incidents_from_query])
-    incident_owners.add(demisto.incident()["owner"])  # Add the campaign incident
+    incident_owners.add(demisto.incident()["owner"])  # Add the campaign incident owner
     incident_owners_res = list(filter(lambda x: x, incident_owners))
 
     return incident_owners_res
