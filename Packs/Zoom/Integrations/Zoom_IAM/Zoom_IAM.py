@@ -107,7 +107,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        user_data = {"action": "deactivate"}
+        user_data = {'action': 'deactivate'}
         return self.update_user(user_id, user_data)
 
     @staticmethod
@@ -238,9 +238,10 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     '''CRUD commands'''
-
     if command == 'iam-disable-user':
         user_profile = iam_command.disable_user(client, args)
+    elif command == 'iam-get-user':
+        user_profile = iam_command.get_user(client, args)
 
     if user_profile:
         return_results(user_profile)

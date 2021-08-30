@@ -23,6 +23,10 @@ configuration:
   name: disable-user-enabled
   required: false
   type: 8
+- display: Allow getting users
+  name: get-user-enabled
+  required: false
+  type: 8
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -81,6 +85,17 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: iam-get-user
   dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: false
