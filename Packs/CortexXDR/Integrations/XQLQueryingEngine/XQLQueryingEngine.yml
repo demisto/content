@@ -72,7 +72,7 @@ script:
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
-        The value is used to call the Get XQL Query Results API.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.status
       description: |-
@@ -363,6 +363,10 @@ script:
     polling: true
     name: xdr-xql-file-event-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -371,7 +375,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.query_cos
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
@@ -465,6 +469,10 @@ script:
     polling: true
     name: xdr-xql-process-event-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -478,7 +486,7 @@ script:
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.remaining_quota
+    - contextPath: PaloAltoNetwofrksXDR.XQL.BuiltInQuery.ProcessEvent.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -594,6 +602,10 @@ script:
     polling: true
     name: xdr-xql-dll-module-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -733,6 +745,10 @@ script:
     polling: true
     name: xdr-xql-network-connection-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -863,6 +879,10 @@ script:
     polling: true
     name: xdr-xql-registry-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -980,6 +1000,10 @@ script:
     polling: true
     name: xdr-xql-event-log-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -1100,6 +1124,10 @@ script:
     polling: true
     name: xdr-xql-dns-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -1248,6 +1276,10 @@ script:
     polling: true
     name: xdr-xql-file-dropper-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -1396,6 +1428,10 @@ script:
     polling: true
     name: xdr-xql-process-instance-network-activity-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -1544,6 +1580,10 @@ script:
     polling: true
     name: xdr-xql-process-causality-network-activity-query
     outputs:
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
