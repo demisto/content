@@ -427,6 +427,8 @@ def test_email_with_special_character(mocker):
     # )
     # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
     # encoding parts.
+    # **please DO NOT delete the commented tests**.
+    # they have been disabled in attempt to fix issue no. 40877, and they may be needed for a better solution in the future.
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
