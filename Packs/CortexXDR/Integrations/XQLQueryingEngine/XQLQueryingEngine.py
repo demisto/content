@@ -564,15 +564,15 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
 
     try:
         client.get_xql_quota({'request_data': {}})
-        message = 'ok'
-    except DemistoException as e:
-        if any(error in str(e) for error in ['Forbidden', 'Authorization', 'Unauthorized']):
-            message = 'Authorization failed, make sure API Key is correctly set'
-        elif 'Not Found' in str(e):
-            message = 'Authorization failed, make sure the URL is correct'
+        return 'ok'
+    except Exception as err:
+        if any(error in str(err) for error in ['Forbidden', 'Authorization', 'Unauthorized']):
+            raise Demisto
+            Exception('Authorization failed, make sure API Key is correctly set')
+        elif 'Not Found' in str(err):
+            raise DemistoException('Authorization failed, make sure the URL is correct')
         else:
-            raise e
-    return message
+            raise err
 
 
 def start_xql_query_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
