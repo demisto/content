@@ -40,10 +40,10 @@ configuration:
   - Critical
   required: false
   type: 15
-- additionalinfo: Whether to send or not automatic notifications to the configured notifications channel.
-  display: Automatic Notifications
+- additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
+  display: Disable Automatic Notifications
   hidden: false
-  name: disable_auto_notifications
+  name: auto_notifications
   required: false
   type: 8
   defaultvalue: false

@@ -1165,7 +1165,7 @@ def send_message():
         severity: float = float(demisto.args().get('severity'))
 
         # Adding disable and not enable because of adding new boolean parameter always defaults to false value in server
-        if (disable_auto_notifications := demisto.params().get('disable_auto_notifications')) is not None:
+        if (disable_auto_notifications := demisto.params().get('auto_notifications')) is not None:
             disable_auto_notifications = argToBoolean(disable_auto_notifications)
         else:
             disable_auto_notifications = False
