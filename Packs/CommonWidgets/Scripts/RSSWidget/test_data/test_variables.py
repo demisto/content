@@ -41,6 +41,13 @@ this is another summary
 
 '''
 
+ONE_ARTICLE_STRING_FORMATTED = '''**[Test Article without comma](https://test-article.com/)**
+{{color:#89A5C1}}(*Posted June 25, 2021 3:35 PM by Timor*)
+this is another summary
+
+
+'''
+
 ONE_ARTICLE_NOT_PUBLISHED = feedparser.util.FeedParserDict({
     'bozo': False,
     'entries': [

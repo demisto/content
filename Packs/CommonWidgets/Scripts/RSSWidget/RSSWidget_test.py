@@ -1,6 +1,6 @@
 import sys
 import pytest
-from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, \
+from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, ONE_ARTICLE_STRING_FORMATTED, \
     TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
     ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES, TWO_ARTICLES_STRING_REVERSED
 from RSSWidget import collect_entries_data_from_response, create_widget_content, main
@@ -29,12 +29,13 @@ def test_collect_entries_data_from_response(parsed_response, limit, expected_res
         assert entry in result
 
 
-@pytest.mark.parametrize('data, text_output', [
-    (NO_ARTICLE_RES, '## No entries were found.'),
-    (ONE_ARTICLE_RES, ONE_ARTICLE_STRING),
-    (TWO_ARTICLES_RES, TWO_ARTICLES_STRING)
+@pytest.mark.parametrize('data, is_version_ge_65, text_output', [
+    (NO_ARTICLE_RES, False, '## No entries were found.'),
+    (ONE_ARTICLE_RES, False, ONE_ARTICLE_STRING),
+    (ONE_ARTICLE_RES, True, ONE_ARTICLE_STRING_FORMATTED),
+    (TWO_ARTICLES_RES, False, TWO_ARTICLES_STRING)
 ])
-def test_create_widget_content(data, text_output):
+def test_create_widget_content(mocker, data, is_version_ge_65, text_output):
     """
     Given: Data about entries to show.
 
@@ -42,6 +43,9 @@ def test_create_widget_content(data, text_output):
 
     Then: Verify the markdown string.
     """
+    import RSSWidget as rssw
+    mocker.patch.object(rssw, 'is_demisto_version_ge', return_value=is_version_ge_65)
+    
     res = create_widget_content(data)
 
     assert res == text_output
