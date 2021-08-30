@@ -1,7 +1,7 @@
 import sys
 import pytest
-from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, ONE_ARTICLE_STRING_FORMATTED, \
-    TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
+from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, \
+    ONE_ARTICLE_STRING_FORMATTED, TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
     ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES, TWO_ARTICLES_STRING_REVERSED
 from RSSWidget import collect_entries_data_from_response, create_widget_content, main
 import demistomock as demisto
@@ -45,7 +45,7 @@ def test_create_widget_content(mocker, data, is_version_ge_65, text_output):
     """
     import RSSWidget as rssw
     mocker.patch.object(rssw, 'is_demisto_version_ge', return_value=is_version_ge_65)
-    
+
     res = create_widget_content(data)
 
     assert res == text_output

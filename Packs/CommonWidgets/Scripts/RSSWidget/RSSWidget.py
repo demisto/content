@@ -99,13 +99,13 @@ def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
 
     for entry_data in entries_data:
         content += f'**[{entry_data["title"]}]({entry_data["link"]})**\n'
-        
+
         # Markdown formatting is supported from 6.5
         if is_demisto_version_ge('6.5'):
             content += '{{color:#89A5C1}}' + f'(*Posted {entry_data["timestamp"]} by {entry_data["author"]}*)\n'
         else:
             content += f'*Posted {entry_data["timestamp"]} by {entry_data["author"]}*\n'
-        
+
         content += f'{entry_data["summary"]}\n'
         content += '\n\n'
 
