@@ -306,7 +306,7 @@ def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
         return int((datetime.utcnow() - relative).total_seconds()) * 1000
     except Exception as exc:
         raise DemistoException(f'Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, '
-                               f'years).\nstr({exc})')
+                               f'years).\n{str(exc)}')
 
 
 def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
