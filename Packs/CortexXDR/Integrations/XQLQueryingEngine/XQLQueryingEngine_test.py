@@ -288,7 +288,7 @@ def test_get_process_causality_network_activity_query():
     response = XQLQueryingEngine.get_process_causality_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK
- andactor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses,agent_id,
+ and actor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses,agent_id,
  action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,dns_query_name,
  action_app_id_transitions, action_total_download, action_total_upload, action_country,action_as_data,
  actor_process_image_sha256, actor_process_image_name , actor_process_image_path,actor_process_signature_vendor,
