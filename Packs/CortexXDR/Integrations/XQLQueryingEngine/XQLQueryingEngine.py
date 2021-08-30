@@ -567,8 +567,7 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
         return 'ok'
     except Exception as err:
         if any(error in str(err) for error in ['Forbidden', 'Authorization', 'Unauthorized']):
-            raise Demisto
-            Exception('Authorization failed, make sure API Key is correctly set')
+            raise DemistoException('Authorization failed, make sure API Key is correctly set')
         elif 'Not Found' in str(err):
             raise DemistoException('Authorization failed, make sure the URL is correct')
         else:
