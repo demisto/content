@@ -416,7 +416,8 @@ def test_email_with_special_character(mocker):
         '\xe3\x80\x90\xe2\x91\xa0'  # 【①
     ),
     (
-        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= =?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+        '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
         'メール�と�日本語文字が表示されない文字のテスト'
     )
 ])
