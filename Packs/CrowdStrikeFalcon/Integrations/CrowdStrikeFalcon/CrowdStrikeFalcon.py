@@ -138,7 +138,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
-HOST_GROUP_HEADERS = ['id', 'name', 'group_type', 'description',
+HOST_GROUP_HEADERS = ['id', 'name', 'group_type', 'description', 'assignment_rule',
                       'created_by', 'created_timestamp',
                       'modified_by', 'modified_timestamp']
 
