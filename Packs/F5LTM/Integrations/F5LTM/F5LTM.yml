@@ -1,0 +1,45 @@
+category: IT Services
+commonfields:
+  id: F5LTM
+  version: -1
+configuration:
+- defaultvalue: example.com
+  display: Server Address
+  name: server
+  required: true
+  type: 0
+- additionalinfo: The Username to use for connection
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Manages F5 LTM
+display: F5 LTM
+name: F5LTM
+script:
+  commands:
+  - deprecated: false
+    description: Get a list of all pools on the BigIP and print their names and their
+      members' names
+    execution: false
+    name: f5-ltm-get-pools
+  dockerimage: demisto/python3:3.9.5.21272
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: '6.0'
