@@ -74,7 +74,7 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution.
         The value is used to call the Get XQL Query Results API.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -207,7 +207,7 @@ script:
     polling: true
     name: xdr-xql-get-query-results
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -215,12 +215,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -363,7 +363,7 @@ script:
     polling: true
     name: xdr-xql-file-event-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -371,12 +371,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.query_cos
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -465,7 +465,7 @@ script:
     polling: true
     name: xdr-xql-process-event-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -473,12 +473,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -594,7 +594,7 @@ script:
     polling: true
     name: xdr-xql-dll-module-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -602,12 +602,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -733,7 +733,7 @@ script:
     polling: true
     name: xdr-xql-network-connection-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -741,12 +741,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -863,7 +863,7 @@ script:
     polling: true
     name: xdr-xql-registry-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -871,12 +871,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -980,7 +980,7 @@ script:
     polling: true
     name: xdr-xql-event-log-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -988,12 +988,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -1100,7 +1100,7 @@ script:
     polling: true
     name: xdr-xql-dns-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -1108,12 +1108,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -1248,7 +1248,7 @@ script:
     polling: true
     name: xdr-xql-file-dropper-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -1256,12 +1256,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -1396,7 +1396,7 @@ script:
     polling: true
     name: xdr-xql-process-instance-network-activity-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -1404,12 +1404,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
@@ -1544,7 +1544,7 @@ script:
     polling: true
     name: xdr-xql-process-causality-network-activity-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.Status
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
@@ -1552,12 +1552,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.QueryCost
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.RemainingQuota
+    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
