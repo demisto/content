@@ -2489,7 +2489,7 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: true
   longRunning: false
