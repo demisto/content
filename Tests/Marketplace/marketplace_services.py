@@ -1659,7 +1659,7 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            return task_status, content_items_result
+            return task_status
 
     def load_user_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
