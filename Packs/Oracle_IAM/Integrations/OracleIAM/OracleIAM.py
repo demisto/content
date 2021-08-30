@@ -62,7 +62,10 @@ class Client(BaseClient):
             'scope': 'urn:opc:idm:__myscopes__',
         }
 
-        token = self._http_request('POST', url_suffix='/oauth2/v1/token', headers=headers, data=data)
+        try:
+            token = self._http_request('POST', url_suffix='/oauth2/v1/token', headers=headers, data=data)
+        except DemistoException as e:
+            return e
         return token.get('access_token')
 
     def test(self):
@@ -389,7 +392,7 @@ class OutputContext:
                  errorMessage=None, details=None, displayName=None, members=None):
         self.instanceName = demisto.callingContext.get('context', {}).get('IntegrationInstance')
         self.brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-        self.command = demisto.command().replace('-', '_').title().replace('_', '')
+        self.command = demisto.command().replace('-', '_').title().replace('_', '').replace('Iam', '')
         self.success = success
         self.active = active
         self.id = id
@@ -444,9 +447,13 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 def test_module(client: Client):
     """ Tests connectivity with the client. """
-
-    client.test()
-    return_results('ok')
+    res = client.test()
+    if isinstance(res, DemistoException):
+        if 'Unauthorized' in str(res):
+            return 'Authorization Error: Make sure "Client ID" and "Client Secret" is correctly set'
+        else:
+            return str(res)
+    return 'ok'
 
 
 def get_group_command(client, args):
@@ -537,11 +544,13 @@ def update_group_command(client, args):
 
     if member_ids_to_add == member_ids_to_delete is None:
         raise Exception('You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the scim data')
+    
     operations = []
     member_ids_json_list = []
     if member_ids_to_add:
         if not isinstance(member_ids_to_add, list):
-            member_ids_to_add = json.loads(member_ids_to_add)
+            member_ids_to_add = safe_load_json(member_ids_to_add)
+
         for member_id in member_ids_to_add:
             member_ids_json_list.append(
                 {
@@ -560,7 +569,8 @@ def update_group_command(client, args):
 
     if member_ids_to_delete:
         if not isinstance(member_ids_to_delete, list):
-            member_ids_to_delete = json.loads(member_ids_to_delete)
+            member_ids_to_delete = safe_load_json(member_ids_to_delete)
+
         for member_id in member_ids_to_delete:
             operation = {
                 'op': 'remove',
@@ -702,7 +712,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
 
         elif command == 'iam-get-group':
             return_results(get_group_command(client, args))

@@ -10,7 +10,7 @@ configuration:
 - display: Client ID
   name: clientid
   required: true
-  type: 12
+  type: 0
 - display: Client Secret
   name: clientsecret
   required: true
@@ -58,8 +58,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Identity and Access Management integration template.
-display: OracleIAM
+description: Integrate with Oracle's services to execute CRUD and Group operations for employee lifecycle processes.
+display: Oracle IAM
 name: OracleIAM
 script:
   commands:
