@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT"],
-    "useCases": ["IT Services", "Asset Management"],
-    "keywords": []
+    "useCases": [],
+    "keywords": ["Asset Management"]
 }
