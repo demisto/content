@@ -356,7 +356,7 @@ class TestGetGroupCommand:
         with pytest.raises(Exception) as e:
             get_group_command(client, args)
 
-        assert str(e.value) == "You must supply either 'id' or 'displayName' in the scim data"
+        assert str(e.value) == 'You must supply either "id" or "displayName" in the scim data'
 
     def test_get_group__display_name(self, mocker):
         client = mock_client()
@@ -404,7 +404,7 @@ class TestCreateGroupCommand:
         with pytest.raises(Exception) as e:
             create_group_command(client, args)
 
-        assert str(e.value) == "You must supply 'displayName' of the group in the scim data"
+        assert str(e.value) == 'You must supply "displayName" of the group in the scim data'
 
 
 class TestUpdateGroupCommand:
@@ -428,7 +428,7 @@ class TestUpdateGroupCommand:
         with pytest.raises(Exception) as e:
             update_group_command(client, args)
 
-        assert str(e.value) == "You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments"
+        assert str(e.value) == 'You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the arguments'
 
 
 class TestDeleteGroupCommand:

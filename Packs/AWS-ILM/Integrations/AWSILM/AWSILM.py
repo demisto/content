@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 userUri = '/scim/v2/Users/'
 groupUri = '/scim/v2/Groups/'
-patchSchema = "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+patchSchema = 'urn:ietf:params:scim:api:messages:2.0:PatchOp'
 ERROR_CODES_TO_SKIP = [
     404
 ]
@@ -18,15 +18,15 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
     for key, value in new_user_data.items():
         operation = {
-            "op": "replace" if key in old_user_data.keys() else "add",
-            "path": key,
-            "value": [value] if key in ("emails", "phoneNumbers", "address") else value,
+            'op': 'replace' if key in old_user_data.keys() else 'add',
+            'path': key,
+            'value': [value] if key in ('emails', 'phoneNumbers', 'address') else value,
         }
         operations.append(operation)
 
     data = {
-        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-        "Operations": operations,
+        'schemas': [patchSchema],
+        'Operations': operations,
     }
 
     return data
@@ -134,14 +134,14 @@ class Client(BaseClient):
         """
 
         user_data = {
-            "schemas": [
-                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            'schemas': [
+                patchSchema
             ],
-            "Operations": [
+            'Operations': [
                 {
-                    "op": "replace",
-                    "path": "active",
-                    "value": "true",
+                    'op': 'replace',
+                    'path': 'active',
+                    'value': 'true',
                 }
             ]
         }
@@ -169,14 +169,14 @@ class Client(BaseClient):
         """
 
         user_data = {
-            "schemas": [
-                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            'schemas': [
+                patchSchema
             ],
-            "Operations": [
+            'Operations': [
                 {
-                    "op": "replace",
-                    "path": "active",
-                    "value": "false",
+                    'op': 'replace',
+                    'path': 'active',
+                    'value': 'false',
                 }
             ]
         }
@@ -205,7 +205,7 @@ class Client(BaseClient):
             'filter': f'displayName eq "{group_name}"'
         }
         return self._http_request(
-            method="GET",
+            method='GET',
             url_suffix=groupUri,
             params=params,
             resp_type='response',
@@ -213,23 +213,23 @@ class Client(BaseClient):
 
     def create_group(self, data):
         return self._http_request(
-            method="POST",
+            method='POST',
             url_suffix=groupUri,
-            data=data,
+            json_data=data,
             resp_type='response',
         )
 
     def update_group(self, group_id, data):
         return self._http_request(
-            method="PATCH",
+            method='PATCH',
             url_suffix=groupUri + group_id,
-            data=data,
+            json_data=data,
             resp_type='response',
         )
 
     def delete_group(self, group_id):
         return self._http_request(
-            method="DELETE",
+            method='DELETE',
             url_suffix=groupUri + group_id,
             resp_type='response',
         )
@@ -338,26 +338,19 @@ class OutputContext:
         self.displayName = displayName  # Used in group
         self.members = members  # Used in group
         self.data = {
-            "brand": self.brand,
-            "instanceName": self.instanceName,
-            "success": success,
-            "active": active,
-            "id": iden,
-            "username": username,
-            "email": email,
-            "errorCode": errorCode,
-            "errorMessage": errorMessage,
-            "details": details,
-            "displayName": displayName,
-            "members": members,
+            'brand': self.brand,
+            'instanceName': self.instanceName,
+            'success': success,
+            'active': active,
+            'id': iden,
+            'username': username,
+            'email': email,
+            'errorCode': errorCode,
+            'errorMessage': errorMessage,
+            'details': details,
+            'displayName': displayName,
+            'members': members,
         }
-
-
-def verify_and_load_scim_data(scim):
-    scim = json.loads(scim)
-    if not isinstance(scim, dict):
-        raise Exception("SCIM data is not a valid JSON")
-    return scim
 
 
 '''COMMAND FUNCTIONS'''
@@ -371,13 +364,13 @@ def test_module(client: Client):
 
 
 def get_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
     if not (group_id or group_name):
-        raise Exception("You must supply either 'id' or 'displayName' in the scim data")
+        raise Exception('You must supply either "id" or "displayName" in the scim data')
 
     if not group_id:
         res = client.search_group(group_name)
@@ -386,7 +379,7 @@ def get_group_command(client, args):
         if res.status_code == 200:
             if res_json.get('totalResults') < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
-                                                    errorMessage="Group Not Found", details=res_json)
+                                                    errorMessage='Group Not Found', details=res_json)
 
                 readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
@@ -436,7 +429,7 @@ def get_group_command(client, args):
                                             displayName=res_json.get('displayName'), details=res_json)
     elif res.status_code == 404:
         generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id, errorCode=404,
-                                            errorMessage="Group Not Found", details=res_json)
+                                            errorMessage='Group Not Found', details=res_json)
     else:
         generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id,
                                             errorCode=res_json.get('code'),
@@ -454,11 +447,11 @@ def get_group_command(client, args):
 
 
 def create_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
     group_name = scim.get('displayName')
 
     if not group_name:
-        raise Exception("You must supply 'displayName' of the group in the scim data")
+        raise Exception('You must supply "displayName" of the group in the scim data')
 
     res = client.create_group(scim)
     res_json = res.json()
@@ -485,19 +478,19 @@ def create_group_command(client, args):
 
 
 def update_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
     if not group_id:
-        raise Exception("You must supply 'id' in the scim data")
+        raise Exception('You must supply "id" in the scim data')
 
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
 
     if member_ids_to_add == member_ids_to_delete is None:
-        raise Exception("You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments")
+        raise Exception('You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the arguments')
 
     if member_ids_to_add:
         if not isinstance(member_ids_to_add, list):
@@ -505,9 +498,9 @@ def update_group_command(client, args):
 
         for member_id in member_ids_to_add:
             operation = {
-                "op": "add",
-                "path": "members",
-                "value": [{"value": member_id}]
+                'op': 'add',
+                'path': 'members',
+                'value': [{'value': member_id}]
             }
             group_input = {'schemas': [patchSchema], 'Operations': [operation]}
             res = client.update_group(group_id, group_input)
@@ -532,9 +525,9 @@ def update_group_command(client, args):
             member_ids_to_delete = json.loads(member_ids_to_delete)
         for member_id in member_ids_to_delete:
             operation = {
-                "op": "remove",
-                "path": "members",
-                "value": [{"value": member_id}]
+                'op': 'remove',
+                'path': 'members',
+                'value': [{'value': member_id}]
             }
             group_input = {'schemas': [patchSchema], 'Operations': [operation]}
             res = client.update_group(group_id, group_input)
@@ -560,7 +553,7 @@ def update_group_command(client, args):
     elif res.status_code == 404:
         res_json = res.json()
         generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage="Group/User Not Found or User not a member of group",
+                                            errorMessage='Group/User Not Found or User not a member of group',
                                             details=res_json)
     else:
         res_json = res.json()
@@ -580,12 +573,12 @@ def update_group_command(client, args):
 
 
 def delete_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
     if not group_id:
-        raise Exception("The group id needs to be provided.")
+        raise Exception('The group id needs to be provided.')
 
     res = client.delete_group(group_id)
     if res.status_code == 204:
@@ -593,7 +586,7 @@ def delete_group_command(client, args):
         generic_iam_context = OutputContext(success=True, iden=group_id, displayName=group_name, details=str(res_json))
     elif res.status_code == 404:
         generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage="Group Not Found", details=res.json())
+                                            errorMessage='Group Not Found', details=res.json())
     else:
         res_json = res.json()
         generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id,
@@ -640,11 +633,11 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    is_create_enabled = params.get("create_user_enabled")
-    is_enable_enabled = params.get("enable_user_enabled")
-    is_disable_enabled = params.get("disable_user_enabled")
-    is_update_enabled = params.get("update_user_enabled")
-    create_if_not_exists = params.get("create_if_not_exists")
+    is_create_enabled = params.get('create_user_enabled')
+    is_enable_enabled = params.get('enable_user_enabled')
+    is_disable_enabled = params.get('disable_user_enabled')
+    is_update_enabled = params.get('update_user_enabled')
+    create_if_not_exists = params.get('create_if_not_exists')
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out, 'username')
@@ -660,7 +653,7 @@ def main():
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201),
+        ok_codes=(200, 201, 204),
     )
 
     demisto.debug(f'Command being called is {command}')
