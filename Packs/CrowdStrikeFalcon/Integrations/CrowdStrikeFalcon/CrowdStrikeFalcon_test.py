@@ -2942,6 +2942,6 @@ def test_list_host_group_members(requests_mock):
         status_code=200
     )
     command_results = list_host_group_members_command()
-    actual_results = load_json('test_data/expected_list_hostgroup_members_results.json')
-    for actual_res, command_res in zip(actual_results, command_results):
-        assert actual_res == command_res.outputs
+    expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
+    for expected_results, ectual_results in zip(expected_results, command_results.outputs):
+        assert expected_results == ectual_results
