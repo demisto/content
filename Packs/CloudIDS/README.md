@@ -9,7 +9,10 @@ Google Cloud IDS, a next-generation advanced intrusion detection service that pr
   `Cloud_IDS-IP_Blacklist-GCP_Firewall_Append` will update the ip list to patch GCP firewall.
   
 #### Flow Chart of Playbook 
-* [IP Blacklist - GCP Firewall](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_README.md)
+* [Cloud_IDS-IP_Blacklist-GCP_Firewall](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_README.md)
+![Playbook Image](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine.png)
+![Playbook Image](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract.png)
+![Playbook Image](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_Append.png)
 
 ## Dependencies
 ### Packs
