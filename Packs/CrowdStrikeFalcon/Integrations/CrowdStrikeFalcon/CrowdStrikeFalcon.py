@@ -138,6 +138,10 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
+HOST_GROUP_HEADERS = ['id', 'name', 'group_type', 'description',
+                      'created_by', 'created_timestamp',
+                      'modified_by', 'modified_timestamp']
+
 STATUS_TEXT_TO_NUM = {'New': "20",
                       'Reopened': "25",
                       'In Progress': "30",
@@ -2569,10 +2573,11 @@ def create_host_group_command(name: str,
                                  group_type=group_type,
                                  description=description,
                                  assignment_rule=assignment_rule)
-    resources = response.get('resources')
+    host_groups = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
-                          outputs=resources,
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
                           raw_response=response)
 
 
@@ -2585,45 +2590,43 @@ def update_host_group_command(host_group_id: str,
                                  name=name,
                                  description=description,
                                  assignment_rule=assignment_rule)
-    resources = response.get('resources')
+    host_groups = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
-                          outputs=resources,
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
                           raw_response=response)
 
 
 def list_host_group_members_command(host_group_id: Optional[str] = None,
                                     filter: Optional[str] = None,
                                     offset: Optional[str] = None,
-                                    limit: Optional[str] = None) -> List[CommandResults]:
+                                    limit: Optional[str] = None) -> CommandResults:
     response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
     if not devices:
-        return [CommandResults(readable_output='No hosts are found',
-                               raw_response=response)]
-    command_results: List[CommandResults] = []
-    for single_device in devices:
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = list(SEARCH_DEVICE_KEY_MAP.values())
-        command_results.append(CommandResults(
-            outputs_prefix='CrowdStrike.Device',
-            outputs_key_field='ID',
-            outputs=entry,
-            readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
-            raw_response=response
-        ))
-
-    return command_results
+        return CommandResults(readable_output='No hosts are found',
+                              raw_response=response)
+    headers = list(SEARCH_DEVICE_KEY_MAP.values())
+    outputs = [get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP) for single_device in devices]
+    return CommandResults(
+        outputs_prefix='CrowdStrike.Device',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Devices', outputs, headers=headers, headerTransform=pascalToSpace),
+        raw_response=response
+    )
 
 
 def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
     response = change_host_group_members(action_name='add-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
-    resources = response.get('resources')
+    host_groups = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
-                          outputs=resources,
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
                           raw_response=response)
 
 
@@ -2631,10 +2634,11 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -
     response = change_host_group_members(action_name='remove-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
-    resources = response.get('resources')
+    host_groups = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
-                          outputs=resources,
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
                           raw_response=response)
 
 
@@ -2645,20 +2649,14 @@ def resolve_incident_command(ids: List[str], status: str):
 
 
 def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
-        -> List[CommandResults]:
+        -> CommandResults:
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get('resources')
-    if not host_groups:
-        return [CommandResults(readable_output='No host groups are found.',
-                               raw_response=response)]
-    command_results: List[CommandResults] = []
-    for host_group in host_groups:
-        command_results.append(CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                                              outputs_key_field='id',
-                                              outputs=host_group,
-                                              raw_response=response)
-                               )
-    return command_results
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
 
 
 def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
