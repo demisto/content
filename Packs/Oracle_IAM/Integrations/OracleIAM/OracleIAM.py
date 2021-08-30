@@ -466,28 +466,34 @@ def get_group_command(client, args):
         raise Exception('You must supply either "id" or "displayName" in the scim data')
 
     if group_id:
-        res = client.get_group_by_id(group_id)
-        res_json = res.json()
-        if res.status_code == 200:
-            generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'))
-    else:
-        res = client.get_group_by_name(group_name)
-        res_json = res.json()
-        if res.status_code == 200:
-            if res_json.get('totalResults') < 1:
-                res.status_code = 404
+        try:
+            res = client.get_group_by_id(group_id)
+            res_json = res.json()
+            if res.status_code == 200:
+                generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'))
+        except DemistoException as exc:
+            if exc.res.status_code == 404:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                    errorCode=404, errorMessage='Group Not Found', details=str(exc))
             else:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                    errorCode=exc.res.status_code,
+                                                    errorMessage=exc.message, details=str(exc))
+    else:
+        try:
+            res = client.get_group_by_name(group_name)
+            res_json = res.json()
+            if res.status_code == 200 and res_json.get('totalResults') > 0:
                 res_json = res_json['Resources'][0]
                 generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
-
-    if res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
-                                            errorMessage='Group Not Found', details=res_json)
-    # Any other error
-    elif res.status_code not in (200, 404):
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
-                                            errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
-                                            details=res_json)
+        except DemistoException as exc:
+            if exc.res.status_code == 404:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
+                                                    errorMessage='Group Not Found', details=str(exc))
+            else:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                    errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                    details=str(exc))
 
     readable_output = tableToMarkdown('Oracle Cloud Get Group:', generic_iam_context.data, removeNull=True)
 
@@ -580,19 +586,20 @@ def update_group_command(client, args):
 
     group_input = {'schemas': ['urn:ietf:params:scim:api:messages:2.0:PatchOp'], 'Operations': operations}
 
-    res = client.update_group(group_id, group_input)
-    res_json = res.json()
-
-    if res.status_code == 200:
-        generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage='Group/User Not Found or User not a member of group',
-                                            details=res.json())
-    else:
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
-                                            errorCode=res_json.get('code'),
-                                            errorMessage=res_json.get('message'), details=res_json)
+    try:
+        res = client.update_group(group_id, group_input)
+        res_json = res.json()
+        if res.status_code == 200:
+            generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name, details=res_json)
+    except DemistoException as exc:
+        if exc.res.status_code == 404:
+            generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
+                                                errorMessage='Group/User Not Found or User not a member of group',
+                                                details=str(exc))
+        else:
+            generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name,
+                                                errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                details=str(exc))
 
     readable_output = tableToMarkdown('Oracle Cloud Update Group:', generic_iam_context.data, removeNull=True)
 
@@ -615,16 +622,18 @@ def delete_group_command(client, args):
 
     res = client.delete_group(group_id)
 
-    if res.status_code == 204:
-        generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage='Group Not Found', details=res.json())
-    else:
-        res_json = res.json()
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
-                                            errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
-                                            details=res_json)
+    try:
+        if res.status_code == 204:
+            generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
+    except DemistoException as exc:
+        if exc.res.status_code == 404:
+            generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
+                                                errorMessage='Group Not Found', details=str(exc))
+        else:
+            res_json = res.json()
+            generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name,
+                                                errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                details=str(exc))
 
     readable_output = tableToMarkdown('Oracle Cloud Delete Group:', generic_iam_context.data, removeNull=True)
 
@@ -656,8 +665,8 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = params['url'].strip('/')
-    client_id = params.get('clientid')
-    client_secret = params.get('clientsecret')
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
