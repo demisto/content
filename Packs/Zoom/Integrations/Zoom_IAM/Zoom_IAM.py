@@ -4,7 +4,6 @@ from IAMApiModule import *
 import traceback
 import jwt
 import urllib3
-import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -170,8 +169,8 @@ def get_jwt(api_key: str, api_secret: str) -> str:
     """
     Encode the JWT token given the api ket and secret
     """
-    now = datetime.datetime.now()
-    expire_time = int(now.strftime('%s')) + 5000
+    now = time.time()
+    expire_time = int(now) + 5000
     payload = {
         'iss': api_key,
         'exp': expire_time
@@ -252,7 +251,7 @@ def main():
         if command == 'test-module':
             test_module(client)
 
-    except Exception as e:
+    except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
