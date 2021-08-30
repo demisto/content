@@ -218,3 +218,19 @@ def test_get_whois_ip_proxy_param(mocker):
     mocker.patch.object(demisto, 'params', return_value={"proxy": True})
     result = get_whois_ip('1.1.1.1')
     assert result
+
+
+def test_indian_tld():
+    """
+    Given:
+        - indian domain
+
+    When:
+        - running the get_root_server function
+
+    Then:
+        - Verify the function returns the correct Whois server
+    """
+    from Whois import get_root_server
+    result = get_root_server("google.in")
+    assert result == "in.whois-servers.net"
