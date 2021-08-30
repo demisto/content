@@ -2599,7 +2599,8 @@ def list_host_group_members_command(host_group_id: Optional[str] = None,
     response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
     if not devices:
-        return [CommandResults(readable_output='No hosts are found')]
+        return [CommandResults(readable_output='No hosts are found',
+                               raw_response=response)]
     command_results: List[CommandResults] = []
     for single_device in devices:
         entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
@@ -2648,7 +2649,8 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get('resources')
     if not host_groups:
-        return [CommandResults(readable_output='No host groups are found')]
+        return [CommandResults(readable_output='No host groups are found.',
+                               raw_response=response)]
     command_results: List[CommandResults] = []
     for host_group in host_groups:
         command_results.append(CommandResults(outputs_prefix='CrowdStrike.HostGroup',
@@ -2664,7 +2666,8 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
     deleted_ids = response.get('resources')
     readable = '\n'.join([f'Host group id {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
         if deleted_ids else f'Host groups {host_group_ids} are not deleted'
-    return CommandResults(readable_output=readable)
+    return CommandResults(readable_output=readable,
+                          raw_response=response)
 
 
 def test_module():
