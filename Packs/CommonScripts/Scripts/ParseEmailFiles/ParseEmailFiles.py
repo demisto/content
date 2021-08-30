@@ -3403,21 +3403,13 @@ def get_utf_string(text, field):
     return utf_string
 
 
-def mime_decode(encoded_string):
-    word_mime_encoded = MIME_ENCODED_WORD.search(encoded_string)
-    if word_mime_encoded:
-        prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
-        if encoding.lower() == 'b':
-            byte_string = base64.b64decode(encoded_text)
-        elif encoding.lower() == 'q':
-            byte_string = quopri.decodestring(encoded_text)
-        try:
-            return prefix + byte_string.decode(charset) + suffix
-        except UnicodeDecodeError:
-            demisto.debug('Failed to decode encoded_string: {}. charset: {}, '
-                          'encoding: {}, encoded_text: {}'.format(encoded_string, charset, encoding, encoded_text))
-            return prefix + byte_string.decode(charset, errors='replace') + suffix
-    return ''
+def mime_decode(word_mime_encoded):
+    prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
+    if encoding.lower() == 'b':
+        byte_string = base64.b64decode(encoded_text)
+    elif encoding.lower() == 'q':
+        byte_string = quopri.decodestring(encoded_text)
+    return prefix + byte_string.decode(charset) + suffix
 
 
 def convert_to_unicode(s, is_msg_header=True):
@@ -3425,31 +3417,24 @@ def convert_to_unicode(s, is_msg_header=True):
     try:
         res = ''  # utf encoded result
         if is_msg_header:  # Mime encoded words used on message headers only
-            encode_decode_phrase = s
             try:
-                word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
+                word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
                 if word_mime_encoded:
-                    if '?= =?' in encode_decode_phrase:
-                        encode_decode_phrase = encode_decode_phrase.replace('?= =?', '?==?')
-                    while word_mime_encoded:
-                        # encoded-word" is a sequence of printable ASCII characters that begins with "=?",
-                        # ends with "?=", and has two "?"s in between.
-                        start_encoding_index = encode_decode_phrase.index('=?')
-                        end_encoding_index = encode_decode_phrase.index('?=') + 2
-                        # index return the index where "?=" starts, need to include it on the substring
-                        encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index]
-                        decoded_substring = mime_decode(encoded_substring)
-                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + decoded_substring + \
-                                               encode_decode_phrase[end_encoding_index:]  # noqa: E127
-                        word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
-                    return encode_decode_phrase
-
+                    word_mime_decoded = mime_decode(word_mime_encoded)
+                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
+                        # ensure decoding was successful
+                        return word_mime_decoded
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
                 demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
         for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
             if encoding:
-                res += decoded_s.decode(encoding).encode('utf-8')
+                try:
+                    res += decoded_s.decode(encoding).encode('utf-8')
+                except UnicodeDecodeError:
+                    demisto.debug('Failed to decode encoded_string:'
+                                  'encoding: {}, encoded_text: {}'.format(encoding, decoded_s))
+                    res += decoded_s.decode(encoding, errors='replace').encode('utf-8')
                 ENCODINGS_TYPES.add(encoding)
             else:
                 res += decoded_s
