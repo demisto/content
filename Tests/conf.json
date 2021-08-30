@@ -3535,6 +3535,10 @@
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
+        },
+        {
+            "integrations": "Microsoft Teams",
+            "playbookID": "Microsoft Teams - Test"
         }
     ],
     "skipped_tests": {
