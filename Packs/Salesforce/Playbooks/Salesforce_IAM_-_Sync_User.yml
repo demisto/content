@@ -1,9 +1,9 @@
 description: Sync users into Salesforce.
-id: a870a46f-90fa-474c-896d-b2e4d654252e
+id: Salesforce IAM - Sync User
 inputs:
 - description: Salesforce app instance name
   key: salesforceInstance
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value:
     complex:
@@ -27,23 +27,23 @@ inputs:
         operator: WhereFieldEquals
 - description: Email to notify about errors in the provisioning process.
   key: ITNotificationEmail
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: ""
   key: welcomeEmailBody
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "<p>Hi, \n<BR/><BR/> \nYour Salesforce account has been created successfully.
-      Please click on the link below and enter your network credentials to login to
-      Salesforce. \n<BR/><BR/>\nhttps://paloaltonetworks.my.salesforce.com\n<BR/><BR/>\nPlease
-      feel free to create a ticket with IT Services at https://panservicedesk.service-now.com/services,
-      if you have any questions or issues. \n<BR/><BR/>\nRegards,\n<BR/>Salesforce
-      Admin Team<BR/>"
+    simple: "<p>Hi, \n<BR/><BR/> \nYour Salesforce account has been created successfully.\
+      \ Please click on the link below and enter your network credentials to login\
+      \ to Salesforce. \n<BR/><BR/>\nhttps://paloaltonetworks.my.salesforce.com\n\
+      <BR/><BR/>\nPlease feel free to create a ticket with IT Services at https://panservicedesk.service-now.com/services,\
+      \ if you have any questions or issues. \n<BR/><BR/>\nRegards,\n<BR/>Salesforce\
+      \ Admin Team<BR/>"
 - description: Provisioning results from previous run.
   key: PreviousRun
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Salesforce IAM - Sync User
@@ -51,14 +51,11 @@ outputs:
 - contextPath: IAM.Vendor
   description: Salesforce Provisioning Details
   type: unknown
-sourceplaybookid: 3d654419-7293-448d-85b3-cf33f8ca8360
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "44"
@@ -72,6 +69,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 7566cd03-91a4-4287-8204-40736a6de166
     timertriggers: []
     type: start
@@ -85,8 +83,6 @@ tasks:
   "20":
     id: "20"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -98,6 +94,7 @@ tasks:
       name: End
       type: title
       version: -1
+      description: ''
     taskid: 1d9f1c14-67c4-4e18-8e2a-7c8514c06415
     timertriggers: []
     type: title
@@ -111,8 +108,6 @@ tasks:
   "44":
     id: "44"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "103"
@@ -171,8 +166,6 @@ tasks:
       label: "yes"
     id: "61"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "20"
@@ -184,6 +177,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 8e7aa1c8-b274-452a-8321-b673d05765f5
       iscommand: false
       name: Is Org Unit configured for provisioning?
@@ -213,8 +207,6 @@ tasks:
       label: "Yes"
     id: "65"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "61"
@@ -226,6 +218,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: b5291cb2-02da-4d37-80db-cf360eb21d6b
       iscommand: false
       name: Should the user be terminated?
@@ -244,8 +237,6 @@ tasks:
   "69":
     id: "69"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -260,6 +251,7 @@ tasks:
       name: Deactivation Complete
       type: title
       version: -1
+      description: ''
     taskid: 77f423f1-133d-448f-84b9-5b1cdd2969c9
     timertriggers: []
     type: title
@@ -273,8 +265,6 @@ tasks:
   "70":
     id: "70"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -289,6 +279,7 @@ tasks:
       name: Update Complete
       type: title
       version: -1
+      description: ''
     taskid: 91102e08-8364-45e4-8649-12cd21270233
     timertriggers: []
     type: title
@@ -302,8 +293,6 @@ tasks:
   "71":
     id: "71"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -318,6 +307,7 @@ tasks:
       name: Create/enable Complete
       type: title
       version: -1
+      description: ''
     taskid: 11102df9-c719-44a2-8c7d-44130e453ed4
     timertriggers: []
     type: title
@@ -331,8 +321,6 @@ tasks:
   "72":
     id: "72"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -347,6 +335,7 @@ tasks:
       name: No Rule Found. SFDC account not synced
       type: title
       version: -1
+      description: ''
     taskid: 97ee7104-8e1c-4b3d-8f2c-b820af14761b
     timertriggers: []
     type: title
@@ -360,8 +349,6 @@ tasks:
   "79":
     id: "79"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -409,10 +396,11 @@ tasks:
       brand: ""
       id: 3c2b5d66-e170-4ae7-84ee-adc830ef0ff8
       iscommand: false
-      name: Post Provisioning Tasks
+      name: 1b509870-e890-4c31-8bca-d025dfb3730d
       playbookId: 1b509870-e890-4c31-8bca-d025dfb3730d
       type: playbook
       version: -1
+      description: ''
     taskid: 3c2b5d66-e170-4ae7-84ee-adc830ef0ff8
     timertriggers: []
     type: playbook
@@ -426,8 +414,6 @@ tasks:
   "82":
     id: "82"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -457,10 +443,11 @@ tasks:
       brand: ""
       id: c44727dc-d822-495b-877c-d3fb392225db
       iscommand: false
-      name: Post Deprovisioning Tasks
+      name: 40102808-670f-4424-81cd-de6437e79e85
       playbookId: 40102808-670f-4424-81cd-de6437e79e85
       type: playbook
       version: -1
+      description: ''
     taskid: c44727dc-d822-495b-877c-d3fb392225db
     timertriggers: []
     type: playbook
@@ -474,8 +461,6 @@ tasks:
   "83":
     id: "83"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "84"
@@ -515,8 +500,6 @@ tasks:
   "84":
     id: "84"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "71"
@@ -597,8 +580,6 @@ tasks:
   "86":
     id: "86"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "72"
@@ -656,8 +637,6 @@ tasks:
       label: "yes"
     id: "88"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "98"
@@ -669,6 +648,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 2b75a0b7-af42-4d6e-8b85-0e212bdd71c5
       iscommand: false
       name: Is Org Unit Sales?
@@ -687,8 +667,6 @@ tasks:
   "89":
     id: "89"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -718,10 +696,11 @@ tasks:
       brand: ""
       id: d2eec8a6-3ae3-47fa-8ab4-8ee8dfdbc904
       iscommand: false
-      name: Freeze Account
+      name: f548aa32-1aed-4459-8d15-59aafb709788
       playbookId: f548aa32-1aed-4459-8d15-59aafb709788
       type: playbook
       version: -1
+      description: ''
     taskid: d2eec8a6-3ae3-47fa-8ab4-8ee8dfdbc904
     timertriggers: []
     type: playbook
@@ -735,8 +714,6 @@ tasks:
   "95":
     id: "95"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "70"
@@ -779,8 +756,6 @@ tasks:
   "98":
     id: "98"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "108"
@@ -835,8 +810,6 @@ tasks:
       label: "yes"
     id: "99"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "86"
@@ -848,6 +821,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 256857bf-8c4a-49f3-805e-b9c77f409254
       iscommand: false
       name: Match found in SalesforceProvisioningSettings?
@@ -866,8 +840,6 @@ tasks:
   "101":
     id: "101"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "106"
@@ -945,8 +917,6 @@ tasks:
       label: Active
     id: "102"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "101"
@@ -962,6 +932,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: ccfbdfb6-4330-4ded-89bf-4a18320adc43
       iscommand: false
       name: What is the status of the user?
@@ -980,8 +951,6 @@ tasks:
   "103":
     id: "103"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "65"
@@ -1037,8 +1006,6 @@ tasks:
       label: "Yes"
     id: "106"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "20"
@@ -1050,6 +1017,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: a89ff7c4-99a1-4376-88ca-10a9014c909f
       iscommand: false
       name: Success?
@@ -1078,8 +1046,6 @@ tasks:
       label: "Yes"
     id: "108"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "20"
@@ -1091,6 +1057,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 131f34db-2e4e-413b-8ddf-f95e63e5f845
       iscommand: false
       name: Success?
@@ -1228,8 +1195,6 @@ tasks:
       label: User Was Rehired
     id: "109"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "71"
@@ -1243,6 +1208,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 93a08ac7-90f9-495d-860c-8231e21c9e91
       iscommand: false
       name: Was any action successful?
@@ -1261,8 +1227,6 @@ tasks:
   "110":
     id: "110"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -1292,10 +1256,11 @@ tasks:
       brand: ""
       id: 9f985127-59d2-43e6-8eaa-9412ed4d9e56
       iscommand: false
-      name: Unfreeze Account
+      name: b12324a1-d668-482d-80eb-6c2b31255acf
       playbookId: b12324a1-d668-482d-80eb-6c2b31255acf
       type: playbook
       version: -1
+      description: ''
     taskid: 9f985127-59d2-43e6-8eaa-9412ed4d9e56
     timertriggers: []
     type: playbook
@@ -1328,8 +1293,6 @@ tasks:
       label: Does not exist
     id: "111"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "89"
@@ -1343,6 +1306,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: af1e7297-c27f-4294-887d-34531560da13
       iscommand: false
       name: What is the status of the user?
@@ -1383,3 +1347,6 @@ view: |-
       }
     }
   }
+tests:
+- SalesforceTestPlaybook
+fromversion: 6.0.0

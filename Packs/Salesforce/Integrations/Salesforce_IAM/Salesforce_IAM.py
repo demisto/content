@@ -455,7 +455,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                 salesforce_user = demisto.mapObject(user_profile, mapper_out, 'User Profile - Disable')
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                res = client.update_user_profile(user_term=user_id, data=salesforce_user)
+                res = client.update_user(user_term=user_id, data=salesforce_user)
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,

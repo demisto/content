@@ -1,47 +1,45 @@
-id: 1b509870-e890-4c31-8bca-d025dfb3730d
+id: Salesforce IAM - Post Provisioning
 inputs:
 - description: salesforce Id
   key: salesforceId
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: permissionSetLicences
   key: permissionSetLicences
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: permissionSets
   key: permissionSets
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: packageLicences
   key: packageLicences
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Email to notify about errors in the provisioning process.
   key: ITNotificationEmail
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: A list of vendors that ran previously.
   key: PreviousRun
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Salesforce IAM - Post Provisioning
 outputs:
 - contextPath: IAM.Vendor
+  description: The Salesforce IAM commands' results.
   type: unknown
-sourceplaybookid: 3d654419-7293-448d-85b3-cf33f8ca8360
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "76"
@@ -55,6 +53,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 9f3b1e09-58a2-499a-882a-cd0b4bd4c7a0
     timertriggers: []
     type: start
@@ -68,8 +67,6 @@ tasks:
   "20":
     id: "20"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -81,6 +78,7 @@ tasks:
       name: End
       type: title
       version: -1
+      description: ''
     taskid: e6a14f97-cd23-46e5-8551-a6e4f823fac7
     timertriggers: []
     type: title
@@ -112,8 +110,6 @@ tasks:
       label: "yes"
     id: "76"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "77"
@@ -129,6 +125,7 @@ tasks:
       iscommand: false
       name: Should run Permission Set Licenses command?
       type: condition
+      description: ""
       version: -1
     taskid: f9141f96-6cfe-45ff-871c-44f2fec1dd3e
     timertriggers: []
@@ -174,8 +171,6 @@ tasks:
       label: Skip
     id: "77"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "20"
@@ -192,6 +187,7 @@ tasks:
       id: b22e9a79-6ffd-4a75-8ac8-4a14ee8be436
       iscommand: false
       name: Should run Assigned Package Licenses command?
+      description: ""
       type: condition
       version: -1
     taskid: b22e9a79-6ffd-4a75-8ac8-4a14ee8be436
@@ -225,8 +221,6 @@ tasks:
       label: "yes"
     id: "78"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "20"
@@ -240,6 +234,7 @@ tasks:
       brand: ""
       id: 3dc8dcfa-f19d-44d2-85bd-52290867d995
       iscommand: false
+      description: ""
       name: Should run Assign Permission Sets command?
       type: condition
       version: -1
@@ -256,8 +251,6 @@ tasks:
   "79":
     id: "79"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "78"
@@ -294,8 +287,6 @@ tasks:
   "80":
     id: "80"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "77"
@@ -332,8 +323,6 @@ tasks:
   "81":
     id: "81"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -383,3 +372,8 @@ view: |-
       }
     }
   }
+tests:
+- SalesforceTestPlaybook
+fromversion: 6.0.0
+description: Assignes permission sets, permission set licenses and package licenses
+  to a Salesforce account.

@@ -1,22 +1,20 @@
-id: b12324a1-d668-482d-80eb-6c2b31255acf
+id: Salesforce IAM - Unfreeze Account
 inputs:
 - description: Salesforce Unique ID
   key: salesforceId
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: Salesforce IAM - Unfreeze Account
 outputs:
 - contextPath: IAM.Vendor
+  description: The Salesforce IAM commands' results.
   type: unknown
-sourceplaybookid: 681196fe-1a54-4f06-8f2e-6d457cd0b35f
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "5"
@@ -30,6 +28,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 504d410a-68d2-410c-82e2-f64486f64867
     timertriggers: []
     type: start
@@ -51,8 +50,6 @@ tasks:
       label: "Yes"
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "3"
@@ -67,6 +64,7 @@ tasks:
       id: 7a963b54-22e6-4618-8948-807dbdb98d34
       iscommand: false
       name: IsFrozen Call Success?
+      description: ""
       type: condition
       version: -1
     taskid: 7a963b54-22e6-4618-8948-807dbdb98d34
@@ -82,8 +80,6 @@ tasks:
   "3":
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -95,6 +91,7 @@ tasks:
       name: End
       type: title
       version: -1
+      description: ''
     taskid: 1f457db5-dde9-4f4c-8ffc-8633b64545e0
     timertriggers: []
     type: title
@@ -108,8 +105,6 @@ tasks:
   "5":
     id: "5"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "2"
@@ -153,8 +148,6 @@ tasks:
       label: "yes"
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "3"
@@ -170,6 +163,7 @@ tasks:
       iscommand: false
       name: Is User account Frozen?
       type: condition
+      description: ""
       version: -1
     taskid: 9bb7e703-64e9-4b36-8c63-8a992278ade4
     timertriggers: []
@@ -184,8 +178,6 @@ tasks:
   "7":
     id: "7"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -232,3 +224,7 @@ view: |-
       }
     }
   }
+tests:
+- SalesforceTestPlaybook
+fromversion: 6.0.0
+description: Unfreezes a Salesforce account.
