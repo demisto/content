@@ -545,7 +545,8 @@ def update_group_command(client, args):
         for member_id in member_ids_to_add:
             member_ids_json_list.append(
                 {
-                    'value': member_id
+                    'value': member_id,
+                    'type': 'User',
                 }
             )
 
@@ -645,8 +646,8 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = params['url'].strip('/')
-    client_id = params.get('credentials', {}).get('identifier')
-    client_secret = params.get('credentials', {}).get('password')
+    client_id = params.get('clientid')
+    client_secret = params.get('clientsecret')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)

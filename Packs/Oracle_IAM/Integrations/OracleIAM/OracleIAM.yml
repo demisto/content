@@ -7,10 +7,14 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
+- display: Client ID
+  name: clientid
   required: true
-  type: 9
+  type: 12
+- display: Client Secret
+  name: clientsecret
+  required: true
+  type: 4
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -70,7 +74,8 @@ script:
       default: false
       defaultValue: 'true'
       description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -167,8 +172,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'When set to true, after the command execution the status of the user in the 3rd-party
-        integration will be active. Possible values: "true" and "false".'
+      description: 'When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -183,7 +189,8 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -255,11 +262,17 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - name: iam-create-group
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: Group SCIM data with the display name.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an empty group.
+    execution: true
+    name: iam-create-group
     outputs:
     - contextPath: CreateGroup.id
       description: Group ID.
@@ -276,20 +289,29 @@ script:
     - contextPath: CreateGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Creates an empty group.
-    execution: true
-  - name: iam-get-group
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: Group SCIM data.
-    - name: includeMembers
-      auto: PREDEFINED
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether members need to be included in the response. Possible
+        values: "true" and "false".'
+      isArray: false
+      name: includeMembers
       predefined:
-      - "true"
-      - "false"
-      description: 'Whether members need to be included in the response. Possible values: "true" and "false".'
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the group information including members.
+    execution: false
+    name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
       description: Group ID.
@@ -312,12 +334,17 @@ script:
     - contextPath: GetGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Retrieves the group information including members.
-  - name: iam-delete-group
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: Group SCIM with ID.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Permanently removes a group.
+    execution: true
+    name: iam-delete-group
     outputs:
     - contextPath: DeleteGroup.id
       description: Group ID.
@@ -334,27 +361,40 @@ script:
     - contextPath: DeleteGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Permanently removes a group.
-    execution: true
-  - name: iam-update-group
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: Group SCIM data.
-    - name: memberIdsToAdd
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - default: false
       description: List of members IDs to add. A maximum of 15,000 users per call
         can be modified using this command.
       isArray: true
-    - name: memberIdsToDelete
+      name: memberIdsToAdd
+      required: false
+      secret: false
+    - default: false
       description: List of members IDs to be deleted from the group. A maximum of
         15,000 users per call can be modified using this command
       isArray: true
+      name: memberIdsToDelete
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing group resource. This command allows individual
+      (or groups of) users to be added or removed from the group with a single operation.
+      A maximum of 15,000 users can be modified in a single call.
+    execution: true
+    name: iam-update-group
     outputs:
     - contextPath: UpdateGroup.id
       description: Group ID.
       type: String
     - contextPath: UpdateGroup.displayName
       description: Display name of the group.
+      type: Unknown
     - contextPath: UpdateGroup.success
       description: Success status of the command.
       type: Boolean
@@ -364,16 +404,13 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Error details if there is a failure.
       type: Unknown
-    description: Updates an existing group resource. This command allows individual
-      (or groups of) users to be added or removed from the group with a single operation.
-      A maximum of 15,000 users can be modified in a single call.
-    execution: true
   - deprecated: false
     description: Retrieves a User Profile schema, which holds all of the user fields
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
   dockerimage: demisto/python3:3.9.6.22912
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -381,8 +418,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0
