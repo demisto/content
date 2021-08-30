@@ -80,7 +80,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: custom.[0].param1
+              simple: custom.param1
             iscontext: true
           right:
             value:
@@ -88,7 +88,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: custom.[0].param2
+              simple: custom.param2
             iscontext: true
           right:
             value:
