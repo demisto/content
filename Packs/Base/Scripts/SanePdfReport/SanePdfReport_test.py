@@ -46,10 +46,13 @@ def test_sane_pdf_report(mocker):
     zombies, output = find_zombie_processes()
     assert len(zombies) == 0
 
-def test_markdown_image_server(mocker,capfd):
+
+def test_markdown_image_server(mocker, capfd):
     with capfd.disabled():
         mocker.patch.object(demisto, 'results')
-        mocker.patch.object(demisto, 'getFilePath', return_value={'path':'./TestData/1234-5678-9012-3456.png', 'name': '1234-5678-9012-3456.png'})
+        fileName = '1234-5678-9012-3456.png'
+        path = f'./TestData/{fileName}'
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': path, 'name': fileName})
 
         serverThread = threading.Thread(target=startServer)
         serverThread.daemon = True
@@ -68,7 +71,7 @@ def test_markdown_image_server(mocker,capfd):
         assert res2.status == 200
 
         # correct markdown image path with missing file
-        mocker.patch.object(demisto, 'getFilePath', return_value={'path':'', 'name': ''})
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': '', 'name': ''})
         conn.request("GET", "/markdown/image/dummyFile.png")
         res3 = conn.getresponse()
         assert res3.status == 404
