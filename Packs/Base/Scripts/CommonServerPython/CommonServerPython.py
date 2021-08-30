@@ -466,7 +466,7 @@ class ThreatIntel:
         INTRUSION_SET = 3
         TOOL = 2
         THREAT_ACTOR = 3
-        INFRASTRUCTURE =
+        INFRASTRUCTURE = 2
 
     class KillChainPhases(object):
         """
