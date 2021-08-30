@@ -135,7 +135,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
         if tlp_color:
             indicator["fields"]["trafficlightprotocol"] = str(tlp_color)
         if tags:
-            indicator["fields"]["tags"] = ",".join(list(set(tags)))
+            indicator["fields"]["tags"] = tags
     except Exception as err:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
         raise DemistoException(err_msg)
@@ -151,7 +151,6 @@ def fetch_indicators_command(
         records = records.get("objects", [])
         for rec in records:
             if is_indicator(rec):
-                # if not rec.get("type", "") == "marking-definition":
                 ind = stix_to_indicator(rec, tags, tlp_color)
                 indicators_list.append(ind)
             if get_indicators_mode and len(indicators_list) == limit:
@@ -188,6 +187,7 @@ def main():
         FeedStream.DVEFEED,
         bulk_size=max_indicators,
         session=SESSION,
+        logger=demisto,
         verify=VERIFY
     )
     command = demisto.command()
