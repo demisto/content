@@ -2085,22 +2085,22 @@ Create a host group
 | --- | --- | --- |
 | name | The name of the host. | Required | 
 | group_type | The group type of the group. Can be 'static' or 'dynamic'. Possible values are: static, dynamic. | Optional | 
-| description | Description of the host. | Optional | 
-| assignment_rule | The assignmet rule. | Optional | 
+| description | The description of the host. | Optional | 
+| assignment_rule | The assignment rule. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The id of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
-| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
-| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
-| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.' | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.' | 
 
 
 #### Command Example
@@ -2133,7 +2133,7 @@ Create a host group
 
 ### cs-falcon-update-host-group
 ***
-Update a host group
+Update a host group.
 
 
 #### Base Command
@@ -2196,7 +2196,7 @@ Update a host group
 
 ### cs-falcon-list-host-group-members
 ***
-Get the list of host group members
+Get the list of host group members.
 
 
 #### Base Command
@@ -2304,7 +2304,7 @@ Get the list of host group members
 
 ### cs-falcon-add-host-group-members
 ***
-Add host group members
+Add host group members.
 
 
 #### Base Command
@@ -2365,7 +2365,7 @@ Add host group members
 
 ### cs-falcon-remove-host-group-members
 ***
-Remove host group members
+Remove host group members.
 
 
 #### Base Command
@@ -3042,7 +3042,7 @@ Delete the requested host groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_group_id | The ID of the host group to be deleted. | Required | 
+| host_group_id | A comma-separated list of the IDs of the host groups to be deleted. | Required | 
 
 
 #### Context Output
