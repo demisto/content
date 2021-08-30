@@ -1,0 +1,33 @@
+{
+	"brands": null,
+	"defaultIncidentType": "Azure Storage Queue Incident",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "af445a9a-e982-47c3-8c2c-6809a79fc1ed",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "Azure Storage Queue Classifier",
+	"nameRaw": "Azure Storage Queue Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

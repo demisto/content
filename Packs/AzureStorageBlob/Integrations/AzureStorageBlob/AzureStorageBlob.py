@@ -1,0 +1,860 @@
+import shutil
+
+from requests import Response
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
+
+
+class Client:
+    """
+    API Client
+    """
+
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+        self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
+                                                api_version)
+
+    def list_containers_request(self, limit: str = None, prefix: str = None, marker: str = None) -> str:
+        """
+        List Containers under the specified storage account.
+
+        Args:
+            limit (str): Number of Containers to retrieve.
+            prefix (str): Filters the results to return only Containers whose name begins with the specified prefix.
+            marker (str): Identifies the portion of the list to be returned.
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        params = assign_params(maxresults=limit, prefix=prefix, comp='list', marker=marker)
+
+        response = self.ms_client.http_request(method='GET', url_suffix='', params=params, resp_type="text")
+
+        return response
+
+    def create_container_request(self, container_name: str) -> Response:
+        """
+        Create a new Container under the specified account.
+
+        Args:
+            container_name (str): Container name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(restype="container")
+
+        response = self.ms_client.http_request(method='PUT', url_suffix=f'{container_name}', params=params,
+                                               return_empty_response=True)
+
+        return response
+
+    def get_container_properties_request(self, container_name: str) -> Response:
+        """
+        Retrieve properties for the specified Container.
+
+        Args:
+            container_name (str): Container name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(restype="container")
+
+        response = self.ms_client.http_request(method='GET', url_suffix=f'{container_name}', params=params,
+                                               return_empty_response=True)
+
+        return response
+
+    def delete_container_request(self, container_name: str) -> Response:
+        """
+        Delete Container under the specified account.
+
+        Args:
+            container_name (str): Container name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(restype="container")
+
+        response = self.ms_client.http_request(method='DELETE', url_suffix=f'{container_name}', params=params,
+                                               return_empty_response=True)
+
+        return response
+
+    def list_blobs_request(self, container_name: str, limit: str = None, prefix: str = None, marker: str = None) -> str:
+        """
+        List Blobs under the specified container.
+
+        Args:
+            container_name (str): Container name.
+            limit (str): Number of Blob to retrieve.
+            prefix (str): Filters the results to return only Blob whose name begins with the specified prefix.
+            marker (str): Identifies the portion of the list to be returned.
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        params = assign_params(container_name=container_name, maxresults=limit,
+                               prefix=prefix, restype='container', comp='list', marker=marker)
+
+        response = self.ms_client.http_request(method='GET', url_suffix=f'{container_name}', params=params,
+                                               resp_type="text")
+
+        return response
+
+    def put_blob_request(self, container_name: str, file_entry_id: str, file_name: str = None) -> Response:
+        """
+        Create or update Blob under the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            file_entry_id (str): File War room Entry ID.
+            file_name (str): File name. Default is XSOAR file name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+
+        xsoar_file_data = demisto.getFilePath(file_entry_id)
+        file_path = xsoar_file_data['path']
+        file_name = file_name if file_name else xsoar_file_data['name']
+
+        headers = {'x-ms-blob-type': 'BlockBlob'}
+
+        try:
+            shutil.copy(file_path, file_name)
+        except Exception:
+            raise Exception('Failed to prepare file for upload.')
+
+        try:
+            with open(file_name, 'rb') as file:
+                response = self.ms_client.http_request(method='PUT',
+                                                       url_suffix=f'{container_name}/{file_name}',
+                                                       headers=headers,
+                                                       return_empty_response=True,
+                                                       data=file)
+
+        finally:
+            shutil.rmtree(file_name, ignore_errors=True)
+
+        return response
+
+    def get_blob_request(self, container_name: str, blob_name: str) -> Response:
+        """
+        Retrieve Blob from Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        response = self.ms_client.http_request(method='GET', url_suffix=f'{container_name}/{blob_name}',
+                                               resp_type="response")
+
+        return response
+
+    def get_blob_tags_request(self, container_name: str, blob_name: str) -> str:
+        """
+        Retrieve the tags of the specified Blob.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        params = assign_params(comp="tags")
+
+        response = self.ms_client.http_request(method='GET', url_suffix=f'{container_name}/{blob_name}', params=params,
+                                               resp_type="text")
+
+        return response
+
+    def set_blob_tags_request(self, container_name: str, blob_name: str, tags: str) -> Response:
+        """
+        Set the tags for the specified Blob.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            tags (str): XML tags data.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        params = assign_params(comp="tags")
+
+        response = self.ms_client.http_request(method='PUT', url_suffix=f'{container_name}/{blob_name}',
+                                               params=params, return_empty_response=True, data=tags)
+
+        return response
+
+    def delete_blob_request(self, container_name: str, blob_name: str) -> Response:
+        """
+        Delete Blob from Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+
+        response = self.ms_client.http_request(method='DELETE', url_suffix=f'{container_name}/{blob_name}',
+                                               return_empty_response=True)
+
+        return response
+
+    def get_blob_properties_request(self, container_name: str, blob_name: str) -> Response:
+        """
+        Retrieve Blob properties.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+
+        response = self.ms_client.http_request(method='HEAD', url_suffix=f'{container_name}/{blob_name}',
+                                               resp_type="response")
+
+        return response
+
+    def set_blob_properties_request(self, container_name: str, blob_name: str, headers: dict) -> Response:
+        """
+        Set Blob properties.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            headers (dict): Request Headers.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+
+        params = assign_params(comp='properties')
+        response = self.ms_client.http_request(method='PUT', url_suffix=f'{container_name}/{blob_name}',
+                                               params=params, headers=headers, return_empty_response=True)
+
+        return response
+
+
+def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    List Containers under the specified storage account.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    limit = args.get('limit', '50')
+    prefix = args.get('prefix')
+    page = arg_to_number(args.get('page', '1'))
+
+    marker = ''
+    readable_message = f'Containers List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+
+    if page > 1:
+        offset = int(limit) * (page - 1)
+        response = client.list_containers_request(str(offset), prefix)
+        tree = ET.ElementTree(ET.fromstring(response))
+        root = tree.getroot()
+        marker = root.findtext('NextMarker')
+
+        if not marker:
+            return CommandResults(
+                readable_output=readable_message,
+                outputs_prefix='AzureStorageBlob.Container',
+                outputs=[],
+                raw_response=[]
+            )
+
+    response = client.list_containers_request(limit, prefix, marker)
+
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    raw_response = []
+    outputs = []
+
+    for element in root.iter('Container'):
+        outputs.append({'container_name': element.findtext('Name')})
+        data = {'Name': element.findtext('Name')}
+        properties = {}
+        for container_property in element.findall('Properties'):
+            for attribute in container_property:
+                properties[attribute.tag] = attribute.text
+
+        data['Properties'] = properties
+        raw_response.append(data)
+
+    readable_output = tableToMarkdown(
+        readable_message,
+        outputs,
+        headers=['container_name'],
+        headerTransform=string_to_table_header
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureStorageBlob.Container',
+        outputs_key_field='container_name',
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+    return command_results
+
+
+def create_container_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a new Container under the specified account.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+
+    client.create_container_request(container_name)
+
+    command_results = CommandResults(
+        readable_output=f'Container {container_name} successfully created.',
+    )
+
+    return command_results
+
+
+def get_container_properties_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve properties for the specified Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+
+    response = client.get_container_properties_request(container_name)
+
+    raw_response = response.headers
+    raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
+
+    response_headers = list(raw_response.keys())
+    outputs = {}
+
+    properties = {key.replace('x-ms-', '').replace('-', '_').lower(): value
+                  for key, value in raw_response.items() if key in response_headers}
+
+    outputs['container_name'] = container_name
+    outputs['Properties'] = properties
+
+    for header in ['last_modified', 'date']:
+        if outputs.get('Properties').get(header):
+            time_value = datetime.strptime(outputs.get('Properties').get(header), DATE_FORMAT)
+            iso_time = FormatIso8601(time_value)
+            outputs['Properties'][header] = iso_time
+
+    readable_output = tableToMarkdown(
+        'Containers Properties:',
+        outputs.get('Properties'),
+        headers=['last_modified', 'etag', 'lease_status', 'lease_state', 'has_immutability_policy', 'has_legal_hold'],
+        headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureStorageBlob.Container',
+        outputs_key_field='container_name',
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+
+def delete_container_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete Container under the specified account.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+
+    client.delete_container_request(container_name)
+
+    command_results = CommandResults(
+        readable_output=f'Container {container_name} successfully deleted.',
+    )
+
+    return command_results
+
+
+def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    List Blobs under the specified container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    limit = args.get('limit', '50')
+    prefix = args.get('prefix')
+    page = arg_to_number(args.get('page', '1'))
+
+    marker = ''
+    readable_message = f'Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+
+    if page > 1:
+        offset = int(limit) * (page - 1)
+        response = client.list_blobs_request(container_name, str(offset), prefix, marker)
+        tree = ET.ElementTree(ET.fromstring(response))
+        root = tree.getroot()
+        marker = root.findtext('NextMarker')
+
+        if not marker:
+            return CommandResults(
+                readable_output=readable_message,
+                outputs_prefix='AzureStorageBlob.Blob',
+                outputs=[],
+                raw_response=[]
+            )
+
+    response = client.list_blobs_request(container_name, limit, prefix, marker)
+
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    raw_response = []
+    outputs = []
+
+    for element in root.iter('Blob'):
+        outputs.append({'container_name': container_name, 'blob_name': element.findtext('Name')})
+        data = {'Name': element.findtext('Name')}
+        properties = {}
+        for blob_property in element.findall('Properties'):
+            for attribute in blob_property:
+                properties[attribute.tag] = attribute.text
+
+        data['Properties'] = properties
+        raw_response.append(data)
+
+    readable_output = tableToMarkdown(
+        readable_message,
+        outputs,
+        headers=['blob_name'],
+        headerTransform=string_to_table_header
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureStorageBlob.Blob',
+        outputs_key_field=['container_name', 'blob_name'],
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+    return command_results
+
+
+def create_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a new Blob under the specified Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    file_entry_id = args.get('file_entry_id')
+    blob_name = args.get('blob_name')
+
+    client.put_blob_request(container_name, file_entry_id, blob_name)
+
+    command_results = CommandResults(
+        readable_output='Blob successfully created.',
+    )
+
+    return command_results
+
+
+def update_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update Blob under the specified Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    file_entry_id = args.get('file_entry_id')
+    blob_name = args.get('blob_name')
+
+    client.put_blob_request(container_name, file_entry_id, blob_name)
+
+    command_results = CommandResults(
+        readable_output=f'Blob {blob_name} successfully updated.',
+    )
+
+    return command_results
+
+
+def get_blob_command(client: Client, args: Dict[str, Any]) -> fileResult:
+    """
+    Retrieve Blob from Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        fileResult: XSOAR File Result.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+
+    response = client.get_blob_request(container_name, blob_name)
+
+    return fileResult(filename=blob_name, data=response.content)
+
+
+def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the tags of the specified Blob.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+
+    response = client.get_blob_tags_request(container_name, blob_name)
+
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    raw_response = []
+    outputs = {'container_name': container_name, 'blob_name': blob_name}
+
+    for element in root.iter('Tag'):
+        tag = {'Key': element.findtext('Key'), 'Value': element.findtext('Value')}
+        raw_response.append(dict(tag))
+
+    outputs['Tag'] = raw_response
+
+    readable_output = tableToMarkdown(
+        'Blob Tags:',
+        outputs['Tag'],
+        headers=['Key', 'Value'],
+        headerTransform=pascalToSpace
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureStorageBlob.Blob',
+        outputs_key_field=['container_name', 'blob_name'],
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+    return command_results
+
+
+def set_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Sets the tags for the specified Blob.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+    tags = args.get('tags')
+
+    try:
+        tags = json.loads(tags)
+    except Exception:
+        raise Exception('Failed to parse tags argument')
+
+    top = ET.Element('Tags')
+
+    tag_set = ET.SubElement(top, 'TagSet')
+
+    for key, value in tags.items():
+        tag = ET.SubElement(tag_set, 'Tag')
+        tag_key = ET.SubElement(tag, 'Key')
+        tag_key.text = key
+
+        tag_value = ET.SubElement(tag, 'Value')
+        tag_value.text = value
+
+    xml_data = ET.tostring(top, encoding='unicode')
+
+    client.set_blob_tags_request(container_name, blob_name, xml_data)
+
+    command_results = CommandResults(
+        readable_output=f'{blob_name} Tags successfully updated.',
+    )
+
+    return command_results
+
+
+def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete Blob from Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+
+    client.delete_blob_request(container_name, blob_name)
+
+    command_results = CommandResults(
+        readable_output=f'Blob {blob_name} successfully deleted.',
+    )
+
+    return command_results
+
+
+def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve Blob properties.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+
+    response = client.get_blob_properties_request(container_name, blob_name)
+
+    raw_response = response.headers
+    raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
+
+    response_headers = list(raw_response.keys())
+    outputs = {}
+
+    properties = {key.replace('x-ms-', '').replace('-', '_').lower(): value
+                  for key, value in raw_response.items() if key in response_headers}
+
+    outputs['container_name'] = container_name
+    outputs['blob_name'] = blob_name
+    outputs['Properties'] = properties
+
+    for header in ['creation_time', 'last_modified', 'date']:
+        if outputs.get('Properties').get(header):
+            time_value = datetime.strptime(outputs.get('Properties').get(header), DATE_FORMAT)
+            iso_time = FormatIso8601(time_value)
+            outputs['Properties'][header] = iso_time
+
+    readable_output = tableToMarkdown(
+        'Blob Properties:',
+        outputs.get('Properties'),
+        headers=['creation_time', 'last_modified', 'content_length', 'content_type', 'etag'],
+        headerTransform=string_to_table_header
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureStorageBlob.Blob',
+        outputs_key_field=['container_name', 'blob_name'],
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+
+def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Set Blob properties.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get('container_name')
+    blob_name = args.get('blob_name')
+    content_type = args.get('content_type')
+    content_md5 = args.get('content_md5')
+    content_encoding = args.get('content_encoding')
+    content_language = args.get('content_language')
+    content_disposition = args.get('content_disposition')
+    cache_control = args.get('cache_control')
+    request_id = args.get('request_id')
+    lease_id = args.get('lease_id')
+
+    headers = remove_empty_elements({
+        'x-ms-blob-cache-control': cache_control,
+        'x-ms-blob-content-type': content_type,
+        'x-ms-blob-content-md5': content_md5,
+        'x-ms-blob-content-encoding': content_encoding,
+        'x-ms-blob-content-language': content_language,
+        'x-ms-blob-content-disposition': content_disposition,
+        'x-ms-client-request-id': request_id,
+        'x-ms-lease-id': lease_id,
+    })
+
+    client.set_blob_properties_request(container_name, blob_name, headers)
+
+    command_results = CommandResults(
+        readable_output=f'Blob {blob_name} properties successfully updated.',
+    )
+
+    return command_results
+
+
+def test_module(client: Client) -> None:
+    """
+    Tests API connectivity and authentication.
+    Args:
+        client (Client): Azure Blob Storage API client.
+    Returns:
+        str : 'ok' if test passed, anything else will fail the test.
+    """
+    try:
+        client.list_containers_request()
+    except Exception as exception:
+        if 'Error in API call' in str(exception):
+            return return_results('Authorization Error: make sure API Credentials are correctly set')
+
+        if 'Error Type' in str(exception):
+            return return_results(
+                'Verify that the storage account name is correct and that you have access to the server from your host.')
+
+        raise exception
+
+    return_results('ok')
+
+
+def main() -> None:
+    """
+    Main function
+    """
+    params: Dict[str, Any] = demisto.params()
+    args: Dict[str, Any] = demisto.args()
+    verify_certificate: bool = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    account_sas_token = params.get('account_sas_token')
+    storage_account_name = params.get('storage_account_name')
+    api_version = "2020-10-02"
+    base_url = f'https://{storage_account_name}.blob.core.windows.net/'
+
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+
+    try:
+        requests.packages.urllib3.disable_warnings()
+        client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
+                                api_version)
+
+        commands = {
+            'azure-storage-blob-container-list': list_containers_command,
+            'azure-storage-blob-container-create': create_container_command,
+            'azure-storage-blob-container-properties-get': get_container_properties_command,
+            'azure-storage-blob-container-delete': delete_container_command,
+            'azure-storage-blob-blob-list': list_blobs_command,
+            'azure-storage-blob-blob-create': create_blob_command,
+            'azure-storage-blob-blob-update': update_blob_command,
+            'azure-storage-blob-blob-get': get_blob_command,
+            'azure-storage-blob-blob-tag-get': get_blob_tags_command,
+            'azure-storage-blob-blob-tag-set': set_blob_tags_command,
+            'azure-storage-blob-blob-delete': delete_blob_command,
+            'azure-storage-blob-blob-properties-get': get_blob_properties_command,
+            'azure-storage-blob-blob-properties-set': set_blob_properties_command,
+        }
+
+        if command == 'test-module':
+            test_module(client)
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
+
+    except Exception as e:
+        return_error(str(e))
+
+
+from MicrosoftAzureStorageApiModule import *  # noqa: E402
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

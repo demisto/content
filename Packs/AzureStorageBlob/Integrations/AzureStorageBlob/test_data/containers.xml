@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://test.blob.core.windows.net/">
+    <MaxResults>2</MaxResults>
+    <Containers>
+        <Container>
+            <Name>xsoar</Name>
+            <Properties>
+                <Last-Modified>Wed, 04 Aug 2021 13:14:14 GMT</Last-Modified>
+                <Etag>"0x8D95749C1EEA8DE"</Etag>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <PublicAccess>blob</PublicAccess>
+                <DefaultEncryptionScope>$account-encryption-key</DefaultEncryptionScope>
+                <DenyEncryptionScopeOverride>false</DenyEncryptionScopeOverride>
+                <HasImmutabilityPolicy>false</HasImmutabilityPolicy>
+                <HasLegalHold>false</HasLegalHold>
+                <ImmutableStorageWithVersioningEnabled>false</ImmutableStorageWithVersioningEnabled>
+            </Properties>
+        </Container>
+        <Container>
+            <Name>test</Name>
+            <Properties>
+                <Last-Modified>Wed, 18 Aug 2021 14:36:06 GMT</Last-Modified>
+                <Etag>"0x8D962558312C6F1"</Etag>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <DefaultEncryptionScope>$account-encryption-key</DefaultEncryptionScope>
+                <DenyEncryptionScopeOverride>false</DenyEncryptionScopeOverride>
+                <HasImmutabilityPolicy>false</HasImmutabilityPolicy>
+                <HasLegalHold>false</HasLegalHold>
+                <ImmutableStorageWithVersioningEnabled>false</ImmutableStorageWithVersioningEnabled>
+            </Properties>
+        </Container>
+    </Containers>
+    <NextMarker/>
+</EnumerationResults>

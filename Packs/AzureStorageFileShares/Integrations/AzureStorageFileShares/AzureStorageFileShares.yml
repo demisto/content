@@ -1,0 +1,336 @@
+category: IT Services
+commonfields:
+  id: Azure Storage FileShares
+  version: -1
+configuration:
+- display: Storage account name
+  name: storage_account_name
+  required: true
+  type: 0
+- display: Account SAS Token
+  name: account_sas_token
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+description: Create and Manage Azure FileShares Files and Directories.
+display: Azure Storage FileShares
+name: Azure Storage FileShares
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Azure file share under the specified account.
+    execution: false
+    name: azure-storage-fileshares-share-create
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete file share under the specified account.
+    execution: false
+    name: azure-storage-fileshares-share-delete
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Number of shares to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filters the results to return only shares whose name begins with
+        the specified prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: list Azure file shares under the specified account.
+    execution: false
+    name: azure-storage-fileshares-share-list
+    outputs:
+    - contextPath: AzureStorageFileShares.Share.Name
+      description: Share name.
+      type: String
+  - arguments:
+    - default: false
+      description: Filters the results to return only files and directories whose
+        name begins with the specified prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Number of directories and files to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: The path to the directory.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List files and directories under the specified share or directory.
+    execution: false
+    name: azure-storage-fileshares-directory-file-list
+    outputs:
+    - contextPath: AzureStorageFileShares.Directory.DirectoryId
+      description: Directory ID.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.File.FileId
+      description: File ID.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.File.Name
+      description: File name.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.Content-Length
+      description: File size in bytes.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.CreationTime
+      description: File creation time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.LastAccessTime
+      description: File last access time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.LastWriteTime
+      description: File last write time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.ChangeTime
+      description: File change time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.File.Properties.Last-Modified
+      description: File last modified time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.Directory.FileId
+      description: Directory ID.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.Directory.Name
+      description: Directory name.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.Directory.Properties.CreationTime
+      description: File creation time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.Directory.Properties.LastAccessTime
+      description: File last access time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.Directory.Properties.LastWriteTime
+      description: File last write time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.Directory.Properties.ChangeTime
+      description: File change time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.Directory.Properties.Last-Modified
+      description: File last modified time.
+      type: Date
+    - contextPath: AzureStorageFileShares.Directory.share_name
+      description: Share name.
+      type: String
+    - contextPath: AzureStorageFileShares.Directory.path
+      description: Directory path.
+      type: String
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: New directory name.
+      isArray: false
+      name: directory_name
+      required: true
+      secret: false
+    - default: false
+      description: The path to the parent directory where the new directory will be
+        created. If the parent directory path is omitted, the directory will be created
+        within the specified share.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new directory under the specified share or parent directory.
+    execution: false
+    name: azure-storage-fileshares-directory-create
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: The directory name to delete.
+      isArray: false
+      name: directory_name
+      required: true
+      secret: false
+    - default: false
+      description: The path to the parent directory.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete the specified empty directory. Note that the directory must
+      be empty before it can be deleted.
+    execution: false
+    name: azure-storage-fileshares-directory-delete
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: XSOAR file entry ID.
+      isArray: false
+      name: file_entry_id
+      required: true
+      secret: false
+    - default: false
+      description: The path to the directory where the file should be created.If the
+        directory path is omitted, the file will be created within the specified share.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    - default: false
+      description: File name.Default is XSOAR file name.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new file in Share.
+    execution: false
+    name: azure-storage-fileshares-file-create
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: File name.
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: The path to the file directory.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Get file from Share.
+    execution: false
+    name: azure-storage-fileshares-file-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - default: false
+      description: Share name.
+      isArray: false
+      name: share_name
+      required: true
+      secret: false
+    - default: false
+      description: File name.
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: The path to the file directory.
+      isArray: false
+      name: directory_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete file from Share.
+    execution: false
+    name: azure-storage-fileshares-file-delete
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

@@ -1,0 +1,445 @@
+category: IT Services
+commonfields:
+  id: Azure Storage Blob
+  version: -1
+configuration:
+- display: Storage account name
+  name: storage_account_name
+  required: true
+  type: 0
+- display: Account SAS Token
+  name: account_sas_token
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+description: Create and Manage Azure Storage Blob services.
+display: Azure Storage Blob
+name: Azure Storage Blob
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Number of Containers to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filters the results to return only Containers whose names begin
+        with the specified prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List Containers under the specified storage account.
+    execution: false
+    name: azure-storage-blob-container-list
+    outputs:
+    - contextPath: AzureStorageBlob.Container.container_name
+      description: Container name.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Container under the specified account.
+    execution: false
+    name: azure-storage-blob-container-create
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve properties for the specified Container.
+    execution: false
+    name: azure-storage-blob-container-properties-get
+    outputs:
+    - contextPath: AzureStorageBlob.Container.Properties.last_modified
+      description: Last modified time of the container.
+      type: Date
+    - contextPath: AzureStorageBlob.Container.Properties.etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: AzureStorageBlob.Container.Properties.lease_status
+      description: The lease status of the container.
+      type: String
+    - contextPath: AzureStorageBlob.Container.Properties.lease_state
+      description: The lease state of the container.
+      type: String
+    - contextPath: AzureStorageBlob.Container.Properties.has_immutability_policy
+      description: 'Indicates whether the container has an immutability policy set
+        on it. '
+      type: String
+    - contextPath: AzureStorageBlob.Container.Properties.has_legal_hold
+      description: Indicates whether the container has a legal hold.
+      type: String
+    - contextPath: AzureStorageBlob.Container.container_name
+      description: Container name.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Marks the specified Container for deletion. The Container and any
+      Blobs contained within it, will be deleted during garbage collection.
+    execution: false
+    name: azure-storage-blob-container-delete
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Number of blobs to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filters the results to return only blobs whose names begin with
+        the specified prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List Blobs under the specified container.
+    execution: false
+    name: azure-storage-blob-blob-list
+    outputs:
+    - contextPath: AzureStorageBlob.Blob.blob_name
+      description: Blob name.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.container_name
+      description: Container name.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: XSOAR file entry ID.
+      isArray: false
+      name: file_entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.Default is XSOAR file name.
+      isArray: false
+      name: blob_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Blob under the specified Container.
+    execution: false
+    name: azure-storage-blob-blob-create
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: XSOAR file entry ID.
+      isArray: false
+      name: file_entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the content of an existing Blob.
+    execution: false
+    name: azure-storage-blob-blob-update
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve Blob from Container.
+    execution: false
+    name: azure-storage-blob-blob-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: Unknown
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the tags of the specified Blob.
+    execution: false
+    name: azure-storage-blob-blob-tag-get
+    outputs:
+    - contextPath: AzureStorageBlob.Tag.Key
+      description: Tag key.
+      type: String
+    - contextPath: AzureStorageBlob.Tag.Value
+      description: Tag value.
+      type: String
+    - contextPath: AzureStorageBlob.container_name
+      description: Container name.
+      type: String
+    - contextPath: AzureStorageBlob.blob_name
+      description: Blob name.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    - default: false
+      description: 'Tags records in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2":
+        "tag-value-2"}.The tag set may contain at most 10 tags.'
+      isArray: false
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets the tags for the specified Blob.
+    execution: false
+    name: azure-storage-blob-blob-tag-set
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Marks the specified Blob for deletion. The Blob will be deleted during
+      garbage collection.
+    execution: false
+    name: azure-storage-blob-blob-delete
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve Blob properties.
+    execution: false
+    name: azure-storage-blob-blob-properties-get
+    outputs:
+    - contextPath: AzureStorageBlob.Blob.Properties.last_modified
+      description: Last modified time of the blob.
+      type: Date
+    - contextPath: AzureStorageBlob.Blob.Properties.etag
+      description: The entity tag for the blob.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.lease_status
+      description: The lease status of the blob.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.lease_state
+      description: The lease state of the blob.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.blob_type
+      description: The blob type.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.content_length
+      description: The size of the blob in bytes.
+      type: Number
+    - contextPath: AzureStorageBlob.Blob.Properties.content_type
+      description: The content type specified for the blob. If no content type was
+        specified, the default content type is application/octet-stream.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.content-md5
+      description: The MD5 hash of the blob content.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.Properties.creation_time
+      description: The date at which the blob was created.
+      type: Date
+    - contextPath: AzureStorageBlob.Blob.container_name
+      description: Container name.
+      type: String
+    - contextPath: AzureStorageBlob.Blob.blob_name
+      description: Blob name.
+      type: String
+  - arguments:
+    - default: false
+      description: Container name.
+      isArray: false
+      name: container_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob name.
+      isArray: false
+      name: blob_name
+      required: true
+      secret: false
+    - default: false
+      description: Blob content type.
+      isArray: false
+      name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: Blob MD5 hash.
+      isArray: false
+      name: content_md5
+      required: false
+      secret: false
+    - default: false
+      description: Blob content encoding.
+      isArray: false
+      name: content_encoding
+      required: false
+      secret: false
+    - default: false
+      description: Blob content language.
+      isArray: false
+      name: content_language
+      required: false
+      secret: false
+    - default: false
+      description: Blob content disposition.
+      isArray: false
+      name: content_disposition
+      required: false
+      secret: false
+    - default: false
+      description: Modifies the cache control string for the blob.
+      isArray: false
+      name: cache_control
+      required: false
+      secret: false
+    - default: false
+      description: Request ID generated by the client and recorded in the analytics
+        logs when storage analytics logging is enabled.
+      isArray: false
+      name: request_id
+      required: false
+      secret: false
+    - default: false
+      description: Required if the blob has an active lease.
+      isArray: false
+      name: lease_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Set Blob properties.
+    execution: false
+    name: azure-storage-blob-blob-properties-set
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
