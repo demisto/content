@@ -18,7 +18,7 @@ configuration:
   required: true
   additionalinfo: The FQDN/IP the integration should connect to.
 - display: API Key
-  name: ApiKey
+  name: api_key
   type: 4
   required: true
   additionalinfo: ' The API Key required to authenticate to the service.'
