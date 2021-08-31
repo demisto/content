@@ -1,4 +1,4 @@
-Custom Indicator Demo is a demo integration which demonstrates usage of CustomIndicator helper class.
+Custom Indicator Demo is a demo integration that demonstrates the usage of the CustomIndicator helper class.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
