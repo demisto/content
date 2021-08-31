@@ -529,6 +529,11 @@
             "timeout": 400
         },
         {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -4880,7 +4885,8 @@
         "Create-Mock-Feed-Relationships"
     ],
     "private_tests": [
-        "HelloWorldPremium_Scan-Test"
+        "HelloWorldPremium_Scan-Test",
+        "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
