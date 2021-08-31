@@ -764,7 +764,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-```!arcusteam-get-vulnerabilities firmware_id=d8e81c52ba635da73458028d6514e8bb device_id=c11eb29c5346d182b94ee1fcde6d0b21```
+```!arcusteam-get-vulnerabilities firmware_id=d8e81c52ba635da73458028d6514e8bb device_id=c11eb29c5346d182b94ee1fcde6d0b21 return_fields=risk,cve,cwe,description,codename,exploit_published,exploit_used,modified_date```
 
 #### Context Example
 ```json
@@ -774,44 +774,104 @@ After you successfully execute a command, a DBot message appears in the War Room
         "max_items": 76,
         "results": [
             {
-                "cve": "CVE-2019-12643",
-                "risk": 1
+              "risk": 1,
+              "cve": "CVE-2019-12643",
+              "description": "A vulnerability in the Cisco REST API virtual service container for Cisco IOS XE Software could allow an unauthenticated, remote attacker to bypass authentication on the managed Cisco IOS XE device. The vulnerability is due to an improper check performed by the area of code that manages the REST API authentication service. An attacker could exploit this vulnerability by submitting malicious HTTP requests to the targeted device. A successful exploit could allow the attacker to obtain the token-id of an authenticated user. This token-id could be used to bypass authentication and execute privileged actions through the interface of the REST API virtual service container on the affected Cisco IOS XE device. The REST API interface is not enabled by default and must be installed and activated separately on IOS XE devices. See the Details section for more information.",
+              "codename": null,
+              "cwe": "CWE-287",
+              "exploit_published": null,
+              "exploit_used": null,
+              "modified_date": 1570664700
             },
             {
-                "cve": "CVE-2020-10188",
-                "risk": 0.9800000000000001
+              "risk": 0.9800000000000001,
+              "cve": "CVE-2016-2148",
+              "description": "Heap-based buffer overflow in the DHCP client (udhcpc) in BusyBox before 1.25.0 allows remote attackers to have unspecified impact via vectors involving OPTION_6RD parsing.",
+              "codename": null,
+              "cwe": "CWE-119",
+              "exploit_published": null,
+              "exploit_used": null,
+              "modified_date": 1598559300
             },
             {
-                "cve": "CVE-2018-0151",
-                "risk": 0.9800000000000001
+              "risk": 0.9800000000000001,
+              "cve": "CVE-2018-0151",
+              "description": "A vulnerability in the quality of service (QoS) subsystem of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition or execute arbitrary code with elevated privileges. The vulnerability is due to incorrect bounds checking of certain values in packets that are destined for UDP port 18999 of an affected device. An attacker could exploit this vulnerability by sending malicious packets to an affected device. When the packets are processed, an exploitable buffer overflow condition may occur. A successful exploit could allow the attacker to execute arbitrary code on the affected device with elevated privileges. The attacker could also leverage this vulnerability to cause the device to reload, causing a temporary DoS condition while the device is reloading. The malicious packets must be destined to and processed by an affected device. Traffic transiting a device will not trigger the vulnerability. Cisco Bug IDs: CSCvf73881.",
+              "codename": null,
+              "cwe": "CWE-119",
+              "exploit_published": null,
+              "exploit_used": null,
+              "modified_date": 1575312840
             },
             {
-                "cve": "CVE-2016-2148",
-                "risk": 0.9800000000000001
+              "risk": 0.9800000000000001,
+              "cve": "CVE-2020-10188",
+              "description": null,
+              "codename": null,
+              "cwe": "CWE-120",
+              "exploit_published": false,
+              "exploit_used": false,
+              "modified_date": 1594227510
             },
             {
-                "cve": "CVE-2018-1000517",
-                "risk": 0.9800000000000001
+              "risk": 0.9800000000000001,
+              "cve": "CVE-2018-1000517",
+              "description": "BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e.",
+              "codename": null,
+              "cwe": "CWE-120",
+              "exploit_published": null,
+              "exploit_used": null,
+              "modified_date": 1590612900
             },
             {
-                "cve": "CVE-2020-3217",
-                "risk": 0.8800000000000001
+              "risk": 0.8800000000000001,
+              "cve": "CVE-2017-16544",
+              "description": "In the add_match function in libbb/lineedit.c in BusyBox through 1.27.2, the tab autocomplete feature of the shell, used to get a list of filenames in a directory, does not sanitize filenames and results in executing any escape sequence in the terminal. This could potentially result in code execution, arbitrary file writes, or other attacks.",
+              "codename": null,
+              "cwe": "CWE-94",
+              "exploit_published": null,
+              "exploit_used": null,
+              "modified_date": 1610543700
             },
             {
-                "cve": "CVE-2018-0167",
-                "risk": 0.8800000000000001
+              "risk": 0.8800000000000001,
+              "cve": "CVE-2019-16009",
+              "description": null,
+              "codename": null,
+              "cwe": "CWE-352",
+              "exploit_published": false,
+              "exploit_used": false,
+              "modified_date": 1588096010
             },
             {
-                "cve": "CVE-2019-16009",
-                "risk": 0.8800000000000001
+              "risk": 0.8800000000000001,
+              "cve": "CVE-2020-3217",
+              "description": null,
+              "codename": null,
+              "cwe": "CWE-20",
+              "exploit_published": false,
+              "exploit_used": false,
+              "modified_date": 1591200000
             },
             {
-                "cve": "CVE-2017-16544",
-                "risk": 0.8800000000000001
+              "risk": 0.8800000000000001,
+              "cve": "CVE-2018-0167",
+              "description": null,
+              "codename": null,
+              "cwe": "CWE-119",
+              "exploit_published": false,
+              "exploit_used": false,
+              "modified_date": 1525269240
             },
             {
-                "cve": "CVE-2018-0485",
-                "risk": 0.86
+              "risk": 0.86,
+              "cve": "CVE-2020-3226",
+              "description": null,
+              "codename": null,
+              "cwe": "CWE-20",
+              "exploit_published": false,
+              "exploit_used": false,
+              "modified_date": 1591200000
             }
         ]
     }
@@ -822,16 +882,17 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 >## Scan results
 >### Number of CVE's found: 76
->|cve|risk|
->|---|---|
->| CVE-2019-12643 | 100% |
->| CVE-2020-10188 | 98.0% |
->| CVE-2018-0151 | 98.0% |
->| CVE-2016-2148 | 98.0% |
->| CVE-2018-1000517 | 98.0% |
->| CVE-2020-3217 | 88.0% |
->| CVE-2018-0167 | 88.0% |
->| CVE-2019-16009 | 88.0% |
->| CVE-2017-16544 | 88.0% |
->| CVE-2018-0485 | 86.0% |
+>|risk|cve|cwe|description|codename|exploit_published|exploit_used|modified_date|
+>|---|---|---|---|---|---|---|---|
+>| 100.0% | CVE-2019-12643 | CWE-287 | A vulnerability in the Cisco REST API virtual service container for Cisco IOS XE Software could allow an unauthenticated, remote attacker to bypass authentication on the managed Cisco IOS XE device. The vulnerability is due to an improper check performed by the area of code that manages the REST API authentication service. An attacker could exploit this vulnerability by submitting malicious HTTP requests to the targeted device. A successful exploit could allow the attacker to obtain the token-id of an authenticated user. This token-id could be used to bypass authentication and execute privileged actions through the interface of the REST API virtual service container on the affected Cisco IOS XE device. The REST API interface is not enabled by default and must be installed and activated separately on IOS XE devices. See the Details section for more information. |  |  |  | 1570664700 |
+>| 98.0% | CVE-2020-10188 | CWE-120 |  |  | false | false | 1594227510 |
+>| 98.0% | CVE-2018-0151 | CWE-119 | A vulnerability in the quality of service (QoS) subsystem of Cisco IOS Software and Cisco IOS XE Software could allow an unauthenticated, remote attacker to cause a denial of service (DoS) condition or execute arbitrary code with elevated privileges. The vulnerability is due to incorrect bounds checking of certain values in packets that are destined for UDP port 18999 of an affected device. An attacker could exploit this vulnerability by sending malicious packets to an affected device. When the packets are processed, an exploitable buffer overflow condition may occur. A successful exploit could allow the attacker to execute arbitrary code on the affected device with elevated privileges. The attacker could also leverage this vulnerability to cause the device to reload, causing a temporary DoS condition while the device is reloading. The malicious packets must be destined to and processed by an affected device. Traffic transiting a device will not trigger the vulnerability. Cisco Bug IDs: CSCvf73881. |  |  |  | 1575312840 |
+>| 98.0% | CVE-2018-1000517 | CWE-120 | BusyBox project BusyBox wget version prior to commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e contains a Buffer Overflow vulnerability in Busybox wget that can result in heap buffer overflow. This attack appear to be exploitable via network connectivity. This vulnerability appears to have been fixed in after commit 8e2174e9bd836e53c8b9c6e00d1bc6e2a718686e. |  |  |  | 1590612900 |
+>| 98.0% | CVE-2016-2148 | CWE-119 | Heap-based buffer overflow in the DHCP client (udhcpc) in BusyBox before 1.25.0 allows remote attackers to have unspecified impact via vectors involving OPTION_6RD parsing. |  |  |  | 1598559300 |
+>| 88.0% | CVE-2017-16544 | CWE-94 | In the add_match function in libbb/lineedit.c in BusyBox through 1.27.2, the tab autocomplete feature of the shell, used to get a list of filenames in a directory, does not sanitize filenames and results in executing any escape sequence in the terminal. This could potentially result in code execution, arbitrary file writes, or other attacks. |  |  |  | 1610543700 |
+>| 88.0% | CVE-2019-16009 | CWE-352 |  |  | false | false | 1588096010 |
+>| 88.0% | CVE-2020-3217 | CWE-20 |  |  | false | false | 1591200000 |
+>| 88.0% | CVE-2018-0167 | CWE-119 |  |  | false | false | 1525269240 |
+>| 86.0% | CVE-2019-1737 | CWE-770 | A vulnerability in the processing of IP Service Level Agreement (SLA) packets by Cisco IOS Software and Cisco IOS XE software could allow an unauthenticated, remote attacker to cause an interface wedge and an eventual denial of service (DoS) condition on the affected device. The vulnerability is due to improper socket resources handling in the IP SLA responder application code. An attacker could exploit this vulnerability by sending crafted IP SLA packets to an affected device. An exploit could allow the attacker to cause an interface to become wedged, resulting in an eventual denial of service (DoS) condition on the affected device. |  |  |  | 1602187260 |
+
 
