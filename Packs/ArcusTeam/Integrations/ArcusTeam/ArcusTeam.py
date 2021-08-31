@@ -19,39 +19,34 @@ VERSION = "1.0.0"
 
 class Client(BaseClient):
 
-
     def get_devices(self, vendor, model, series, firmware_version):
 
         return self._http_request(
             method='POST',
-            url_suffix=f'/get_devices',
-            json_data = {
+            url_suffix='/get_devices',
+            json_data={
                 "vendor": vendor,
                 "model": model,
                 "series": series,
                 "firmware_version": firmware_version,
                 "version": VERSION
-            }
-        )
+            })
 
     def get_vulnerabities(self, firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields):
 
-
         return self._http_request(
             method='POST',
-            url_suffix=f'/get_vulnerabilities',
-            json_data = {
-                    "firmwareId": firmwareId,
-                    "version": VERSION,
-                    "deviceId": deviceId,
-                    "pageSize": pageSize,
-                    "page": page,
-                    "sortOrder": sortOrder,
-                    "sortField": sortField,
-                    "returnFields": returnFields,
-
-                }
-        )
+            url_suffix='/get_vulnerabilities',
+            json_data={
+                "firmwareId": firmwareId,
+                "version": VERSION,
+                "deviceId": deviceId,
+                "pageSize": pageSize,
+                "page": page,
+                "sortOrder": sortOrder,
+                "sortField": sortField,
+                "returnFields": returnFields,
+            })
 
 
 def deviceToMarkdown(device):
@@ -95,28 +90,29 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     :param device_name: device name to search for in the DB.
     :return: List of matching devices for the given device.
     """
-    result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""), series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
+    result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""),
+                series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
     markdown = '## Found ' + str(len(result)) + ' devices\n'
     markdown += "".join(list(map(deviceToMarkdown, result)))
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="ArcusTeamDevices",
         outputs_key_field="",
-        outputs={'devices': result},
+        outputs={'devices': result}
     )
 
 
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    returnFields = str(args.get("return_fields", ['risk','cve'])).split(',')
-    firmwareId= args.get("firmware_id", "")
-    deviceId =  args.get("device_id", "")
+    returnFields = str(args.get("return_fields", ['risk', 'cve'])).split(',')
+    firmwareId = args.get("firmware_id", "")
+    deviceId = args.get("device_id", "")
     pageSize = int(args.get("page_size", 10))
     page = int(args.get("page_number", 1))
     sortOrder = args.get("sort_order", "desc")
     sortField = args.get("sort_field", "risk")
 
-    result = client.get_vulnerabities(firmwareId=firmwareId, deviceId=deviceId, pageSize=pageSize, page=page, sortField=sortField, sortOrder=sortOrder,returnFields=returnFields)
+    result = client.get_vulnerabities(firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields)
     if len(result.get('code', '')) > 0:
         raise Exception(result.get('message'))
     result['results'] = list(map(getEditIssue(returnFields), result.get("results")))
@@ -156,7 +152,7 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(demisto.params()["url"], "/api/v10/xsoar")
 
-    authentication_url  = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
+    authentication_url = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
 
     payload = {
         "apiKey": api_key,
@@ -165,7 +161,7 @@ def main() -> None:
 
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
-    result = requests.request("POST", authentication_url , headers=headers, data=json.dumps(payload))
+    result = requests.request("POST", authentication_url, headers=headers, data=json.dumps(payload))
     readable_output = result.json()
     access_token = readable_output["access_token"]
 
@@ -204,3 +200,4 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+    
