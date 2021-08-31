@@ -23,7 +23,7 @@ configuration:
   required: true
   additionalinfo: ' The API Key required to authenticate to the service.'
 - display: 'The client ID'
-  name: ClientID
+  name: client_id
   type: 0
   required: true
   additionalinfo: The client ID from ArcusTeam dashboard
