@@ -268,7 +268,7 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     return current_query
 
 
-def _add_to_current_query(current_query: str, params: dict) -> str:
+def _add_to_current_query(current_query: str = '', params: dict = None) -> str:
     new_query = ''
     if not params:
         return current_query
@@ -740,7 +740,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
-                    feedname: str = None, query: str = None):
+                    feedname: str = None, query: str = ''):
     if (status or feedname) and query:
         raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
 
