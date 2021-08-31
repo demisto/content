@@ -8,6 +8,18 @@ configuration:
   name: server
   required: true
   type: 0
+- defaultvalue: '443'
+  display: Port Number
+  hidden: false
+  name: port
+  required: true
+  type: 0
+- defaultvalue: Common
+  display: The administrative partition
+  hidden: false
+  name: partition
+  required: false
+  type: 0
 - additionalinfo: The Username to use for connection
   display: Username
   name: credentials
@@ -27,11 +39,44 @@ name: F5LTM
 script:
   commands:
   - deprecated: false
-    description: Get a list of all pools on the BigIP and print their names and their
-      members' names
+    description: Get a list of all pools
     execution: false
     name: f5-ltm-get-pools
-  dockerimage: demisto/python3:3.9.5.21272
+    outputs:
+    - contextPath: F5.LTM.Pools.name
+      description: Pool Name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Pool Name
+      isArray: false
+      name: pool
+      required: true
+      secret: false
+    deprecated: false
+    description: Get pool details
+    execution: false
+    name: f5-ltm-get-pool
+    outputs:
+    - contextPath: F5.LTM.Pools.name
+      description: Pool Name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Pool Name
+      isArray: false
+      name: pool
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Pool Members
+    execution: false
+    name: f5-ltm-get-pool-members
+    outputs:
+    - contextPath: F5.LTM.Pools.members.name
+      description: Members Names
+      type: Unknown
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false
