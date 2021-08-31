@@ -364,13 +364,14 @@ def alert_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResu
     response = client.alert_get_by_id_request(alert_id)
     # output returns keys capitalized rather then with first lower case letter (as stated and should be)
     response = keys_to_lowercase(response)
+    output = {key: response[key] for key in response.keys() - {'settings'}}
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Alert {alert_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Alert {alert_id} Results', output, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -438,7 +439,7 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organization For User {user_id}', response, removeNull=True,
+        readable_output=tableToMarkdown(f'Organizations For User {user_id}', response, removeNull=True,
                                         headerTransform=pascalToSpace)
     )
 
@@ -474,8 +475,7 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     text = str(args.get('text'))
 
     response = client.annotation_create_request(text, dashboard_id, panel_id, time_start, time_end, tags)
-    output = dict(response)
-    output.pop('message')
+    output = {key: response[key] for key in response.keys() - {'message'}}
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Annotation',
