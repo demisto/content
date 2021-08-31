@@ -80,7 +80,7 @@ script:
       required: true
       description: ' ArcusTeam Device ID'
     - name: page_size
-      description: Page size [1,100]
+      description: Page size. Minimum page size is 1, maximum is 100.
       defaultValue: "10"
     - name: page_number
       description: ' Page number'
