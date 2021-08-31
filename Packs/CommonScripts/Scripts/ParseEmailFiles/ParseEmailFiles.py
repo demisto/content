@@ -3502,6 +3502,7 @@ def unfold(s):
     """
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
+
 def process_individual_message(message):
     """Decodes a message from Base64, if fails will outputs its str(message)
     """
@@ -3512,6 +3513,7 @@ def process_individual_message(message):
     except TypeError:
         msg_info = str(msg)
     return msg_info
+
 
 def decode_content(mime):
     """
@@ -3659,7 +3661,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         # email is DSN
                         msgs = part.get_payload()  # human-readable section
                         for i, individual_message in enumerate(msgs):
-                            
+
                             msg_info = process_individual_message(individual_message)
                             attached_emails.append(msg_info)
 
