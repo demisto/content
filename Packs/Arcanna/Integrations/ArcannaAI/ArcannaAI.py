@@ -83,14 +83,13 @@ class Client:
     def send_feedback(self, job_id, event_id, username, arcanna_label, closing_notes, indicators):
         url_suffix = f"api/v1/events/{job_id}/{event_id}/feedback"
         body = self.map_to_arcanna_label(arcanna_label, closing_notes, username)
-        demisto.log(f"{body}")
-        if indicators is not None:
+        if indicators:
             body["indicators"] = indicators
         raw_response = requests.put(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
                                     json=body)
 
         if raw_response.status_code != 200:
-            raise Exception(f"Error HttpCode={raw_response.status_code}")
+            raise Exception(f"Arcanna Error HttpCode={raw_response.status_code} body={raw_response.text}")
         return raw_response.json()
 
     @staticmethod
@@ -112,7 +111,7 @@ class Client:
                                      json=body)
 
         if raw_response.status_code != 201:
-            raise Exception(f"Error HttpCode={raw_response.status_code}")
+            raise Exception(f"Arcanna Error HttpCode={raw_response.status_code} body={raw_response.text}")
         return raw_response.json()
 
 
@@ -122,7 +121,7 @@ class Client:
 def test_module(client: Client, feature_mapping_field: str) -> str:
     result = parse_mappings(feature_mapping_field)
     if len(result) < 2:
-        return "Mapping Error. Please check feature_mapping field"
+        return "Arcanna Mapping Error. Please check your feature_mapping field"
 
     try:
         response = client.test_arcanna()
@@ -232,7 +231,7 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
     indicators = args.get("indicators", None)
     arcanna_label = mappings.get(label, None)
     if arcanna_label is None:
-        demisto.log(f"Error unknown label supplied.label={label}")
+        return_error(f"Error unknown label supplied.label={label}")
         raise Exception(f"Error in arcanna-send-feedback.Wrong label")
 
     response = client.send_feedback(job_id, event_id, username, arcanna_label, closing_notes, indicators)
@@ -240,26 +239,24 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Arcanna.Feedback',
-        outputs_key_field='status',
+        outputs_prefix='Arcanna.Event',
+        outputs_key_field='feedback_status',
         outputs=response
     )
 
 
 def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> dict:
-    job_id = args.get("job_id", None)
-    if not job_id:
-        job_id = client.get_default_job_id()
-    events = args.get("events")
+    job_id = args.get("job_id")
+    events = argToList(args.get("events"))
     mappings = parse_mappings(feature_mapping_field)
     mapped_events = []
     for event in events:
-        closing_status = event["closingReason"]
-        closing_notes = event["closeNotes"]
-        closing_user = event["closeReason"]
-        arcanna_label = mappings.get(closing_status, None)
-        title = event["name"]
-        severity = event["severity"]
+        closing_status = event.get("closingReason")
+        closing_notes = event.get("closeNotes")
+        closing_user = event.get("closeUser")
+        arcanna_label = mappings.get(closing_status)
+        title = event.get("name")
+        severity = event.get("severity")
 
         body = client.map_to_arcanna_raw_event(job_id, event, severity, title)
         body["label"] = client.map_to_arcanna_label(arcanna_label, closing_notes, closing_user)
@@ -275,7 +272,7 @@ def parse_mappings(mapping: str) -> dict:
     for pair in pairs:
         parts = pair.split("=")
         if len(parts) != 2:
-            demisto.log("Error while parsing mapping fields")
+            return_error("Arcanna: Error while parsing mapping fields")
             return result
         demisto_closing_reason = parts[0].strip().replace("\"", "")
         arcanna_label = parts[1].strip().replace("\"", "")
@@ -296,7 +293,7 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(demisto.params()['url'])
     verify_certificate = not demisto.params().get('insecure', False)
-    feature_mapping = demisto.params().get('feature_mapping', None)
+    feature_mapping = demisto.params().get('feature_mapping')
     proxy = demisto.params().get('proxy', False)
 
     default_job_id = demisto.params().get('default_job_id', -1)

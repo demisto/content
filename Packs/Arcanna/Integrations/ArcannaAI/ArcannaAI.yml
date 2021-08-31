@@ -178,7 +178,7 @@ script:
       description: Arcanna job id
       isArray: false
       name: job_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Arcanna event id
@@ -190,13 +190,13 @@ script:
       description: Arcanna Feedback Label
       isArray: false
       name: label
-      required: false
+      required: true
       secret: false
     - default: false
       description: User providing feedback
       isArray: false
       name: username
-      required: false
+      required: true
       secret: false
     - default: false
       description: Cortex closing notes if any
@@ -239,6 +239,10 @@ script:
     description: Returns the Feedback field set on integration
     execution: false
     name: arcanna-get-feedback-field
+    outputs:
+    - contextPath: Arcanna.FeedbackField
+      description: XSOAR field used to signal feedback/label for Arcanna
+      type: Unknown
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
