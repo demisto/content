@@ -51,11 +51,11 @@ configuration:
   type: 16
   required: false
   options:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
 - display: 'Fetch only incidents with matching status'
   additionalinfo: If none is selected all will be used.
   name: status
@@ -121,11 +121,11 @@ script:
     - name: severity
       auto: PREDEFINED
       predefined:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
+        - '1'
+        - '2'
+        - '3'
+        - '4'
+        - '5'
       description: The severity of the incidents. In none is selected, all severities will be pulled.
     - name: status
       auto: PREDEFINED
@@ -439,7 +439,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test

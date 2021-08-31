@@ -1,11 +1,5 @@
 Use the SaaS Security integration to protect against cloud‑based threats by scanning and analyzing all your assets and applying Security policy to identify exposures, external collaborators, risky user behavior, and sensitive documents and identifying the potential risks associated with each asset.
-This integration was integrated and tested with version 1.0 of SaasSecurity
-
-
-## Required Scopes
-- Log access — Access log files.
-- Incident management — Retrieve and change incident status.
-- Quarantine management — Quarantine assets and restore quarantined assets.
+This integration was integrated and tested with version xx of SaasSecurity
 
 ## Configure SaasSecurity on Cortex XSOAR
 
@@ -24,9 +18,9 @@ This integration was integrated and tested with version 1.0 of SaasSecurity
     | The number of incident per fetch | Minimum is 10 | True |
     | First fetch timestamp | (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Fetch only incidents with matching state |  | False |
-    | Fetch only incidents with matching severity  |  | False |
-    | Fetch only incidents with matching status |  | False |
-    | App IDs | Comma-separated list of app IDs. Run the 'saas-security-get-apps' command to list apps info. | False |
+    | Fetch only incidents with matching severity | If none is selected all severities will be used. | False |
+    | Fetch only incidents with matching status | If none is selected all will be used. | False |
+    | Fetch only incidents with matching App IDs | Comma-separated list of app IDs. Run the 'saas-security-get-apps' command to list apps info. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -50,8 +44,8 @@ Retrieve incidents from the Saas Security platform.
 | from | The start time of query, filter by the date the incident was updated, e.g, `2021-08-23T09:26:25.872Z`. | Optional | 
 | to | The end time of query, filter by the date the incident was updated, e.g, `2021-08-23T09:26:25.872Z`. | Optional | 
 | app_ids | Comma-separated list of application id. Run the 'saas-security-get-apps' command to list all apps. | Optional | 
-| state | The state of the incidents. Possible values are: All, Open, Closed. Default is open. | Optional | 
-| severity | The severity of the incidents. Possible values are: Low, Medium, High, All. | Optional | 
+| state | The state of the incidents. If empty, retrieves all states. Possible values are: All, Open, Closed. Default is open. | Optional | 
+| severity | The severity of the incidents. In none is selected, all severities will be pulled. Possible values are: 1, 2, 3, 4, 5. | Optional | 
 | status | The status of the incidents. Possible values are: New, Assigned, In Progress, Pending, No Reason, Business Justified, Misidentified, In The Cloud, Dismiss. | Optional | 
 | next_page | Get the next batch of incidents. No other argument is needed when providing this. | Optional | 
 
@@ -74,10 +68,12 @@ Retrieve incidents from the Saas Security platform.
 | SaasSecurity.Incident.exposure_type | Number | Exposure type \(Internal/External\). | 
 | SaasSecurity.Incident.exposure_level | String | Exposure level. | 
 | SaasSecurity.Incident.policy_id | String | Policy ID. | 
+| SaasSecurity.Incident.policy_name | String | Policy name. | 
 | SaasSecurity.Incident.policy_version | Number | Policy version. | 
 | SaasSecurity.Incident.policy_page_uri | String | Policy page URI. | 
 | SaasSecurity.Incident.severity | String | Sevrity of the incident. | 
 | SaasSecurity.Incident.status | String | Incident status. | 
+| SaasSecurity.Incident.state | String | Incident state. | 
 | SaasSecurity.Incident.category | String | Incident category. | 
 | SaasSecurity.Incident.resolved_by | String | Name of the User who resolved the incident. | 
 | SaasSecurity.Incident.resolution_date | Date | Date the incident was resolved. | 
@@ -121,9 +117,11 @@ Retrieve incidents from the Saas Security platform.
                 "policy_id": "6109a5d0e64152534b240f48",
                 "policy_page_uri": "https://xsoartest.staging.cirrotester.com/data_policies/6109a5d0e64152534b240f48",
                 "policy_version": 1,
+                "policy_name": "policy name",
                 "resolution_date": "2021-08-24T07:44:21.608Z",
                 "resolved_by": "api",
                 "severity": "Low",
+                "state": "closed",
                 "status": "Closed-Business Justified",
                 "tenant": "xsoartest",
                 "updated_at": "2021-08-24T07:44:21.608Z"
@@ -209,10 +207,12 @@ Gets an incident by its ID.
 | SaasSecurity.Incident.exposure_type | Number | Exposure type \(Internal/External\). | 
 | SaasSecurity.Incident.exposure_level | String | Exposure level. | 
 | SaasSecurity.Incident.policy_id | String | Policy ID. | 
+| SaasSecurity.Incident.policy_name | String | Policy name. | 
 | SaasSecurity.Incident.policy_version | Number | Policy version. | 
 | SaasSecurity.Incident.policy_page_uri | String | Policy page URI. | 
 | SaasSecurity.Incident.severity | String | Sevrity of the incident. | 
 | SaasSecurity.Incident.status | String | Incident status. | 
+| SaasSecurity.Incident.state | String | Incident state. | 
 | SaasSecurity.Incident.category | String | Incident category. | 
 | SaasSecurity.Incident.resolved_by | String | Name of the User who resolved the incident. | 
 | SaasSecurity.Incident.resolution_date | Date | Date the incident was resolved. | 
@@ -294,6 +294,7 @@ Closes an incident and updates its category.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| SaasSecurity.IncidentState.incident_id | String | The incident ID. | 
 | SaasSecurity.IncidentState.state | String | The incident state \(open/closed\). | 
 | SaasSecurity.IncidentState.category | String | The incident category. | 
 | SaasSecurity.IncidentState.resolved_by | String | Name of the User who resolved the incident. | 

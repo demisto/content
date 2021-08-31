@@ -2918,6 +2918,10 @@
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
         {
+            "integrations": "SaasSecurity",
+            "playbookID": "SaasSecurity-Test"
+        },
+        {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
