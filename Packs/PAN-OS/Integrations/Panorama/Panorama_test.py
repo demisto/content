@@ -1,4 +1,5 @@
 import pytest
+
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -350,6 +351,31 @@ def test_prettify_logs():
     assert response == expected
 
 
+prepare_security_rule_inputs = [
+    ('top', 'test_rule_name'),
+    ('bottom', 'test_rule_name'),
+]
+
+
+@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst):
+    """
+    Given:
+     - a non valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import prepare_security_rule_params
+    err_msg = 'Please provide a dst rule only when the where argument is before or after.'
+    with pytest.raises(DemistoException, match=err_msg):
+        prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                     rulename='test', where=where, dst=dst)
+
+
 def test_build_policy_match_query():
     """
     Given:
@@ -388,6 +414,32 @@ def test_panorama_security_policy_match_command_no_target():
               "or for a Panorama instance, to be used with the target argument."
     with pytest.raises(DemistoException, match=err_msg):
         panorama_security_policy_match_command(demisto.args())
+
+
+def test_panorama_register_ip_tag_command_wrongful_args(mocker):
+    """
+    Given:
+     - a non valid arguments for the panorama_register_ip_tag_command function
+
+    When:
+     - running the panorama_register_ip_tag_command function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import panorama_register_ip_tag_command
+    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'true', 'timeout': '5'}
+
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    with pytest.raises(DemistoException,
+                       match='When the persistent argument is true, you can not use the timeout argument.'):
+        panorama_register_ip_tag_command(args)
+
+    args['persistent'] = 'false'
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    with pytest.raises(DemistoException,
+                       match='The timeout argument is only applicable on 9.x PAN-OS versions or higher.'):
+        panorama_register_ip_tag_command(args)
 
 
 def test_prettify_matching_rule():

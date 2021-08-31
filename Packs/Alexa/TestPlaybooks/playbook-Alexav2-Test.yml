@@ -1,0 +1,212 @@
+id: AlexaV2 Test Playbook
+version: -1
+name: AlexaV2 Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4fc03915-0028-4eef-8eca-33b95e95f9d6
+    type: start
+    task:
+      id: 4fc03915-0028-4eef-8eca-33b95e95f9d6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9a50fb5a-9b7c-4f48-8fbc-894e35030013
+    type: regular
+    task:
+      id: 9a50fb5a-9b7c-4f48-8fbc-894e35030013
+      version: -1
+      name: domain
+      description: Provides an Alexa ranking of the Domain in question.
+      script: Alexa Rank Indicator v2|||domain
+      type: regular
+      iscommand: true
+      brand: Alexa Rank Indicator v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 51f1f999-be43-4861-8118-332586bfb281
+    type: condition
+    task:
+      id: 51f1f999-be43-4861-8118-332586bfb281
+      version: -1
+      name: test_domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Alexa.Domain.Rank
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Alexa.Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Alexa.Domain.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+          right:
+            value:
+              simple: A - Completely reliable
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Alexa Rank Indicator v2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cdc575b6-66a3-43df-8ca9-17f2e1102505
+    type: title
+    task:
+      id: cdc575b6-66a3-43df-8ca9-17f2e1102505
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
