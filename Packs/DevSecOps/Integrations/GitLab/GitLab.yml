@@ -796,7 +796,7 @@ script:
   - arguments:
     - name: labels
       description: Comma seperated values of labels to search issues by.
-    - name: in
+    - name: scope
       defaultValue: title,description
       description: On what scope to perform the search on.
       predefined:

@@ -132,7 +132,7 @@ class Client(BaseClient):
         response = self._http_request('get', suffix, headers=headers)
         return response
 
-    def get_issues_list_request(self, project_id: str, labels: str, state: str, search: str, _in: str,
+    def get_issues_list_request(self, project_id: str, labels: str, state: str, search: str, scope: str,
                                 assignee_username: str):
         headers = self._headers
         suffix = f'projects/{project_id}/issues'
@@ -143,7 +143,7 @@ class Client(BaseClient):
             search=search,
             per_page=100
         )
-        params['in'] = _in
+        params['in'] = scope
         response = self._http_request('get', suffix, headers=headers, params=params)
         return response
 
@@ -536,8 +536,8 @@ def gitlab_issues_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     state = args.get('state', '')
     assignee_username = args.get('assignee_username', '')
     search = args.get('search', '')
-    _in = args.get('in', '')
-    response = client.get_issues_list_request(project_id, labels, state, search, _in, assignee_username)
+    scope = args.get('scope', '')
+    response = client.get_issues_list_request(project_id, labels, state, search, scope, assignee_username)
     human_readable = tableToMarkdown('Issues Lists', response)
     return CommandResults(
         outputs_prefix='GitLab.Issue',

@@ -1492,7 +1492,7 @@ List all issues
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | labels | Comma seperated values of labels to search issues by. | Optional | 
-| in | On what scope to perform the search on. Possible values are: title, description, title,description. Default is title,description. | Optional | 
+| scope | On what scope to perform the search on. Possible values are: title, description, title,description. Default is title,description. | Optional | 
 | search | The search clause. | Optional | 
 | state | The state of the issue. Possible values are: opened, closed, all. Default is all. | Optional | 
 | project_id | Project ID from which to retrieve the Merge Requests. | Required | 
