@@ -348,6 +348,7 @@ class TestGetGroupCommand:
 
     def test_get_group__non_existing_group(self, mocker):
         mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
@@ -355,11 +356,12 @@ class TestGetGroupCommand:
         with requests_mock.Mocker() as m:
             m.get('https://test.com/admin/v1/Groups/1234', status_code=404, text='Group Not Found')
 
-            with pytest.raises(Exception) as e:
-                get_group_command(client, args)
+            get_group_command(client, args)
 
-        assert e.value.res.status_code == 404
-        assert 'Group Not Found' in str(e.value)
+        assert mock_result.call_args.kwargs['outputs']['success'] is False
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
     def test_get_group__id_and_display_name_empty(self, mocker):
         mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())

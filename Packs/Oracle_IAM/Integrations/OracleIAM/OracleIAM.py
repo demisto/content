@@ -20,7 +20,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
         operation = {
             'op': 'replace' if key in old_user_data.keys() else 'add',
             'path': key,
-            'value': [value] if key in ('emails', 'phoneNumbers', 'address') else value,
+            'value': [value] if key in ('emails', 'phoneNumbers') and not isinstance(value, list) else value,
         }
         operations.append(operation)
 
