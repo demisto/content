@@ -261,7 +261,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     """
     List incidents with query.
     """
-    limit = arg_to_number(args.get('limit', LIMIT_DEFAULT))
+    limit = arg_to_number(args.get('limit')) or LIMIT_DEFAULT
     from_time = args.get('from')
     to_time = args.get('to')
     app_ids = ','.join(argToList(args.get('app_ids', [])))
@@ -302,7 +302,7 @@ def get_incident_by_id_command(client: Client, args: dict) -> CommandResults:
     """
     Get incident by ID.
     """
-    inc_id = args.get('id')
+    inc_id = args['id']
     incident = client.get_incident_by_id(inc_id)
     human_readable = tableToMarkdown(f'Incident {inc_id} details', incident, headers=INC_HEADERS_SHORTEN,
                                      headerTransform=string_to_table_header, removeNull=True)
@@ -341,7 +341,7 @@ def get_apps_command(client: Client, _) -> CommandResults:
     Gets Apps info.
     """
     raw_res = client.get_apps()
-    human_readable = tableToMarkdown(f'Apps Info', raw_res, removeNull=True,
+    human_readable = tableToMarkdown('Apps Info', raw_res, removeNull=True,
                                      headerTransform=string_to_table_header)
 
     return CommandResults(
@@ -478,6 +478,9 @@ def main() -> None:
                             fetch_app_ids)
         if command in commands:
             return_results(commands[command](client, demisto.args()))
+
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

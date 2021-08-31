@@ -110,7 +110,7 @@ def test_convert_to_xsoar_incident():
 def test_convert_to_xsoar_incident_without_occurred():
     """
         Given:
-            - An incident with the created_at field from the Saas Security platform
+            - An incident without the created_at field from the Saas Security platform
         When:
             - Fetching incidents
         Then:
@@ -190,7 +190,7 @@ def test_get_incident_by_id_command(client, requests_mock):
     from SaasSecurity import get_incident_by_id_command
 
     incident = util_load_json('test_data/get-incident-by-id.json')
-    requests_mock.get(f'http://base_url/incident/api/incidents/4', json=incident)
+    requests_mock.get('http://base_url/incident/api/incidents/4', json=incident)
     res = get_incident_by_id_command(client, {'id': '4'})
     assert res.outputs == incident
     assert res.outputs_prefix == 'SaasSecurity.Incident'
@@ -275,5 +275,3 @@ def test_get_remediation_status_command(client, requests_mock):
 
     assert 'system_quarantine' in req_mocker.last_request.query
     assert remediation_status == result.outputs
-
-

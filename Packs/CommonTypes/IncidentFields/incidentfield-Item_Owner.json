@@ -1,7 +1,6 @@
 {
     "id": "incident_itemowner",
     "version": -1,
-    "modified": "2021-08-26T11:29:19.754846+03:00",
     "name": "Item Owner",
     "ownerOnly": false,
     "cliName": "itemowner",
