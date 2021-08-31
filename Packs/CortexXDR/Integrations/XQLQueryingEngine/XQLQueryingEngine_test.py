@@ -248,7 +248,7 @@ def test_get_file_dropper_query():
 def test_get_process_instance_network_activity_query():
     """
     Given:
-    - ENDPOINT_IDS and process_instace_id list (as a string).
+    - ENDPOINT_IDS and process_instance_id list (as a string).
 
     When:
     - Calling get_process_instance_network_activity_query function.
@@ -258,7 +258,7 @@ def test_get_process_instance_network_activity_query():
     """
 
     args = {
-        'process_instace_id': 'testARG1,testARG2',
+        'process_instance_id': 'testARG1,testARG2',
     }
     response = XQLQueryingEngine.get_process_instance_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 

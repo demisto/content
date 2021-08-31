@@ -18,7 +18,7 @@ configuration:
   display: API Key ID
   hidden: false
   name: apikey_id
-  required: false
+  required: true
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 8
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your
-  data sources using a series of APIs.
+  data sources.
 display: Cortex XDR - XQL Query Engine
 name: Cortex XDR - XQL Query Engine
 script:
@@ -43,7 +43,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -329,7 +329,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -365,7 +365,7 @@ script:
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
-        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+        The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.status
       description: |-
@@ -435,7 +435,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -568,7 +568,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -685,13 +685,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Source ip of the network connection query.
+      description: Source IP of the network connection query.
       isArray: true
       name: local_ip
       required: false
       secret: false
     - default: false
-      description: Destination ip of the network connection query.
+      description: Destination IP of the network connection query.
       isArray: true
       name: remote_ip
       required: true
@@ -710,7 +710,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -738,7 +738,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Query network connections between a source ip, destination ip and
+    description: Query network connections between a source IP, destination IP and
       port.
     execution: false
     hidden: false
@@ -845,7 +845,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -966,7 +966,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1090,7 +1090,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1118,7 +1118,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Query by dns query or domain name.
+    description: Query by DNS query or domain name.
     execution: false
     hidden: false
     polling: true
@@ -1241,7 +1241,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1382,7 +1382,7 @@ script:
     - default: false
       description: Process insatce ID to search on XDR dataset.
       isArray: true
-      name: process_instace_id
+      name: process_instance_id
       required: true
       secret: false
     - default: false
@@ -1393,7 +1393,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1421,7 +1421,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for network connection created by a given process instace
+    description: Search for network connection created by a given process instance
       ID.
     execution: false
     hidden: false
@@ -1545,7 +1545,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
       isArray: false
       name: time_frame
       required: false

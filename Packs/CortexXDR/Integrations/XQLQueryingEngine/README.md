@@ -32,7 +32,7 @@ Execute an XQL query and retrieve results of an executed XQL query API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | String of the XQL query. By default up to 200 results are returned, in order to get more results, enter a custom limit in the query. | Required | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll, (default is 10 seconds). | Optional | 
 
@@ -236,7 +236,7 @@ Query file events by file sha256.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | file_sha256 | File sha256 to run the query on. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -293,7 +293,7 @@ Query process events by process sha256.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | process_sha256 | Process sha256 the search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -361,7 +361,7 @@ Query DLL module events by DLL sha256.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | loaded_module_sha256 | DLL Module sha256 the search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -414,7 +414,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 ### xdr-xql-network-connection-query
 ***
-Query network connections between a source ip, destination ip and port.
+Query network connections between a source IP, destination IP and port.
 
 
 #### Base Command
@@ -429,7 +429,7 @@ Query network connections between a source ip, destination ip and port.
 | remote_ip | Destination ip of the network connection query. | Required | 
 | port | Destination port of the network connection query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -496,7 +496,7 @@ Query windows registry by registry key name.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | reg_key_name | Registry key name to search (for example: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Environments\Windows x64\Drivers\Version-3\Remote Desktop Easy Print). | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -558,7 +558,7 @@ Query event logs by event ID.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | event_id | event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -607,7 +607,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 ### xdr-xql-dns-query
 ***
-Query by dns query or domain name.
+Query by DNS query or domain name.
 
 
 #### Base Command
@@ -621,7 +621,7 @@ Query by dns query or domain name.
 | external_domain | Query by extrenal domain name. | Optional | 
 | dns_query | Query by dns query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -693,7 +693,7 @@ Search for the process who wrote the given file, by its sha256 or file path.
 | file_sha256 | File sha256 to search on XDR dataset. | Optional | 
 | file_path | File path to search on XDR dataset. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -752,7 +752,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 ### xdr-xql-process-instance-network-activity-query
 ***
-Search for network connection created by a given process instace ID.
+Search for network connection created by a given process instance ID.
 
 
 #### Base Command
@@ -763,9 +763,9 @@ Search for network connection created by a given process instace ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
-| process_instace_id | Process insatce ID to search on XDR dataset. | Required | 
+| process_instance_id | Process insatce ID to search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 
@@ -808,13 +808,13 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!xdr-xql-process-instance-network-activity-query endpoint_id=1234,2345 process_instace_id=<process_instace_id> limit=2 time_frame="1 month"```
+```!xdr-xql-process-instance-network-activity-query endpoint_id=1234,2345 process_instance_id=<process_instance_id> limit=2 time_frame="1 month"```
 
 #### Human Readable Output
 >### General Results
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
 >|---|---|---|---|---|---|---|
->| 2791_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = NETWORK and<br>           actor_process_instance_id in ("<process_instace_id>") &#124; fields agent_hostname, agent_ip_addresses,<br>           agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,<br>           dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,<br>           action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,<br>           actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,<br>           actor_process_image_command_line, actor_process_instance_id &#124; limit 2 | 376699223: 0.0008680555555555555 | 999.9619125 | SUCCESS | 1 month |
+>| 2791_inv | 2 | dataset = xdr_data &#124; filter agent_id in ("1234","2345") and event_type = NETWORK and<br>           actor_process_instance_id in ("<process_instance_id>") &#124; fields agent_hostname, agent_ip_addresses,<br>           agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,<br>           dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,<br>           action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,<br>           actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,<br>           actor_process_image_command_line, actor_process_instance_id &#124; limit 2 | 376699223: 0.0008680555555555555 | 999.9619125 | SUCCESS | 1 month |
 >### Data Results
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -837,7 +837,7 @@ Search for network connection created by a given process causality ID.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | process_causality_id | Process causality ID to search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Timestamp in relative date format (for example: "1 day", "3 weeks"). Cortex XDR calls by default the last 24 hours. | Optional | 
+| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 

@@ -254,12 +254,12 @@ def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -
     Returns:
         str: The created query.
     """
-    process_instace_id_list = args.get('process_instace_id', '')
-    if not process_instace_id_list:
-        raise DemistoException('Please provide a process_instace_id argument.')
-    process_instace_id_list = wrap_list_items_in_double_quotes(process_instace_id_list)
+    process_instance_id_list = args.get('process_instance_id', '')
+    if not process_instance_id_list:
+        raise DemistoException('Please provide a process_instance_id argument.')
+    process_instance_id_list = wrap_list_items_in_double_quotes(process_instance_id_list)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and
- actor_process_instance_id in ({process_instace_id_list}) | fields agent_hostname, agent_ip_addresses, agent_id,
+ actor_process_instance_id in ({process_instance_id_list}) | fields agent_hostname, agent_ip_addresses, agent_id,
  action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name,
  action_app_id_transitions, action_total_download, action_total_upload, action_country, action_as_data,
  actor_process_image_sha256, actor_process_image_name , actor_process_image_path, actor_process_signature_vendor,
