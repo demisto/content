@@ -172,8 +172,9 @@ def create_attack_pattern_relationships(client: Client, raw_response: dict, enti
     return relationships
 
 
-def lowercase_protocol_callback(pattern: re.Match) -> str: 
+def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
+
 
 ''' COMMANDS '''
 
