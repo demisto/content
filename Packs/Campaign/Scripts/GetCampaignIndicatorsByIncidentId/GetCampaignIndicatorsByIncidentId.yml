@@ -1,7 +1,7 @@
 commonfields:
-  id: getCampaignIndicatorsByIncidentId
+  id: GetCampaignIndicatorsByIncidentId
   version: -1
-name: getCampaignIndicatorsByIncidentId
+name: GetCampaignIndicatorsByIncidentId
 script: ''
 type: python
 comment: Get the campaign indicators by the campaign incident ids as a MD table.
@@ -13,6 +13,6 @@ subtype: python3
 runonce: false
 dockerimage: demisto/sklearn:1.0.0.23593
 runas: DBotWeakRole
-fromversion: 6.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
