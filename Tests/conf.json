@@ -2146,6 +2146,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "GetIndicatorDBotScoreFromCache-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
