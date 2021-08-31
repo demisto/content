@@ -139,7 +139,7 @@ def get_indicators_command(
 
     # add filter for indicator types by default
     # filter_args = {"type": "indicator"}
-    filter_args = {}
+    filter_args = {"type": "attack-pattern"}
 
     limit = try_parse_integer(limit)
     if added_after:
