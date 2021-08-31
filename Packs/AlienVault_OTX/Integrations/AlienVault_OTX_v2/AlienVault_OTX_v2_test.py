@@ -134,7 +134,7 @@ URL_EC = {
 
 URL_RELATIONSHIPS = [{
     'name': 'hosted-on', 'reverseName': 'hosts', 'type': 'IndicatorToIndicator',
-    'entityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+    'entityA': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list',
     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'fotoidea.com', 'entityBFamily': 'Indicator',
     'entityBType': 'Domain', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'
 }]
