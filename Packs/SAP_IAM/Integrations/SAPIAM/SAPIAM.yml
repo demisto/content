@@ -54,8 +54,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: An Identity and Access Management integration template.
-display: SAP-IAM
+description: Integrate with SAP's services to execute CRUD operations for employee lifecycle processes.
+display: SAP - IAM
 name: SAP-IAM
 script:
   commands:

@@ -17,11 +17,13 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, ok_codes: tuple, headers: dict,
-                 auth: Optional[dict, tuple], email: str, user_name: str):
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes: tuple = None,
+                 headers: dict = None, auth: tuple = None, deactivate_uri: str = None, user_id: str = None,
+                 email: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self.deactivate_uri = deactivate_uri
+        self.id = user_id
         self.email = email
-        self.user_name = user_name
 
     def test(self, params):
         """ Tests connectivity with the application. """
@@ -29,36 +31,36 @@ class Client(BaseClient):
         uri = params.get('deactivate_uri')
         return self._http_request(method='GET', url_suffix=uri, resp_type='response')
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+    def get_user(self, user_name: str) -> Optional[IAMUserAppData]:
+        """ Returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type user_name: ``str``
+        :param user_name: userName of the user in the app
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
 
-        user_id = email.split('@')[0]
+        user_id = self.id if self.id else user_name.split('@')[0]
         is_active = True
-        username = email
 
-        return IAMUserAppData(user_id, username, is_active, {})
+        return IAMUserAppData(user_id, user_name, is_active, {})
 
-    def disable_user(self, user_id: str) -> IAMUserAppData:
+    def disable_user(self, user_name: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
 
-        :type user_id: ``str``
-        :param user_id: ID of the user in the application
+        :type user_name: ``str``
+        :param user_name: userName of the user in the app
 
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
 
-        uri = demisto.params().get('deactivate_uri')
+        uri = self.deactivate_uri
+        user_id = self.id if self.id else user_name
         body = {
-            'id': user_id if user_id else self.user_name,
+            'id': user_id,
             'email': self.email,
             'termdate': datetime.now().strftime("%Y/%m/%d")
         }
@@ -66,13 +68,13 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=body
+            data=body,
         )
 
         user_app_data = res.get('MT_Account_Terminate_Response')
         is_active = user_app_data.get('IsActive')
 
-        return IAMUserAppData(user_id, self.user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -190,7 +192,8 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = params['url'].strip('/')
+    base_url = params.get('url').strip('/')
+    deactivate_uri = params.get('deactivate_uri')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
@@ -199,8 +202,8 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    email = args.get('email')
-    user_name = args.get('user_name')
+    user_id = args.get('user-profile').get('id')
+    email = args.get('user-profile').get('email')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -209,11 +212,11 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, 'username')
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
     }
 
     client = Client(
@@ -223,8 +226,9 @@ def main():
         ok_codes=(200, 201),
         headers=headers,
         auth=requests.auth.HTTPBasicAuth(username, password),
+        deactivate_uri=deactivate_uri,
+        user_id=user_id,
         email=email,
-        user_name=user_name
     )
 
     demisto.debug(f'Command being called is {command}')
