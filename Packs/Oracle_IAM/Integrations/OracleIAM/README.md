@@ -570,7 +570,7 @@ Creates an empty group
 #### Context Example
 ```json
 {
-    "IamCreateGroup": {
+    "CreateGroup": {
         "brand": "OracleIAM",
         "displayName": "The Best Group",
         "id": "111111",
@@ -623,7 +623,7 @@ Retrieves the group information including members
 #### Context Example
 ```json
 {
-    "IamGetGroup": {
+    "GetGroup": {
         "brand": "OracleIAM",
         "displayName": "New Group",
         "id": "121212",
@@ -673,7 +673,7 @@ Permanently removes a group.
 #### Context Example
 ```json
 {
-    "IamDeleteGroup": {
+    "DeleteGroup": {
         "brand": "OracleIAM",
         "id": "121212",
         "instanceName": "OracleIAM_instance_1",
@@ -724,7 +724,7 @@ Updates an existing group resource. This command allows individual (or groups of
 #### Context Example
 ```json
 {
-    "IamUpdateGroup": {
+    "UpdateGroup": {
         "brand": "OracleIAM",
         "id": "121212",
         "instanceName": "OracleIAM_instance_1",
