@@ -224,7 +224,7 @@ class TestUpdateUserCommand:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(create_if_not_exists=True, attr='username').create_user(client, args)
+            user_profile = IAMCommand(create_if_not_exists=True, attr='username').update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 

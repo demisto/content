@@ -81,10 +81,10 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        if not isinstance(user_data['emails'], list):
-            user_data['emails'] = [user_data['emails']]
-        if not isinstance(user_data['phoneNumbers'], list):
-            user_data['phoneNumbers'] = [user_data['phoneNumbers']]
+        if not isinstance(user_data.get('emails'), list):
+            user_data['emails'] = [user_data.get('emails')]
+        if not isinstance(user_data.get('phoneNumbers'), list):
+            user_data['phoneNumbers'] = [user_data.get('phoneNumbers')]
         user_data['active'] = True
 
         res = self._http_request(
