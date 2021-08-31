@@ -58,8 +58,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Identity and Access Management integration template.
-display: AWS-ILM
+description: Integrate with AWS's services to execute CRUD and Group operations for employee lifecycle processes.
+display: AWS - IAM (user lifecycle management)
 name: AWS-ILM
 script:
   commands:

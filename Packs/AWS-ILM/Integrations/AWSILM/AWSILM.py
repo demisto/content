@@ -20,7 +20,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
         operation = {
             'op': 'replace' if key in old_user_data.keys() else 'add',
             'path': key,
-            'value': [value] if key in ('emails', 'phoneNumbers', 'address') else value,
+            'value': [value] if key in ('emails', 'phoneNumbers') and not isinstance(value, list) else value,
         }
         operations.append(operation)
 
@@ -81,7 +81,11 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        user_data['emails'] = [user_data.get('emails')]
+        if not isinstance(user_data['emails'], list):
+            user_data['emails'] = [user_data['emails']]
+        if not isinstance(user_data['phoneNumbers'], list):
+            user_data['phoneNumbers'] = [user_data['phoneNumbers']]
+        user_data['active'] = True
 
         res = self._http_request(
             method='POST',
@@ -325,7 +329,7 @@ class OutputContext:
                  errorMessage=None, details=None, displayName=None, members=None):
         self.instanceName = demisto.callingContext.get('context', {}).get('IntegrationInstance')
         self.brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-        self.command = demisto.command().replace('-', '_').title().replace('_', '')
+        self.command = demisto.command().replace('-', '_').title().replace('_', '').replace('Iam', '')
         self.success = success
         self.active = active
         self.id = id
@@ -373,67 +377,41 @@ def get_group_command(client, args):
         raise Exception('You must supply either "id" or "displayName" in the scim data')
 
     if not group_id:
-        res = client.search_group(group_name)
-        res_json = res.json()
+        try:
+            res = client.search_group(group_name)
+            res_json = res.json()
 
-        if res.status_code == 200:
-            if res_json.get('totalResults') < 1:
-                generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
-                                                    errorMessage='Group Not Found', details=res_json)
+            if res.status_code == 200:
+                if res_json.get('totalResults') == 0:
+                    generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
+                                                        errorMessage='Group Not Found', details=res_json)
 
-                readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
+                else:
+                    group_id = res_json['Resources'][0].get('id')
+                    group_name = res_json['Resources'][0].get('displayName')
+                    generic_iam_context = OutputContext(success=True, iden=group_id, displayName=group_name,
+                                                        details=res_json['Resources'][0])
 
-                return CommandResults(
-                    raw_response=generic_iam_context.data,
-                    outputs_prefix=generic_iam_context.command,
-                    outputs_key_field='id',
-                    outputs=generic_iam_context.data,
-                    readable_output=readable_output,
-                )
-
-            else:
-                group_id = res_json['Resources'][0].get('id')
-                group_name = res_json['Resources'][0].get('displayName')
-                generic_iam_context = OutputContext(success=True, iden=group_id,
-                                                    displayName=group_name, details=res_json['Resources'][0])
-                readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
-
-                return CommandResults(
-                    raw_response=generic_iam_context.data,
-                    outputs_prefix=generic_iam_context.command,
-                    outputs_key_field='id',
-                    outputs=generic_iam_context.data,
-                    readable_output=readable_output,
-                )
-
-        else:
+        except DemistoException as exc:
             generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id,
-                                                errorCode=res_json.get('code'),
-                                                errorMessage=res_json.get('message'), details=res_json)
-
-            readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
-
-            return CommandResults(
-                raw_response=generic_iam_context.data,
-                outputs_prefix=generic_iam_context.command,
-                outputs_key_field='id',
-                outputs=generic_iam_context.data,
-                readable_output=readable_output,
-            )
-
-    res = client.get_group_by_id(group_id)
-    res_json = res.json()
-
-    if res.status_code == 200:
-        generic_iam_context = OutputContext(success=True, iden=res_json.get('id'),
-                                            displayName=res_json.get('displayName'), details=res_json)
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id, errorCode=404,
-                                            errorMessage='Group Not Found', details=res_json)
+                                                errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                details=str(exc))
     else:
-        generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id,
-                                            errorCode=res_json.get('code'),
-                                            errorMessage=res_json.get('message'), details=res_json)
+        try:
+            res = client.get_group_by_id(group_id)
+            res_json = res.json()
+
+            if res.status_code == 200:
+                generic_iam_context = OutputContext(success=True, iden=res_json.get('id'),
+                                                    displayName=res_json.get('displayName'), details=res_json)
+        except DemistoException as exc:
+            if exc.res.status_code == 404:
+                generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
+                                                    errorMessage='Group Not Found', details=str(exc))
+            else:
+                generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name,
+                                                    errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                    details=str(exc))
 
     readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
@@ -463,8 +441,8 @@ def create_group_command(client, args):
     else:
         res_json = res.json()
         generic_iam_context = OutputContext(success=False, displayName=group_name,
-                                            errorCode=res_json.get('code'),
-                                            errorMessage=res_json.get('message'), details=res_json)
+                                            errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
+                                            details=res_json)
 
     readable_output = tableToMarkdown('AWS Create Group:', generic_iam_context.data, removeNull=True)
 
@@ -494,7 +472,7 @@ def update_group_command(client, args):
 
     if member_ids_to_add:
         if not isinstance(member_ids_to_add, list):
-            member_ids_to_add = json.loads(member_ids_to_add)
+            member_ids_to_add = safe_load_json(member_ids_to_add)
 
         for member_id in member_ids_to_add:
             operation = {
@@ -503,12 +481,12 @@ def update_group_command(client, args):
                 'value': [{'value': member_id}]
             }
             group_input = {'schemas': [patchSchema], 'Operations': [operation]}
-            res = client.update_group(group_id, group_input)
-            if res.status_code != 204:
-                res_json = res.json()
+            try:
+                res = client.update_group(group_id, group_input)
+            except DemistoException as exc:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, iden=member_id,
-                                                    errorCode=res_json.get('code'),
-                                                    errorMessage=res_json.get('message'), details=res_json)
+                                                    errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                    details=str(exc))
 
                 readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
@@ -522,7 +500,8 @@ def update_group_command(client, args):
 
     if member_ids_to_delete:
         if not isinstance(member_ids_to_delete, list):
-            member_ids_to_delete = json.loads(member_ids_to_delete)
+            member_ids_to_delete = safe_load_json(member_ids_to_delete)
+
         for member_id in member_ids_to_delete:
             operation = {
                 'op': 'remove',
@@ -530,12 +509,12 @@ def update_group_command(client, args):
                 'value': [{'value': member_id}]
             }
             group_input = {'schemas': [patchSchema], 'Operations': [operation]}
-            res = client.update_group(group_id, group_input)
-            if res.status_code != 204:
-                res_json = res.json()
-                generic_iam_context = OutputContext(success=False, displayName=group_name, iden=member_id,
-                                                    errorCode=res_json.get('code'),
-                                                    errorMessage=res_json.get('message'), details=res_json)
+            try:
+                res = client.update_group(group_id, group_input)
+            except DemistoException as exc:
+                generic_iam_context = OutputContext(success=False, iden=member_id, displayName=group_name,
+                                                    errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                    details=str(exc))
 
                 readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
@@ -550,16 +529,6 @@ def update_group_command(client, args):
     if res.status_code == 204:
         res_json = res.headers
         generic_iam_context = OutputContext(success=True, iden=group_id, displayName=group_name, details=str(res_json))
-    elif res.status_code == 404:
-        res_json = res.json()
-        generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage='Group/User Not Found or User not a member of group',
-                                            details=res_json)
-    else:
-        res_json = res.json()
-        generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name,
-                                            errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
-                                            details=res_json)
 
     readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
@@ -580,18 +549,18 @@ def delete_group_command(client, args):
     if not group_id:
         raise Exception('The group id needs to be provided.')
 
-    res = client.delete_group(group_id)
-    if res.status_code == 204:
+    try:
+        res = client.delete_group(group_id)
         res_json = res.headers
         generic_iam_context = OutputContext(success=True, iden=group_id, displayName=group_name, details=str(res_json))
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
-                                            errorMessage='Group Not Found', details=res.json())
-    else:
-        res_json = res.json()
-        generic_iam_context = OutputContext(success=False, displayName=group_name, iden=group_id,
-                                            errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
-                                            details=res_json)
+    except DemistoException as exc:
+        if exc.res.status_code == 404:
+            generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name, errorCode=404,
+                                                errorMessage='Group Not Found', details=str(exc))
+        else:
+            generic_iam_context = OutputContext(success=False, iden=group_id, displayName=group_name,
+                                                errorCode=exc.res.status_code, errorMessage=exc.message,
+                                                details=str(exc))
 
     readable_output = tableToMarkdown('AWS Delete Group:', generic_iam_context.data, removeNull=True)
 
