@@ -1,0 +1,21 @@
+args:
+- description: Detailed items as a dictionary.
+  name: itemDetails
+comment: Map RaDark Items to an incident.
+commonfields:
+  id: MapRaDarkItems
+  version: -1
+dockerimage: demisto/python3:3.9.6.24019
+enabled: true
+name: MapRaDarkItems
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Enrichment
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

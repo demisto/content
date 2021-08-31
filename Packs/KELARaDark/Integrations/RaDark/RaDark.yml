@@ -1,0 +1,105 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RaDark
+  version: -1
+configuration:
+- additionalinfo: 'API Key generated from RaDark by your user.'
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: 'Start fetching incidents from the specified time.'
+  defaultvalue: 45 days
+  display: First time fetching
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: 'Set your monitor ID in RaDark.'
+  display: Monitor ID
+  name: monitor_id
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: 'Maximum supported: 1000'
+  defaultvalue: "10"
+  display: Max incidents to fetch each fetching
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'Set which incident types to fetch from RaDark.'
+  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports
+  display: Incident types to fetch
+  name: incident_types
+  options:
+  - Leaked Credentials
+  - Compromised Accounts
+  - Intelligence Reports
+  required: true
+  type: 16
+description: This integration enables you to fetch incidents and manage your RaDark
+  monitor from Cortex XSOAR.
+display: RaDark
+name: RaDark
+script:
+  commands:
+  - arguments:
+    - description: The unique ID of an incident that requires enrichment.
+      name: incident_id
+      required: true
+    description: Fetch all items for an incident.
+    name: radark-incident-get-items
+    outputs:
+    - contextPath: Radark.itemDetails
+      description: Return the parsed items dictionary and the items as mrakdown table.
+  - arguments:
+    - description: The email address tested for leaked credentials.
+      name: email
+      required: true
+    description: Search a specific email address to get all exposed leaked credentials
+      collected by RaDark.
+    name: radark-email-enrich
+    outputs:
+    - contextPath: Radark.emailDetails
+      description: Return the parsed emails dictionary and the emails as mrakdown
+        table.
+  - arguments:
+    - description: The unique ID of an item that should be marked as handled on RaDark.
+      name: item_id
+      required: true
+    description: Mark item as handled on RaDark.
+    name: radark-item-handle
+  - arguments:
+    - description: The unique ID of an item that should requires purchase.
+      name: item_id
+      required: true
+    description: Request to purchase an item offered for sale on an automated store.
+    name: radark-item-purchase
+  dockerimage: demisto/python3:3.9.6.24019
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

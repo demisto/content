@@ -1,0 +1,113 @@
+id: Get RaDark Detailed Items
+inputs: []
+name: Get RaDark Detailed Items
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e42261ee-1e3a-4de7-8d40-b5ebca8dcd27
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e42261ee-1e3a-4de7-8d40-b5ebca8dcd27
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        simple: ${incident.alertid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RaDark
+      description: Get detailed items from RaDark by incident_id.
+      id: 9a3a7f5f-de08-40ca-8c09-10e4603b40a1
+      iscommand: true
+      name: RaDark - Get items
+      script: RaDark|||radark-incident-get-items
+      type: regular
+      version: -1
+    taskid: 9a3a7f5f-de08-40ca-8c09-10e4603b40a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      feedDetails:
+        simple: ${Radark.itemDetails}
+      itemDetails:
+        simple: ${Radark.itemDetails}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Map RaDark items to the incident.
+      id: a079bc5a-ca53-43e0-844c-52f6b9fe60f8
+      iscommand: false
+      name: RaDark - Map items
+      script: MapRaDarkItems
+      type: regular
+      version: -1
+    taskid: a079bc5a-ca53-43e0-844c-52f6b9fe60f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": -60
+      }
+    }
+  }
+fromversion: 6.0.0
+description: "Enriches RaDark incident."
+tests:
+- No tests (auto formatted)
