@@ -436,7 +436,7 @@ Retrieves a group
 #### Context Example
 ```json
 {
-    "IamGetGroup": {
+    "GetGroup": {
         "active": null,
         "brand": "AWS-ILM",
         "details": {
@@ -505,7 +505,7 @@ Creates an empty group
 #### Context Example
 ```json
 {
-    "IamCreateGroup": {
+    "CreateGroup": {
         "active": null,
         "brand": "AWS-ILM",
         "details": {
@@ -576,7 +576,7 @@ Updates an existing group resource. This command allows individual (or groups of
 #### Context Example
 ```json
 {
-    "IamUpdateGroup": {
+    "UpdateGroup": {
         "active": null,
         "brand": "AWS-ILM",
         "details": "{'Date': 'Mon, 23 Aug 2021 12:54:08 GMT', 'Content-Type': 'application/json', 'Connection': 'keep-alive', 'x-amzn-RequestId': '123456'}",
@@ -633,7 +633,7 @@ Permanently removes a group.
 #### Context Example
 ```json
 {
-    "IamDeleteGroup": {
+    "DeleteGroup": {
         "active": null,
         "brand": "AWS-ILM",
         "details": "{'Date': 'Mon, 23 Aug 2021 12:54:11 GMT', 'Content-Type': 'application/json', 'Connection': 'keep-alive', 'x-amzn-RequestId': '123456'}",
