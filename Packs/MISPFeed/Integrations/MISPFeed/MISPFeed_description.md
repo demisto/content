@@ -1,8 +1,10 @@
-## BaseIntegration Help
+## MISP Feed Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+How to configure MISP Feed integration
+- Use your MISP instance url as 'https://x.x.x.x/'.
+- You can find your API key in 'Global Actions'->'My Profile'->'Auth key'-> click the eye symbol to view your key.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+How to configure your fetch indicators query
 
+- You can enter a list of types and tags. All indicators which are of those tags and types will be returened.
+- You can enter a JSON query which will be used as the search query.

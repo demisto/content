@@ -26,7 +26,11 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
@@ -43,7 +47,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -82,20 +87,26 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
 - display: Attribute Tags
-  additionalinfo: Attribute tags to get
+  additionalinfo: Attribute tags to get. You can enter a list of tags, separated by
+    ',' , for example <tag1,tag2,tag3>.
   name: attribute_tags
   required: false
   defaultvalue: "test"
   type: 0
 - display: Attribute Types
-  additionalinfo: Attribute types to get
+  additionalinfo: Attribute types to get. You can enter a list of types, separated
+    by ',' , for example <type1,type2,type3>.
   name: attribute_types
   required: false
   type: 0
 - display: Query
-  additionalinfo: JSON query to filter MISP attributes. When query parameter is used Attribute Types and Attribute Tags parameters wont be used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+  additionalinfo: JSON query to filter MISP attributes. When query parameter is used
+    Attribute Types and Attribute Tags parameters wont be used. You can check for
+    the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
   name: query
   required: false
   type: 0
@@ -110,6 +121,11 @@ configuration:
   - WHITE
   required: false
   type: 15
+- name: feedTags
+  display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
 description: 'Indicators feed from MISP'
 display: MISPFeed
 name: MISPFeed
@@ -136,7 +152,9 @@ script:
       required: false
       secret: false
     - name: query
-      description: JSON query to filter MISP attributes. When query argument is used attribute_type and tags arguemtns wont be used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+      description: JSON query to filter MISP attributes. When query argument is used
+        attribute_type and tags arguemtns wont be used. You can check for the correct
+        syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
       isArray: false
       default: false
       required: false
@@ -151,7 +169,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.24019
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- playbook-MISPFeed-test

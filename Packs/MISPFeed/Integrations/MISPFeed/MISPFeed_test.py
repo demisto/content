@@ -19,10 +19,10 @@ def test_build_indicators_iterator_success():
         'response': {
             'Attribute': [
                 {
-                 'id': '123',
-                 'type': 'sha256',
-                 'value': '123456789',
-                 },
+                    'id': '123',
+                    'type': 'sha256',
+                    'value': '123456789',
+                },
             ]
         }
     }

@@ -174,10 +174,10 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, A
         attribute_type: List of types to filter by
     Returns: Dictionary used as a search query for MISP
     """
-    params = {
+    params: Dict[str, Any] = {
         'returnFormat': 'json',
         'type': {
-                'OR': []
+            'OR': []
         },
         'tags': {
             'OR': []
@@ -300,8 +300,8 @@ def fetch_indicators(client: Client,
         indicators_iterator = indicators_iterator[:limit]
 
     for indicator in indicators_iterator:
-        value_ = indicator.get('value').get('value')
-        type_ = indicator.get('type')
+        value_ = indicator['value']['value']
+        type_ = indicator['type']
         raw_type = indicator.pop('raw_type')
         raw_data = {
             'value': value_,
@@ -333,9 +333,9 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
     galaxy_indicators = []
     for tag in tags:
         tag_name = tag.get('name', None)
-        if tag_name and get_galaxy_indicator_type(tag_name):
+        type_ = get_galaxy_indicator_type(tag_name)
+        if tag_name and type_:
             value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
-            type_ = get_galaxy_indicator_type(tag_name)
             raw_data = {
                 'value': value_,
                 'type': type_,
@@ -349,6 +349,14 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
 
 
 def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
+    """
+    Creates relationships between the indicators created from the attributes and
+    the indicators created from the galaxies
+    Args:
+        indicator_obj: Indicator being built
+        galaxy_indicators: List of indicators created from the galaxies
+    Returns: None
+    """
     indicator_obj_type = indicator_obj['type']
     relationships_indicators = []
     for galaxy_indicator in galaxy_indicators:
@@ -364,7 +372,7 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_a_type=indicator_obj_type,
             entity_b=galaxy_indicator['value'],
             entity_b_type=galaxy_indicator_type,
-            ).to_indicator()
+        ).to_indicator()
 
         galaxy_relation = EntityRelationship(
             name=galaxy_to_indicator_relation,
@@ -459,7 +467,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     human_readable = f'Retrieved {str(len(indicators))} indicators.'
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Indicators',
+        outputs_prefix='MISPFeed.Indicators',
         outputs_key_field='',
         raw_response=indicators,
         outputs=indicators,
@@ -467,12 +475,12 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
 
 
 def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dict]:
-    """Wrapper for retrieving indicators from the feed to the war-room.
+    """
+    Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
         params: demisto.params()
-    Returns:
-        A list of indiactors.
+    Returns: List of indicators.
     """
     tlp_color = params.get('tlp_color')
     tags = argToList(params.get('attribute_tags', ''))
