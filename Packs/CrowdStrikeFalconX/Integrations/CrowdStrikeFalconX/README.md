@@ -104,7 +104,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.uploaded_id  | String | Analysis ID received after uploading the file. | 
+| csfalconx.resource.uploaded_id | String | Analysis ID received after uploading the file. | 
 | csfalconx.resource.state | String | Analysis state. | 
 | csfalconx.resource.created_timpestamp | String | Analysis start time. | 
 | csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 
