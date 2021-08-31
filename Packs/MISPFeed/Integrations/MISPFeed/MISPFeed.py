@@ -75,14 +75,11 @@ indicator_to_galaxy_relation_dict: Dict[str, Any] = {
     }
 }
 
-"""
-Client Class
-------------
-"""
+""" Client Class """
 
 
 class Client(BaseClient):
-    def search_query(self, body: Dict[str, Any]) -> bytes:
+    def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a request to MISP to get all attributes filtered by query in the body argument
         Args:
@@ -94,25 +91,28 @@ class Client(BaseClient):
             "Accept": "application/json",
             'Content-Type': 'application/json'
         }
-        # TODO: change to demisto handle_http and check for wrong apikey
-        response = requests.request("POST",
-                                    url=f'{self._base_url}attributes/restSearch',
-                                    headers=headers,
-                                    data=json.dumps(body),
-                                    verify=False)
-        return response.content
+        response = self._http_request('POST',
+                                      full_url=f'{self._base_url}attributes/restSearch',
+                                      resp_type='json',
+                                      headers=headers,
+                                      data=json.dumps(body))
+        return response
 
 
-"""
-Helper Functions
-----------------
-"""
+""" Helper Functions """
 
 
-def build_indicators_iterator(attributes_str: bytes, url: Optional[str]) -> List[Dict[str, Any]]:
+def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) -> List[Dict[str, Any]]:
+    """
+    Creates a list of valid indicators types to be created
+    Args:
+        attributes: List of attributes returned from MISP
+        url: Feed URL
+    Returns: List of indicators and their types
+    """
     indicators_iterator = []
     try:
-        attributes_list: List[Dict[str, Any]] = json.loads(attributes_str)['response']['Attribute']
+        attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
         for attribute in attributes_list:
             if get_attribute_indicator_type(attribute):
                 indicators_iterator.append({
@@ -121,13 +121,20 @@ def build_indicators_iterator(attributes_str: bytes, url: Optional[str]) -> List
                     'raw_type': attribute['type'],
                     'FeedURL': url,
                 })
-    except ValueError as err:
+    except KeyError as err:
         demisto.debug(str(err))
-        raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
+        raise KeyError(f'Could not parse returned data as attributes list. \n\nError massage: {err}')
     return indicators_iterator
 
 
 def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
+    """
+    Adds tags from the attribute to the indicator if they're a valid indicator
+    Args:
+        indicator_obj: Indicator currently being built
+        tags: List of tags of the attribute retrieved from MISP
+    Returns: None
+    """
     indicator_obj['fields']['Tags'] = []
     for tag in tags:
         tag_name = tag.get('name', None)
@@ -136,6 +143,16 @@ def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
 
 
 def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> None:
+    """
+    If the attribute is of type sha1,sha256 or MD5 - will add SHA1 or
+    SHA256 or MD5 field and their value to the indicator.
+    If the attribute type is 'filename|<sha1/sha256/md5>' will add the filename to Associated File Names field,
+    will update the indicator value and will add the hash field.
+    Args:
+        raw_type: Type of the attribute
+        indicator_obj: Indicator currently being built
+    Returns: None
+    """
     hash_value = indicator_obj['value']
     if 'filename|' in raw_type:
         pipe_index = hash_value.index("|")
@@ -149,7 +166,14 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any, str]:
+def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
+    """
+    Creates a dictionary in the format required by MISP to be used as a query.
+    Args:
+        tags: List of tags to filter by
+        attribute_type: List of types to filter by
+    Returns: Dictionary used as a search query for MISP
+    """
     params = {
         'returnFormat': 'json',
         'type': {
@@ -166,7 +190,13 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any, s
     return params
 
 
-def clean_user_query(query: str):
+def clean_user_query(query: str) -> Dict[str, Any]:
+    """
+    Takes the query string created by the user, adds necessary argument and removes unnecessary arguments
+    Args:
+        query: User's query string
+    Returns: Dict which has only needed arguments to be sent to MISP
+    """
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
@@ -174,11 +204,17 @@ def clean_user_query(query: str):
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \n\nError massage: {err}')
-
     return params
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
+    """
+    Gets the correct Indicator type that matches the attribute type, attribute type is not supported
+    returns None
+    Args:
+        attribute: Dictionary containing information about the attribute
+    Returns: The matching indicator type or None if the attribute type is not supported
+    """
     attribute_type = attribute['type']
     indicator_map = {
         'sha256': FeedIndicatorType.File,
@@ -206,6 +242,12 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
 
 
 def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
+    """
+    Returns an Indicator type matching to the galaxy type
+    Args:
+        galaxy_tag_name: name of the galaxy
+    Returns: type of the indicator if there's one matching to the provided galaxy or None
+    """
     if 'galaxy' in galaxy_tag_name:
         galaxy_name = galaxy_tag_name[0:galaxy_tag_name.index("=")]
         galaxy_map = {
@@ -220,6 +262,14 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
 
 
 def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Creates an indicator object
+    Args:
+        value_: value of the indicator
+        type_: type of the indicator
+        raw_data: raw data of the indicator
+    Returns: Dictionray which is the indicator object
+    """
     indicator_obj = {
         'value': value_,
         'type': type_,
@@ -273,6 +323,12 @@ def fetch_indicators(client: Client,
 
 
 def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Builds indicators from the galaxy tags in the attribute
+    Args:
+        indicator_obj: Indicator being built
+    Returns: List of indicators created from the galaxies
+    """
     tags = indicator_obj['rawJSON']['value'].get('Tag', [])
     galaxy_indicators = []
     for tag in tags:
@@ -292,7 +348,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
     return galaxy_indicators
 
 
-def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
+def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
     indicator_obj_type = indicator_obj['type']
     relationships_indicators = []
     for galaxy_indicator in galaxy_indicators:
@@ -309,6 +365,7 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
             entity_b=galaxy_indicator['value'],
             entity_b_type=galaxy_indicator_type,
             ).to_indicator()
+
         galaxy_relation = EntityRelationship(
             name=galaxy_to_indicator_relation,
             entity_a=galaxy_indicator['value'],
@@ -325,12 +382,21 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
 
 
 def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
-    first_seen = indicator_obj['rawJSON']['value'].get('first_seen', None)
-    last_seen = indicator_obj['rawJSON']['value'].get('last_seen', None)
-    timestamp = indicator_obj['rawJSON']['value'].get('timestamp', None)
-    category = indicator_obj['rawJSON']['value'].get('category', None)
-    comment = indicator_obj['rawJSON']['value'].get('comment', None)
-    tags = indicator_obj['rawJSON']['value'].get('Tag', None)
+    """
+    Updating required fields of the indicator with values from the attribute
+    Args:
+        indicator_obj: Indicator being built
+        tlp_color: Traffic Light Protocol color.
+        raw_type: Type of the attribute
+    Returns: None
+    """
+    raw_json_value = indicator_obj['rawJSON']['value']
+    first_seen = raw_json_value.get('first_seen', None)
+    last_seen = raw_json_value.get('last_seen', None)
+    timestamp = raw_json_value.get('timestamp', None)
+    category = raw_json_value.get('category', None)
+    comment = raw_json_value.get('comment', None)
+    tags = raw_json_value.get('Tag', None)
 
     if first_seen:
         indicator_obj['fields']['First Seen By Source'] = first_seen
@@ -387,8 +453,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
     query = args.get('query', None)
-
     attribute_type = argToList(args.get('attribute_type', ''))
+
     indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
     human_readable = f'Retrieved {str(len(indicators))} indicators.'
     return CommandResults(
