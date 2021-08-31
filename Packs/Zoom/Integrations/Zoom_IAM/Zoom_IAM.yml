@@ -23,10 +23,6 @@ configuration:
   name: disable-user-enabled
   required: false
   type: 8
-- display: Allow getting users
-  name: get-user-enabled
-  required: false
-  type: 8
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in

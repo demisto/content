@@ -89,7 +89,7 @@ class Client(BaseClient):
                      },
         )
         # res is an empty response
-        user_app_data = res
+        user_app_data = self.get_user(user_id).full_data
         # if we wanted to disable the user and request succeeded,
         # we get to this line and know the user's status
         is_active = True if user_data.get('action', '') == 'activate' else False
@@ -201,7 +201,8 @@ def test_module(client: Client):
     try:
         client.test()
     except Exception as e:
-        return_results(e)
+        error_message_index = str(e).find('"message":')
+        return_results(str(e)[error_message_index:])
     return_results('ok')
 
 
@@ -251,7 +252,6 @@ def main():
     try:
         if command == 'test-module':
             test_module(client)
-
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
