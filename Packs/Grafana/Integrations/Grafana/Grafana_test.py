@@ -150,9 +150,9 @@ with open("TestData/parse_alerts_values.json") as parse_alerts_values_file:
 no_alerts_to_fetch = ([],
                       5,
                       dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-                      0,
+                      -1,
                       dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-                      0,
+                      -1,
                       [])
 after_one_alert_was_fetched_high_limit = (parse_alerts_values_data["after_one_alert_was_fetched_high_limit"],
                                           10,
@@ -171,14 +171,14 @@ after_one_alert_was_fetched_low_limit = (parse_alerts_values_data["after_one_ale
 keep_all_alerts = (parse_alerts_values_data["keep_all_alerts"],
                    2,
                    dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-                   0,
+                   -1,
                    dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
                    3,
                    ["Arseny's Alert", "TryAlert"])
 limit_to_one = (parse_alerts_values_data["limit_to_one"],
                 1,
                 dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-                0,
+                -1,
                 dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
                 1,
                 ["Arseny's Alert"])
