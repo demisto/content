@@ -78,7 +78,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'/users/{user_id}/status'
-        res = self._http_request(
+        self._http_request(
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
@@ -88,8 +88,8 @@ class Client(BaseClient):
                      'Content-Type': 'application/json',
                      },
         )
-        # res is an empty response
-        user_app_data = self.get_user(user_id).full_data
+        # res is an empty *response object*
+        user_app_data = {}
         # if we wanted to disable the user and request succeeded,
         # we get to this line and know the user's status
         is_active = True if user_data.get('action', '') == 'activate' else False
