@@ -2,7 +2,7 @@
     "id": "Threat Actor",
     "layout": "Threat Report Layout",
     "locked": false,
-    "name": "Threat Actor - updated name for test",
+    "name": "Threat Actor",
     "color": "#8052f4",
     "definitionId": "ThreatIntelReport",
     "genericModuleId": "threatIntel",
