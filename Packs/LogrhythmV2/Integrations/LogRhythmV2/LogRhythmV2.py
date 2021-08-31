@@ -9,7 +9,20 @@ import demistomock as demisto  # noqa: F401
 ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'entityName',
                  'alarmDataCached']
 
-ALARM_EVENTS_HEADERS = ['serviceName', 'logMessage', 'entityName']
+ALARM_EVENTS_HEADERS = ['commonEventName', 'logMessage', 'priority', 'logDate', 'impactedHostId', 'impactedZone',
+                        'serviceName', '', 'entityName', 'classificationName', 'classificationTypeName']
+
+CASE_EVIDENCES_HEADERS = ['number', 'type', 'status', 'dateCreated', 'createdBy', 'text', 'alarm', 'file']
+
+TAG_HEADERS = ['number', 'text', 'dateCreated', 'createdBy']
+
+ENTITY_HEADERS = ['id', 'name', 'fullName', 'recordStatusName', 'shortDesc', 'dateUpdated']
+
+USER_HEADERS = ['id', 'fullName', 'userType', 'firstName', 'lastName', 'recordStatusName', 'dateUpdated',
+                'objectPermissions']
+
+LIST_HEADERS = ['guid', 'name', 'listType', 'status', 'shortDescription', 'id', 'entityName', 'dateCreated',
+                'writeAccess', 'readAccess']
 
 ALARM_STATUS = {0: 'New',
                 1: 'Opened',
@@ -1761,7 +1774,8 @@ def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     evidences = client.case_evidence_list_request(case_id, evidence_number, evidence_type, status)
 
     if evidences:
-        hr = tableToMarkdown(f'evidences for case {case_id}', evidences, headerTransform=pascalToSpace)
+        hr = tableToMarkdown(f'Evidences for case {case_id}', evidences, headerTransform=pascalToSpace,
+                             headers=CASE_EVIDENCES_HEADERS)
     else:
         hr = f'No evidences found for case {case_id}.'
 
@@ -1784,7 +1798,8 @@ def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> Com
 
     evidences = client.case_alarm_evidence_add_request(case_id, alarm_numbers)
 
-    hr = tableToMarkdown(f'Alarms added as evidence to case {case_id} successfully', evidences, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f'Alarms added as evidence to case {case_id} successfully', evidences,
+                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
 
     ec = [{'CaseID': case_id, 'Evidences': evidences}]
 
@@ -1805,7 +1820,7 @@ def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
 
     evidences = client.case_note_evidence_add_request(case_id, note)
     hr = tableToMarkdown(f'Note added as evidence to case {case_id} successfully', evidences,
-                         headerTransform=pascalToSpace)
+                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
 
     ec = [{'CaseID': case_id, 'Evidences': evidences}]
 
@@ -1826,7 +1841,7 @@ def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
 
     evidences = client.case_file_evidence_add_request(case_id, entry_id)
     hr = tableToMarkdown(f'File added as evidence to case {case_id} successfully', evidences,
-                         headerTransform=pascalToSpace)
+                         headerTransform=pascalToSpace, headers=CASE_EVIDENCES_HEADERS)
 
     ec = [{'CaseID': case_id, 'Evidences': evidences}]
 
@@ -1918,7 +1933,7 @@ def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.tags_list_request(tag_name, offset, count)
     if response:
-        hr = tableToMarkdown('Tags', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Tags', response, headerTransform=pascalToSpace, headers=TAG_HEADERS)
     else:
         hr = 'No tags were found.'
 
@@ -1992,7 +2007,7 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     response = client.entities_list_request(entity_id, parent_entity_id, offset, count)
     if response:
-        hr = tableToMarkdown('Entities', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Entities', response, headerTransform=pascalToSpace, headers=ENTITY_HEADERS)
     else:
         hr = 'No entities were found.'
 
@@ -2042,7 +2057,7 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.users_list_request(user_ids, entity_ids, user_status, offset, count)
     if response:
-        hr = tableToMarkdown('Users', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Users', response, headerTransform=pascalToSpace, headers=USER_HEADERS)
     else:
         hr = 'No users were found.'
 
@@ -2064,7 +2079,7 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.lists_get_request(list_type, list_name, can_edit)
     if response:
-        hr = tableToMarkdown('Lists', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Lists', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     else:
         hr = 'No lists were found.'
 
@@ -2113,7 +2128,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
     list_items = response.get('items')
     response.pop('items', None)
 
-    hr = tableToMarkdown(f'List {list_id} details', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f'List {list_id} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     if list_items:
         hr = hr + tableToMarkdown(f'List items', list_items, headerTransform=pascalToSpace)
 
