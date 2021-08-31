@@ -339,15 +339,15 @@ class TestGetGroupCommand:
     def test_get_group__non_existing_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
             m.get(f'{groupUri}1234', status_code=404, text='Group Not Found')
 
-            with pytest.raises(Exception) as e:
-                get_group_command(client, args)
+            get_group_command(client, args)
 
-        assert e.value.res.status_code == 404
-        assert 'Group Not Found' in str(e.value)
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
     def test_get_group__id_and_display_name_empty(self):
         client = mock_client()
@@ -447,15 +447,15 @@ class TestDeleteGroupCommand:
     def test_delete_group__non_existing_group(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
             m.delete(f'{groupUri}1234', status_code=404, text="Group Not Found")
 
-            with pytest.raises(Exception) as e:
-                delete_group_command(client, args)
+            delete_group_command(client, args)
 
-        assert e.value.res.status_code == 404
-        assert 'Group Not Found' in str(e.value)
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
     def test_delete_group__id_is_empty(self):
         client = mock_client()
