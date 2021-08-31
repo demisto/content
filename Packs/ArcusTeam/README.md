@@ -1,4 +1,4 @@
-### Cortex Xsoar interfaces with ArcusTeam to help identify, analyze, and predict vulnerabilities and security risks on your connected devices. 
+### Cortex XSOAR interfaces with ArcusTeam to help identify, analyze, and predict vulnerabilities and security risks on your connected devices. 
 
 ## What Does this pack do?
 * Search for devices and their software in ArcusTeam's growing database of thoroughly inspected devices.
