@@ -1,6 +1,7 @@
 # Using ArcusTeam's integration for XSOAR
 
-- Using this integration requires an API key - please visit our [dedicated page](https://arcusteam.com/pa-partnership/) to obtain one.
+## Get Your API Key
+- Please visit our [dedicated page](https://arcusteam.com/pa-partnership/) to obtain your API key.
 
 ## Configure ArcusTeam on Cortex XSOAR
 
