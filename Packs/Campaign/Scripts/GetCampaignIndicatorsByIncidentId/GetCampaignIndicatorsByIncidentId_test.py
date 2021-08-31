@@ -3,41 +3,47 @@ from GetCampaignIndicatorsByIncidentId import *
 import demistomock as demisto
 
 INCIDENT_IDS = ['1', '2', '3']
-INDICATORS = [{"Contents": [{
-      "id": "23",
-      "indicator_type": "URL",
-      "investigationIDs": [
-        "1"
-      ],
-      "relatedIncCount": 5,
-      "score": 1,
-      "value": "http://www.example.com"
-    },
+INDICATORS = [
     {
-      "id": "24",
-      "indicator_type": "URL",
-      "investigationIDs": [
-        "1",
-        "2"
-      ],
-      "relatedIncCount": 5,
-      "score": 1,
-      "value": "http://www.example.com"
-    },
-    {
-      "id": "25",
-      "indicator_type": "URL",
-      "investigationIDs": [
-        "1",
-        "2",
-        "3",
-        "4"
-      ],
-      "relatedIncCount": 5,
-      "score": 1,
-      "value": "http://www.example.com"
+        "Contents": [
+            {
+                "id": "23",
+                "indicator_type": "URL",
+                "investigationIDs": [
+                    "1"
+                ],
+                "relatedIncCount": 5,
+                "score": 1,
+                "value": "http://www.example.com"
+            },
+            {
+                "id": "24",
+                "indicator_type": "URL",
+                "investigationIDs": [
+                    "1",
+                    "2"
+                ],
+                "relatedIncCount": 5,
+                "score": 1,
+                "value": "http://www.example.com"
+            },
+            {
+                "id": "25",
+                "indicator_type": "URL",
+                "investigationIDs": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                ],
+                "relatedIncCount": 5,
+                "score": 1,
+                "value": "http://www.example.com"
+            }
+        ],
+        'Type': 0
     }
-], 'Type': 0}]
+]
 
 NO_INDICATORS_FOUND = 'No mutual indicators were found.'
 MD_INDICATORS_RESULT = '|Id|Value|Type|Reputation|Involved Incidents Count|\n' \
