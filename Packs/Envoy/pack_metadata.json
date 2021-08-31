@@ -1,6 +1,6 @@
 {
     "name": "Envoy",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Envoy is offering an enterprise workplace visitor management software platform.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

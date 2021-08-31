@@ -33,21 +33,22 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = f'scim/v2/Users?filter=email eq {email}'
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=query_params
         )
+        try:
+            res_json = res.json()
+        except Exception:
+            res_json = res
 
-        if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
-
-            user_id = user_app_data.get('user_id')
+        if res_json and res_json.get('totalResults', 0) != 1:
+            user_app_data = res_json.get('Resources')[0]
+            user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
-            username = user_app_data.get('user_name')
+            username = user_app_data.get('userName')
 
             return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
@@ -61,16 +62,16 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
+        uri = 'scim/v2/Users'
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            data=user_data
         )
-        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        user_app_data = res.json()
+        user_id = user_app_data.get('id')
+        is_active = True
+        username = user_data.get('userName')
 
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
@@ -86,17 +87,15 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
+        uri = f'scim/v2/Users/{user_id}'
         res = self._http_request(
-            method='PATCH',
+            method='PUT',
             url_suffix=uri,
-            json_data=user_data
+            data=user_data
         )
-
-        user_app_data = res.get('result')
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        user_app_data = res.json()
+        is_active = user_app_data.get('active', False)
+        username = user_data.get('userName')
 
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
@@ -113,7 +112,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
+        user_data = {'active': True}
         return self.update_user(user_id, user_data)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
@@ -129,7 +128,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
+        user_data = {'active': False}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -138,15 +137,21 @@ class Client(BaseClient):
         :return: The user schema fields dictionary
         :rtype: ``Dict[str, str]``
         """
-
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
+        app_fields = {}
+        uri = '/Schemas/Users'
         res = self._http_request(
             method='GET',
             url_suffix=uri
         )
 
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        elements = res.get('attributes', [])
+        for elem in elements:
+            if elem.get('name'):
+                field_name = elem.get('name')
+                description = elem.get('description')
+                app_fields[field_name] = description
+
+        return app_fields
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -212,7 +217,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
+    message = res.get('error', {}).get('message')
     details = res.get('error', {}).get('detail')
     return f'{message}: {details}'
 
@@ -246,8 +251,7 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/now/')
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
+    token = params.get('api_key')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
@@ -266,7 +270,8 @@ def main():
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {token}',
     }
 
     client = Client(
@@ -275,7 +280,6 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password)
     )
 
     demisto.debug(f'Command being called is {command}')
