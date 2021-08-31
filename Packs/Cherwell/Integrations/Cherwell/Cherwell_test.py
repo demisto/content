@@ -3,7 +3,7 @@ from CommonServerPython import date_to_timestamp
 import demistomock as demisto
 from Cherwell import cherwell_get_business_object_summary_command, cherwell_get_one_step_actions_command,\
     get_one_step_actions_recursive
-from mock import patch
+from unittest.mock import patch
 
 
 BO_SUMMARY_RES = {"firstRecIdField": "fa03d51b709e4a6eb2d52885b2ef7e04", "groupSummaries": [],
