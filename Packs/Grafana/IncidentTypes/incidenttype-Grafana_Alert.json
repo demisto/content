@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "92489654-eee8-4221-8704-523d0d764829",
+    "layout": "Grafana Alert",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

@@ -632,7 +632,7 @@ def org_get_by_name_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Organizations', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization {name} Results', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results

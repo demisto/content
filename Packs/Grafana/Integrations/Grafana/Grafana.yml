@@ -893,7 +893,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address
       type: Unknown
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: true
   longRunning: false
