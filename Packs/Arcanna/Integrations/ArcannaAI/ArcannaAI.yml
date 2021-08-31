@@ -183,19 +183,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Arcanna event id
+      description: An Arcanna event id.
       isArray: false
       name: event_id
       required: true
       secret: false
     - default: false
-      description: Arcanna Feedback Label
+      description: An Arcanna feedback label.
       isArray: false
       name: label
       required: true
       secret: false
     - default: false
-      description: User providing feedback
+      description: A username providing the feedback.
       isArray: false
       name: username
       required: true
@@ -218,17 +218,17 @@ script:
     name: arcanna-send-event-feedback
     outputs:
     - contextPath: Arcanna.Event.feedback_status
-      description: 'Arcanna feedback status response '
+      description: An Arcanna feedback status response.
       type: String
   - arguments:
     - default: false
-      description: Arcanna job_id
+      description: An Arcanna job id.
       isArray: false
       name: job_id
       required: true
       secret: false
     - default: false
-      description: 'Arcanna evens to be sent '
+      description: A comma-separated list of Arcanna evens ids to be sent.
       isArray: true
       name: events
       required: true
