@@ -347,12 +347,12 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.create_user(salesforce_user)
                 iam_user_profile.set_result(success=True,
-                                            iden=res.get('id'),
-                                            email=salesforce_user.get('email'),
-                                            username=salesforce_user.get('userName'),
+                                            iden=res.get('Id'),
+                                            email=res.get('Email'),
+                                            username=res.get('Username'),
                                             action=IAMActions.CREATE_USER,
                                             details=res,
-                                            active=True)
+                                            active=res.get('IsActive'))
 
         return iam_user_profile
 
@@ -407,7 +407,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            active=active,
+                                            active=res.get('IsActive'),   # TODO - finish fixes and open PR
                                             action=action,
                                             details=res
                                             )

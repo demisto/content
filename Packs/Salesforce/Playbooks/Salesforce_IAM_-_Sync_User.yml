@@ -30,7 +30,7 @@ inputs:
   playbookInputQuery:
   required: true
   value: {}
-- description: ""
+- description: "The template of the welcome email body."
   key: welcomeEmailBody
   playbookInputQuery:
   required: false
