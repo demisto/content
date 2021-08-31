@@ -399,7 +399,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
     raws: list = []
 
     for url in urls_list:
-        url = url.lower()
+        lowercase_protocol_callback = lambda pattern: pattern.group(0).lower()
+        url = re.sub('(\w+)://', lowercase_protocol_callback, url)
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
