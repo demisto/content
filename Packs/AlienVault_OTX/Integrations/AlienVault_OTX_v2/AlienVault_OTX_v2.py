@@ -71,13 +71,13 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
-            if e.res.status_code == 404:
-                result = 404
-            elif e.res.status_code == 400:
-                demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
-                raise Exception(f'The command could not be execute: {argument} is invalid.')
-            else:
-                raise
+            if hasattr(e.res, 'status_code'):
+                if e.res.status_code == 404:
+                    result = 404
+                elif e.res.status_code == 400:
+                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    raise Exception(f'The command could not be execute: {argument} is invalid.')
+            raise
         return result
 
 
@@ -399,6 +399,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
     raws: list = []
 
     for url in urls_list:
+        url = url.lower()
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
