@@ -77,7 +77,10 @@ class Client(BaseClient):
                 elif e.res.status_code == 400:
                     demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
                     raise Exception(f'The command could not be execute: {argument} is invalid.')
-            raise
+                else:
+                    raise
+            else:
+                raise
         return result
 
 
