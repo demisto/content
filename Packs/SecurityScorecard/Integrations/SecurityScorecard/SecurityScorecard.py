@@ -325,8 +325,8 @@ def incidents_to_import(
     # Check if there are more than 0 alerts
     if alerts_returned > 0:
 
-        # The alerts are sorted by descending date so first alert is the most recent
-        most_recent_alert = alerts[0]
+        # The alerts are sorted by ascending date so last alert is the most recent
+        most_recent_alert = alerts[-1]
 
         most_recent_alert_created_date = most_recent_alert.get("created_at")
 
