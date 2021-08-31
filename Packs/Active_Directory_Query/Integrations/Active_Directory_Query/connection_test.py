@@ -1,5 +1,5 @@
 import demistomock as demisto
-from Active_Directory_Query import main
+from Active_Directory_Query import main, group_dn
 import socket
 import ssl
 from threading import Thread
@@ -365,3 +365,31 @@ def test_search_group_members(mocker):
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_group_members('dc', 1)
         mock.assert_called_with(expected_results)
+
+
+def test_group_dn_escape_characters():
+    """
+    Given:
+         Group name with parentheses
+    When:
+        Running the function group_dn
+    Then:
+        The function search gets the group name after escape special characters.
+
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('Active_Directory_Query.search', return_value=[EntryMocker()]) as mock:
+        group_dn('group(group)', '')
+
+        mock.assert_called_with('(&(objectClass=group)(cn=group\\28group\\29))', '')
