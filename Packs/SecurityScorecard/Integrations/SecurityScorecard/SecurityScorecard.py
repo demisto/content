@@ -196,13 +196,14 @@ class SecurityScorecardClient(BaseClient):
             url_suffix=f"companies/{domain}/services"
         )
 
-    def fetch_alerts(self, page_size: int) -> Dict[str, Any]:
+    def fetch_alerts(self, page_size: int, page: int) -> Dict[str, Any]:
 
         query_params: Dict[str, Any] = assign_params(
             username=self.username,
             page_size=page_size,
             sort="date",
-            order="asc"
+            order="asc",
+            page=page
         )
 
         return self.http_request_wrapper(
@@ -285,7 +286,9 @@ def get_last_run(last_run: str, first_fetch: str):
     else:
         if not first_fetch:
             days_ago = "2 days"
+            demisto.debug(f"First fetch is undefined, setting '{days_ago}' as default")
         else:
+            demisto.debug(f"First fetch is defined as '{first_fetch}'")
             days_ago = first_fetch
 
         fetch_days_ago = arg_to_datetime(arg=days_ago, arg_name="first_fetch", required=False)
@@ -320,10 +323,8 @@ def incidents_to_import(
 
     incidents_to_import: List[Dict[str, Any]] = []
 
-    alerts_returned = len(alerts)
-    demisto.debug(f"Number of alerts found: {alerts_returned}")
     # Check if there are more than 0 alerts
-    if alerts_returned > 0:
+    if alerts:
 
         # The alerts are sorted by ascending date so last alert is the most recent
         most_recent_alert = alerts[-1]
@@ -398,7 +399,7 @@ def test_module(
         return "Test failed. Max Fetch is larger than 50."
 
     try:
-        client.fetch_alerts(page_size=1)
+        client.fetch_alerts(page_size=1, page=1)
         demisto.debug("Test module successful")
         return('ok')
     except DemistoException as e:
@@ -1004,27 +1005,70 @@ def fetch_alerts(client: SecurityScorecardClient):
     # Set the query size
     max_incidents = arg_to_number(client.max_fetch)  # type: ignore
 
-    # TODO add paging logic (`page=1&page_size=10`)
+    # Set initial page
+    initial_page = 1
 
-    results = client.fetch_alerts(page_size=max_incidents)  # type: ignore
+    # Initial call will request the first page.
+    results = client.fetch_alerts(page_size=max_incidents, page=initial_page)  # type: ignore
 
-    alerts = results.get("entries")
+    first_fetch_alerts = results.get("entries")
     size = results.get("size")
 
-    demisto.debug(f"API returned {size} alerts")
+    # The number of fetches needed to retrieve all alerts
+    # is the total number of alerts divided by the max fetch size
+    fetches_required = int(size / max_incidents)  # type: ignore
+
+    demisto.debug(f"API returned {size} alerts. Fetches required to retrieve all alerts: {fetches_required}")
 
     # Check if the API returned any alerts
-    if alerts:
-        incidents = incidents_to_import(alerts=alerts)
+    if size > 0:  # type: ignore
 
-        # Check if any incidents should be imported according to last run time timestamp
-        if incidents:
-            demisto.debug(f"{len(incidents)} Incidents will be imported")
-            demisto.debug(f"Incidents: {incidents}")
-            demisto.incidents(incidents)
-        else:
-            demisto.debug("No incidents will be imported.")
-            demisto.incidents([])
+        # If there are no fetches required, import the alerts pulled from the initial request
+        if fetches_required == 0:
+            incidents = incidents_to_import(alerts=first_fetch_alerts)  # type: ignore
+
+            # Check if any incidents should be imported according to last run time timestamp
+            if incidents:
+                demisto.debug(f"{len(incidents)} Incidents will be imported")
+                demisto.debug(f"Incidents: {incidents}")
+                demisto.incidents(incidents)
+            else:
+                demisto.debug("No incidents will be imported.")
+                demisto.incidents([])
+
+        # In case we cannot import all alerts in one go,
+        # we paginate.
+        if fetches_required > 0:
+            alerts_to_import = []
+
+            # Add the alerts from the first fetch.
+            first_fetch_incidents = incidents_to_import(alerts=first_fetch_alerts)  # type: ignore
+            if first_fetch_incidents:
+                alerts_to_import.extend(first_fetch_incidents)
+                demisto.debug(f"Adding {len(first_fetch_incidents)} alerts from first fetch to total alerts to import")
+                demisto.debug(f"Total alerts currently in list: {len(alerts_to_import)}")
+
+            # Iterate to bring the rest of the alerts
+            for fetch_iteration in range(initial_page + 1, fetches_required + 2):
+                demisto.debug(f"Fetch iteration {fetch_iteration} started...")
+
+                results = client.fetch_alerts(page_size=max_incidents, page=fetch_iteration)  # type: ignore
+                alerts = results.get("entries")
+
+                incidents = incidents_to_import(alerts=alerts)  # type: ignore
+
+                # Check if any incidents should be imported according to last run time timestamp
+                if incidents:
+                    demisto.debug(f"Adding {len(incidents)} to total alerts to import")
+                    alerts_to_import.extend(incidents)
+                    demisto.debug(f"Total alerts currently in list: {len(alerts_to_import)}")
+                else:
+                    demisto.debug("No incidents will be imported in this iteration.")
+                demisto.debug(f"Fetch iteration {fetch_iteration} finished")
+
+            demisto.debug(f"Total alerts to import: {len(alerts_to_import)}")
+            demisto.debug(alerts_to_import)
+            demisto.incidents(alerts_to_import)
     # Return no incidents if API returned no alerts
     else:
         demisto.debug("API returned no alerts. Returning empty incident list")
