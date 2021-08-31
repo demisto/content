@@ -562,8 +562,7 @@ def test_url_command(mocker, raw_response, expected_ec, expected_relationships):
     - Validate that the proper relations were created
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
-    command_results = url_command(client, {
-        'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'})
+    command_results = url_command(client, 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list')
     # results is CommandResults list
     all_context = command_results[0].to_context()
 
