@@ -33,8 +33,6 @@ This integration was integrated and tested with Splunk v7.2.
 | extractFields | The CSV fields that will be parsed out of _raw notable events. | False |
 | useSplunkTime | Uses the Splunk clock time for the fetch. | False |
 | unsecure | When selected, certificates are not checked (not secure). | False |
-| earliest_fetch_time_fieldname | The earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch). | False |
-| latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
 | app | The context of the application's namespace. | False |
 | hec_token | The HEC token (HTTP Event Collector). | False |
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
@@ -98,9 +96,13 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
-**NOTE: This feature is available from Cortex XSOAR version 6.0.0**
-**NOTE: This feature is supported by Splunk Enterprise Security only**
-
+**Imporatnt Notes*** 
+ - This feature is available from Cortex XSOAR version 6.0.0.
+ - This feature is supported by Splunk Enterprise Security only.
+ - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+ 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -126,7 +128,7 @@ Users who wish to enrich or mirror fetched notables and have already used the in
 2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
 ```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
 ```
 
 ### Mapping fetched incidents using Select Schema

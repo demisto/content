@@ -62,7 +62,7 @@ Returns the configuration information of the Lambda function and a presigned URL
 | AWS.Lambda.Functions.Configuration.Description | string | The function's description. | 
 | AWS.Lambda.Functions.Configuration.Timeout | number | The amount of time that Lambda allows a function to run before terminating it. | 
 | AWS.Lambda.Functions.Configuration.MemorySize | number | The memory allocated to the function | 
-| AWS.Lambda.Functions.Configuration.LastModified  | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Functions.Configuration.LastModified | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
 | AWS.Lambda.Functions.Configuration.CodeSha256 | string | The SHA256 hash of the function's deployment package. | 
 | AWS.Lambda.Functions.Configuration.Version | string | The version of the Lambda function. | 
 | AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds | string | A list of VPC subnet IDs. | 

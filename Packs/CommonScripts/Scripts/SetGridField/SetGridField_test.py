@@ -66,6 +66,15 @@ def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_ex
                          ])
 def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):
+    """Unit test
+    Given
+    - script args
+    - a file
+    When
+    - build_grid command
+    Then
+    - Validate that the grid was created with the correct column names
+    """
     import SetGridField
     import json
     import pandas as pd
@@ -80,13 +89,26 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     ).to_dict()
 
 
+very_long_column_name = 11 * "column_name_OF_LEN_264__"
+
+
 @pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
                          argvalues=[
-                             (["name", "value"], ["col1", "col2"], False, 'context_entry_list_missing_key.json',
+                             (["name", "value"], ["col!@#$%^&*()ע_1", very_long_column_name], False,
+                              'context_entry_list_missing_key.json',
                               'expected_list_grid_none_value.json')
                          ])
 def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str], unpack_nested_elements: bool,
                             dt_response_path: str, expected_results_path: str):
+    """Unit test
+    Given
+    - script args
+    - a file
+    When
+    - build_grid_command command
+    Then
+    - Validate that the grid was created with the correct column names
+    """
     import json
     import SetGridField
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
@@ -95,6 +117,69 @@ def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str]
         SetGridField.demisto.dt.return_value = json.load(json_file)
     results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
                                               columns=columns, overwrite=True, sort_by=None,
+                                              unpack_nested_elements=unpack_nested_elements)
+    with open(datadir[expected_results_path]) as json_file:
+        expected_results = json.load(json_file)
+    assert json.dumps(results) == json.dumps(expected_results)
+
+
+@pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
+                         argvalues=[
+                             (["firstname", "lastname", "email"], ["fname", "lname", "email"], False,
+                              'context_entry_list_of_dicts_non_sorted.json', 'expected_entry_list_of_dicts_sorted.json')
+                         ])
+def test_build_grid_command_with_sort_by(datadir, mocker, keys: List[str], columns: List[str],
+                                         unpack_nested_elements: bool, dt_response_path: str,
+                                         expected_results_path: str):
+    """Unit test
+    Given
+    - script args, including sort_by
+    - a file
+    When
+    - build_grid_command command
+    Then
+    - Validate that the grid was created with the correct column names and sorted correctly
+    """
+    import json
+    import SetGridField
+    mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
+    mocker.patch.object(SetGridField, 'demisto')
+    with open(datadir[dt_response_path]) as json_file:
+        SetGridField.demisto.dt.return_value = json.load(json_file)
+    results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
+                                              columns=columns, overwrite=True, sort_by=['fname'],
+                                              unpack_nested_elements=unpack_nested_elements)
+    with open(datadir[expected_results_path]) as json_file:
+        expected_results = json.load(json_file)
+    assert json.dumps(results) == json.dumps(expected_results)
+
+
+@pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
+                         argvalues=[
+                             (["col1", "col2"], ["col1", "col2"], False,
+                              'context_entry_list_of_dicts_non_sorted_multi.json',
+                              'expected_entry_list_of_dicts_sorted_multi.json')
+                         ])
+def test_build_grid_command_with_multi_sort_by(datadir, mocker, keys: List[str], columns: List[str],
+                                               unpack_nested_elements: bool, dt_response_path: str,
+                                               expected_results_path: str):
+    """Unit test
+    Given
+    - script args, including multi sort_by cols
+    - a file
+    When
+    - build_grid_command command
+    Then
+    - Validate that the grid was created with the correct column names and sorted correctly
+    """
+    import json
+    import SetGridField
+    mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
+    mocker.patch.object(SetGridField, 'demisto')
+    with open(datadir[dt_response_path]) as json_file:
+        SetGridField.demisto.dt.return_value = json.load(json_file)
+    results = SetGridField.build_grid_command(grid_id='test', context_path=mocker.MagicMock(), keys=keys,
+                                              columns=columns, overwrite=True, sort_by=['col1', 'col2'],
                                               unpack_nested_elements=unpack_nested_elements)
     with open(datadir[expected_results_path]) as json_file:
         expected_results = json.load(json_file)

@@ -23,15 +23,20 @@ oauth_config:
     bot:
       - channels:history
       - channels:read
+      - channels:manage
       - chat:write
       - files:write
       - groups:history
       - groups:read
+      - groups:write
       - im:history
       - im:read
+      - im:write
       - mpim:history
       - mpim:read
+      - mpim:write
       - users:read
+      - users:read.email
       - commands
 settings:
   event_subscriptions:
