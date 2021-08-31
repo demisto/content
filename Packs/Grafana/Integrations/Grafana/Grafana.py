@@ -182,6 +182,17 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def set_time_for_annotation(time_start, time_end):
+    """
+    For annotation creation, sets the start and end time to epoch numbers in millisecond resolution - if they were filled.
+    """
+    if time_start:
+        time_start = str(date_to_timestamp(time_start, DATE_FORMAT))
+    if time_end:
+        time_end = str(date_to_timestamp(time_end, DATE_FORMAT))
+    return time_start, time_end
+
+
 def change_key(response: dict, prev_key: str, new_key: str):
     """
     This function changes a key in response, so the values could be aggregated with other functions.
@@ -457,13 +468,7 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     dashboard_id = args.get('dashboard_id')
     panel_id = args.get('panel_id')
 
-    #  epoch numbers in millisecond resolution
-    time_start = args.get('time')
-    if time_start:
-        time_start = str(date_to_timestamp(time_start, DATE_FORMAT))
-    time_end = args.get('time_end')
-    if time_end:
-        time_end = str(date_to_timestamp(time_end, DATE_FORMAT))
+    time_start, time_end = set_time_for_annotation(args.get('time'), args.get('time_end'))
 
     tags = argToList(args.get('tags', ''))
     text = str(args.get('text'))
@@ -703,10 +708,9 @@ def test_module(client: Client, params: dict) -> None:
 
 def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, panel_id: str = None,
                     alert_name: str = None, state: str = None, limit: Optional[int] = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
-    if not limit:
-        limit = MAX_INCIDENTS_TO_FETCH
-    last_fetch = demisto.getLastRun().get('last_fetch', None)
-    last_id_fetched = demisto.getLastRun().get('last_id_fetched', 0)
+    limit = limit if limit else MAX_INCIDENTS_TO_FETCH
+    last_fetch = demisto.getLastRun().get('last_fetch')
+    last_id_fetched = demisto.getLastRun().get('last_id_fetched', -1)
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
                   f'time to fetch from is: {fetch_start_time}')
