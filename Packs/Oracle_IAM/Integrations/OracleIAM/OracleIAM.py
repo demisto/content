@@ -550,7 +550,7 @@ def update_group_command(client, args):
 
     if member_ids_to_add == member_ids_to_delete is None:
         raise Exception('You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the scim data')
-    
+
     operations = []
     member_ids_json_list = []
     if member_ids_to_add:
@@ -630,7 +630,6 @@ def delete_group_command(client, args):
             generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
                                                 errorMessage='Group Not Found', details=str(exc))
         else:
-            res_json = res.json()
             generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name,
                                                 errorCode=exc.res.status_code, errorMessage=exc.message,
                                                 details=str(exc))
