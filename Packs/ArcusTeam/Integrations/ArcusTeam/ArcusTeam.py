@@ -91,7 +91,7 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     :return: List of matching devices for the given device.
     """
     result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""),
-                series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
+                                series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
     markdown = '## Found ' + str(len(result)) + ' devices\n'
     markdown += "".join(list(map(deviceToMarkdown, result)))
     return CommandResults(
@@ -200,4 +200,3 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-    
