@@ -28,8 +28,9 @@ configuration:
   name: default_job_id
   required: false
   type: 0
-- defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
-  display: Feature Mapping as an array to map between CLOSING REASON and Arcanna labels
+- additionalinfo: An array to map between closing reason and Arcanna labels
+  defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+  display: A closing reason to Arcanna labels.
   hidden: false
   name: feature_mapping
   required: false
