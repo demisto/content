@@ -18,7 +18,40 @@ VERSION = "1.0.0"
 
 
 class Client(BaseClient):
-    pass
+
+
+    def get_devices(self, vendor, model, series, firmware_version):
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/get_devices',
+            json_data = {
+                "vendor": vendor,
+                "model": model,
+                "series": series,
+                "firmware_version": firmware_version,
+                "version": VERSION
+            }
+        )
+
+    def get_vulnerabities(self, firmwareId, deviceId, pageSize, page, sortField, sortOrder, returnFields):
+
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/get_vulnerabilities',
+            json_data = {
+                    "firmwareId": firmwareId,
+                    "version": VERSION,
+                    "deviceId": deviceId,
+                    "pageSize": pageSize,
+                    "page": page,
+                    "sortOrder": sortOrder,
+                    "sortField": sortField,
+                    "returnFields": returnFields,
+
+                }
+        )
 
 
 def deviceToMarkdown(device):
@@ -62,52 +95,38 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     :param device_name: device name to search for in the DB.
     :return: List of matching devices for the given device.
     """
-    url = urljoin(client._base_url, "/get_devices")
-    payload = {
-        "vendor": args.get("vendor", ""),
-        "model": args.get("model", ""),
-        "series": args.get("series", ""),
-        "firmware_version": args.get("firmware_version", ""),
-        "version": VERSION
-    }
-    result = requests.request("POST", url, headers=client._headers, data=json.dumps(payload))
-    resultJson = result.json()
-    markdown = '## Found ' + str(len(resultJson)) + ' devices\n'
-    markdown += "".join(list(map(deviceToMarkdown, resultJson)))
+    result = client.get_devices(vendor=args.get("vendor", ""), model=args.get("model", ""), series=args.get("series", ""), firmware_version=args.get("firmware_version", ""))
+    markdown = '## Found ' + str(len(result)) + ' devices\n'
+    markdown += "".join(list(map(deviceToMarkdown, result)))
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="ArcusTeamDevices",
         outputs_key_field="",
-        outputs={'devices': resultJson},
+        outputs={'devices': result},
     )
 
 
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
-    url = urljoin(client._base_url, "/get_vulnerabilities")
-    returnFields = str(args.get("return_fields")).split(',')
-    payload = {
-        "firmwareId": args.get("firmware_id", ""),
-        "version": VERSION,
-        "deviceId": args.get("device_id", ""),
-        "pageSize": int(args.get("page_size", 10)),
-        "page": int(args.get("page_number", 1)),
-        "sortOrder": args.get("sort_order", "desc"),
-        "sortField": args.get("sort_field", "risk"),
-        "returnFields": str(args.get("return_fields")).split(','),
 
-    }
-    result = requests.request("POST", url, headers=client._headers, data=json.dumps(payload))
-    if len(result.json().get('code', '')) > 0:
-        raise Exception(result.json().get('message'))
-    resultJson = result.json()
-    resultJson['results'] = list(map(getEditIssue(returnFields), resultJson.get("results")))
+    returnFields = str(args.get("return_fields", ['risk','cve'])).split(',')
+    firmwareId= args.get("firmware_id", "")
+    deviceId =  args.get("device_id", "")
+    pageSize = int(args.get("page_size", 10))
+    page = int(args.get("page_number", 1))
+    sortOrder = args.get("sort_order", "desc")
+    sortField = args.get("sort_field", "risk")
+
+    result = client.get_vulnerabities(firmwareId=firmwareId, deviceId=deviceId, pageSize=pageSize, page=page, sortField=sortField, sortOrder=sortOrder,returnFields=returnFields)
+    if len(result.get('code', '')) > 0:
+        raise Exception(result.get('message'))
+    result['results'] = list(map(getEditIssue(returnFields), result.get("results")))
     markdown = '## Scan results\n'
 
-    if len(resultJson.get('results')) > 0:
+    if len(result.get('results')) > 0:
         markdown += tableToMarkdown(
-            'Number of CVE\'s found: ' + str(resultJson.get("max_items")),
-            resultJson.get('results'),
-            headers=list(resultJson.get('results')[0].keys())
+            'Number of CVE\'s found: ' + str(result.get("max_items")),
+            result.get('results'),
+            headers=list(result.get('results')[0].keys())
         )
     else:
         markdown += "No results"
@@ -116,7 +135,7 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=markdown,
         outputs_prefix="ArcusTeamVulnerabilities",
         outputs_key_field="",
-        outputs=result.json(),
+        outputs=result,
     )
 
 
@@ -130,14 +149,14 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get("ApiKey")
+    api_key = demisto.params().get("api_key")
 
-    client_id = demisto.params().get("ClientID")
+    client_id = demisto.params().get("client_id")
 
     # get the service API url
     base_url = urljoin(demisto.params()["url"], "/api/v10/xsoar")
 
-    url = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
+    authentication_url  = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
 
     payload = {
         "apiKey": api_key,
@@ -146,7 +165,7 @@ def main() -> None:
 
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
-    result = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+    result = requests.request("POST", authentication_url , headers=headers, data=json.dumps(payload))
     readable_output = result.json()
     access_token = readable_output["access_token"]
 
