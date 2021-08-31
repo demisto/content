@@ -699,12 +699,12 @@ def main():
             'gitlab-jobs-list': gitlab_jobs_list_command,
             'gitlab-artifact-get': gitlab_artifact_get_command,
             'gitlab-merge-requests-list': gitlab_merge_requests_list_command,
-            'gitlab-get-merge-request': gitlab_get_merge_request_command,
+            'gitlab-merge-request-get': gitlab_get_merge_request_command,
             'gitlab-issues-list': gitlab_issues_list_command,
-            'gitlab-create-issue': gitlab_create_issue_command,
-            'gitlab-edit-issue': gitlab_edit_issue_command,
+            'gitlab-issue-create': gitlab_create_issue_command,
+            'gitlab-issue-edit': gitlab_edit_issue_command,
             'gitlab-group-projects-list': gitlab_group_projects_list_command,
-            'gitlab-get-raw-file': gitlab_get_raw_file_command
+            'gitlab-raw-file-get': gitlab_get_raw_file_command
         }
 
         if command == 'test-module':

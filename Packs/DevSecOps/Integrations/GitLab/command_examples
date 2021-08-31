@@ -13,8 +13,8 @@
 !gitlab-artifact-get project_id=123 job_id=6063195 artifact_path_suffix=artifacts/failed_tests.txt
 !gitlab-issues-list project_id=123 state=opened search="Summary"
 !gitlab-merge-requests-list target_branch=development project_id=123 state=merged
-!gitlab-get-merge-request project_id=123 merge_request_iid=18
-!gitlab-edit-issue project_id=123 issue_id=1 add_labels="To Do"
+!gitlab-merge-request-get project_id=123 merge_request_iid=18
+!gitlab-issue-edit project_id=123 issue_id=1 add_labels="To Do"
 !gitlab-group-projects-list group_id=1
-!gitlab-create-issue title=wow description=wow labels=a,b,c
-!gitlab-get-raw-file project_id=123 ref=master file=wow.py
+!gitlab-issue-create title=wow description=wow labels=a,b,c
+!gitlab-raw-file-get project_id=123 ref=master file=wow.py

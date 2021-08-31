@@ -739,8 +739,8 @@ script:
         name: merge_request_iid
         required: true
         secret: false
-    description: Get a Merge Request.
-    name: gitlab-get-merge-request
+    description: Get a Merge Request
+    name: gitlab-merge-request-get
     outputs:
       - contextPath: GitLab.MergeRequest.id
         description: The merge request ID.
@@ -889,7 +889,7 @@ script:
         required: true
         secret: false
     description: Create an issue
-    name: gitlab-create-issue
+    name: gitlab-issue-create
     outputs:
       - contextPath: GitLab.Issue.id
         description: The issue ID.
@@ -953,7 +953,7 @@ script:
       required: true
       secret: false
     description: Edit an issue
-    name: gitlab-edit-issue
+    name: gitlab-issue-edit
     outputs:
     - contextPath: GitLab.Issue.id
       description: The issue ID.
@@ -1036,7 +1036,7 @@ script:
         required: true
         secret: false
     description: Get raw file
-    name: gitlab-get-raw-file
+    name: gitlab-raw-file-get
     outputs:
       - contextPath: GitLab.File.ref
         description: The branch the file's content was taken from.

@@ -1201,14 +1201,14 @@ Gets an artifact from a given artifact path, corresponding to a given job ID.
 >|---|---|---|
 >| Carbon Black Response Test | artifacts/failed_tests.txt | 6063195 |
 
-### gitlab-edit-issue
+### gitlab-issue-edit
 ***
 Edit an issue
 
 
 #### Base Command
 
-`gitlab-edit-issue`
+`gitlab-issue-edit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1241,7 +1241,7 @@ Edit an issue
 
 
 #### Command Example
-```!gitlab-edit-issue project_id=123 issue_id=1 add_labels=label1,label2```
+```!gitlab-issue-edit project_id=123 issue_id=1 add_labels=label1,label2```
 
 #### Context Example
 ```json
@@ -1340,14 +1340,14 @@ Edit an issue
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 | label1,<br>label2 | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
 
-### gitlab-create-issue
+### gitlab-issue-create
 ***
 Create an issue
 
 
 #### Base Command
 
-`gitlab-create-issue`
+`gitlab-issue-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1379,7 +1379,7 @@ Create an issue
 
 
 #### Command Example
-`gitlab-create-issue labels="a,b,c" title=wow description="bla bla" project_id=123`
+`gitlab-issue-create labels="a,b,c" title=wow description="bla bla" project_id=123`
 
 #### Context Example
 ```json
@@ -1747,14 +1747,14 @@ List all merge requests
 |  |  |  | avatar_url: www.google.com<br>id: 10582<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | true |  |  | 2021-08-16T12:16:06.143Z |  |  | 0 |  | false | 53852 | 18 |  | SHA | can_be_merged | false | 2021-08-16T19:07:14.962Z | avatar_url: www.google.com<br>id: 9164<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com |  | 7959 | !18 | full: wow<br>relative: !18<br>short: !18 |  | SHA |  | 1.0.1.23955-feature-branch | 7959 | false |  | merged | development | 7959 | completed_count: 0<br>count: 0 | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-16T19:07:14.765Z | 0 | 0 | www.google.com | false |
 
 
-### gitlab-merge-requests-list
+### gitlab-merge-request-get
 ***
-List all merge requests
+Get a Merge Request
 
 
 #### Base Command
 
-`gitlab-merge-requests-list`
+`gitlab-merge-request-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1787,7 +1787,7 @@ List all merge requests
 
 
 #### Command Example
-```!gitlab-get-merge-request project_id=123 merge_request_iid=18```
+```!gitlab-merge-request-get project_id=123 merge_request_iid=18```
 
 #### Context Example
 ```json
@@ -2025,14 +2025,15 @@ Get the list of projects of a given group.
 |_links|allow_merge_on_skipped_pipeline|analytics_access_level|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|container_registry_image_prefix|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|issues_template|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|merge_requests_template|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|operations_access_level|packages_enabled|pages_access_level|path|path_with_namespace|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|requirements_enabled|resolve_outdated_diff_discussions|restrict_user_defined_variables|security_and_compliance_enabled|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | self: www.google.com<br>issues: www.google.com<br>merge_requests: www.google.com<br>repo_branches: www.google.com<br>labels: www.google.com<br>events: www.google.com<br>members: www.google.com | false | enabled | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | false | wow | 50 | true |  | cadence: 1d<br>enabled: false<br>keep_n: 10<br>older_than: 90d<br>name_regex: .*<br>name_regex_keep: null<br>next_run_at: 2021-07-16T17:53:46.012Z | false | www.google.com | 2021-07-15T17:53:45.964Z | 7127 | development |  | false | false |  | enabled | 0 | www.google.com | 7988 | finished | enabled | true |  | true | 2021-08-12T03:05:08.722Z | false |  |  | merge | enabled | true |  | false | wow | a / b / c / wow | id: 10665<br>name: wow<br>path: wow<br>kind: group<br>full_path: a/b/c<br>parent_id: 10664<br>avatar_url: null<br>web_url: www.google.com | true | false | 1 | enabled | false | enabled | wow | x/a/b/c/wow | true | true | www.google.com | true | enabled | true | true | false | true |  |  | false | true |  | disabled | false | wow | 0 |  |  | public | www.google.com | disabled | false |
-### gitlab-get-raw-file
+
+### gitlab-raw-file-get
 ***
 Get raw file
 
 
 #### Base Command
 
-`gitlab-get-raw-file`
+`gitlab-raw-file-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2052,7 +2053,7 @@ Get raw file
 
 
 #### Command Example
-```!gitlab-get-raw-file project_id=123 ref=master file=wow.py```
+```!gitlab-raw-file-get project_id=123 ref=master file=wow.py```
 
 #### Human Readable Output
 ### Raw file wow.py on branch master
