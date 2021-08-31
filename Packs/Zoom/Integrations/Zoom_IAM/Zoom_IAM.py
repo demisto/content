@@ -89,7 +89,7 @@ class Client(BaseClient):
                      },
         )
         # res is an empty *response object*
-        user_app_data = {}
+        user_app_data: dict = {}
         # if we wanted to disable the user and request succeeded,
         # we get to this line and know the user's status
         is_active = True if user_data.get('action', '') == 'activate' else False
