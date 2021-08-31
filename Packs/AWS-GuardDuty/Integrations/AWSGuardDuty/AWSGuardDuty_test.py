@@ -306,3 +306,4 @@ def test_parse_incident_from_finding():
     assert incident['name'] == title
     assert incident['details'] == desc
     assert incident['severity'] == 0
+    assert '2015-01-01' in incident['rawJSON']
