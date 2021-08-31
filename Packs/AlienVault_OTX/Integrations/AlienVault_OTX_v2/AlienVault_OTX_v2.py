@@ -172,6 +172,9 @@ def create_attack_pattern_relationships(client: Client, raw_response: dict, enti
     return relationships
 
 
+def lowercase_protocol_callback(pattern): 
+    return pattern.group(0).lower()
+
 ''' COMMANDS '''
 
 
@@ -399,7 +402,6 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
     raws: list = []
 
     for url in urls_list:
-        lowercase_protocol_callback = lambda pattern: pattern.group(0).lower()
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
         raw_response = client.query(section='url', argument=url)
         if raw_response:
