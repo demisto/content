@@ -45,7 +45,7 @@ script:
     outputs:
     - contextPath: ArcusTeamDevices.devices.categories
       description: ' Device categories'
-      type: string
+      type: Unknown
     - contextPath: ArcusTeamDevices.devices.device_key
       description: ' Arcus Team Device ID'
       type: string
