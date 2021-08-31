@@ -28,15 +28,17 @@ configuration:
   name: default_job_id
   required: false
   type: 0
-- defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
-  display: Feature Mapping as an array to map between CLOSING REASON and Arcanna labels
+- additionalinfo: An array to map between closing reason and Arcanna labels
+  defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+  display: A closing reason to Arcanna labels.
   hidden: false
   name: feature_mapping
   required: false
   type: 12
-- defaultvalue: closeReason
-  display: Field use to signal to arcanna the status for closing an alert(or marking
-    as feedback for Arcanna)
+- additionalinfo: This field use to signal to Arcanna the status for closing an alert
+    or marking feedback for Arcanna
+  defaultvalue: closeReason
+  display: Alert closing reason
   hidden: false
   name: closing_reason_field
   required: false
@@ -109,7 +111,7 @@ script:
       description: Arcanna error message if any
       type: String
     - contextPath: Arcanna.Event.job_id
-      description: Arcanna Job id used for sending.
+      description: Arcanna Job id used for sending an event.
       type: Unknown
   - arguments:
     - default: false
