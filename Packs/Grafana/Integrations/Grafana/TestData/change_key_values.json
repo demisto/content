@@ -1,0 +1,40 @@
+{
+  "alertId_to_id": [
+    {
+      "alertId": 2,
+      "message": "Alert is already paused",
+      "state": "paused"
+    },
+    "alertId",
+    "id",
+    {
+      "id": 2,
+      "message": "Alert is already paused",
+      "state": "paused"
+    }
+  ],
+  "teamID_to_id": [
+    {
+      "message": "Team created",
+      "teamId": 6
+    },
+    "teamId",
+    "id",
+    {
+      "message": "Team created",
+      "id": 6
+    }
+  ],
+  "orgID_to_id": [
+    {
+      "message": "Organization created",
+      "orgId": 3
+    },
+    "orgId",
+    "id",
+    {
+      "message": "Organization created",
+      "id": 3
+    }
+  ]
+}
