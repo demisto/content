@@ -1,5 +1,5 @@
 Arcanna integration for using the power of AI in SOC
-This integration was integrated and tested with version xx of Arcanna.AI
+This integration was integrated and tested with version 1.0 and above of Arcanna.AI
 
 ## Configure Arcanna.AI on Cortex XSOAR
 
