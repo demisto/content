@@ -10,26 +10,20 @@ import traceback
 from datetime import datetime, timedelta
 import os
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 ''' GLOBALS/PARAMS '''
-PARAMS = demisto.params()
-FETCHES_INCIDENTS = PARAMS.get('isFetch')
-FETCH_TIME = PARAMS.get('fetch_time')
-FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
-OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
-MAX_RESULT = PARAMS.get('max_results')
-USERNAME = PARAMS.get('credentials').get('identifier')
-PASSWORD = PARAMS.get('credentials').get('password')
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
-SECURED = not PARAMS.get('insecure')
-CLIENT_ID = PARAMS.get('client_id')
-QUERY_STRING = PARAMS.get('query_string')
-DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
-# Service base URL
-BASE_URL = SERVER + '/CherwellAPI/'
+FETCHES_INCIDENTS = ''
+FETCH_TIME = ''
+FETCH_ATTACHMENTS = ''
+OBJECTS_TO_FETCH = ''
+MAX_RESULT = ''
+USERNAME = ''
+PASSWORD = ''
+SERVER = ''
+SECURED = ''
+CLIENT_ID = ''
+QUERY_STRING = ''
+DATE_FORMAT = ''
+BASE_URL = ''
 
 HTTP_CODES = {
     'unauthorized': 401,
@@ -1046,6 +1040,30 @@ def cherwell_run_one_step_action_command():
 
 
 def main():
+    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, PASSWORD, SERVER, \
+        SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    params = demisto.params()
+
+    FETCHES_INCIDENTS = params.get('isFetch')
+    FETCH_TIME = params.get('fetch_time')
+    FETCH_ATTACHMENTS = params.get('fetch_attachments')
+    OBJECTS_TO_FETCH = params.get('objects_to_fetch').split(',')
+    MAX_RESULT = params.get('max_results')
+    USERNAME = params.get('credentials').get('identifier')
+    PASSWORD = params.get('credentials').get('password')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
+    SECURED = not params.get('insecure')
+    CLIENT_ID = params.get('client_id')
+    QUERY_STRING = params.get('query_string')
+    DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
+    # Service base URL
+    BASE_URL = SERVER + '/CherwellAPI/'
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
     LOG('Command being called is %s' % (demisto.command()))
 

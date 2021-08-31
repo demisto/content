@@ -3,6 +3,8 @@ from CommonServerPython import date_to_timestamp
 import demistomock as demisto
 from Cherwell import cherwell_get_business_object_summary_command, cherwell_get_one_step_actions_command,\
     get_one_step_actions_recursive
+from mock import patch
+
 
 BO_SUMMARY_RES = {"firstRecIdField": "fa03d51b709e4a6eb2d52885b2ef7e04", "groupSummaries": [],
                   "recIdFields": "fa03d51b709e4a6eb2d52885b2ef7e04", "stateFieldId": "5eb3234ae1344c64a19819eda437f18d",
@@ -59,6 +61,7 @@ INTEGRATION_CONTEXT = {'token_expiration_time': date_to_timestamp(datetime.now()
                        'access_token': 'TOKEN'}
 
 
+@patch('Cherwell.BASE_URL', 'https://demisto.experiencecherwell.com/CherwellAPI/')
 def test_cherwell_get_business_object_summary_command(mocker, requests_mock):
     """
     When:
@@ -79,6 +82,7 @@ def test_cherwell_get_business_object_summary_command(mocker, requests_mock):
     assert command_res.outputs_prefix == 'Cherwell.BusinessObjectSummary'
 
 
+@patch('Cherwell.BASE_URL', 'https://demisto.experiencecherwell.com/CherwellAPI/')
 def test_cherwell_get_one_step_actions_command(mocker, requests_mock):
     """
     When:
