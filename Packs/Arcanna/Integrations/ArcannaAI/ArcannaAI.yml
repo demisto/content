@@ -35,9 +35,10 @@ configuration:
   name: feature_mapping
   required: false
   type: 12
-- defaultvalue: closeReason
-  display: Field use to signal to arcanna the status for closing an alert(or marking
-    as feedback for Arcanna)
+- additionalinfo: This field use to signal to Arcanna the status for closing an alert
+    or marking feedback for Arcanna
+  defaultvalue: closeReason
+  display: Alert closing reason
   hidden: false
   name: closing_reason_field
   required: false
