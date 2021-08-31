@@ -111,7 +111,7 @@ script:
       description: Arcanna error message if any
       type: String
     - contextPath: Arcanna.Event.job_id
-      description: Arcanna Job id used for sending.
+      description: Arcanna Job id used for sending an event.
       type: Unknown
   - arguments:
     - default: false
