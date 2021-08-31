@@ -48,6 +48,10 @@ Retruns the latest updated CVEs.
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | When CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
 
 ##### Command Example
@@ -106,6 +110,10 @@ Search CVE by ID
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | The date the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
 
 ##### Command Example

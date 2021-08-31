@@ -568,42 +568,42 @@ class Pack(object):
 
         """
         pack_metadata = {
-            'name': self._display_name or self._pack_name,
-            'id': self._pack_name,
-            'description': self._description or self._pack_name,
-            'created': self._create_date,
-            'updated': self._update_date,
-            'legacy': self._legacy,
-            'support': self._support_type,
-            'supportDetails': self._support_details,
-            'eulaLink': self.eula_link,
-            'author': self._author,
-            'authorImage': self._author_image,
-            'certification': self._certification,
-            'price': self._price,
+            Metadata.NAME: self._display_name or self._pack_name,
+            Metadata.ID: self._pack_name,
+            Metadata.DESCRIPTION: self._description or self._pack_name,
+            Metadata.CREATED: self._create_date,
+            Metadata.UPDATED: self._update_date,
+            Metadata.LEGACY: self._legacy,
+            Metadata.SUPPORT: self._support_type,
+            Metadata.SUPPORT_DETAILS: self._support_details,
+            Metadata.EULA_LINK: self.eula_link,
+            Metadata.AUTHOR: self._author,
+            Metadata.AUTHOR_IMAGE: self._author_image,
+            Metadata.CERTIFICATION: self._certification,
+            Metadata.PRICE: self._price,
             Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
             Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
-            'versionInfo': build_number,
-            'commit': commit_hash,
-            'downloads': self._downloads_count,
-            'tags': list(self._tags),
-            'categories': self._categories,
-            'contentItems': self._content_items,
-            'searchRank': self._search_rank,
-            'integrations': self._related_integration_images,
-            'useCases': self._use_cases,
-            'keywords': self._keywords,
-            'dependencies': self._dependencies
+            Metadata.VERSION_INFO: build_number,
+            Metadata.COMMIT: commit_hash,
+            Metadata.DOWNLOADS: self._downloads_count,
+            Metadata.TAGS: list(self._tags),
+            Metadata.CATEGORIES: self._categories,
+            Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.USE_CASES: self._use_cases,
+            Metadata.KEY_WORDS: self._keywords,
+            Metadata.DEPENDENCIES: self._dependencies
         }
 
         if self._is_private_pack:
             pack_metadata.update({
-                'premium': self._is_premium,
-                'vendorId': self._vendor_id,
-                'partnerId': self._partner_id,
-                'partnerName': self._partner_name,
-                'contentCommitHash': self._content_commit_hash,
-                'previewOnly': self._preview_only
+                Metadata.PREMIUM: self._is_premium,
+                Metadata.VENDOR_ID: self._vendor_id,
+                Metadata.PARTNER_ID: self._partner_id,
+                Metadata.PARTNER_NAME: self._partner_name,
+                Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
+                Metadata.PREVIEW_ONLY: self._preview_only
             })
 
         return pack_metadata
@@ -620,8 +620,8 @@ class Pack(object):
 
         """
         dependencies_data_result = {}
-        first_level_dependencies = self.user_metadata.get('dependencies', {})
-        all_level_displayed_dependencies = self.user_metadata.get('displayedImages', [])
+        first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
+        all_level_displayed_dependencies = self.user_metadata.get(Metadata.DISPLAYED_IMAGES, [])
         dependencies_ids = {d for d in first_level_dependencies.keys()}
         dependencies_ids.update(all_level_displayed_dependencies)
 
@@ -931,7 +931,7 @@ class Pack(object):
             with open(pack_index_metadata_path, 'r') as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
 
-            previous_commit_hash = downloaded_metadata.get('commit', previous_commit_hash)
+            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)
@@ -1472,11 +1472,23 @@ class Pack(object):
                 PackFolders.INDICATOR_TYPES.value: "reputation",
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget"
+                PackFolders.WIDGETS.value: "widget",
+                PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+                PackFolders.GENERIC_FIELDS.value: "GenericFields",
+                PackFolders.GENERIC_MODULES.value: "GenericModules",
+                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.LISTS.value: "list",
+                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
+                parent_directory = root.split(os.path.sep)[-2]
+
+                if parent_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    current_directory = parent_directory
+                elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    continue
 
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
@@ -1606,10 +1618,40 @@ class Pack(object):
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
                         })
+                    elif current_directory == PackFolders.LISTS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")
+                        })
+                    elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif parent_directory == PackFolders.GENERIC_FIELDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.GENERIC_MODULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif parent_directory == PackFolders.GENERIC_TYPES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.PREPROCESS_RULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
-                    content_items_result[content_item_key] = folder_collected_items
+                    content_items_result[content_item_key] = \
+                        content_items_result.get(content_item_key, []) + folder_collected_items
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
@@ -1617,7 +1659,7 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            return task_status, content_items_result
+            return task_status
 
     def load_user_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
@@ -1640,13 +1682,13 @@ class Pack(object):
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
             # store important user metadata fields
-            self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+            self.support_type = user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
             self.hidden = user_metadata.get(Metadata.HIDDEN, False)
-            self.description = user_metadata.get('description', False)
-            self.display_name = user_metadata.get('name', '')
+            self.description = user_metadata.get(Metadata.DESCRIPTION, False)
+            self.display_name = user_metadata.get(Metadata.NAME, '')
             self._user_metadata = user_metadata
-            self.eula_link = user_metadata.get('eulaLink', Metadata.EULA_URL)
+            self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1692,41 +1734,41 @@ class Pack(object):
 
         """
         landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
-        displayed_dependencies = self.user_metadata.get('displayedImages', [])
+        displayed_dependencies = self.user_metadata.get(Metadata.DISPLAYED_IMAGES, [])
         trending_packs = None
         pack_dependencies_by_download_count = displayed_dependencies
         if not format_dependencies_only:
             # ===== Pack Regular Attributes =====
-            self._support_type = self.user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+            self._support_type = self.user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
             self._support_details = self._create_support_section(
-                support_type=self._support_type, support_url=self.user_metadata.get('url'),
-                support_email=self.user_metadata.get('email')
+                support_type=self._support_type, support_url=self.user_metadata.get(Metadata.URL),
+                support_email=self.user_metadata.get(Metadata.EMAIL)
             )
             self._author = self._get_author(
-                support_type=self._support_type, author=self.user_metadata.get('author', ''))
+                support_type=self._support_type, author=self.user_metadata.get(Metadata.AUTHOR, ''))
             self._certification = self._get_certification(
-                support_type=self._support_type, certification=self.user_metadata.get('certification')
+                support_type=self._support_type, certification=self.user_metadata.get(Metadata.CERTIFICATION)
             )
-            self._legacy = self.user_metadata.get('legacy', True)
+            self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
-            self._use_cases = input_to_list(input_data=self.user_metadata.get('useCases'), capitalize_input=True)
-            self._categories = input_to_list(input_data=self.user_metadata.get('categories'), capitalize_input=True)
-            self._keywords = input_to_list(self.user_metadata.get('keywords'))
+            self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES), capitalize_input=True)
+            self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES), capitalize_input=True)
+            self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
         self._dependencies = self._parse_pack_dependencies(
-            self.user_metadata.get('dependencies', {}), dependencies_data)
+            self.user_metadata.get(Metadata.DEPENDENCIES, {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
-            self._is_private_pack = 'partnerId' in self.user_metadata
+            self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
             self._is_premium = self._is_private_pack
-            self._preview_only = get_valid_bool(self.user_metadata.get('previewOnly', False))
+            self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
             self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
             if self._is_private_pack:
-                self._vendor_id = self.user_metadata.get('vendorId', "")
-                self._partner_id = self.user_metadata.get('partnerId', "")
-                self._partner_name = self.user_metadata.get('partnerName', "")
-                self._content_commit_hash = self.user_metadata.get('contentCommitHash', "")
+                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
+                self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
+                self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
+                self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
                 # Currently all content packs are legacy.
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
@@ -1750,7 +1792,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=[], format_dependencies_only=False):
+                        pack_was_modified, statistics_handler, pack_names=None, format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1770,12 +1812,13 @@ class Pack(object):
 
         """
         task_status = False
+        pack_names = pack_names if pack_names else []
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
-            if 'displayedImages' not in self.user_metadata:
-                self._user_metadata['displayedImages'] = packs_dependencies_mapping.get(
-                    self._pack_name, {}).get('displayedImages', [])
+            if Metadata.DISPLAYED_IMAGES not in self.user_metadata:
+                self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
+                    self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names)
@@ -1828,10 +1871,10 @@ class Pack(object):
         metadata = load_json(os.path.join(index_folder_path, pack_name, Pack.METADATA))
 
         if metadata:
-            if metadata.get('created'):
-                created_time = metadata.get('created')
+            if metadata.get(Metadata.CREATED):
+                created_time = metadata.get(Metadata.CREATED)
             else:
-                raise Exception(f'The metadata file of the {pack_name} pack does not contain "created" time')
+                raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
         return created_time
 
@@ -1854,23 +1897,23 @@ class Pack(object):
         return latest_changelog_released_date
 
     def set_pack_dependencies(self, packs_dependencies_mapping):
-        pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
-        if 'dependencies' not in self.user_metadata:
-            self._user_metadata['dependencies'] = {}
+        pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get(Metadata.DEPENDENCIES, {})
+        if Metadata.DEPENDENCIES not in self.user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = {}
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
         if self._pack_name in GCPConfig.CORE_PACKS_LIST:
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
-                                      if v.get('mandatory', False) is True
+                                      if v.get(Metadata.MANDATORY, False) is True
                                       and k not in GCPConfig.CORE_PACKS_LIST
-                                      and k not in self.user_metadata['dependencies'].keys()]
+                                      and k not in self.user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
 
-        pack_dependencies.update(self.user_metadata['dependencies'])
-        self._user_metadata['dependencies'] = pack_dependencies
+        pack_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
+        self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.

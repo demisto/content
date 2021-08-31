@@ -26,6 +26,7 @@ LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/wel
 FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
 TIMEOUT = demisto.params().get('timeout', '60')
+PORT = arg_to_number(demisto.params().get('port', '443') or '443')
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
 RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
@@ -163,7 +164,7 @@ def check_configuration():
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
         creds = get_writer_creds()
-        Sender(SenderConfigSSL(address=(WRITER_RELAY, 443),
+        Sender(SenderConfigSSL(address=(WRITER_RELAY, PORT),
                                key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))\
             .send(tag=HEALTHCHECK_WRITER_TABLE, msg=f'{HEALTHCHECK_WRITER_RECORD}')
 
@@ -553,7 +554,7 @@ def write_to_table_command():
     creds = get_writer_creds()
     linq = f"from {table_name}"
 
-    sender = Sender(SenderConfigSSL(address=(WRITER_RELAY, 443),
+    sender = Sender(SenderConfigSSL(address=(WRITER_RELAY, PORT),
                     key=creds['key'].name, cert=creds['crt'].name, chain=creds['chain'].name))
 
     for r in records:
@@ -600,7 +601,7 @@ def write_to_lookup_table_command():
 
     creds = get_writer_creds()
 
-    engine_config = SenderConfigSSL(address=(WRITER_RELAY, 443),
+    engine_config = SenderConfigSSL(address=(WRITER_RELAY, PORT),
                                     key=creds['key'].name,
                                     cert=creds['crt'].name,
                                     chain=creds['chain'].name)

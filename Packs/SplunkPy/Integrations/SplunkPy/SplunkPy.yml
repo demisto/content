@@ -72,18 +72,6 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: earliest_time
-  display: Earliest time to fetch (The name of the Splunk field whose value defines
-    the query's earliest time to fetch.)
-  name: earliest_fetch_time_fieldname
-  required: false
-  type: 0
-- defaultvalue: latest_time
-  display: Latest time to fetch (The name of the Splunk field whose value defines
-    the query's latest time to fetch.)
-  name: latest_fetch_time_fieldname
-  required: false
-  type: 0
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   required: false
@@ -799,4 +787,5 @@ tests:
 - SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultmapperout: Splunk - Notable Generic Outgoing Mapper
 fromversion: 5.0.0

@@ -1,0 +1,27 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "LogsignSIEM Classifier",
+    "keyTypeMap": {
+        "Discovery": "Reconnaissance",
+        "File": "Access",
+        "Identity": "Authentication",
+        "Mail": "Phishing",
+        "Malware": "Malware",
+        "Privilege Escalation": "Lateral Movement",
+        "Reconnaissance": "Reconnaissance",
+        "Threat Intelligence": "Reconnaissance",
+        "Traffic": "Network"
+    },
+    "name": "LogsignSIEM_Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "Alert.Category"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
