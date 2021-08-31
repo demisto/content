@@ -998,7 +998,7 @@ def cherwell_get_business_object_summary_command():
     md = tableToMarkdown('Business Object Summary:', result, headerTransform=pascalToSpace)
 
     return CommandResults(outputs=result, readable_output=md, outputs_key_field='busObId',
-                                  outputs_prefix='Cherwell.BusinessObjectSummary', raw_response=result)
+                          outputs_prefix='Cherwell.BusinessObjectSummary', raw_response=result)
 
 
 def cherwell_get_one_step_actions_command():
@@ -1021,7 +1021,7 @@ def cherwell_get_one_step_actions_command():
         md = f'No one-step actions found for business object ID {business_object_id}'
 
     return CommandResults(outputs=ec, readable_output=md, outputs_key_field='BusinessObjectId',
-                                  outputs_prefix='Cherwell.OneStepActions', raw_response=result)
+                          outputs_prefix='Cherwell.OneStepActions', raw_response=result)
 
 
 def cherwell_run_one_step_action_command():
@@ -1040,8 +1040,7 @@ def cherwell_run_one_step_action_command():
 
     result = run_one_step_action(payload)
 
-    return CommandResults(readable_output='One-Step action has been executed successfully.',
-                                  raw_response=result)
+    return CommandResults(readable_output='One-Step action has been executed successfully.', raw_response=result)
 
 #######################################################################################################################
 

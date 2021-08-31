@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from CommonServerPython import date_to_timestamp
 import demistomock as demisto
 from Cherwell import cherwell_get_business_object_summary_command, cherwell_get_one_step_actions_command,\
-                     get_one_step_actions_recursive
+    get_one_step_actions_recursive
 
 BO_SUMMARY_RES = {"firstRecIdField": "fa03d51b709e4a6eb2d52885b2ef7e04", "groupSummaries": [],
                   "recIdFields": "fa03d51b709e4a6eb2d52885b2ef7e04", "stateFieldId": "5eb3234ae1344c64a19819eda437f18d",
@@ -20,13 +20,13 @@ ONE_STEP_ACTIONS_RES = {
              "name": "Call Contact",
              "association": "6dd536621cf6434ae",
              "standInKey": "DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393434ae"}]},
-                         {"childFolders": [{"name": "Buttons", "childItems": [
-                             {"description": "Abandons the incident and opens the default dashboard",
-                              "displayName": "Cancel Incident",
-                              "id": "944414556c072e6e430",
-                              "name": "Cancel Incident",
-                              "association": "6dd53665ccf6434ae",
-                              "standInKey": "DefType:OneStepDef#Scope:Global#Id:944434ae"}]}]}]}}
+            {"childFolders": [{"name": "Buttons", "childItems": [
+             {"description": "Abandons the incident and opens the default dashboard",
+              "displayName": "Cancel Incident",
+              "id": "944414556c072e6e430",
+              "name": "Cancel Incident",
+              "association": "6dd53665ccf6434ae",
+              "standInKey": "DefType:OneStepDef#Scope:Global#Id:944434ae"}]}]}]}}
 
 ONE_STEP_ACTIONS_OUTPUTS = {"BusinessObjectId": "6dd53665", "Actions": {"Config Item Tasks": [
     {"description": "Launches Skype to contact the Customer.", "displayName": "Call Contact",
@@ -37,18 +37,23 @@ ONE_STEP_ACTIONS_OUTPUTS = {"BusinessObjectId": "6dd53665", "Actions": {"Config 
      "standInKey": "DefType:OneStepDef#Scope:Global#Id:944434ae"}]}}
 
 BU_SUMMARY_HR = '### Business Object Summary:\n' \
-                '|Bus Ob Id|Display Name|First Rec Id Field|Group|Group Summaries|Lookup|Major|Name|Rec Id Fields|State Field Id|States|Supporting|\n' \
+                '|Bus Ob Id|Display Name|First Rec Id Field|Group|Group Summaries|Lookup|Major|Name|' \
+                'Rec Id Fields|State Field Id|States|Supporting|\n' \
                 '|---|---|---|---|---|---|---|---|---|---|---|---|\n' \
-                '| 6dd53665c0c24cab86870a21cf6434ae | Incident | fa03d51b709e4a6eb2d52885b2ef7e04 | false |  | false | false | Incident | fa03d51b709e4a6eb2d52885b2ef7e04 | 5eb3234ae1344c64a19819eda437f18d | Pending,Closed,Reopened,New,In Progress,Resolved,Assigned | false |\n'
+                '| 6dd53665c0c24cab86870a21cf6434ae | Incident | fa03d51b709e4a6eb2d52885b2ef7e04 | false |  |' \
+                ' false | false | Incident | fa03d51b709e4a6eb2d52885b2ef7e04 | 5eb3234ae1344c64a19819eda437f18d |' \
+                ' Pending,Closed,Reopened,New,In Progress,Resolved,Assigned | false |\n'
 
 ONE_TEP_ACTIONS_HR = '### Config Item Tasks one-step actions:\n' \
                      '|Name|Display Name|Description|Id|Association|Stand In Key|\n' \
                      '|---|---|---|---|---|---|\n' \
-                     '| Call Contact | Call Contact | Launches Skype to contact the Customer. | 9389e70ed88b993cff6c66 | 6dd536621cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393434ae |\n' \
+                     '| Call Contact | Call Contact | Launches Skype to contact the Customer. | 9389e70ed88b993cff6c66' \
+                     ' | 6dd536621cf6434ae | DefType:OneStepDef#Scope:Global#Id:9389e70ed88b73a6b1393434ae |\n' \
                      '### Buttons one-step actions:\n' \
                      '|Name|Display Name|Description|Id|Association|Stand In Key|\n' \
                      '|---|---|---|---|---|---|\n' \
-                     '| Cancel Incident | Cancel Incident | Abandons the incident and opens the default dashboard | 944414556c072e6e430 | 6dd53665ccf6434ae | DefType:OneStepDef#Scope:Global#Id:944434ae |\n'
+                     '| Cancel Incident | Cancel Incident | Abandons the incident and opens the default dashboard |' \
+                     ' 944414556c072e6e430 | 6dd53665ccf6434ae | DefType:OneStepDef#Scope:Global#Id:944434ae |\n'
 
 INTEGRATION_CONTEXT = {'token_expiration_time': date_to_timestamp(datetime.now() + timedelta(days=1)),
                        'access_token': 'TOKEN'}
