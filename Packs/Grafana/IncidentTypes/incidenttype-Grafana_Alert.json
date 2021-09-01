@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Grafana Alert",
+    "layout": "Grafana Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

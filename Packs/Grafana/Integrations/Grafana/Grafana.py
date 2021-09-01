@@ -689,9 +689,9 @@ def test_module(client: Client, params: dict) -> None:
 
         if params['isFetch']:
             max_fetch = arg_to_number(params.get('max_fetch'))
-            if max_fetch and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
+            if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
                 raise DemistoException(f'Maximum number of incidents to fetch exceeds the limit '
-                                       f'(restricted to {MAX_INCIDENTS_TO_FETCH})')
+                                       f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
             query = params.get('query')
             if query:
                 query = url_encode(query)
@@ -719,7 +719,7 @@ def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, 
                                         state=argToList(state))
     last_fetch, last_id_fetched, incidents = parse_alerts(alerts, limit, fetch_start_time, last_id_fetched)
     demisto.debug(f'last fetch now is: {last_fetch}, last id fetched is now: {last_id_fetched}, '
-                  f'number of incidents fetched is {len(incidents)}')
+                  f'number of incidents fetched is {len(incidents)}, number of alerts got is {len(alerts)}')
 
     demisto.setLastRun({'last_fetch': str(date_to_timestamp(last_fetch, DATE_FORMAT)), 'last_id_fetched': last_id_fetched})
     return incidents
