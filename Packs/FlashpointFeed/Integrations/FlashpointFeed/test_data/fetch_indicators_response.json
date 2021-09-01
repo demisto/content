@@ -92,6 +92,48 @@
         },
         {
           "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Execution through API - T1106\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Execution through Module Load - T1129\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Process Discovery - T1057\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "Software Packing - T1045",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-course-of-action=\"Process Injection Mitigation - T1055\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
           "is_galaxy": false,
           "local": 0,
           "name": "os:windows",
