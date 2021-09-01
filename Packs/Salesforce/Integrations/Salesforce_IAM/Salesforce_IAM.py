@@ -407,7 +407,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            active=res.get('IsActive'),   # TODO - finish fixes and open PR
+                                            active=res.get('IsActive'),
                                             action=action,
                                             details=res
                                             )

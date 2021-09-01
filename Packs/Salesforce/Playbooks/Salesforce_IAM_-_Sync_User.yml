@@ -720,6 +720,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      allow-enable:
+        simple: "false"
       retry-count:
         simple: "3"
       retry-interval:
