@@ -15,18 +15,10 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: "username"
-  display: User Name
-  additionalinfo: The given username to use for NucleonCyber API connection
-  name: username
+- display: Username
+  name: credentials
+  type: 9
   required: true
-  type: 0
-- defaultvalue: "password"
-  display: Password
-  additionalinfo: The given password to use for NucleonCyber API connection
-  name: password
-  required: true
-  type: 0
 - defaultvalue: "usrn"
   display: Usrn
   additionalinfo: The given usrn to use for NucleonCyber API connection

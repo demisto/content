@@ -1,5 +1,5 @@
-from typing import Dict, List, Optional
 import urllib3
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -46,7 +46,7 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}') from err
         return result
 
-    def get_hashes(self, params: Dict[str, str], limit: int) -> List:
+    def get_hashes(self) -> List:
         json_payload = self._http_request('GET', full_url="http://api.cybercure.ai/feed/get_hash")
         result = []
         all_urls = json_payload.get("data").get("hash")
@@ -59,7 +59,7 @@ class Client(BaseClient):
             )
         return result
 
-    def get_urls(self, limit: int) -> List:
+    def get_urls(self) -> List:
         json_payload = self._http_request('GET', full_url="http://api.cybercure.ai/feed/get_url")
         result = []
         response_data = json_payload.get("data")
@@ -75,8 +75,9 @@ class Client(BaseClient):
         return result
 
     def get_ips(self, params: Dict[str, str], limit: int) -> List:
-        global_username = params.get('username')
-        global_password = params.get('password')
+        credentials = params.get('credentials', dict())
+        global_username = credentials.get('identifier')
+        global_password = credentials.get('password')
         global_usrn = params.get('usrn')
         global_client_id = params.get('clientid')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
@@ -119,19 +120,7 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client) -> str:
-    """Builds the iterator to check that the feed is accessible.
-    Args:
-        client: Client object.
-    Returns:
-        Outputs.
-    """
-    client.build_iterator()
-    return 'ok'
-
-
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
-        -> List[Dict]:
+def fetch_indicators(client: Client, tlp_color: Optional[str], feed_tags: List, limit: int = -1) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -165,17 +154,20 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         bruteForce_ = item.get('bruteForce')
         sourceCountry_ = item.get('sourceCountry')
         tags_name = {
-            'nucleon_botnet': bot_,
-            'nucleon_darknet': darknet_,
-            'nucleon_cnc': cnc_,
-            'nucleon_proxy': proxy_,
-            'nucleon_automated': automated_,
-            'nucleon_bruteForce': bruteForce_,
-            'nucleon_governments': governments_,
+            'botnet': bot_,
+            'darknet': darknet_,
+            'cnc': cnc_,
+            'automated': automated_,
+            'bruteForce': bruteForce_,
         }
         for tag_name, tag_value in tags_name.items():
-            if (isinstance(tag_value, str) and tag_value == 'true') or (isinstance(tag_value, bool) and tag_value is True):
+            if (isinstance(tag_value, str) and tag_value == 'true') or (
+                    isinstance(tag_value, bool) and tag_value is True):
                 tags_.append(tag_name)
+
+        if segment_:
+            tags_.append(segment_)
+
         raw_data = {
             'value': value_,
             'type': type_,
@@ -205,39 +197,21 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             # The indicator type as defined in Cortex XSOAR.
             # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
             'type': type_,
-            'segment': segment_,
-            'targetCountry': targetCountry_,
-            'os': os_,
-            'osVersion': osVersion_,
-            'governments': governments_,
-            'port': port_,
-            'darknet': darknet_,
-            'botnet': bot_,
-            'cnc': cnc_,
-            'proxy': proxy_,
-            'automated': automated_,
-            'bruteForce': bruteForce_,
-            'sourceCountry': sourceCountry_,
             # The name of the service supplying this feed.
             'service': 'NucleonCyberFeed',
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
             # One can use this section in order to map custom indicator fields previously defined
             # in Cortex XSOAR to their values.
-
-            'fields': {
-                'osversion': osVersion_,
-                'os': os_,
-                'port': port_,
-                'nucleonsegment': segment_,
-                'targetCountry': targetCountry_,
-                'tags': tags_,
-            },
             # A dictionary of the raw data returned from the feed source about the indicator.
+            'fields': {},
             'rawJSON': raw_data
         }
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        if feed_tags or tags_:
+            indicator_obj['fields']['tags'] = feed_tags + tags_
 
         indicators.append(indicator_obj)
 
@@ -253,8 +227,7 @@ def fetch_hashes(client: Client, limit: int = -1) \
     Returns:
         Indicators.
     """
-    params = demisto.params()
-    iterator = client.get_hashes(params, limit)
+    iterator = client.get_hashes()
 
     indicators = []
 
@@ -303,7 +276,7 @@ def fetch_urls(client: Client, limit: int = -1) \
     Returns:
         Indicators.
     """
-    iterator = client.get_urls(limit)
+    iterator = client.get_urls()
 
     indicators = []
 
@@ -455,29 +428,12 @@ def main():
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
-
-    # Get the service API url
-    base_url = params.get('url')
-
-    # If your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    insecure = not params.get('insecure', False)
-
-    # If your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get('proxy', False)
-
     command = demisto.command()
     args = demisto.args()
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
+    base_url = params.get('url')
+    insecure = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     try:
         client = Client(
@@ -486,18 +442,15 @@ def main():
             proxy=proxy,
         )
         if command == 'test-module':
-            # return_results(client.get_ips(params, 10))
+            client.get_ips(params, 10)
             demisto.results('ok')
         if command == 'nucleon-get-indicators':
-            type = args.get('type')
-            if type == 'ip':
-                return_results(get_indicators_command(client, params, args))
-            elif type == 'hash':
+            type_ = args.get('type')
+            if type_ == 'hash':
                 return_results(get_hashes_command(client, args))
-            elif type == 'url':
+            elif type_ == 'url':
                 return_results(get_urls_command(client, args))
             else:
-                # return_error(f'########\n{params=}\n{args=}\nwe are inside else')
                 return_results(get_indicators_command(client, params, args))
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
@@ -514,7 +467,10 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        err_msg: str = str(e)
+        if 'Error in API call [401]' in err_msg:
+            err_msg = 'Unauthorized. Make sure your credentials are correct.'
+        return_error(f'Failed to execute {command} command.\nError:\n{err_msg}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
