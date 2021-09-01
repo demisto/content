@@ -94,17 +94,21 @@ class Client(BaseClient):
         if not tags:
             return []
 
+        my_tags = [tag for tag in tags if tag.get('is_galaxy')]
         relationships = []
-        for tag in tags:
+        for tag in my_tags:
             entity_b = tag.get('name')
             if entity_b:
+                if 'misp-galaxy:mitre-enterprise-attack' in entity_b:
+                    name = entity_b.split("=")
+                    entity_b = name[1].replace('\"', "")
+
                 obj = EntityRelationship(
                     name=EntityRelationship.Relationships.INDICATOR_OF,
                     entity_a=entity_a,
                     entity_a_type=entity_a_type,
                     entity_b=entity_b,
-                    entity_b_type='Flashpoint Indicator',
-                    brand="FlashpointFeed"
+                    entity_b_type='Attack Pattern'
                 )
                 obj = obj.to_indicator()
                 relationships.append(obj)
@@ -302,20 +306,16 @@ def test_module(client: Client, params: dict) -> str:
         Outputs.
     """
     client.http_request(url_suffix='/indicators/attribute', params={"limit": 1})
-    is_fetch = params.get('feed')
-    if is_fetch:
-        fetch_indicators_command(client, params, {}, True, False)
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, params: dict, args: dict, is_test: bool, is_get: bool) -> List:
+def fetch_indicators_command(client: Client, params: dict, args: dict, is_get: bool) -> List:
     """
     Function to fetch the indicators
 
     :param client: Client object
     :param params: Dictionary of parameters
     :param args: Dictionary of arguments
-    :param is_test: Whether this request is from test_module command or not
     :param is_get: Whether this request is from flashpoint-get-indicators command or not
 
     :return: List of indicators
@@ -327,9 +327,6 @@ def fetch_indicators_command(client: Client, params: dict, args: dict, is_test: 
         context = get_integration_context()
         if context.get('last_fetch'):
             fetch_params['updated_since'] = context.get('last_fetch')
-
-    if is_test:
-        return []
 
     response = client.fetch_indicators(fetch_params)
     indicators = client.create_indicators_from_response(response, fetch_params['updated_since'], params, is_get)
@@ -347,7 +344,7 @@ def get_indicators_command(client: Client, params: dict, args: dict) -> CommandR
 
     :return: Standard Command Result
     """
-    indicators = fetch_indicators_command(client, params, args, False, True)
+    indicators = fetch_indicators_command(client, params, args, True)
     if not indicators:
         return CommandResults(readable_output=MESSAGES['NO_INDICATORS_FOUND'])
 
@@ -393,7 +390,7 @@ def main():
             return_results(test_module(client, params))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params, args, False, False)
+            indicators = fetch_indicators_command(client, params, args, False)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 

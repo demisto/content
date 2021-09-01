@@ -126,7 +126,7 @@ def test_fetch_indicators_command_when_valid_response_is_returned(mocker_http_re
     indicators = util_load_json('test_data/fetch_indicators.json')
 
     params = PARAMS
-    assert fetch_indicators_command(client, params, {}, False, False) == indicators
+    assert fetch_indicators_command(client, params, {}, False) == indicators
 
 
 def test_validate_get_indicators_params_when_valid_params_are_provided():

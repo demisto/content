@@ -172,7 +172,7 @@ script:
       of the fetch-indicators command.
     execution: false
     name: flashpoint-get-indicators
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: true
   isfetch: false
   longRunning: false
