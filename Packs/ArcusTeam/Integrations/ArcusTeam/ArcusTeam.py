@@ -60,6 +60,13 @@ class Client(BaseClient):
                 "returnFields": returnFields,
             })
 
+    def get_authentication_token(self, authentication_url: str, headers: Dict, payload: Dict):
+        return self._http_request(
+            method='POST',
+            full_url=authentication_url,
+            headers=headers,
+            data=payload
+        )
 
 def deviceToMarkdown(device):
     nl = '\n'
