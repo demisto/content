@@ -50,8 +50,8 @@ tasks:
     task:
       id: 97beb953-6513-4650-8c99-b66cb37e24cc
       version: -1
-      name: 'Block Domain - Symantec Messaging Gateway '
-      playbookName: 'Block Domain - Symantec Messaging Gateway '
+      name: Block Domain - Symantec Messaging Gateway
+      playbookName: Block Domain - Symantec Messaging Gateway
       type: playbook
       iscommand: false
       brand: ""
