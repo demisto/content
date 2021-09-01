@@ -294,7 +294,7 @@ def prettify_report_entry(file_info):
     return pretty_report
 
 
-def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
+def create_file_report(file_hash: str, reports, file_info, format_: str = 'pdf', verbose: bool = False):
     outputs, feed_related_indicators, behavior = parse_file_report(reports, file_info)
 
     dbot_score = 3 if file_info["malware"] == 'yes' else 1
@@ -306,28 +306,20 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
                        feed_related_indicators=feed_related_indicators, tags=['malware'], behaviors=behavior)
 
-    if format_ == 'pdf':
-        get_report_uri = URL + URL_DICT["report"]
-        params = {
-            'apikey': TOKEN,
-            'format': 'pdf',
-            'hash': file_hash
-        }
+    get_report_uri = URL + URL_DICT["report"]
+    params = {
+        'apikey': TOKEN,
+        'format': 'pdf',
+        'hash': file_hash
+    }
 
-        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
+    res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
 
-        file_name = 'wildfire_report_' + file_hash + '.pdf'
-        file_type = entryTypes['entryInfoFile']
-        result = fileResult(file_name, res_pdf.content, file_type)  # will be saved under 'InfoFile' in the context.
-        demisto.results(result)
-        human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
-
-    else:
-        human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
-        if verbose:
-            for report in reports:
-                if isinstance(report, dict):
-                    human_readable += tableToMarkdown('Report ', report, list(report), removeNull=True)
+    file_name = 'wildfire_report_' + file_hash + '.pdf'
+    file_type = entryTypes['entryInfoFile']
+    result = fileResult(file_name, res_pdf.content, file_type)  # will be saved under 'InfoFile' in the context.
+    demisto.results(result)
+    human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
 
     return human_readable, outputs, file
 
@@ -347,11 +339,9 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         file_info = json_res.get('wildfire').get('file_info')
 
         verbose = args.get('verbose', 'false').lower() == 'true'
-        format_ = args.get('format', 'xml')
 
         if reports and file_info:
-            human_readable, entry_context, indicator = create_file_report(file_hash, reports, file_info, format_,
-                                                                          verbose)
+            human_readable, entry_context, indicator = create_file_report(file_hash, reports, file_info, 'pdf', verbose)
 
         else:
             entry_context['Status'] = 'Pending'
