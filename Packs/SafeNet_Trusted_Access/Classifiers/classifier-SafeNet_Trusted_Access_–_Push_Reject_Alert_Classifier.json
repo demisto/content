@@ -1,7 +1,7 @@
 {
     "description": "Classifies SafeNet Trusted Access alerts.",
     "feed": false,
-    "id": "b3e49867-6677-42eb-808d-5ba1b25d5e6d",
+    "id": "SafeNet Trusted Access – Push Reject Alert Classifier",
     "keyTypeMap": {
         "Fwd: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
         "Push Notification Rejection Alert": "SafeNet Trusted Access Alert",

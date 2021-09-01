@@ -3,7 +3,7 @@
     "feed": false,
     "id": "SafeNet Trusted Access – Push Reject Alert Mapper",
     "mapping": {
-        "dbot_classification_incident_type_all": {
+        "SafeNet Trusted Access Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "SafeNet Trusted Access - Instance Name": {
@@ -107,10 +107,75 @@
                         ]
                     },
                     "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "SafeNet Trusted Access - Instance Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Instance name:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
-                "severity": {
-                    "complex": null,
-                    "simple": "2"
+                "SafeNet Trusted Access - Username": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "user account"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "in organization"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 }
             }
         }

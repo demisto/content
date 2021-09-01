@@ -1,4 +1,4 @@
-Post processing script to remove the user from the High Risk group on Close Form.
+Post processing script to remove the user from the Unusual Activity Group on Close Form.
 
 ## Script Data
 ---
@@ -6,7 +6,7 @@ Post processing script to remove the user from the High Risk group on Close Form
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | post-processing |
+| Tags | post-processing, field-change-triggered |
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs

@@ -43,7 +43,7 @@ script:
     - contextPath: STA.USER.ID
       description: User ID of the user.
       type: string
-    - contextPath: STA.USER.SCHEMA.VERSION
+    - contextPath: STA.USER.SCHEMA
       description: Schema version number.
       type: string
     - contextPath: STA.USER.USERNAME
@@ -102,7 +102,7 @@ script:
     - contextPath: STA.USER.ID
       description: User ID of the user.
       type: string
-    - contextPath: STA.USER.SCHEMA.VERSION
+    - contextPath: STA.USER.SCHEMA
       description: Schema version number.
       type: string
     - contextPath: STA.USER.USERNAME
@@ -202,7 +202,7 @@ script:
     - contextPath: STA.USER.ID
       description: User ID of the user.
       type: string
-    - contextPath: STA.USER.SCHEMA.VERSION
+    - contextPath: STA.USER.SCHEMA
       description: Schema version number.
       type: string
     - contextPath: STA.USER.USERNAME
@@ -287,7 +287,7 @@ script:
     - contextPath: STA.USER.ID
       description: User ID of the user.
       type: string
-    - contextPath: STA.USER.SCHEMA.VERSION
+    - contextPath: STA.USER.SCHEMA
       description: Schema version number.
       type: string
     - contextPath: STA.USER.USERNAME
@@ -346,9 +346,15 @@ script:
     execution: true
     name: sta-delete-user
     outputs:
-    - contextPath: STA.USER.DELETE
-      description: User deleted from the tenant.
+    - contextPath: STA.USER.ID
+      description: User ID of the user to be deleted from the tenant.
       type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user to be deleted from the tenant.
+      type: string
+    - contextPath: STA.USER.DELETED
+      description: Returns true, if the user deleted from the tenant.
+      type: boolean
   - arguments:
     - description: Username of the user.
       name: userName
@@ -468,9 +474,15 @@ script:
     execution: true
     name: sta-delete-group
     outputs:
-    - contextPath: STA.DELETE.GROUP
-      description: Group successfully deleted.
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group to be deleted.
       type: string
+    - contextPath: STA.GROUP.GROUPNAME
+      description: Name of the group to be deleted.
+      type: string
+    - contextPath: STA.GROUP.DELETED
+      description: Returns true, if the group deleted from the tenant.
+      type: boolean
   - arguments:
     - description: Name of the group to be updated.
       name: groupName
@@ -507,8 +519,9 @@ script:
     description: Check if user exists in a specific group.
     name: sta-user-exist-group
     outputs:
-    - contextPath: STA.USER.EXIST.GROUP
-      description: Check if user exists in group.
+    - contextPath: STA.EXIST.USER.GROUP
+      description: Check if user exists in group. Returns true, if the user is a member
+        of the group.
       type: boolean
   - arguments:
     - description: User name of the user to be added.
@@ -520,9 +533,21 @@ script:
     description: Add user to a specific group.
     name: sta-add-user-group
     outputs:
-    - contextPath: STA.ADD.USER.GROUP
-      description: User successfully added to the group.
+    - contextPath: STA.UPDATE.USER.GROUP.USERID
+      description: User ID of the user.
       type: string
+    - contextPath: STA.UPDATE.USER.GROUP.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPNAME
+      description: Groupname of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.STATUS
+      description: Returns true, if the user successfully added to the group.
+      type: boolean
   - arguments:
     - description: User name of the user to be deleted from the group.
       name: userName
@@ -533,46 +558,80 @@ script:
     description: Remove user from a group.
     name: sta-remove-user-group
     outputs:
-    - contextPath: STA.REMOVE.USER.GROUP
-      description: User successfully removed from the group.
+    - contextPath: STA.UPDATE.USER.GROUP.USERID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPNAME
+      description: Groupname of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.STATUS
+      description: Returns false, if the user successfully removed from the group.
+      type: boolean
   - arguments:
     - description: Username of the user.
       name: userName
-    - description: 'Filter logs since the specified date and time in Universal Time Coordinated time zone.
-        Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z'
+    - description: 'Filter logs since the specified date and time in Universal Time
+        Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z'
       name: since
-    - description: 'Filter logs until the specified date and time in Universal Time Coordinated time zone.
-        Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z'
+    - description: 'Filter logs until the specified date and time in Universal Time
+        Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z'
       name: until
     - description: The maximum number of results to return.
       name: limit
-    description: Fetch the access logs.
-    name: sta-get-access-logs
+    description: Get access, authentication, and audit logs.
+    name: sta-get-logs
     outputs:
     - contextPath: STA.LOGS.TIMESTAMP
       description: Timestamp of event.
-      type: date
+      type: string
     - contextPath: STA.LOGS.USERNAME
       description: Username of the user.
       type: string
-    - contextPath: STA.LOGS.RESULT
-      description: Result of the event.
-      type: string
     - contextPath: STA.LOGS.TYPE
-      description: Authentication type.
+      description: Type of event log.
       type: string
-    - contextPath: STA.LOGS.IP
-      description: IP of the user.
-      type: string
-    - contextPath: STA.LOGS.MESSAGE
-      description: Authentication message.
+    - contextPath: STA.LOGS.CREDENTIAL
+      description: Credential type of the event.
       type: string
     - contextPath: STA.LOGS.ACTION
-      description: Action type of the event.
+      description: Authentication action.
+      type: string
+    - contextPath: STA.LOGS.RESULT
+      description: Authentication Action Result.
+      type: string
+    - contextPath: STA.LOGS.MESSAGE
+      description: Message or description of the event.
+      type: string
+    - contextPath: STA.LOGS.APPLICATION
+      description: Application name.
+      type: string
+    - contextPath: STA.LOGS.POLICY
+      description: Policy applied for the application.
+      type: string
+    - contextPath: STA.LOGS.STATE
+      description: State of the access request.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONTYPE
+      description: Operation type.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONOBJECT
+      description: Operation object type.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONNAME
+      description: Operation object name.
       type: string
     - contextPath: STA.LOGS.SERIAL
-      description: Authentication serial number.
-      type: number
+      description: Serial number of authentication.
+      type: string
+    - contextPath: STA.LOGS.IP
+      description: IP address of the user.
+      type: string
   - arguments: []
     description: Checks if you have permission to access the requested tenant.
     name: sta-validate-tenant
@@ -580,7 +639,7 @@ script:
     - contextPath: STA.VALIDATE.TENANT
       description: Checks if you have permission to access the requested tenant.
       type: boolean
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   runonce: false
   script: ''
   subtype: python3

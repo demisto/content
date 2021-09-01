@@ -23,7 +23,7 @@ Get list of users in the tenant.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | STA.USER.ID | string | User ID of the user. | 
-| STA.USER.SCHEMA.VERSION | string | Schema version number. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
 | STA.USER.USERNAME | string | Username of the user. | 
 | STA.USER.FIRSTNAME | string | First name of the user. | 
 | STA.USER.LASTNAME | string | Last name of the user. | 
@@ -42,7 +42,7 @@ Get list of users in the tenant.
 
 
 #### Command Example
-```!sta-get-user-list limit=10```
+```!sta-get-user-list```
 
 #### Context Example
 ```json
@@ -101,7 +101,7 @@ Get the profile information for a specific user.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | STA.USER.ID | string | User ID of the user. | 
-| STA.USER.SCHEMA.VERSION | string | Schema version number. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
 | STA.USER.USERNAME | string | Username of the user. | 
 | STA.USER.FIRSTNAME | string | First name of the user. | 
 | STA.USER.LASTNAME | string | Last name of the user. | 
@@ -185,7 +185,7 @@ Create new user in the tenant
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | STA.USER.ID | string | User ID of the user. | 
-| STA.USER.SCHEMA.VERSION | string | Schema version number. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
 | STA.USER.USERNAME | string | Username of the user. | 
 | STA.USER.FIRSTNAME | string | First name of the user. | 
 | STA.USER.LASTNAME | string | Last name of the user. | 
@@ -214,7 +214,7 @@ Create new user in the tenant
         "USER": {
             "email": "test.user@demisto.com",
             "firstName": "User",
-            "id": "iNlUrf8RIazgkpeUDHEAAAAc",
+            "id": "iNlsjym+x1MLesvCSusAAAAc",
             "isSynchronized": false,
             "lastName": "Test",
             "schemaVersionNumber": "1.0",
@@ -229,7 +229,7 @@ Create new user in the tenant
 >### STA user successfully created :
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | usertest123 | User | Test | test.user@demisto.com | false |
+>| iNlsjym+x1MLesvCSusAAAAc | 1.0 | usertest123 | User | Test | test.user@demisto.com | false |
 
 
 ### sta-update-user-info
@@ -264,7 +264,7 @@ Update the profile for a specific user.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | STA.USER.ID | string | User ID of the user. | 
-| STA.USER.SCHEMA.VERSION | string | Schema version number. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
 | STA.USER.USERNAME | string | Username of the user. | 
 | STA.USER.FIRSTNAME | string | First name of the user. | 
 | STA.USER.LASTNAME | string | Last name of the user. | 
@@ -284,7 +284,7 @@ Update the profile for a specific user.
 
 
 #### Command Example
-```!sta-update-user-info userName="usertest123" userName_new="testuser" first_name="Demo" last_name="Name"```
+```!sta-update-user-info userName="usertest123" userName_new="testuser1" first_name="Demo" last_name="Name"```
 
 #### Context Example
 ```json
@@ -293,11 +293,11 @@ Update the profile for a specific user.
         "USER": {
             "email": "test.user@demisto.com",
             "firstName": "Demo",
-            "id": "iNlUrf8RIazgkpeUDHEAAAAc",
+            "id": "iNlsjym+x1MLesvCSusAAAAc",
             "isSynchronized": false,
             "lastName": "Name",
             "schemaVersionNumber": "1.0",
-            "userName": "testuser"
+            "userName": "testuser1"
         }
     }
 }
@@ -308,7 +308,7 @@ Update the profile for a specific user.
 >### STA user successfully updated:
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | testuser | Demo | Name | test.user@demisto.com | false |
+>| iNlsjym+x1MLesvCSusAAAAc | 1.0 | testuser1 | Demo | Name | test.user@demisto.com | false |
 
 
 ### sta-delete-user
@@ -330,26 +330,30 @@ Delete user from the tenant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.USER.DELETE | string | User deleted from the tenant. | 
+| STA.USER.ID | string | User ID of the user to be deleted from the tenant. | 
+| STA.USER.USERNAME | string | Username of the user to be deleted from the tenant. | 
+| STA.USER.DELETED | boolean | Returns true, if the user deleted from the tenant. | 
 
 
 #### Command Example
-```!sta-delete-user userName="testuser"```
+```!sta-delete-user userName="testuser1"```
 
 #### Context Example
 ```json
 {
     "STA": {
         "USER": {
-            "DELETE": 204
+            "Deleted": true,
+            "id": "iNlsjym+x1MLesvCSusAAAAc",
+            "userName": "testuser1"
         }
     }
 }
-```
+`````
 
 #### Human Readable Output
 
->## STA user - testuser successfully deleted.
+>## STA user - testuser1 successfully deleted.
 
 ### sta-get-user-groups
 ***
@@ -387,10 +391,10 @@ Return all the groups associated with a specific user.
     "STA": {
         "GROUP": [
             {
-                "description": "High Risk Group for Testing",
+                "description": "Unusual Activity Group for Testing",
                 "id": "50331650",
                 "isSynchronized": false,
-                "name": "Test Group",
+                "name": "TestUnusualActivityGroup",
                 "schemaVersionNumber": "1.0"
             },
             {
@@ -410,7 +414,7 @@ Return all the groups associated with a specific user.
 >### Groups associated with user - hellouser : 
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331650 | 1.0 | Test Group | High Risk Group for Testing | false |
+>| 50331650 | 1.0 | TestUnusualActivityGroup | Unusual Activity Group for Testing | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -441,7 +445,7 @@ Get list of groups in the tenant.
 
 
 #### Command Example
-```!sta-get-group-list limit=5```
+```!sta-get-group-list```
 
 #### Context Example
 ```json
@@ -456,10 +460,10 @@ Get list of groups in the tenant.
                 "schemaVersionNumber": "1.0"
             },
             {
-                "description": "High Risk Group for Testing",
+                "description": "Unusual Activity Group for Testing",
                 "id": "50331650",
                 "isSynchronized": false,
-                "name": "Test Group",
+                "name": "TestUnusualActivityGroup",
                 "schemaVersionNumber": "1.0"
             },
             {
@@ -480,7 +484,7 @@ Get list of groups in the tenant.
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
 >| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
->| 50331650 | 1.0 | Test Group | High Risk Group for Testing | false |
+>| 50331650 | 1.0 | TestUnusualActivityGroup | Unusual Activity Group for Testing | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -572,7 +576,7 @@ Get list of users in a specific group.
             {
                 "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
                 "links": {
-                    "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
+                    "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
                 },
                 "name": "demouser",
                 "type": "User"
@@ -580,7 +584,7 @@ Get list of users in a specific group.
             {
                 "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
                 "links": {
-                    "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
+                    "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
                 },
                 "name": "hellouser",
                 "type": "User"
@@ -636,7 +640,7 @@ Create a new group in the tenant.
     "STA": {
         "GROUP": {
             "description": "Group description.",
-            "id": "16777225",
+            "id": "16777228",
             "isSynchronized": false,
             "name": "TestGroup2",
             "schemaVersionNumber": "1.0"
@@ -650,7 +654,7 @@ Create a new group in the tenant.
 >### STA group - TestGroup2 successfully created:
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 16777225 | 1.0 | TestGroup2 | Group description. | false |
+>| 16777228 | 1.0 | TestGroup2 | Group description. | false |
 
 
 ### sta-delete-group
@@ -672,7 +676,9 @@ Delete group from the tenant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.DELETE.GROUP | string | Group successfully deleted. | 
+| STA.GROUP.ID | string | Group ID of the group to be deleted. | 
+| STA.GROUP.GROUPNAME | string | Name of the group to be deleted. | 
+| STA.GROUP.DELETED | boolean | Returns true, if the group deleted from the tenant. | 
 
 
 #### Command Example
@@ -682,8 +688,10 @@ Delete group from the tenant.
 ```json
 {
     "STA": {
-        "DELETE": {
-            "GROUP": 204
+        "GROUP": {
+            "Deleted": true,
+            "groupName": "TestGroup2",
+            "id": "16777228"
         }
     }
 }
@@ -767,7 +775,7 @@ Check if user exists in a specific group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.USER.EXIST.GROUP | string | Check if user exists in group. | 
+| STA.EXIST.USER.GROUP | boolean | Check if user exists in group. Returns true, if the user is a member of the group. | 
 
 
 #### Command Example
@@ -777,8 +785,8 @@ Check if user exists in a specific group.
 ```json
 {
     "STA": {
-        "USER": {
-            "EXIST": {
+        "EXIST": {
+            "USER": {
                 "GROUP": true
             }
         }
@@ -810,7 +818,11 @@ Add user to a specific group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.ADD.USER.GROUP | string | User successfully added to the group. | 
+| STA.UPDATE.USER.GROUP.USERID | string | User ID of the user. | 
+| STA.UPDATE.USER.GROUP.USERNAME | string | Username of the user. | 
+| STA.UPDATE.USER.GROUP.GROUPID | string | Group ID of the group. | 
+| STA.UPDATE.USER.GROUP.GROUPNAME | string | Groupname of the group. | 
+| STA.UPDATE.USER.GROUP.STATUS | boolean | Returns true, if the user successfully added to the group. | 
 
 
 #### Command Example
@@ -820,9 +832,15 @@ Add user to a specific group.
 ```json
 {
     "STA": {
-        "ADD": {
+        "UPDATE": {
             "USER": {
-                "GROUP": 200
+                "GROUP": {
+                    "groupName": "TestGroup1",
+                    "group_id": "50331649",
+                    "status": true,
+                    "userName": "hellouser",
+                    "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"
+                }
             }
         }
     }
@@ -853,7 +871,11 @@ Remove user from a group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.REMOVE.USER.GROUP | unknown | User successfully removed from the group. | 
+| STA.UPDATE.USER.GROUP.USERID | string | User ID of the user. | 
+| STA.UPDATE.USER.GROUP.USERNAME | string | Username of the user. | 
+| STA.UPDATE.USER.GROUP.GROUPID | string | Group ID of the group. | 
+| STA.UPDATE.USER.GROUP.GROUPNAME | string | Groupname of the group. | 
+| STA.UPDATE.USER.GROUP.STATUS | boolean | Returns false, if the user successfully removed from the group. | 
 
 
 #### Command Example
@@ -863,9 +885,15 @@ Remove user from a group.
 ```json
 {
     "STA": {
-        "REMOVE": {
+        "UPDATE": {
             "USER": {
-                "GROUP": 204
+                "GROUP": {
+                    "groupName": "TestGroup1",
+                    "group_id": "50331649",
+                    "status": false,
+                    "userName": "hellouser",
+                    "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"
+                }
             }
         }
     }
@@ -876,21 +904,21 @@ Remove user from a group.
 
 >## User - hellouser successfully removed from the group - TestGroup1.
 
-### sta-get-access-logs
+### sta-get-logs
 ***
-Fetch the access logs.
+Get access, authentication, and audit logs.
 
 
 #### Base Command
 
-`sta-get-access-logs`
+`sta-get-logs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | Username of the user. | Optional | 
-| since | Filter logs since the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z. | Optional | 
-| till | Filter logs until the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z. | Optional | 
+| since | Filter logs since the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z | Optional | 
+| until | Filter logs until the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z | Optional | 
 | limit | The maximum number of results to return. | Optional | 
 
 
@@ -898,45 +926,95 @@ Fetch the access logs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.LOGS.TIMESTAMP | date | Timestamp of event. | 
+| STA.LOGS.TIMESTAMP | string | Timestamp of event. | 
 | STA.LOGS.USERNAME | string | Username of the user. | 
-| STA.LOGS.RESULT | string | Result of the event. | 
-| STA.LOGS.TYPE | string | Authentication type. | 
-| STA.LOGS.IP | string | IP of the user. | 
-| STA.LOGS.MESSAGE | string | Authentication message. | 
-| STA.LOGS.ACTION | string | Action type of the event. | 
-| STA.LOGS.SERIAL | number | Authentication serial number. | 
+| STA.LOGS.TYPE | string | Type of event log. | 
+| STA.LOGS.CREDENTIAL | string | Credential type of the event. | 
+| STA.LOGS.ACTION | string | Authentication action. | 
+| STA.LOGS.RESULT | string | Authentication Action Result. | 
+| STA.LOGS.MESSAGE | string | Message or description of the event. | 
+| STA.LOGS.APPLICATION | string | Application name. | 
+| STA.LOGS.POLICY | string | Policy applied for the application. | 
+| STA.LOGS.STATE | string | State of the access request. | 
+| STA.LOGS.OPERATIONTYPE | string | Operation type. | 
+| STA.LOGS.OPERATIONOBJECT | string | Operation object type. | 
+| STA.LOGS.OPERATIONNAME | string | Operation object name. | 
+| STA.LOGS.SERIAL | string | Serial number of authentication. | 
+| STA.LOGS.IP | string | IP address of the user. | 
 
 
 #### Command Example
-```!sta-get-access-logs userName="demouser" since="2021-07-21T12:22:16.718Z"```
+```!sta-get-logs userName="demouser" since="2021-07-21T12:22:16.718Z"```
 
 #### Context Example
 ```json
 {
     "STA": {
-        "LOGS": {
-            "actionText": "AUTH_ATTEMPT",
-            "credentialType": "MobilePASS",
-            "ip": "8.8.8.8",
-            "message": "Login from SafeNet Authentication Service Console.",
-            "resultText": "AUTH_SUCCESS",
-            "serial": "1000014514",
-            "timeStamp": "2021-07-22T09:20:21.1356016Z",
-            "userName": "demouser"
-        }
+        "LOGS": [
+            {
+                "actionText": "AUTH_ATTEMPT",
+                "applicationName": "",
+                "credentialType": "MobilePASS",
+                "ip": "165.225.104.81",
+                "logType": "AUTHENTICATION",
+                "message": "Login from SafeNet Authentication Service Console.",
+                "operationObjectName": "",
+                "operationObjectType": "",
+                "operationType": "",
+                "policyName": "",
+                "resultText": "CHALLENGE",
+                "serial": "1000014514",
+                "state": "",
+                "timeStamp": "2021-07-22T08:19:05.5905986Z",
+                "userName": "demouser"
+            },
+            {
+                "actionText": "AUTH_ATTEMPT",
+                "applicationName": "",
+                "credentialType": "MobilePASS",
+                "ip": "165.225.104.81",
+                "logType": "AUTHENTICATION",
+                "message": "Login from SafeNet Authentication Service Console.",
+                "operationObjectName": "",
+                "operationObjectType": "",
+                "operationType": "",
+                "policyName": "",
+                "resultText": "AUTH_SUCCESS",
+                "serial": "1000014514",
+                "state": "",
+                "timeStamp": "2021-07-22T08:20:45.5326006Z",
+                "userName": "demouser"
+            },
+            {
+                "actionText": "",
+                "applicationName": "",
+                "credentialType": "otp",
+                "ip": "165.225.104.81",
+                "logType": "OPERATOR_LOGIN",
+                "message": "",
+                "operationObjectName": "",
+                "operationObjectType": "",
+                "operationType": "",
+                "policyName": "",
+                "resultText": "",
+                "serial": "",
+                "state": "Accepted",
+                "timeStamp": "2021-07-22T08:20:45.638Z",
+                "userName": "demouser"
+            }
+        ]
     }
 }
 ```
 
 #### Human Readable Output
 
->### Access logs : 
->|Time Stamp|User Name|Action Text|Result Text|Credential Type|Message|Serial|Ip|
->|---|---|---|---|---|---|---|---|
->| 2021-07-22T08:19:05.5905986Z | demouser | AUTH_ATTEMPT | CHALLENGE | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
->| 2021-07-22T08:20:45.5326006Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
->| 2021-07-22T09:20:21.1356016Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
+>### Logs : 
+>|Time Stamp|User Name|Log Type|Credential Type|Action Text|Result Text|Message|State|Serial|Ip|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2021-07-22T08:19:05.5905986Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | CHALLENGE | Login from SafeNet Authentication Service Console. |  | 1000014514 | 165.225.104.81 |
+>| 2021-07-22T08:20:45.5326006Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | AUTH_SUCCESS | Login from SafeNet Authentication Service Console. |  | 1000014514 | 165.225.104.81 |
+>| 2021-07-22T08:20:45.638Z | demouser | OPERATOR_LOGIN | otp |  |  |  | Accepted |  | 165.225.104.81 |
 
 
 ### sta-validate-tenant
@@ -957,7 +1035,7 @@ Checks if you have permission to access the requested tenant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.VALIDATE.TENANT | string | Checks if you have permission to access the requested tenant. | 
+| STA.VALIDATE.TENANT | boolean | Checks if you have permission to access the requested tenant. | 
 
 
 #### Command Example

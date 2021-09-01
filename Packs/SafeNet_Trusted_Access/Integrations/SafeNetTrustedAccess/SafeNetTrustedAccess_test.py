@@ -1,5 +1,4 @@
 import pytest
-from requests import Response
 from SafeNetTrustedAccess import Client
 
 # Defining client object for mocker
@@ -57,12 +56,15 @@ update_user = {
     "userName": "testuser"
 }
 
-delete_user = Response()
-delete_user.status_code = 204
+delete_user = {
+    "Deleted": True,
+    "id": "iNlsjym+x1MLesvCSusAAAAc",
+    "userName": "testuser1"
+}
 
 user_groups = [
     {
-        "description": "High Risk Group for Testing",
+        "description": "Unusual Activity Group for Testing",
         "id": "50331650",
         "isSynchronized": False,
         "name": "Test Group",
@@ -86,7 +88,7 @@ group_list = [
         "schemaVersionNumber": "1.0"
     },
     {
-        "description": "High Risk Group for Testing",
+        "description": "Unusual Activity Group for Testing",
         "id": "50331650",
         "isSynchronized": False,
         "name": "Test Group",
@@ -113,7 +115,7 @@ group_members = [
     {
         "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
         "links": {
-            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
+            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=True"
         },
         "name": "demouser",
         "type": "User"
@@ -121,7 +123,7 @@ group_members = [
     {
         "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
         "links": {
-            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
+            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=True"
         },
         "name": "hellouser",
         "type": "User"
@@ -136,11 +138,14 @@ create_group = {
     "schemaVersionNumber": "1.0"
 }
 
-remove_user = Response()
-remove_user.status_code = 204
+delete_group = {
+    "Deleted": True,
+    "groupName": "TestGroup2",
+    "id": "16777228"
+}
 
 update_group = {
-    "description": "Description has been updated from XSOAR end.",
+    "description": "Description has been updated.",
     "id": "50331649",
     "isSynchronized": False,
     "name": "TestGroup1",
@@ -149,41 +154,38 @@ update_group = {
 
 user_exist_group = True
 
-add_user_group = Response()
-add_user_group.status_code = 200
+add_user_group = {
+    "groupName": "TestGroup1",
+    "group_id": "50331649",
+    "status": True,
+    "userName": "hellouser",
+    "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"
+}
 
-remove_user_group = Response()
-remove_user_group.status_code = 204
+remove_user_group = {
+    "groupName": "TestGroup1",
+    "group_id": "50331649",
+    "status": False,
+    "userName": "hellouser",
+    "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"
+}
 
-access_logs = [
+logs_result = [
     {
         "actionText": "AUTH_ATTEMPT",
+        "applicationName": "",
         "credentialType": "MobilePASS",
-        "ip": "8.8.8.8",
-        "message": "Login from SafeNet Authentication Service Console.",
+        "ip": "165.225.104.81",
+        "logType": "AUTHENTICATION",
+        "message": "Login from STA Console.",
+        "operationObjectName": "",
+        "operationObjectType": "",
+        "operationType": "",
+        "policyName": "",
         "resultText": "CHALLENGE",
         "serial": "1000014514",
+        "state": "",
         "timeStamp": "2021-07-22T08:19:05.5905986Z",
-        "userName": "demouser"
-    },
-    {
-        "actionText": "AUTH_ATTEMPT",
-        "credentialType": "MobilePASS",
-        "ip": "8.8.8.8",
-        "message": "Login from SafeNet Authentication Service Console.",
-        "resultText": "AUTH_SUCCESS",
-        "serial": "1000014514",
-        "timeStamp": "2021-07-22T08:20:45.5326006Z",
-        "userName": "demouser"
-    },
-    {
-        "actionText": "AUTH_ATTEMPT",
-        "credentialType": "MobilePASS",
-        "ip": "8.8.8.8",
-        "message": "Login from SafeNet Authentication Service Console.",
-        "resultText": "AUTH_SUCCESS",
-        "serial": "1000014514",
-        "timeStamp": "2021-07-22T09:20:21.1356016Z",
         "userName": "demouser"
     }
 ]
@@ -218,7 +220,6 @@ def test_get_userlist_sta_command(mocker, args, expected_output, expected_readab
     response = get_userlist_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
-    assert response.outputs_key_field[0] in expected_output[0]
     assert 'demouser' in response.readable_output
     assert 'hellouser' in response.readable_output
 
@@ -241,7 +242,6 @@ def test_get_user_info_sta_command(mocker, args, expected_output, expected_reada
     response = get_user_info_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
-    assert response.outputs_key_field[0] in expected_readable
     assert response.outputs['userName'] == args['userName']
     assert 'hellouser' in response.readable_output
 
@@ -263,7 +263,6 @@ def test_create_user_sta_command(mocker, args, expected_output, expected_readabl
     response = create_user_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
-    assert response.outputs_key_field[0] in expected_readable
     assert response.outputs['userName'] == args['userName']
     assert 'usertest123' in response.readable_output
 
@@ -285,16 +284,16 @@ def test_update_user_sta_command(mocker, args, expected_output, expected_readabl
     response = update_user_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
-    assert response.outputs_key_field[0] in expected_readable
     assert response.outputs['userName'] == args['userName_new']
 
 
 # Tests sta-delete-user command function.
 @pytest.mark.parametrize(
-    "args, expected_output",
+    "args, expected_output, expected_readable",
     [
-        ({'userName': 'testuser'},
-         {204})
+        ({'userName': 'testuser1'},
+         {"Deleted": True, "id": "iNlsjym+x1MLesvCSusAAAAc", "userName": "testuser1"},
+         {'STA user - testuser1 successfully deleted.'})
     ])
 def test_delete_user_sta_command(mocker, args, expected_output):
 
@@ -302,9 +301,8 @@ def test_delete_user_sta_command(mocker, args, expected_output):
     mocker.patch.object(client, 'delete_user_sta', return_value=delete_user)
     response = delete_user_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.USER.DELETE'
-    assert response.outputs == 204
-    assert 'testuser' in response.readable_output
+    assert response.outputs_prefix == 'STA.USER'
+    assert 'testuser1' in response.readable_output
 
 
 # Tests sta-get-user-groups command function.
@@ -312,12 +310,12 @@ def test_delete_user_sta_command(mocker, args, expected_output):
     "args, expected_output, expected_readable",
     [
         ({'userName': 'hellouser', 'limit': '5'},
-         [{"description": "High Risk Group for Testing", "id": "50331650", "isSynchronized": False,
+         [{"description": "Unusual Activity Group for Testing", "id": "50331650", "isSynchronized": False,
            "name": "Test Group", "schemaVersionNumber": "1.0"},
           {"description": "Group for testing.", "id": "50331652", "isSynchronized": False, "name": "TestGroup0",
            "schemaVersionNumber": "1.0"}],
          [{"id": "50331650", "schemaVersionNumber": "1.0", "name": "Test Group",
-           "description": "High Risk Group for Testing", "isSynchronized": False},
+           "description": "Unusual Activity Group for Testing", "isSynchronized": False},
           {"id": "50331652", "schemaVersionNumber": "1.0", "name": "TestGroup0", "description": "Group for testing.",
            "isSynchronized": False}]
          )
@@ -330,8 +328,6 @@ def test_get_user_groups_sta_command(mocker, args, expected_output, expected_rea
     response = get_user_groups_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
-    assert response.outputs_key_field[0] in expected_output[0]
-    assert response.outputs == expected_output
     assert 'Test Group' in response.outputs[0]['name']
     assert 'TestGroup0' in response.outputs[1]['name']
 
@@ -343,14 +339,14 @@ def test_get_user_groups_sta_command(mocker, args, expected_output, expected_rea
         ({'limit': '5'},
          [{"description": "Group for testing.", "id": "50331649", "isSynchronized": False,
            "name": "TestGroup1", "schemaVersionNumber": "1.0"},
-          {"description": "High Risk Group for Testing", "id": "50331650", "isSynchronized": False,
+          {"description": "Unusual Activity Group for Testing", "id": "50331650", "isSynchronized": False,
            "name": "Test Group", "schemaVersionNumber": "1.0"},
           {"description": "Group for testing.", "id": "50331652", "isSynchronized": False, "name": "TestGroup0",
            "schemaVersionNumber": "1.0"}],
          [{"id": "50331649", "schemaVersionNumber": "1.0", "name": "TestGroup1",
            "description": "Group for testing.", "isSynchronized": False},
           {"id": "50331650", "schemaVersionNumber": "1.0", "name": "Test Group",
-           "description": "High Risk Group for Testing", "isSynchronized": False},
+           "description": "Unusual Activity Group for Testing", "isSynchronized": False},
           {"id": "50331652", "schemaVersionNumber": "1.0", "name": "TestGroup0", "description": "Group for testing.",
            "isSynchronized": False}]
          )
@@ -363,11 +359,7 @@ def test_get_group_list_sta_command(mocker, args, expected_output, expected_read
     response = get_group_list_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
-    assert response.outputs_key_field[0] in expected_output[0]
-    assert len(response.outputs) <= int(args['limit'])
     assert 'TestGroup1' in response.outputs[0]['name']
-    assert 'Test Group' in response.outputs[1]['name']
-    assert 'TestGroup0' in response.outputs[2]['name']
 
 
 # Tests sta-get-group-info command function.
@@ -387,7 +379,6 @@ def test_get_group_info_sta_command(mocker, args, expected_output, expected_read
     response = get_group_info_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
-    assert response.outputs_key_field[0] in expected_readable
     assert response.outputs['name'] == args['groupName']
     assert 'TestGroup1' in response.readable_output
 
@@ -399,11 +390,11 @@ def test_get_group_info_sta_command(mocker, args, expected_output, expected_read
         ({'groupName': 'TestGroup0'},
          [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc",
            "links": {
-               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"},
+               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=True"},
            "name": "demouser", "type": "User"},
           {"id": "CNlM6rvB0uQDXA4rWyUAAAAc",
            "links": {
-               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"},
+               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=True"},
            "name": "hellouser", "type": "User"}],
          [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc", "name": "demouser", "type": "User"},
           {"id": "CNlM6rvB0uQDXA4rWyUAAAAc", "name": "hellouser", "type": "User"}])
@@ -416,7 +407,6 @@ def test_get_group_members_sta_command(mocker, args, expected_output, expected_r
     response = get_group_members_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
-    assert response.outputs_key_field[0] in expected_output[0]
     assert 'demouser' in response.readable_output
     assert 'hellouser' in response.readable_output
 
@@ -439,27 +429,26 @@ def test_create_group_sta_command(mocker, args, expected_output, expected_readab
     response = create_group_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
-    assert response.outputs_key_field[0] in expected_output
     assert response.outputs['name'] == args['groupName']
     assert 'TestGroup2' in response.readable_output
 
 
 # Tests sta-delete-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output",
+    "args, expected_output, expected_readable",
     [
         ({'groupName': 'TestGroup2'},
-         {204})
+         {"Deleted": True, "groupName": "TestGroup2", "id": "16777228"},
+         {'STA group - TestGroup2 successfully deleted.'})
     ])
 def test_delete_group_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import delete_group_sta_command
 
-    mocker.patch.object(client, 'delete_group_sta', return_value=remove_user)
+    mocker.patch.object(client, 'delete_group_sta', return_value=delete_group)
     response = delete_group_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.DELETE.GROUP'
-    assert response.outputs == 204
+    assert response.outputs_prefix == 'STA.GROUP'
     assert 'TestGroup2' in response.readable_output
 
 
@@ -467,11 +456,11 @@ def test_delete_group_sta_command(mocker, args, expected_output):
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'groupName': 'TestGroup1', 'description': 'Description has been updated from XSOAR end.'},
-         {"description": "Description has been updated from XSOAR end.", "id": "50331649", "isSynchronized": False,
+        ({'groupName': 'TestGroup1', 'description': 'Description has been updated.'},
+         {"description": "Description has been updated.", "id": "50331649", "isSynchronized": False,
           "name": "TestGroup1", "schemaVersionNumber": "1.0"},
          {"id": "50331649", "schemaVersionNumber": "1.0", "name": "TestGroup1",
-          "description": "Description has been updated from XSOAR end.", "isSynchronized": False})
+          "description": "Description has been updated.", "isSynchronized": False})
     ])
 def test_update_group_sta_command(mocker, args, expected_output, expected_readable):
 
@@ -481,16 +470,17 @@ def test_update_group_sta_command(mocker, args, expected_output, expected_readab
     response = update_group_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
-    assert response.outputs_key_field[0] in expected_output
     assert response.outputs['description'] == args['description']
 
 
 # Tests sta-add-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output",
+    "args, expected_output, expected_readable",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
-         {200})
+         {"groupName": "TestGroup1", "group_id": "50331649", "status": True, "userName": "hellouser",
+             "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
+         {'User - hellouser successfully added to the group - TestGroup1.'})
     ])
 def test_add_user_group_sta_command(mocker, args, expected_output):
 
@@ -499,8 +489,7 @@ def test_add_user_group_sta_command(mocker, args, expected_output):
     mocker.patch.object(client, 'add_user_group_sta', return_value=add_user_group)
     response = add_user_group_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.ADD.USER.GROUP'
-    assert response.outputs == 200
+    assert response.outputs_prefix == 'STA.UPDATE.USER.GROUP'
     assert 'TestGroup1' in response.readable_output
     assert 'hellouser' in response.readable_output
 
@@ -519,16 +508,18 @@ def test_user_exist_group_sta_command(mocker, args, expected_output):
     mocker.patch.object(client, 'user_exist_group_sta', return_value=user_exist_group)
     response = user_exist_group_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.USER.EXIST.GROUP'
+    assert response.outputs_prefix == 'STA.EXIST.USER.GROUP'
     assert response.outputs is True
 
 
 # Tests sta-remove-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output",
+    "args, expected_output, expected_readable",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
-         {204})
+         {"groupName": "TestGroup1", "group_id": "50331649", "status": False, "userName": "hellouser",
+          "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
+         {'User - hellouser successfully removed from the group - TestGroup1.'})
     ])
 def test_remove_user_group_sta_command(mocker, args, expected_output):
 
@@ -537,49 +528,30 @@ def test_remove_user_group_sta_command(mocker, args, expected_output):
     mocker.patch.object(client, 'remove_user_group_sta', return_value=remove_user_group)
     response = remove_user_group_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.REMOVE.USER.GROUP'
-    assert response.outputs == 204
+    assert response.outputs_prefix == 'STA.UPDATE.USER.GROUP'
     assert 'TestGroup1' in response.readable_output
     assert 'hellouser' in response.readable_output
 
 
 # Tests sta-get-access-logs command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
-        ({'userName': 'demouser', 'since': '2021-07-21T12:22:16.718Z'},
-         [{"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
-           "message": "Login from SafeNet Authentication Service Console.", "resultText": "CHALLENGE",
-           "serial": "1000014514", "timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser"},
-          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
-           "message": "Login from SafeNet Authentication Service Console.", "resultText": "AUTH_SUCCESS",
-           "serial": "1000014514", "timeStamp": "2021-07-22T08:20:45.5326006Z", "userName": "demouser"},
-          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
-           "message": "Login from SafeNet Authentication Service Console.", "resultText": "AUTH_SUCCESS",
-           "serial": "1000014514", "timeStamp": "2021-07-22T09:20:21.1356016Z", "userName": "demouser"}],
-         [{"timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
-           "resultText": "CHALLENGE", "credentialType": "MobilePASS",
-           "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "8.8.8.8"},
-          {"timeStamp": "2021-07-22T08:20:45.5326006Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
-           "resultText": "AUTH_SUCCESS", "credentialType": "MobilePASS",
-           "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "8.8.8.8"},
-          {"timeStamp": "2021-07-22T09:20:21.1356016Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
-           "resultText": "AUTH_SUCCESS", "credentialType": "MobilePASS",
-           "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "8.8.8.8"}])
+        ({},
+         [{"actionText": "AUTH_ATTEMPT", "applicationName": "", "credentialType": "MobilePASS",
+           "ip": "165.225.104.81", "logType": "AUTHENTICATION", "message": "Login from STA Console.",
+           "operationObjectName": "", "operationObjectType": "", "operationType": "", "policyName": "",
+           "resultText": "CHALLENGE", "serial": "1000014514", "state": "",
+           "timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser"}])
     ])
-def test_get_access_logs_sta_command(mocker, args, expected_output, expected_readable):
+def test_get_logs_sta_command(mocker, args, expected_output, expected_readable):
 
-    from SafeNetTrustedAccess import get_access_logs_sta_command
+    from SafeNetTrustedAccess import get_logs_sta_command
 
-    mocker.patch.object(client, 'get_access_logs_sta', return_value=access_logs)
-    response = get_access_logs_sta_command(client, args)
+    mocker.patch.object(client, 'get_logs_sta', return_value=logs_result)
+    response = get_logs_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.LOGS'
-    assert response.outputs_key_field in expected_output[0]
-    assert response.outputs[0]['userName'] == args['userName']
 
 
 # Tests sta-validate-tenant command function.

@@ -404,15 +404,37 @@ class Client(BaseClient):
     # Creates a log's attribute dictionary from API's response data.
     def logs_attributes_sta(self, response):
 
-        logs_attributes = {}
-        logs_attributes['timeStamp'] = response['timeStamp']
-        logs_attributes['userName'] = response['details']['usedName']
-        logs_attributes['resultText'] = response['details']['resultText']
-        logs_attributes['credentialType'] = response['details']['credentialType']
-        logs_attributes['ip'] = response['context']['originatingAddress']
-        logs_attributes['message'] = response['details']['message']
-        logs_attributes['serial'] = response['details']['serial']
-        logs_attributes['actionText'] = response['details']['actionText']
+        logs_attributes = {'timeStamp': response['timeStamp'], 'userName': response['context']['principalId'],
+                           'logType': response['details']['type'], 'ip': response['context']['originatingAddress'],
+                           "credentialType": "", "resultText": "", "actionText": "", "applicationName": "",
+                           "policyName": "", "state": "", "operationType": "", "operationObjectType": "",
+                           "operationObjectName": "", "message": "", "serial": ""}
+        if 'credentialType' in response['details']:
+            logs_attributes['credentialType'] = response['details']['credentialType']
+        elif 'credentials' in response['details']:
+            logs_attributes['credentialType'] = response['details']['credentials'][0]['type']
+        if 'resultText' in response['details'].keys():
+            logs_attributes['resultText'] = response['details']['resultText']
+        if 'actionText' in response['details'].keys():
+            logs_attributes['actionText'] = response['details']['actionText']
+        if 'applicationName' in response['context'].keys():
+            logs_attributes['applicationName'] = response['context']['applicationName']
+        if 'policyName' in response['context'].keys():
+            logs_attributes['policyName'] = response['context']['policyName']
+        if 'state' in response['details'].keys():
+            logs_attributes['state'] = response['details']['state']
+        if 'operationType' in response['details'].keys():
+            logs_attributes['operationType'] = response['details']['operationType']
+        if 'operationObjectType' in response['details'].keys():
+            logs_attributes['operationObjectType'] = response['details']['operationObjectType']
+        if 'operationObjectName' in response['details'].keys():
+            logs_attributes['operationObjectName'] = response['details']['operationObjectName']
+        if 'message' in response['details'].keys():
+            logs_attributes['message'] = response['details']['message']
+        elif 'description' in response['details'].keys():
+            logs_attributes['message'] = response['details']['description']
+        if 'serial' in response['details'].keys():
+            logs_attributes['serial'] = response['details']['serial']
 
         return logs_attributes
 
@@ -423,8 +445,8 @@ class Client(BaseClient):
             logs_items = []
         if userName:
             for response in total_items:
-                if 'usedName' in response['details'].keys():
-                    if response['details']['usedName'] == userName:
+                if 'principalId' in response['context'].keys():
+                    if response['context']['principalId'] == userName:
                         if limit:
                             if limit >= count:
                                 count = count + 1
@@ -434,7 +456,7 @@ class Client(BaseClient):
 
         else:
             for response in total_items:
-                if 'usedName' in response['details'].keys():
+                if 'principalId' in response['context'].keys():
                     if limit:
                         if limit >= count:
                             count = count + 1
@@ -444,8 +466,8 @@ class Client(BaseClient):
 
         return logs_items, count
 
-    # Get user's access logs.
-    def get_access_logs_sta(self, userName=None, since=None, until=None, limit=None):
+    # Get user's logs.
+    def get_logs_sta(self, userName=None, since=None, until=None, limit=None):
 
         uri = '/logs'
         query_params = {}
@@ -458,6 +480,8 @@ class Client(BaseClient):
         if since and until:
             if until <= since:
                 raise Exception("Until argument's date and time must be greater than since.")
+        if not since and until:
+            raise Exception("Use until argument only while using since.")
 
         query_params = tuple(query_params.items())
         response = self.http_request(
@@ -465,6 +489,8 @@ class Client(BaseClient):
             url_suffix=uri,
             params=query_params,
         )
+        if since and not limit:
+            limit = 10000
 
         if limit:
             limit = self.validate_limit_sta(limit)
@@ -541,7 +567,7 @@ def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
         readable_output=tableToMarkdown("List of users in the tenant :", response, headers=header_sequence,
                                         headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.USER',
-        outputs_key_field=['id', 'userName'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -563,7 +589,7 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
                                         response, headers=header_sequence, headerTransform=pascalToSpace,
                                         removeNull=True),
         outputs_prefix='STA.USER',
-        outputs_key_field=['id', 'userName'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -584,7 +610,7 @@ def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
         readable_output=tableToMarkdown("STA user successfully created :", response, headers=header_sequence,
                                         headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.USER',
-        outputs_key_field=['id', 'userName'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -605,7 +631,7 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
         readable_output=tableToMarkdown("STA user successfully updated:", response,
                                         headers=header_sequence, headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.USER',
-        outputs_key_field=['id', 'userName'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -613,15 +639,18 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user command. Delete user from the tenant. """
 
-    response = client.delete_user_sta(userName=args.get('userName'))
+    userName = args.get('userName')
+    user_id = client.get_user_id_sta(userName=userName)
+    response = client.delete_user_sta(userName=userName)
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
-        readable_output=f"## STA user - {args.get('userName')} successfully deleted.",
-        outputs_prefix='STA.USER.DELETE',
-        outputs=response.status_code
+        readable_output=f"## STA user - {userName} successfully deleted.",
+        outputs_prefix='STA.USER',
+        outputs_key_field=['id'],
+        outputs={"id": user_id, "userName": userName, "Deleted": True}
     )
 
 
@@ -639,7 +668,7 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
             f"Groups associated with user - {args.get('userName')} : ", response, headers=header_sequence,
             headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.GROUP',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -657,7 +686,7 @@ def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
         readable_output=tableToMarkdown("STA groups in the tenant : ", response,
                                         headers=header_sequence, headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.GROUP',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -675,7 +704,7 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
         readable_output=tableToMarkdown(f"Group - {args.get('groupName')} :", response,
                                         headers=header_sequence, headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.GROUP',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -694,7 +723,7 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=tableToMarkdown(f"Members of group - {args.get('groupName')} : ", response,
                                         headers=header_sequence, headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.USER',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -713,7 +742,7 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
             f"STA group - {args.get('groupName')} successfully created:", response, headers=header_sequence,
             headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.GROUP',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -721,15 +750,18 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-group command. Delete group from the tenant. """
 
-    response = client.delete_group_sta(groupName=args.get('groupName'))
+    groupName = args.get('groupName')
+    group_id = client.get_group_id_sta(groupName=groupName)
+    response = client.delete_group_sta(groupName=groupName)
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
-        readable_output=f"## STA group - {args.get('groupName')} successfully deleted.",
-        outputs_prefix='STA.DELETE.GROUP',
-        outputs=response.status_code
+        readable_output=f"## STA group - {groupName} successfully deleted.",
+        outputs_prefix='STA.GROUP',
+        outputs_key_field=['id'],
+        outputs={"id": group_id, "groupName": groupName, "Deleted": True}
     )
 
 
@@ -746,7 +778,7 @@ def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
         readable_output=tableToMarkdown("STA user successfully updated :", response, headers=header_sequence,
                                         headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.GROUP',
-        outputs_key_field=['id', 'name'],
+        outputs_key_field=['id'],
         outputs=response
     )
 
@@ -758,13 +790,13 @@ def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> Comman
     if response is True:
         return CommandResults(
             readable_output=f"## Yes, user - {args.get('userName')} is a member of group - {args.get('groupName')}.",
-            outputs_prefix='STA.USER.EXIST.GROUP',
+            outputs_prefix='STA.EXIST.USER.GROUP',
             outputs=response
         )
     else:
         return CommandResults(
             readable_output=f"## No, user - {args.get('userName')} is not a member of group - {args.get('groupName')}.",
-            outputs_prefix='STA.USER.EXIST.GROUP',
+            outputs_prefix='STA.EXIST.USER.GROUP',
             outputs=response
         )
 
@@ -772,49 +804,62 @@ def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> Comman
 def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-add-user-group command. Add user to a specific group. """
 
-    response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
+    userName = args.get('userName')
+    groupName = args.get('groupName')
+    response = client.add_user_group_sta(userName=userName, groupName=groupName)
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
+    user_id = client.get_user_id_sta(userName=userName)
+    group_id = client.get_group_id_sta(groupName=groupName)
+
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully added to the group - {args.get('groupName')}.",
-        outputs_prefix='STA.ADD.USER.GROUP',
-        outputs=response.status_code
+        outputs_prefix='STA.UPDATE.USER.GROUP',
+        outputs_key_field=['user_id', 'group_id'],
+        outputs={"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName, "status": True}
     )
 
 
 def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-remove-user-group command. Remove user from a specific group. """
 
-    response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
+    userName = args.get('userName')
+    groupName = args.get('groupName')
+    response = client.remove_user_group_sta(userName=userName, groupName=groupName)
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
+    user_id = client.get_user_id_sta(userName=userName)
+    group_id = client.get_group_id_sta(groupName=groupName)
+
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully removed from the group - {args.get('groupName')}.",
-        outputs_prefix='STA.REMOVE.USER.GROUP',
-        outputs=response.status_code
+        outputs_prefix='STA.UPDATE.USER.GROUP',
+        outputs_key_field=['user_id', 'group_id'],
+        outputs={"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName, "status": False}
     )
 
 
-def get_access_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Function for sta-get-access-logs command. Get user's access logs. """
+def get_logs_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """ Function for sta-get-logs command. Get user's logs. """
 
-    response = client.get_access_logs_sta(userName=args.get('userName'), since=args.get('since'),
-                                          until=args.get('until'), limit=args.get('limit'))
+    response = client.get_logs_sta(userName=args.get('userName'), since=args.get('since'),
+                                   until=args.get('until'), limit=args.get('limit'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
-    header_sequence = ['timeStamp', 'userName', 'actionText', 'resultText', 'credentialType', 'message', 'serial', 'ip']
+    header_sequence = ['timeStamp', 'userName', 'logType', 'credentialType', 'actionText', 'resultText', 'message',
+                       'applicationName', 'policyName', 'state', 'operationType', 'operationObjectType',
+                       'operationObjectName', 'serial', 'ip']
 
     return CommandResults(
-        readable_output=tableToMarkdown("Access logs : ", response, headers=header_sequence,
+        readable_output=tableToMarkdown("Logs : ", response, headers=header_sequence,
                                         headerTransform=pascalToSpace, removeNull=True),
         outputs_prefix='STA.LOGS',
-        outputs_key_field='userName',
         outputs=response
     )
 
@@ -875,7 +920,7 @@ def main() -> None:
             'sta-user-exist-group': user_exist_group_sta_command,
             'sta-add-user-group': add_user_group_sta_command,
             'sta-remove-user-group': remove_user_group_sta_command,
-            'sta-get-access-logs': get_access_logs_sta_command,
+            'sta-get-logs': get_logs_sta_command,
             'sta-validate-tenant': validate_tenant_sta_command,
         }
 

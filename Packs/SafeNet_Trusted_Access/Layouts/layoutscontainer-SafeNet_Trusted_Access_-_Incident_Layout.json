@@ -5,7 +5,7 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_safenettrustedaccessremoveuserfromhighriskgroup",
+                        "fieldId": "incident_staremoveuserfromunusualactivitygroup",
                         "isVisible": true
                     },
                     {
@@ -540,70 +540,28 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "safenettrustedaccesshighriskgroup",
+                                "fieldId": "safenettrustedaccessinstancename",
                                 "height": 53,
-                                "id": "fd1f24e0-eba5-11eb-b40c-a1ebcf84e839",
+                                "id": "00eaabd0-eba6-11eb-b40c-a1ebcf84e839",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "safenettrustedaccessinstancename",
+                                "fieldId": "safenettrustedaccessunusualactivitygroup",
                                 "height": 53,
-                                "id": "00eaabd0-eba6-11eb-b40c-a1ebcf84e839",
+                                "id": "f64ed610-0978-11ec-83ff-1b27f6ded04d",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stausername",
+                                "fieldId": "safenettrustedaccessuserinunusualactivitygrouphours",
                                 "height": 53,
-                                "id": "54c7bec0-d8bc-11eb-8dc2-2f690ab9bf8c",
+                                "id": "f8e20410-0978-11ec-83ff-1b27f6ded04d",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stainstancename",
-                                "height": 53,
-                                "id": "59939eb0-d8bc-11eb-8dc2-2f690ab9bf8c",
-                                "index": 3,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stahighriskgroup",
-                                "height": 53,
-                                "id": "57af0030-d8bc-11eb-8dc2-2f690ab9bf8c",
-                                "index": 3,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "stauserinhighriskgrouphours",
-                                "height": 53,
-                                "id": "ef9ae9e0-e073-11eb-9322-69482d8f47e7",
-                                "index": 3,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "safenettrustedaccessuserinhighriskgrouphours",
-                                "height": 22,
-                                "id": "08827d00-eba6-11eb-b40c-a1ebcf84e839",
-                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -1055,98 +1013,6 @@
                     },
                     {
                         "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcaller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcallerid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowclosedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowescalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenownotify",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowpriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowrecordid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutioncode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolvedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowtablename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowurgency",
                         "isVisible": true
                     },
                     {
@@ -1687,98 +1553,6 @@
                     },
                     {
                         "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcaller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcallerid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowclosedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowescalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenownotify",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowpriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowrecordid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutioncode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolvedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowtablename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowurgency",
                         "isVisible": true
                     },
                     {

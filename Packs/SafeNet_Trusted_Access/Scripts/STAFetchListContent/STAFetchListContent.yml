@@ -1,21 +1,22 @@
 args:
-- defaultValue: sta_high_risk_group
-  description: Name of the list containing the High Risk Group.
+- defaultValue: sta_unusual_activity_group
+  description: Name of the list containing the Unusual Activity Group.
   name: list_name
   required: true
-comment: This script will get the High Risk Group from "sta_high_risk_group" List.
+comment: This script will get the Unusual Activity Group from "sta_unusual_activity_group"
+  List.
 commonfields:
   id: STA-FetchListContent
   version: -1
 dependson:
   must:
   - Builtin|||getList
-dockerimage: demisto/python3:3.9.6.22912
+dockerimage: demisto/python3:3.9.6.24019
 enabled: true
 name: STA-FetchListContent
 outputs:
-- contextPath: STA.GET.RISK.GROUP
-  description: Return High Risk Group name.
+- contextPath: STA.GET.GROUP
+  description: Return Unusual Activity Group name.
   type: string
 runas: DBotWeakRole
 runonce: false

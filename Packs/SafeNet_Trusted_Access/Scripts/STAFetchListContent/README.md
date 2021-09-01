@@ -1,4 +1,4 @@
-This script will get the High Risk Group from "sta_high_risk_group" List.
+This script will get the Unusual Activity Group from "sta_unusual_activity_group" List.
 
 ## Script Data
 ---
@@ -19,11 +19,11 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| list_name | Name of the list containing the High Risk Group. |
+| list_name | Name of the list containing the Unusual Activity Group. |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| STA.GET.RISK.GROUP | Return High Risk Group name. | string |
+| STA.GET.GROUP | Return Unusual Activity Group name. | string |
