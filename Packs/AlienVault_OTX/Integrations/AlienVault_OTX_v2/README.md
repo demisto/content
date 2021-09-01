@@ -976,4 +976,4 @@ Queries a URL in AlienVault OTX.
 
 
 ## Additional Information
- - AlienVault consider non lowercased URL protocol as invalid, and hence such URL protocols will be lowercased by the integration and returned as such.
+ - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
