@@ -19,11 +19,12 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes: tuple = None,
                  headers: dict = None, auth: tuple = None, deactivate_uri: str = None, user_id: str = None,
-                 email: str = None):
+                 email: str = None, user_name: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.deactivate_uri = deactivate_uri
         self.id = user_id
         self.email = email
+        self.user_name = user_name
 
     def test(self, params):
         """ Tests connectivity with the application. """
@@ -47,18 +48,19 @@ class Client(BaseClient):
 
         return IAMUserAppData(user_id, user_name, is_active, {})
 
-    def disable_user(self, user_name: str) -> IAMUserAppData:
+    def disable_user(self, user_id: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
 
-        :type user_name: ``str``
-        :param user_name: userName of the user in the app
+        :type user_id: ``str``
+        :param user_id: The ID of the user in the app
 
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
 
         uri = self.deactivate_uri
-        user_id = self.id if self.id else user_name
+        user_id = user_id if user_id else self.user_name
+
         body = {
             'id': user_id,
             'email': self.email,
@@ -74,7 +76,7 @@ class Client(BaseClient):
         user_app_data = res.get('MT_Account_Terminate_Response')
         is_active = user_app_data.get('IsActive')
 
-        return IAMUserAppData(user_id, user_name, is_active, res)
+        return IAMUserAppData(user_id, self.user_name, is_active, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -194,7 +196,7 @@ def main():
     params = demisto.params()
     base_url = params.get('url').strip('/')
     deactivate_uri = params.get('deactivate_uri')
-    username = params.get('credentials', {}).get('identifier')
+    identifier = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
@@ -204,6 +206,7 @@ def main():
     args = demisto.args()
     user_id = args.get('user-profile').get('id')
     email = args.get('user-profile').get('email')
+    user_name = args.get('user-profile').get('username')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -225,10 +228,11 @@ def main():
         proxy=proxy,
         ok_codes=(200, 201),
         headers=headers,
-        auth=requests.auth.HTTPBasicAuth(username, password),
+        auth=requests.auth.HTTPBasicAuth(identifier, password),
         deactivate_uri=deactivate_uri,
         user_id=user_id,
         email=email,
+        user_name=user_name
     )
 
     demisto.debug(f'Command being called is {command}')

@@ -1,5 +1,5 @@
-from requests import Response, Session
-from SAPIAM import main
+import requests_mock
+from SAPIAM import Client, get_mapping_fields, main
 from IAMApiModule import *
 import demistomock as demisto
 
@@ -15,36 +15,24 @@ MOCK_PARAMS = {
     'url': 'https://test.com',
     'deactivate_uri': 'deactivate_uri',
     'credentials': {'identifier': '1234', 'password': '5678'},
+    'disable_user_enabled': True,
 }
 
-APP_USER_OUTPUT = {
-    "user_id": "mock_id",
-    "user_name": "mock_user_name",
-    "first_name": "mock_first_name",
-    "last_name": "mock_last_name",
-    "active": "true",
-    "email": "testdemisto@paloaltonetworks.com",
+APP_DISABLE_USER_OUTPUT = {
+    "MT_Account_Terminate_Response": {
+        "user_id": "1234",
+        "user_name": "test_demisto",
+        "first_name": "mock_first_name",
+        "last_name": "mock_last_name",
+        "IsActive": False,
+        "email": "testdemisto@paloaltonetworks.com",
+    }
 }
 
-APP_DISABLED_USER_OUTPUT = {
-    "user_id": "mock_id",
-    "user_name": "mock_user_name",
-    "first_name": "mock_first_name",
-    "last_name": "mock_last_name",
-    "active": "false",
-    "email": "testdemisto@paloaltonetworks.com",
-}
-#
-#
-# def mock_client():
-#     client = Client(base_url='https://test.com')
-#     return client
-#
 
-def get_outputs_from_user_profile(user_profile):
-    entry_context = user_profile.to_entry()
-    outputs = entry_context.get('Contents')
-    return outputs
+def mock_client():
+    client = Client(base_url='https://test.com', headers={})
+    return client
 
 
 class TestGetUserCommand:
@@ -62,50 +50,19 @@ class TestGetUserCommand:
         mocker.patch.object(demisto, 'command', return_value='iam-get-user')
         mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
         mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
-        mock_results = mocker.patch('demistomock.results')
+        demisto_results_mock = mocker.patch('demistomock.results')
 
         main()
 
-        assert mock_results.call_args[0][0]['Contents']['action'] == IAMActions.GET_USER
-        assert mock_results.call_args[0][0]['Contents']['success'] is True
-        assert mock_results.call_args[0][0]['Contents']['active'] is True
-        assert mock_results.call_args[0][0]['Contents']['id'] == '1234'
-        assert mock_results.call_args[0][0]['Contents']['username'] == 'test_demisto'
-
-    def test_get_user_command__bad_response(self, mocker):
-        """
-        Given:
-            - An app client object
-            - A user-profile argument that contains an email of a non-existing user in the application
-        When:
-            - Calling function get_user_command
-            - A bad response (500) is returned from the application API
-        Then:
-            - Ensure the resulted User Profile object holds information about the bad response.
-        """
-        import demistomock as demisto
-
-        client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
-
-        bad_response = Response()
-        bad_response.status_code = 500
-        bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
-
-        mocker.patch.object(demisto, 'error')
-        mocker.patch.object(Session, 'request', return_value=bad_response)
-
-        user_profile = IAMCommand().get_user(client, args)
-        outputs = get_outputs_from_user_profile(user_profile)
-
-        assert outputs.get('action') == IAMActions.GET_USER
-        assert outputs.get('success') is False
-        assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == 'message: details'
+        assert demisto_results_mock.call_args[0][0]['Contents']['action'] == IAMActions.GET_USER
+        assert demisto_results_mock.call_args[0][0]['Contents']['success'] is True
+        assert demisto_results_mock.call_args[0][0]['Contents']['active'] is True
+        assert demisto_results_mock.call_args[0][0]['Contents']['id'] == '1234'
+        assert demisto_results_mock.call_args[0][0]['Contents']['username'] == 'test_demisto'
 
 
 class TestDisableUserCommand:
-    def test_disable_user_command__non_existing_user(self, mocker):
+    def test_disable_user_command(self, mocker):
         """
         Given:
             - An app client object
@@ -117,18 +74,21 @@ class TestDisableUserCommand:
         Then:
             - Ensure the command is considered successful and skipped
         """
-        client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        mocker.patch.object(demisto, 'command', return_value='iam-disable-user')
+        mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+        mocker.patch.object(demisto, 'args', return_value=MOCK_ARGS)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
 
-        mocker.patch.object(client, 'get_user', return_value=None)
+        with requests_mock.Mocker() as m:
+            m.post('/deactivate_uri', json=APP_DISABLE_USER_OUTPUT)
 
-        user_profile = IAMCommand().disable_user(client, args)
-        outputs = get_outputs_from_user_profile(user_profile)
+            main()
 
-        assert outputs.get('action') == IAMActions.DISABLE_USER
-        assert outputs.get('success') is True
-        assert outputs.get('skipped') is True
-        assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+        assert demisto_results_mock.call_args[0][0]['Contents']['action'] == IAMActions.DISABLE_USER
+        assert demisto_results_mock.call_args[0][0]['Contents']['success'] is True
+        assert demisto_results_mock.call_args[0][0]['Contents']['active'] is False
+        assert demisto_results_mock.call_args[0][0]['Contents']['id'] == '1234'
+        assert demisto_results_mock.call_args[0][0]['Contents']['username'] == 'test_demisto'
 
 
 def test_get_mapping_fields_command(mocker):
