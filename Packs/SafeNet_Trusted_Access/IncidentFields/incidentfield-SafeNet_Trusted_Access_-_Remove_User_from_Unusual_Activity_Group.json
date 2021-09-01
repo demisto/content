@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "staremoveuserfromunusualactivitygroup",
+    "closeForm": true,
+    "content": true,
+    "description": "Ensure yes option is selected, otherwise you need to remove user from the Unusual Activity Group manually.",
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_staremoveuserfromunusualactivitygroup",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "STA - Remove User from Unusual Activity Group",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "script": "STA-PostProcessing",
+    "selectValues": [
+        "Yes",
+        "No"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
