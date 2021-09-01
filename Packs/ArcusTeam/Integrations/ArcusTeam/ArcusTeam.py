@@ -36,6 +36,7 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='/get_devices',
+            headers=self.headers,
             json_data={
                 "vendor": vendor,
                 "model": model,
@@ -49,6 +50,7 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='/get_vulnerabilities',
+            headers=self.headers,
             json_data={
                 "firmwareId": firmwareId,
                 "version": VERSION,
@@ -65,7 +67,7 @@ class Client(BaseClient):
             method='POST',
             full_url=authentication_url,
             headers=headers,
-            data=payload
+            json_data=payload
         )
 
 def deviceToMarkdown(device):
