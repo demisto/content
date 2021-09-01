@@ -67,7 +67,6 @@ create-instances:
     - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
-    - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
     - section_start "Collect Tests and Content Packs"
@@ -121,10 +120,14 @@ create-instances:
     - sleep 60
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
-      if [ -f ./Tests/failed_tests.txt ]; then
+      if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - |
+      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
+        TIME_TO_LIVE=300
+      fi
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
 

@@ -1477,7 +1477,8 @@ class Pack(object):
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
                 PackFolders.GENERIC_TYPES.value: "GenericTypes",
-                PackFolders.LISTS.value: "list"
+                PackFolders.LISTS.value: "list",
+                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1641,6 +1642,11 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
                         })
+                    elif current_directory == PackFolders.PREPROCESS_RULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
@@ -1653,7 +1659,7 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            return task_status, content_items_result
+            return task_status
 
     def load_user_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
@@ -1759,7 +1765,7 @@ class Pack(object):
             self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
             self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
             if self._is_private_pack:
-                self._vendor_id = self.user_metadata.get(Metadata.VERNDOR_ID, "")
+                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
                 self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
                 self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
                 self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
@@ -1786,7 +1792,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=[], format_dependencies_only=False):
+                        pack_was_modified, statistics_handler, pack_names=None, format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1806,6 +1812,7 @@ class Pack(object):
 
         """
         task_status = False
+        pack_names = pack_names if pack_names else []
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
