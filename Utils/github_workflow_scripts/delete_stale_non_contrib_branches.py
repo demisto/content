@@ -48,6 +48,29 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
     return branch_names
 
 
+def is_suitable_for_pr(repo: Repository, head: str, base: str = 'master') -> bool:
+    """Checks if a PR can be created for a given head branch
+
+    We compare the branch commits to determine if we should create a PR from the head branch.
+    Sometimes people create a branch but never push commits to the branch. In
+    those cases, there are no changes from which to create a PR against the base
+    branch, and therefore we should not try to create a PR from that branch. We
+    should simply delete it.
+
+    Args:
+        repo (Repository): The repo to query.
+        head (str): The name of the head branch for a potential PR.
+        base (str, optional): The name of the base branch to merge the head branch into. Defaults to 'master'.
+
+    Returns:
+        bool: True if the head branch is ahead of the base branch by one or more commits, False otherwise.
+    """
+    comparison = repo.compare(base, head)
+    if comparison.ahead_by > 0:
+        return True
+    return False
+
+
 def main():
     debug_mode = len(sys.argv) >= 2 and 'debug' in sys.argv[1].casefold()
     t = Terminal()
@@ -61,19 +84,25 @@ def main():
     stale_non_contrib_branches = get_non_contributor_stale_branch_names(content_repo)
     for branch_name in stale_non_contrib_branches:
         try:
-            print(f'Creating PR for {branch_name}')
             base_branch = 'master'
-            title = branch_name
-            body = (f'## Description\r\nPosterity PR Created for the branch "{branch_name}"'
-                    ' so that it may be restored if necessary')
-            pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=branch_name, draft=False)
-            print(f'{t.cyan}Posterity PR Created - {pr.html_url}{t.normal}')
-            pr.add_to_labels('stale-branch')
-            pr.edit(state='closed')
-            print(f'{t.cyan}Posterity PR Closed{t.normal}')
-            print(f'Deleting {branch_name}')
-            branch_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-            branch_ref.delete()
+            if not is_suitable_for_pr(content_repo, branch_name):
+                print(f'Branch {branch_name} is not ahead of {base_branch} '
+                      'and therefore not suited for a posterity PR')
+                print(f'Deleting stale branch {branch_name} without creating a postery PR')
+                content_repo.get_git_ref(f'heads/{branch_name}').delete()
+            else:
+                print(f'Creating PR for {branch_name}')
+                title = branch_name
+                body = (f'## Description\r\nPosterity PR Created for the branch "{branch_name}"'
+                        ' so that it may be restored if necessary')
+                pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=branch_name, draft=False)
+                print(f'{t.cyan}Posterity PR Created - {pr.html_url}{t.normal}')
+                pr.add_to_labels('stale-branch')
+                pr.edit(state='closed')
+                print(f'{t.cyan}Posterity PR Closed{t.normal}')
+                print(f'Deleting {branch_name}')
+                branch_ref = content_repo.get_git_ref(f'heads/{branch_name}')
+                branch_ref.delete()
         except Exception as e:
             print(f"{t.red}Deletion of {branch_name} encountered an issue: {str(e)}{t.normal}")
 
