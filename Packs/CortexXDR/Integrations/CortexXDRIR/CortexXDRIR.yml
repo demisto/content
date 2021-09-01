@@ -2848,6 +2848,13 @@ script:
     description: Returns the number of the connected\disconnected endpoints.
     execution: false
     name: xdr-get-endpoints-by-status
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointsStatus.status
+      description: The endpoint's status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointsStatus.count
+      description: The number of endpoint's with this status.
+      type: String
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true

@@ -1280,7 +1280,7 @@ class Client(BaseClient):
         )
 
         endpoints_count = reply.get('reply').get('total_count', 0)
-        return endpoints_count
+        return endpoints_count, reply
 
 
 def get_incidents_command(client, args):
@@ -3254,12 +3254,16 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> List[CommandR
         arg_name='last_seen_lte'
     )
 
-    endpoints_count = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+
+    ec = {'status': status, 'count': endpoints_count}
 
     return CommandResults(
             readable_output=f'{status} endpoins count: {endpoints_count}',
-            outputs={},
-            raw_response={},
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
+            outputs_key_field='status',
+            outputs=ec,
+            raw_response=raw_res,
         )
 
 
