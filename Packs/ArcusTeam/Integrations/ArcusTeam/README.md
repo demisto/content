@@ -736,7 +736,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | --- | --- | --- |
 | firmware_id |  ArcusTeam Firmware ID. | Required | 
 | device_id |  ArcusTeam Device ID. | Required | 
-| page_size | Page size [1,100]. Default is 10. | Optional | 
+| page_size | Page size. Minimum page size is 1, maximum is 100. Default is 10. | Optional |
 | page_number |  Page number. Default is 1. | Optional | 
 | sort_order |  Sorting order (“asc”,”desc”). Possible values are: desc, asc. Default is desc. | Optional | 
 | sort_field |  Sorting field. Possible values are: risk, cve, description, codename, cwe, exploit_published, exploit_used, modified_date. Default is risk. | Optional | 
