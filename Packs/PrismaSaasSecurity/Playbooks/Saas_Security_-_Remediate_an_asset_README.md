@@ -1,7 +1,7 @@
-Takes a remediation action over an asset:
-  Use this playbook as a sub-playbook to remediate an asset.
+Take a remediation action over an asset:
+  Use this playbook as a sub-playbook to take a remediation action on an asset. Available remediation actions are 1) Remove public sharing, 2) Quarantine, and 3) Restore.
   This playbook implements polling by continuously running the `saas-security-remediation-status-get`
-  command until the operation completes.
+    command to get the remediation status for a given asset ID, until the operation completes.
 
 The remote action should have the following structure:
   1. Initiate the operation - provide the Asset ID and the remediation action.
@@ -15,7 +15,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* SaasSecurity
+* SaaS Security
 
 ### Scripts
 This playbook does not use any scripts.
