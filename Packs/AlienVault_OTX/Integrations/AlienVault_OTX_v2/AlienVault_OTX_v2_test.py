@@ -600,7 +600,7 @@ def test_url_command_uppercase_protocol(requests_mock):
     """
     Given:
         - URL with uppercase protocol (HTTPS)
-   
+
     When:
         - Running the url command
 
