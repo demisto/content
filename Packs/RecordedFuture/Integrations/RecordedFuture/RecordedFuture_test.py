@@ -181,6 +181,30 @@ class RFTest(unittest.TestCase):
         self.assertTrue(context.get('HumanReadable'))
         self.assertTrue(context.get('Contents'))
 
+    @vcr.use_cassette()
+    def test_get_alert_writestatus_command(self):
+        """Get Technical Links"""
+        alert_status = 'no-action'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_writestatus(alert_id, alert_status)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['status'], alert_status)
+
+    @vcr.use_cassette()
+    def test_get_alert_setnote(self):
+        """Get Technical Links"""
+        note_text = 'note unittest'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_setnote(alert_id, note_text)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['note']['text'], note_text)
+
 
 def create_client():
     base_url = "https://api.recordedfuture.com/gw/xsoar/"

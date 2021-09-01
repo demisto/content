@@ -14,7 +14,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
-__version__ = '2.2'
+__version__ = '2.3'
 
 
 def rename_keys(old_to_new: Dict[str, str], original: Dict[str, Any]):
@@ -175,7 +175,7 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_TO_RETRY
         )
 
-    def get_alert_rules(self, rule_name: str, limit: int) -> Dict[str, Any]:
+    def get_alert_rules(self, rule_name: str, limit: int = None) -> Dict[str, Any]:
         """Get Alert Rules."""
         params: Dict[str, Any] = {}
         if rule_name:
@@ -200,6 +200,17 @@ class Client(BaseClient):
             timeout=30,
             retries=3,
             status_list_to_retry=STATUS_TO_RETRY
+        )
+
+    def update_alerts(self, data: Union[List, Dict]):
+        """Update Alerts"""
+        return self._http_request(
+            method="post",
+            url_suffix="alert/update",
+            json_data=data,
+            timeout=30,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
     def get_triage(
@@ -343,6 +354,7 @@ def create_indicator(
             Common.DBotScore(
                 entity,
                 DBotScoreType.IP,
+
                 dbot_vendor,
                 dbot_score,
                 dbot_description,
@@ -413,6 +425,8 @@ def get_output_prefix(entity_type: str) -> str:
         return "RecordedFuture.File"
     elif entity_type == "links":
         return "RecordedFuture.Links"
+    elif entity_type == "alerts":
+        return "RecordedFuture.Alerts"
     else:
         raise Exception(f"Unknown entity type: {entity_type}")
 
@@ -1357,6 +1371,122 @@ class Actions():
                     outputs_key_field=""
                 )
 
+    def fetch_incidents(self, rule_names, fetch_time):
+        if rule_names:
+            rule_names = rule_names.split(';')
+        else:
+            rule_names = []
+
+        if not fetch_time:
+            fetch_time = '24 hours'
+
+
+        last_run = demisto.getLastRun()
+        if not last_run:
+            last_run = {}
+        if 'time' not in last_run:
+            time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            time = last_run['time']
+
+        current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        triggered_time = '[{},)'.format(datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S'))
+        max_time = current_time
+
+        rule_ids = []  # type: list
+
+        for rule in rule_names:
+            rules = self.client.get_alert_rules(rule)
+            if rules and 'data' in rules:
+                rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
+
+        all_alerts = []  # type: list
+        if rule_ids:
+            for rule_id in rule_ids:
+                params = {"alertRule": rule_id, "triggered": triggered_time, "status": "no-action"}
+                alerts = self.client.get_alerts(params)
+                if alerts and 'data' in alerts:
+                    all_alerts += alerts['data'].get('results', [])
+        else:
+            params = {"triggered": triggered_time, "status": "no-action"}
+            alerts = self.client.get_alerts(params)
+            if alerts and 'data' in alerts:
+                all_alerts += alerts['data'].get('results', [])
+
+        incidents = []
+        update_data = []
+        for alert in all_alerts:
+            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            # The API returns also alerts that are triggered in the same time
+            if alert_time > current_time:
+                #Set alerts status to pending
+                update_data.append({"id": alert['id'], "status": "pending"})
+                alert_data = self.client.get_single_alert(alert['id'])
+                if alert_data and 'data' in alert_data:
+                    alert = alert_data['data']
+                incidents.append({
+                    "name": "Recorded Future Alert - " + alert['title'],
+                    "occurred": datetime.strftime(alert_time, "%Y-%m-%dT%H:%M:%SZ"),
+                    "rawJSON": json.dumps(alert),
+                })
+
+                if alert_time > max_time:
+                    max_time = alert_time
+        if update_data:
+            self.client.update_alerts(update_data)
+        demisto.incidents(incidents)
+        demisto.setLastRun({
+            'start_time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        })
+
+    def alert_writestatus(self, alert_id: str, status: str):
+        data = [{
+            "id": alert_id,
+            "status": status,
+        }]
+        response = self.client.update_alerts(data)
+        if response.get('success'):
+            # We are working only with one alert so there is one element in response list
+            context_data = response.get('success')[0]
+            result = CommandResults(
+                    readable_output=f'## Status {status} for Alert {alert_id} was successfully set',
+                    outputs_prefix=get_output_prefix('alerts'),
+                    outputs=context_data,
+                )
+        else:
+            error_message = "; ".join(
+                error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
+            )
+            result = CommandResults(
+                    readable_output= (
+                        f'## Error setting the {status} status for Alert {alert_id}.'
+                        f'Reason: {error_message}'
+                    ),
+                )
+        return result
+
+    def alert_setnote(self, alert_id: str, note: str):
+        data = [{
+            "id": alert_id,
+            "note": note,
+        }]
+        response = self.client.update_alerts(data)
+        if response.get('success'):
+            # We are working only with one alert so there is one element in response list
+            context_data = response.get('success')[0]
+            result = CommandResults(
+                    readable_output=f'## Note for Alert {alert_id} was successfully set',
+                    outputs_prefix=get_output_prefix('alerts'),
+                    outputs=context_data,
+                )
+        else:
+            error_message = "; ".join(
+                error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
+            )
+            result = CommandResults(
+                    readable_output=f'## Error setting the note for Alert {alert_id}. Reason: {error_message}',
+                )
+        return result
 
 
 def main() -> None:
@@ -1396,6 +1526,10 @@ def main() -> None:
         elif command in ["url", "ip", "domain", "file", "cve"]:
             entities = argToList(demisto_args.get(command))
             return_results(actions.lookup_command(entities, command))
+        elif command == 'fetch-incidents':
+            rule_names = demisto_params.get('rule_names', '').strip()
+            fetch_time = demisto_params.get('triggered', '').strip()
+            actions.fetch_incidents(rule_names, fetch_time)
         elif command == "recordedfuture-threat-assessment":
             context = demisto_args.get("context")
             entities = {
@@ -1447,6 +1581,20 @@ def main() -> None:
                 actions.get_links_command(
                     demisto_args.get("entity"),
                     demisto_args.get("entity_type")
+                )
+            )
+        elif command == "recordedfuture-alert-writestatus":
+            return_results(
+                actions.alert_writestatus(
+                    demisto_args.get("alert_id"),
+                    demisto_args.get("status"),
+                )
+            )
+        elif command == "recordedfuture-alert-setnote":
+            return_results(
+                actions.alert_setnote(
+                    demisto_args.get('alert_id'),
+                    demisto_args.get('note'),
                 )
             )
     except Exception as e:
