@@ -14,7 +14,7 @@ Follow these steps for a self-deployed configuration.
 
 
 ## Configure the server url
-If you have dedicated servel url - enter it in the ***Client ID*** parameter. 
+If you have dedicated servel url - enter it in the ***Server URL*** parameter. 
 
 ## Get the additional instance parameters
 

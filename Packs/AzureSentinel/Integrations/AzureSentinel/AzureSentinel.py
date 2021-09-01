@@ -18,6 +18,7 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 API_VERSION = '2021-04-01'
+DEFAULT_AZURE_SERVER_URL = 'https://management.azure.com'
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
@@ -72,10 +73,9 @@ class AzureSentinelClient(MicrosoftClient):
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
         """
-        if not server_url:
-            server_url = f'https://management.azure.com/subscriptions/{subscription_id}/'\
-                         f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
-                         f'{workspace_name}/providers/Microsoft.SecurityInsights'
+        server_url = f'{server_url}/subscriptions/{subscription_id}/'\
+                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
+                     f'{workspace_name}/providers/Microsoft.SecurityInsights'
 
         super().__init__(
             tenant_id=tenant_id,
@@ -974,10 +974,10 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = AzureSentinelClient(
-            server_url=params.get('server_url', ''),
+            server_url=params.get('server_url', DEFAULT_AZURE_SERVER_URL),
             tenant_id=params.get('tenant_id', ''),
-            client_id=params.get('client_id', ''),
-            client_secret=params.get('client_secret', ''),
+            client_id=params.get('credentials', {}).get('identifier'),
+            client_secret=params.get('credentials', {}).get('password'),
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),

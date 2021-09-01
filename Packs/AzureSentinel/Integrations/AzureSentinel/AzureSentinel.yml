@@ -4,6 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
+  defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
   required: false
@@ -13,13 +14,9 @@ configuration:
   required: true
   type: 4
 - display: Client ID
-  name: client_id
+  name: credentials
   required: true
-  type: 4
-- display: Client Secret
-  name: client_secret
-  required: true
-  type: 4
+  type: 9
 - display: Subscription ID
   name: subscriptionID
   required: true
@@ -1012,7 +1009,7 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
@@ -1022,6 +1019,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No test - manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests
-  folder
+- TestAzureSentinelUpdatedPlaybook
+- Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0

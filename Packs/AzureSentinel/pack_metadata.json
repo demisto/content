@@ -1,5 +1,5 @@
 {
-    "name": "Azure Sentinel (Beta)",
+    "name": "Azure Sentinel",
     "description": "Azure Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.",
     "support": "xsoar",
     "currentVersion": "1.1.0",
