@@ -1,0 +1,18 @@
+commonfields:
+  id: ShowCampaignSenders
+  version: -1
+name: ShowCampaignSenders
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the phishing campaign senders email addreses and their amount.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.6.24019
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
