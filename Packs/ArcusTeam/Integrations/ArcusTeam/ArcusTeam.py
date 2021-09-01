@@ -173,22 +173,6 @@ def main() -> None:
 
     authentication_url = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
 
-    payload = {
-        "apiKey": api_key,
-        "clientID": client_id,
-    }
-
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
-
-    result = requests.request("POST", authentication_url, headers=headers, data=json.dumps(payload))
-    readable_output = result.json()
-    access_token = readable_output["access_token"]
-
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + access_token
-    }
 
     verify_certificate = not demisto.params().get("insecure", False)
 
