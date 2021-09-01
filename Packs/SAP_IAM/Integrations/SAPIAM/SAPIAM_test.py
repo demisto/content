@@ -36,7 +36,7 @@ def mock_client():
 
 
 class TestGetUserCommand:
-    def test_get_user_command__existing_user(self, mocker):
+    def test_existing_user(self, mocker):
         """
         Given:
             - An app client object
@@ -62,7 +62,7 @@ class TestGetUserCommand:
 
 
 class TestDisableUserCommand:
-    def test_disable_user_command(self, mocker):
+    def test_success(self, mocker):
         """
         Given:
             - An app client object
