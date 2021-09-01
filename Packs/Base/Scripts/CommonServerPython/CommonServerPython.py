@@ -449,6 +449,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 'Course of Action'
         INTRUSION_SET = 'Intrusion Set'
         TOOL = 'Tool'
+        THREAT_ACTOR = 'Threat Actor'
+        INFRASTRUCTURE = 'Infrastructure'
 
     class ObjectsScore(object):
         """
@@ -463,6 +465,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 0
         INTRUSION_SET = 3
         TOOL = 2
+        THREAT_ACTOR = 3
+        INFRASTRUCTURE = 2
 
     class KillChainPhases(object):
         """
@@ -2484,6 +2488,13 @@ class Common(object):
                 Common.DBotScore.get_context_path(): dbot_context
             }
             return ret_value
+
+        def to_readable(self):
+            dbot_score_to_text = {0: 'Unknown',
+                                  1: 'Good',
+                                  2: 'Suspicious',
+                                  3: 'Bad'}
+            return dbot_score_to_text.get(self.score, 'Undefined')
 
     class CustomIndicator(Indicator):
 
@@ -6940,7 +6951,8 @@ if 'requests' in sys.modules:
 
         def __del__(self):
             try:
-                self._session.close()
+                if hasattr(self, '_session'):
+                    self._session.close()
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 

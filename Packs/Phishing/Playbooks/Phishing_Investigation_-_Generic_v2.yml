@@ -1,7 +1,10 @@
 id: Phishing Investigation - Generic v2
 version: -1
 name: Phishing Investigation - Generic v2
-description: "Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.\n\nThe final remediation tasks are always decided by a human analyst."
+description: "Use this playbook to investigate and remediate a potential phishing\
+  \ incident. The playbook simultaneously engages with the user that triggered the\
+  \ incident, while investigating the incident itself.\n\nThe final remediation tasks\
+  \ are always decided by a human analyst."
 starttaskid: '0'
 tasks:
   '0':
@@ -31,7 +34,8 @@ tasks:
       id: b8fe1f1e-c1ae-499e-83d7-f466009b5790
       version: -1
       name: Assign to analyst
-      description: Assign the incident to an analyst based on the analyst's organizational role.
+      description: Assign the incident to an analyst based on the analyst's organizational
+        role.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -63,7 +67,8 @@ tasks:
       id: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
       version: -1
       name: Manually review the incident
-      description: Review the incident to determine if the email that the user reported is malicious.
+      description: Review the incident to determine if the email that the user reported
+        is malicious.
       type: regular
       iscommand: false
       brand: ''
@@ -164,7 +169,8 @@ tasks:
       id: 9551bc3f-272d-4db9-8a40-30b48d1ba33b
       version: -1
       name: Acknowledge incident was received
-      description: "Send an auto-response to user that reported the incident, informing them the incident was received and being handled.\n"
+      description: "Send an auto-response to user that reported the incident, informing\
+        \ them the incident was received and being handled.\n"
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -179,7 +185,14 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && acc.Email && acc.Email.Address === reporter }); return account && account[0] && account[0].DisplayName || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress;\
+          \ var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc)\
+          \ { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email)\
+          \ && acc.Email.indexOf(reporter) > -1) }); return account && account[0]\
+          \ && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received\
+          \ your email and are investigating.\nPlease do not touch the email until\
+          \ further notice.\n\nCordially, \n  Your friendly neighborhood security\
+          \ team"
       cc: {}
       from: {}
       htmlBody: {}
@@ -241,7 +254,8 @@ tasks:
       id: b2b37a86-85e8-4385-811c-004dd3b0b215
       version: -1
       name: Update  the user that the reported email is safe
-      description: Send an email to the user explaining that the email they reported is safe.
+      description: Send an email to the user explaining that the email they reported
+        is safe.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -256,7 +270,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
           We've concluded that the email you forwarded to us is safe.
           Thank you for your alertness and your participation in keeping our organization secure.
 
@@ -290,8 +304,9 @@ tasks:
     task:
       id: 38d12767-452d-438e-8361-2c19bdb6bc65
       version: -1
-      name: Update  the user that the reported email is malicious
-      description: Send an email to the user explaining that the email they reported is malicious.
+      name: Update the user that the reported email is malicious
+      description: Send an email to the user explaining that the email they reported
+        is malicious.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -304,7 +319,14 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress;\
+          \ var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc)\
+          \ { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email)\
+          \ && acc.Email.indexOf(reporter) > -1) }); return account && account[0]\
+          \ && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded\
+          \ that the email you forwarded to us is malicious. No further action is\
+          \ required on your part. Good job on detecting and forwarding it to us!\n\
+          \nAll the best,\n  Your security team"
       cc: {}
       htmlBody: {}
       replyTo: {}
@@ -517,7 +539,10 @@ tasks:
       id: 945915a4-395f-444f-8500-c80791cddcfd
       version: -1
       name: Manually remediate  the incident
-      description: "Consider the following:\n1. Search for and delete similar emails\n2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update proxies and firewalls as necessary\n5. Block the malicious sender/ domain in the mail-gateway "
+      description: "Consider the following:\n1. Search for and delete similar emails\n\
+        2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4.\
+        \ Update proxies and firewalls as necessary\n5. Block the malicious sender/\
+        \ domain in the mail-gateway "
       type: regular
       iscommand: false
       brand: ''
@@ -952,7 +977,9 @@ tasks:
       id: d18654f5-16fd-441e-8db0-4e55f0df0f43
       version: -1
       name: Should the email be authenticated?
-      description: Whether the email should be authenticated using DKIM, SPF and DMARC. This checks whether "AuthenticateEmail" output is set to "True" and whether there are headers from an email to authenticate.
+      description: Whether the email should be authenticated using DKIM, SPF and DMARC.
+        This checks whether "AuthenticateEmail" output is set to "True" and whether
+        there are headers from an email to authenticate.
       type: condition
       iscommand: false
       brand: ''
@@ -1013,7 +1040,8 @@ tasks:
       id: 0f654686-0911-450d-86e6-0689df621d61
       version: -1
       name: Authenticate email
-      description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
+      description: Checks the authenticity of an email based on the email's SPF, DMARC,
+        and DKIM.
       scriptName: CheckEmailAuthenticity
       type: regular
       iscommand: false
@@ -1061,7 +1089,8 @@ tasks:
       id: e80e3f5a-a74f-44a8-8e83-8eee96def1d0
       version: -1
       name: Save authenticity check result to incident field
-      description: Save the verdict, regarding the authenticity of the email, in an incident field.
+      description: Save the verdict, regarding the authenticity of the email, in an
+        incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1070,57 +1099,6 @@ tasks:
       '#none#':
       - '84'
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
       emailauthenticitycheck:
         complex:
           root: Email
@@ -1162,97 +1140,6 @@ tasks:
               toReplace:
                 value:
                   simple: suspicious
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
-      severity: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2255\n  }\n}"
@@ -1288,7 +1175,8 @@ tasks:
       id: c325df0c-5e0f-4ba9-8863-0b0c18410025
       version: -1
       name: Save reporter email address in field
-      description: Saves the email address of the reporter of the email, in an incident field.
+      description: Saves the email address of the reporter of the email, in an incident
+        field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1297,171 +1185,9 @@ tasks:
       '#none#':
       - '13'
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
       reporteremailaddress:
         complex:
           root: ReporterAddress
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
-      severity: {}
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 1650,\n    \"y\": 530\n  }\n}"
@@ -1476,7 +1202,9 @@ tasks:
       id: bf7ea13b-64cd-46fb-8563-825432a1c808
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific type of phishing mail using a pre-trained machine learning model, and highlights the most important words used in the classification decision.
+      description: Predicts the specific type of phishing mail using a pre-trained
+        machine learning model, and highlights the most important words used in the
+        classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -1548,7 +1276,8 @@ tasks:
       id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
       version: -1
       name: Update incident with predictions
-      description: Updates incident fields with the predictions of the machine-learning phishing model.
+      description: Updates incident fields with the predictions of the machine-learning
+        phishing model.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1557,52 +1286,6 @@ tasks:
       '#none#':
       - '56'
     scriptarguments:
-      account: {}
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
       dbotprediction:
         complex:
           root: DBotPredictPhishingWords
@@ -1621,184 +1304,6 @@ tasks:
           accessor: TextTokensHighlighted
           transformers:
           - operator: uniq
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourceip: {}
-      src: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": -1142.5,\n    \"y\": 1060\n  }\n}"
@@ -2047,7 +1552,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"15_30_Malicious \": 0.48,\n    \"15_31_#default#\": 0.44,\n    \"33_16_No\": 0.64,\n    \"33_17_Yes\": 0.19,\n    \"36_43_#default#\": 0.39,\n    \"37_43_#default#\": 0.23,\n    \"79_80_yes\": 0.49,\n    \"79_84_#default#\": 0.34,\n    \"90_56_#default#\": 0.3,\n    \"90_89_yes\": 0.48\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5370,\n      \"width\": 3172.5,\n      \"x\": -1142.5,\n      \"y\": -90\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"15_30_Malicious \": 0.48,\n    \"15_31_#default#\"\
+  : 0.44,\n    \"33_16_No\": 0.64,\n    \"33_17_Yes\": 0.19,\n    \"36_43_#default#\"\
+  : 0.39,\n    \"37_43_#default#\": 0.23,\n    \"79_80_yes\": 0.49,\n    \"79_84_#default#\"\
+  : 0.34,\n    \"90_56_#default#\": 0.3,\n    \"90_89_yes\": 0.48\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 5370,\n      \"width\": 3172.5,\n\
+  \      \"x\": -1142.5,\n      \"y\": -90\n    }\n  }\n}"
 inputs:
 - key: Role
   value:
@@ -2058,22 +1568,28 @@ inputs:
   value:
     simple: 'False'
   required: false
-  description: "Enable the \"Search and Delete\" capability (can be either \"True\" or \"False\").\nIn case of a malicious email, the \"Search and Delete\" sub-playbook will look for other instances of the email and delete them pending analyst approval."
+  description: "Enable the \"Search and Delete\" capability (can be either \"True\"\
+    \ or \"False\").\nIn case of a malicious email, the \"Search and Delete\" sub-playbook\
+    \ will look for other instances of the email and delete them pending analyst approval."
 - key: BlockIndicators
   value:
     simple: 'False'
   required: false
-  description: "Enable the \"Block Indicators\" capability (can be either \"True\" or \"False\").\nIn case of a malicious email, the \"Block Indicators\" sub-playbook will block all malicious indicators in the relevant integrations."
+  description: "Enable the \"Block Indicators\" capability (can be either \"True\"\
+    \ or \"False\").\nIn case of a malicious email, the \"Block Indicators\" sub-playbook\
+    \ will block all malicious indicators in the relevant integrations."
 - key: AuthenticateEmail
   value:
     simple: 'False'
   required: false
-  description: Whether the authenticity of the email should be verified, using SPF, DKIM and DMARC.
+  description: Whether the authenticity of the email should be verified, using SPF,
+    DKIM and DMARC.
 - key: OnCall
   value:
     simple: 'false'
   required: false
-  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
 outputs: []
 fromversion: 5.0.0
 toversion: 5.9.9
