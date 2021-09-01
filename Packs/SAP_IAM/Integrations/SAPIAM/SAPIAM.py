@@ -228,7 +228,7 @@ def main():
         proxy=proxy,
         ok_codes=(200, 201),
         headers=headers,
-        auth=requests.auth.HTTPBasicAuth(identifier, password),
+        auth=(identifier, password),
         deactivate_uri=deactivate_uri,
         user_id=user_id,
         email=email,
