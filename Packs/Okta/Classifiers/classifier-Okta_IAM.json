@@ -10,7 +10,7 @@
   "user.account.update_profile": "IAM - App Update",
   "user.lifecycle.deactivate": "IAM - Terminate User"
  },
- "name": "Okta IAM (classifier)",
+ "name": "Okta IAM - App Sync (classifier)",
  "transformer": {
   "complex": null,
   "simple": "eventType"
