@@ -389,7 +389,7 @@ class TestGetGroupCommand:
         """
         Given:
             - An app client object
-            - A scim argument that contains an ID and displayName of a group
+            - A scim argument that contains an ID and displayName of a mon_existing group
         When:
             - The group not exists in the application
             - Calling the main function with 'iam-get-group' command
@@ -553,6 +553,15 @@ class TestUpdateGroupCommand:
 
 class TestDeleteGroupCommand:
     def test_success(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a group ID.
+        When:
+            - Calling the main function with 'iam-delete-group'
+        Then:
+            - Ensure the resulted 'CommandResults' object holds information about the deleted group.
+        """
         mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
