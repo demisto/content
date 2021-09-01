@@ -529,6 +529,11 @@
             "timeout": 400
         },
         {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -2139,6 +2144,10 @@
         {
             "playbookID": "PowerShellCommon-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "GetIndicatorDBotScoreFromCache-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Detonate URL - Generic Test",
@@ -4603,9 +4612,13 @@
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
         "Microsoft Teams Management - Test": "Issue 33410",
         "RedLockTest": "Issue 24600",
-        "MicrosoftGraphMail-Test_prod": "Issue 40125"
+        "MicrosoftGraphMail-Test_prod": "Issue 40125",
+        "Cisco Umbrella Test": "Issue 24338",
+        "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862"
     },
     "skipped_integrations": {
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4698,13 +4711,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -4878,9 +4894,11 @@
         "Create-Mock-Feed-Relationships"
     ],
     "private_tests": [
-        "HelloWorldPremium_Scan-Test"
+        "HelloWorldPremium_Scan-Test",
+        "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

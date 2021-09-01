@@ -138,6 +138,20 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
+HOST_GROUP_HEADERS = ['id', 'name', 'group_type', 'description', 'assignment_rule',
+                      'created_by', 'created_timestamp',
+                      'modified_by', 'modified_timestamp']
+
+STATUS_TEXT_TO_NUM = {'New': "20",
+                      'Reopened': "25",
+                      'In Progress': "30",
+                      'Closed': "40"}
+
+STATUS_NUM_TO_TEXT = {20: 'New',
+                      25: 'Reopened',
+                      30: 'In Progress',
+                      40: 'Closed'}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -193,10 +207,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             headers=headers,
             files=files,
-            json=json
+            json=json,
         )
-    except requests.exceptions.RequestException:
-        return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+    except requests.exceptions.RequestException as e:
+        return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
+                     f' Exception is {str(e)}.')
     try:
         valid_status_codes = {200, 201, 202, 204}
         # Handling a case when we want to return an entry for 404 status code.
@@ -1281,6 +1296,92 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     return int(timestamp1), int(timestamp2)
 
 
+def change_host_group(is_post: bool,
+                      host_group_id: Optional[str] = None,
+                      name: Optional[str] = None,
+                      group_type: Optional[str] = None,
+                      description: Optional[str] = None,
+                      assignment_rule: Optional[str] = None) -> Dict:
+    method = 'POST' if is_post else 'PATCH'
+    data = {'resources': [{
+        'id': host_group_id,
+        "name": name,
+        "description": description,
+        "group_type": group_type,
+        "assignment_rule": assignment_rule
+    }]}
+    response = http_request(method=method,
+                            url_suffix='/devices/entities/host-groups/v1',
+                            json=data)
+    return response
+
+
+def change_host_group_members(action_name: str,
+                              host_group_id: str,
+                              host_ids: List[str]) -> Dict:
+    allowed_actions = {'add-hosts', 'remove-hosts'}
+    if action_name not in allowed_actions:
+        raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
+    data = {'action_parameters': [{'name': 'filter',
+                                   'value': f"(device_id:{str(host_ids)})"}],
+            'ids': [host_group_id]}
+    response = http_request(method='POST',
+                            url_suffix='/devices/entities/host-group-actions/v1',
+                            params={'action_name': action_name},
+                            json=data)
+    return response
+
+
+def host_group_members(filter: Optional[str],
+                       host_group_id: Optional[str],
+                       limit: Optional[str],
+                       offset: Optional[str]):
+    params = {'id': host_group_id,
+              'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-group-members/v1',
+                            params=params)
+    return response
+
+
+def resolve_incident(ids: List[str], status: str):
+    if status not in STATUS_TEXT_TO_NUM:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
+    data = {
+        "action_parameters": [
+            {
+                "name": "update_status",
+                "value": STATUS_TEXT_TO_NUM[status]
+            }
+        ],
+        "ids": ids
+    }
+    http_request(method='POST',
+                 url_suffix='/incidents/entities/incident-actions/v1',
+                 json=data)
+
+
+def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
+    params = {'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-groups/v1',
+                            params=params)
+    return response
+
+
+def delete_host_groups(host_group_ids: List[str]) -> Dict:
+    params = {'ids': host_group_ids}
+    response = http_request(method='DELETE',
+                            url_suffix='/devices/entities/host-groups/v1',
+                            params=params)
+    return response
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -1654,7 +1755,6 @@ def get_endpoint_command():
 
     command_results = []
     for endpoint in standard_endpoints:
-
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
 
@@ -2433,9 +2533,10 @@ def incidents_to_human_readable(incidents):
     for incident in incidents:
         readable_output = assign_params(description=incident.get('description'), state=incident.get('state'),
                                         name=incident.get('name'), tags=incident.get('tags'),
-                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'))
+                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'),
+                                        status=STATUS_NUM_TO_TEXT.get(incident.get('status')))
         incidents_readable_outputs.append(readable_output)
-    headers = ['incident_id', 'created_time', 'name', 'description', 'state', 'tags']
+    headers = ['incident_id', 'created_time', 'name', 'description', 'status', 'state', 'tags']
     human_readable = tableToMarkdown('CrowdStrike Incidents', incidents_readable_outputs, headers, removeNull=True)
     return human_readable
 
@@ -2463,6 +2564,110 @@ def list_incident_summaries_command():
     )
 
 
+def create_host_group_command(name: str,
+                              group_type: str = None,
+                              description: str = None,
+                              assignment_rule: str = None) -> CommandResults:
+    response = change_host_group(is_post=True,
+                                 name=name,
+                                 group_type=group_type,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def update_host_group_command(host_group_id: str,
+                              name: Optional[str] = None,
+                              description: Optional[str] = None,
+                              assignment_rule: Optional[str] = None) -> CommandResults:
+    response = change_host_group(is_post=False,
+                                 host_group_id=host_group_id,
+                                 name=name,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def list_host_group_members_command(host_group_id: Optional[str] = None,
+                                    filter: Optional[str] = None,
+                                    offset: Optional[str] = None,
+                                    limit: Optional[str] = None) -> CommandResults:
+    response = host_group_members(filter, host_group_id, limit, offset)
+    devices = response.get('resources')
+    if not devices:
+        return CommandResults(readable_output='No hosts are found',
+                              raw_response=response)
+    headers = list(SEARCH_DEVICE_KEY_MAP.values())
+    outputs = [get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP) for single_device in devices]
+    return CommandResults(
+        outputs_prefix='CrowdStrike.Device',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Devices', outputs, headers=headers, headerTransform=pascalToSpace),
+        raw_response=response
+    )
+
+
+def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='add-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='remove-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def resolve_incident_command(ids: List[str], status: str):
+    resolve_incident(ids, status)
+    readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
+    return CommandResults(readable_output=readable)
+
+
+def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
+        -> CommandResults:
+    response = list_host_groups(filter, limit, offset)
+    host_groups = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=host_groups,
+                          readable_output=tableToMarkdown('Host Groups', host_groups, headers=HOST_GROUP_HEADERS),
+                          raw_response=response)
+
+
+def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
+    response = delete_host_groups(host_group_ids)
+    deleted_ids = response.get('resources')
+    readable = '\n'.join([f'Host groups {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
+        if deleted_ids else f'Host groups {host_group_ids} are not deleted'
+    return CommandResults(readable_output=readable,
+                          raw_response=response)
+
+
 def test_module():
     try:
         get_token(new_token=True)
@@ -2483,15 +2688,14 @@ LOG('Command being called is {}'.format(demisto.command()))
 
 def main():
     command = demisto.command()
-    # should raise error in case of issue
-    if command == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
-
     args = demisto.args()
     try:
         if command == 'test-module':
             result = test_module()
             return_results(result)
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
@@ -2566,7 +2770,28 @@ def main():
             )
         elif command == 'endpoint':
             return_results(get_endpoint_command())
-        # Log exceptions
+        elif command == 'cs-falcon-create-host-group':
+            return_results(create_host_group_command(**args))
+        elif command == 'cs-falcon-update-host-group':
+            return_results(update_host_group_command(**args))
+        elif command == 'cs-falcon-list-host-groups':
+            return_results(list_host_groups_command(**args))
+        elif command == 'cs-falcon-delete-host-groups':
+            return_results(delete_host_groups_command(host_group_ids=argToList(args.get('host_group_id'))))
+        elif command == 'cs-falcon-list-host-group-members':
+            return_results(list_host_group_members_command(**args))
+        elif command == 'cs-falcon-add-host-group-members':
+            return_results(add_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                          host_ids=argToList(args.get('host_ids'))))
+        elif command == 'cs-falcon-remove-host-group-members':
+            return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                             host_ids=argToList(args.get('host_ids'))))
+        elif command == 'cs-falcon-resolve-incident':
+            return_results(resolve_incident_command(status=args.get('status'),
+                                                    ids=argToList(args.get('ids'))))
+        else:
+            raise NotImplementedError(f'CrowdStrike Falcon error: '
+                                      f'command {command} is not implemented')
     except Exception as e:
         return_error(str(e))
 

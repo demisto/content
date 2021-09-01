@@ -1,4 +1,8 @@
+import io
 import json
+
+import dateparser
+from datetime import datetime
 
 import pytest
 from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
@@ -10,6 +14,11 @@ from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
                                        parse_list)
 
 dummy_user_id = 'dummy_id'
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 @pytest.fixture()
@@ -146,3 +155,43 @@ def test_parse_list_empty():
     assert outputs == {f'AADIdentityProtection.{context_path}(val.id === obj.id)': []}  # no next_link
     assert f"{human_readable_title} (0 results)" in parsed.readable_output
     assert "**No entries.**" in parsed.readable_output
+
+
+def test_fetch_all_incidents(mocker):
+    """
+        Given
+            fetch incidents command running for the first time.
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client gets all 3 relevant incidents
+    """
+    from AzureADIdentityProtection import create_incidents_from_input
+    test_incidents = util_load_json('test_data/incidents.json')
+    last_fetch_datetime: datetime = dateparser.parse('2021-07-10T11:02:54Z')
+    incidents, last_item_time = create_incidents_from_input(
+        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    assert len(incidents) == 3
+    assert incidents[0].get(
+        'name') == 'Azure AD: 17 newCountry adminDismissedAllRiskForUser'
+    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
+
+
+def test_fetch_new_incidents(mocker):
+    """
+        Given
+            fetch incidents command running for the first time.
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client gets all 3 relevant incidents
+    """
+    from AzureADIdentityProtection import create_incidents_from_input
+    test_incidents = util_load_json('test_data/incidents.json')
+    last_fetch_datetime: datetime = dateparser.parse('2021-07-20T11:02:54Z')
+    incidents, last_item_time = create_incidents_from_input(
+        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    assert len(incidents) == 1
+    assert incidents[0].get(
+        'name') == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
+    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
