@@ -200,7 +200,7 @@ def get_default_job_id(client: Client) -> CommandResults:
 
 def get_feedback_field(params: Dict[str, Any]) -> CommandResults:
     response = params.get("closing_reason_field")
-    readable_output = f'## {response}'
+    readable_output = f' ## Get feedback returned results: {response}'
 
     return CommandResults(
         readable_output=readable_output,
@@ -235,7 +235,7 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
         raise Exception(f"Error in arcanna-send-feedback.Wrong label")
 
     response = client.send_feedback(job_id, event_id, username, arcanna_label, closing_notes, indicators)
-    readable_output = f'## {response}'
+    readable_output = f' ## Arcanna send event feedback results: {response}'
 
     return CommandResults(
         readable_output=readable_output,

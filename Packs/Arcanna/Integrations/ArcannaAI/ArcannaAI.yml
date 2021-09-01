@@ -28,15 +28,17 @@ configuration:
   name: default_job_id
   required: false
   type: 0
-- defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
-  display: Feature Mapping as an array to map between CLOSING REASON and Arcanna labels
+- additionalinfo: An array to map between closing reason and Arcanna labels
+  defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+  display: A closing reason to Arcanna labels.
   hidden: false
   name: feature_mapping
   required: false
   type: 12
-- defaultvalue: closeReason
-  display: Field use to signal to arcanna the status for closing an alert(or marking
-    as feedback for Arcanna)
+- additionalinfo: This field use to signal to Arcanna the status for closing an alert
+    or marking feedback for Arcanna
+  defaultvalue: closeReason
+  display: Alert closing reason
   hidden: false
   name: closing_reason_field
   required: false
@@ -199,19 +201,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Cortex closing notes if any
+      description: Cortex closing notes if any.
       isArray: false
       name: closing_notes
       required: false
       secret: false
     - default: false
-      description: Cortex Indicator if any as a dict containing 3 keys (type,value,source) as mandatory
+      description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
       isArray: false
       name: indicators
       required: false
       secret: false
     deprecated: false
-    description: Send Arcanna feedback for a previous inferred event
+    description: Send Arcanna feedback for a previous inferred event.
     execution: false
     name: arcanna-send-event-feedback
     outputs:
@@ -232,7 +234,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Send to Arcanna a bulk of events as a dict encoded json string  filled with xsoar fields.
+    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
     execution: false
     name: arcanna-send-bulk-events
   - deprecated: false

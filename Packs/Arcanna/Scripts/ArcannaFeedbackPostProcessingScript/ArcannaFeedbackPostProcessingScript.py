@@ -25,12 +25,12 @@ def extract_feedback_information():
     if type(feedback_field) == list:
         feedback_field = feedback_field[0]
 
-    if feedback_field is None or feedback_field == "":
+    if not feedback_field:
         raise Exception("Failed to get value for Arcanna closing field")
 
     # Get Values from incident
     feedback_field_value = demisto.incident().get(feedback_field, None)
-    if feedback_field_value is None or feedback_field_value == "":
+    if not feedback_field_value :
         # if closing field value is Empty try to get it from Args as a fallback
         feedback_field_value = demisto.args().get(feedback_field, None)
 
@@ -38,10 +38,10 @@ def extract_feedback_information():
 
 
 def add_closing_user_information(closing_user, owner, survey_user):
-    if closing_user is None or closing_user == "":
-        if survey_user is not None:
+    if not closing_user:
+        if survey_use:
             closing_user = survey_user
-        elif owner is not None:
+        elif owner:
             closing_user = owner
         else:
             closing_user = "dbot"
@@ -53,7 +53,7 @@ def run_arcanna_send_feedback():
         event_id = get_value_from_context(key="Arcanna.Event.event_id")
         job_id = get_value_from_context(key="Arcanna.Event.job_id")
         incident_id = demisto.incident().get('id')
-        if event_id is None:
+        if not event_id:
             demisto.log("Trying to send feedback for an event which was not sent to Arcanna first.Skipping")
             return_results(f'Skipping event feedback with id={incident_id}')
             return
@@ -69,12 +69,13 @@ def run_arcanna_send_feedback():
 
             feedback_field, feedback_field_value = extract_feedback_information()
 
-            close_reason = demisto.incident().get('closeReason', None)
-            close_notes = demisto.incident().get('closeNotes')
-            owner = demisto.incident().get('owner', None)
-            closing_user = demisto.incident().get('closingUserId', None)
+            incident = demisto.incident()
+            close_reason = incident.get('closeReason', None)
+            close_notes = incident.get('closeNotes')
+            owner = incident.get('owner', None)
+            closing_user = incident.get('closingUserId', None)
             # if feedback_field_value is not empty get that value, else use the default closeReason value
-            if feedback_field_value is not None and feedback_field_value != "":
+            if feedback_field_value:
                 close_reason = feedback_field_value
 
             survey_user = get_value_from_context(key="Closure_Reason_Survey.Answers.name")
@@ -84,9 +85,9 @@ def run_arcanna_send_feedback():
                     f'Skipping Sending Arcanna event feedback for incident_id={incident_id}.No Analyst Reviewed')
                 return
 
-            if close_reason is None or close_reason == "":
+            if not close_reason:
                 raise Exception(
-                    "Trying to use arcanna post processing script without providing value for the closing field")
+                    "Trying to use Arcanna post-processing script without providing value for the closing field")
 
             closing_user = add_closing_user_information(closing_user, owner, survey_user)
 

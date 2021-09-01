@@ -2,7 +2,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: closing_reason
-  description: Closing Reason for manual overriding
+  description: Closing Reason for manual overriding.
   isArray: false
   name: closing_user
   predefined:
@@ -10,16 +10,16 @@ args:
   required: false
   secret: false
 - default: false
-  description: Closing Notes for manual overriding
+  description: Closing Notes for manual overriding.
   isArray: false
   name: closing_notes
   required: false
   secret: false
 comment: |-
-  Arcanna.Ai post processing script for sending feedback back to Arcanna about closed incident.Additional modification might be required depending on the each cortex setup.
-  This script is intended to be used as sample or in conjunction with the Arcanna-Generic-Investigation Playbook
+  Arcanna.Ai post-processing script for sending feedback back to Arcanna about the closed incident. Additional modification might be required depending on each Cortex setup.
+  This script is intended to be used as a sample or in conjunction with the Arcanna-Generic-Investigation playbook.
 commonfields:
-  id: c8015064-ea83-4ff3-857b-6695ca92d329
+  id: ArcannaFeedbackPostProcessingScript
   version: -1
 enabled: true
 name: ArcannaFeedbackPostProcessingScript
