@@ -1,5 +1,3 @@
-import json
-import requests
 import urllib3
 import traceback
 import demistomock as demisto  # noqa: F401
@@ -69,6 +67,7 @@ class Client(BaseClient):
             headers=headers,
             json_data=payload
         )
+
 
 def deviceToMarkdown(device):
     nl = '\n'
@@ -174,7 +173,6 @@ def main() -> None:
     base_url = urljoin(demisto.params()["url"], "/api/v10/xsoar")
 
     authentication_url = urljoin(demisto.params()["url"], "/api/v10/auth/login_apikey")
-
 
     verify_certificate = not demisto.params().get("insecure", False)
 
