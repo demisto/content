@@ -987,7 +987,7 @@
 			}
 		}
 	},
-	"name": "Okta IAM - App Sync (mapper)",
+	"name": "Okta IAM (mapper)",
 	"type": "mapping-incoming",
 	"version": -1,
 	"fromVersion": "6.0.0"
