@@ -39,7 +39,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ArcusTeamDevices.devices.categories | string |  Device categories | 
+| ArcusTeamDevices.devices.categories | Unknown |  Device categories | 
 | ArcusTeamDevices.devices.device_key | string |  Arcus Team Device ID | 
 | ArcusTeamDevices.devices.model | string |  Device model | 
 | ArcusTeamDevices.devices.series | string |  Device series | 
