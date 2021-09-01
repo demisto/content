@@ -54,9 +54,6 @@ def upload_files_to_google_cloud_storage(service_account: str,
                                         last_updated: str,
                                         ):
     """Upload files to the bucket."""
-    # google cloud storage client initialized
-    storage_client = init_storage_client(service_account)
-    bucket = storage_client.bucket(bucket_name)
 
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
     updated_date = updated.strftime(DATE_FORMAT)
@@ -67,9 +64,14 @@ def upload_files_to_google_cloud_storage(service_account: str,
         (f'{destination_blob_dir}/coverage-min.json', minimal_file_name),
         (f'{destination_blob_dir}/history/coverage-min/{updated_date}.json', minimal_file_name),
     ]
-    for file1, file2 in files_to_upload:
-        upload_file_to_bucket(bucket, file1, file2)
-        print("File {} uploaded to {}.".format(file2, file1))
+
+    # google cloud storage client initialized
+    storage_client = init_storage_client(service_account)
+    bucket = storage_client.bucket(bucket_name)
+
+    for path_in_bucket, local_path in files_to_upload:
+        upload_file_to_bucket(bucket_obj=bucket, path_in_bucket=path_in_bucket, local_path=local_path)
+        print("File {} uploaded to {}.".format(local_path, path_in_bucket))
 
 
 def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path):
