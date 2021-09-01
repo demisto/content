@@ -61,25 +61,6 @@ NwQueryMetaMappingConfig = {
 # End of NwQueryMetaMappingConfig
 
 
-class Enum:
-    # Value of the Enum
-    _value_ = None
-
-    def __init__(self, v):
-        self._value_ = v
-
-    def __eq__(self, other: Any):
-        """Overrides the default implementation"""
-        if isinstance(other, Enum):
-            return self._value_ == other._value_
-        return self._value_ == other
-
-    def value(self):
-        return self._value_
-
-
-# End of Class Enum
-
 # #--------------------------------------------------------------------------------------------------------------------#
 # # COMMON CLASSES AND UTILITIES                                                                                       #
 # #--------------------------------------------------------------------------------------------------------------------#
@@ -100,7 +81,7 @@ class NwConstants:
 # End of NwConstants
 
 
-class NwIndexLevel(Enum):
+class NwIndexLevel:
     """
         Netwitness Meta Key Index Level Constants!
     """
@@ -113,7 +94,7 @@ class NwIndexLevel(Enum):
 # End of NwIndexLevel
 
 
-class NwMetaFormat(Enum):
+class NwMetaFormat:
     """
         Netwitness Meta Format Enums. These formats can be inferred in the Query Response Delivered from Core
     """
@@ -191,10 +172,6 @@ class NwSessionRenderType:
         Supported Netwitness Rendering Options for A Session
     """
 
-    # Check for Equality of values
-    def __init__(self):
-        pass
-
     # Auto Select HTML Content View
     AUTO = 0
 
@@ -262,7 +239,7 @@ class NwMeta:
     # Utility method to get the Index Level out of Flags Value of Meta
     def getIndexLevel(self):
         level = 0x00F & int(self.flags or 0)
-        return NwIndexLevel(level)
+        return level
 
 
 # End of NwMeta
@@ -378,15 +355,16 @@ class NwQueryResponse:
         self.result: List[NwQueryField] = []
 
     # Wrapper method to read from Plain Text SDK Response
+    @logger
     def parseFromHttpResponse(self, response: str = ''):
         """
             Reads the SDK Response obtained by firing a SDK Request via Netwitness Core Service Rest Interface
 
             :param response: The HTTP Response from the Netwitness Core Service
         """
+        debug(f'lines:\n{response}')
         # Split lines on Line Breaks!
         lines = response.splitlines()
-        debug(f'lines:\n{lines}')
 
         # Iterate thru lines!
         _c = len(lines)
@@ -396,10 +374,9 @@ class NwQueryResponse:
             if line in ('[', ']'):
                 continue
             elif line.startswith('['):
-
                 # If line starts with '[' then its ID Range for response
-                self.id1 = int(NwQueryField._extract_field(r'\s*id1=(\d+)', line, default_value=0))
-                self.id2 = int(NwQueryField._extract_field(r'\s*id2=(\d+)', line, default_value=0))
+                self.id1 = int(NwQueryField._extract_field(r'\s*id1=(\d+)', line, default_value=0)[1])
+                self.id2 = int(NwQueryField._extract_field(r'\s*id2=(\d+)', line, default_value=0)[1])
 
             else:
                 # Else parse it as the Query Response Field
@@ -410,6 +387,7 @@ class NwQueryResponse:
 
     # End of Function parseFromHttpResponse
 
+    @logger
     def asSDKQueryResponse(self):
         """
             Parses the Query Response as SDK Query Events grouped by Session Ids
@@ -423,6 +401,7 @@ class NwQueryResponse:
         #         <Query Type>: [<list of values>],
         #     }
         # }
+        debug(f'result: {self.result}')
         for f in self.result:
             data.setdefault(f.group, {}).setdefault(f.type, []).append(f.value)
 
@@ -886,7 +865,10 @@ class NwCoreClient(NwClient):
     def __init__(self, host, port, uname, pwd, proxy, ssl, secure):
         super().__init__(host, port, uname, pwd, proxy=proxy, ssl=ssl, secure=secure)
         # Summary Information
-        self.deviceSummary = dict()
+        self.device_summary = dict()
+
+    def __repr__(self):
+        return f'NwCoreClient({vars(self)})'
 
     # End of constructor
 
@@ -924,6 +906,7 @@ class NwCoreClient(NwClient):
     # End of function doLogin
 
     # REST Call Method
+    @logger
     def __makeNodeCall(self, node: str, msg: str, options: dict = None, params: dict = None):
         """
         Do a REST Get call for a particular node
@@ -940,6 +923,7 @@ class NwCoreClient(NwClient):
         z = {'msg': msg, 'force-content-type': 'text/plain'}
         z.update(options)
         z.update(params)
+        debug(f'query: {z}')
         return self.session.get(_url, verify=self.secure, proxies=self.proxy, params=z)
 
     # End of __makeNodeCall
@@ -989,7 +973,7 @@ class NwCoreClient(NwClient):
     # End of function __readMetaLanguages
 
     @logger
-    def __executeSDKQuery(self, nwQuery='', size=1000, params={}):
+    def __executeSDKQuery(self, nwQuery='', size=1000, params=None):
         """
         Fires the SDK Query on the Core Service and reads the response as NwQueryResponse
 
@@ -998,6 +982,7 @@ class NwCoreClient(NwClient):
         :param params: Override Parameters
         :return:
         """
+        params = params or {}
         response = self.__makeNodeCall('sdk', 'query',
                                        {
                                            'size': str(size),
@@ -1034,7 +1019,7 @@ class NwCoreClient(NwClient):
             r = NwQueryResponse()
             r.parseFromHttpResponse(response.content.decode('utf-8'))
             return r
-        raise Exception("Error while executing SDK Query with status code [ " + response.status_code + " ] [ "
+        raise Exception("Error while executing SDK Values Query with status code [ " + response.status_code + " ] [ "
                         + str(response.content))
 
     # End of function __executeSDKValues
@@ -1246,6 +1231,7 @@ class NwCoreClient(NwClient):
     # End of function __executeSDKValuesForMetaKeys
 
     # Utility function to generate Time Clause
+    @logger
     def __generateTimeClause(self, startTimeEpoch=-1, endTimeEpoch=-1):
 
         # If past minute is negative. Do not include the time clause
@@ -1284,7 +1270,7 @@ class NwCoreClient(NwClient):
     # #----------------------------------------------------------------------------------------------------------------#
     def getSessionIdRange(self):
         self.__readSummary()
-        return [int(self.deviceSummary['sid1']), int(self.deviceSummary['sid2'])]
+        return [int(self.device_summary['sid1']), int(self.device_summary['sid2'])]
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1295,7 +1281,7 @@ class NwCoreClient(NwClient):
     # #----------------------------------------------------------------------------------------------------------------#
     def getMetaIdRange(self):
         self.__readSummary()
-        return [int(self.deviceSummary['mid1']), int(self.deviceSummary['mid2'])]
+        return [int(self.device_summary['mid1']), int(self.device_summary['mid2'])]
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1306,7 +1292,7 @@ class NwCoreClient(NwClient):
     # #----------------------------------------------------------------------------------------------------------------#
     def getTimeRange(self):
         self.__readSummary()
-        return [int(self.deviceSummary['time1']), int(self.deviceSummary['time2'])]
+        return [int(self.device_summary['time1']), int(self.device_summary['time2'])]
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1349,7 +1335,9 @@ class NwCoreClient(NwClient):
     # #     startTimeEpoch :   Number of Minutes in the Time Range. Default: 180
     # #     params      :   A dictionary containing string parameters to be overridden in the request sent to Core
     # #----------------------------------------------------------------------------------------------------------------#
-    def searchByNwQueryAndTime(self, where='', size=20, endTimeEpoch=-1, startTimeEpoch=-1, params={}, **kwargs):
+    @logger
+    def searchByNwQueryAndTime(self, where='', size=20, endTimeEpoch=-1, startTimeEpoch=-1, params=None, **kwargs):
+        params = params or {}
 
         # Create Time Clause
         _tClause = self.__generateTimeClause(startTimeEpoch, endTimeEpoch)
@@ -1357,13 +1345,14 @@ class NwCoreClient(NwClient):
         # Collect SessionId
         response = None
         if len(where) > 0:
-            response = self.__executeSDKQuery('select sessionid where ( ' + where + ' ) && ' + _tClause, size, params)
+            response = self.__executeSDKQuery(f'select sessionid where ( {where} ) && {_tClause}', size, params)
         else:
-            response = self.__executeSDKQuery('select sessionid where ' + _tClause, size, params)
+            response = self.__executeSDKQuery(f'select sessionid where {_tClause}', size, params)
 
         # Get Session Ids
         sessionIds = response.asSDKQueryResponse()
-        if len(sessionIds) == 0:
+        debug(f'found sessions: {sessionIds}')
+        if not sessionIds:
             return response
 
         sessions = list()
@@ -1678,43 +1667,38 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     if time_frame is None:
         return None, None
 
-    if time_frame == 'Custom':
+    time_frame = time_frame.lower()
+    now = datetime.now()
+
+    if time_frame == 'custom':
         if start_time is None and end_time is None:
             raise ValueError('invalid custom time frame: need to specify one of start_time, end_time')
 
         if start_time is None:
-            start_time = datetime.now()
+            start_time = now
         else:
             start_time = dateparser.parse(start_time)
 
         if end_time is None:
-            end_time = datetime.now()
+            end_time = now
         else:
             end_time = dateparser.parse(end_time)
 
-        return date_to_timestamp(start_time), date_to_timestamp(end_time)
+        return date_to_timestamp(start_time) / 1000, date_to_timestamp(end_time) / 1000
 
-    end_time = datetime.now()
-    if time_frame == 'Today':
-        start_time = datetime.now().date()
+    end_time = now
+    if time_frame == 'today':
+        start_time = now.date()
 
-    elif time_frame == 'Yesterday':
+    elif time_frame == 'yesterday':
         start_time = (end_time - timedelta(days=1)).date()
 
-    elif time_frame == 'Last Hour':
-        start_time = end_time - timedelta(hours=1)
-    elif time_frame == 'Last 24 Hours':
-        start_time = end_time - timedelta(hours=24)
-    elif time_frame == 'Last 48 Hours':
-        start_time = end_time - timedelta(hours=48)
-    elif time_frame == 'Last 7 Days':
-        start_time = end_time - timedelta(days=7)
-    elif time_frame == 'Last 30 Days':
-        start_time = end_time - timedelta(days=30)
+    elif 'last' in time_frame:
+        start_time = dateparser.parse(time_frame.replace('last', ''))
     else:
         raise ValueError('Could not parse time frame: {}'.format(time_frame))
 
-    return date_to_timestamp(start_time), date_to_timestamp(end_time)
+    return date_to_timestamp(start_time) / 1000, date_to_timestamp(end_time) / 1000
 
 
 def utilParseTimeRange(userInput: str, endTimeEpoch: int):
@@ -1770,14 +1754,14 @@ def utilParseTimeRange(userInput: str, endTimeEpoch: int):
             return None
         # Convert Minutes into Seconds!
         num = num * 60
-        result.append(endTimeEpoch - num)
-        result.append(endTimeEpoch)
+        result.append(int(endTimeEpoch) - num)
+        result.append(int(endTimeEpoch))
 
     # See if time range is "today"
     elif "today" == input:
 
         currentEpoch = time.mktime(now.timetuple())
-        midnightEpoch = time.mktime(datetime(now.year, now.month, now.day, 0).timetuple())
+        midnightEpoch = time.mktime(now.date().timetuple())
         result.append(int(midnightEpoch))
         result.append(int(currentEpoch))
 
@@ -1785,7 +1769,7 @@ def utilParseTimeRange(userInput: str, endTimeEpoch: int):
     elif "yesterday" == input:
 
         currentEpoch = time.mktime(now.timetuple())
-        midnightEpoch = time.mktime(datetime(now.year, now.month, now.day, 0).timetuple())
+        midnightEpoch = time.mktime((now.date() - timedelta(days=1)).timetuple())
         result.append(int(midnightEpoch))
         result.append(int(currentEpoch))
 
@@ -1811,7 +1795,7 @@ def utilParseTimeRange(userInput: str, endTimeEpoch: int):
         if re.compile(ISOT2).match(d2) and re.compile(ISOT2).match(d1):
             startDate = datetime.strptime(d1, '%Y-%m-%d %H:%M:%S')
             endDate = datetime.strptime(d2, '%Y-%m-%d %H:%M:%S')
-            result.append((int(time.mktime(endDate.timetuple())) - int(time.mktime(startDate.timetuple()))) / 60)
+            result.append(int(time.mktime(startDate.timetuple())))
             result.append(int(time.mktime(endDate.timetuple())))
         else:
             # Invalid Date Format. May be a Bug ?
@@ -1888,7 +1872,7 @@ def utilParseTimeRange(userInput: str, endTimeEpoch: int):
             return None
     else:
         raise DemistoException("Invalid Time Range Given. Please see the Documentation for correct formatting of date ranges.")
-        return None
+
     return result
 
 
@@ -1898,39 +1882,38 @@ def utilParseTimeRange(userInput: str, endTimeEpoch: int):
 # #=====================================================================================================================
 
 class NwParams:
-
-    def __init__(self):
-        pass
+    Time = ('time', '')
+    TimeFrame = ('time_frame', '')
+    StartTime = ('start_time', '')
+    EndTime = ('end_time', '')
 
     Size = ('size', 1000)
-    NwQuery = ('nwQuery', '')
     Where = ('query', '')
-    Time = ('time', '')
-    Meta = ('meta', '')
-    Values = ('values', '')
-    Op = ('operation', 'EQUALS')
+    Meta = ('meta', '')  # add to yml
+    Values = ('values', '')  # add to yml
+    Operation = ('operation', 'EQUALS')
     Must = ('must', 'False')
-    SearchAll = ('searchAll', 'False')
+    # SearchAll = ('searchAll', 'False')
     PivotMeta = ('find', '')
     MSearch = ('text', '')
-    SearchInPackets = ('searchInPackets', 'False')
-    SearchAsRegEx = ('searchAsRegEx', 'False')
-    CaseInSensitive = ('caseInSensitive', 'True')
-    MaxSessionsToScan = ('maxSessionsToScan', 100000)
+    # SearchInPackets = ('searchInPackets', 'False')
+    # SearchAsRegEx = ('searchAsRegEx', 'False')
+    # CaseInSensitive = ('caseInSensitive', 'True')
+    # MaxSessionsToScan = ('maxSessionsToScan', 100000)
     SessionIds = ('sessionIds', '')
     DetailType = ('renderType', 'AUTO')
     IpSearch = ('ip', '')
     UserSearch = ('user', '')
     DomainSearch = ('domain', '')
     HostSearch = ('host', '')
-    ExtractFileToWarRoom = ('getFiles', 'False')
     Params = ('params', '{}')
     ExportType = ('exportType', 'WARROOM')
-    ExportAsZip = ('exportAsZip', 'False')
+    # ExtractFileToWarRoom = ('getFiles', 'False')
+    # ExportAsZip = ('exportAsZip', 'False')
 
 
 def hasParam(args, param):
-    return param[0] in demisto.args()
+    return args.get(param[0])
 
 
 def getParam(args, param: Tuple[str, Any]):
@@ -1943,39 +1926,48 @@ def getParam(args, param: Tuple[str, Any]):
 def process_args(client: NwCoreClient, args):
     p = {
         'size': int(getParam(args, NwParams.Size)),
-        'nwQuery': getParam(args, NwParams.NwQuery),
+        # 'nwQuery': getParam(args, NwParams.NwQuery),
         'where': getParam(args, NwParams.Where),
-        'meta': getParam(args, NwParams.Meta).split(','),
-        'values': getParam(args, NwParams.Meta).split(r'(?<!\\),'),
-        'op': getattr(NwQueryOperator(), getParam(args, NwParams.Op)),
+        'meta': argToList(getParam(args, NwParams.Meta)),
+        'values': argToList(getParam(args, NwParams.Meta)),
+        'op': getattr(NwQueryOperator, getParam(args, NwParams.Operation)),
         'must': (getParam(args, NwParams.Must) == 'True'),
-        'searchAll': (getParam(args, NwParams.SearchAll) == 'True'),
+        # 'searchAll': (getParam(args, NwParams.SearchAll) == 'True'),
         'pivotMeta': re.split(r'(?<!\\),', getParam(args, NwParams.PivotMeta)),
         'searchString': getParam(args, NwParams.MSearch),
-        'searchRaw': (getParam(args, NwParams.SearchInPackets) == 'True'),
-        'regEx': (getParam(args, NwParams.SearchAsRegEx) == 'True'),
-        'caseInsensitive': (getParam(args, NwParams.CaseInSensitive) == 'True'),
-        'maxSession': int(getParam(args, NwParams.MaxSessionsToScan)),
+        # 'searchRaw': (getParam(args, NwParams.SearchInPackets) == 'True'),
+        # 'regEx': (getParam(args, NwParams.SearchAsRegEx) == 'True'),
+        # 'caseInsensitive': (getParam(args, NwParams.CaseInSensitive) == 'True'),
+        # 'maxSession': int(getParam(args, NwParams.MaxSessionsToScan)),
         'sessionIds': re.split(r'(?<!\\),', getParam(args, NwParams.SessionIds)),
-        'renderType': int(getattr(NwSessionRenderType(), getParam(args, NwParams.DetailType))),
-        'startTimeEpoch': -1,
-        'endTimeEpoch': -1,
+        'renderType': int(getattr(NwSessionRenderType, getParam(args, NwParams.DetailType))),
         'params': json.loads(getParam(args, NwParams.Params)),
         'exportType': getParam(args, NwParams.ExportType).split(r'(?<!\\),'),
+        'startTimeEpoch': -1,
+        'endTimeEpoch': -1,
     }
 
     # Collect Time Parameter
+    # start_time, end_time = get_time_range(
+    #     time_frame=getParam(args, NwParams.TimeFrame),
+    #     start_time=getParam(args, NwParams.StartTime),
+    #     end_time=getParam(args, NwParams.EndTime),
+    # )
+    # if start_time and end_time:
+    #         p.update({
+    #             'startTimeEpoch': start_time,
+    #             'endTimeEpoch': end_time,
+    #         })
     t_param = getParam(args, NwParams.Time)
-    if len(t_param) > 0:
+    if t_param:
         start_time, end_time = utilParseTimeRange(t_param, client.getTimeRange()[1])
         if start_time and end_time:
             p.update({
                 'startTimeEpoch': start_time,
                 'endTimeEpoch': end_time,
             })
-        else:
-            demisto.log('Time range was ommitted as the format was incorrect')
 
+    debug(f'args: {p}')
     return p
 
 
@@ -2027,22 +2019,31 @@ def nw_events_search_command(client: NwCoreClient, args):
 
     elif hasParam(args, NwParams.Where):
         c1_results = client.searchByNwQueryAndTime(**args)
+        debug(f'results 1: {c1_results}')
 
     elif hasParam(args, NwParams.MSearch):
         c1_results = client.mSearchEventsByNwQueryAndTime(**args)
+        debug(f'results 2: {c1_results}')
 
     elif hasParam(args, NwParams.Meta) and hasParam(args, NwParams.Values):
         if hasParam(args, NwParams.MSearch):
             c1_results = client.mSearchEventsByMeta(**args)
+            debug(f'results 3: {c1_results}')
         else:
             c1_results = client.searchByMeta(**args)
+            debug(f'results 4: {c1_results}')
 
     else:
+        LOG.messages = []
         c1_results = client.searchByNwQueryAndTime(**args)
+        debug(f'results 5: {c1_results.result}')
+
+        LOG.print_log()
 
     # Show results
     if c1_results is not None:
         response = c1_results.asSDKQueryResponse()
+        debug(f'search response: {response}')
         results = []
         for record in response.values():
             processed_record = {}
@@ -2054,8 +2055,9 @@ def nw_events_search_command(client: NwCoreClient, args):
 
         return CommandResults(
             readable_output=tableToMarkdown(
-                f'Sessions\nTotal Number Of Sessions Fetched : {len(c1_results.asSDKQueryResponse())}',
+                'Sessions',
                 results,
+                metadata=f'Total Number Of Sessions Fetched : {len(results)}',
                 headers=['sessionid', 'time', 'event_source', 'event_desc'],
                 headerTransform=string_to_table_header,
             ),
@@ -2124,9 +2126,9 @@ def nw_events_info_command(client: NwCoreClient, args):
 
     # JSON
     json_ = {
-        'INDEX_NONE': unindexed_meta,
         'INDEX_VALUE': indexed_meta,
         'INDEX_KEY': indexed_key_meta,
+        'INDEX_NONE': unindexed_meta,
     }
 
     # Add Meta Information
@@ -2150,9 +2152,14 @@ def nw_events_info_command(client: NwCoreClient, args):
 
     # Show results
     return [
-        {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': c2_summary},
-        {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': performance_summary},
-        {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json_},
+        CommandResults(raw_response=c2_summary),
+        CommandResults(raw_response=performance_summary),
+        CommandResults(raw_response=json_),
+
+
+        # {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': c2_summary},
+        # {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': performance_summary},
+        # {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json_},
     ]
 
 
@@ -2195,7 +2202,8 @@ def nw_events_values_command(client, args):
         demisto.log(r'Total Number Of Unique Values Fetched for Key [{p}] is {len(c3_results[p])}')
 
     # Show results
-    return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': c3_results}
+    return CommandResults(raw_response=c3_results)
+    # return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': c3_results}
 
 
 # #
@@ -2360,7 +2368,7 @@ def main():
         return_error(f'Failed to run the {command} command. Error:\n{exc}', error=traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
 
 
