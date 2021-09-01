@@ -9,17 +9,16 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The API Key to use for connection
-  display: API Key
-  name: apikey
-  required: true
-  type: 4
-- additionalinfo: The API Key ID to use for connection
-  display: API Key ID
-  hidden: false
+- displaypassword: API Key ID
   name: apikey_id
-  required: true
-  type: 4
+  type: 9
+  required: false
+  hiddenusername: true
+- displaypassword: API Key
+  name: apikey
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -63,6 +62,19 @@ script:
       name: interval_in_seconds
       required: false
       secret: false
+    - default: false
+      description: The maximum number of returned fields per results.
+      isArray: false
+      name: max_fields
+      required: false
+      secret: false
+      defaultValue: 20
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
@@ -70,109 +82,109 @@ script:
     polling: true
     name: xdr-xql-generic-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.execution_id
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.number_of_results
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.query_cost
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._time
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
       description: ''
       type: Date
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.mac
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
       description: ''
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_effective_username
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_signature_status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_signature_status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_type
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.action_remote_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
       description: ''
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._product
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_install_type
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
       description: ''
       type: String
   - deprecated: false
@@ -181,14 +193,14 @@ script:
     hidden: false
     name: xdr-xql-get-quota
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.Quota.license_quota
+    - contextPath: PaloAltoNetworksXQL.Quota.license_quota
       description: Amount of daily quota allocated to your tenant based on your license
         type and size.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.Quota.additional_purchased_quota
+    - contextPath: PaloAltoNetworksXQL.Quota.additional_purchased_quota
       description: Amount of query quota purchased.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.Quota.used_quota
+    - contextPath: PaloAltoNetworksXQL.Quota.used_quota
       description: Amount of query quota used over the past 24 hours.
       type: Number
   - arguments:
@@ -199,6 +211,13 @@ script:
       name: query_id
       required: true
       secret: false
+    - default: false
+      description: The maximum number of returned fields per results.
+      isArray: false
+      name: max_fields
+      required: false
+      secret: false
+      defaultValue: 20
     deprecated: false
     description: |-
       Retrieve results of an executed XQL query API.
@@ -207,105 +226,105 @@ script:
     polling: true
     name: xdr-xql-get-query-results
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.number_of_results
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.query_cost
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._time
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
       description: ''
       type: Date
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.mac
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
       description: ''
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_effective_username
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.actor_process_signature_status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_process_signature_status
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.causality_actor_type
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.os_actor_process_os_pid
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
       description: ''
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.action_remote_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
       description: ''
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._vendor
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results._product
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.GenericQuery.results.agent_install_type
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
       description: ''
       type: String
   - arguments:
@@ -363,55 +382,55 @@ script:
     polling: true
     name: xdr-xql-file-event-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.execution_id
+    - contextPath: PaloAltoNetworksXQL.FileEvent.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.status
+    - contextPath: PaloAltoNetworksXQL.FileEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.number_of_results
+    - contextPath: PaloAltoNetworksXQL.FileEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.query_cost
+    - contextPath: PaloAltoNetworksXQL.FileEvent.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.FileEvent.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.action_file_path
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.action_file_sha256
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.actor_process_file_create_time
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.actor_process_file_create_time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results._vendor
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results._time
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileEvent.results._product
+    - contextPath: PaloAltoNetworksXQL.FileEvent.results._product
       description: ''
       type: String
   - arguments:
@@ -469,82 +488,82 @@ script:
     polling: true
     name: xdr-xql-process-event-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.execution_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.status
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.number_of_results
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.query_cost
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetwofrksXDR.XQL.BuiltInQuery.ProcessEvent.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_image_name
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_image_path
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_causality_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_signature_product
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.action_process_image_command_line
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.actor_process_causality_id
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results._vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results._time
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessEvent.results._product
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._product
       description: ''
       type: String
   - arguments:
@@ -602,79 +621,79 @@ script:
     polling: true
     name: xdr-xql-dll-module-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.execution_id
+    - contextPath: PaloAltoNetworksXQL.DllModule.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.status
+    - contextPath: PaloAltoNetworksXQL.DllModule.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.number_of_results
+    - contextPath: PaloAltoNetworksXQL.DllModule.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.query_cost
+    - contextPath: PaloAltoNetworksXQL.DllModule.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.DllModule.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_effective_username
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_effective_username
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.action_module_sha256
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.action_module_path
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.action_module_file_info
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_file_info
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.action_module_file_create_time
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_file_create_time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.actor_process_causality_id
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results._vendor
+    - contextPath: PaloAltoNetworksXQL.DllModule.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results._time
+    - contextPath: PaloAltoNetworksXQL.DllModule.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.DllModule.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DllModule.results._product
+    - contextPath: PaloAltoNetworksXQL.DllModule.results._product
       description: ''
       type: String
   - arguments:
@@ -745,82 +764,82 @@ script:
     polling: true
     name: xdr-xql-network-connection-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.execution_id
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.status
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.number_of_results
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.query_cost
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_effective_username
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.action_local_ip
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.action_remote_ip
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.action_remote_port
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.dst_action_external_hostname
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.dst_action_external_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.action_country
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_country
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.actor_process_causality_id
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results._vendor
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results._time
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.NetworkConnection.results._product
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._product
       description: ''
       type: String
   - arguments:
@@ -879,67 +898,67 @@ script:
     polling: true
     name: xdr-xql-registry-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.execution_id
+    - contextPath: PaloAltoNetworksXQL.Registry.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.status
+    - contextPath: PaloAltoNetworksXQL.Registry.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.number_of_results
+    - contextPath: PaloAltoNetworksXQL.Registry.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.query_cost
+    - contextPath: PaloAltoNetworksXQL.Registry.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.Registry.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.Registry.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.Registry.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.Registry.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.agent_os_type
+    - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.agent_os_sub_type
+    - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_sub_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.event_type
+    - contextPath: PaloAltoNetworksXQL.Registry.results.event_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.event_sub_type
+    - contextPath: PaloAltoNetworksXQL.Registry.results.event_sub_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.action_registry_key_name
+    - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_key_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.action_registry_value_name
+    - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_value_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.action_registry_data
+    - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_data
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results._vendor
+    - contextPath: PaloAltoNetworksXQL.Registry.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results._time
+    - contextPath: PaloAltoNetworksXQL.Registry.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.Registry.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.Registry.results._product
+    - contextPath: PaloAltoNetworksXQL.Registry.results._product
       description: ''
       type: String
   - arguments:
@@ -1000,67 +1019,67 @@ script:
     polling: true
     name: xdr-xql-event-log-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.execution_id
+    - contextPath: PaloAltoNetworksXQL.EventLog.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.status
+    - contextPath: PaloAltoNetworksXQL.EventLog.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.number_of_results
+    - contextPath: PaloAltoNetworksXQL.EventLog.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.query_cost
+    - contextPath: PaloAltoNetworksXQL.EventLog.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.EventLog.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.agent_os_type
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.agent_os_sub_type
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_sub_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.action_evtlog_event_id
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_event_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.event_type
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.event_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.event_sub_type
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.event_sub_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.action_evtlog_message
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_message
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.action_evtlog_provider_name
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_provider_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results._vendor
+    - contextPath: PaloAltoNetworksXQL.EventLog.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results._time
+    - contextPath: PaloAltoNetworksXQL.EventLog.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.EventLog.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.EventLog.results._product
+    - contextPath: PaloAltoNetworksXQL.EventLog.results._product
       description: ''
       type: String
   - arguments:
@@ -1124,94 +1143,94 @@ script:
     polling: true
     name: xdr-xql-dns-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.execution_id
+    - contextPath: PaloAltoNetworksXQL.DNS.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.status
+    - contextPath: PaloAltoNetworksXQL.DNS.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.number_of_results
+    - contextPath: PaloAltoNetworksXQL.DNS.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.query_cost
+    - contextPath: PaloAltoNetworksXQL.DNS.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.DNS.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.DNS.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.DNS.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.DNS.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.agent_os_type
+    - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.agent_os_sub_type
+    - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_sub_type
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_local_ip
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_local_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_remote_ip
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_remote_port
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_port
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.dst_action_external_hostname
+    - contextPath: PaloAltoNetworksXQL.DNS.results.dst_action_external_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.dns_query_name
+    - contextPath: PaloAltoNetworksXQL.DNS.results.dns_query_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_app_id_transitions
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_total_download
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_total_upload
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_upload
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_country
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_country
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.action_as_data
+    - contextPath: PaloAltoNetworksXQL.DNS.results.action_as_data
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.os_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.os_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.os_actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.os_actor_process_causality_id
+    - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results._vendor
+    - contextPath: PaloAltoNetworksXQL.DNS.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results._time
+    - contextPath: PaloAltoNetworksXQL.DNS.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.DNS.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.DNS.results._product
+    - contextPath: PaloAltoNetworksXQL.DNS.results._product
       description: ''
       type: String
   - arguments:
@@ -1276,100 +1295,100 @@ script:
     polling: true
     name: xdr-xql-file-dropper-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.execution_id
+    - contextPath: PaloAltoNetworksXQL.FileDropper.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.status
+    - contextPath: PaloAltoNetworksXQL.FileDropper.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.number_of_results
+    - contextPath: PaloAltoNetworksXQL.FileDropper.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.query_cost
+    - contextPath: PaloAltoNetworksXQL.FileDropper.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.FileDropper.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.action_file_sha256
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.action_file_path
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_signature_product
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.actor_primary_normalized_user
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_primary_normalized_user
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_process_command_line
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_process_signature_product
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.os_actor_effective_username
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.causality_actor_remote_host
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.causality_actor_remote_ip
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results._vendor
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results._time
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.FileDropper.results._product
+    - contextPath: PaloAltoNetworksXQL.FileDropper.results._product
       description: ''
       type: String
   - arguments:
@@ -1428,100 +1447,100 @@ script:
     polling: true
     name: xdr-xql-process-instance-network-activity-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.execution_id
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.status
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.number_of_results
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.query_cost
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_local_ip
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_local_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_remote_ip
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_remote_port
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.dst_action_external_hostname
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dst_action_external_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.dns_query_name
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_app_id_transitions
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_total_download
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_total_upload
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_upload
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_country
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_country
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.action_as_data
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_as_data
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_signature_product
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_causality_id
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_image_command_line
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results._vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results._time
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessInstanceNetworkActivity.results._product
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._product
       description: ''
       type: String
   - arguments:
@@ -1580,103 +1599,103 @@ script:
     polling: true
     name: xdr-xql-process-causality-network-activity-query
     outputs:
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.execution_id
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.status
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
         For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.number_of_results
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.query_cost
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_cost
       description: |-
         Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.remaining_quota
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota
       description: Float representing the number of query units available for you
         to use.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.agent_hostname
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.agent_ip_addresses
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_ip_addresses
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.agent_id
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_local_ip
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_local_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_remote_ip
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_ip
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_remote_port
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.dst_action_external_hostname
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dst_action_external_hostname
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.dns_query_name
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_app_id_transitions
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_total_download
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_total_upload
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_upload
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_country
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_country
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.action_as_data
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_as_data
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_image_sha256
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_sha256
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_image_name
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_name
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_image_path
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_signature_product
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_product
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_causality_id
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_image_command_line
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.actor_process_instance_id
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results._vendor
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._vendor
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results._time
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._time
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results.insert_timestamp
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.insert_timestamp
       description: ''
       type: String
-    - contextPath: PaloAltoNetworksXDR.XQL.BuiltInQuery.ProcessCausalityNetworkActivity.results._product
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: ''
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: false
   longRunning: false

@@ -339,7 +339,7 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     tenant_ids = argToList(args.get('tenant_ids'))
     if tenant_ids:
         data['request_data']['tenants'] = tenant_ids
-    # Call the Client function and get the raw response
+    # call the client function and get the raw response
     execution_id = client.start_xql_query(data)
     return execution_id
 
@@ -359,13 +359,11 @@ def get_xql_query_results(client: Client, args: dict) -> Tuple[dict, Optional[by
     query_id = args.get('query_id')
     if not query_id:
         raise ValueError('query ID is not specified')
-    limit = args.get('limit', DEFAULT_LIMIT)
     data = {
         'request_data': {
             'query_id': query_id,
             'pending_flag': True,
             'format': 'json',
-            'limit': limit
         }
     }
 
@@ -502,10 +500,10 @@ def get_outputs_prefix(command_name: str) -> str:
     """
 
     if command_name in GENERIC_QUERY_COMMANDS:
-        return 'PaloAltoNetworksXDR.XQL.GenericQuery'
+        return 'PaloAltoNetworksXQL.GenericQuery'
     else:  # built in command
         query_name = BUILT_IN_QUERY_COMMANDS[command_name].get('name')
-        return f'PaloAltoNetworksXDR.XQL.BuiltInQuery.{query_name}'
+        return f'PaloAltoNetworksXQL.{query_name}'
 
 
 def get_nonce() -> str:
@@ -584,6 +582,8 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     Returns:
         CommandResults: The command results.
     """
+    if not (query_name := args.get('query_name')):
+        raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if not execution_id:
         raise DemistoException('Failed to start query\n')
@@ -594,7 +594,8 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
             execution_id: {
                 'query': args.get('query'),
                 'time_frame': args.get('time_frame'),
-                'command_name': demisto.command()
+                'command_name': demisto.command(),
+                'query_name': query_name,
             }
         })
         return get_xql_query_results_polling_command(client, args)
@@ -619,19 +620,23 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
+    max_fields = int(args.get('max_fields', 20))
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
+    outputs.update({'query_name': command_data.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-
     # if there are more then 1000 results - a file is returned
     if file_data:
         file = fileResult(filename="results.gz", data=file_data)
         remove_query_id_from_integration_context(query_id)
         return [file, command_results]
 
-    # if status is pending, the command will be called again in the next run until success.
+    # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
+        if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
+            remove_query_id_from_integration_context(query_id)
+            return command_results
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
@@ -639,7 +644,6 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
         return command_results
 
     results_to_format = outputs.pop('results')
-
     # create Human Readable output
     query = command_data.get('query', '')
     time_frame = command_data.get('time_frame')
@@ -654,6 +658,10 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     if results_to_format:
         formatted_list = format_results(results_to_format, remove_empty_fields=False) \
             if 'fields' in query else format_results(results_to_format)
+        if formatted_list and len(formatted_list[0].keys()) > max_fields:
+            raise DemistoException('The number of fields per result has exceeded the maximum number of allowed fields, '
+                                   'please select specific fields in the query or increase the maximum number of '
+                                   'allowed fields.')
         outputs.update({'results': formatted_list})
         command_results.outputs = outputs
 
@@ -682,7 +690,7 @@ def get_xql_quota_command(client: Client, args: Dict[str, Any]) -> CommandResult
     result = client.get_xql_quota(data).get('reply', {})
     readable_output = tableToMarkdown('Quota Results', result, headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
-        outputs_prefix='PaloAltoNetworksXDR.XQL.Quota',
+        outputs_prefix='PaloAltoNetworksXQL.Quota',
         outputs_key_field='',
         outputs=result,
         readable_output=readable_output
@@ -784,8 +792,10 @@ def main() -> None:
     """
     args = demisto.args()
     params = demisto.params()
-    api_key = params.get('apikey')
-    api_key_id = params.get('apikey_id')
+    if not params.get('apikey') or not (api_key := params.get('apikey', {}).get('password')):
+        raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
+    if not params.get('apikey_id') or not (api_key_id := params.get('apikey_id', {}).get('password')):
+        raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
     base_url = urljoin(params['url'], '/public_api/v1')
     verify_cert = not params.get('insecure', False)
     proxy = params.get('proxy', False)

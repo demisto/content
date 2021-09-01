@@ -586,7 +586,33 @@ def test_format_results_do_not_remove_empty_fields():
     assert expected == response
 
 
-# =========================================== TEST Generic Query Functions ===========================================#
+def test_start_xql_query_polling_not_supported(mocker):
+    """
+    Given:
+    - A query that has a pending status.
+
+    When:
+    - Calling get_xql_query_results_polling_command function but polling is not supported.
+
+    Then:
+    - Ensure returned command results are correct.
+
+    """
+    query = 'MOCK_QUERY'
+    mock_response = {'status': 'PENDING',
+                     'execution_id': 'query_id_mock',
+                     'results': None}
+    mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
+    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=False)
+    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    assert command_results.outputs == {'status': 'PENDING',
+                                       'execution_id': 'query_id_mock',
+                                       'results': None,
+                                       'query_name': 'mock_name'}
+
+# ================================ TEST Generic Query Functions version 6.2 and above ================================#
+
 
 def test_start_xql_query_polling_command(mocker):
     """
@@ -606,6 +632,7 @@ def test_start_xql_query_polling_command(mocker):
             'query': 'mock_query',
             'time_frame': '3 days',
             'command_name': 'previous command',
+            'query_name': 'mock_name',
         }
     }
     set_integration_context(context)
@@ -620,11 +647,11 @@ def test_start_xql_query_polling_command(mocker):
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query})
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
+    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': 'mock_name',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
-    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
+    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | mock_name | 1000.0 | SUCCESS |' in \
            command_results.readable_output
     assert 'y' in command_results.raw_response['results'][0]
     assert get_integration_context() == context
@@ -651,8 +678,8 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
+    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
+    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
     assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
@@ -682,7 +709,7 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
-    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
+    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
     assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
@@ -717,7 +744,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert results[0] == {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz', 'FileID': '12345'}
     command_result = results[1]
-    assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500,
+    assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                       'results': {'stream_id': 'test_stream_id'}, 'execution_id': 'query_id_mock'}
 
@@ -739,11 +766,12 @@ def test_get_xql_query_results_polling_command_pending(mocker):
                      'execution_id': 'query_id_mock',
                      'results': None}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch('XQLQueryingEngine.ScheduledCommand', return_value=None)
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
-    assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None}
+    assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None, 'query_name': ''}
 
 
 def test_get_xql_quota_command(mocker):
