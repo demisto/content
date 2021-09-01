@@ -337,5 +337,11 @@ Disable an active user.
 >| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | false | john.doe@example.com |
 
 
+#### Outgoing Mapper
+- In the `User Profile - PrismaCloudIAM (Outgoing)` you should manually configure and map the following required attributes:
+    1. timeZone - the time zone of the user.
+    1. roleId - the id of the role assigned to the user
+
+
 
 
