@@ -1478,7 +1478,7 @@ class Pack(object):
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
                 PackFolders.GENERIC_TYPES.value: "GenericTypes",
                 PackFolders.LISTS.value: "list",
-                PackFolders.PREPROCESSING_RULE.value: "preprocessrule",
+                PackFolders.PREPROCESS_RULES.value: "preprocessrule",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1659,7 +1659,7 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            return task_status, content_items_result
+            return task_status
 
     def load_user_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
