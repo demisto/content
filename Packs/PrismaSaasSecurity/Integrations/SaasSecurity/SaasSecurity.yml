@@ -26,7 +26,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: The number of incident per fetch
+- display: Number of incidents per fetch
   name: max_fetch
   defaultvalue: "20"
   type: 0
@@ -46,7 +46,7 @@ configuration:
   - Open
   - Closed
 - display: 'Fetch only incidents with matching severity'
-  additionalinfo: If none is selected all severities will be used.
+  additionalinfo: If nothing is selected, all severities will be used.
   name: severity
   type: 16
   required: false
@@ -57,7 +57,7 @@ configuration:
   - '4'
   - '5'
 - display: 'Fetch only incidents with matching status'
-  additionalinfo: If none is selected all will be used.
+  additionalinfo: If nothing is selected, all statuses will be used.
   name: status
   type: 16
   required: false
@@ -71,12 +71,12 @@ configuration:
   - Misidentified
   - In The Cloud
   - Dismiss
-- display: Fetch only incidents with matching app IDs
+- display: Fetch only incidents with matching Application IDs
   name: app_ids
   type: 0
   required: false
-  additionalinfo: Comma-separated list of app IDs. Run the 'saas-security-get-apps'
-    command to list apps info.
+  additionalinfo: Comma-separated list of Application IDs. Run the 'saas-security-get-apps'
+    command to return the Application ID, Name, and Type for all applications.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -86,29 +86,29 @@ configuration:
   type: 8
   required: false
 description: Use the SaaS Security integration to protect against cloud‑based threats
-  by scanning and analyzing all your assets and applying Security policy to identify
-  exposures, external collaborators, risky user behavior, and sensitive documents
+  by scanning and analyzing all your assets; applying Security policy to identify
+  exposures, external collaborators, risky user behavior, and sensitive documents;
   and identifying the potential risks associated with each asset.
-display: Saas Security
+display: SaaS Security
 name: SaasSecurity
 script:
   commands:
   - name: saas-security-incidents-get
-    description: Retrieve incidents from the Saas Security platform.
+    description: Retrieve incidents from the SaaS Security platform.
     arguments:
     - name: limit
       description: The number of incidents to pull. Default is 50, maximum is 200,
         minimum is 10.
       defaultValue: "50"
     - name: from
-      description: "The start time of query, filter by the date the incident was updated,\
-        \ e.g, `2021-08-23T09:26:25.872Z`"
+      description: The start time of the query, filtered by the date the incident was updated,\
+        \ e.g., `2021-08-23T09:26:25.872Z`.
     - name: to
-      description: The end time of query, filter by the date the incident was updated,
-        e.g, `2021-08-23T09:26:25.872Z`
+      description: The end time of the query, filtered by the date the incident was updated,
+        e.g., `2021-08-23T09:26:25.872Z`.
     - name: app_ids
-      description: Comma-separated list of application id. Run the 'saas-security-get-apps'
-        command to list all apps.
+      description: Comma-separated list of application IDs. Run the 'saas-security-get-apps'
+        command to return the Application ID, Name, and Type for all applications.
       isArray: true
     - name: state
       auto: PREDEFINED
@@ -116,7 +116,7 @@ script:
       - All
       - Open
       - Closed
-      description: The state of the incidents. If empty, retrieves all states.
+      description: 'The state of the incidents. If empty, retrieves all states. Possible values: "All", "Open", and "Closed".'
       defaultValue: open
     - name: severity
       auto: PREDEFINED
@@ -126,7 +126,7 @@ script:
         - '3'
         - '4'
         - '5'
-      description: The severity of the incidents. In none is selected, all severities will be pulled.
+      description: 'The severity of the incidents. In none is selected, all severities will be pulled. Possible values: "1", "2", "3", "4", and "5".'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -140,7 +140,7 @@ script:
       - In The Cloud
       - Dismiss
       isArray: true
-      description: The status of the incidents.
+      description: 'The status of the incidents. Possible values:"New", "Assigned", " In Progress", "Pending", "No Reason", "Business Justified", "Misidentified", "In The Cloud", and "Dismiss".' 
     - name: next_page
       description: Get the next batch of incidents. No other argument is needed when
         providing this.
@@ -167,7 +167,7 @@ script:
       description: Asset name.
       type: String
     - contextPath: SaasSecurity.Incident.asset_sha256
-      description: The asset SHA256.
+      description: SHA256 hash value of the asset.
       type: String
     - contextPath: SaasSecurity.Incident.asset_id
       description: Asset ID.
@@ -197,7 +197,7 @@ script:
       description: Policy page URI.
       type: String
     - contextPath: SaasSecurity.Incident.severity
-      description: Sevrity of the incident.
+      description: Severity of the incident.
       type: String
     - contextPath: SaasSecurity.Incident.status
       description: Incident status.
@@ -209,28 +209,28 @@ script:
       description: Incident category.
       type: String
     - contextPath: SaasSecurity.Incident.resolved_by
-      description: Name of the User who resolved the incident.
+      description: Name of the user who resolved the incident.
       type: String
     - contextPath: SaasSecurity.Incident.resolution_date
       description: Date the incident was resolved.
       type: Date
     - contextPath: SaasSecurity.Incident.created_at
-      description: Date the incident was created. e.g, `2021-08-23T09:26:25.872Z`.
+      description: Date the incident was created, e.g., `2021-08-23T09:26:25.872Z`.
       type: Date
     - contextPath: SaasSecurity.Incident.updated_at
-      description: Date the incident was last updated. e.g, `2021-08-24T09:26:25.872Z`.
+      description: Date the incident was last updated. e.g., `2021-08-24T09:26:25.872Z`.
       type: Date
     - contextPath: SaasSecurity.Incident.asset_owner_id
-      description: The ID of the asset owner.
+      description: ID of the asset owner.
       type: String
     - contextPath: SaasSecurity.Incident.asset_owner_name
-      description: The name of the asset owner.
+      description: Name of the asset owner.
       type: String
     - contextPath: SaasSecurity.Incident.asset_owner_email
-      description: The email of the asset owner.
+      description: Email address of the asset owner.
       type: String
     - contextPath: SaasSecurity.NextResultsPage
-      description: The URI for the next batch of incidents.
+      description: URI for the next batch of incidents.
       type: String
   - name: saas-security-incident-get-by-id
     arguments:
@@ -261,7 +261,7 @@ script:
       description: Asset name.
       type: String
     - contextPath: SaasSecurity.Incident.asset_sha256
-      description: The asset SHA256.
+      description: SHA256 hash value of the asset.
       type: String
     - contextPath: SaasSecurity.Incident.asset_id
       description: Asset ID.
@@ -291,7 +291,7 @@ script:
       description: Policy page URI.
       type: String
     - contextPath: SaasSecurity.Incident.severity
-      description: Sevrity of the incident.
+      description: Severity of the incident.
       type: String
     - contextPath: SaasSecurity.Incident.status
       description: Incident status.
@@ -304,34 +304,34 @@ script:
       description: Incident category.
       type: String
     - contextPath: SaasSecurity.Incident.resolved_by
-      description: Name of the User who resolved the incident.
+      description: Name of the user who resolved the incident.
       type: String
     - contextPath: SaasSecurity.Incident.resolution_date
       description: Date the incident was resolved.
       type: Date
     - contextPath: SaasSecurity.Incident.created_at
-      description: Date the incident was created. e.g, `2021-08-23T09:26:25.872Z`.
+      description: Date the incident was created, e.g., `2021-08-23T09:26:25.872Z`.
       type: Date
     - contextPath: SaasSecurity.Incident.updated_at
-      description: Date the incident was last updated. e.g, `2021-08-24T09:26:25.872Z`.
+      description: Date the incident was last updated, e.g., `2021-08-24T09:26:25.872Z`.
       type: Date
     - contextPath: SaasSecurity.Incident.asset_owner_id
-      description: The ID of the asset owner.
+      description: ID of the asset owner.
       type: String
     - contextPath: SaasSecurity.Incident.asset_owner_name
-      description: The name of the asset owner.
+      description: Name of the asset owner.
       type: String
     - contextPath: SaasSecurity.Incident.asset_owner_email
-      description: The email of the asset owner.
+      description: Email address of the asset owner.
       type: String
-    description: Gets an incident by its ID.
+    description: Get an incident by its ID.
   - name: saas-security-incident-state-update
     arguments:
     - name: id
       required: true
       description: The incident ID.
     - name: category
-      description: Reason for closing the incident.
+      description: 'Reason for closing the incident. Possible values: "Misidentified", "No Reason", and "Business Justified".'
       required: true
       auto: PREDEFINED
       predefined:
@@ -341,21 +341,21 @@ script:
       defaultValue: Reason for state update.
     outputs:
     - contextPath: SaasSecurity.IncidentState.incident_id
-      description: The incident ID.
+      description: Incident ID.
       type: String
     - contextPath: SaasSecurity.IncidentState.state
-      description: The incident state (open/closed).
+      description: Incident state (open/closed).
       type: String
     - contextPath: SaasSecurity.IncidentState.category
-      description: The incident category.
+      description: Incident category.
       type: String
     - contextPath: SaasSecurity.IncidentState.resolved_by
-      description: Name of the User who resolved the incident.
+      description: Name of the user who resolved the incident.
       type: String
     - contextPath: SaasSecurity.IncidentState.resolution_date
       description: Date when the incident was resolved.
       type: Date
-    description: Closes an incident and updates its category.
+    description: Close an incident and update its category.
   - name: saas-security-get-apps
     arguments: []
     outputs:
@@ -368,7 +368,7 @@ script:
     - contextPath: SaasSecurity.App.app_type
       description: Application type.
       type: String
-    description: Gets Apps info.
+    description: Returns the Application ID, Name, and Type for all applications.
   - name: saas-security-asset-remediate
     arguments:
     - name: asset_id
@@ -381,14 +381,14 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: The remediation action to take.
+      description: 'The remediation action to take. Possible values: "Remove public sharing", "Quarantine", and "Restore".'
     - name: remove_inherited_sharing
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: Used when remediation type is “remove_public_sharing”, when set
-        to true, all the parent folder sharing url will be removed.
+      description: 'Used when the remediation type is “Remove public sharing”. When set
+        to true, all the parent folders with a shared URL will be removed. Possible values: "True" and "False"'
       defaultValue: "false"
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
@@ -400,9 +400,9 @@ script:
     - contextPath: SaasSecurity.Remediation.status
       description: Remediation action status.
       type: String
-    description: Remediates an asset.
+    description: Remediate an asset.
   - name: saas-security-remediation-status-get
-    description: Get Remediation Status for a given asset ID.
+    description: Get the remediation status for a given asset ID.
     arguments:
     - name: asset_id
       required: true
@@ -414,7 +414,7 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: The remediation action that was taken
+      description: 'The remediation action that was taken. Possible values: "Remove public sharing", "Quarantine", and "Restore".'
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
       description: Asset ID.
@@ -426,7 +426,7 @@ script:
       description: Remediation type.
       type: String
     - contextPath: SaasSecurity.Remediation.action_taker
-      description: The source of the remedation action, e.g, 'api',
+      description: Source of the remediation action, e.g., 'api'.
       type: String
     - contextPath: SaasSecurity.Remediation.action_date
       description: Date when the remediation action was taken.
