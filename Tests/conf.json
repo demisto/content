@@ -3458,7 +3458,49 @@
         },
         {
             "integrations": "QualysV2",
-            "playbookID": "QualysVulnerabilityManagement-Test",
+            "playbookID": "qualys-excluded-host-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-group-host-scheduled-scan-ip-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-pc-scan-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-reports-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-restricted-ips-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-scheduled-report-report-template-vm-list-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-virtual-host-test",
+            "fromversion": "5.5.0",
+            "timeout": 3000
+        },
+        {
+            "integrations": "QualysV2",
+            "playbookID": "qualys-vm-scan-test",
             "fromversion": "5.5.0",
             "timeout": 3000
         },
@@ -4596,7 +4638,6 @@
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
-        "QualysVulnerabilityManagement-Test": "Issue 38640",
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
