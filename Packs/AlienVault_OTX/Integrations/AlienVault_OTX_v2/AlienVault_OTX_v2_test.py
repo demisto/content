@@ -596,6 +596,27 @@ def test_url_command_not_found(mocker):
     assert command_results[0].to_context()['HumanReadable'] == expected_result
 
 
+def test_url_command_uppercase_protocol(requests_mock):
+    """
+    Given:
+        - URL with uppercase protocol (HTTPS)
+    
+    When:
+        - Running the url command
+
+    Then:
+        - Ensure the protocol is lowercased
+    """
+    requests_mock.get(
+        'base_url/indicators/url/https://www.google.com/general', 
+        json={
+            'alexa': 'http://www.alexa.com/siteinfo/google.com',
+        }
+    )
+    res = url_command(client, 'HTTPS://www.google.com')
+    assert res[0].indicator.to_context()['URL(val.Data && val.Data == obj.Data)']['Data'] == 'https://www.google.com'
+
+
 @pytest.mark.parametrize('raw_response,expected', [
     (DOMAIN_RAW_RESPONSE, DOMAIN_EC)
 ])
