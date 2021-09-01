@@ -1371,9 +1371,9 @@ class Actions():
                     outputs_key_field=""
                 )
 
-    def fetch_incidents(self, rule_names, fetch_time):
-        if rule_names:
-            rule_names = rule_names.split(';')
+    def fetch_incidents(self, rule_names_arg: Optional[str], fetch_time: str) -> None:
+        if rule_names_arg:
+            rule_names = rule_names_arg.split(';')
         else:
             rule_names = []
 
