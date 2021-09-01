@@ -289,19 +289,19 @@ def test_update_user_sta_command(mocker, args, expected_output, expected_readabl
 
 # Tests sta-delete-user command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'userName': 'testuser1'},
-         {"Deleted": True, "id": "iNlsjym+x1MLesvCSusAAAAc", "userName": "testuser1"},
-         {'STA user - testuser1 successfully deleted.'})
+         {"Deleted": True, "id": "iNlsjym+x1MLesvCSusAAAAc", "userName": "testuser1"})
     ])
-def test_delete_user_sta_command(mocker, args, expected_output, expected_readable):
+def test_delete_user_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import delete_user_sta_command
     mocker.patch.object(client, 'delete_user_sta', return_value=delete_user)
     response = delete_user_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.USER'
+    assert response.outputs['Deleted'] is True
     assert 'testuser1' in response.readable_output
 
 
@@ -435,13 +435,12 @@ def test_create_group_sta_command(mocker, args, expected_output, expected_readab
 
 # Tests sta-delete-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup2'},
-         {"Deleted": True, "groupName": "TestGroup2", "id": "16777228"},
-         {'STA group - TestGroup2 successfully deleted.'})
+         {"Deleted": True, "groupName": "TestGroup2", "id": "16777228"})
     ])
-def test_delete_group_sta_command(mocker, args, expected_output, expected_readable):
+def test_delete_group_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import delete_group_sta_command
 
@@ -449,6 +448,7 @@ def test_delete_group_sta_command(mocker, args, expected_output, expected_readab
     response = delete_group_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.GROUP'
+    assert response.outputs['Deleted'] is True
     assert 'TestGroup2' in response.readable_output
 
 
@@ -475,14 +475,13 @@ def test_update_group_sta_command(mocker, args, expected_output, expected_readab
 
 # Tests sta-add-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
          {"groupName": "TestGroup1", "group_id": "50331649", "status": True, "userName": "hellouser",
-             "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
-         {'User - hellouser successfully added to the group - TestGroup1.'})
+             "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"})
     ])
-def test_add_user_group_sta_command(mocker, args, expected_output, expected_readable):
+def test_add_user_group_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import add_user_group_sta_command
 
@@ -491,6 +490,7 @@ def test_add_user_group_sta_command(mocker, args, expected_output, expected_read
 
     assert response.outputs_prefix == 'STA.UPDATE.USER.GROUP'
     assert 'TestGroup1' in response.readable_output
+    assert response.outputs['status'] is True
     assert 'hellouser' in response.readable_output
 
 
@@ -514,14 +514,13 @@ def test_user_exist_group_sta_command(mocker, args, expected_output):
 
 # Tests sta-remove-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
          {"groupName": "TestGroup1", "group_id": "50331649", "status": False, "userName": "hellouser",
-          "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
-         {'User - hellouser successfully removed from the group - TestGroup1.'})
+          "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"})
     ])
-def test_remove_user_group_sta_command(mocker, args, expected_output, expected_readable):
+def test_remove_user_group_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import remove_user_group_sta_command
 
@@ -529,6 +528,7 @@ def test_remove_user_group_sta_command(mocker, args, expected_output, expected_r
     response = remove_user_group_sta_command(client, args)
 
     assert response.outputs_prefix == 'STA.UPDATE.USER.GROUP'
+    assert response.outputs['status'] is False
     assert 'TestGroup1' in response.readable_output
     assert 'hellouser' in response.readable_output
 
