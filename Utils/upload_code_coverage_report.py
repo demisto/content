@@ -47,12 +47,12 @@ def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool
 
 
 def upload_files_to_google_cloud_storage(service_account: str,
-                                        bucket_name: str,
-                                        source_file_name: str,
-                                        minimal_file_name: str,
-                                        destination_blob_dir: str,
-                                        last_updated: str,
-                                        ):
+                                         bucket_name: str,
+                                         source_file_name: str,
+                                         minimal_file_name: str,
+                                         destination_blob_dir: str,
+                                         last_updated: str,
+                                         ):
     """Upload files to the bucket."""
 
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
@@ -148,12 +148,12 @@ def main():
 
     if success:
         upload_files_to_google_cloud_storage(service_account=options.service_account,
-                                            bucket_name=options.bucket_name,
-                                            source_file_name=options.source_file_name,
-                                            minimal_file_name=options.minimal_file_name,
-                                            destination_blob_dir=options.destination_blob_dir,
-                                            last_updated=last_updated
-                                            )
+                                             bucket_name=options.bucket_name,
+                                             source_file_name=options.source_file_name,
+                                             minimal_file_name=options.minimal_file_name,
+                                             destination_blob_dir=options.destination_blob_dir,
+                                             last_updated=last_updated
+                                             )
 
 
 if __name__ == '__main__':
