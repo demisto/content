@@ -49,6 +49,26 @@ class Client(BaseClient):
             'members': response.get('items')
         }
 
+    def get_nodes(self):
+
+        url_suffix = 'ltm/node'
+        response = self._http_request(method='GET', url_suffix=url_suffix,
+                                      headers=self.headers, params={})
+
+        return response.get('items')
+
+    def get_node(self, node):
+        url_suffix = f'ltm/node/~{self.partition}~{node}'
+        response = self._http_request(method='GET', url_suffix=url_suffix,
+                                      headers=self.headers, params={})
+        return response
+
+    def disable_node(self, node):
+        url_suffix = f'ltm/node/~{self.partition}~{node}'
+        response = self._http_request(method='PATCH', url_suffix=url_suffix,
+                                      headers=self.headers, json_data={"session": "user-disabled"})
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -103,12 +123,44 @@ def ltm_get_pool_command(client, args) -> CommandResults:
     )
 
 
+def ltm_get_nodes_command(client) -> CommandResults:
+    results = client.get_nodes()
+
+    return CommandResults(
+        outputs_prefix='F5.LTM.Nodes',
+        outputs_key_field='name',
+        outputs=results,
+    )
+
+
+def ltm_get_node_command(client, args) -> CommandResults:
+    node = args.get('node')
+    results = client.get_node(node)
+
+    return CommandResults(
+        outputs_prefix='F5.LTM.Nodes',
+        outputs_key_field='name',
+        outputs=results,
+    )
+
+
 def ltm_get_pool_members_command(client, args) -> CommandResults:
     pool = args.get('pool')
     results = client.get_pool_members(pool)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Pools',
+        outputs_key_field='name',
+        outputs=results,
+    )
+
+
+def ltm_disable_node_command(client, args) -> CommandResults:
+    node = args.get('node')
+    results = client.disable_node(node)
+
+    return CommandResults(
+        outputs_prefix='F5.LTM.Nodes',
         outputs_key_field='name',
         outputs=results,
     )
@@ -155,6 +207,15 @@ def main() -> None:
 
         elif demisto.command() == 'f5-ltm-get-pool-members':
             return_results(ltm_get_pool_members_command(client, args))
+
+        elif demisto.command() == 'f5-ltm-get-nodes':
+            return_results(ltm_get_nodes_command(client))
+
+        elif demisto.command() == 'f5-ltm-get-node':
+            return_results(ltm_get_node_command(client, args))
+
+        elif demisto.command() == 'f5-ltm-disable-node':
+            return_results(ltm_disable_node_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

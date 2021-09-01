@@ -76,6 +76,40 @@ script:
     - contextPath: F5.LTM.Pools.members.name
       description: Members Names
       type: Unknown
+  - deprecated: false
+    description: Get a list of all nodes
+    execution: false
+    name: f5-ltm-get-nodes
+    outputs:
+    - contextPath: F5.LTM.Nodes.name
+      description: Node Name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Node Name
+      isArray: false
+      name: node
+      required: true
+      secret: false
+    deprecated: false
+    description: Get node details
+    execution: false
+    name: f5-ltm-get-node
+    outputs:
+    - contextPath: F5.LTM.Nodes.name
+      description: Node Name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Node to disable
+      isArray: false
+      name: node
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable a node
+    execution: false
+    name: f5-ltm-disable-node
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
