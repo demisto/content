@@ -54,7 +54,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=uri, data={}, params=params)
 
     def get_user_by_id(self, user_id):
-        uri = f'/data/objects/{user_id}'
+        uri = f'/data/objects{user_id}'
         params = {
             'fields': USER_FIELDS
         }
@@ -84,14 +84,11 @@ class Client(BaseClient):
             json_data=data,
         )
 
-        res_json = res.json()
-        entities = res_json.get('entities')
+        entities = res.get('entities')
 
         if entities:
             user_id = entities[0].get('id')
-            user_res = self.get_user_by_id(user_id)
-
-            user_app_data = user_res.json()
+            user_app_data = self.get_user_by_id(user_id)
 
             user_id = user_app_data.get('id').replace('/User/', '')
             user_name = user_app_data.get('username')
@@ -120,11 +117,8 @@ class Client(BaseClient):
             json_data=user_data,
         )
 
-        res_json = res.json()
-        user_id = res_json.get('id')
-        user_res = self.get_user_by_id(user_id)
-
-        user_app_data = user_res.json()
+        user_id = res.get('id')
+        user_app_data = self.get_user_by_id(user_id)
 
         user_id = user_app_data.get('id').replace('/User/', '')
         user_name = user_app_data.get('username')
@@ -154,12 +148,11 @@ class Client(BaseClient):
             json_data=user_data,
         )
 
-        user_res = self.get_user_by_id(f'/User/{user_id}')
-
-        user_app_data = user_res.json()
+        user_app_data = self.get_user_by_id(f'/User/{user_id}')
 
         user_name = user_app_data.get('username')
-        is_active = True
+        active = user_app_data.get('state', {}).get('id').replace('/State/', '')
+        is_active = False if active == 'Disabled' else True
 
         return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 
