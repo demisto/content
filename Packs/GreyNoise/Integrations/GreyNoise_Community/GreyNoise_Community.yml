@@ -78,7 +78,10 @@ script:
     - contextPath: GreyNoise.IP.message
       description: Additional Information
       type: string
-  dockerimage: demisto/greynoise:1.0.0.19381
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  dockerimage: demisto/greynoise:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

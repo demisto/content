@@ -1,6 +1,6 @@
 import json
 import io
-
+import demistomock as demisto
 import pytest
 
 
@@ -19,6 +19,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
         Then
             - convert the result to indicators list
             - validate the length of the indicators list
+            - validate the Feed tags is as expected
         """
 
     from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
@@ -27,17 +28,19 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
+    feed_tags = ['Tag1', 'Tag2']
     client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
-                    type='Domain', include_deleted='false', limit=2)
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
     args = {
         'limit': '2'
     }
     response = crowdstrike_indicators_list_command(client, args)
 
-    assert len(response.outputs) == 2
-    assert len(response.raw_response) == 2
+    assert len(response.outputs) == 3
+    assert len(response.raw_response) == 3
     assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
     assert "domain_abc" in response.readable_output
+    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']
 
 
 @pytest.mark.parametrize(
@@ -78,3 +81,12 @@ def test_create_indicators_from_response():
     expected_result = util_load_json('test_data/create_indicators_from_response.json')
     res = Client.create_indicators_from_response(raw_response)
     assert res == expected_result
+
+
+def test_empty_first_fetch(mocker, requests_mock):
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch': ''})
+    mocker.patch.object(demisto, 'command', return_value='')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    from CrowdStrikeIndicatorFeed import main
+    main()
+    assert True

@@ -720,7 +720,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blacklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201),
+            ok_codes=(200, 201, 500,),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -1725,14 +1725,19 @@ def convert_os_to_standard(endpoint_os):
     return os_type
 
 
+def get_endpoint_properties(single_endpoint):
+    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
+    is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+    hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
+        'endpoint_name')
+    ip = single_endpoint.get('ip')
+    return status, is_isolated, hostname, ip
+
+
 def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
     standard_endpoints = []
     for single_endpoint in endpoints:
-        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
-        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
-        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
-            'endpoint_name')
-        ip = single_endpoint.get('ip')
+        status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
         if ip_as_string and isinstance(ip, list):
@@ -1896,10 +1901,10 @@ def isolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1937,10 +1942,10 @@ def unisolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
@@ -2203,7 +2208,9 @@ def blacklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
 
-    client.blacklist_files(hash_list=hash_list, comment=comment)
+    res = client.blacklist_files(hash_list=hash_list, comment=comment)
+    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
+        raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
     return (
@@ -2679,7 +2686,8 @@ def get_update_args(delta, inc_status):
     update_args = delta
     handle_outgoing_incident_owner_sync(update_args)
     handle_user_unassignment(update_args)
-    handle_outgoing_issue_closure(update_args, inc_status)
+    if update_args.get('closingUserId'):
+        handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 

@@ -1,10 +1,12 @@
 # coding=utf-8
 from __future__ import print_function
+
+import pytest
+
+import demistomock as demisto
+from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map, DataModel
-from CommonServerPython import entryTypes
-import demistomock as demisto
-import pytest
 
 
 def exec_command_for_file(
@@ -400,13 +402,33 @@ def test_email_with_special_character(mocker):
 
 @pytest.mark.parametrize('encoded_subject, decoded_subject', [
     (
-        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',  # noqa E501
+        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= '
+        '=?utf-8?q?mmer=C3=A7ant_Pickup_!?=',
+        # noqa E501
         '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
     ),
     (
         'This =?UTF-8?B?VGVzdMKu?= passes',
         'This Test® passes'
     ),
+    (
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',  # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'  # 【①
+    ),
+    (
+        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+        '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+        'メール�と�日本語文字が表示されない文字のテスト'
+    )
+    # (
+    #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+    #   '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+    #   'This is test メール�と�日本語文字が表示されない文字のテスト'
+    # )
+    # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
+    # encoding parts.
+    # **please DO NOT delete the commented tests**.
+    # they have been disabled in attempt to fix issue no. 40877, and they may be needed for a better solution in the future.
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
@@ -666,6 +688,20 @@ def test_eml_contains_htm_attachment(mocker):
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
 
 
+def test_signed_attachment(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('email_with_signed_attachment.eml',
+                                                          info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    results = demisto.results.call_args[0]
+
+    assert len(results[0]['EntryContext']['Email']) == 2
+
+
 def test_eml_contains_html_and_text(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
@@ -689,6 +725,22 @@ def test_eml_format_multipart_mix(mocker):
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('multipart_mixed_format.p7m',
                                                           info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
+
+
+def test_eml_format_multipart_related(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('multipart_related_format.p7m',
+                                                          info="multipart/related"))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'

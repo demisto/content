@@ -405,7 +405,7 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
@@ -499,12 +499,11 @@ references:
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
-  update_tests_step: &update_tests_step
+  copy_tests_to_circle_artifact: &copy_tests_to_circle_artifact
     run:
-      name: Update Tests step
+      name: Copy Tests To Artifact Folder
       when: always
       command: |
-        python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
 
   get_contribution_pack: &get_contribution_pack
@@ -606,6 +605,14 @@ references:
         requires:
           - Run Unit Testing And Lint
           - Run Validations
+    - Install Packs in Server 6_2:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Install Packs in Server 6_1:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
     - Install Packs in Server 6_0:
         context: bucket_upload_env
         requires:
@@ -617,6 +624,8 @@ references:
     - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
+          - Install Packs in Server 6_2
+          - Install Packs in Server 6_1
           - Install Packs in Server 6_0
           - Install Packs in Server Master
 
@@ -735,7 +744,7 @@ jobs:
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *validate_files_and_yaml
       - run:
           name: Spell Checks
@@ -817,7 +826,7 @@ jobs:
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *download_configuration
       - when:
           # If this is an ami run - No need to download server artifacts
@@ -843,17 +852,6 @@ jobs:
                     exit 0
                   fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
-            - run:
-                name: Zip Content Packs From GCS
-                command: |
-                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
-                    echo "Skipping packs download to artifact on non master or release branch"
-                    exit 0
-                  fi
-
-                  ZIP_FOLDER=$(mktemp -d)
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
-                when: always
             - run:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
@@ -1029,6 +1027,122 @@ jobs:
             - *destroy_instances
             - *store_artifacts
 
+  Server 6_2:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of contrib_branch or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - set-instance-role-env-variable:
+                instance_role: Server 6.2
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
+            - run:
+                name: Run Tests - Server 6.2
+                shell: /bin/bash
+                when: always
+                no_output_timeout: 5h
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  if [ -f ./Tests/failed_tests.txt ];
+                    then
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  fi
+                  exit $RETVAL
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
+                when: always
+            - *destroy_instances
+            - *store_artifacts
+
+  Server 6_1:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of contrib_branch or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - set-instance-role-env-variable:
+                instance_role: Server 6.1
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
+            - run:
+                name: Run Tests - Server 6.1
+                shell: /bin/bash
+                when: always
+                no_output_timeout: 5h
+                command: |
+                  if [ -z $INSTANCE_WAS_CREATED ];
+                    then
+                      echo "Skipping - instance was not created"
+                      exit 0
+                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  if [ -f ./Tests/failed_tests.txt ];
+                    then
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  fi
+                  exit $RETVAL
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
+                when: always
+            - *destroy_instances
+            - *store_artifacts
+
   Server Master:
     <<: *container_config
     resource_class: medium
@@ -1131,6 +1245,23 @@ jobs:
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
             - run:
+                name: Download packs from GCP
+                command: |
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  fi
+
+                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+                  ZIP_FOLDER=$(mktemp -d)
+                  echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
+                  gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+                when: always
+            - run:
+                name: Zip Content Packs From GCS
+                command: |
+                  python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
+                when: always
+            - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
                 when: always
@@ -1177,7 +1308,7 @@ jobs:
       - *restore_cache
       - *prepare_environment
       - *secrets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *create_id_set
       - *merge_public_and_private_id_sets
       - *validate_files_and_yaml
@@ -1226,6 +1357,11 @@ jobs:
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
+          name: Zip and upload a pack to the Cortex XSOAR's marketpalce
+          command: |
+            printf "y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0" | demisto-sdk init -n ZipPackTest
+            demisto-sdk upload -i Packs/ZipPackTest -z --insecure
+      - run:
           name: Download entities from Cortex XSOAR
           command: |
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
@@ -1252,6 +1388,70 @@ jobs:
           command: |
             ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' $ENV_RESULTS_PATH
           when: always
+
+  Install Packs in Server 6_2:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - set-instance-role-env-variable:
+          instance_role: Server 6.2
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+            fi
+          when: always
+      - *destroy_instances
+      - *store_artifacts
+
+  Install Packs in Server 6_1:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - set-instance-role-env-variable:
+          instance_role: Server 6.1
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
+      - run:
+          name: Install Packs
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            if [ -n "${BUCKET_UPLOAD}" ]; then
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+            fi
+          when: always
+      - *destroy_instances
+      - *store_artifacts
 
   Install Packs in Server 6_0:
     <<: *container_config
@@ -1282,7 +1482,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
-      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
@@ -1315,6 +1514,7 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
+      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
@@ -1414,18 +1614,6 @@ workflows:
     when: << pipeline.parameters.demisto_sdk_nightly>>
     jobs:
       *sdk_nightly_jobs
-
-  bucket_upload:
-    triggers:
-      - schedule:
-          # should trigger every day at 9 AM & 9 PM UTC (11:00 PM & 11:00 AM Israel Time)
-          cron: "0 9,21 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      *bucket_upload_jobs
 
   bucket_upload_trigger:
     # will initiate when using the trigger script.
