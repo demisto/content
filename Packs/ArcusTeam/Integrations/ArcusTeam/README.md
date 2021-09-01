@@ -12,6 +12,8 @@ This integration was integrated and tested with version 6.11.0 of ArcusTeam
     | Server URL (e.g. https://web.prod.arcusteam.com) | The FQDN/IP the integration should connect to. | True |
     | API Key |  The API Key required to authenticate to the service. | True |
     |  The client ID | The client ID from ArcusTeam dashboard | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
