@@ -1,0 +1,736 @@
+id: qualys-pc-scan-test
+version: -1
+name: qualys-pc-scan-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "117"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 08030c04-07a3-46b3-825e-1ecbbc6035a1
+    type: regular
+    task:
+      id: 08030c04-07a3-46b3-825e-1ecbbc6035a1
+      version: -1
+      name: qualys-pc-scan-list
+      description: Get a list of compliance scans in your account.
+      script: QualysV2|||qualys-pc-scan-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 935a35e5-2ec7-4c00-80a4-16f498425701
+    type: condition
+    task:
+      id: 935a35e5-2ec7-4c00-80a4-16f498425701
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.REF
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.LAUNCH_DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.DURATION
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.PROCESSED
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.STATUS.STATE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TARGET
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.USER_LOGIN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 8a521ed2-eb43-4581-8360-396094c87c32
+    type: regular
+    task:
+      id: 8a521ed2-eb43-4581-8360-396094c87c32
+      version: -1
+      name: qualys-pc-scan-fetch
+      description: fetch scan results for a scan
+      script: QualysV2|||qualys-pc-scan-fetch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      scan_ref:
+        simple: compliance/1617631863.22670
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: a634b471-e0a7-41ed-8a32-5658729695ed
+    type: condition
+    task:
+      id: a634b471-e0a7-41ed-8a32-5658729695ed
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.USERNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.COMPANY
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.USERNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.DATE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.TARGET
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.EXCLUDED_TARGET
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.DURATION
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.NBHOST_ALIVE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.NBHOST_TOTAL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.REPORT_TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.OPTIONS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.PC.STATUS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 5770383e-2b4c-499f-889a-abd8f1b268d1
+    type: regular
+    task:
+      id: 5770383e-2b4c-499f-889a-abd8f1b268d1
+      version: -1
+      name: qualys-pc-scan-manage
+      description: Allows users to take actions on compliance scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results.
+      script: QualysV2|||qualys-pc-scan-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      action:
+        simple: pause
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "90"
+      scan_ref:
+        simple: ${Qualys.Scan.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 09a4c5fc-d3c5-47bb-8fb7-871379da8388
+    type: condition
+    task:
+      id: 09a4c5fc-d3c5-47bb-8fb7-871379da8388
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "120"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[1].VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 86f61c07-5799-49a8-8638-11eb37ef92c7
+    type: condition
+    task:
+      id: 86f61c07-5799-49a8-8638-11eb37ef92c7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[0].KEY
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[1].KEY
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "117":
+    id: "117"
+    taskid: 4a41f089-96b0-4907-88bd-234348654b4a
+    type: title
+    task:
+      id: 4a41f089-96b0-4907-88bd-234348654b4a
+      version: -1
+      name: PC Scans
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "118"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "118":
+    id: "118"
+    taskid: 810dd341-d172-4f09-8aa8-d5be2633ad42
+    type: regular
+    task:
+      id: 810dd341-d172-4f09-8aa8-d5be2633ad42
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "119":
+    id: "119"
+    taskid: 3eedf0c6-4589-4d65-8161-8812aad20bee
+    type: regular
+    task:
+      id: 3eedf0c6-4589-4d65-8161-8812aad20bee
+      version: -1
+      name: qualys-pc-scan-launch
+      description: launch compliance scans.
+      script: QualysV2|||qualys-pc-scan-launch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+      option_title:
+        simple: test1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "120":
+    id: "120"
+    taskid: f6e45fe4-6eb3-4138-84fe-77f527746489
+    type: regular
+    task:
+      id: f6e45fe4-6eb3-4138-84fe-77f527746489
+      version: -1
+      name: qualys-pc-scan-manage
+      description: Allows users to take actions on compliance scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results.
+      script: QualysV2|||qualys-pc-scan-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      action:
+        simple: resume
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "90"
+      scan_ref:
+        simple: ${Qualys.Scan.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "121":
+    id: "121"
+    taskid: 412df524-23fa-4302-8250-1d4dc3cc9757
+    type: condition
+    task:
+      id: 412df524-23fa-4302-8250-1d4dc3cc9757
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[1].VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "122":
+    id: "122"
+    taskid: 800ad756-531c-45b7-8248-fcd98df6ac78
+    type: regular
+    task:
+      id: 800ad756-531c-45b7-8248-fcd98df6ac78
+      version: -1
+      name: qualys-pc-scan-manage
+      description: Allows users to take actions on compliance scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results.
+      script: QualysV2|||qualys-pc-scan-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      action:
+        simple: cancel
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "90"
+      scan_ref:
+        simple: ${Qualys.Scan.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "123":
+    id: "123"
+    taskid: 902babb8-fb93-4829-8d89-95ef3a093ba6
+    type: condition
+    task:
+      id: 902babb8-fb93-4829-8d89-95ef3a093ba6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "124"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[1].VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "124":
+    id: "124"
+    taskid: 96990409-b8bc-4099-866c-b527399c8155
+    type: regular
+    task:
+      id: 96990409-b8bc-4099-866c-b527399c8155
+      version: -1
+      name: qualys-pc-scan-manage
+      description: Allows users to take actions on compliance scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results.
+      script: QualysV2|||qualys-pc-scan-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      action:
+        simple: delete
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "90"
+      scan_ref:
+        simple: ${Qualys.Scan.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "125":
+    id: "125"
+    taskid: e17187d6-466d-4929-8f31-2d28c959fcb6
+    type: condition
+    task:
+      id: e17187d6-466d-4929-8f31-2d28c959fcb6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.[1].VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "48_10_yes": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2980,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing PC scans commands'

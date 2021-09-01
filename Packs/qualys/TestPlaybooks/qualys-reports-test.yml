@@ -1,0 +1,1189 @@
+id: qualys-reports-test
+version: -1
+name: qualys-reports-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 09fe7ce0-f0c2-4dd5-867d-54cb96fe609e
+    type: regular
+    task:
+      id: 09fe7ce0-f0c2-4dd5-867d-54cb96fe609e
+      version: -1
+      name: qualys-report-list
+      description: Get a list of generated reports in the system
+      script: QualysV2|||qualys-report-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2a73933b-ef35-421d-8d76-fd007bac84c4
+    type: condition
+    task:
+      id: 2a73933b-ef35-421d-8d76-fd007bac84c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.LAUNCH_DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.OUTPUT_FORMAT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SIZE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.STATUS.STATE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.EXPIRATION_DATETIME
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: eccb2dc8-094e-4664-8737-6463daa98e8e
+    type: regular
+    task:
+      id: eccb2dc8-094e-4664-8737-6463daa98e8e
+      version: -1
+      name: qualys-report-fetch
+      description: Download report
+      script: QualysV2|||qualys-report-fetch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      execution-timeout:
+        simple: "120"
+      file_format:
+        simple: pdf
+      id:
+        simple: ${Qualys.Report.ID}
+      retry-count:
+        simple: "10"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 1891074d-01f7-4127-8824-661cacd8398c
+    type: condition
+    task:
+      id: 1891074d-01f7-4127-8824-661cacd8398c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Info
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: b7a37821-8853-47ab-86cf-8129e55612eb
+    type: regular
+    task:
+      id: b7a37821-8853-47ab-86cf-8129e55612eb
+      version: -1
+      name: qualys-report-cancel
+      description: Cancel running report
+      script: QualysV2|||qualys-report-cancel
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id:
+        simple: ${Qualys.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 7c3183ce-eb42-47ef-8441-1f5a9c7740e2
+    type: condition
+    task:
+      id: 7c3183ce-eb42-47ef-8441-1f5a9c7740e2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: eb547eca-62ac-4e60-8ad2-77c06f906fe9
+    type: regular
+    task:
+      id: eb547eca-62ac-4e60-8ad2-77c06f906fe9
+      version: -1
+      name: qualys-report-delete
+      description: Delete a saved report in the user’s Report Share
+      script: QualysV2|||qualys-report-delete
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      id:
+        simple: ${Qualys.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 500e6a2e-084a-4f10-8b5f-3c2a65d28e10
+    type: condition
+    task:
+      id: 500e6a2e-084a-4f10-8b5f-3c2a65d28e10
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "107"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: d211c1cc-8cca-439e-871e-2ddf04a46e85
+    type: regular
+    task:
+      id: d211c1cc-8cca-439e-871e-2ddf04a46e85
+      version: -1
+      name: qualys-scorecard-launch
+      description: Launch a vulnerability scorecard report
+      script: QualysV2|||qualys-scorecard-launch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all_asset_groups:
+        simple: "1"
+      name:
+        simple: Most Prevalent Vulnerabilities Report
+      output_format:
+        simple: xml
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      source:
+        simple: asset_groups
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 332812ea-2d41-431d-80b7-abb99801e008
+    type: condition
+    task:
+      id: 332812ea-2d41-431d-80b7-abb99801e008
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: d014d86e-8221-4802-84c0-b46422e33c42
+    type: regular
+    task:
+      id: d014d86e-8221-4802-84c0-b46422e33c42
+      version: -1
+      name: qualys-report-launch-map
+      description: Launches a map report
+      script: QualysV2|||qualys-report-launch-map
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      domain:
+        simple: qualys-test.com
+      output_format:
+        simple: pdf
+      report_refs:
+        simple: map/1618151844.78754
+      template_id:
+        simple: "2385938"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 60189b2f-c67e-491f-84e8-8f190f34ca3c
+    type: regular
+    task:
+      id: 60189b2f-c67e-491f-84e8-8f190f34ca3c
+      version: -1
+      name: qualys-report-launch-host-based-findings
+      description: Run host based findings report
+      script: QualysV2|||qualys-report-launch-host-based-findings
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      ips:
+        simple: 1.1.1.1
+      output_format:
+        simple: pdf
+      template_id:
+        simple: "2339987"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 99f5242d-d6e7-47d2-847a-80df00a845e0
+    type: condition
+    task:
+      id: 99f5242d-d6e7-47d2-847a-80df00a845e0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 5e598435-0bc8-491b-813d-e2e05b53f36d
+    type: regular
+    task:
+      id: 5e598435-0bc8-491b-813d-e2e05b53f36d
+      version: -1
+      name: qualys-report-launch-scan-based-findings
+      description: launches a scan report including scan based findings
+      script: QualysV2|||qualys-report-launch-scan-based-findings
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      output_format:
+        simple: pdf
+      report_refs:
+        simple: scan/1619074267.78246
+      template_id:
+        simple: "2339987"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 09e46fd8-403e-4d0f-8756-ad62ce593023
+    type: condition
+    task:
+      id: 09e46fd8-403e-4d0f-8756-ad62ce593023
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: f08524d1-81eb-4580-823a-76386e2c7240
+    type: regular
+    task:
+      id: f08524d1-81eb-4580-823a-76386e2c7240
+      version: -1
+      name: qualys-report-launch-patch
+      description: Run patch report
+      script: QualysV2|||qualys-report-launch-patch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      output_format:
+        simple: pdf
+      template_id:
+        simple: "1528875"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: bcc10b40-c064-4852-865f-914582fe7ef3
+    type: condition
+    task:
+      id: bcc10b40-c064-4852-865f-914582fe7ef3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 453e64a9-3ed1-48e4-8ac7-fce2df86402e
+    type: regular
+    task:
+      id: 453e64a9-3ed1-48e4-8ac7-fce2df86402e
+      version: -1
+      name: qualys-report-launch-remediation
+      description: Run remediation report
+      script: QualysV2|||qualys-report-launch-remediation
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      output_format:
+        simple: pdf
+      template_id:
+        simple: "1528884"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 7c69e8f9-d047-45e7-8c49-36e783f40117
+    type: condition
+    task:
+      id: 7c69e8f9-d047-45e7-8c49-36e783f40117
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "111"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 14836492-4a1e-4bd7-8a51-6b62f3ebd1b5
+    type: regular
+    task:
+      id: 14836492-4a1e-4bd7-8a51-6b62f3ebd1b5
+      version: -1
+      name: qualys-report-launch-compliance
+      description: Run compliance report
+      script: QualysV2|||qualys-report-launch-compliance
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      ips:
+        simple: 1.1.1.1
+      output_format:
+        simple: pdf
+      report_title:
+        simple: test compliance launch
+      template_id:
+        simple: "1528877"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 6e304ebb-5845-4103-811f-2a17fdba041e
+    type: condition
+    task:
+      id: 6e304ebb-5845-4103-811f-2a17fdba041e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 25948c82-5584-4f52-87c8-5ef4c1b9d2cc
+    type: regular
+    task:
+      id: 25948c82-5584-4f52-87c8-5ef4c1b9d2cc
+      version: -1
+      name: qualys-report-launch-compliance-policy
+      description: Run compliance policy report
+      script: QualysV2|||qualys-report-launch-compliance-policy
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      output_format:
+        simple: pdf
+      policy_id:
+        simple: "1772919"
+      template_id:
+        simple: "1528886"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: a3faf8dd-9d40-435d-85ce-907e23cca7c4
+    type: condition
+    task:
+      id: a3faf8dd-9d40-435d-85ce-907e23cca7c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: 0a2194f4-fa9a-42c4-8fd6-253e429026a7
+    type: regular
+    task:
+      id: 0a2194f4-fa9a-42c4-8fd6-253e429026a7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 6718a653-d5be-4759-87f8-b6a5c60efa98
+    type: regular
+    task:
+      id: 6718a653-d5be-4759-87f8-b6a5c60efa98
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: a03c33a6-e3b5-4aa3-8bb9-ae2e85112a1e
+    type: regular
+    task:
+      id: a03c33a6-e3b5-4aa3-8bb9-ae2e85112a1e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 7ef0f836-41aa-4d63-87c9-81b3fb851e1a
+    type: regular
+    task:
+      id: 7ef0f836-41aa-4d63-87c9-81b3fb851e1a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: 6def5b76-469d-4eb3-8039-3827f664e697
+    type: regular
+    task:
+      id: 6def5b76-469d-4eb3-8039-3827f664e697
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: 3ad5b3a5-e559-48df-8537-5eb1407fc537
+    type: regular
+    task:
+      id: 3ad5b3a5-e559-48df-8537-5eb1407fc537
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: f275da01-f91c-418e-8bd6-14af701b3a58
+    type: regular
+    task:
+      id: f275da01-f91c-418e-8bd6-14af701b3a58
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: d7b0eea7-b5d7-47aa-8fad-0f072a6388bc
+    type: title
+    task:
+      id: d7b0eea7-b5d7-47aa-8fad-0f072a6388bc
+      version: -1
+      name: Reports
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "37_38_yes": 0.41,
+      "39_107_yes": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5605,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing reports commands'

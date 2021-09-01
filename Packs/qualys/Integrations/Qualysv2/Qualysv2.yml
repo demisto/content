@@ -2364,5 +2364,12 @@ script:
   subtype: python3
   type: python
 tests:
-- QualysVulnerabilityManagement-Test
+- qualys-excluded-host-test
+- qualys-group-host-scheduled-scan-ip-test
+- qualys-pc-scan-test
+- qualys-reports-test
+- qualys-restricted-ips-test
+- qualys-scheduled-report-report-template-vm-list-test
+- qualys-virtual-host-test
+- qualys-vm-scan-test
 fromversion: 5.5.0

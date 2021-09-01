@@ -1,0 +1,833 @@
+id: qualys-scheduled-report-report-template-vm-list-test
+version: -1
+name: qualys-scheduled-report-report-template-vm-list-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 749a3ecd-3902-4a78-821f-3593149c751a
+    type: regular
+    task:
+      id: 749a3ecd-3902-4a78-821f-3593149c751a
+      version: -1
+      name: qualys-scheduled-report-list
+      description: Get list of scheduled reports
+      script: QualysV2|||qualys-scheduled-report-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 2450e340-dd5d-42e8-8379-c4357ad768ce
+    type: condition
+    task:
+      id: 2450e340-dd5d-42e8-8379-c4357ad768ce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.OUTPUT_FORMAT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ACTIVE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.TEMPLATE_TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.START_DATE_UTC
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.START_HOUR
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.START_MINUTE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.DAILY.@frequency_days
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: c7b19ebf-b093-448b-8603-4fb41f62e5d2
+    type: regular
+    task:
+      id: c7b19ebf-b093-448b-8603-4fb41f62e5d2
+      version: -1
+      name: qualys-report-template-list
+      description: get list of report template for user
+      script: QualysV2|||qualys-report-template-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 6f0f44b9-0620-47d4-835d-a956be5f09ea
+    type: condition
+    task:
+      id: 6f0f44b9-0620-47d4-835d-a956be5f09ea
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.LAST_UPDATE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.GLOBAL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.USER.LOGIN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.USER.FIRSTNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.USER.LASTNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.ReportTemplate.TEMPLATE_TYPE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: eb40af7f-edfe-4587-8497-3b5d4e6812ea
+    type: regular
+    task:
+      id: eb40af7f-edfe-4587-8497-3b5d4e6812ea
+      version: -1
+      name: qualys-vulnerability-list
+      description: download a list of vulnerabilities from Qualys’ KnowledgeBase
+      script: QualysV2|||qualys-vulnerability-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      execution-timeout:
+        simple: "70"
+      published_after:
+        simple: "2021-04-01"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 95bf3794-de9e-40ee-8ee7-0184eed5bc88
+    type: condition
+    task:
+      id: 95bf3794-de9e-40ee-8ee7-0184eed5bc88
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.QID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.PATCHABLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.SEVERITY_LEVEL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.CONSEQUENCE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.URL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.LAST_SERVICE_MODIFICATION_DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.CVE_LIST.CVE.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.CVE_LIST.CVE.URL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.PUBLISHED_DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.DISCOVERY.ADDITIONAL_INFO
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.DISCOVERY.AUTH_TYPE_LIST.AUTH_TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.DISCOVERY.REMOTE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.DIAGNOSIS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.PCI_FLAG
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.PRODUCT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.VENDOR
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.VULN_TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.SOLUTION
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Vulnerability.List.CATEGORY
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7742e609-0374-4724-8069-ccc16f13368e
+    type: regular
+    task:
+      id: 7742e609-0374-4724-8069-ccc16f13368e
+      version: -1
+      name: qualys-group-list
+      description: Get account asset groups
+      script: QualysV2|||qualys-group-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3b80c03e-c6dd-458d-81d8-cf2ca0884f24
+    type: condition
+    task:
+      id: 3b80c03e-c6dd-458d-81d8-cf2ca0884f24
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.AssetGroup.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.AssetGroup.TITLE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 26cf85a7-e299-455d-866e-08826ffc3e46
+    type: regular
+    task:
+      id: 26cf85a7-e299-455d-866e-08826ffc3e46
+      version: -1
+      name: qualys-scheduled-report-launch
+      description: Launch a scheduled report now
+      script: QualysV2|||qualys-scheduled-report-launch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      id:
+        simple: ${Qualys.Report.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: f4416001-b09c-4e32-800b-1b369bdfbda6
+    type: condition
+    task:
+      id: f4416001-b09c-4e32-800b-1b369bdfbda6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: cf03bf0a-e46a-4c96-8a4e-695d389819d1
+    type: title
+    task:
+      id: cf03bf0a-e46a-4c96-8a4e-695d389819d1
+      version: -1
+      name: Scheduled Report
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "98"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: 162812fc-171c-4003-850c-a4d7fac7163b
+    type: regular
+    task:
+      id: 162812fc-171c-4003-850c-a4d7fac7163b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 372f916b-7ca1-45ce-8a6b-b1a51bbf7be8
+    type: title
+    task:
+      id: 372f916b-7ca1-45ce-8a6b-b1a51bbf7be8
+      version: -1
+      name: Report Template
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "138"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: 9857947b-86b0-487f-8a89-69b7c0b5b7ef
+    type: title
+    task:
+      id: 9857947b-86b0-487f-8a89-69b7c0b5b7ef
+      version: -1
+      name: Vulnerability List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: 23a3224d-db99-4fd2-8e4f-23ad377772e1
+    type: regular
+    task:
+      id: 23a3224d-db99-4fd2-8e4f-23ad377772e1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 5866bdac-03a3-4e04-811c-4c9aef238c6c
+    type: title
+    task:
+      id: 5866bdac-03a3-4e04-811c-4c9aef238c6c
+      version: -1
+      name: Group List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 6f914868-9c45-41f3-84f5-da48bde3bf48
+    type: regular
+    task:
+      id: 6f914868-9c45-41f3-84f5-da48bde3bf48
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "138":
+    id: "138"
+    taskid: b847378b-521f-40a9-87e2-03cd472ddd42
+    type: regular
+    task:
+      id: b847378b-521f-40a9-87e2-03cd472ddd42
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing scheduled reports, reports templates and vm list commands'

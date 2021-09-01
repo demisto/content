@@ -1,0 +1,629 @@
+id: qualys-virtual-host-test
+version: -1
+name: qualys-virtual-host-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 458a4b71-d935-4ea7-8662-6705817feb72
+    type: regular
+    task:
+      id: 458a4b71-d935-4ea7-8662-6705817feb72
+      version: -1
+      name: qualys-virtual-host-list
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 6f5f97e7-bf73-4dad-8d6a-c1c12b403f25
+    type: condition
+    task:
+      id: 6f5f97e7-bf73-4dad-8d6a-c1c12b403f25
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.PORT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.FQDN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5b61098d-19fb-449b-8b74-f128dadbce7e
+    type: regular
+    task:
+      id: 5b61098d-19fb-449b-8b74-f128dadbce7e
+      version: -1
+      name: qualys-virtual-host-manage
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      action:
+        simple: create
+      fqdn:
+        simple: panw.test.com
+      ip:
+        simple: 1.1.1.1
+      port:
+        simple: "1124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9d7a6f37-e820-47fc-84c8-0bd35da0d5bb
+    type: condition
+    task:
+      id: 9d7a6f37-e820-47fc-84c8-0bd35da0d5bb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.TEXT
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: b449d04c-9c25-4137-82cb-2a9d7877bd7e
+    type: regular
+    task:
+      id: b449d04c-9c25-4137-82cb-2a9d7877bd7e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: a358f93a-736f-4642-8163-d0da9bcecbbd
+    type: regular
+    task:
+      id: a358f93a-736f-4642-8163-d0da9bcecbbd
+      version: -1
+      name: qualys-virtual-host-manage
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      action:
+        simple: update
+      fqdn:
+        simple: panw.test.com
+      ip:
+        simple: 1.1.1.1
+      port:
+        simple: "1124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: f3ea4197-fe05-4cb4-8e2b-f8d59cec8cca
+    type: condition
+    task:
+      id: f3ea4197-fe05-4cb4-8e2b-f8d59cec8cca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.TEXT
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 1de7ed68-e883-489c-86ac-31d390bf8531
+    type: regular
+    task:
+      id: 1de7ed68-e883-489c-86ac-31d390bf8531
+      version: -1
+      name: qualys-virtual-host-manage
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      action:
+        simple: add_fqdn
+      fqdn:
+        simple: panw.test2.com
+      ip:
+        simple: 1.1.1.1
+      port:
+        simple: "1124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 19c809b6-3935-4446-8a84-83dee8cd9ce6
+    type: condition
+    task:
+      id: 19c809b6-3935-4446-8a84-83dee8cd9ce6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.TEXT
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: dca16448-c048-4ac2-8df1-b3103e471c77
+    type: regular
+    task:
+      id: dca16448-c048-4ac2-8df1-b3103e471c77
+      version: -1
+      name: qualys-virtual-host-manage
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      action:
+        simple: delete_fqdn
+      fqdn:
+        simple: panw.test2.com
+      ip:
+        simple: 1.1.1.1
+      port:
+        simple: "1124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: fbdc2b2b-5d4f-4c23-8bf1-b3a455658191
+    type: condition
+    task:
+      id: fbdc2b2b-5d4f-4c23-8bf1-b3a455658191
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.TEXT
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: ec46b450-7d65-4931-89d4-2ec3da1d444a
+    type: regular
+    task:
+      id: ec46b450-7d65-4931-89d4-2ec3da1d444a
+      version: -1
+      name: qualys-virtual-host-manage
+      description: View a list of virtual hosts in the user account.
+      script: QualysV2|||qualys-virtual-host-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      action:
+        simple: delete
+      ip:
+        simple: 1.1.1.1
+      port:
+        simple: "1124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 13707333-1c6a-45f1-8adb-84e6d13b4440
+    type: condition
+    task:
+      id: 13707333-1c6a-45f1-8adb-84e6d13b4440
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VirtualEndpoint.TEXT
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 4a4f3de1-4869-4e16-8c2c-b6841e6d8b34
+    type: title
+    task:
+      id: 4a4f3de1-4869-4e16-8c2c-b6841e6d8b34
+      version: -1
+      name: Virtual Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "137"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "137":
+    id: "137"
+    taskid: 74485288-b05b-4774-8867-af29b20cf873
+    type: regular
+    task:
+      id: 74485288-b05b-4774-8867-af29b20cf873
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_79_yes": 0.47,
+      "83_84_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2805,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing virtual hosts commands'

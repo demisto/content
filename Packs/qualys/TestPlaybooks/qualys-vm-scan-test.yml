@@ -1,0 +1,594 @@
+id: qualys-vm-scan-test
+version: -1
+name: qualys-vm-scan-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: bd0ab9c6-aa6f-4cdb-80d3-47a23b9ae29b
+    type: regular
+    task:
+      id: bd0ab9c6-aa6f-4cdb-80d3-47a23b9ae29b
+      version: -1
+      name: qualys-vm-scan-list
+      description: Lists vulnerability scans in the user’s account
+      script: QualysV2|||qualys-vm-scan-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 48242c72-7535-4d01-807b-bde6fd6cc0ab
+    type: condition
+    task:
+      id: 48242c72-7535-4d01-807b-bde6fd6cc0ab
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "145"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.REF
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TYPE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.LAUNCH_DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.DURATION
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.PROCESSING_PRIORITY
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.PROCESSED
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.STATUS.STATE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TARGET
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.USER_LOGIN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ccc80951-4de9-43b7-823e-e67cd6495495
+    type: condition
+    task:
+      id: ccc80951-4de9-43b7-823e-e67cd6495495
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VM.Dns
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VM.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VM.QID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VM.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: b4c41b73-4ecb-4e89-8d40-4f44cfc66814
+    type: regular
+    task:
+      id: b4c41b73-4ecb-4e89-8d40-4f44cfc66814
+      version: -1
+      name: qualys-vm-scan-launch
+      description: launch vulnerability scans in the user’s account.
+      script: QualysV2|||qualys-vm-scan-launch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+      option_title:
+        simple: Test2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: f339f6ca-6ef5-4a4f-8bb0-b95ced0e4285
+    type: condition
+    task:
+      id: f339f6ca-6ef5-4a4f-8bb0-b95ced0e4285
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.VM.Launched.[0].KEY
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Report.VM.Launched.[1].KEY
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 32f58b86-64e9-4f06-865f-03ecbc514a25
+    type: regular
+    task:
+      id: 32f58b86-64e9-4f06-865f-03ecbc514a25
+      version: -1
+      name: qualys-vm-scan-action
+      description: allows users to take actions on vulnerability scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results
+      script: QualysV2|||qualys-vm-scan-action
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      action:
+        simple: pause
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "120"
+      scan_ref:
+        simple: ${Qualys.Report.VM.Launched.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: 31a34c2f-9d5d-48d4-80c0-81992a775db3
+    type: title
+    task:
+      id: 31a34c2f-9d5d-48d4-80c0-81992a775db3
+      version: -1
+      name: VM Scans
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: 00628e55-eca2-4f71-8f62-cded7c56ccb8
+    type: regular
+    task:
+      id: 00628e55-eca2-4f71-8f62-cded7c56ccb8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "114":
+    id: "114"
+    taskid: 68be8b0c-8599-49c6-8479-6dfc5be6a0f9
+    type: regular
+    task:
+      id: 68be8b0c-8599-49c6-8479-6dfc5be6a0f9
+      version: -1
+      name: qualys-vm-scan-action
+      description: allows users to take actions on vulnerability scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results
+      script: QualysV2|||qualys-vm-scan-action
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      action:
+        simple: resume
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+      scan_ref:
+        simple: ${Qualys.Report.VM.Launched.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "115":
+    id: "115"
+    taskid: 6e4dd3ef-6347-45c2-872d-f2910f3c1fcd
+    type: regular
+    task:
+      id: 6e4dd3ef-6347-45c2-872d-f2910f3c1fcd
+      version: -1
+      name: qualys-vm-scan-action
+      description: allows users to take actions on vulnerability scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results
+      script: QualysV2|||qualys-vm-scan-action
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action:
+        simple: cancel
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+      scan_ref:
+        simple: ${Qualys.Report.VM.Launched.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "145":
+    id: "145"
+    taskid: 00df3b32-5875-4872-896e-92d1aace28d1
+    type: regular
+    task:
+      id: 00df3b32-5875-4872-896e-92d1aace28d1
+      version: -1
+      name: qualys-vm-scan-action
+      description: allows users to take actions on vulnerability scans in their account,
+        like cancel, pause, resume, delete and fetch completed scan results
+      script: QualysV2|||qualys-vm-scan-action
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      action:
+        simple: delete
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
+      scan_ref:
+        simple: ${Qualys.Report.VM.Launched.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "146":
+    id: "146"
+    taskid: e5b2c78b-a78d-4180-8590-c16f5049ab93
+    type: regular
+    task:
+      id: e5b2c78b-a78d-4180-8590-c16f5049ab93
+      version: -1
+      name: qualys-vm-scan-fetch
+      description: Download scan results when scan has status Finished, Canceled,
+        Paused or Error
+      script: QualysV2|||qualys-vm-scan-fetch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+      scan_ref:
+        simple: ${Qualys.Report.VM.Launched.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "147":
+    id: "147"
+    taskid: 1fa67ac1-328e-4790-808d-21c61f20bd93
+    type: condition
+    task:
+      id: 1fa67ac1-328e-4790-808d-21c61f20bd93
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.VM.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2455,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing vm scans commands'

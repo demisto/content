@@ -1,0 +1,890 @@
+id: qualys-group-host-scheduled-scan-ip-test
+version: -1
+name: qualys-group-host-scheduled-scan-ip-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 54373145-5de2-4688-8aab-3f2f5c5b5e38
+    type: regular
+    task:
+      id: 54373145-5de2-4688-8aab-3f2f5c5b5e38
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 75e2a4b0-ce98-48c5-8c6f-16d901d587f9
+    type: regular
+    task:
+      id: 75e2a4b0-ce98-48c5-8c6f-16d901d587f9
+      version: -1
+      name: qualys-ip-list
+      description: View a list of IP addresses in the user account.
+      script: QualysV2|||qualys-ip-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b28a12ce-d0c0-48a2-897f-bdd011040782
+    type: condition
+    task:
+      id: b28a12ce-d0c0-48a2-897f-bdd011040782
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.IP.Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 98bbc072-5a58-4a95-8887-c9b7e74a0a49
+    type: regular
+    task:
+      id: 98bbc072-5a58-4a95-8887-c9b7e74a0a49
+      version: -1
+      name: qualys-schedule-scan-list
+      description: Shows schedule scans
+      script: QualysV2|||qualys-schedule-scan-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: e60debd9-b7f6-4533-874c-fbb9c757f821
+    type: condition
+    task:
+      id: e60debd9-b7f6-4533-874c-fbb9c757f821
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TITLE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.PROCESSING_PRIORITY
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.TARGET
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.USER_LOGIN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.ACTIVE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.USER_ENTERED_IPS.RANGE.START
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.USER_ENTERED_IPS.RANGE.END
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.ISCANNER_NAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.DAILY.@frequency_days
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.START_DATE_UTC
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.START_HOUR
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.START_MINUTE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.OPTION_PROFILE.DEFAULT_FLAG
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Scan.OPTION_PROFILE.TITLE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b0e14216-0011-4854-849a-cd82a58fe657
+    type: regular
+    task:
+      id: b0e14216-0011-4854-849a-cd82a58fe657
+      version: -1
+      name: qualys-host-list
+      description: View a list of scanned hosts in the user account.
+      script: QualysV2|||qualys-host-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e3f1af86-5965-43fe-883f-cd566422209a
+    type: condition
+    task:
+      id: e3f1af86-5965-43fe-883f-cd566422209a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.CLOUD_PROVIDER
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.DNS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.EC2_INSTANCE_ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.QG_HOSTID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.CLOUD_SERVICE
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.TRACKING_METHOD
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.CLOUD_RESOURCE_ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.DNS_DATA.DOMAIN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.DNS_DATA.HOSTNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.NETBIOS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Endpoint.OS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7742e609-0374-4724-8069-ccc16f13368e
+    type: regular
+    task:
+      id: 7742e609-0374-4724-8069-ccc16f13368e
+      version: -1
+      name: qualys-group-list
+      description: Get account asset groups
+      script: QualysV2|||qualys-group-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3b80c03e-c6dd-458d-81d8-cf2ca0884f24
+    type: condition
+    task:
+      id: 3b80c03e-c6dd-458d-81d8-cf2ca0884f24
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "129"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.AssetGroup.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.AssetGroup.TITLE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 896e83ca-d28b-409c-8f10-307030517683
+    type: regular
+    task:
+      id: 896e83ca-d28b-409c-8f10-307030517683
+      version: -1
+      name: qualys-ip-add
+      description: Add IP addresses to the subscription.
+      script: QualysV2|||qualys-ip-add
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      enable_vm:
+        simple: "1"
+      ips:
+        simple: 1.1.1.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: e69a6154-9136-427d-881b-dec121cdf577
+    type: condition
+    task:
+      id: e69a6154-9136-427d-881b-dec121cdf577
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "139"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.IP.Add.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.IP.Add.DATETIME
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 8539e030-211f-462d-81d3-a3a2167222db
+    type: regular
+    task:
+      id: 8539e030-211f-462d-81d3-a3a2167222db
+      version: -1
+      name: qualys-ip-update
+      description: gives you the ability to update IP addresses within the subscription.
+      script: QualysV2|||qualys-ip-update
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      comment:
+        simple: update
+      ips:
+        simple: 1.1.1.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: ce0cf97a-35b8-481b-899a-853807d788eb
+    type: condition
+    task:
+      id: ce0cf97a-35b8-481b-899a-853807d788eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.IP.Update.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.IP.Update.DATETIME
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 50a2a848-e69b-4ed4-8b33-b07ccd89025c
+    type: regular
+    task:
+      id: 50a2a848-e69b-4ed4-8b33-b07ccd89025c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: d7d817b6-bbfb-4bab-8f83-99859248f26f
+    type: regular
+    task:
+      id: d7d817b6-bbfb-4bab-8f83-99859248f26f
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 5866bdac-03a3-4e04-811c-4c9aef238c6c
+    type: title
+    task:
+      id: 5866bdac-03a3-4e04-811c-4c9aef238c6c
+      version: -1
+      name: Group List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 6f914868-9c45-41f3-84f5-da48bde3bf48
+    type: regular
+    task:
+      id: 6f914868-9c45-41f3-84f5-da48bde3bf48
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "126":
+    id: "126"
+    taskid: 103fccea-d2a8-476f-8e3f-77f98f71bfed
+    type: title
+    task:
+      id: 103fccea-d2a8-476f-8e3f-77f98f71bfed
+      version: -1
+      name: IP Management
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "128":
+    id: "128"
+    taskid: c87f6689-c384-438a-84d3-2c82b19edb3d
+    type: title
+    task:
+      id: c87f6689-c384-438a-84d3-2c82b19edb3d
+      version: -1
+      name: Scheduled Scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "129":
+    id: "129"
+    taskid: b99793fd-5f38-437c-85f1-b18c1049e3e9
+    type: title
+    task:
+      id: b99793fd-5f38-437c-85f1-b18c1049e3e9
+      version: -1
+      name: Host List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "139":
+    id: "139"
+    taskid: 98befc0b-63a2-4ea9-894f-ab8bf09810cd
+    type: regular
+    task:
+      id: 98befc0b-63a2-4ea9-894f-ab8bf09810cd
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing group, host, scheduled scans and IP management commands'

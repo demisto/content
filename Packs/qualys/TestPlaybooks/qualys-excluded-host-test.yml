@@ -1,0 +1,532 @@
+id: qualys-excluded-host-test
+version: -1
+name: qualys-excluded-host-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: f4036c42-9680-4ec9-8b07-781aa8ad4d6e
+    type: regular
+    task:
+      id: f4036c42-9680-4ec9-8b07-781aa8ad4d6e
+      version: -1
+      name: qualys-host-excluded-list
+      description: Show the excluded host list for the user's account. Hosts in your
+        excluded host list will not be scanned.
+      script: QualysV2|||qualys-host-excluded-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cfc42e43-41c9-44e6-8f41-d7266a143ef8
+    type: condition
+    task:
+      id: cfc42e43-41c9-44e6-8f41-d7266a143ef8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.Address
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.#text
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.@expiration_date
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.Range
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: e800774b-f557-4e42-8710-95533b2c23ce
+    type: regular
+    task:
+      id: e800774b-f557-4e42-8710-95533b2c23ce
+      version: -1
+      name: qualys-host-excluded-manage
+      description: Manage your excluded IPs list using the Excluded IP. The IPs in
+        your excluded IPs list will not be scanned.
+      script: QualysV2|||qualys-host-excluded-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      action:
+        simple: remove_all
+      comment:
+        simple: remove all
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: e95d1aa4-fbaf-40e5-8fb7-9fa5f7a7f64e
+    type: condition
+    task:
+      id: e95d1aa4-fbaf-40e5-8fb7-9fa5f7a7f64e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Endpoint.KEY
+            iscontext: true
+          right:
+            value:
+              simple: Removed IPs
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 126f760f-fe14-431f-8ee9-0ee9f7155f5f
+    type: title
+    task:
+      id: 126f760f-fe14-431f-8ee9-0ee9f7155f5f
+      version: -1
+      name: Excluded Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: 233e9a64-c238-4c6c-8c99-849bc6bed1d8
+    type: regular
+    task:
+      id: 233e9a64-c238-4c6c-8c99-849bc6bed1d8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: e28efd6c-4e98-42cf-8a4b-3507dadb462f
+    type: regular
+    task:
+      id: e28efd6c-4e98-42cf-8a4b-3507dadb462f
+      version: -1
+      name: qualys-host-excluded-manage
+      description: Manage your excluded IPs list using the Excluded IP. The IPs in
+        your excluded IPs list will not be scanned.
+      script: QualysV2|||qualys-host-excluded-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      action:
+        simple: add
+      comment:
+        simple: add with expiry
+      expiry_days:
+        simple: "3"
+      ips:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 4cf6fad1-46d2-4ce6-817d-a08a1243a03c
+    type: condition
+    task:
+      id: 4cf6fad1-46d2-4ce6-817d-a08a1243a03c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Endpoint.[1].KEY
+            iscontext: true
+          right:
+            value:
+              simple: Added IPs
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Endpoint.[1].VALUE
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: 732cbc07-5f50-4665-8451-5c0d518f61c4
+    type: regular
+    task:
+      id: 732cbc07-5f50-4665-8451-5c0d518f61c4
+      version: -1
+      name: qualys-host-excluded-list
+      description: Show the excluded host list for the user's account. Hosts in your
+        excluded host list will not be scanned.
+      script: QualysV2|||qualys-host-excluded-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: c98e1d3a-d72d-4dd3-8a1c-0e2c7538ca33
+    type: condition
+    task:
+      id: c98e1d3a-d72d-4dd3-8a1c-0e2c7538ca33
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "96"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Excluded.Host.Address.#text
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.Address.@expiration_date
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Qualys.Excluded.Host.Range
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: d9929cfd-67b9-4ac9-825c-0aa40876beea
+    type: regular
+    task:
+      id: d9929cfd-67b9-4ac9-825c-0aa40876beea
+      version: -1
+      name: qualys-host-excluded-manage
+      description: Manage your excluded IPs list using the Excluded IP. The IPs in
+        your excluded IPs list will not be scanned.
+      script: QualysV2|||qualys-host-excluded-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      action:
+        simple: remove
+      comment:
+        simple: remove 1.1.1.1
+      ips:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 557e6252-b621-4311-8cef-12eda2a09fbb
+    type: condition
+    task:
+      id: 557e6252-b621-4311-8cef-12eda2a09fbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Endpoint.KEY
+            iscontext: true
+          right:
+            value:
+              simple: Removed IPs
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Qualys.Endpoint.[0].VALUE
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2280,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing excluded hosts commands'

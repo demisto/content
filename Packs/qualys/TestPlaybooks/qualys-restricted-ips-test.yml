@@ -1,0 +1,638 @@
+id: qualys-restricted-ips-test
+version: -1
+name: qualys-restricted-ips-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 842c3a41-7065-4662-8992-38913954ebc8
+    type: start
+    task:
+      id: 842c3a41-7065-4662-8992-38913954ebc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "127"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: e0f569a2-0225-4a59-8f72-ce0f979df919
+    type: regular
+    task:
+      id: e0f569a2-0225-4a59-8f72-ce0f979df919
+      version: -1
+      name: qualys-ip-restricted-list
+      description: Get the list of restricted IPs within the user's subscription.
+      script: QualysV2|||qualys-ip-restricted-list
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 59de0cfa-a1b6-4df4-8598-6999275414cc
+    type: condition
+    task:
+      id: 59de0cfa-a1b6-4df4-8598-6999275414cc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "143"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 1044b7d2-946c-4d09-8e0c-d259ce2ebcbf
+    type: regular
+    task:
+      id: 1044b7d2-946c-4d09-8e0c-d259ce2ebcbf
+      version: -1
+      name: qualys-ip-restricted-manage
+      description: Get the list of restricted IPs within the user's subscription.
+      script: QualysV2|||qualys-ip-restricted-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      action:
+        simple: clear
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 87c18b37-9a68-4ff1-8812-50ceb884fe71
+    type: condition
+    task:
+      id: 87c18b37-9a68-4ff1-8812-50ceb884fe71
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "140"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+    type: title
+    task:
+      id: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "127":
+    id: "127"
+    taskid: be1419ed-4732-4e54-8142-36874a8048f2
+    type: title
+    task:
+      id: be1419ed-4732-4e54-8142-36874a8048f2
+      version: -1
+      name: Restricted IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "136"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "130":
+    id: "130"
+    taskid: 9285283a-4952-455e-8345-3f7b806eab84
+    type: regular
+    task:
+      id: 9285283a-4952-455e-8345-3f7b806eab84
+      version: -1
+      name: qualys-ip-restricted-manage
+      description: Get the list of restricted IPs within the user's subscription.
+      script: QualysV2|||qualys-ip-restricted-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      action:
+        simple: add
+      ips:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "131":
+    id: "131"
+    taskid: 8f3b9796-117d-4126-8292-2620b4667741
+    type: regular
+    task:
+      id: 8f3b9796-117d-4126-8292-2620b4667741
+      version: -1
+      name: qualys-ip-restricted-manage
+      description: Get the list of restricted IPs within the user's subscription.
+      script: QualysV2|||qualys-ip-restricted-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "133"
+    scriptarguments:
+      action:
+        simple: replace
+      ips:
+        simple: 1.1.1.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "132":
+    id: "132"
+    taskid: 2bdfcabf-555c-4627-8f46-8de6740ae25f
+    type: condition
+    task:
+      id: 2bdfcabf-555c-4627-8f46-8de6740ae25f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "133":
+    id: "133"
+    taskid: cda94bc8-32cc-4972-893e-51ca460841a8
+    type: condition
+    task:
+      id: cda94bc8-32cc-4972-893e-51ca460841a8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "142"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "134":
+    id: "134"
+    taskid: 03d72744-b27e-42c8-8614-86bf07dc64b1
+    type: regular
+    task:
+      id: 03d72744-b27e-42c8-8614-86bf07dc64b1
+      version: -1
+      name: qualys-ip-restricted-manage
+      description: Get the list of restricted IPs within the user's subscription.
+      script: QualysV2|||qualys-ip-restricted-manage
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      action:
+        simple: delete
+      ips:
+        simple: 1.1.1.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "135":
+    id: "135"
+    taskid: 13522a6f-2d00-4480-8c8a-fa9f37f7c9c8
+    type: condition
+    task:
+      id: 13522a6f-2d00-4480-8c8a-fa9f37f7c9c8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.TEXT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.DATETIME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "136":
+    id: "136"
+    taskid: a9cb7519-b27e-42c1-801b-a19b249df286
+    type: regular
+    task:
+      id: a9cb7519-b27e-42c1-801b-a19b249df286
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "140":
+    id: "140"
+    taskid: c21ea8f1-a5a2-48b6-8f55-b2d0150f19c0
+    type: regular
+    task:
+      id: c21ea8f1-a5a2-48b6-8f55-b2d0150f19c0
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "141":
+    id: "141"
+    taskid: 6511a106-91f8-42db-8e5f-008130d9e432
+    type: regular
+    task:
+      id: 6511a106-91f8-42db-8e5f-008130d9e432
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "142":
+    id: "142"
+    taskid: c7f64c95-473b-42b7-836e-7332a9702535
+    type: regular
+    task:
+      id: c7f64c95-473b-42b7-836e-7332a9702535
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "143":
+    id: "143"
+    taskid: 5cce0fc3-3d75-4399-8cad-55b13b1b0449
+    type: regular
+    task:
+      id: 5cce0fc3-3d75-4399-8cad-55b13b1b0449
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "72_143_yes": 0.47,
+      "74_140_yes": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2995,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing restricted IPs commands'
