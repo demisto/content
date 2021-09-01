@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:DigitalGuardian_Demo.yml]
 ignore=BA110
+
+[file:incidentfield-Digital_Guardian_Computer_Name.json]
+ignore=BA113
