@@ -974,3 +974,6 @@ Queries a URL in AlienVault OTX.
 >|---|---|---|---|---|
 >| http://www.alexa.com/siteinfo/fotoidea.com | fotoidea.com | www.fotoidea.com | http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list | http://whois.domaintools.com/fotoidea.com |
 
+
+## Additional Information
+ - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
