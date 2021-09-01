@@ -178,9 +178,7 @@ class Client(BaseClient):
             json_data=user_data,
         )
 
-        user_res = self.get_user_by_id(f'/User/{user_id}')
-
-        user_app_data = user_res.json()
+        user_app_data = self.get_user_by_id(f'/User/{user_id}')
 
         user_name = user_app_data.get('username')
         is_active = True
@@ -209,9 +207,7 @@ class Client(BaseClient):
             json_data=user_data,
         )
 
-        user_res = self.get_user_by_id(f'/User/{user_id}')
-
-        user_app_data = user_res.json()
+        user_app_data = self.get_user_by_id(f'/User/{user_id}')
 
         user_name = user_app_data.get('username')
         is_active = False

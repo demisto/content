@@ -276,23 +276,23 @@ class TestUpdateUserCommand:
 
 
 class TestDisableUserCommand:
-    def test_disable_user_command__non_existing_user(self, mocker):
+    def test_success(self):
         """
         Given:
             - An app client object
             - A user-profile argument that contains an email of a user
         When:
-            - create-if-not-exists parameter is unchecked
-            - The user does not exist in the application
             - Calling function disable_user_command
         Then:
-            - Ensure the command is considered successful and skipped
+            - Ensure that the command is successful and the user is disabled
         """
         client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
-            m.post('/data/findUserQuery', json={})
+            m.post('/data/findUserQuery', json={'entities': [{'id': '/User/1234'}]})
+            m.get('/data/objects/User/1234', json=APP_DISABLED_USER_OUTPUT)
+            m.post('/data/lifecycle', json={})
 
             user_profile = IAMCommand().disable_user(client, args)
 
@@ -300,8 +300,38 @@ class TestDisableUserCommand:
 
         assert outputs.get('action') == IAMActions.DISABLE_USER
         assert outputs.get('success') is True
-        assert outputs.get('skipped') is True
-        assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+        assert outputs.get('active') is False
+        assert outputs.get('id') == '1234'
+        assert outputs.get('username') == 'mock_user_name'
+        assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
+        assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+
+    def test_non_existing_user(self):
+            """
+            Given:
+                - An app client object
+                - A user-profile argument that contains an email of a user
+            When:
+                - create-if-not-exists parameter is unchecked
+                - The user does not exist in the application
+                - Calling function disable_user_command
+            Then:
+                - Ensure the command is considered successful and skipped
+            """
+            client = mock_client()
+            args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+
+            with requests_mock.Mocker() as m:
+                m.post('/data/findUserQuery', json={})
+
+                user_profile = IAMCommand().disable_user(client, args)
+
+            outputs = get_outputs_from_user_profile(user_profile)
+
+            assert outputs.get('action') == IAMActions.DISABLE_USER
+            assert outputs.get('success') is True
+            assert outputs.get('skipped') is True
+            assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
 def test_get_mapping_fields_command(mocker):
