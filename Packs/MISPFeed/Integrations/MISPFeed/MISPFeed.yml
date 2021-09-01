@@ -128,7 +128,7 @@ configuration:
   additionalinfo: Supports CSV values.
 description: 'Indicators feed from MISP'
 display: MISP Feed
-name: MISP Feed
+name: MISPFeed
 script:
   commands:
   - arguments:

@@ -1,8 +1,8 @@
-import pytest
 import json
+import pytest
 
 from CommonServerPython import DemistoException, ThreatIntel
-from Packs.MISPFeed.Integrations.MISPFeed.MISPFeed import clean_user_query, build_indicators_iterator,\
+from MISPFeed import clean_user_query, build_indicators_iterator, \
     handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies
 
 

@@ -1,5 +1,5 @@
 Indicators feed from MISP
-This integration was integrated and tested with version xx of MISPFeed
+This integration was integrated and tested with version 1.0 of MISPFeed
 ## Configure MISPFeed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
