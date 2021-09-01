@@ -289,11 +289,10 @@ def test_update_user_sta_command(mocker, args, expected_output, expected_readabl
 
 # Tests sta-delete-user command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'userName': 'testuser1'},
-         {"Deleted": True, "id": "iNlsjym+x1MLesvCSusAAAAc", "userName": "testuser1"},
-         {'STA user - testuser1 successfully deleted.'})
+         {"Deleted": True, "id": "iNlsjym+x1MLesvCSusAAAAc", "userName": "testuser1"})
     ])
 def test_delete_user_sta_command(mocker, args, expected_output):
 
@@ -435,11 +434,10 @@ def test_create_group_sta_command(mocker, args, expected_output, expected_readab
 
 # Tests sta-delete-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup2'},
-         {"Deleted": True, "groupName": "TestGroup2", "id": "16777228"},
-         {'STA group - TestGroup2 successfully deleted.'})
+         {"Deleted": True, "groupName": "TestGroup2", "id": "16777228"})
     ])
 def test_delete_group_sta_command(mocker, args, expected_output):
 
@@ -475,12 +473,11 @@ def test_update_group_sta_command(mocker, args, expected_output, expected_readab
 
 # Tests sta-add-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
          {"groupName": "TestGroup1", "group_id": "50331649", "status": True, "userName": "hellouser",
-             "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
-         {'User - hellouser successfully added to the group - TestGroup1.'})
+             "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"})
     ])
 def test_add_user_group_sta_command(mocker, args, expected_output):
 
@@ -514,12 +511,11 @@ def test_user_exist_group_sta_command(mocker, args, expected_output):
 
 # Tests sta-remove-user-group command function.
 @pytest.mark.parametrize(
-    "args, expected_output, expected_readable",
+    "args, expected_output",
     [
         ({'groupName': 'TestGroup1', 'userName': 'hellouser'},
          {"groupName": "TestGroup1", "group_id": "50331649", "status": False, "userName": "hellouser",
-          "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"},
-         {'User - hellouser successfully removed from the group - TestGroup1.'})
+          "user_id": "CNlM6rvB0uQDXA4rWyUAAAAc"})
     ])
 def test_remove_user_group_sta_command(mocker, args, expected_output):
 
@@ -544,7 +540,7 @@ def test_remove_user_group_sta_command(mocker, args, expected_output):
            "resultText": "CHALLENGE", "serial": "1000014514", "state": "",
            "timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser"}])
     ])
-def test_get_logs_sta_command(mocker, args, expected_output, expected_readable):
+def test_get_logs_sta_command(mocker, args, expected_output):
 
     from SafeNetTrustedAccess import get_logs_sta_command
 
