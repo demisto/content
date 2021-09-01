@@ -53,7 +53,7 @@ def get_outputs_from_user_profile(user_profile):
 
 
 class TestGetUserCommand:
-    def test_get_user_command__existing_user(self):
+    def test_existing_user(self):
         """
         Given:
             - An app client object
@@ -82,7 +82,7 @@ class TestGetUserCommand:
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
-    def test_get_user_command__non_existing_user(self):
+    def test_non_existing_user(self):
         """
         Given:
             - An app client object
@@ -108,7 +108,7 @@ class TestGetUserCommand:
         assert outputs.get('errorCode') == IAMErrors.USER_DOES_NOT_EXIST[0]
         assert outputs.get('errorMessage') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
-    def test_get_user_command__bad_response(self, mocker):
+    def test_bad_response(self, mocker):
         """
         Given:
             - An app client object
@@ -140,7 +140,7 @@ class TestGetUserCommand:
 
 
 class TestCreateUserCommand:
-    def test_create_user_command__success(self):
+    def test_success(self):
         """
         Given:
             - An app client object
@@ -169,7 +169,7 @@ class TestCreateUserCommand:
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
-    def test_create_user_command__user_already_exists(self):
+    def test_user_already_exists(self):
         """
         Given:
             - An app client object
@@ -203,7 +203,7 @@ class TestCreateUserCommand:
 
 
 class TestUpdateUserCommand:
-    def test_update_user_command__non_existing_user(self):
+    def test_non_existing_user(self):
         """
         Given:
             - An app client object
@@ -236,7 +236,7 @@ class TestUpdateUserCommand:
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
-    def test_update_user_command__command_is_disabled(self):
+    def test_command_is_disabled(self):
         """
         Given:
             - An app client object
@@ -259,7 +259,7 @@ class TestUpdateUserCommand:
         assert outputs.get('skipped') is True
         assert outputs.get('reason') == 'Command is disabled.'
 
-    def test_update_user_command__allow_enable(self):
+    def test_allow_enable(self):
         """
         Given:
             - An app client object
@@ -294,7 +294,7 @@ class TestUpdateUserCommand:
 
 
 class TestDisableUserCommand:
-    def test_disable_user_command__non_existing_user(self):
+    def test_non_existing_user(self):
         """
         Given:
             - An app client object
@@ -323,7 +323,18 @@ class TestDisableUserCommand:
 
 
 class TestGetGroupCommand:
-    def test_get_group(self, mocker):
+    """
+    Given:
+        - An app client object
+        - A scim argument that contains an ID of a group
+    When:
+        - The group exists in the application
+        - Calling the main function with 'iam-get-group' command
+    Then:
+        - Ensure the resulted 'CommandResults' object holds the correct group details
+    """
+
+    def test_with_id(self, mocker):
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
         mock_result = mocker.patch('AWSILM.CommandResults')
@@ -336,7 +347,39 @@ class TestGetGroupCommand:
 
         assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
 
-    def test_get_group__non_existing_group(self, mocker):
+    def test_with_display_name(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a displayName of a group
+        When:
+            - The group exists in the application
+            - Calling the main function with 'iam-get-group' command
+        Then:
+            - Ensure the resulted 'CommandResults' object holds the correct group details
+        """
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.get(f'{groupUri}', json={'totalResults': 1, 'Resources': [APP_GROUP_OUTPUT]})
+
+            get_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
+
+    def test_non_existing_group(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains an ID and displayName of a non_existing group
+        When:
+            - The group not exists in the application
+            - Calling the main function with 'iam-get-group' command
+        Then:
+            - Ensure the resulted 'CommandResults' object holds information about an unsuccessful result.
+        """
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
         mock_result = mocker.patch('AWSILM.CommandResults')
@@ -349,7 +392,16 @@ class TestGetGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
         assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
-    def test_get_group__id_and_display_name_empty(self):
+    def test_id_and_display_name_empty(self):
+        """
+        Given:
+            - An app client object
+            - A scim argument that not contains an ID and displayName of a group
+        When:
+            - Calling the main function with 'iam-get-group' command
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{}"}
 
@@ -358,21 +410,18 @@ class TestGetGroupCommand:
 
         assert str(e.value) == 'You must supply either "id" or "displayName" in the scim data'
 
-    def test_get_group__display_name(self, mocker):
-        client = mock_client()
-        args = {"scim": "{\"displayName\": \"The group name\"}"}
-        mock_result = mocker.patch('AWSILM.CommandResults')
-
-        with requests_mock.Mocker() as m:
-            m.get(f'{groupUri}', json={'totalResults': 1, 'Resources': [APP_GROUP_OUTPUT]})
-
-            get_group_command(client, args)
-
-        assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
-
 
 class TestCreateGroupCommand:
-    def test_create_group(self, mocker):
+    def test_success(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a displayName of a non-existing group in the application
+        When:
+            - Calling the main function with 'iam-create-group' command
+        Then:
+            - Ensure the resulted 'CommandResults' object holds information about the created group.
+        """
         client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
         mock_result = mocker.patch('AWSILM.CommandResults')
@@ -384,7 +433,16 @@ class TestCreateGroupCommand:
 
         assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
 
-    def test_create_group__group_already_exist(self, mocker):
+    def test_group_already_exist(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a displayName of an existing group in the application
+        When:
+            - Calling the main function with 'iam-create-group' command
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
 
@@ -397,7 +455,16 @@ class TestCreateGroupCommand:
         assert e.value.res.status_code == 400
         assert 'Group already exist' in str(e.value)
 
-    def test_create_group__display_name_empty(self):
+    def test_display_name_empty(self):
+        """
+        Given:
+            - An app client object
+            - A scim argument that not contains a displayName
+        When:
+            - Calling the main function with 'iam-create-group' command
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{}"}
 
@@ -408,7 +475,17 @@ class TestCreateGroupCommand:
 
 
 class TestUpdateGroupCommand:
-    def test_update_group(self, mocker):
+    def test_success(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a group ID and a memberIdsToAdd/memberIdsToDelete argument
+                of the members who are supposed to be updated.
+        When:
+            - Calling the main function with 'iam-update-group'
+        Then:
+            - Ensure the resulted 'CommandResults' object holds information about the updated group.
+        """
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}", "memberIdsToAdd": ["111111"],
                 "memberIdsToDelete": ["222222"]}
@@ -421,7 +498,16 @@ class TestUpdateGroupCommand:
 
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
 
-    def test_update_group__nothing_to_update(self):
+    def test_nothing_to_update(self):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a group ID.
+        When:
+            - Calling the main function with 'iam-update-group'
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
 
@@ -432,7 +518,16 @@ class TestUpdateGroupCommand:
 
 
 class TestDeleteGroupCommand:
-    def test_delete_group(self, mocker):
+    def test_success(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a group ID.
+        When:
+            - Calling the main function with 'iam-delete-group'
+        Then:
+            - Ensure the resulted 'CommandResults' object holds information about the deleted group.
+        """
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
         mock_result = mocker.patch('AWSILM.CommandResults')
@@ -444,7 +539,16 @@ class TestDeleteGroupCommand:
 
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
 
-    def test_delete_group__non_existing_group(self, mocker):
+    def test_non_existing_group(self, mocker):
+        """
+        Given:
+            - An app client object
+            - A scim argument that contains a non-existing group ID.
+        When:
+            - Calling the main function with 'iam-delete-group'
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
         mock_result = mocker.patch('AWSILM.CommandResults')
@@ -457,7 +561,16 @@ class TestDeleteGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
         assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
-    def test_delete_group__id_is_empty(self):
+    def test_id_is_empty(self):
+        """
+        Given:
+            - An app client object
+            - A scim argument that not contains a group ID.
+        When:
+            - Calling the main function with 'iam-delete-group'
+        Then:
+            - Ensure that an error is raised with an expected message.
+        """
         client = mock_client()
         args = {"scim": "{}"}
 
