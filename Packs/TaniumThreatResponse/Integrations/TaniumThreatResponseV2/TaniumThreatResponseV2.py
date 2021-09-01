@@ -22,7 +22,6 @@ PROCESS_CHILDREN_TEXT = 'Children for process with PTID'
 
 # The commands below won't work unless the connection passed in `connection_name` argument is active.
 COMMANDS_DEPEND_ON_CONNECTIVITY = [
-    'tanium-tr-list-snapshots-by-connection',
     'tanium-tr-create-snapshot',
     'tanium-tr-list-events-by-connection',
     'tanium-tr-get-process-info',
@@ -36,7 +35,6 @@ COMMANDS_DEPEND_ON_CONNECTIVITY = [
     'tanium-tr-list-files-in-directory',
     'tanium-tr-get-file-info',
     'tanium-tr-delete-file-from-endpoint',
-    'tanium-tr-get-process-timeline',
 ]
 DEPENDENT_COMMANDS_ERROR_MSG = '\nPlease verify that the connection you have specified is active.'
 
@@ -62,7 +60,7 @@ class Client(BaseClient):
 
         if res.status_code == 401:
             if self.api_token:
-                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the '\
+                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
                           'client is listed in the api_token_trusted_ip_address_list global setting.\n'
             else:
                 err_msg = ''
@@ -268,7 +266,6 @@ def init_commands_dict():
         'tanium-tr-get-parent-process': get_parent_process,
         'tanium-tr-get-parent-process-tree': get_parent_process_tree,
         'tanium-tr-get-process-tree': get_process_tree,
-        'tanium-tr-get-process-timeline': get_process_timeline,
 
         'tanium-tr-event-evidence-list': list_evidence,
         'tanium-tr-get-evidence-by-id': get_evidence,
@@ -278,7 +275,6 @@ def init_commands_dict():
         'tanium-tr-list-file-downloads': get_file_downloads,
         'tanium-tr-get-file-download-info': get_file_download_info,
         'tanium-tr-request-file-download': request_file_download,
-        'tanium-tr-get-download-file-request-status': get_file_download_request_status,
         'tanium-tr-delete-file-download': delete_file_download,
         'tanium-tr-list-files-in-directory': list_files_in_dir,
         'tanium-tr-get-file-info': get_file_info,
@@ -287,25 +283,6 @@ def init_commands_dict():
 
 
 ''' PROCESS HELPER FUNCTIONS '''
-
-
-def get_process_timeline_item(raw_item, category_name, limit, offset):
-    timeline_item = []
-    for category in raw_item:
-        if category['name'].lower() == category_name.lower():
-            sorted_timeline_dates = sorted(category['details'].keys())
-            from_idx = min(offset, len(sorted_timeline_dates))
-            to_idx = min(offset + limit, len(sorted_timeline_dates))
-            for i in range(from_idx, to_idx):
-                current_date = sorted_timeline_dates[i]
-                events_in_current_date = category['details'][current_date]
-                timeline_item.append({
-                    'Date': timestamp_to_datestring(sorted_timeline_dates[i], date_format='%Y-%m-%d %H:%M:%S.%f'),
-                    'Category': category_name,
-                    'Event': events_in_current_date
-                })
-
-    return timeline_item
 
 
 def get_process_tree_item(raw_item, level):
@@ -385,37 +362,34 @@ def get_process_event_item(raw_event):
 
 def get_event_header(event_type):
     if event_type == 'combined':
-        headers = ['ID', 'Type', 'ProcessName', 'Detail', 'Timestamp', 'Operation']
+        headers = ['Id', 'Type', 'ProcessPath', 'Detail', 'Timestamp', 'Operation']
 
     elif event_type == 'file':
-        headers = ['ID', 'Type', 'File', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName',
-                   'Username']
+        headers = ['Id', 'File', 'Timestamp', 'ProcessTableId', 'ProcessPath', 'Pid'
+                   'UserName']
 
     elif event_type == 'network':
-        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
-                   'Operation', 'DestinationAddress', 'DestinationPort', 'SourceAddress', 'SourcePort']
+        headers = ['Id', 'Timestamp', 'GroupName', 'ProcessTableId', 'Pid', 'ProcessPath', 'UserName',
+                   'Operation', 'LocalAddress', 'LocalAddressPort', 'RemoteAddress', 'RemoteAddressPort']
 
     elif event_type == 'registry':
-        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+        headers = ['Id', 'Timestamp', 'GroupName', 'ProcessTableId', 'Pid', 'ProcessPath', 'UserName',
                    'KeyPath', 'ValueName']
 
     elif event_type == 'process':
-        headers = ['Domain', 'Type', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName', 'ExitCode',
-                   'SID', 'Username', 'CreationTime', 'EndTime']
+        headers = ['GroupName', 'ProcessTableId', 'ProcessCommandLine', 'Pid', 'ProcessPath', 'ExitCode',
+                   'UserName', 'CreateTime', 'EndTime']
 
     elif event_type == 'driver':
-        headers = ['ID', 'Type', 'Timestamp', 'ProcessTableID', 'SID', 'Hashes', 'ImageLoaded', 'Signature', 'Signed',
-                   'EventID', 'EventOpcode', 'EventRecordID', 'EventTaskID']
-
-    elif event_type == 'security':
-        headers = ['ID', 'Type', 'Timestamp', 'EventID', 'EventTaskName', 'ProcessTableID']
+        headers = ['Id', 'Timestamp', 'ProcessTableID', 'Hashes', 'ImageLoaded', 'Signature', 'Signed',
+                   'EventId', 'EventOpcode', 'EventRecordId', 'EventTaskId']
 
     elif event_type == 'dns':
-        headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+        headers = ['Id', 'Timestamp', 'GroupName', 'ProcessTableId', 'Pid', 'ProcessPath', 'UserName',
                    'Operation', 'Query', 'Response']
 
     else:  # if event_type == 'image'
-        headers = ['ID', 'Type', 'Timestamp', 'ImagePath', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
+        headers = ['Id', 'Timestamp', 'ImagePath', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'Hash', 'Signature']
     return headers
 
@@ -489,27 +463,6 @@ def get_file_item(file, con_name, dir_path='', full_path=''):
         file_item['Path'] = path_join(dir_path, file_item['Path'])
 
     return {key: val for key, val in file_item.items() if val is not None}
-
-
-def get_file_download_item(file):
-    return {
-        'ID': file.get('id'),
-        'Host': file.get('host'),
-        'Path': file.get('path'),
-        'SPath': file.get('spath'),
-        'Hash': file.get('hash'),
-        'Size': file.get('size'),
-        'Created': file.get('created'),
-        'CreatedBy': file.get('created_by'),
-        'CreatedByProc': file.get('created_by_proc'),
-        'LastModified': file.get('last_modified'),
-        'LastModifiedBy': file.get('last_modified_by'),
-        'LastModifiedByProc': file.get('last_modified_by_proc'),
-        'Downloaded': file.get('downloaded'),
-        'Comments': file.get('comments'),
-        'Tags': file.get('tags'),
-        'Deleted': False
-    }
 
 
 ''' LABELS HELPER FUNCTIONS '''
@@ -1085,8 +1038,8 @@ def get_deploy_status(client: Client, data_args: dict) -> Tuple[str, dict, Union
 
 
 def get_alerts(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = data_args.get('offset')
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     ip_address = data_args.get('computer-ip-address')
     computer_name = data_args.get('computer-name')
     scan_config_id = data_args.get('scan-config-id')
@@ -1096,17 +1049,15 @@ def get_alerts(client, data_args):
     type_ = data_args.get('type')
     state = data_args.get('state')
 
-    params = {'type': type_,
-              'priority': priority,
-              'severity': severity,
-              'intelDocId': intel_doc_id,
-              'scanConfigId': scan_config_id,
-              'computerName': computer_name,
-              'computerIpAddress': ip_address,
-              'limit': limit,
-              'offset': offset}
-    if state:
-        params['state'] = state.lower()
+    params = assign_params(type=type_,
+                           priority=priority,
+                           severity=severity,
+                           intelDocId=intel_doc_id,
+                           scanConfigId=scan_config_id,
+                           computerName=computer_name,
+                           computerIpAddress=ip_address,
+                           limit=limit,
+                           offset=offset, state=state.lower())
 
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts/', params=params)
 
@@ -1159,8 +1110,8 @@ def alert_update_state(client, data_args):
 
 
 def list_snapshots(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
 
     params = assign_params(limit=limit, offset=offset)
     raw_response = client.do_request(method='GET',
@@ -1172,9 +1123,9 @@ def list_snapshots(client, data_args):
         if created := snapshot.get('created'):
             snapshot['created'] = timestamp_to_datestring(created)
 
-    context = createContext(snapshots, removeNull=True)
+    context = createContext(snapshots, removeNull=True, keyTransform=lambda x: x[:1].upper()+x[1:])
     headers = ['name', 'evidenceType', 'hostname', 'created']
-    outputs = {'Tanium.Snapshot(val.uuid === obj.uuid && val.connectionId === obj.connectionId)': context}
+    outputs = {'Tanium.Snapshot(val.Uuid === obj.Uuid)': context}
     human_readable = tableToMarkdown('Snapshots:', snapshots, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1215,8 +1166,8 @@ def delete_local_snapshot(client, data_args):
 
 
 def get_connections(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns')
 
     from_idx = min(offset, len(raw_response))
@@ -1229,8 +1180,8 @@ def get_connections(client, data_args):
         if initiated_at := connection.get('initiatedAt'):
             connection['initiatedAt'] = timestamp_to_datestring(initiated_at)
 
-    context = createContext(connections, removeNull=True)
-    outputs = {'Tanium.Connection(val.Hostname && val.Hostname === obj.Hostname)': context}
+    context = createContext(connections, removeNull=True, keyTransform=lambda x: x[:1].upper()+x[1:])
+    outputs = {'Tanium.Connection(val.Hostname === obj.Hostname)': context}
     headers = ['status', 'hostname', 'message', 'ip', 'platform', 'connectedAt']
     human_readable = tableToMarkdown('Connections', connections, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1268,22 +1219,22 @@ def delete_connection(client, data_args):
 
 
 def get_events_by_connection(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
-    connection = validate_connection_name(client, data_args.get('connection-name'))
+    limit = arg_to_number(data_args.get('limit')) - 1  # there ia a bug in the api, when send limit 2 it returns 3 items
+    offset = arg_to_number(data_args.get('offset'))
+    cid = data_args.get('cid')
     sort = data_args.get('sort')
     fields = data_args.get('fields')
     event_type = data_args.get('event-type').lower()
     filter_dict = filter_to_tanium_api_syntax(data_args.get('filter'))
     match = data_args.get('match')
 
-    params = {
-        'limit': limit,
-        'offset': offset,
-        'sort': sort,
-        'fields': fields,
-        'match': match
-    }
+    params = assign_params(
+        limit=limit,
+        offset=offset,
+        sort=sort,
+        fields=fields,
+        match=match
+    )
 
     if filter_dict:
         g1 = ','.join([str(i) for i in range(len(filter_dict) // 3)])  # A weird param that must be passed
@@ -1291,18 +1242,14 @@ def get_events_by_connection(client, data_args):
         params['g1'] = g1
         params.update(filter_dict)
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/',
+    raw_response = client.do_request('GET',
+                                     f'/plugin/products/threat-response/api/v1/conns/{cid}/views/{event_type}/events',
                                      params=params)
 
-    events = []
-    for item in raw_response:
-        event = get_event_item(item, event_type)
-        events.append(event)
-
-    context = createContext(events, removeNull=True)
-    outputs = {'TaniumEvent(val.ID === obj.ID)': context}
+    context = createContext(raw_response, removeNull=True, keyTransform=underscoreToCamelCase)
+    outputs = {'TaniumEvent(val.Id === obj.Id)': context}
     headers = get_event_header(event_type)
-    human_readable = tableToMarkdown(f'Events for {connection}', events, headers=headers,
+    human_readable = tableToMarkdown(f'Events for {cid}', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1311,8 +1258,8 @@ def get_events_by_connection(client, data_args):
 
 
 def get_labels(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
 
     from_idx = min(offset, len(raw_response))
@@ -1347,19 +1294,22 @@ def get_label(client, data_args):
 
 
 def get_file_downloads(client, data_args):
-    data_args = {key: val for key, val in data_args.items() if val is not None}
-    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params=data_args)
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
+    sort = data_args.get('sort')
+    params = assign_params(limit=limit, offset=offset, sort=sort)
+    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/filedownload', params=params)
 
-    files = []
-    for item in raw_response:
-        file = get_file_download_item(item)
-        files.append(file)
+    files = raw_response.get('fileEvidence', [])
+    for file in files:
+        if evidence_type := file.get('evidenceType'):
+            file['evidence_type'] = evidence_type
+            del file['evidenceType']
 
-    context = createContext(files, removeNull=True)
-    outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Host', 'Path', 'Hash', 'Downloaded', 'Size', 'Created', 'CreatedBy', 'CreatedByProc',
-               'LastModified', 'LastModifiedBy', 'LastModifiedByProc', 'SPath', 'Comments', 'Tags']
-    human_readable = tableToMarkdown('File downloads', files, headers=headers,
+    context = createContext(files, removeNull=True, keyTransform=underscoreToCamelCase)
+    outputs = {'Tanium.FileDownload(val.Uuid && val.Uuid === obj.Uuid)': context}
+    headers = ['Path', 'EvidenceType', 'Hostname', 'ProcessCreationTime', 'Size', 'Username']
+    human_readable = tableToMarkdown('File downloads', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1413,44 +1363,6 @@ def request_file_download(client, data_args):
     client.do_request('POST', '/plugin/products/trace/filedownloads', data=data, resp_type='text')
     filename = os.path.basename(path)
     return f'Download request of file {filename} has been sent successfully.', outputs, {}
-
-
-def get_file_download_request_status(client, data_args):
-    downloaded = str(data_args.get('request-date')).replace('T', ' ')
-    host = data_args.get('connection-name')
-    path = data_args.get('path')
-
-    params = {'downloaded>': downloaded}
-    if host:
-        params['host'] = host
-    if path:
-        params['path'] = path
-
-    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads', params=params)
-    if raw_response:
-        file_id = raw_response[0].get('id')
-        status = 'Completed'
-        downloaded = raw_response[0].get('downloaded')
-        path = path if path else raw_response[0].get('path')
-        host = host if host else raw_response[0].get('host')
-    else:
-        file_id = None
-        status = 'Not found'
-
-    file_download_request = {
-        'ID': file_id,
-        'ConnectionName': host,
-        'Path': path,
-        'Status': status,
-        'Downloaded': downloaded
-    }
-
-    context = createContext(file_download_request, removeNull=True)
-    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-    headers = ['ID', 'ConnectionName', 'Status', 'Path', 'Downloaded']
-    human_readable = tableToMarkdown('File download request status', file_download_request,
-                                     headers=headers, headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
 
 
 def delete_file_download(client, data_args):
@@ -1653,30 +1565,12 @@ def get_process_tree(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_process_timeline(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
-    ptid = data_args.get('ptid')
-    category = data_args.get('category')
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
-
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_name}/eprocesstimelines/{ptid}')
-    timeline = get_process_timeline_item(raw_response, category, limit, offset)
-
-    context = createContext(timeline, removeNull=True)
-    outputs = {'Tanium.ProcessTimeline(val.ProcessTableID && val.ProcessTableID === obj.ProcessTableID)': context}
-    headers = ['Date', 'Event', 'Category']
-    human_readable = tableToMarkdown(f'Timeline data for process with PTID `{ptid}`', timeline,
-                                     headers=headers, headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
-
-
 ''' EVIDENCE COMMANDS FUNCTIONS '''
 
 
 def list_evidence(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     sort = data_args.get('sort')
 
     params = assign_params(sort=sort)

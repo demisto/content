@@ -455,34 +455,34 @@ script:
     execution: false
     name: tanium-tr-list-snapshots
     outputs:
-    - contextPath: Tanium.Snapshot.size
+    - contextPath: Tanium.Snapshot.Size
       description: The snapshot size.
       type: String
-    - contextPath: Tanium.Snapshot.created
+    - contextPath: Tanium.Snapshot.Created
       description: The snapshot creation date.
       type: String
-    - contextPath: Tanium.Snapshot.completed
+    - contextPath: Tanium.Snapshot.Completed
       description: The snapshot completed date.
       type: String
-    - contextPath: Tanium.Snapshot.name
+    - contextPath: Tanium.Snapshot.Name
       description: The snapshot name.
       type: String
-    - contextPath: Tanium.Snapshot.isUpload
+    - contextPath: Tanium.Snapshot.IsUpload
       description: Is the snapshot uplaod.
       type: Boolean
-    - contextPath: Tanium.Snapshot.evidenceType
+    - contextPath: Tanium.Snapshot.EvidenceType
       description: Evidence type.
       type: String
-    - contextPath: Tanium.Snapshot.hostname
+    - contextPath: Tanium.Snapshot.Hostname
       description: Hxstname of the snapshot.
       type: String
-    - contextPath: Tanium.Snapshot.connectionId
+    - contextPath: Tanium.Snapshot.ConnectionId
       description: The snapshot connection ID.
       type: String
-    - contextPath: Tanium.Snapshot.recorderVersion
+    - contextPath: Tanium.Snapshot.RecorderVersion
       description: Recorder Version.
       type: String
-    - contextPath: Tanium.Snapshot.uuid
+    - contextPath: Tanium.Snapshot.Uuid
       description: The snapshot uuid.
       type: String
   - arguments:
@@ -529,43 +529,43 @@ script:
     execution: false
     name: tanium-tr-list-connections
     outputs:
-    - contextPath: Tanium.Connection.id
+    - contextPath: Tanium.Connection.Id
       description: The connection id.
       type: String
-    - contextPath: Tanium.Connection.initiatedAt
+    - contextPath: Tanium.Connection.InitiatedAt
       description: Time when the connection was first created.
       type: Date
-    - contextPath: Tanium.Connection.hostname
+    - contextPath: Tanium.Connection.Hostname
       description: The connection hostname.
       type: String
-    - contextPath: Tanium.Connection.status
+    - contextPath: Tanium.Connection.Status
       description: Current connection state.
       type: String
-    - contextPath: Tanium.Connection.platform
+    - contextPath: Tanium.Connection.Platform
       description: The connection's operating system.
       type: String
-    - contextPath: Tanium.Connection.ip
+    - contextPath: Tanium.Connection.Ip
       description: The connection's ip.
       type: String
-    - contextPath: Tanium.Connection.connectedAt
+    - contextPath: Tanium.Connection.ConnectedAt
       description: Time when the connection was connected.
       type: String
-    - contextPath: Tanium.Connection.message
+    - contextPath: Tanium.Connection.Message
       description: The connection's message descriding the status.
       type: String
-    - contextPath: Tanium.Connection.personaId
+    - contextPath: Tanium.Connection.PersonaId
       description: The connection's ???????
       type: String
-    - contextPath: Tanium.Connection.clientId
+    - contextPath: Tanium.Connection.ClientId
       description: The connection's ???????
       type: String
-    - contextPath: Tanium.Connection.userId
+    - contextPath: Tanium.Connection.UserId
       description: The connection's ???????
       type: String
-    - contextPath: Tanium.Connection.eid
+    - contextPath: Tanium.Connection.Eid
       description: The connection's ???????
       type: String
-    - contextPath: Tanium.Connection.hasTools
+    - contextPath: Tanium.Connection.HasTools
       description: The connection's ???????
       type: String
   - arguments:
@@ -738,20 +738,17 @@ script:
     - contextPath: Tanium.FileDownload.Downloaded
       description: The date when this file was downloaded.
       type: Date
-    - contextPath: Tanium.FileDownload.Host
+    - contextPath: Tanium.FileDownload.Hostname
       description: The hostname of the downloaded file.
       type: String
-    - contextPath: Tanium.FileDownload.Created
+    - contextPath: Tanium.FileDownload.ProcessCreationTime
       description: The date when the file was created.
       type: Date
     - contextPath: Tanium.FileDownload.Hash
       description: The file hash.
       type: String
-    - contextPath: Tanium.FileDownload.SPath
-      description: The file SPath.
-      type: String
-    - contextPath: Tanium.FileDownload.ID
-      description: The downloaded file ID.
+    - contextPath: Tanium.FileDownload.Uuid
+      description: The downloaded file uuid.
       type: Number
     - contextPath: Tanium.FileDownload.LastModified
       description: The date when the file was last modified.
@@ -774,9 +771,15 @@ script:
     - contextPath: Tanium.FileDownload.Tags
       description: The downloaded file tags.
       type: String
-    - contextPath: Tanium.FileDownload.Deleted
-      description: Whether the file download has been deleted.
-      type: Boolean
+    - contextPath: Tanium.FileDownload.Username
+      description: The user that created this file.
+      type: String
+    - contextPath: Tanium.FileDownload.Username
+      description: The user that created this file.
+      type: String
+    - contextPath: Tanium.FileDownload.EvidenceType
+      description: The evidence type - file.
+      type: String
   - arguments:
     - default: false
       description: The file ID.
@@ -790,16 +793,16 @@ script:
     name: tanium-tr-get-downloaded-file
   - arguments:
     - default: false
-      description: The connection name.
+      description: The connection id.
       isArray: false
-      name: connection-name
+      name: cid
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: combined
       description: The type of event. Can be "File", "Network", "Registry", "Process",
-        "Driver", "Security", "Combined", "DNS", or "Image". The default is "Combined".
+        "Driver", "Combined", "DNS", or "Image". The default is "Combined".
       isArray: false
       name: event-type
       predefined:
@@ -808,7 +811,6 @@ script:
       - Registry
       - Process
       - Driver
-      - Security
       - Combined
       - DNS
       - Image
@@ -873,8 +875,8 @@ script:
     execution: false
     name: tanium-tr-list-events-by-connection
     outputs:
-    - contextPath: TaniumEvent.Domain
-      description: The domain of the event.
+    - contextPath: TaniumEvent.GroupName
+      description: The group name of the event.
       type: String
     - contextPath: TaniumEvent.File
       description: The path of the file in the event.
@@ -882,31 +884,31 @@ script:
     - contextPath: TaniumEvent.Operation
       description: The event operation.
       type: String
-    - contextPath: TaniumEvent.ProcessID
+    - contextPath: TaniumEvent.ProcessId
       description: The ID of the process.
       type: Number
-    - contextPath: TaniumEvent.ProcessName
-      description: The name of the process.
+    - contextPath: TaniumEvent.ProcessPath
+      description: The path of the process.
       type: String
-    - contextPath: TaniumEvent.ProcessTableID
+    - contextPath: TaniumEvent.ProcessTableId
       description: The ID of the process table.
       type: Number
     - contextPath: TaniumEvent.Timestamp
       description: The date when the event was created.
       type: Date
-    - contextPath: TaniumEvent.Username
+    - contextPath: TaniumEvent.UserName
       description: The username associated with the event.
       type: String
-    - contextPath: TaniumEvent.DestinationAddress
+    - contextPath: TaniumEvent.RemoteAddress
       description: The network event destination address.
       type: String
-    - contextPath: TaniumEvent.DestinationPort
+    - contextPath: TaniumEvent.RemoteAddressPort
       description: The network event destination port.
       type: Number
-    - contextPath: TaniumEvent.SourceAddress
+    - contextPath: TaniumEvent.LocalAddress
       description: The network event source address.
       type: String
-    - contextPath: TaniumEvent.SourcePort
+    - contextPath: TaniumEvent.LocalAddressPort
       description: The network event source port.
       type: Number
     - contextPath: TaniumEvent.KeyPath
@@ -924,9 +926,6 @@ script:
     - contextPath: TaniumEvent.ProcessHash
       description: The hash value of the process.
       type: String
-    - contextPath: TaniumEvent.SID
-      description: The process SID.
-      type: Number
     - contextPath: TaniumEvent.Hashes
       description: The hashes of the driver.
       type: String
@@ -939,16 +938,16 @@ script:
     - contextPath: TaniumEvent.Signed
       description: Whether the driver is signed.
       type: Boolean
-    - contextPath: TaniumEvent.EventID
+    - contextPath: TaniumEvent.EventId
       description: The ID of the event.
       type: Number
     - contextPath: TaniumEvent.EventOpcode
       description: The event opcode.
       type: Number
-    - contextPath: TaniumEvent.EventRecordID
+    - contextPath: TaniumEvent.EventRecordId
       description: The ID of the event record.
       type: Number
-    - contextPath: TaniumEvent.EventTaskID
+    - contextPath: TaniumEvent.EventTaskId
       description: The ID of the event task.
       type: Number
     - contextPath: TaniumEvent.Query
@@ -968,12 +967,6 @@ script:
       type: Date
     - contextPath: TaniumEvent.EventTaskName
       description: The name of the event task.
-      type: String
-    - contextPath: TaniumEvent.Property.Name
-      description: The name of the event's property
-      type: String
-    - contextPath: TaniumEvent.Property.Value
-      description: The value of the event's property
       type: String
   - arguments:
     - default: false
