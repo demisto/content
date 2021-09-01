@@ -600,7 +600,7 @@ def test_url_command_uppercase_protocol(requests_mock):
     """
     Given:
         - URL with uppercase protocol (HTTPS)
-    
+   
     When:
         - Running the url command
 
@@ -608,7 +608,7 @@ def test_url_command_uppercase_protocol(requests_mock):
         - Ensure the protocol is lowercased
     """
     requests_mock.get(
-        'base_url/indicators/url/https://www.google.com/general', 
+        'base_url/indicators/url/https://www.google.com/general',
         json={
             'alexa': 'http://www.alexa.com/siteinfo/google.com',
         }
