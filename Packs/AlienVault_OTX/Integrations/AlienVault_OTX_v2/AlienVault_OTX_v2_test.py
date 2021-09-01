@@ -134,7 +134,7 @@ URL_EC = {
 
 URL_RELATIONSHIPS = [{
     'name': 'hosted-on', 'reverseName': 'hosts', 'type': 'IndicatorToIndicator',
-    'entityA': {'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'},
+    'entityA': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list',
     'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'fotoidea.com', 'entityBFamily': 'Indicator',
     'entityBType': 'Domain', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'
 }]
@@ -562,8 +562,7 @@ def test_url_command(mocker, raw_response, expected_ec, expected_relationships):
     - Validate that the proper relations were created
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
-    command_results = url_command(client, {
-        'url': 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list'})
+    command_results = url_command(client, 'http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list')
     # results is CommandResults list
     all_context = command_results[0].to_context()
 
@@ -595,6 +594,27 @@ def test_url_command_not_found(mocker):
     command_results = url_command(client, url)
 
     assert command_results[0].to_context()['HumanReadable'] == expected_result
+
+
+def test_url_command_uppercase_protocol(requests_mock):
+    """
+    Given:
+        - URL with uppercase protocol (HTTPS)
+
+    When:
+        - Running the url command
+
+    Then:
+        - Ensure the protocol is lowercased
+    """
+    requests_mock.get(
+        'base_url/indicators/url/https://www.google.com/general',
+        json={
+            'alexa': 'http://www.alexa.com/siteinfo/google.com',
+        }
+    )
+    res = url_command(client, 'HTTPS://www.google.com')
+    assert res[0].indicator.to_context()['URL(val.Data && val.Data == obj.Data)']['Data'] == 'https://www.google.com'
 
 
 @pytest.mark.parametrize('raw_response,expected', [
