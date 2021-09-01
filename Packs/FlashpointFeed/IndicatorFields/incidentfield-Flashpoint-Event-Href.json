@@ -2,7 +2,7 @@
     "id": "indicator_flashpointeventhref",
     "version": -1,
     "modified": "2021-07-05T20:12:11.730102355+05:30",
-    "name": "Flashpoint Event Href",
+    "name": "FlashpointFeed Event Href",
     "ownerOnly": false,
     "description": "URL reference of the event.",
     "cliName": "flashpointeventhref",
@@ -20,7 +20,12 @@
     "hidden": false,
     "associatedToAll": false,
     "associatedTypes": [
-        "Flashpoint Indicator", "IP", "Domain", "Email", "File", "URL"
+        "Flashpoint Indicator",
+        "IP",
+        "Domain",
+        "Email",
+        "File",
+        "URL"
     ],
     "unmapped": false,
     "unsearchable": false,
