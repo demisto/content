@@ -215,7 +215,7 @@ inputs:
 - key: remove_inherited_sharing
   value: {}
   required: false
-  description: ' Used when remediation type is “remove_public_sharing”, when set to
+  description: 'Used when remediation type is “remove_public_sharing”, when set to
     true, all the parent folder sharing url will be removed.'
   playbookInputQuery:
 outputs: []
