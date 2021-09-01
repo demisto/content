@@ -37,7 +37,7 @@ ignore=IF100
 ignore=IF100
 
 [file:incidentfield-XDR_Similar_Incidents.json]
-ignore=IF100
+ignore=IF100,BC103
 
 [file:widget-Cortex_XDR_Disconnected_Endpoints.json]
-ignore=BA113
+ignore=BA113,BC103

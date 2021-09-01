@@ -3241,7 +3241,7 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
-def get_endpoints_by_status_command(client: Client, args: Dict) -> List[CommandResults]:
+def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
 
     last_seen_gte = arg_to_timestamp(
