@@ -12,7 +12,9 @@ The following types of indicators are retrieved:
 - Domain
 - URL
 - Email
-- File
+- SHA1
+- SHA256
+- MD5
 - Flashpoint Indicator
 
 Note: All the unsupported types of indicators are considered as Flashpoint Indicator such as ip-dst, Hostname, Filename, Text, Pdb, Yara, etc.
