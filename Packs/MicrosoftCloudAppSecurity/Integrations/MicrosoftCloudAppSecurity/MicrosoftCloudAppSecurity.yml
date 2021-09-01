@@ -73,7 +73,7 @@ configuration:
   type: 0
 - additionalinfo: The time delta in minutes that each fetch will start from
   defaultvalue: '0'
-  display: Fetch Delta Time
+  display: Fetch Time Delta
   hidden: false
   name: fetch_delta_time
   required: false
