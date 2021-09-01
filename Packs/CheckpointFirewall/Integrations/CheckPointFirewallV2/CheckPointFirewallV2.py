@@ -62,9 +62,6 @@ class Client(BaseClient):
 
     def restore_sid_from_context_or_login(self, username: str, password: str, session_timeout: int,
                                           domain_arg: str = None):
-        """
-        returns True if the sid was restored from context, False if a login is performed.
-        """
         if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
             demisto.debug(f"restore sid: success, setting restored sid on Client (sid={sid_from_context})")
             self.sid = sid_from_context
