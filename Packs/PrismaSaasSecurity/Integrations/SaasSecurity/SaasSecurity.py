@@ -132,7 +132,7 @@ class Client(BaseClient):
         return token_response.get('access_token')
 
     def get_incidents(self, limit: int = None, from_time: str = None, to_time: str = None, app_ids: str = None,
-                      state: str = 'open', severity: str = None, status: str = None, next_page: str = None):
+                      state: str = None, severity: str = None, status: str = None, next_page: str = None):
         """
         :param limit: The number of incidents to pull per page. Default is 50, max is 1000, min is 10.
         :param from_time: The start time of query, filter by the incident's “updated-at” field.
@@ -267,7 +267,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     app_ids = ','.join(argToList(args.get('app_ids', [])))
     state = args.get('state', 'open')
     severity = ','.join(argToList(args.get('severity', [])))
-    status = ','.join(STATUS_MAP.get(x) for x in argToList(args.get('status', [])))
+    status = ','.join(STATUS_MAP.get(x) for x in argToList(args.get('status', [])))  # type: ignore[misc]
     next_page = args.get('next_page')
 
     if limit > LIMIT_MAX or limit < LIMIT_MIN:
@@ -320,7 +320,7 @@ def update_incident_state_command(client: Client, args: dict) -> CommandResults:
     Changes an Incident status, can only closing due to an API limitation.
     Category can be changed multiple times.
     """
-    inc_id = args.get('id')
+    inc_id = args['id']
     category = args.get('category', '').replace(' ', '_').lower()
 
     raw_res = client.update_incident_state(inc_id, category)
@@ -356,8 +356,8 @@ def remediate_asset_command(client: Client, args: dict) -> CommandResults:
     """
     Remediate as asset.
     """
-    asset_id = args.get('asset_id')
-    remediation_type = REMEDIATION_MAP.get(args.get('remediation_type'))
+    asset_id = args['asset_id']
+    remediation_type = REMEDIATION_MAP.get(args.get('remediation_type'))  # type: ignore
 
     if not remediation_type:
         raise DemistoException(f'Invalid remediation type: {args.get("remediation_type")}.\n'
@@ -384,8 +384,8 @@ def get_remediation_status_command(client: Client, args: dict) -> CommandResults
     """
     Get Remediation Status for a given asset ID.
     """
-    asset_id = args.get('asset_id')
-    remediation_type = REMEDIATION_MAP.get(args.get('remediation_type'))
+    asset_id = args['asset_id']
+    remediation_type = REMEDIATION_MAP.get(args.get('remediation_type'))  # type: ignore
 
     if not remediation_type:
         raise DemistoException(f'Invalid remediation type: {remediation_type}.\n'
@@ -446,7 +446,7 @@ def main() -> None:
     fetch_limit = arg_to_number(params.get('max_fetch', LIMIT_DEFAULT))
     fetch_state = params.get('state')
     fetch_severity = params.get('severity')
-    fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))
+    fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))  # type: ignore[misc]
     fetch_app_ids = ','.join(argToList(params.get('app_ids', [])))
 
     commands = {
@@ -488,5 +488,5 @@ def main() -> None:
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'): # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

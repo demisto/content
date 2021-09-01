@@ -3,6 +3,7 @@ from freezegun import freeze_time
 import pytest
 import json
 from CommonServerPython import DemistoException
+from datetime import datetime
 
 from SaasSecurity import Client
 import demistomock as demisto
