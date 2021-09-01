@@ -4517,9 +4517,6 @@
             "integrations": [
                 "TOPdesk"
             ]
-        },
-        {
-            "playbookID": "Test Playbook STA"
         }
     ],
     "skipped_tests": {
@@ -4617,11 +4614,6 @@
         "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Cisco Umbrella Test": "Issue 24338",
-        "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
-        "Domain Enrichment - Generic v2 - Test": "Issue 40862"
-    },
-    "skipped_integrations": {
-        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4714,11 +4706,6 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
-        "_comment2": "~~~ UNSTABLE ~~~",
-        "Tenable.sc": "unstable instance",
-        "ThreatConnect v2": "unstable instance",
-        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
