@@ -1,11 +1,11 @@
-id: Saas Security - Remediate an asset
+id: SaaS Security - Remediate an Asset
 version: -1
-name: Saas Security - Remediate an asset
+name: SaaS Security - Remediate an Asset
 description: |-
-  Takes a remediation action over an asset:
-    Use this playbook as a sub-playbook to remediate an asset.
+  Take a remediation action over an asset:
+    Use this playbook as a sub-playbook to take a remediation action on an asset. Available remediation actions are 1) Remove public sharing, 2) Quarantine, and 3) Restore.
     This playbook implements polling by continuously running the `saas-security-remediation-status-get`
-    command until the operation completes.
+    command to get the remediation status for a given asset ID, until the operation completes.
 
   The remote action should have the following structure:
     1. Initiate the operation - provide the Asset ID and the remediation action.
@@ -135,8 +135,8 @@ tasks:
     task:
       id: 0199bd9b-4a0c-41b4-85ad-32064519eefd
       version: -1
-      name: Get Remediation Status
-      description: Get Remediation Status for a given asset ID.
+      name: Get remediation status
+      description: Get the remediation status for a given asset ID.
       script: '|||saas-security-remediation-status-get'
       type: regular
       iscommand: true
@@ -215,7 +215,7 @@ inputs:
 - key: remove_inherited_sharing
   value: {}
   required: false
-  description: 'Used when remediation type is “remove_public_sharing”, when set to
+  description: ' Used when remediation type is “remove_public_sharing”, when set to
     true, all the parent folder sharing url will be removed.'
   playbookInputQuery:
 outputs: []
