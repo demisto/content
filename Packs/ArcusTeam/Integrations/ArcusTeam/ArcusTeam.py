@@ -19,6 +19,18 @@ VERSION = "1.0.0"
 
 class Client(BaseClient):
 
+    def __init__(self, base_url: str, verify: bool, proxy: bool, authentication_url: str, client_id: str, api_key: str):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        payload = {
+            "apiKey": api_key,
+            "clientID": client_id,
+        }
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
+        authentication_response = self.get_authentication_token(authentication_url, headers, payload)
+        access_token = authentication_response["access_token"]
+        headers["Authorization"] = "Bearer " + access_token
+        self.headers = headers
+
     def get_devices(self, vendor, model, series, firmware_version):
 
         return self._http_request(
