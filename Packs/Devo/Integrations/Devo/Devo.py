@@ -31,8 +31,8 @@ VERIFY_SSL = not demisto.params().get('unsecure', False)
 
 def get_server_url():
     url = demisto.params()['url']
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub('/[\/]+$/', '', url)  # guardrails-disable-line
+    url = re.sub('\/$', '', url)  # guardrails-disable-line
     return url
 
 
