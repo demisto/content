@@ -450,7 +450,6 @@ def main() -> None:
     fetch_app_ids = ','.join(argToList(params.get('app_ids', [])))
 
     commands = {
-        'test-module': test_module,
         'saas-security-incidents-get': get_incidents_command,
         'saas-security-incident-get-by-id': get_incident_by_id_command,
         'saas-security-incident-state-update': update_incident_state_command,
@@ -473,10 +472,10 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time, fetch_state, fetch_severity,
                                        fetch_status, fetch_app_ids))
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents(client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
                             fetch_app_ids)
-        if command in commands:
+        elif command in commands:
             return_results(commands[command](client, demisto.args()))
 
         else:
@@ -484,10 +483,10 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'): # pragma: no cover
     main()

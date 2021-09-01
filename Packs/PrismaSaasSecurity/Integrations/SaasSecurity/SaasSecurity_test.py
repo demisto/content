@@ -1,9 +1,10 @@
 import io
 from freezegun import freeze_time
 import pytest
+import json
+from CommonServerPython import DemistoException
 
 from SaasSecurity import Client
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import demistomock as demisto
 
 
@@ -40,7 +41,6 @@ def demisto_mocker(mocker):
                                                          })
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': '2021-08-25T13:51:03.247Z'})
     mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'log')
     mocker.patch.object(demisto, 'results')
 
 
