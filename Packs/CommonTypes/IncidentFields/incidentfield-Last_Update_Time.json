@@ -3,6 +3,7 @@
     "associatedTypes": [
         "Qradar Generic",
         "Carbon Black Endpoint Standard",
+        "Azure Active Directory Identity and Access",
         "Saas Security Incident"
     ],
     "breachScript": "",
