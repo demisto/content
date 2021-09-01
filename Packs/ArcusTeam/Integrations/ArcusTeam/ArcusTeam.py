@@ -196,7 +196,8 @@ def main() -> None:
 
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url=base_url, verify=verify_certificate, proxy=proxy, authentication_url=authentication_url,
+            client_id=client_id, api_key=api_key
         )
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
