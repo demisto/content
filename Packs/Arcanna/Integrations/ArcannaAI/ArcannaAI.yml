@@ -43,8 +43,6 @@ configuration:
   name: closing_reason_field
   required: false
   type: 0
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
 display: Arcanna.AI
@@ -173,7 +171,8 @@ script:
     name: arcanna-set-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
-      description: An Arcanna  job id used as default(if not specified, default job_id will be used).
+      description: An Arcanna  job id used as default(if not specified, default job_id
+        will be used).
       type: String
   - arguments:
     - default: false
@@ -207,7 +206,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
+      description: Cortex Indicator if any as a dict containing 3 keys (type, value,
+        source) as mandatory.
       isArray: false
       name: indicators
       required: false
@@ -234,7 +234,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
+    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled
+      with XSOAR fields.
     execution: false
     name: arcanna-send-bulk-events
   - deprecated: false
@@ -245,7 +246,7 @@ script:
     - contextPath: Arcanna.FeedbackField
       description: XSOAR field used to signal feedback/label for Arcanna.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: false
   longRunning: false
