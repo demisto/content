@@ -33,12 +33,20 @@ configuration:
   name: min_incident_severity
   options:
   - Unknown
+  - Informational
   - Low
   - Medium
   - High
   - Critical
   required: false
   type: 15
+- additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
+  display: Disable Automatic Notifications
+  hidden: false
+  name: auto_notifications
+  required: false
+  type: 8
+  defaultvalue: false
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
@@ -312,7 +320,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
+      description: Display name/mail/UPN of user who created the meeting, e.g., Adam
+        Smith.
       isArray: false
       name: member
       required: true

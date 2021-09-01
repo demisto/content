@@ -311,6 +311,10 @@ def get_attack_id_and_value_from_name(attack_indicator):
     idx = ind_name.index(':')
     ind_id = ind_name[:idx]
     value = ind_name[idx + 2:]
+
+    if attack_indicator.get('x_mitre_is_subtechnique'):
+        value = attack_indicator.get('x_panw_parent_technique_subtechnique')
+
     return ind_id, value
 
 
