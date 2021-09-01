@@ -6,7 +6,7 @@ from STAPostProcessing import close_incident_sta
 incident_fields = {
     'id': 100,
     'CustomFields': {
-        'staremoveuserfromunusualactivitygroup': 'Yes',
+        'safenettrustedaccessremoveuserfromunusualactivitygroup': 'Yes',
         'safenettrustedaccessusername': 'demouser',
         'safenettrustedaccessunusualactivitygroup': 'TestUnusualActivityGroup',
         'safenettrustedaccessinstancename': 'SafeNet Trusted Access_instance_1',

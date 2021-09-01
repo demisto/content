@@ -295,7 +295,7 @@ tasks:
       id:
         simple: ${incident.id}
       phishingsubtype: {}
-      staremoveuserfromunusualactivitygroup: {}
+      safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false
     task:
@@ -409,7 +409,7 @@ tasks:
       id:
         simple: ${foundIncidents.id}
       phishingsubtype: {}
-      staremoveuserfromunusualactivitygroup: {}
+      safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false
     task:
@@ -650,7 +650,7 @@ tasks:
       id:
         simple: ${incident.id}
       phishingsubtype: {}
-      staremoveuserfromunusualactivitygroup: {}
+      safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false
     task:

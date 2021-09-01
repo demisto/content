@@ -1,4 +1,2 @@
 [file:SafeNet_Trusted_Access_–_Add_to_Unusual_Activity_Group.yml]
 ignore=PB106
-[file:incidentfield-SafeNet_Trusted_Access_-_Remove_User_from_Unusual_Activity_Group.json]
-ignore=IF113
