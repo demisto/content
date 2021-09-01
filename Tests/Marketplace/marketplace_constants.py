@@ -84,6 +84,41 @@ class Metadata(object):
     CURRENT_VERSION = 'currentVersion'
     SERVER_MIN_VERSION = 'serverMinVersion'
     HIDDEN = 'hidden'
+    NAME = 'name'
+    ID = 'id'
+    DESCRIPTION = 'description'
+    CREATED = 'created'
+    UPDATED = 'updated'
+    LEGACY = 'legacy'
+    SUPPORT = 'support'
+    SUPPORT_DETAILS = 'supportDetails'
+    EULA_LINK = 'eulaLink'
+    AUTHOR = 'author'
+    AUTHOR_IMAGE = 'authorImage'
+    CERTIFICATION = 'certification'
+    PRICE = 'price'
+    VERSION_INFO = 'versionInfo'
+    COMMIT = 'commit'
+    DOWNLOADS = 'downloads'
+    TAGS = 'tags'
+    CATEGORIES = 'categories'
+    CONTENT_ITEMS = 'contentItems'
+    SEARCH_RANK = 'searchRank'
+    INTEGRATIONS = 'integrations'
+    USE_CASES = 'useCases'
+    KEY_WORDS = 'keywords'
+    DEPENDENCIES = 'dependencies'
+    PREMIUM = 'premium'
+    VENDOR_ID = 'vendorId'
+    PARTNER_ID = 'partnerId'
+    PARTNER_NAME = 'partnerName'
+    CONTENT_COMMIT_HASH = 'contentCommitHash'
+    PREVIEW_ONLY = 'previewOnly'
+    MANDATORY = 'mandatory'
+
+    DISPLAYED_IMAGES = 'displayedImages'
+    EMAIL = 'email'
+    URL = 'url'
 
 
 class PackFolders(enum.Enum):
@@ -108,6 +143,8 @@ class PackFolders(enum.Enum):
     GENERIC_FIELDS = "GenericFields"
     GENERIC_MODULES = "GenericModules"
     GENERIC_TYPES = "GenericTypes"
+    LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -117,7 +154,7 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
         }
 
     @classmethod
@@ -132,7 +169,8 @@ class PackFolders(enum.Enum):
             PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value
         }
 
 
