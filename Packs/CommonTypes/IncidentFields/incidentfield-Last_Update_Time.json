@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Carbon Black Endpoint Standard"
+        "Carbon Black Endpoint Standard",
+        "Azure Active Directory Identity and Access"
     ],
     "breachScript": "",
     "caseInsensitive": true,
