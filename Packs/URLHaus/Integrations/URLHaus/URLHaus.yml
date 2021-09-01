@@ -43,7 +43,6 @@ configuration:
     an error.
   defaultvalue: '3'
   display: Number of retries
-  hidden: false
   name: retry
   required: false
   type: 0
@@ -56,13 +55,10 @@ script:
   - arguments:
     - default: true
       description: URL to query.
-      isArray: false
       name: url
       required: true
-      secret: false
-    deprecated: false
+      isArray: false
     description: Retrieves URL information from URLhaus.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -131,13 +127,10 @@ script:
   - arguments:
     - default: true
       description: Domain to query.
-      isArray: false
       name: domain
       required: true
-      secret: false
-    deprecated: false
+      isArray: false
     description: Retrieves domain information from URLhaus.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -179,13 +172,10 @@ script:
   - arguments:
     - default: true
       description: MD5 hash or SHA256 hash of the file to query.
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
+      isArray: false
     description: Retrieves file information from URLhaus.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Size
@@ -248,11 +238,8 @@ script:
   - arguments:
     - default: true
       description: SHA256 hash of the file to download.
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a malware sample from URLhaus.
     execution: true
     name: urlhaus-download-sample
@@ -287,15 +274,11 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.9.6.24019
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - Test_URLhaus
-fromversion: 5.0.0

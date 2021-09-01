@@ -21,3 +21,7 @@ URLs and domains receive a DBot score of Good if they do not appear on any black
 
 ### DBot Score: Empty
 If there is no information for the URLs and domains, they will not receive a DBot score.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/ur-lhaus)

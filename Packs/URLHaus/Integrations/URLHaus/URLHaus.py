@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import traceback
-import requests
-import zipfile
 import io
+import traceback
+import zipfile
 from datetime import datetime as dt
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -354,6 +354,13 @@ def file_command(**kwargs):
                 },
                 'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
+
+            ec['DBotScore'] = {'Type': 'file',
+                               'Vendor': 'URLhaus',
+                               'Indicator': urlhaus_data.get('SHA256'),
+                               'Score': 3 if file_information.get('signature', '') else 0,
+                               'Reliability': kwargs.get('reliability')
+                               }
 
             human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
                                              {
