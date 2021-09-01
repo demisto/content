@@ -955,7 +955,7 @@ Get access, authentication, and audit logs.
                 "actionText": "AUTH_ATTEMPT",
                 "applicationName": "",
                 "credentialType": "MobilePASS",
-                "ip": "165.225.104.81",
+                "ip": "8.8.8.8",
                 "logType": "AUTHENTICATION",
                 "message": "Login from SafeNet Authentication Service Console.",
                 "operationObjectName": "",
@@ -972,7 +972,7 @@ Get access, authentication, and audit logs.
                 "actionText": "AUTH_ATTEMPT",
                 "applicationName": "",
                 "credentialType": "MobilePASS",
-                "ip": "165.225.104.81",
+                "ip": "8.8.8.8",
                 "logType": "AUTHENTICATION",
                 "message": "Login from SafeNet Authentication Service Console.",
                 "operationObjectName": "",
@@ -989,7 +989,7 @@ Get access, authentication, and audit logs.
                 "actionText": "",
                 "applicationName": "",
                 "credentialType": "otp",
-                "ip": "165.225.104.81",
+                "ip": "8.8.8.8",
                 "logType": "OPERATOR_LOGIN",
                 "message": "",
                 "operationObjectName": "",
@@ -1012,9 +1012,9 @@ Get access, authentication, and audit logs.
 >### Logs : 
 >|Time Stamp|User Name|Log Type|Credential Type|Action Text|Result Text|Message|State|Serial|Ip|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2021-07-22T08:19:05.5905986Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | CHALLENGE | Login from SafeNet Authentication Service Console. |  | 1000014514 | 165.225.104.81 |
->| 2021-07-22T08:20:45.5326006Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | AUTH_SUCCESS | Login from SafeNet Authentication Service Console. |  | 1000014514 | 165.225.104.81 |
->| 2021-07-22T08:20:45.638Z | demouser | OPERATOR_LOGIN | otp |  |  |  | Accepted |  | 165.225.104.81 |
+>| 2021-07-22T08:19:05.5905986Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | CHALLENGE | Login from SafeNet Authentication Service Console. |  | 1000014514 | 8.8.8.8 |
+>| 2021-07-22T08:20:45.5326006Z | demouser | AUTHENTICATION | MobilePASS | AUTH_ATTEMPT | AUTH_SUCCESS | Login from SafeNet Authentication Service Console. |  | 1000014514 | 8.8.8.8 |
+>| 2021-07-22T08:20:45.638Z | demouser | OPERATOR_LOGIN | otp |  |  |  | Accepted |  | 8.8.8.8 |
 
 
 ### sta-validate-tenant
