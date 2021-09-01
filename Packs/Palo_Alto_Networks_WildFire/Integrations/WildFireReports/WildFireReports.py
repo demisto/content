@@ -9,91 +9,329 @@ from typing import Dict, Any, Tuple
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
-
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
 TOKEN = PARAMS.get('token')
+USE_SSL = not PARAMS.get('insecure', False)
+FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
+RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
+DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
+MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
+WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
+                          " val.URL && val.URL == obj.URL)"
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+if URL and not URL.endswith('/publicapi'):
+    if URL[-1] != '/':
+        URL += '/'
+    URL += 'publicapi'
 
-''' CLIENT CLASS '''
+URL_DICT = {
+    'upload_url': '/submit/link',
+    'report': '/get/report',
+}
 
 
-class Client(BaseClient):
+ERROR_DICT = {
+    '401': 'Unauthorized, API key invalid',
+    '404': 'Not Found, The report was not found',
+    '405': 'Method Not Allowed, Method other than POST used',
+    '413': 'Request Entity Too Large, Sample file size over max limit',
+    '415': 'Unsupported Media Type',
+    '418': 'Unsupported File Type Sample, file type is not supported',
+    '419': 'Request quota exceeded',
+    '420': 'Insufficient arguments',
+    '421': 'Invalid arguments',
+    '500': 'Internal error',
+    '502': 'Bad Gateway',
+    '513': 'File upload failed'
+}
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, params=None):
-        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.params = params
 
-    def get_url_report(self, url: str):
-        """Retrieving the results of a previously uploaded url
+class NotFoundError(Exception):
+    """ Report or File not found. """
 
-        :type url: ``str``
-        :param url: string to add in the dummy dict that is returned
-
-        :return:
-        :rtype:
-        """
-        suffix_url = '/get/report'
-        self.params['url'] = url
-
-        return self._http_request('POST', suffix_url, params=self.params)
+    def __init__(self, *args):  # real signature unknown
+        pass
 
 
 ''' HELPER FUNCTIONS '''
 
 
-@logger
-def wildfire_get_url_report(url: str) -> Tuple:
-    """
-    This functions is used for retrieving the results of a previously uploaded url.
-    Args:
-        url: The url of interest.
+def http_request(url: str, method: str, headers: dict = None, body=None, params=None, files=None,
+                 resp_type: str = 'xml', return_raw: bool = False):
+    LOG('running request with url=%s' % url)
+    result = requests.request(
+        method,
+        url,
+        headers=headers,
+        data=body,
+        verify=USE_SSL,
+        params=params,
+        files=files
+    )
+    if str(result.reason) == 'Not Found':
+        raise NotFoundError('Not Found.')
 
-    Returns:
-        A CommandResults object with the results of the request and the status of that upload (Pending/Success/NotFound).
-
-    """
-
-    get_report_uri = f"{URL}{URL_DICT['report']}"
-    params = {'apikey': TOKEN, 'url': url}
-    entry_context = {'URL': url}
-
-    try:
-        response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
-        report = response.get('result').get('report')
-
-        if not report:
-            entry_context['Status'] = 'Pending'
-            human_readable = 'The sample is still being analyzed. Please wait to download the report.'
-
+    if result.status_code < 200 or result.status_code >= 300:
+        if str(result.status_code) in ERROR_DICT:
+            if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:
+                demisto.results({
+                    'Type': 11,
+                    'Contents': f'Request Failed with status: {result.status_code}'
+                                f' Reason is: {ERROR_DICT[str(result.status_code)]}',
+                    'ContentsFormat': formats['text']
+                })
+                sys.exit(0)
+            else:
+                raise Exception(f'Request Failed with status: {result.status_code}'
+                                f' Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
-            entry_context['Status'] = 'Success'
-            report = json.loads(report) if type(report) is not dict else report
-            report.update(entry_context)
-            sha256_of_file_in_url = get_sha256_of_file_from_report(report)
-            human_readable_dict = {'SHA256': sha256_of_file_in_url, 'URL': url, 'Status': 'Success'}
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=human_readable_dict, removeNull=True)
+            raise Exception(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
+    if result.text.find("Forbidden. (403)") != -1:
+        raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
-    except NotFoundError:
-        entry_context['Status'] = 'NotFound'
-        human_readable = 'Report not found.'
-        report = ''
-    except Exception as e:
-        entry_context['Status'] = ''
-        human_readable = f'Error while requesting the report: {e}.'
-        report = ''
-        demisto.error(f'Error while requesting the given report. Error: {e}')
+    if (('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
+            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked')) and return_raw:
+        return result
 
-    finally:
-        command_results = CommandResults(outputs_prefix='WildFire.Report', outputs_key_field='url',
-                                         outputs=report, readable_output=human_readable, raw_response=report)
-        return command_results, entry_context['Status']
+    if resp_type == 'json':
+        return result.json()
+    try:
+        json_res = json.loads(xml2json(result.text))
+        return json_res
+    except Exception as exc:
+        demisto.error(f'Failed to parse response to json. Error: {exc}')
+        raise Exception(f'Failed to parse response to json. response: {result.text}')
 
 
-@logger
+def hash_args_handler(sha256=None, md5=None):
+    # Hash argument used in wildfire-report
+    inputs = argToList(sha256) if sha256 else argToList(md5)
+    for element in inputs:
+        if sha256Regex.match(element) or md5Regex.match(element):
+            continue
+        raise Exception('Invalid hash. Only SHA256 and MD5 are supported.')
+
+    return inputs
+
+
+def wildfire_upload_url(upload):
+    upload_url_uri = URL + URL_DICT["upload_url"]
+    body = '''--upload_boundry
+Content-Disposition: form-data; name="apikey"
+
+{apikey}
+--upload_boundry
+Content-Disposition: form-data; name="link"
+
+{link}
+--upload_boundry--'''.format(apikey=TOKEN, link=upload)
+
+    result = http_request(
+        upload_url_uri,
+        'POST',
+        headers=MULTIPART_HEADERS,
+        body=body
+    )
+
+    return result
+
+
+def create_feed_related_indicators_object(feed_related_indicators):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.FeedRelatedIndicators object
+
+    """
+    feed_related_indicators_objects_list = []
+    for item in feed_related_indicators:
+        feed_related_indicators_objects_list.append(Common.FeedRelatedIndicators(value=item['value'],
+                                                                                 indicator_type=item['type']))
+    return feed_related_indicators_objects_list
+
+
+def create_behaviors_object(behaviors):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.Behaviors object
+
+    """
+    behaviors_objects_list = []
+    for item in behaviors:
+        behaviors_objects_list.append(Common.Behaviors(details=item['details'], action=item['action']))
+    return behaviors_objects_list
+
+
+def parse_file_report(reports, file_info):
+    udp_ip = []
+    udp_port = []
+    tcp_ip = []
+    tcp_port = []
+    dns_query = []
+    dns_response = []
+    evidence_md5 = []
+    evidence_text = []
+    feed_related_indicators = []
+    behavior = []
+
+    # When only one report is in response, it's returned as a single json object and not a list.
+    if not isinstance(reports, list):
+        reports = [reports]
+
+    for report in reports:
+        if 'network' in report and report["network"]:
+            if 'UDP' in report["network"]:
+                for udp_obj in report["network"]["UDP"]:
+                    if '-ip' in udp_obj:
+                        udp_ip.append(udp_obj["-ip"])
+                        feed_related_indicators.append({'value': udp_obj["-ip"], 'type': 'IP'})
+                    if '-port' in udp_obj:
+                        udp_port.append(udp_obj["-port"])
+            if 'TCP' in report["network"]:
+                for tcp_obj in report["network"]["TCP"]:
+                    if '-ip' in tcp_obj:
+                        tcp_ip.append(tcp_obj["-ip"])
+                        feed_related_indicators.append({'value': tcp_obj["-ip"], 'type': 'IP'})
+                    if '-port' in tcp_obj:
+                        tcp_port.append(tcp_obj['-port'])
+            if 'dns' in report["network"]:
+                for dns_obj in report["network"]["dns"]:
+                    if '-query' in dns_obj:
+                        dns_query.append(dns_obj['-query'])
+                    if '-response' in dns_obj:
+                        dns_response.append(dns_obj['-response'])
+            if 'url' in report["network"]:
+                url = ''
+                if '@host' in report["network"]["url"]:
+                    url = report["network"]["url"]["@host"]
+                if '@uri' in report["network"]["url"]:
+                    url += report["network"]["url"]["@uri"]
+                if url:
+                    feed_related_indicators.append({'value': url, 'type': 'URL'})
+
+        if 'evidence' in report and report["evidence"]:
+            if 'file' in report["evidence"]:
+                if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
+                    if '-md5' in report["evidence"]["file"]["entry"]:
+                        evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
+                    if '-text' in report["evidence"]["file"]["entry"]:
+                        evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+
+        if 'elf_info' in report and report["elf_info"]:
+            if 'Domains' in report["elf_info"]:
+                if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
+                    for domain in report["elf_info"]["Domains"]["entry"]:
+                        feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+            if 'IP_Addresses' in report["elf_info"]:
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in\
+                        report["elf_info"]["IP_Addresses"]:
+                    for ip in report["elf_info"]["IP_Addresses"]["entry"]:
+                        feed_related_indicators.append({'value': ip, 'type': 'IP'})
+            if 'suspicious' in report["elf_info"]:
+                if 'entry' in report["elf_info"]['suspicious']:
+                    for entry_obj in report["elf_info"]['suspicious']['entry']:
+                        if '#text' in entry_obj and '@description' in entry_obj:
+                            behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
+            if 'URLs' in report["elf_info"]:
+                if 'entry' in report["elf_info"]['URLs']:
+                    for url in report["elf_info"]['URLs']['entry']:
+                        feed_related_indicators.append({'value': url, 'type': 'URL'})
+
+    outputs = {
+        'Status': 'Success',
+        'SHA256': file_info.get('sha256')
+    }
+
+    if len(udp_ip) > 0 or len(udp_port) > 0 or len(tcp_ip) > 0 or len(tcp_port) > 0 or dns_query or dns_response:
+
+        outputs["Network"] = {}
+
+        if len(udp_ip) > 0 or len(udp_port) > 0:
+            outputs["Network"]["UDP"] = {}
+            if len(udp_ip) > 0:
+                outputs["Network"]["UDP"]["IP"] = udp_ip
+            if len(udp_port) > 0:
+                outputs["Network"]["UDP"]["Port"] = udp_port
+
+        if len(tcp_ip) > 0 or len(tcp_port) > 0:
+            outputs["Network"]["TCP"] = {}
+            if len(tcp_ip) > 0:
+                outputs["Network"]["TCP."]["IP"] = tcp_ip
+            if len(tcp_port) > 0:
+                outputs["Network"]["TCP"]["Port"] = tcp_port
+
+        if len(dns_query) > 0 or len(dns_response) > 0:
+            outputs["Network"]["DNS"] = {}
+            if len(dns_query) > 0:
+                outputs["Network"]["DNS"]["Query"] = dns_query
+            if len(dns_response) > 0:
+                outputs["Network"]["DNS"]["Response"] = dns_response
+
+    if len(evidence_md5) > 0 or len(evidence_text) > 0:
+        outputs["Evidence"] = {}
+        if len(evidence_md5) > 0:
+            outputs["Evidence"]["md5"] = evidence_md5
+        if len(evidence_text) > 0:
+            outputs["Evidence"]["Text"] = evidence_text
+
+    feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
+    behavior = create_behaviors_object(behavior)
+    return outputs, feed_related_indicators, behavior
+
+
+def prettify_report_entry(file_info):
+    pretty_report = {
+        'MD5': file_info["md5"],
+        'SHA256': file_info["sha256"],
+        'Status': 'Completed'
+    }
+    if 'filetype' in file_info:
+        pretty_report["FileType"] = file_info["filetype"]
+    if 'size' in file_info:
+        pretty_report["Size"] = file_info["size"]
+    if 'url' in file_info:
+        pretty_report["URL"] = file_info["url"]
+
+    return pretty_report
+
+
+def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
+    outputs, feed_related_indicators, behavior = parse_file_report(reports, file_info)
+
+    dbot_score = 3 if file_info["malware"] == 'yes' else 1
+
+    dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
+                                         integration_name='WildFire', score=dbot_score)
+    file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
+                       file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
+                       sha256=file_info.get('sha256'), size=file_info.get('size'),
+                       feed_related_indicators=feed_related_indicators, tags=['malware'], behaviors=behavior)
+
+    if format_ == 'pdf':
+        get_report_uri = URL + URL_DICT["report"]
+        params = {
+            'apikey': TOKEN,
+            'format': 'pdf',
+            'hash': file_hash
+        }
+
+        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
+
+        file_name = 'wildfire_report_' + file_hash + '.pdf'
+        file_type = entryTypes['entryInfoFile']
+        result = fileResult(file_name, res_pdf.content, file_type)  # will be saved under 'InfoFile' in the context.
+        demisto.results(result)
+        human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
+
+    else:
+        human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
+        if verbose:
+            for report in reports:
+                if isinstance(report, dict):
+                    human_readable += tableToMarkdown('Report ', report, list(report), removeNull=True)
+
+    return human_readable, outputs, file
+
+
 def wildfire_get_file_report(file_hash: str, args: dict):
     get_report_uri = URL + URL_DICT["report"]
     params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
@@ -112,8 +350,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         format_ = args.get('format', 'xml')
 
         if reports and file_info:
-            human_readable, entry_context, indicator = create_file_report(file_hash,
-                                                                          reports, file_info, format_, verbose)
+            human_readable, entry_context, indicator = create_file_report(file_hash, reports, file_info, format_,
+                                                                          verbose)
 
         else:
             entry_context['Status'] = 'Pending'
@@ -130,7 +368,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             indicator_type=DBotScoreType.FILE,
             integration_name='WildFire',
             score=dbot_score_file,
-            reliability=RELIABILITY)
+            reliability=RELIABILITY,
+        )
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
         demisto.error(f'Report not found. Error: {exc}')
 
@@ -147,32 +386,9 @@ def wildfire_get_file_report(file_hash: str, args: dict):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+def test_module():
+    if wildfire_upload_url('https://www.demisto.com'):
+        demisto.results('ok')
 
 
 def wildfire_get_report_command(args):
@@ -182,13 +398,9 @@ def wildfire_get_report_command(args):
 
     Returns:
         A single or list of CommandResults, and the status of the reports of the url or file of interest.
-        Note that the status is only used for the polling sequence, where the command will always receive a single
-        file or url. Hence, when running this command via the polling sequence, the CommandResults list will contain a
-        single item, and the status will represent that result's status.
 
     """
     command_results_list = []
-    urls = argToList(args.get('url', ''))
     if 'sha256' in args:
         sha256 = args.get('sha256')
     elif 'hash' in args:
@@ -196,48 +408,31 @@ def wildfire_get_report_command(args):
     else:
         sha256 = None
     md5 = args.get('md5')
-    inputs = urls if urls else hash_args_handler(sha256, md5)
+    inputs = hash_args_handler(sha256, md5)
 
     for element in inputs:
-        command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
+        command_results = wildfire_get_file_report(element, args)
         command_results_list.append(command_results)
 
-    return command_results_list, status
+    return command_results_list
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
-    params = demisto.params()
-
-    # get the service API url
-    base_url = params.get('url')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-
+def main():
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+
     try:
-
-        headers: Dict = {'Content-Type': 'application/x-www-form-urlencoded'}
-        params: Dict = {'apikey': params.get('token')}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy,
-            params=params,
-        )
+        handle_proxy()
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            test_module()
 
         elif command == 'wildfire-report':
-            return_results(wildfire_get_report_command(client, demisto.args()))
+            return_results(wildfire_get_report_command(demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -246,7 +441,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
