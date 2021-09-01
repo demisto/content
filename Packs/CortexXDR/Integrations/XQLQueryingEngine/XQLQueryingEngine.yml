@@ -1706,4 +1706,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 5.5.0
