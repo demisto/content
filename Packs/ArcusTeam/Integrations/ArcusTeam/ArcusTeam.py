@@ -104,7 +104,7 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
 
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    returnFields = str(args.get("return_fields", ['risk', 'cve'])).split(',')
+    returnFields = str(args.get("return_fields", 'risk,cve')).split(',')
     firmwareId = args.get("firmware_id", "")
     deviceId = args.get("device_id", "")
     pageSize = int(args.get("page_size", 10))
