@@ -222,14 +222,6 @@ class Client(BaseClient):
             data=json.dumps(data)
         ).json()
 
-    # Delete user from the tenant.
-    def delete_user_sta(self, userName):
-
-        return self.http_request(
-            method='DELETE',
-            url_suffix=urljoin('/users/', quote_plus(userName)),
-        )
-
     # Get user ID from username.
     def get_user_id_sta(self, userName):
 
@@ -239,6 +231,16 @@ class Client(BaseClient):
     def get_group_id_sta(self, groupName):
 
         return self.get_group_info_sta(groupName=groupName)['id']
+
+    # Delete user from the tenant.
+    def delete_user_sta(self, userName):
+
+        user_id = self.get_user_id_sta(userName=userName)
+        self.http_request(
+            method='DELETE',
+            url_suffix=urljoin('/users/', quote_plus(userName)),
+        )
+        return {"id": user_id, "userName": userName, "Deleted": True}
 
     # Get all the groups associated with a specific user.
     def get_user_groups_sta(self, userName, limit=None):
@@ -328,10 +330,11 @@ class Client(BaseClient):
     def delete_group_sta(self, groupName):
 
         group_id = self.get_group_id_sta(groupName=groupName)
-        return self.http_request(
+        self.http_request(
             method='DELETE',
             url_suffix=urljoin('/groups/', quote_plus(group_id)),
         )
+        return {"id": group_id, "groupName": groupName, "Deleted": True}
 
     # Update information of a specific group.
     def update_group_sta(self, args):
@@ -377,12 +380,13 @@ class Client(BaseClient):
                 "id": user_id,
                 "type": "User",
             }
-
-            return self.http_request(
+            self.http_request(
                 method='POST',
                 url_suffix=urljoin(urljoin('/groups/', quote_plus(group_id)), '/members'),
                 data=json.dumps(data),
             )
+            return {"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName,
+                    "status": True}
         else:
             raise Exception(f"Username - {userName} is already a member of the group - {groupName}.")
 
@@ -393,11 +397,13 @@ class Client(BaseClient):
             user_id = self.get_user_id_sta(userName=userName)
             group_id = self.get_group_id_sta(groupName=groupName)
 
-            return self.http_request(
+            self.http_request(
                 method='DELETE',
                 url_suffix=urljoin(urljoin(urljoin('/groups/', quote_plus(group_id)), '/members/'),
                                    quote_plus(user_id)),
             )
+            return {"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName,
+                    "status": False}
         else:
             raise Exception(f"Username - {userName} is not a member of the group - {groupName}.")
 
@@ -639,18 +645,16 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-user command. Delete user from the tenant. """
 
-    userName = args.get('userName')
-    user_id = client.get_user_id_sta(userName=userName)
-    response = client.delete_user_sta(userName=userName)
+    response = client.delete_user_sta(userName=args.get('userName'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
-        readable_output=f"## STA user - {userName} successfully deleted.",
+        readable_output=f"## STA user - {args.get('userName')} successfully deleted.",
         outputs_prefix='STA.USER',
         outputs_key_field=['id'],
-        outputs={"id": user_id, "userName": userName, "Deleted": True}
+        outputs=response
     )
 
 
@@ -750,18 +754,16 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-delete-group command. Delete group from the tenant. """
 
-    groupName = args.get('groupName')
-    group_id = client.get_group_id_sta(groupName=groupName)
-    response = client.delete_group_sta(groupName=groupName)
+    response = client.delete_group_sta(groupName=args.get('groupName'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
-        readable_output=f"## STA group - {groupName} successfully deleted.",
+        readable_output=f"## STA group - {args.get('groupName')} successfully deleted.",
         outputs_prefix='STA.GROUP',
         outputs_key_field=['id'],
-        outputs={"id": group_id, "groupName": groupName, "Deleted": True}
+        outputs=response
     )
 
 
@@ -804,42 +806,34 @@ def user_exist_group_sta_command(client: Client, args: Dict[str, Any]) -> Comman
 def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-add-user-group command. Add user to a specific group. """
 
-    userName = args.get('userName')
-    groupName = args.get('groupName')
-    response = client.add_user_group_sta(userName=userName, groupName=groupName)
+    response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
-    user_id = client.get_user_id_sta(userName=userName)
-    group_id = client.get_group_id_sta(groupName=groupName)
 
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully added to the group - {args.get('groupName')}.",
         outputs_prefix='STA.UPDATE.USER.GROUP',
         outputs_key_field=['user_id', 'group_id'],
-        outputs={"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName, "status": True}
+        outputs=response
     )
 
 
 def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-remove-user-group command. Remove user from a specific group. """
 
-    userName = args.get('userName')
-    groupName = args.get('groupName')
-    response = client.remove_user_group_sta(userName=userName, groupName=groupName)
+    response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
         )
-    user_id = client.get_user_id_sta(userName=userName)
-    group_id = client.get_group_id_sta(groupName=groupName)
 
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully removed from the group - {args.get('groupName')}.",
         outputs_prefix='STA.UPDATE.USER.GROUP',
         outputs_key_field=['user_id', 'group_id'],
-        outputs={"user_id": user_id, "userName": userName, "group_id": group_id, "groupName": groupName, "status": False}
+        outputs=response
     )
 
 

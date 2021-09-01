@@ -143,6 +143,7 @@ delete_group = {
     "groupName": "TestGroup2",
     "id": "16777228"
 }
+group_id = "16777228"
 
 update_group = {
     "description": "Description has been updated.",
