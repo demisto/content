@@ -76,7 +76,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: json event for arcanna to inference
+      description: json event for arcanna to inference.
       isArray: false
       name: event_json
       required: true
@@ -121,13 +121,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Arcanna generated unique event id
+      description: Arcanna generated unique event id.
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieves Arcanna Inference result
+    description: Retrieves Arcanna Inference result.
     execution: false
     name: arcanna-get-event-status
     outputs:
@@ -135,25 +135,25 @@ script:
       description: Arcanna event id
       type: String
     - contextPath: Arcanna.Event.ingest_timestamp
-      description: Arcanna ingestion timestamp
+      description: Arcanna ingestion timestamp.
       type: String
     - contextPath: Arcanna.Event.confidence_level
-      description: Arcanna ML confidence_level
+      description: Arcanna ML confidence_level.
       type: Number
     - contextPath: Arcanna.Event.result
       description: Arcanna event  result
       type: String
     - contextPath: Arcanna.Event.is_duplicated
-      description: Arcanna signalling if event is duplicated by another alert
+      description: Arcanna signalling if event is duplicated by another alert.
       type: boolean
     - contextPath: Arcanna.Event.error_message
-      description: Arcanna error message if any
+      description: Arcanna error message if any.
       type: String
     - contextPath: Arcanna.Event.status
-      description: Arcanna event status
+      description: Arcanna event status.
       type: String
   - deprecated: false
-    description: Retrieves Arcanna Default Job id
+    description: Retrieves Arcanna Default Job id.
     execution: false
     name: arcanna-get-default-job-id
     outputs:
@@ -168,13 +168,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Sets Arcanna Default Job id
+    description: Sets Arcanna Default Job id.
     execution: false
     name: arcanna-set-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
-      description: Arcanna default job id
-      type: Unknown
+      description: An Arcanna  job id used as default(if not specified, default job_id will be used).
+      type: String
   - arguments:
     - default: false
       description: An Arcanna job id.
@@ -238,13 +238,13 @@ script:
     execution: false
     name: arcanna-send-bulk-events
   - deprecated: false
-    description: Returns the Feedback field set on integration
+    description: Returns the Feedback field set on integration.
     execution: false
     name: arcanna-get-feedback-field
     outputs:
     - contextPath: Arcanna.FeedbackField
-      description: XSOAR field used to signal feedback/label for Arcanna
-      type: Unknown
+      description: XSOAR field used to signal feedback/label for Arcanna.
+      type: String
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
