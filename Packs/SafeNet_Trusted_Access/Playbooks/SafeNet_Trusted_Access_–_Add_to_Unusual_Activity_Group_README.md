@@ -1,4 +1,4 @@
-This playbook adds the user to a group that was created to identify higher risk accounts. SafeNet Trusted Access policies can be configured to take this into account and provide stronger protection when handling access events from users who are members of the group. The user is added to this group for a configurable period of time.
+This playbook adds the user to a group that was created to identify unusual activity. SafeNet Trusted Access policies can be configured to take this into account and provide stronger protection when handling access events from users who are members of the group. The user is added to this group for a configurable period of time.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
