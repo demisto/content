@@ -60,7 +60,48 @@ def test_checkpoint_login_and_get_session_id(requests_mock):
             },
             'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False, 'Relationships': []}
     assert client.headers == {'Content-Type': 'application/json', 'X-chkp-sid': sid}  # after login, sid is present
+    assert client.has_performed_login
     assert client.sid == sid  # a non-None client.sid indicates that the client is logged in.
+
+
+@pytest.mark.parametrize('session_id', (None, 'None', 'sid'))
+def test_checkpoint_login_mechanism(requests_mock, mocker, session_id):
+    """
+    Given
+        an session id argument
+    When
+        calling an arbitrary command, that is not an explicit login command
+    Then
+        validate a login is performed if and only if the session id is in {None, "None"}
+    """
+    from CheckPointFirewallV2 import main
+    port = 4434
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'command', return_value='checkpoint-host-add')
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'args', return_value={'session_id': session_id,
+                                                                            'name': 'george',
+                                                                            'ip_address': '0.0.0.0',
+                                                                            'groups': [],
+                                                                            'ignore_warnings': 'true',
+                                                                            'ignore_errors': 'false'})
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'params', return_value={'username': {'identifier': 'user',
+                                                                                           'password': 'pass'},
+                                                                              'session_timeout': 601,
+                                                                              'domain_arg': 'domain',
+                                                                              'server': 'www.example.com',
+                                                                              'port': port})
+    mocked_address = f'{DUMMY_BASE_URL}:{port}/web_api'
+
+    login_adapter = requests_mock.post(f'{mocked_address}/login', json={'sid': 'sid'})
+    add_host_adapter = requests_mock.post(f'{mocked_address}/add-host', json={})
+    logout_adapter = requests_mock.post(f'{mocked_address}/logout', json={})
+
+    main()
+
+    expected_login_attempts = 1 if session_id in ["None", None] else 0
+
+    assert login_adapter.call_count == expected_login_attempts
+    assert add_host_adapter.call_count == 1
+    assert logout_adapter.call_count == expected_login_attempts
 
 
 @pytest.mark.parametrize('response_code', [418, 500])
@@ -85,6 +126,7 @@ def test_checkpoint_login_and_get_session_id__invalid(requests_mock, response_co
     with pytest.raises(CheckPointFirewallV2.DemistoException) as e:
         client.login(**login_args)
     assert e.value.res.status_code == response_code
+    assert not client.has_performed_login
 
 
 def test_checkpoint_test_connection_command__500(requests_mock):
@@ -102,6 +144,7 @@ def test_checkpoint_test_connection_command__500(requests_mock):
                              'errors': ['dummy_error']})
     client = CheckPointFirewallV2.Client(base_url=DUMMY_BASE_URL, use_ssl=False, use_proxy=False)
     assert client.test_connection() == 'Server Error: make sure Server URL and Server Port are correctly set'
+    assert not client.has_performed_login
 
 
 def test_checkpoint_test_connection_command__not_logged_in(requests_mock):
@@ -119,6 +162,7 @@ def test_checkpoint_test_connection_command__not_logged_in(requests_mock):
     client = CheckPointFirewallV2.Client(base_url=base_url, use_ssl=False, use_proxy=False)
     assert client.test_connection() == '\nWrong credentials! Please check the username and password you entered' \
                                        ' and try again.'
+    assert not client.has_performed_login
 
 
 def test_checkpoint_list_hosts_command(mocker):
