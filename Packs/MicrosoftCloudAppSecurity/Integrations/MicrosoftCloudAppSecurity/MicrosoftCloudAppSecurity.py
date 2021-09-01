@@ -175,6 +175,7 @@ class Client(BaseClient):
             json_data={
                 'filters': filters,
                 'limit': limit,
+                'sortField': 'date',
                 'sortDirection': 'asc',
             },
         )
@@ -576,16 +577,40 @@ def list_users_accounts_command(client: Client, args: dict):
     )
 
 
-def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str]):
+def parse_date_to_timestamp(date_string: str) -> int:
+    """
+    Convert iso date string to timestamp in millisecondes
+    Args:
+        date_string(str): Iso date string.
+
+    Returns:
+        time stamp in milliseconds.
+
+    """
+    date_time = parse(date_string).replace(tzinfo=utc)  # type:ignore
+    # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
+    return int(date_time.timestamp()) * 1000
+
+
+def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str], fetch_delta_time: int) -> int:
+    """
+    Calculates the timestamp that fetch incident will start from.
+    Args:
+        last_fetch: Last fetch date and time.
+        first_fetch: If this is the first run, time to start
+        fetch_delta_time: Time in minutes to deduct from the timestamp.
+
+    Returns:
+        time stamp in milliseconds.
+    """
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
-        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
-        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
-        return first_fetch_time
+        return parse_date_to_timestamp(first_fetch)
     else:
-        return int(last_fetch)
+        last_fetch_timestamp = parse_date_to_timestamp(last_fetch)
+        fetch_delta_time_milliseconds = fetch_delta_time * 6000
+        return last_fetch_timestamp - fetch_delta_time_milliseconds
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -600,57 +625,71 @@ def arrange_alerts_by_incident_type(alerts: List[dict]):
     return alerts
 
 
-def is_the_first_alert_is_already_fetched_in_previous_fetch(alerts: List[dict], last_run: dict):
-    last_incident_in_previous_fetch = last_run.get('last_fetch_id')
-    alert = alerts[0]
-    return alert.get('_id') == last_incident_in_previous_fetch
+def convert_alert_to_incident(alert: Dict) -> Dict:
+    """
+    Converts Microsoft cloud app raw alert to Demisto's incident
+    Args:
+        alert: Microsoft cloud app's alert
+
+    Returns:
+         Incident.
+    """
+    incident_created_time = (alert['timestamp'])
+    incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
+    incident_occurred = incident_created_datetime.split('.')
+    incident = {
+        'name': alert['title'],
+        'occurred': incident_occurred[0] + 'Z',
+        'rawJSON': json.dumps(alert)
+    }
+    return incident
 
 
-def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_time: str, last_run: dict):
-    fetch_start_time = int(fetch_start_time)
-    incidents = []
-    current_last_incident_fetched = ''
-    if alerts and is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
-        alerts = alerts[1:]
-    for alert in alerts:
-        incident_created_time = (alert['timestamp'])
-        incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
-        incident_occurred = incident_created_datetime.split('.')
-        incident = {
-            'name': alert['title'],
-            'occurred': incident_occurred[0] + 'Z',
-            'rawJSON': json.dumps(alert)
-        }
-        incidents.append(incident)
-        if incident_created_time > fetch_start_time:
-            fetch_start_time = incident_created_time
-            current_last_incident_fetched = str(alert.get('_id', ''))
+def convert_and_filter_alerts(alerts: List[Dict], fetched_ids: List[str]) -> List[Dict]:
+    """
+    Converts microsoft cloud app alerts to Demisto incidents and filter already fetched incidents.
+    Args:
+        alerts([Dict]): List of raw alerts.
+        fetched_ids(List[str]): List of previous fetched alerts' ids.
 
-    if not current_last_incident_fetched:
-        current_last_incident_fetched = str(last_run.get('last_fetch_id', ''))
-
-    return incidents, fetch_start_time, current_last_incident_fetched
+    Returns:
+        List of Demisto incidents.
+    """
+    alerts_ids = [alert.get('_id', '') for alert in alerts]
+    incidents = [convert_alert_to_incident(alert) for alert in alerts if alert.get('_id', '') not in fetched_ids]
+    return incidents, alerts_ids
 
 
-def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
-                    filters: dict):
+def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, first_fetch: Optional[str],
+                    filters: Dict, fetch_delta_time: int) -> (Dict, List[Dict]):
+    """
+    Uses to fetch incidents into Demisto
+    Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-comman
+    Args:
+        client(Client): Microsoft Cloud App Security client to preform the API calls.
+        max_results(Optional[str]): The maximum number of incidents in each fetch.
+        last_run(Dict): Demisto's last run dictionary.
+        first_fetch(Optional[str]: From when to fetch if first time, e.g. `3 days`.
+        filters(Dict): Filtering Client's request filtering rules.
+        fetch_delta_time(int): The time delta in minutes that each fetch will start from (earlier).
+
+    Returns:
+        next_run(Dict): The updated last run dictionary.
+        incidents(List[Dict]): List of incidents.
+    """
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
     last_fetch = last_run.get('last_fetch')
-    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
+    fetched_ids = last_run.get('fetched_ids', list())
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch, fetch_delta_time)
     filters["date"] = {"gte": fetch_start_time}
 
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
-        alerts, str(fetch_start_time), last_run)
-
-    if incidents:
-        # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
-        fetch_start_time += 1
-    next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
-    demisto.debug(f'setting last run to: {last_run}')
+    incidents, new_fetched_ids = convert_and_filter_alerts(alerts, fetched_ids)
+    next_run = {'last_fetch': incidents[-1]['occurred'], 'fetched_ids': new_fetched_ids} if incidents else last_run
+    demisto.debug(f'setting last run to: {next_run}')
     return next_run, incidents
 
 
@@ -797,11 +836,13 @@ def main():  # pragma: no cover
     token = params.get('token')
     base_url = f'{params.get("url")}/api/v1'
     verify_certificate = not params.get('insecure', False)
-    first_fetch = params.get('first_fetch')
+    first_fetch = params.get('first_fetch', '')
     max_results = params.get('max_fetch')
     proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
+    fetch_delta_time = params.get('fetch_delta_time',0)
+
     LOG(f'Command being called is {command}')
     try:
         client = Client(
@@ -824,7 +865,8 @@ def main():  # pragma: no cover
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
-                filters=filters)
+                filters=filters,
+                fetch_delta_time=fetch_delta_time)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

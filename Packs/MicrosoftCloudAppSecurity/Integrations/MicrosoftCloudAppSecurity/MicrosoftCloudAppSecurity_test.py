@@ -126,34 +126,92 @@ def test_params_to_filter(severity, resolution_status, expected):
     assert res == expected
 
 
-def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
+@pytest.mark.parametrize(
+    "fetched_ids, expected_incidents, expected_ids",
+    [
+        ([],
+         [{'name': 'block0', 'occurred': '2020-10-22T17:47:21Z',
+           'rawJSON': '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'},
+          {'name': 'block1', 'occurred': '2020-10-22T19:58:23Z',
+           'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
+         ['id1', 'id2']),
+        (['id1'],
+         [{'name': 'block1', 'occurred': '2020-10-22T19:58:23Z',
+           'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
+         ['id1', 'id2']),
+    ]
+)
+def test_convert_and_filter_alerts(fetched_ids, expected_incidents, expected_ids):
     """
     Given:
-        `getLastRun` which holds `last_fetch` and `last_fetch_id`.
+        List of raw incidents and fetched ids list.
     When:
-        There are two incidents to fetch, That one of them we had already fetched the previous time.
+        Running convert_and_filter_alerts.
     Then:
-        We only fetched the one that does not exist in his system.
+        Check that only new incidents are converted.
     """
-    from MicrosoftCloudAppSecurity import alerts_to_incidents_and_fetch_start_from
-    incidents = get_fetch_data()
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=incidents["incidents"])
-    res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], '1602771392519',
-                                                 {"last_fetch": 1603365903,
-                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert fetch_start_time == 1603385903000
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
+    from MicrosoftCloudAppSecurity import convert_and_filter_alerts
+    incidents = get_fetch_data()["incidents"]
+    res_incidents, new_fetched_ids = convert_and_filter_alerts(incidents, fetched_ids)
+    assert res_incidents == expected_incidents
+    assert new_fetched_ids == expected_ids
 
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=[])
-    res_incidents, fetch_start_time, new_last_fetch_id = \
-        alerts_to_incidents_and_fetch_start_from([], '1602771392519', {"last_fetch": 1603365903,
-                                                                       "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert fetch_start_time == 1602771392519
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
-    assert res_incidents == []
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        `getLastRun` which holds `last_fetch` and `fetched_ids`.
+    When:
+        There are new incidents with time stamp older than the last fetch.
+    Then:
+        Fetch only the new incidents.
+    """
+    from MicrosoftCloudAppSecurity import fetch_incidents
+    incidents = get_fetch_data()["alerts_response_data"]
+    mocker.patch('MicrosoftCloudAppSecurity.Client.list_incidents', return_value=incidents)
+    next_run, incidents = fetch_incidents(client=client_mocker, max_results=1, last_run={'last_fetch': '2021-03-08T22:42:49Z', 'fetched_ids': ['id2']}, first_fetch=None, filters={}, fetch_buffer_time=30)
+    assert next_run == {'last_fetch': '2021-03-08T20:31:42Z', 'fetched_ids': ['id1', 'id2']}
+    assert incidents == [{'name': 'Impossible travel activity', 'occurred': '2021-03-08T20:31:42Z', 'rawJSON': '{"_id": "id1", "contextId": "contextId", "timestamp": 1615228302580, "title": "Impossible travel activity", "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]}'}]
+
+
+def test_convert_alert_to_incident():
+    """
+    Given:
+        Raw alert.
+    When:
+        Running convert_alert_to_incident.
+    Then:
+        Check that incident is properly converted.
+    """
+    from MicrosoftCloudAppSecurity import convert_alert_to_incident
+    alert = get_fetch_data()["incidents"][0]
+    incident = convert_alert_to_incident(alert)
+    assert incident['name'] == alert['title']
+    assert incident['occurred'] == '2020-10-22T17:47:21Z'
+    assert incident['rawJSON'] == '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'
+
+
+@pytest.mark.parametrize(
+    "last_fetch,first_fetch,fetch_buffer_time,expected",
+    [
+        (None, None, 0, 1630255838000),
+        ('2021-08-19T06:30:42Z', None, 30, 1630255658000)
+    ]
+)
+def test_calculate_fetch_start_time(mocker, last_fetch, first_fetch, fetch_buffer_time, expected):
+    """
+    Given:
+        last_fetch first_fetch fetch_buffer_time
+    When:
+        Running calculate_fetch_start_time.
+    Then:
+        Check that the generated timestamp is correct
+    """
+    from MicrosoftCloudAppSecurity import calculate_fetch_start_time
+    mocker.patch('MicrosoftCloudAppSecurity.parse_date_to_timestamp', return_value=1630255838000)
+    res = calculate_fetch_start_time(last_fetch, first_fetch, fetch_buffer_time)
+    assert res == expected
 
 
 class TestCloseBenign:

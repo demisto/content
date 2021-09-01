@@ -71,6 +71,13 @@ configuration:
   name: custom_filter
   required: false
   type: 0
+- additionalinfo: The time delta in minutes that each fetch will start from
+  defaultvalue: '0'
+  display: Fetch Delta Time
+  hidden: false
+  name: fetch_delta_time
+  required: false
+  type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
   (CASB). It provides rich visibility, control over data travel, and sophisticated
   analytics to identify and combat cyber threats across all your cloud services. Use
@@ -91,9 +98,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -148,9 +155,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -302,9 +309,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -623,9 +630,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned activities. If
+      description: A custom filter by which to filter the returned activities. If
         you pass the custom_filter argument it will override the other filters in
-        this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+        this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -637,13 +644,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
+      description: Timeout of the request to Microsoft CAS, in seconds. Default is
+        60 seconds.
       isArray: false
       name: timeout
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
+    description: Returns a list of activities that match the specified filters. In
+      case of timeout errors, please consider increasing the timeout argument.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
@@ -851,9 +860,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
@@ -978,6 +987,7 @@ script:
     - default: false
       description: The group ID by which to filter the information about the user
         accounts.
+      isArray: false
       name: group_id
       required: false
       secret: false
@@ -1014,9 +1024,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A custom filter by which to filter the returned files. If you
-        pass the custom_filter argument it will override the other filters in this
-        command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: A custom filter by which to filter the returned files. If you pass
+        the custom_filter argument it will override the other filters in this command.
+        For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
       isArray: false
       name: custom_filter
       required: false
