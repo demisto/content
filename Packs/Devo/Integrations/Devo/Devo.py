@@ -77,7 +77,7 @@ def send_request(path, headers=get_headers(), method='get', body=None, params=No
 
     try:
         return res.json()
-    except:
+    except Exception:
         return res.content
 
 
@@ -124,7 +124,7 @@ def query_command():
                 decimal_ip = int(result['srcIp'])
                 # Convert decimal IP to IP
                 result['srcIp'] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
-            except:
+            except Exception:
                 pass
         results.append(result)
 
