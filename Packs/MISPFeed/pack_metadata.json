@@ -1,6 +1,6 @@
 {
     "name": "MISP Feed",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Indicators feed from MISP",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
