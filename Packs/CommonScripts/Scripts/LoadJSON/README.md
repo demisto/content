@@ -1,6 +1,9 @@
+# LoadJSON
+
 Loads a JSON from a string input, and returns a JSON object result.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
