@@ -132,13 +132,13 @@ def test_params_to_filter(severity, resolution_status, expected):
     "fetched_ids, expected_incidents, expected_ids",
     [
         ([],
-         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041).isoformat()+'Z',
+         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041000 / 1000.0).isoformat() + 'Z',
            'rawJSON': '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'},
-          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903).isoformat()+'Z',
+          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903000 / 1000.0).isoformat() + 'Z',
            'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
          ['id1', 'id2']),
         (['id1'],
-         [{'name': 'block1', 'occurred': '2020-10-22T19:58:23Z',
+         [{'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903000 / 1000.0).isoformat() + 'Z',
            'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
          ['id1', 'id2']),
     ]
@@ -174,10 +174,10 @@ def test_fetch_incidents(mocker):
     next_run, incidents = fetch_incidents(client=client_mocker, max_results=1,
                                           last_run={'last_fetch': '2021-03-08T22:42:49Z', 'fetched_ids': ['id2']},
                                           first_fetch=None, filters={}, fetch_delta_time=30)
-    assert next_run == {'last_fetch': '2021-03-08T20:31:42Z', 'fetched_ids': ['id1', 'id2']}
+    assert next_run == {'last_fetch': datetime.fromtimestamp(1615228302).isoformat() + 'Z', 'fetched_ids': ['id1', 'id2']}
     assert incidents == [
-        {'name':'Impossible travel activity',
-         'occurred':  datetime.fromtimestamp(1615228302).isoformat()+'Z',
+        {'name': 'Impossible travel activity',
+         'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
          'rawJSON':
              '{"_id": "id1",'
              ' "contextId": "contextId",'
@@ -202,7 +202,7 @@ def test_convert_alert_to_incident():
     alert = get_fetch_data()["incidents"][0]
     incident = convert_alert_to_incident(alert)
     assert incident['name'] == alert['title']
-    assert incident['occurred'] == datetime.fromtimestamp(1603378041).isoformat()+'Z'
+    assert incident['occurred'] == datetime.fromtimestamp(1603378041).isoformat() + 'Z'
     assert incident['rawJSON'] == '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'
 
 

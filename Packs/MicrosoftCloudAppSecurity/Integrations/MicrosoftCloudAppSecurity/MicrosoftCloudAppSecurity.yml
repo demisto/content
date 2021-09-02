@@ -71,7 +71,7 @@ configuration:
   name: custom_filter
   required: false
   type: 0
-- additionalinfo: The time delta in minutes that each fetch will start from
+- additionalinfo: The time delta in minutes that each fetch will start from.
   defaultvalue: '0'
   display: Fetch Time Delta
   hidden: false
