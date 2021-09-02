@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 import json
 
@@ -130,9 +132,9 @@ def test_params_to_filter(severity, resolution_status, expected):
     "fetched_ids, expected_incidents, expected_ids",
     [
         ([],
-         [{'name': 'block0', 'occurred': '2020-10-22T17:47:21Z',
+         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041).isoformat(),
            'rawJSON': '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'},
-          {'name': 'block1', 'occurred': '2020-10-22T19:58:23Z',
+          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903).isoformat(),
            'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
          ['id1', 'id2']),
         (['id1'],
@@ -175,7 +177,7 @@ def test_fetch_incidents(mocker):
     assert next_run == {'last_fetch': '2021-03-08T20:31:42Z', 'fetched_ids': ['id1', 'id2']}
     assert incidents == [
         {'name':'Impossible travel activity',
-         'occurred': '2021-03-08T20:31:42Z',
+         'occurred':  datetime.fromtimestamp(1615228302).isoformat()+'Z',
          'rawJSON':
              '{"_id": "id1",'
              ' "contextId": "contextId",'
@@ -200,7 +202,7 @@ def test_convert_alert_to_incident():
     alert = get_fetch_data()["incidents"][0]
     incident = convert_alert_to_incident(alert)
     assert incident['name'] == alert['title']
-    assert incident['occurred'] == '2020-10-22T17:47:21Z'
+    assert incident['occurred'] == datetime.fromtimestamp(1603378041).isoformat()
     assert incident['rawJSON'] == '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'
 
 
