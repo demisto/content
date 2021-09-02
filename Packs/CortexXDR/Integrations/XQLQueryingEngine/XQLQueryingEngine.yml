@@ -86,6 +86,9 @@ script:
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
       type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -226,6 +229,13 @@ script:
     polling: true
     name: xdr-xql-get-query-results
     outputs:
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
@@ -375,6 +385,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query file events by file sha256.
     execution: false
@@ -382,6 +398,9 @@ script:
     polling: true
     name: xdr-xql-file-event-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.FileEvent.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the xdr-xql-get-query-results command.
@@ -481,6 +500,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query process events by process sha256.
     execution: false
@@ -488,6 +513,9 @@ script:
     polling: true
     name: xdr-xql-process-event-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.ProcessEvent.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -614,6 +642,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query DLL module events by DLL sha256.
     execution: false
@@ -621,6 +655,9 @@ script:
     polling: true
     name: xdr-xql-dll-module-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.DllModule.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -756,6 +793,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query network connections between a source IP, destination IP and
       port.
@@ -764,6 +807,9 @@ script:
     polling: true
     name: xdr-xql-network-connection-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.NetworkConnection.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -891,6 +937,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query windows registry by registry key name.
     execution: false
@@ -898,6 +950,9 @@ script:
     polling: true
     name: xdr-xql-registry-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.Registry.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.Registry.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -1012,6 +1067,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query event logs by event ID.
     execution: false
@@ -1019,6 +1080,9 @@ script:
     polling: true
     name: xdr-xql-event-log-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.EventLog.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -1136,6 +1200,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Query by DNS query or domain name.
     execution: false
@@ -1143,6 +1213,9 @@ script:
     polling: true
     name: xdr-xql-dns-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.DNS.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.DNS.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -1287,6 +1360,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Search for the process who wrote the given file, by its sha256 or
       file path.
@@ -1295,6 +1374,9 @@ script:
     polling: true
     name: xdr-xql-file-dropper-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.FileDropper.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -1439,6 +1521,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Search for network connection created by a given process instance
       ID.
@@ -1447,6 +1535,9 @@ script:
     polling: true
     name: xdr-xql-process-instance-network-activity-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.
@@ -1591,6 +1682,12 @@ script:
       name: tenant_id
       required: false
       secret: false
+    - default: false
+      description: The name of the query.
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
     deprecated: false
     description: Search for network connection created by a given process causality
       ID.
@@ -1599,6 +1696,9 @@ script:
     polling: true
     name: xdr-xql-process-causality-network-activity-query
     outputs:
+    - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name
+      description: The given name of the query.
+      type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
         The execution_id value can be passed to the  xdr-xql-get-query-results command.

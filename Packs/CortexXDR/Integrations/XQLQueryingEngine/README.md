@@ -41,6 +41,7 @@ Execute an XQL query and retrieve results of an executed XQL query API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -169,6 +170,8 @@ Retrieve results of an executed XQL query API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given query name. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.GenericQuery.number_of_results | Number | Integer representing the number of results returned. | 
@@ -245,6 +248,7 @@ Query file events by file sha256.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.FileEvent.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.FileEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.FileEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -303,6 +307,7 @@ Query process events by process sha256.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.ProcessEvent.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.ProcessEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -372,6 +377,7 @@ Query DLL module events by DLL sha256.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.DllModule.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.DllModule.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -441,6 +447,7 @@ Query network connections between a source IP, destination IP and port.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.NetworkConnection.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.NetworkConnection.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -509,6 +516,7 @@ Query windows registry by registry key name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.Registry.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.Registry.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -572,6 +580,7 @@ Query event logs by event ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.EventLog.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.EventLog.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -636,6 +645,7 @@ Query by DNS query or domain name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.DNS.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.DNS.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -709,6 +719,7 @@ Search for the process who wrote the given file, by its sha256 or file path.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.FileDropper.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.FileDropper.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -782,6 +793,7 @@ Search for network connection created by a given process instance ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
@@ -855,6 +867,7 @@ Search for network connection created by a given process causality ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name | String | The given query name. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 

@@ -658,7 +658,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     if results_to_format:
         formatted_list = format_results(results_to_format, remove_empty_fields=False) \
             if 'fields' in query else format_results(results_to_format)
-        if formatted_list and len(formatted_list[0].keys()) > max_fields:
+        if formatted_list and command_name == 'xdr-xql-generic-query' and len(formatted_list[0].keys()) > max_fields:
             raise DemistoException('The number of fields per result has exceeded the maximum number of allowed fields, '
                                    'please select specific fields in the query or increase the maximum number of '
                                    'allowed fields.')
@@ -726,6 +726,7 @@ def get_built_in_query_results_polling_command(client: Client, args: dict) -> Un
 
     query_args = {
         'query': query,
+        'query_name': args.get('query_name'),
         'tenants': argToList(args.get('tenants', [])),
         'time_frame': args.get('time_frame', '')
     }
