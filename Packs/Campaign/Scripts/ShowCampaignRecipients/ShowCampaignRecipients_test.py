@@ -16,7 +16,7 @@ DEMISTO_RESULT = [
     }
 ]
 EXPECTED_MD_TABLE = '### Recipients:\n|Email|Number Of Appearances|\n|---|---|\n| example1@support.com | 5 |\n| ' \
-                 'example2@support.com | 3 |\n| example3@support.com | 2 |\n'
+                    'example2@support.com | 3 |\n| example3@support.com | 2 |\n'
 
 
 @pytest.mark.parametrize('execute_command_result, expected_md_result', [
