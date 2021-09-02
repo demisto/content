@@ -1,0 +1,4 @@
+- You must create a developer account through Twitter to use this integratin (it's easy!)
+- visit: https://developer.twitter.com/en/apply-for-access
+- Once done, copy your consumer key & secret, access token & secret, and bearer token to the corresponding parameters in XSOAR
+- You're ready to go!
