@@ -46,8 +46,7 @@ SALESFORCE_GET_USER_OUTPUT = {
 
 
 SALESFORCE_CREATE_USER_OUTPUT = {
-    "Id": "12345",
-    "IsActive": True
+    "id": "12345"
 }
 
 
