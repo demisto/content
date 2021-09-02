@@ -1971,7 +1971,7 @@ def main():
             raise NotImplementedError(f"Unknown command {demisto.command()}.")
 
         if client.has_performed_login:
-            # this party is not reached when login() is explicitly called
+            # this part is not reached when login() is explicitly called
             demisto.debug("main: client.has_performed_login==True, logging out.")
             client.logout()
 
