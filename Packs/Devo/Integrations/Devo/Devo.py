@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import hashlib
 import hmac
 import json
-import re
 import socket
 import struct
 import time
@@ -27,16 +26,10 @@ if not demisto.params().get('proxy', False):
 API_KEY = demisto.params()['api_key']
 API_SECRET = demisto.params()['api_secret']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
+SERVER = demisto.params().get('url')[:-1] if demisto.params().get('url').endswith('/') \
+    else demisto.params().get('url')
 
-
-def get_server_url():
-    url = demisto.params()['url']
-    url = re.sub('/[\/]+$/', '', url)  # guardrails-disable-line
-    url = re.sub('\/$', '', url)  # guardrails-disable-line
-    return url
-
-
-SERVER_URL = get_server_url() + '/search'
+SERVER_URL = SERVER + '/search'
 
 ''' HELPER FUNCTIONS '''
 
