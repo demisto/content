@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from dateparser import parse
 from pytz import utc
 
@@ -645,7 +647,7 @@ def convert_alert_to_incident(alert: Dict) -> Dict:
     return incident
 
 
-def convert_and_filter_alerts(alerts: List[Dict], fetched_ids: List[str]) -> List[Dict]:
+def convert_and_filter_alerts(alerts: List[Dict], fetched_ids: List[str]) -> Tuple[List[Dict], List[str]]:
     """
     Converts microsoft cloud app alerts to Demisto incidents and filter already fetched incidents.
     Args:
@@ -661,7 +663,7 @@ def convert_and_filter_alerts(alerts: List[Dict], fetched_ids: List[str]) -> Lis
 
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, first_fetch: Optional[str],
-                    filters: Dict, fetch_delta_time: int) -> (Dict, List[Dict]):
+                    filters: Dict, fetch_delta_time: int) -> Tuple[Dict, List[Dict]]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-comman
@@ -841,7 +843,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
-    fetch_delta_time = params.get('fetch_delta_time',0)
+    fetch_delta_time = arg_to_number(params.get('fetch_delta_time', '0'))
 
     LOG(f'Command being called is {command}')
     try:

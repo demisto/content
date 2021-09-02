@@ -157,7 +157,6 @@ def test_convert_and_filter_alerts(fetched_ids, expected_incidents, expected_ids
     assert new_fetched_ids == expected_ids
 
 
-
 def test_fetch_incidents(mocker):
     """
     Given:
@@ -170,9 +169,22 @@ def test_fetch_incidents(mocker):
     from MicrosoftCloudAppSecurity import fetch_incidents
     incidents = get_fetch_data()["alerts_response_data"]
     mocker.patch('MicrosoftCloudAppSecurity.Client.list_incidents', return_value=incidents)
-    next_run, incidents = fetch_incidents(client=client_mocker, max_results=1, last_run={'last_fetch': '2021-03-08T22:42:49Z', 'fetched_ids': ['id2']}, first_fetch=None, filters={}, fetch_buffer_time=30)
+    next_run, incidents = fetch_incidents(client=client_mocker, max_results=1,
+                                          last_run={'last_fetch': '2021-03-08T22:42:49Z', 'fetched_ids': ['id2']},
+                                          first_fetch=None, filters={}, fetch_delta_time=30)
     assert next_run == {'last_fetch': '2021-03-08T20:31:42Z', 'fetched_ids': ['id1', 'id2']}
-    assert incidents == [{'name': 'Impossible travel activity', 'occurred': '2021-03-08T20:31:42Z', 'rawJSON': '{"_id": "id1", "contextId": "contextId", "timestamp": 1615228302580, "title": "Impossible travel activity", "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]}'}]
+    assert incidents == [
+        {'name':'Impossible travel activity',
+         'occurred': '2021-03-08T20:31:42Z',
+         'rawJSON':
+             '{"_id": "id1",'
+             ' "contextId": "contextId",'
+             ' "timestamp": 1615228302580,'
+             ' "title": "Impossible travel activity",'
+             ' "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]'
+             '}'
+         }
+    ]
 
 
 def test_convert_alert_to_incident():
