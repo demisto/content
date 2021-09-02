@@ -448,6 +448,7 @@ def computer_dn(compuer_name, search_base):
 
 
 def group_dn(group_name, search_base):
+    group_name = escape_filter_chars(group_name)
     search_filter = '(&(objectClass=group)(cn={}))'.format(group_name)
     entries = search(
         search_filter,
