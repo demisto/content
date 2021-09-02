@@ -9,31 +9,22 @@ For more information, please refer to the [Identity Lifecycle Management article
 2. Search for Salesforce IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-## Required Fields in Create User Command
-When creating a user in Salesforce there are mandatory fields that need to be set. Some of them are set with default values in the integration parameters:
-**Default Local Sid Key**, **Default Email Encoding Key** and **Default Language Locale Key**.
-**ProfileId** and **Timezone Sid Key** are also required, but are filled using the Salesforce mapper in the following manner:
-Duplicate the **GenerateProfileId** and the **GenerateTimeZone** automations, edit them according to your needs, and use them as transformers in the **User Profile - Salesforce (Outgoing)** mapper under the **ProfileId** and **TimeZoneSidKey** fields respectively.
-This configuration ensures that the user being created is created with the right permissions and settings in Salesforce.
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Salesforce url \(Eg: https://domain.salesforce.com/\) | True |
-| credentials | User name | True |
-| consumer_key | Consumer Key | True |
-| consumer_secret | Consumer Secret | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| create_user_enabled | Allow creating users | False |
-| update_user_enabled | Allow updating users | False |
-| enable_user_enabled | Allow enabling users | False |
-| disable_user_enabled | Allow disabling users | False |
-| create_if_not_exists | Automatically create user if not found in update and enable commands | False |
-| mapper_in | Incoming Mapper | True |
-| mapper_out | Outgoing Mapper | True |
-| localesidkey | Default Local Sid Key | True |
-| emailencodingkey | Default Email Encoding Key | True |
-| languagelocalekey | Default Language Locale Key | True |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Salesforce url (Eg: https://&lt;domain&gt;.salesforce.com/) | True |
+    | User name | True |
+    | Password | True |
+    | Consumer Key | True |
+    | Consumer Secret | True |
+    | Allow creating users | False |
+    | Allow updating users | False |
+    | Allow enabling users | False |
+    | Allow disabling users | False |
+    | Automatically create user if not found in update and enable commands | False |
+    | Incoming Mapper | True |
+    | Outgoing Mapper | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -41,7 +32,8 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
-Creates a user with specific settings and permissions in Salesforce, according to the configuration of the Salesforce integration and mapper - as explained in the "Required Fields in Create User Command" section.
+Creates a user.
+
 
 #### Base Command
 
@@ -72,7 +64,7 @@ Creates a user with specific settings and permissions in Salesforce, according t
 
 
 #### Command Example
-``` !iam-create-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com", "givenname":"Test","surname":"Demisto”,”timezonesidkey": "Asia/Tokyo",“localesidkey": "en_US",“profileid": “012345678912345”}` ```
+``` !iam-create-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com", "givenname":"Test","surname":"Demisto","TimeZoneSidKey": "Asia/Tokyo","ProfileId": "012345678912345"}` ```
 #### Human Readable Output
 |brand|instanceName|success|active|id|email|details|
 |---|---|---|---|---|---|---|
@@ -153,6 +145,7 @@ Retrieves a single user resource.
 | IAM.Vendor.username | String | The employee's username in the app. | 
 
 
+
 #### Command Example
 ``` !iam-get-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com"}` ```
 
@@ -211,18 +204,6 @@ Disable an active user.
 Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
 
 
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-
 ### salesforce-assign-permission-set
 ***
 Assigns a permission set for a user.
@@ -243,10 +224,13 @@ Assigns a permission set for a user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceAssignPermissionSet.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceAssignPermissionSet.PermissionSetAssign.id | string | ID of the created permission set assignment. | 
-| SalesforceAssignPermissionSet.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceAssignPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PermissionSetAssign.id | string | ID of the created permission set assignment. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -275,12 +259,15 @@ Gets the assigned permission set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceGetAssignedPermissionSet.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes | string | Information about the type and the url of the field fetched. | 
-| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId | string | User ID passed as an input. | 
-| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id | string | ID of the created permission set assignment. | 
-| SalesforceGetAssignedPermissionSet.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceGetAssignedPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PermissionSetAssignments.attributes | string | Information about the type and the url of the field fetched. | 
+| IAM.Vendor.PermissionSetAssignments.AssigneeId | string | User ID passed as an input. | 
+| IAM.Vendor.PermissionSetAssignments.Id | string | ID of the created permission set assignment. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -309,9 +296,12 @@ Deletes an assigned permission set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceDeleteAssignedPermissionSet.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceDeleteAssignedPermissionSet.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceDeleteAssignedPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -340,9 +330,12 @@ Freezes a user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceFreezeUserAccount.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceFreezeUserAccount.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceFreezeUserAccount.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -371,9 +364,12 @@ Unfreezes a user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceUnfreezeUserAccount.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceUnfreezeUserAccount.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceUnfreezeUserAccount.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -402,12 +398,15 @@ Gets a user frozen status.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceGetUserIsfrozenStatus.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes | string | Information about the type, url of the field fetched. | 
-| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id | string | ID of UserLogin object. UserLogin represents the settings that affect a user's ability to log into an organization. To access this object, you need the UserPermissions.ManageUsers permission. For more details Please refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm | 
-| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen | boolean | Whether the User account is in frozen state. Can be true or false. | 
-| SalesforceGetUserIsfrozenStatus.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceGetUserIsfrozenStatus.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.UserIsfrozenStatus.attributes | string | Information about the type, url of the field fetched. | 
+| IAM.Vendor.UserIsfrozenStatus.Id | string | ID of UserLogin object. UserLogin represents the settings that affect a user's ability to log into an organization. To access this object, you need the UserPermissions.ManageUsers permission. For more details Please refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm | 
+| IAM.Vendor.UserIsfrozenStatus.IsFrozen | boolean | Whether the User account is in frozen state. Can be true or false. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -437,10 +436,13 @@ Assigns a permission set license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceAssignPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id | string | ID of the created ermission set assignment license. | 
-| SalesforceAssignPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceAssignPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PermissionSetLicenseAssign.id | string | ID of the created ermission set assignment license. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -469,12 +471,15 @@ Gets an assigned permission set license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceGetAssignedPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes | string | Information about the type and url of the field fetched. | 
-| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId | string | User ID passed as input. | 
-| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id | string | ID of the PermissionSetLicenseAssignments assigned for given user. | 
-| SalesforceGetAssignedPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceGetAssignedPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PermissionSetLicenseAssignments.attributes | string | Information about the type and url of the field fetched. | 
+| IAM.Vendor.PermissionSetLicenseAssignments.AssigneeId | string | User ID passed as input. | 
+| IAM.Vendor.PermissionSetLicenseAssignments.Id | string | ID of the PermissionSetLicenseAssignments assigned for given user. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -503,9 +508,12 @@ Deletes an assigned permission set license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceDeleteAssignedPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceDeleteAssignedPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
-| SalesforceDeleteAssignedPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.errorCode | string | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -535,10 +543,13 @@ Assigns a package license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceAssignPackageLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceAssignPackageLicense.PackageLicenseAssign.id | boolean | ID of the created Package License Assign. | 
-| SalesforceAssignPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceAssignPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PackageLicenseAssign.id | boolean | ID of the created Package License Assign. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -567,12 +578,15 @@ Gets an assigned package license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceGetAssignedPackageLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes | boolean | Information about the type and url of the field fetched. | 
-| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId | string | User ID passed as input. | 
-| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id | string | ID of the Package License Assignment of the given user. | 
-| SalesforceGetAssignedPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceGetAssignedPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.brand | String | Name of the integration. | 
+| IAM.Vendor.instanceName | string | Name of the integration instance. | 
+| IAM.Vendor.action | String | The command name. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.PackageLicenseAssignments.attributes | boolean | Information about the type and url of the field fetched. | 
+| IAM.Vendor.PackageLicenseAssignments.AssigneeId | string | User ID passed as input. | 
+| IAM.Vendor.PackageLicenseAssignments.Id | string | ID of the Package License Assignment of the given user. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example
@@ -601,9 +615,9 @@ Deletes an assigned package license.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SalesforceDeleteAssignedPackageLicense.success | boolean | Status of the result. Can be true or false. | 
-| SalesforceDeleteAssignedPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
-| SalesforceDeleteAssignedPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+| IAM.Vendor.success | boolean | Status of the result. Can be true or false. | 
+| IAM.Vendor.errorCode | number | Error code from API, displayed in case of failure. | 
+| IAM.Vendor.errorMessage | string | Error message from API, displayed in case of failure. | 
 
 
 #### Command Example

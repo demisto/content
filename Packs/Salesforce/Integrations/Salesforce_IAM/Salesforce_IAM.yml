@@ -19,14 +19,6 @@ configuration:
   name: consumer_secret
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -62,6 +54,14 @@ configuration:
   name: mapper_out
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Integrate with Salesforce's services to perform Identity Lifecycle Management
   operations.
 display: Salesforce IAM
@@ -631,7 +631,7 @@ script:
       type: string
     description: Deletes an assigned package license.
     name: salesforce-delete-assigned-package-license
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: false
   longRunning: false

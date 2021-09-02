@@ -41,13 +41,13 @@ SALESFORCE_GET_USER_OUTPUT = {
     "Username": "TestID@networks.com",
     "FirstName": "test",
     "Id": "12345",
-    "IsActive": "true"
+    "IsActive": True
 }
 
 
 SALESFORCE_CREATE_USER_OUTPUT = {
-    "id": "12345",
-    "success": True
+    "Id": "12345",
+    "IsActive": True
 }
 
 
@@ -118,7 +118,7 @@ def test_create_user_command__user_already_exists(mocker):
     client = mock_client()
 
     mocker.patch.object(client, 'get_user_id_and_activity', return_value=("mock@mock.com", ""))
-    mocker.patch.object(client, 'update_user', return_value="")
+    mocker.patch.object(client, 'update_user', return_value={})
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
