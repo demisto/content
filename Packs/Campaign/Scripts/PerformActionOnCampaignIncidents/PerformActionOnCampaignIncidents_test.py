@@ -9,7 +9,7 @@ CUSTOM_FIELDS = {
     SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME: INCIDENT_IDS
 }
 MOCKED_INCIDENT = {
-    'id': 100,
+    'id': '100',
     'CustomFields': CUSTOM_FIELDS
 }
 
@@ -22,6 +22,7 @@ def prepare(mocker):
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('PerformActionOnCampaignIncidents.get_campaign_incident_ids', return_value=INCIDENT_IDS)
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'callingContext', return_value='admin')
 
 
 @pytest.mark.parametrize('action', ACTIONS_MAPPER.keys())
@@ -90,6 +91,8 @@ def test_error_in_execute_command(mocker, action):
 
     prepare(mocker)
     mocker.patch('PerformActionOnCampaignIncidents.isError', return_value=True)
+    mocker.patch('PerformActionOnCampaignIncidents.get_error', return_value="Error message")
+
     CUSTOM_FIELDS[ACTION_ON_CAMPAIGN_FIELD_NAME] = action
     # run
     try:
@@ -102,7 +105,8 @@ def test_error_in_execute_command(mocker, action):
             action = 'link'  # command failed on link
         elif action == 'unlink & reopen':
             action = 'unlink'  # command failed on unlink
-        assert res['Contents'] == COMMAND_ERROR_MSG.format(action=action, ids=','.join(INCIDENT_IDS))
+        assert res['Contents'] == COMMAND_ERROR_MSG.format(action=action, ids=','.join(INCIDENT_IDS),
+                                                           error="Error message")
 
 
 def test_no_incidents_in_context(mocker):
