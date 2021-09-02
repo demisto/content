@@ -49,7 +49,57 @@ Gets indicators from the feed.
 
 #### Context Output
 
-There is no context output for this command.
+```json
+{
+    "MISPFeed": {
+        "Indicators": {
+            "0": {
+              "fields": {
+                "Category": "Payload delivery",
+                "Description": "desc",
+                "SHA256": "somehash",
+                "Updated Date": 1607517728,
+                "trafficlightprotocol": "GREEN"
+              },
+              "rawJSON": {
+                "FeedURL": "someurl",
+                "type": "File",
+                "value": {
+                  "Event": {
+                    "distribution": 1,
+                    "id": 123,
+                    "info": "some info",
+                    "org_id": 1,
+                    "orgc_id": 7,
+                    "uuid": "some uuid"
+                  },
+                  "category": "Payload delivery",
+                  "comment": "desc",
+                  "deleted": false,
+                  "disable_correlation": false,
+                  "distribution": 5,
+                  "event_id": 143,
+                  "first_seen": null,
+                  "id": 69548,
+                  "last_seen": null,
+                  "object_id": 0,
+                  "object_relation": null,
+                  "sharing_group_id": 0,
+                  "timestamp": 1607517728,
+                  "to_ids": true,
+                  "type": "sha256",
+                  "uuid": "some uuid",
+                  "value": "some hash"
+                }
+              },
+              "service": "MISP",
+              "type": "File",
+              "value":"somehash"
+            }
+        }
+    }
+}
+```
 
 #### Command Example
 ``` !misp-feed-get-indicators tags=tlp:% attribute_type=ip-src ```

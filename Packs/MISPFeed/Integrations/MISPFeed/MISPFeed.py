@@ -12,7 +12,7 @@ Constants
 ---------
 """
 
-indicator_to_galaxy_relation_dict: Dict[str, Any] = {
+INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
@@ -75,6 +75,36 @@ indicator_to_galaxy_relation_dict: Dict[str, Any] = {
     }
 }
 
+ATTRIBUTE_TO_INDICATOR_MAP = {
+    'sha256': FeedIndicatorType.File,
+    'md5': FeedIndicatorType.File,
+    'sha1': FeedIndicatorType.File,
+    'filename|md5': FeedIndicatorType.File,
+    'filename|sha1': FeedIndicatorType.File,
+    'filename|sha256': FeedIndicatorType.File,
+    'ip-src': FeedIndicatorType.IP,
+    'ip-dst': FeedIndicatorType.IP,
+    'domain': FeedIndicatorType.Domain,
+    'email': FeedIndicatorType.Email,
+    'email-src': FeedIndicatorType.Email,
+    'email-dst': FeedIndicatorType.Email,
+    'url': FeedIndicatorType.URL,
+    'regkey': FeedIndicatorType.Registry,
+    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    'btc': DBotScoreType.CRYPTOCURRENCY,
+    'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'malware-type': ThreatIntel.ObjectsNames.MALWARE,
+}
+
+GALAXY_MAP = {
+    'misp-galaxy:mitre-attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    'misp-galaxy:mitre-malware': ThreatIntel.ObjectsNames.MALWARE,
+    'misp-galaxy:mitre-tool': ThreatIntel.ObjectsNames.TOOL,
+    'misp-galaxy:mitre-intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+    'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+}
+
 """ Client Class """
 
 
@@ -123,7 +153,7 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
                 })
     except KeyError as err:
         demisto.debug(str(err))
-        raise KeyError(f'Could not parse returned data as attributes list. \n\nError massage: {err}')
+        raise KeyError(f'Could not parse returned data as attributes list. \nError massage: {err}')
     return indicators_iterator
 
 
@@ -177,16 +207,12 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, A
     params: Dict[str, Any] = {
         'returnFormat': 'json',
         'type': {
-            'OR': []
+            'OR': attribute_type if attribute_type else [],
         },
         'tags': {
-            'OR': []
+            'OR': tags if tags else [],
         }
     }
-    if attribute_type:
-        params["type"]["OR"] = attribute_type
-    if tags:
-        params["tags"]["OR"] = tags
     return params
 
 
@@ -203,7 +229,7 @@ def clean_user_query(query: str) -> Dict[str, Any]:
         params.pop("timestamp", None)
     except Exception as err:
         demisto.debug(str(err))
-        raise DemistoException(f'Could not parse user query. \n\nError massage: {err}')
+        raise DemistoException(f'Could not parse user query. \nError massage: {err}')
     return params
 
 
@@ -216,29 +242,7 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     Returns: The matching indicator type or None if the attribute type is not supported
     """
     attribute_type = attribute['type']
-    indicator_map = {
-        'sha256': FeedIndicatorType.File,
-        'md5': FeedIndicatorType.File,
-        'sha1': FeedIndicatorType.File,
-        'filename|md5': FeedIndicatorType.File,
-        'filename|sha1': FeedIndicatorType.File,
-        'filename|sha256': FeedIndicatorType.File,
-        'ip-src': FeedIndicatorType.IP,
-        'ip-dst': FeedIndicatorType.IP,
-        'domain': FeedIndicatorType.Domain,
-        'email': FeedIndicatorType.Email,
-        'email-src': FeedIndicatorType.Email,
-        'email-dst': FeedIndicatorType.Email,
-        'url': FeedIndicatorType.URL,
-        'regkey': FeedIndicatorType.Registry,
-        'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-        'btc': DBotScoreType.CRYPTOCURRENCY,
-        'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
-        'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
-        'malware-type': ThreatIntel.ObjectsNames.MALWARE
-
-    }
-    return indicator_map.get(attribute_type, None)
+    return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
 
 
 def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
@@ -250,14 +254,7 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
     """
     if 'galaxy' in galaxy_tag_name:
         galaxy_name = galaxy_tag_name[0:galaxy_tag_name.index("=")]
-        galaxy_map = {
-            'misp-galaxy:mitre-attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-            'misp-galaxy:mitre-malware': ThreatIntel.ObjectsNames.MALWARE,
-            'misp-galaxy:mitre-tool': ThreatIntel.ObjectsNames.TOOL,
-            'misp-galaxy:mitre-intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
-            'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-        }
-        return galaxy_map.get(galaxy_name, None)
+        return GALAXY_MAP.get(galaxy_name, None)
     return None
 
 
@@ -303,14 +300,8 @@ def fetch_indicators(client: Client,
         value_ = indicator['value']['value']
         type_ = indicator['type']
         raw_type = indicator.pop('raw_type')
-        raw_data = {
-            'value': value_,
-            'type': type_,
-        }
-        for key, value in indicator.items():
-            raw_data.update({key: value})
 
-        indicator_obj = build_indicator(value_, type_, raw_data)
+        indicator_obj = build_indicator(value_, type_, indicator)
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
@@ -336,14 +327,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
         type_ = get_galaxy_indicator_type(tag_name)
         if tag_name and type_:
             value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
-            raw_data = {
-                'value': value_,
-                'type': type_,
-            }
-            for key, value in tag.items():
-                raw_data.update({key: value})
-
-            galaxy_indicators.append(build_indicator(value_, type_, raw_data))
+            galaxy_indicators.append(build_indicator(value_, type_, tag))
 
     return galaxy_indicators
 
@@ -362,7 +346,7 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
     for galaxy_indicator in galaxy_indicators:
         galaxy_indicator_type = galaxy_indicator['type']
 
-        indicator_to_galaxy_relation = indicator_to_galaxy_relation_dict[galaxy_indicator_type][indicator_obj_type]
+        indicator_to_galaxy_relation = INDICATOR_TO_GALAXY_RELATION_DICT[galaxy_indicator_type][indicator_obj_type]
         galaxy_to_indicator_relation = EntityRelationship.Relationships.\
             RELATIONSHIPS_NAMES[indicator_to_galaxy_relation]
 
@@ -457,18 +441,18 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     Returns:
         CommandResults object containing the indicators retrieved
     """
-    limit = int(args.get('limit', '10'))
+    limit = int(args.get('limit', '10')) # TODO: fix
     tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
 
     indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
-    human_readable = f'Retrieved {str(len(indicators))} indicators.'
+    human_readable = f'Retrieved {len(indicators)} indicators.'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISPFeed.Indicators',
-        outputs_key_field='',
+        outputs_key_field='value',
         raw_response=indicators,
         outputs=indicators,
     )
