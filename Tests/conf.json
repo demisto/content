@@ -4517,6 +4517,11 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -4615,7 +4620,8 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Cisco Umbrella Test": "Issue 24338",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
-        "Domain Enrichment - Generic v2 - Test": "Issue 40862"
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862",
+        "Cortex XDR - XQL Query - Test": "Issue 40892"
     },
     "skipped_integrations": {
         
