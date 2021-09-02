@@ -54,7 +54,7 @@ configuration:
   name: attributes_limit
   required: false
   type: 0
-description: Deprecated. Use the MISP v3 integration instead. Malware information sharing platform and threat sharing.
+description: Deprecated. Use the MISP v3 integration instead.
 display: MISP v2 (Deprecated)
 name: MISP V2
 script:
