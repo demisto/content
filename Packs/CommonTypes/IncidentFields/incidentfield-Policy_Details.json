@@ -6,7 +6,8 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Trend Micro CAS Event"
+		"Trend Micro CAS Event",
+		"Saas Security Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
