@@ -79,7 +79,10 @@ def run_arcanna_send_feedback():
             close_notes = incident.get('closeNotes')
             owner = incident.get('owner', None)
             closing_user = incident.get('closingUserId', None)
-            demisto.debug(f"Values supplied to command are{feedback_field} cr={close_reason} ow={owner} cu={closing_user} close_notes={close_notes}")
+            demisto.debug(f"Values supplied to command are{feedback_field} "
+                          f"close_reason={close_reason} owner={owner} closing_user={closing_user} "
+                          f"close_notes={close_notes}")
+
             # if feedback_field_value is not empty get that value, else use the default closeReason value
             if feedback_field_value:
                 close_reason = feedback_field_value
