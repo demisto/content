@@ -4519,11 +4519,9 @@
             ]
         },
         {
+            "integrations": "Grafana",
             "playbookID": "Grafana-Test",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "Grafana"
-            ]
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
