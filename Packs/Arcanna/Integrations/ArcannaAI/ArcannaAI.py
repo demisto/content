@@ -231,8 +231,7 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
     indicators = args.get("indicators", None)
     arcanna_label = mappings.get(label, None)
     if arcanna_label is None:
-        return_error(f"Error unknown label supplied.label={label}")
-        raise Exception(f"Error in arcanna-send-feedback.Wrong label")
+        raise Exception(f"Error in arcanna-send-feedback.Wrong label={label}")
 
     response = client.send_feedback(job_id, event_id, username, arcanna_label, closing_notes, indicators)
     readable_output = f' ## Arcanna send event feedback results: {response}'
@@ -272,8 +271,7 @@ def parse_mappings(mapping: str) -> dict:
     for pair in pairs:
         parts = pair.split("=")
         if len(parts) != 2:
-            return_error("Arcanna: Error while parsing mapping fields")
-            return result
+            raise BaseException("Arcanna: Error while parsing mapping fields")
         demisto_closing_reason = parts[0].strip().replace("\"", "")
         arcanna_label = parts[1].strip().replace("\"", "")
         result[demisto_closing_reason] = arcanna_label
