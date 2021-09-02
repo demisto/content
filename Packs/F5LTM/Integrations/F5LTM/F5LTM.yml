@@ -110,6 +110,45 @@ script:
     description: Disable a node
     execution: false
     name: f5-ltm-disable-node
+  - arguments:
+    - default: false
+      description: Node to enable
+      isArray: false
+      name: node
+      required: true
+      secret: false
+    deprecated: false
+    description: Enable a node
+    execution: false
+    name: f5-ltm-enable-node
+  - arguments:
+    - default: false
+      description: Pool to get its stats
+      isArray: false
+      name: pool
+      required: true
+      secret: false
+    - default: false
+      description: Member to get its stats
+      isArray: false
+      name: member
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Pool Member Stats
+    execution: false
+    name: f5-ltm-get-pool-member-stats
+  - arguments:
+    - default: false
+      description: Node To Query
+      isArray: false
+      name: node
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Node Stats
+    execution: false
+    name: f5-ltm-get-node-stats
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
