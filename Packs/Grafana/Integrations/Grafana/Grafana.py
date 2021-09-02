@@ -182,7 +182,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def set_time_for_annotation(time_start, time_end):
+def set_time_for_annotation(time_start: Optional[str] = None, time_end: Optional[str] = None):
     """
     For annotation creation, sets the start and end time to epoch numbers in millisecond resolution - if they were filled.
     """
