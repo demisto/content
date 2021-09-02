@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # coding=utf-8
-# PEP0263 https://www.python.org/dev/peps/pep-0263/
+# PEP0263  https://www.python.org/dev/peps/pep-0263/
 """Based on MS-OXMSG protocol specification
 ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
 ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
