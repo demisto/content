@@ -132,9 +132,9 @@ def test_params_to_filter(severity, resolution_status, expected):
     "fetched_ids, expected_incidents, expected_ids",
     [
         ([],
-         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041).isoformat(),
+         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041).isoformat()+'Z',
            'rawJSON': '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'},
-          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903).isoformat(),
+          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903).isoformat()+'Z',
            'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
          ['id1', 'id2']),
         (['id1'],
@@ -202,7 +202,7 @@ def test_convert_alert_to_incident():
     alert = get_fetch_data()["incidents"][0]
     incident = convert_alert_to_incident(alert)
     assert incident['name'] == alert['title']
-    assert incident['occurred'] == datetime.fromtimestamp(1603378041).isoformat()
+    assert incident['occurred'] == datetime.fromtimestamp(1603378041).isoformat()+'Z'
     assert incident['rawJSON'] == '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'
 
 
