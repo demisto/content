@@ -620,7 +620,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
-    max_fields = int(args.get('max_fields', 20))
+    max_fields = arg_to_number(args.get('max_fields', 20))
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({'query_name': command_data.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
@@ -793,9 +793,11 @@ def main() -> None:
     """
     args = demisto.args()
     params = demisto.params()
-    if not params.get('apikey') or not (api_key := params.get('apikey', {}).get('password')):
+    apikey = params.get('apikey', {})
+    apikey_id = params.get('apikey_id', {})
+    if not apikey or not apikey.get('password'):
         raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-    if not params.get('apikey_id') or not (api_key_id := params.get('apikey_id', {}).get('password')):
+    if not apikey_id or not apikey_id.get('password'):
         raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
     base_url = urljoin(params['url'], '/public_api/v1')
     verify_cert = not params.get('insecure', False)
@@ -808,7 +810,7 @@ def main() -> None:
         # get the current timestamp as milliseconds.
         timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
         # generate the auth key:
-        auth_key = f'{api_key}{nonce}{timestamp}'
+        auth_key = f'{apikey.get("password")}{nonce}{timestamp}'
         # convert to bytes object and calculate sha256
         api_key_hash = hashlib.sha256(auth_key.encode("utf-8")).hexdigest()
 
@@ -816,7 +818,7 @@ def main() -> None:
         headers = {
             "x-xdr-timestamp": timestamp,
             "x-xdr-nonce": nonce,
-            "x-xdr-auth-id": api_key_id,
+            "x-xdr-auth-id": apikey_id.get('password'),
             "Authorization": api_key_hash,
         }
 
