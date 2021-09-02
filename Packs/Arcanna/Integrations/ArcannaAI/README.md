@@ -1,5 +1,5 @@
 Arcanna integration for using the power of AI in SOC
-This integration was integrated and tested with version 1.0 and above of Arcanna.AI
+This integration was integrated and tested with version 1.2.2 of Arcanna.AI
 
 ## Configure Arcanna.AI on Cortex XSOAR
 
@@ -14,8 +14,8 @@ This integration was integrated and tested with version 1.0 and above of Arcanna
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Default Arcanna Job Id |  | False |
-    | Feature Mapping as an array to map between CLOSING REASON and Arcanna labels |  | False |
-    | Field use to signal to arcanna the status for closing an alert(or marking as feedback for Arcanna) |  | False |
+    | A closing reason to Arcanna labels. | An array to map between closing reason and Arcanna labels | False |
+    | Alert closing reason | This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -50,12 +50,20 @@ There are no input arguments for this command.
 ```json
 {
     "Arcanna": {
-        "Jobs": {
-            "data_type": "dev",
-            "job_id": 1201,
-            "status": "STARTED",
-            "title": "dev1"
-        }
+        "Jobs": [
+            {
+                "data_type": "",
+                "job_id": 1201,
+                "status": "STARTED",
+                "title": "dev1"
+            },
+            {
+                "data_type": "",
+                "job_id": 1202,
+                "status": "STARTED",
+                "title": "marian-demo"
+            }
+        ]
     }
 }
 ```
@@ -65,7 +73,8 @@ There are no input arguments for this command.
 >### Arcanna Jobs
 >|job_id|title|data_type|status|
 >|---|---|---|---|
->| 1201 | dev1 | dev | STARTED |
+>| 1201 | dev1 |  | STARTED |
+>| 1202 | marian-demo |  | STARTED |
 
 
 ### arcanna-send-event
@@ -80,7 +89,7 @@ Sends a raw event to Arcanna
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | arcanna running job_id. | Optional | 
+| job_id | An Arcanna running job_id. | Optional | 
 | event_json | json event for arcanna to inference. | Required | 
 | title | event title. | Required | 
 | severity | event severity. | Optional | 
@@ -94,19 +103,34 @@ Sends a raw event to Arcanna
 | Arcanna.Event.status | String | Arcanna ingestion status | 
 | Arcanna.Event.ingest_timestamp | date | Arcanna ingestion timestamp | 
 | Arcanna.Event.error_message | String | Arcanna error message if any | 
-| Arcanna.Event.job_id | Unknown | Arcanna Job id used for sending. | 
+| Arcanna.Event.job_id | Number | An Arcanna Job id used for sending. | 
 
 
 #### Command Example
-``` ```
+```!arcanna-send-event job_id=1202 event_json="{\"destination\":{   \"address\":\"10.128.0.6\",   \"port\":53720,   \"bytes\":836035,   \"ip\":\"10.128.0.6\",   \"packets\":6459},\"rule\":{   \"name\":\"SURICATA HTTP unable to match response to request\",   \"id\":\"2221010\",   \"category\":\"Generic Protocol Command Decode\"},\"source\":{   \"address\":\"8.8.8.8\",   \"port\":9200,   \"bytes\":4833843,   \"ip\":\"8.8.8.8\",   \"packets\":9677},\"event\":{   \"severity\":3,   \"ingested\":\"2021-06-15T07:56:50.654225827Z\",   \"created\":\"2021-06-15T07:56:49.649Z\",   \"kind\":\"alert\",   \"module\":\"suricata\",   \"start\":\"2021-06-14T14:02:06.280Z\",   \"category\":[      \"network\",      \"intrusion_detection\"   ],   \"type\":[      \"allowed\"   ],   \"dataset\":\"suricata.eve\"},\"fileset\":{   \"name\":\"eve\"},\"message\":\"Generic Protocol Command Decode\",\"url\":{   \"path\":\"/libhtp::request_uri_not_seen\",   \"original\":\"/libhtp::request_uri_not_seen\"},\"@timestamp\":\"2021-06-15T07:56:49.647Z\",\"suricata\":{   \"eve\":{      \"in_iface\":\"ens4\",      \"metadata\":{         \"flowints\":{            \"http.anomaly.count\":2419         }      },      \"event_type\":\"alert\",      \"alert\":{         \"signature_id\":2221010,         \"rev\":1,         \"gid\":1,         \"signature\":\"SURICATA HTTP unable to match response to request\",         \"category\":\"Generic Protocol Command Decode\"      },      \"flow_id\":576330410117303,      \"tx_id\":3224,      \"flow\":{               }   }}}" title=Test_alert severity=3```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Event": {
+            "error_message": "",
+            "event_id": "12023636421762",
+            "ingest_timestamp": "2021-09-02T09:46:22.363642Z",
+            "job_id": 1202,
+            "status": "Pending inference"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>## {'event_id': '12023636421762', 'job_id': 1202, 'ingest_timestamp': '2021-09-02T09:46:22.363642Z', 'status': 'Pending inference', 'error_message': ''}
 
 ### arcanna-get-event-status
 ***
-Retrieves Arcanna Inference result
+Retrieves Arcanna Inference result.
 
 
 #### Base Command
@@ -125,12 +149,12 @@ Retrieves Arcanna Inference result
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Arcanna.Event.event_id | String | Arcanna event id | 
-| Arcanna.Event.ingest_timestamp | String | Arcanna ingestion timestamp | 
-| Arcanna.Event.confidence_level | Number | Arcanna ML confidence_level | 
+| Arcanna.Event.ingest_timestamp | String | Arcanna ingestion timestamp. | 
+| Arcanna.Event.confidence_level | Number | Arcanna ML confidence_level. | 
 | Arcanna.Event.result | String | Arcanna event  result | 
-| Arcanna.Event.is_duplicated | boolean | Arcanna signalling if event is duplicated by another alert | 
-| Arcanna.Event.error_message | String | Arcanna error message if any | 
-| Arcanna.Event.status | String | Arcanna event status | 
+| Arcanna.Event.is_duplicated | boolean | Arcanna signalling if event is duplicated by another alert. | 
+| Arcanna.Event.error_message | String | Arcanna error message if any. | 
+| Arcanna.Event.status | String | Arcanna event status. | 
 
 
 #### Command Example
@@ -159,7 +183,7 @@ Retrieves Arcanna Inference result
 
 ### arcanna-get-default-job-id
 ***
-Retrieves Arcanna Default Job id
+Retrieves Arcanna Default Job id.
 
 
 #### Base Command
@@ -194,7 +218,7 @@ There are no input arguments for this command.
 
 ### arcanna-set-default-job-id
 ***
-Sets Arcanna Default Job id
+Sets Arcanna Default Job id.
 
 
 #### Base Command
@@ -211,7 +235,7 @@ Sets Arcanna Default Job id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Default_Job_Id | Unknown | Arcanna default job id | 
+| Arcanna.Default_Job_Id | String | An Arcanna  job id used as default\(if not specified, default job_id will be used\). | 
 
 
 #### Command Example
@@ -232,7 +256,7 @@ Sets Arcanna Default Job id
 
 ### arcanna-send-event-feedback
 ***
-Send Arcanna feedback for a previous inferred event
+Send Arcanna feedback for a previous inferred event.
 
 
 #### Base Command
@@ -242,29 +266,29 @@ Send Arcanna feedback for a previous inferred event
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Arcanna job id. | Required | 
-| event_id | Arcanna event id. | Required | 
-| label | Arcanna Feedback Label. | Optional | 
-| username | User providing feedback. | Optional | 
+| job_id | An Arcanna job id. | Optional | 
+| event_id | An Arcanna event id. | Required | 
+| label | An Arcanna feedback label. | Required | 
+| username | A username providing the feedback. | Required | 
 | closing_notes | Cortex closing notes if any. | Optional | 
-| indicators | Cortex Indicator if any. | Optional | 
+| indicators | Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.feedback_status | String | Arcanna feedback status response  | 
+| Arcanna.Event.feedback_status | String | An Arcanna feedback status response. | 
 
 
 #### Command Example
-```!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" label="Resolved" username="dbot" closing_notes="some note"```
+```!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" label="Resolved" username="dbot" closing_notes="some note" indicators="[{\"type\": \"malware\",\"value\": \"some_hash_value\"}]"```
 
 #### Context Example
 ```json
 {
     "Arcanna": {
-        "Feedback": {
+        "Event": {
             "status": "updated"
         }
     }
@@ -273,11 +297,11 @@ Send Arcanna feedback for a previous inferred event
 
 #### Human Readable Output
 
->## {'status': 'updated'}
+> ## Arcanna send event feedback results: {'status': 'updated'}
 
 ### arcanna-send-bulk-events
 ***
-Send to Arcanna a bulk of events.
+Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
 
 
 #### Base Command
@@ -287,8 +311,8 @@ Send to Arcanna a bulk of events.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Arcanna job_id. | Required | 
-| events | Arcanna evens to be sent . | Required | 
+| job_id | An Arcanna job id. | Required | 
+| events | A comma-separated list of Arcanna evens ids to be sent. | Required | 
 
 
 #### Context Output
@@ -296,15 +320,15 @@ Send to Arcanna a bulk of events.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!arcanna-send-bulk-events job_id=1202 events="[   {\"job_id\":1202,\"severity\":3,\"name\":\"test_alert\",\"destination\":{   \"address\":\"10.128.0.6\",   \"port\":53720,   \"bytes\":836035,   \"ip\":\"10.128.0.6\",   \"packets\":6459},\"rule\":{   \"name\":\"SURICATA HTTP unable to match response to request\",   \"id\":\"2221010\",   \"category\":\"Generic Protocol Command Decode\"},\"source\":{   \"address\":\"8.8.8.8\",   \"port\":9200,   \"bytes\":4833843,   \"ip\":\"8.8.8.8\",   \"packets\":9677},\"event\":{   \"severity\":3,   \"ingested\":\"2021-06-15T07:56:50.654225827Z\",   \"created\":\"2021-06-15T07:56:49.649Z\",   \"kind\":\"alert\",   \"module\":\"suricata\",   \"start\":\"2021-06-14T14:02:06.280Z\",   \"category\":[      \"network\",      \"intrusion_detection\"   ],   \"type\":[      \"allowed\"   ],   \"dataset\":\"suricata.eve\"},\"fileset\":{   \"name\":\"eve\"},\"message\":\"Generic Protocol Command Decode\",\"url\":{   \"path\":\"/libhtp::request_uri_not_seen\",   \"original\":\"/libhtp::request_uri_not_seen\"},\"@timestamp\":\"2021-06-15T07:56:49.647Z\",\"suricata\":{   \"eve\":{      \"in_iface\":\"ens4\",      \"metadata\":{         \"flowints\":{            \"http.anomaly.count\":2419         }      },      \"event_type\":\"alert\",      \"alert\":{         \"signature_id\":2221010,         \"rev\":1,         \"gid\":1,         \"signature\":\"SURICATA HTTP unable to match response to request\",         \"category\":\"Generic Protocol Command Decode\"      },      \"flow_id\":576330410117303,      \"tx_id\":3224,      \"flow\":{               }   }},\"closingReason\":\"Resolved\",\"closing_notes\":\"some analyst note\"   }]"```
 
 #### Human Readable Output
 
-
+>{"error_message":"","status":"ok"}
 
 ### arcanna-get-feedback-field
 ***
-Returns the Feedback field set on integration
+Returns the Feedback field set on integration.
 
 
 #### Base Command
@@ -316,7 +340,10 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.FeedbackField | String | XSOAR field used to signal feedback/label for Arcanna. | 
+
 
 #### Command Example
 ```!arcanna-get-feedback-field```
@@ -332,4 +359,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->## closeReason
+> ## Get feedback returned results: closeReason

@@ -1,6 +1,5 @@
-id: e57be0a4-243c-4bc0-8994-240843e3d211
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+id: Arcanna-Generic-Investigation-V2-With-Feedback
+version: -1
 name: Arcanna-Generic-Investigation-V2-With-Feedback
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -41,6 +41,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -196,6 +197,7 @@ tasks:
       id: c1a27ffe-e3c0-4089-8080-2f842935638d
       version: -1
       name: 'Did Arcanna inference successfully completed ? '
+      description: 'Check Arcanna inference result'
       type: condition
       iscommand: false
       brand: ""
@@ -291,6 +293,7 @@ tasks:
       id: f59e600c-572f-492c-84de-cfb98b91ae66
       version: -1
       name: Is Arcanna Decision to close incident?
+      description: Check Arcanna Decision and act accordingly
       tags:
       - arcanna-auto
       type: condition
@@ -533,6 +536,7 @@ tasks:
       id: 3f551f02-8e11-4c96-8cc7-705b008700bc
       version: -1
       name: Get Analyst Input and add Closing Information
+      description: Get Analyst manual investigation result
       type: collection
       iscommand: false
       brand: ""
@@ -551,14 +555,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Input Analyst investigation result.
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -646,4 +650,8 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: e7ba7153-451b-441a-82bb-48c487c626de
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
+description: Alert Triage using Arcanna.Ai Machine Learning capabilities and reinforcement
+  learning by offerring analyst feedback to incidents closed

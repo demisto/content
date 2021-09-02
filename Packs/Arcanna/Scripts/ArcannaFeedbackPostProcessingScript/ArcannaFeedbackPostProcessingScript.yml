@@ -1,7 +1,6 @@
 args:
 - auto: PREDEFINED
-  default: false
-  defaultValue: closing_reason
+  default: true
   description: Closing Reason for manual overriding.
   isArray: false
   name: closing_user
@@ -9,20 +8,26 @@ args:
   - Closing Reason for manual overriding
   required: false
   secret: false
-- default: false
+- default: true
   description: Closing Notes for manual overriding.
   isArray: false
   name: closing_notes
+  required: false
+  secret: false
+- default: true
+  description: aaa
+  isArray: false
+  name: closing_reason
   required: false
   secret: false
 comment: |-
   Arcanna.Ai post-processing script for sending feedback back to Arcanna about the closed incident. Additional modification might be required depending on each Cortex setup.
   This script is intended to be used as a sample or in conjunction with the Arcanna-Generic-Investigation playbook.
 commonfields:
-  id: ArcannaFeedbackPostProcessingScript
+  id: ArcannaFeedbackPostProcessing
   version: -1
 enabled: true
-name: ArcannaFeedbackPostProcessingScript
+name: ArcannaFeedbackPostProcessing
 script: '-'
 subtype: python3
 system: false
@@ -30,12 +35,13 @@ tags:
 - post-processing
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.6.22912
+dockerimage: demisto/python3:3.9.6.24019
 runas: DBotWeakRole
 runonce: false
 dependson:
   should:
   - Arcanna.AI|||arcanna-send-event
   - Arcanna.AI|||arcanna-get-event-status
-pswd: ''
-fromversion: '6.0'
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

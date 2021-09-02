@@ -84,7 +84,7 @@ class Client:
         url_suffix = f"api/v1/events/{job_id}/{event_id}/feedback"
         body = self.map_to_arcanna_label(arcanna_label, closing_notes, username)
         if indicators:
-            body["indicators"] = indicators
+            body["indicators"] = json.loads(indicators)
         raw_response = requests.put(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
                                     json=body)
 
