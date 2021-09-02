@@ -120,7 +120,7 @@ def test_arcanna_send_event_feedback_command(mocker):
         "closing_notes": "notes"
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = send_event_feedback(client, command_args)
+    command_result = send_event_feedback(client=client, feature_mapping_field="closeReason", args=command_args)
 
     assert command_result.outputs_prefix == "Arcanna.Feedback"
     assert command_result.raw_response['status'] == "updated"
