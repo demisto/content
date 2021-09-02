@@ -1,6 +1,5 @@
 from LoadJSON import load_json
 import pytest
-import json
 
 
 @pytest.mark.parametrize('inputs, outputs', [
@@ -12,5 +11,5 @@ def test_load_json(inputs, outputs):
 
 
 def test_load_json_failure():
-    with pytest.raises(json.decoder.JSONDecodeError):
+    with pytest.raises(ValueError):
         load_json({'input': 'not json at all'})
