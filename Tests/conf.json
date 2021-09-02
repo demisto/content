@@ -2962,7 +2962,8 @@
         {
             "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
