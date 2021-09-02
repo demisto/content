@@ -2926,6 +2926,10 @@
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
         {
+            "integrations": "SaasSecurity",
+            "playbookID": "SaasSecurity-Test"
+        },
+        {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
@@ -4732,8 +4736,7 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance",
-        "AutoFocus V2": "Nightly build troubleshooting"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
     },
     "nightly_integrations": [
         "Lastline v2",
