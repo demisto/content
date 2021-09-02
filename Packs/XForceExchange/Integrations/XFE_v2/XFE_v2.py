@@ -409,8 +409,9 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
         hash_info = {**report['origins'], 'Family': family_value,
                      'FamilyMembers': report_data.get('familyMembers')}
         if client.create_relationships:
-            malware = dict_safe_get(hash_info, ['external', 'family'], [])[0]
-            if malware:
+            malware = dict_safe_get(hash_info, ['external', 'family'], [])
+            if malware and isinstance(malware, list):
+                malware = malware[0]
                 relationship = [EntityRelationship(name=EntityRelationship.Relationships.RELATED_TO,
                                                    entity_a=file_hash,
                                                    entity_a_type=FeedIndicatorType.File,
