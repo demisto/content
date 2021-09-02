@@ -307,7 +307,7 @@ script:
       description: The CVE stdcodes
       type: Unknown
     - contextPath: XFE.CVE.Title
-      description: the title of the CVE
+      description: The title of the CVE
       type: String
     - contextPath: XFE.CVE.Description
       description: The description of the CVE
@@ -374,7 +374,7 @@ script:
       description: The CVE stdcodes
       type: Unknown
     - contextPath: XFE.CVE.Title
-      description: the title of the CVE
+      description: The title of the CVE
       type: String
     - contextPath: XFE.CVE.Description
       description: The description of the CVE
@@ -526,7 +526,7 @@ script:
       description: The CVE stdcodes
       type: Unknown
     - contextPath: XFE.CVE.Title
-      description: the title of the CVE
+      description: The title of the CVE
       type: String
     - contextPath: XFE.CVE.Description
       description: The description of the CVE

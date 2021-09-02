@@ -727,7 +727,7 @@ script:
     - contextPath: Qualys.Endpoint.NETBIOS
       description: NETBIOS
     - contextPath: Qualys.Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint operating system
     description: View a list of scanned hosts in the user account.
   - name: qualys-virtual-host-list
     arguments:
@@ -896,7 +896,7 @@ script:
     - contextPath: Qualys.Report.SCHEDULE.START_HOUR
       description: Start hour of the scheduled report
     - contextPath: Qualys.Report.SCHEDULE.START_MINUTE
-      description: start minute of the scheduled report
+      description: Start minute of the scheduled report
     - contextPath: Qualys.Report.SCHEDULE.DAILY.@frequency_days
       description: Frequency of the schduled report
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
@@ -1152,9 +1152,9 @@ script:
     - contextPath: Qualys.AssetGroup.IP_SET.IP_RANGE
       description: Asset Group IP range
     - contextPath: Qualys.AssetGroup.APPLIANCE_IDS
-      description: Appliance ids of the asset group
+      description: Appliance IDs of the asset group
     - contextPath: Qualys.AssetGroup.DEFAULT_APPLIANCE_ID
-      description: Default appliance ids of the asset group
+      description: Default appliance IDs of the asset group
     description: Get account asset groups
   - name: qualys-report-fetch
     arguments:
@@ -1594,7 +1594,7 @@ script:
         format: compliance/nnnnnnnnnn.nnnnn'
     outputs:
     - contextPath: Qualys.Scan.KEY
-      description: key name, either ID or REFERENCE
+      description: Key name, either ID or REFERENCE
     - contextPath: Qualys.Scan.VALUE
       description: Value of either ID or REFERENCE
     description: Allows users to take actions on compliance scans in their account,
