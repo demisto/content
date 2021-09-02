@@ -2174,16 +2174,17 @@ class MessagesHandler:
 
     @staticmethod
     def get_messages_data(notable_id):
-        comments = []
-        query = '|`incident_review` | where rule_id="{}" | search comment=* reviewer=*'.format(notable_id)
-        for comment in json.load(MessagesHandler.service.jobs.oneshot(query, output_mode='json'))['results']:
-            comments.append({
-                'comment': comment['comment'],
-                'reviewer': comment['reviewer'],
-                'time': comment['_time']
-            })
+        if MessagesHandler.service is not None:
+            comments = []
+            query = '|`incident_review` | where rule_id="{}" | search comment=* reviewer=*'.format(notable_id)
+            for comment in json.load(MessagesHandler.service.jobs.oneshot(query, output_mode='json'))['results']:
+                comments.append({
+                    'comment': comment['comment'],
+                    'reviewer': comment['reviewer'],
+                    'time': comment['_time']
+                })
 
-        return comments
+            return comments
 
 
 def main():

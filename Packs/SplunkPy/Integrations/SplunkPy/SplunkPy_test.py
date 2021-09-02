@@ -1070,3 +1070,32 @@ def test_build_search_human_readable(mocker):
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+def test_get_noteable_messages(mocker):
+    import io
+
+    class PatchService:
+        def __init__(self, data):
+            self.data = data
+            self.jobs = self
+
+        def oneshot(self, *args, **kwargs):
+            assert kwargs['output_mode'] == 'json'
+            assert args[0].startswith('|`incident_review` | where rule_id="')
+            assert args[0].endswith('" | search comment=* reviewer=*')
+            return io.StringIO(self.data)
+
+    splunk.MessagesHandler.service = PatchService(u'{"results": []}')
+    empty = splunk.MessagesHandler.get_messages_data('')
+    assert empty == []
+    splunk.MessagesHandler.service = PatchService(
+        u'{"results": [{"_time": "2021-02-09T16:41:30.589575+02:00", "reviewer": "admin", "comment": "the comment"}]}')
+    single_comment = splunk.MessagesHandler.get_messages_data('')
+    assert single_comment == [{"time": "2021-02-09T16:41:30.589575+02:00", "reviewer": "admin", "comment": "the comment"}]
+    splunk.MessagesHandler.service = PatchService(
+        u'{"results": [{"_time": "2021-02-09T16:41:30.589575+02:00", "reviewer": "admin", "comment": "first comment"}, \
+                       {"_time": "2021-02-09T16:50:30.589575+02:00", "reviewer": "admin", "comment": "second comment"}]}')
+    multiple_comments = splunk.MessagesHandler.get_messages_data('')
+    assert multiple_comments == [{"time": "2021-02-09T16:41:30.589575+02:00", "reviewer": "admin", "comment": "first comment"},
+                                 {"time": "2021-02-09T16:50:30.589575+02:00", "reviewer": "admin", "comment": "second comment"}]
