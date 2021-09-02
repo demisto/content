@@ -624,10 +624,6 @@
             "playbookID": "Akamai_WAF-Test"
         },
         {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
-        },
-        {
             "integrations": "abuse.ch SSL Blacklist Feed",
             "playbookID": "SSL Blacklist test",
             "fromversion": "5.5.0"
