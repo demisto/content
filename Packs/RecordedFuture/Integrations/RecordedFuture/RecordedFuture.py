@@ -757,7 +757,7 @@ class Actions():
                 f'{data["entity"]["name"]}',
                 f'Risk Score: {risk.get("score", "N/A")}',
                 f'Summary: {risk.get("riskSummary", "N/A")}',
-                f"Criticality label: " f'{risk.get("criticalityLabel", "N/A")}',
+                f'Criticality label: {risk["criticalityLabel"] if risk.get("criticalityLabel") else "N/A"}',
                 f"Total references to this entity: {total_hits}",
             ]
             if entity_type == "ip":
@@ -766,12 +766,12 @@ class Actions():
                 markdown.extend(
                     [
                         "ASN and Geolocation",
-                        f'AS Number: {loc.get("asn", "N/A")}',
-                        f'AS Name: {loc.get("organization", "N/A")}',
-                        f'CIDR: {loc.get("cidr", {}).get("name", "N/A")}',
-                        "Geolocation (city): " f'{locloc.get("city", "N/A")}',
+                        f'AS Number: {loc["asn"] if loc.get("asn") else "N/A"}',
+                        f'AS Name: {loc["organization"] if loc.get("organization") else "N/A"}',
+                        f'CIDR: {loc["cidr"].get("name", "N/A") if loc.get("cidr") else "N/A"}',
+                        "Geolocation (city): " f'{locloc["city"] if locloc.get("city") else "N/A"}',
                         "Geolocation (country): "
-                        f'{locloc.get("country", "N/A")}',
+                        f'{locloc["country"] if locloc.get("country") else "N/A"}',
                     ]
                 )
             tstamps = data.get("timestamps", {})
