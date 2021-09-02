@@ -1834,11 +1834,12 @@ def main():
 
         elif command == 'checkpoint-login-and-get-session-id':
             return_results(client.login(**login_args))
-            # note that the "if client.has_logged in: client.logout()" mechanism isn't used here, to allow sid reuse
+            # note that the "if client.has_logged in: client.logout()" mechanism is NOT used here, to allow sid reuse
             return
 
         elif command == 'checkpoint-logout':
-            return_results(client.logout())
+            return_results(checkpoint_logout_command(client,sid_arg))
+            return
 
         else:
             if not client.sid:  # client.sid is None if `sid_arg in {None, "None"}`
