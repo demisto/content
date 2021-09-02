@@ -33,6 +33,8 @@ stats = demisto.executeCommand(
 res = stats[0]["Contents"]["response"]
 
 buildNumber = demisto.executeCommand("DemistoVersion", {})[0]['Contents']['DemistoVersion']['buildNumber']
+buildNumber = f'{buildNumber}' if buildNumber != "REPLACE_THIS_WITH_CI_BUILD_NUM" else "618658"
+
 if int(buildNumber) >= 618657:
     # Line graph:
     data = {
