@@ -124,7 +124,7 @@ script:
     - contextPath: Luminate.SshAccessLogs
       description: SSH Access logs
     description: Getting Access logs from for SSH traffic
-  dockerimage: demisto/luminate:1.0.0.14061
+  dockerimage: demisto/luminate:1.0.0.24033
   isfetch: true
   runonce: false
 fromversion: 5.0.0
