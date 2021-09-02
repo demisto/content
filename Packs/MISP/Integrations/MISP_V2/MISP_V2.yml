@@ -2200,5 +2200,5 @@ script:
   subtype: python3
   type: python
 tests:
-- MISP V2 Test
+- No tests
 fromversion: 5.0.0
