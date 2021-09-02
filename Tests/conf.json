@@ -803,11 +803,6 @@
             "playbookID": "CirclIntegrationTest"
         },
         {
-            "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test",
-            "timeout": 300
-        },
-        {
             "integrations": "MISP V3",
             "playbookID": "MISP V3 Test",
             "timeout": 300,
