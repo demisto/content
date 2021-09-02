@@ -1815,7 +1815,10 @@ def main():
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
-    if server[-1] == "/":
+    if server.startswith("https://"):
+        server = server[len("https://"):]
+
+    if server.endswith("/"):
         server = server[:-1]
 
     client = Client(base_url=f'https://{server}:{port}/web_api/',
