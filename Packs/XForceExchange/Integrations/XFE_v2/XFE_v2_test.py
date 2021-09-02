@@ -304,16 +304,16 @@ HASH_RESP_NO_FAMILY = {
     'malware': {
         'origins': {
             'external': {
-                'source': 'reversingLabs', 
-                'firstSeen': '2021-08-02T21:59:46Z', 
-                'lastSeen': '2021-08-16T04:35:50Z', 
-                'detectionCoverage': 0, 
+                'source': 'reversingLabs',
+                'firstSeen': '2021-08-02T21:59:46Z',
+                'lastSeen': '2021-08-16T04:35:50Z',
+                'detectionCoverage': 0,
                 'family': None
             }
-        }, 
-        'type': 'sha256', 
-        'sha256': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010', 
-        'hash': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010', 
+        },
+        'type': 'sha256',
+        'sha256': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
+        'hash': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
         'risk': 'low'
     }
 }
