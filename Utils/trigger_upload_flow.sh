@@ -258,7 +258,7 @@ function updating_old_release_notes {
   printf "\n#### Upload flow\n - Test\n" >>"${2}.md"
   cd "${CONTENT_PATH}" || return
 
-  git commit --untracked-files=no -am "Updated release note - $current_latest_note"
+  git commit --untracked-files=no -am "Updated release note - ${2}"
 
 }
 
