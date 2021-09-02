@@ -529,7 +529,7 @@ def assign_permission_set_command(client, args):
             'errorCode': error_code,
             'errorMessage': error_message
         }
-    
+
     outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,

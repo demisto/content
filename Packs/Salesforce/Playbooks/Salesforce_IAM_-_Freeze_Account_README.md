@@ -32,4 +32,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Salesforce IAM - Freeze Account](Insert the link to your image here)
+![Salesforce IAM - Freeze Account](./../doc_files/Salesforce_IAM_-_Freeze_Account.png)

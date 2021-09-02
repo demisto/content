@@ -1,4 +1,4 @@
-Unfreezes a Salesforce account.
+Unassignes permission sets, permission set licenses and package licenses from a Salesforce account.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,8 +13,12 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* salesforce-unfreeze-user-account
-* salesforce-get-user-isfrozen-status
+* salesforce-get-assigned-permission-set
+* salesforce-get-assigned-permission-set-license
+* salesforce-get-assigned-package-license
+* salesforce-delete-assigned-permission-set-license
+* salesforce-delete-assigned-permission-set
+* salesforce-delete-assigned-package-license
 
 ## Playbook Inputs
 ---
@@ -32,4 +36,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Salesforce IAM - Unfreeze Account](./../doc_files/Salesforce_IAM_-_Unfreeze_Account.png)
+![Salesforce IAM - Post Deprovisioning](./../doc_files/Salesforce_IAM_-_Post_Deprovisioning.png)

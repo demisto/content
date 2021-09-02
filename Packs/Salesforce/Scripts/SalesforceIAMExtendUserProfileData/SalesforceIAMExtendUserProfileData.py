@@ -54,7 +54,7 @@ def get_lookup_key(user_profile, org_unit, org_settings):
     key_format = org_settings.get(KEY_FORMAT_FIELD)
     if not key_format:
         raise Exception(f'Missing key "{KEY_FORMAT_FIELD}" in the org unit "{org_unit}".')
-    
+
     lookup_key_values_list = [user_profile.get(field, '') for field in key_format.split('|')]
     return '|'.join(lookup_key_values_list).lower()
 
@@ -120,7 +120,6 @@ def get_manager(user_profile, app_instance):
     return None, {}
 
 
-
 def update_user_profile_with_salesforce_attributes(user_profile, salesforce_provisioning_settings, app_instance):
     """ Adds Salesforce specific attributes to User Profile data """
     salesforce_attributes = {}
@@ -129,7 +128,7 @@ def update_user_profile_with_salesforce_attributes(user_profile, salesforce_prov
     if manager_id:
         salesforce_attributes['ManagerId'] = manager_id
     else:
-        demisto.log(f"Manager not found")
+        demisto.log('Manager not found')
 
     for key, value in salesforce_provisioning_settings.items():
         if value == 'default_to_manager':
@@ -172,7 +171,7 @@ def main():
             provisioning_settings[EMAIL_NOTIFICATION_LIST_FIELD] = org_settings.get(EMAIL_NOTIFICATION_LIST_FIELD)
 
             update_user_profile_with_salesforce_attributes(user_profile, provisioning_settings, app_instance)
-            
+
             results = [
                 CommandResults(
                     outputs_prefix='IAM.Vendor',
@@ -198,8 +197,8 @@ def main():
 
     except Exception as e:
         result = CommandResults(
-            outputs_prefix='IAM.Vendor', 
-            outputs_key_field='instanceName', 
+            outputs_prefix='IAM.Vendor',
+            outputs_key_field='instanceName',
             readable_output=f'Error while parsing Salesforce provisioning settings. Error is: {traceback.format_exc()}',
             outputs={
                 'email': email,

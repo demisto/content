@@ -41,4 +41,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Salesforce IAM - Sync User](Insert the link to your image here)
+![Salesforce IAM - Sync User](./../doc_files/Salesforce_IAM_-Sync_User.png)
