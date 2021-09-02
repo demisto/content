@@ -1838,7 +1838,7 @@ def main():
             return
 
         elif command == 'checkpoint-logout':
-            return_results(checkpoint_logout_command(client,sid_arg))
+            return_results(checkpoint_logout_command(client, sid_arg))
             return
 
         else:
