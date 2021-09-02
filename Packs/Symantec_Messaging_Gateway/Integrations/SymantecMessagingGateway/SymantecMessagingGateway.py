@@ -14,7 +14,7 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 BASE_URL = SERVER + '/brightmail/'
 USE_SSL = not demisto.params().get('insecure', False)
-COOKIES = {}
+COOKIES = {}  # type: ignore
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -143,6 +143,7 @@ def unblock_request(selected_group_member, selected_sender_groups):
         'selectedGroupMembers': int(selected_group_member)
     }
     response = http_request('post', cmd_url, data=data)
+    return response
 
 
 def get_blocked_request(sender_group):
@@ -158,9 +159,9 @@ def get_blocked_request(sender_group):
 
 
 def get_next_page(selected_sender_groups):
-    '''
+    """
     Gets next page in bad list
-    '''
+    """
     cmd_url = 'reputation/sender-group/viewNextPage.do'
     data = {
         'selectedSenderGroups': selected_sender_groups,
@@ -277,7 +278,7 @@ def unblock_email(email):
         next_page = get_next_page(selected_sender_groups)
         soup = BeautifulSoup(next_page.content, 'lxml')
 
-    if not 'selected_group_member' in locals():
+    if 'selected_group_member' not in locals():
         return 'Could not find given email address in ' + BAD_DOMAINS_EMAILS_GROUP
 
     unblock_request(selected_group_member, selected_sender_groups)
@@ -347,7 +348,7 @@ def unblock_domain(domain):
         next_page = get_next_page(selected_sender_groups)
         soup = BeautifulSoup(next_page.content, 'lxml')
 
-    if not 'selected_group_member' in locals():
+    if 'selected_group_member' not in locals():
         return 'Could not find given domain in ' + BAD_DOMAINS_EMAILS_GROUP
 
     unblock_request(selected_group_member, selected_sender_groups)
@@ -416,7 +417,7 @@ def unblock_ip(ip):
         next_page = get_next_page(selected_sender_groups)
         soup = BeautifulSoup(next_page.content, 'lxml')
 
-    if not 'selected_group_member' in locals():
+    if 'selected_group_member' not in locals():
         return 'Could not find given IP address in ' + BAD_IPS_GROUP
 
     unblock_request(selected_group_member, selected_sender_groups)
