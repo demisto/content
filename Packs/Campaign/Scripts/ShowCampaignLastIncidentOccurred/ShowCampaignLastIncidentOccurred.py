@@ -35,7 +35,7 @@ def get_last_incident_occurred(incident_ids) -> str:
     incidents_from_query = json.loads(res[0]['Contents'])
 
     if not incidents_from_query:
-        return_error('No incidents found.')
+        return incidents_from_query
 
     incident_created = max([dateutil.parser.parse(incident['created']) for incident in incidents_from_query])
 
@@ -49,12 +49,14 @@ def main():
         last_incident_occurred = get_last_incident_occurred(incident_ids)
 
         if last_incident_occurred:
-            html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 15px;'>Last Incident Occurred" \
-                                   f"</br> <div style='font-size:24px;'> {last_incident_occurred} </div>"
+            html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 15px;'>" \
+                                   f"Last Incident Occurred</br> <div style='font-size:24px;'> " \
+                                   f"{last_incident_occurred} </div></div>"
 
         else:
-            html_readable_output = "<div style='font-size:17px; text-align:center; padding: 15px;'>Last Incident Occurred" \
-                                   "</br> <div style='font-size:20px;'> No last incident occurred found. </div></div>"
+            html_readable_output = "<div style='text-align:center; font-size:17px; padding: 15px;'>" \
+                                   "Last Incident Occurred</br> <div style='font-size:20px;'> " \
+                                   "No last incident occurred found. </div></div>"
 
         demisto.results({
             'ContentsFormat': formats['html'],

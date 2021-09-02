@@ -45,10 +45,10 @@ def main():
             header = 'Similarity Range' if len(similarity_range.split('-')) > 1 else 'Similarity'
 
             html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 15px;'>{header}" \
-                                   f"</br> <div style='font-size:24px;'> {similarity_range} </div>"
+                                   f"</br> <div style='font-size:24px;'> {similarity_range} </div></div>"
 
         else:
-            html_readable_output = "<div style='font-size:17px; text-align:center; padding: 15px;'>Similarity" \
+            html_readable_output = "<div style='text-align:center; font-size:17px; padding: 15px;'>Similarity" \
                                    "</br> <div style='font-size:20px;'> No incident similarities were found. </div></div>"
 
         demisto.results({
