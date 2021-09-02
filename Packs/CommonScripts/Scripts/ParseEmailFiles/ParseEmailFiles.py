@@ -3503,7 +3503,7 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
-def process_individual_message(message):
+def decode_attachment_payload(message):
     """Decodes a message from Base64, if fails will outputs its str(message)
     """
     msg = message.get_payload()
@@ -3662,7 +3662,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         msgs = part.get_payload()  # human-readable section
                         for i, individual_message in enumerate(msgs):
 
-                            msg_info = process_individual_message(individual_message)
+                            msg_info = decode_attachment_payload(individual_message)
                             attached_emails.append(msg_info)
 
                             attachment_file_name = individual_message.get_filename()

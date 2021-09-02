@@ -1039,7 +1039,7 @@ def test_PtypString():
     ('escape', 'escape'),
     (u'eśćąpe', u'eśćąpe')
 ])
-def test_process_individual_message_non_base64(payload, answer):
+def test_decode_attachment_payload_non_base64(payload, answer):
     class MockedMessage:
         def __init__(self, payload=None):
             self.payload = payload
@@ -1047,15 +1047,15 @@ def test_process_individual_message_non_base64(payload, answer):
         def get_payload(self):
             return self.payload
 
-    from ParseEmailFiles import process_individual_message
-    assert answer == process_individual_message(MockedMessage(payload))
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))
 
 
 @pytest.mark.parametrize('payload, answer', [
     ('//5lAFsBBwEFAXAAZQA=', '\xff\xfee\x00[\x01\x07\x01\x05\x01p\x00e\x00'),  # eśćąpe
     ('ZXNjYXBl', 'escape')
 ])
-def test_process_individual_message_base64(payload, answer):
+def test_decode_attachment_payload_base64(payload, answer):
     class MockedMessage:
         def __init__(self, payload=None):
             self.payload = payload
@@ -1063,5 +1063,5 @@ def test_process_individual_message_base64(payload, answer):
         def get_payload(self):
             return self.payload
 
-    from ParseEmailFiles import process_individual_message
-    assert answer == process_individual_message(MockedMessage(payload))
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))
