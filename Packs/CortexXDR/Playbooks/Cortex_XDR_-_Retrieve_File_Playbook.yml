@@ -352,5 +352,6 @@ outputs:
     file entries).
   type: String
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook
+- Cortex XDR - IOC - Test
 fromversion: 5.0.0
