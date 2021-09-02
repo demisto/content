@@ -48,7 +48,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "flashpointindicatortype",
+                                "fieldId": "flashpointfeedindicatortype",
                                 "height": 22,
                                 "id": "03325f30-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 1,
@@ -198,7 +198,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "flashpointattributeuuid",
+                                "fieldId": "flashpointfeedattributeuuid",
                                 "height": 53,
                                 "id": "a397c5f0-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 0,
@@ -208,7 +208,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "flashpointattributeid",
+                                "fieldId": "flashpointfeedattributeid",
                                 "height": 53,
                                 "id": "7e228230-e52a-11eb-9d52-198f717d1d7c",
                                 "index": 1,
@@ -227,7 +227,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "flashpointcategory",
+                                "fieldId": "flashpointfeedcategory",
                                 "height": 53,
                                 "id": "bac4b210-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 3,
@@ -255,7 +255,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "flashpointeventuuid",
+                                "fieldId": "flashpointfeedeventuuid",
                                 "height": 22,
                                 "id": "f0967770-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 0,
@@ -265,7 +265,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointeventhref",
+                                "fieldId": "flashpointfeedeventhref",
                                 "height": 22,
                                 "id": "ec11b2a0-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 1,
@@ -274,7 +274,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointeventinformation",
+                                "fieldId": "flashpointfeedeventinformation",
                                 "height": 44,
                                 "id": "ef447c00-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 2,
@@ -283,7 +283,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointeventcreatoremail",
+                                "fieldId": "flashpointfeedeventcreatoremail",
                                 "height": 22,
                                 "id": "0ab134b0-dd80-11eb-bce6-1da739b1c4c0",
                                 "index": 3,
@@ -336,7 +336,7 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "flashpointreport",
+                                "fieldId": "flashpointfeedreport",
                                 "height": 22,
                                 "id": "fed4b4f0-dd7f-11eb-bce6-1da739b1c4c0",
                                 "index": 0,
@@ -346,7 +346,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "flashpointtimestamp",
+                                "fieldId": "flashpointfeedtimestamp",
                                 "height": 22,
                                 "id": "038851f0-dd80-11eb-bce6-1da739b1c4c0",
                                 "index": 1,
@@ -356,7 +356,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "flashpointmalwaredescription",
+                                "fieldId": "flashpointfeedmalwaredescription",
                                 "height": 44,
                                 "id": "06280310-dd80-11eb-bce6-1da739b1c4c0",
                                 "index": 2,
