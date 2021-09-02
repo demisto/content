@@ -64,18 +64,29 @@ def test_checkpoint_login_and_get_session_id(requests_mock):
     assert client.sid == sid  # a non-None client.sid indicates that the client is logged in.
 
 
-@pytest.mark.parametrize('session_id', (None, 'None', 'sid'))
-def test_checkpoint_login_mechanism(requests_mock, mocker, session_id):
+INTEGRATION_CONTEXT_EMPTY = dict()
+INTEGRATION_CONTEXT_WITH_SID = {'cp_sid': 'sid'}
+
+
+@pytest.mark.parametrize('session_id,integration_context,should_log_in', ((None, INTEGRATION_CONTEXT_EMPTY, True),
+                                                                          ('None', INTEGRATION_CONTEXT_EMPTY, True),
+                                                                          ('sid', INTEGRATION_CONTEXT_EMPTY, False),
+                                                                          (None, INTEGRATION_CONTEXT_WITH_SID, False),
+                                                                          ('None', INTEGRATION_CONTEXT_WITH_SID, False),
+                                                                          ('sid', INTEGRATION_CONTEXT_WITH_SID, False)))
+def test_checkpoint_login_mechanism(mocker, session_id, integration_context, should_log_in):
     """
     Given
         an session id argument
     When
         calling an arbitrary command, that is not an explicit login command
     Then
-        validate a login is performed if and only if the session id is in {None, "None"}
+        validate a login is performed if and only if the session id is in {None, "None"} AND integrationContext is empty
     """
     from CheckPointFirewallV2 import main
     port = 4434
+
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'getIntegrationContext', return_value=integration_context)
     mocker.patch.object(CheckPointFirewallV2.demisto, 'command', return_value='checkpoint-host-add')
     mocker.patch.object(CheckPointFirewallV2.demisto, 'args', return_value={'session_id': session_id,
                                                                             'name': 'george',
@@ -91,17 +102,17 @@ def test_checkpoint_login_mechanism(requests_mock, mocker, session_id):
                                                                               'port': port})
     mocked_address = f'{DUMMY_BASE_URL}:{port}/web_api'
 
-    login_adapter = requests_mock.post(f'{mocked_address}/login', json={'sid': 'sid'})
-    add_host_adapter = requests_mock.post(f'{mocked_address}/add-host', json={})
-    logout_adapter = requests_mock.post(f'{mocked_address}/logout', json={})
+    import requests_mock
+    with requests_mock.Mocker() as request_mocker:
+        login_adapter = request_mocker.post(f'{mocked_address}/login', json={'sid': 'sid'})
+        add_host_adapter = request_mocker.post(f'{mocked_address}/add-host', json={})
+        logout_adapter = request_mocker.post(f'{mocked_address}/logout', json={})
 
-    main()
+        main()
 
-    expected_login_attempts = 1 if session_id in ["None", None] else 0
-
-    assert login_adapter.call_count == expected_login_attempts
-    assert add_host_adapter.call_count == 1
-    assert logout_adapter.call_count == expected_login_attempts
+        assert login_adapter.call_count == int(should_log_in)
+        assert add_host_adapter.call_count == 1
+        assert logout_adapter.call_count == int(should_log_in)
 
 
 @pytest.mark.parametrize('response_code', [418, 500])
