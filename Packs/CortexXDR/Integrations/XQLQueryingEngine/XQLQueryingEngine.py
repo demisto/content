@@ -621,6 +621,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     max_fields = arg_to_number(args.get('max_fields', 20))
+    if max_fields is None:
+        raise DemistoException('Please provide a valid number for max_fields argument.')
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({'query_name': command_data.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
