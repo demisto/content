@@ -7,17 +7,17 @@ Inputs for this playbook are:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
-* PrintErrorEntry
+PrintErrorEntry
 
 ### Commands
-* xdr-retrieve-file-details
 * xdr-retrieve-files
+* xdr-retrieve-file-details
 
 ## Playbook Inputs
 ---
