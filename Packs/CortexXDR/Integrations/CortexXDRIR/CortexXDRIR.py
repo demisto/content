@@ -63,6 +63,103 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
+ALERTS_GENERAL_FIELDS = {
+    "_time",
+    "vendor",
+    "event_timestamp",
+    "event_type",
+    "event_id",
+    "cloud_provider",
+    "project",
+    "cloud_provider_event_id",
+    "cloud_correlation_id",
+    "operation_name_orig",
+    "operation_name",
+    "identity_orig",
+    "identity_name",
+    "identity_uuid",
+    "identity_type",
+    "identity_sub_type",
+    "identity_invoked_by_name",
+    "identity_invoked_by_uuid",
+    "identity_invoked_by_type",
+    "identity_invoked_by_sub_type",
+    "operation_status",
+    "operation_status_orig",
+    "operation_status_orig_code",
+    "operation_status_reason_provided",
+    "resource_type",
+    "resource_type_orig",
+    "resource_sub_type",
+    "resource_sub_type_orig",
+    "region",
+    "zone",
+    "referenced_resource",
+    "referenced_resource_name",
+    "referenced_resources_count",
+    "user_agent",
+    "caller_ip",
+    'caller_ip_geolocation',
+    "caller_ip_asn",
+    'caller_project',
+    'raw_log',
+    "log_name",
+    "caller_ip_asn_org",
+    "event_base_id",
+    "ingestion_time",
+}
+
+ALERTS_AWS_FIELDS = {
+    "eventVersion",
+    "userIdentity",
+    "eventTime",
+    "eventSource",
+    "eventName",
+    "awsRegion",
+    "sourceIPAddress",
+    "userAgent",
+    "requestID",
+    "eventID",
+    "readOnly",
+    "eventType",
+    "apiVersion",
+    "managementEvent",
+    "recipientAccountId",
+    "eventCategory",
+    "errorCode",
+    "errorMessage",
+    "resources",
+}
+
+ALERTS_GCP_FIELDS = {
+    "labels",
+    "operation",
+    "protoPayload",
+    "resource",
+    "severity",
+    "timestamp",
+}
+
+ALERTS_AZURE_FIELDS = {
+    "time",
+    "resourceId",
+    "category",
+    "operationName",
+    "operationVersion",
+    "schemaVersion",
+    "statusCode",
+    "statusText",
+    "callerIpAddress",
+    "correlationId",
+    "identity",
+    "level",
+    "properties",
+    "uri",
+    "protocol",
+    "resourceType",
+    "tenantId",
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1250,6 +1347,17 @@ class Client(BaseClient):
 
         set_integration_context({'modified_incidents': modified_incidents_context})
 
+    def get_original_alerts(self, alert_id_list):
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_original_alerts/',
+            json_data={
+                'request_data': {
+                    'alert_id_list': alert_id_list,
+                }
+            },
+        )
+        return res.get('reply', {})
 
 def get_incidents_command(client, args):
     """
@@ -3064,7 +3172,7 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_prefix=f'{c}.ScriptRun',
         outputs_key_field='action_id',
         outputs=reply,
         raw_response=response,
@@ -3132,6 +3240,77 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
         demisto.debug(f'Failed extracting filename from response headers - [{str(e)}]')
         filename = action_id + '.zip'
     return fileResult(filename, file_response.content)
+
+
+def decode_dict_values(dict_to_decode: dict):
+    for key in dict_to_decode.keys():
+        # if value if a dictionary, we want to recursively decode it's values
+        if isinstance(dict_to_decode[key], dict):
+            decode_dict_values(dict_to_decode[key])
+        # if value if a string, we want to try to decode it, if it cannot be decoded, we will move on.
+        elif isinstance(dict_to_decode[key], str):
+            try:
+                dict_to_decode[key] = json.loads(dict_to_decode[key])
+            except Exception:
+                continue
+    return
+
+
+def filter_general_fields(alert: dict):
+    alert.pop('external_id')
+    alert.pop('_detection_method')
+    alert.pop('alert_source')
+    alert.pop('severity')
+    event = alert.get('raw_abioc', {}).get('event', {})
+    if event and isinstance(event, dict):
+        for key in list(event):
+            if key not in ALERTS_GENERAL_FIELDS:
+                event.pop(key)
+
+
+def filter_vendor_fields(alert):
+    vendor_mapper = {
+        'Amazon': ALERTS_AWS_FIELDS,
+        'Google': ALERTS_GCP_FIELDS,
+        'Microsoft': ALERTS_AZURE_FIELDS,
+    }
+    event = alert.get('raw_abioc', {}).get('event', {})
+    vendor = event.get('vendor')
+    if vendor and vendor in vendor_mapper:
+        raw_log = event.get('raw_log', {})
+        if raw_log and isinstance(raw_log, dict):
+            for key in list(raw_log):
+                if key not in vendor_mapper[vendor]:
+                    raw_log.pop(key)
+
+
+def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
+    alert_id_list = argToList(args.get('alert_id_list', []))
+    raw_response = client.get_original_alerts(alert_id_list)
+    reply = copy.deepcopy(raw_response)
+    alerts = reply.get('alerts', [])
+    for alert in alerts:
+        # decode raw_response
+        try:
+            alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
+            # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
+            # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
+            decode_dict_values(alert)
+        except Exception:
+            continue
+        alert.update(alert.pop('original_alert_json')) # remove original_alert_json field and add its content to alert.
+        filter_general_fields(alert)
+        filter_vendor_fields(alert)
+        x = 5
+
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Original Alerts', alerts),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
+        outputs_key_field='internal_id',
+        outputs=alerts,
+        raw_response=raw_response,
+    )
 
 
 def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
@@ -3212,7 +3391,6 @@ def main():
     Executes an integration command
     """
     LOG(f'Command being called is {demisto.command()}')
-
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
     first_fetch_time = demisto.params().get('fetch_time', '3 days')
@@ -3386,6 +3564,9 @@ def main():
 
         elif demisto.command() == 'xdr-get-script-execution-result-files':
             return_results(get_script_execution_result_files_command(client, args))
+
+        elif demisto.command() == 'xdr-get-cloud-original_alerts':
+            return_results(get_original_alerts_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))
