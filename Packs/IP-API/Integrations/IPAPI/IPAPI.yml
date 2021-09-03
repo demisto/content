@@ -1,0 +1,64 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: IP-API
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: false
+  type: 4
+- additionalinfo: HTTP does not need an API key - but is subject to API limits and
+    data is exchanged in clear text.
+  defaultvalue: "true"
+  display: Use HTTPS to make requests (requires API key)
+  name: https
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: See https://ip-api.com/docs/api:json to calculate value for the
+    fields you need
+  defaultvalue: "536608767"
+  display: Define the fields returned from the API
+  name: fields
+  required: false
+  type: 0
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cf2aad71-0364-49b3-8f01-ebb633197da5
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This integration will query IP-API to enrich IP Addresses with geographical
+  and other data.
+display: IP-API
+name: IP-API
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+    description: Return IP information and reputation
+    name: ip
+    outputs:
+    - contextPath: IP-API.as
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  dockerimage: demisto/powershell:7.1.4.24032
+  runonce: false
+  script: ''
+  type: powershell
+fromversion: 5.5.0

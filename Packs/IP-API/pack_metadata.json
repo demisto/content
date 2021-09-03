@@ -1,0 +1,17 @@
+{
+    "name": "IP-API",
+    "description": "Enrich IP addresses using the ip-api.com SaaS service.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Michael Wareman",
+    "url": "",
+    "email": "",
+    "created": "2021-09-03T18:02:45Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "mwareman"
+    ]
+}
