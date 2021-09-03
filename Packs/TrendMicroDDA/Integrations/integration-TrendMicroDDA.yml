@@ -714,7 +714,7 @@ script:
 
     def build_brief_report(res, sha1, threshold):
         report_json = json.loads(xml2json(res.text))
-        brief_report_json = report_json.get('REPORT', {}.get('BRIEF_REPORT', {})
+        brief_report_json = report_json.get('REPORT', {}).get('BRIEF_REPORT', {})
         hr = {
             'SHA1': sha1,
             'Risk Level': brief_report_json.get('RiskLevel'),
