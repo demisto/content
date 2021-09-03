@@ -28,6 +28,10 @@ configuration:
   name: ruleName
   required: false
   type: 0
+- display: Fetch only incidents matching this policy name
+  name: policyName
+  required: false
+  type: 0
 - display: Fetch only incidents with this severity
   name: policySeverity
   required: false
