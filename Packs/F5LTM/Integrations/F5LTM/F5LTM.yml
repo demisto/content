@@ -99,6 +99,29 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: Node Name
       type: Unknown
+  - deprecated: false
+    description: Get a list of all virtual servers
+    execution: false
+    name: f5-ltm-get-virtuals
+    outputs:
+    - contextPath: F5.LTM.Virtuals.name
+      description: Virtual Name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Virtual Name
+      isArray: false
+      name: virtual
+      required: true
+      secret: false
+    deprecated: false
+    description: Get virtual details
+    execution: false
+    name: f5-ltm-get-virtual
+    outputs:
+    - contextPath: F5.LTM.Virtual.name
+      description: Virtual Name
+      type: Unknown
   - arguments:
     - default: false
       description: Node to disable
