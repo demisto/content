@@ -1516,12 +1516,12 @@ def main() -> None:
                     error = json.loads(str(err).split("\n")[1])
                     if "error" in error:
                         message = error.get("error", {})["message"]
-                        return_results(f"Failed due to: {message}")
-                except Exception as err2:
-                    return_results(
+                except Exception:
+                    message = (
                         "Unknown error. Please verify that the API"
                         " URL and Token are correctly configured."
                     )
+                raise DemistoException(f"Failed due to: {message}")
 
         elif command in ["url", "ip", "domain", "file", "cve"]:
             entities = argToList(demisto_args.get(command))
