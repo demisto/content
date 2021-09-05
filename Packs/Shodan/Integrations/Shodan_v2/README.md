@@ -137,7 +137,7 @@ Searches Shodan using facets to get summary information on properties.
 
 #### Human Readable Output
 
->### Search results for query "country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" - page 1, facets: None
+>Search results for query "country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" - page 1, facets: None
 >|IP|Port|Timestamp|
 >|---|---|---|
 >| 103.47.177.23 | 5353 | 2021-08-17T03:13:54.617598 |
@@ -218,7 +218,7 @@ Returns all services that have been found on the IP address of the searched host
 
 #### Human Readable Output
 
->### Shodan details for IP 8.8.8.8
+>Shodan details for IP 8.8.8.8
 >|ASN|Country|Hostname|ISP|Location|Ports|
 >|---|---|---|---|---|---|
 >| AS15169 | United States | dns.google | Google LLC | 37.406,-122.078 | 53 |
@@ -262,7 +262,7 @@ Returns the total number of results that match only the specified query or facet
 
 #### Human Readable Output
 
->## 498645 results for query "country:HK product:Apache"
+>498645 results for query "country:HK product:Apache"
 
 ### shodan-scan-ip
 ***
@@ -304,7 +304,7 @@ Requests Shodan to crawl a network.
 
 #### Human Readable Output
 
->### Scanning results for scan wQEp0bIIEHklpAwa
+>Scanning results for scan wQEp0bIIEHklpAwa
 >|ID|Status|
 >|---|---|
 >| wQEp0bIIEHklpAwa | PROCESSING |
@@ -380,7 +380,7 @@ Checks the progress of a previously submitted scan request on the specified port
 
 #### Human Readable Output
 
->### Scanning results for scan 7rbp1CAtx91BMwcg
+>Scanning results for scan 7rbp1CAtx91BMwcg
 >|ID|Status|
 >|---|---|
 >| 7rbp1CAtx91BMwcg | DONE |
@@ -428,7 +428,7 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 
 #### Human Readable Output
 
->### Alert ID CB68M776ICCMS36L
+>Alert ID CB68M776ICCMS36L
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
@@ -474,7 +474,7 @@ Gets the details of a network alert.
 
 #### Human Readable Output
 
->### Alert ID 0EKRH38BBQEHTQ3E
+>Alert ID 0EKRH38BBQEHTQ3E
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.2.3.4 | test_alert |
@@ -537,7 +537,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Alert ID VXGB6CZ536X5AWE6
+>Alert ID VXGB6CZ536X5AWE6
 >|Expires|IP|Name|
 >|---|---|---|
 >| 0 | 1.1.1.1 | test_alert |
