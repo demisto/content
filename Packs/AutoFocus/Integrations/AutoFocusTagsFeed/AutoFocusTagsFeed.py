@@ -30,11 +30,41 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
+BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
+
+MAP_TAG_CLASS = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
+                 'actor': 'Threat Actor',
+                 'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+                 'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN
+                 }
+
 
 class Client(BaseClient):
     """
     Client class to interact with AutoFocus API
     """
+
+    def __init__(self, api_key, verify, proxy):
+        super().__init__(BASE_URL, verify, proxy)
+        self.api_key = api_key
+
+    def get_all_tags(self):
+        return self._http_request('POST',
+                                  url_suffix='tags',
+                                  headers={
+                                      'apiKey': self.api_key,
+                                      'Content-Type': 'application/json'
+                                  }
+                                  )
+
+    def get_tag_details(self, public_tag_name: str):
+        return self._http_request('POST',
+                                  url_suffix=f'tag/{public_tag_name}',
+                                  headers={
+                                      'apiKey': self.api_key,
+                                      'Content-Type': 'application/json'
+                                  }
+                                  )
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -44,31 +74,17 @@ class Client(BaseClient):
 
         result = []
 
-        res = self._http_request('GET',
-                                 url_suffix='',
-                                 full_url=self._base_url,
-                                 resp_type='text',
-                                 )
-
-        # In this case the feed output is in text format, so extracting the indicators from the response requires
-        # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
-        # require additional processing as well.
-        try:
-            indicators = res.split('\n')
-
-            for indicator in indicators:
-                # Infer the type of the indicator using 'auto_detect_indicator_type(indicator)' function
-                # (defined in CommonServerPython).
-                if auto_detect_indicator_type(indicator):
-                    result.append({
-                        'value': indicator,
-                        'type': auto_detect_indicator_type(indicator),
-                        'FeedURL': self._base_url
-                    })
-
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
+        res = self.get_all_tags()
+        if not res:
+            raise Exception('no result')
+        all_tags = res.get('tags', [])
+        if not all_tags:
+            raise Exception('no result')
+        for tag in all_tags:
+            public_tag_name = tag.get('public_tag_name', '')
+            if public_tag_name:
+                tag_details = self.get_tag_details(public_tag_name)
+                result.append(tag_details)
         return result
 
 
@@ -79,15 +95,6 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    # INTEGRATION FEED DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
 
     client.build_iterator()
     return 'ok'
