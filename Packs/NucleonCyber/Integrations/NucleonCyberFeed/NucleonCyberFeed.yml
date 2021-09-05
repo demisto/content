@@ -124,7 +124,7 @@ script:
   - arguments:
     - default: false
       defaultValue: 'ip'
-      description: The indecator type (ip, url or hash).
+      description: The indicator type (ip, url or hash).
       isArray: false
       name: type
       required: true

@@ -42,7 +42,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indecator type (ip, url or hash). Default is ip. | Required | 
+| type | The indicator type (ip, url or hash). Default is ip. | Required | 
 | limit | The maximum number of results to return. Default is 10. | Optional | 
 
 
