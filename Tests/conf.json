@@ -4612,7 +4612,11 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Cisco Umbrella Test": "Issue 24338",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
-        "Domain Enrichment - Generic v2 - Test": "Issue 40862"
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862",
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "TestIPQualityScorePlaybook": "Issue 40915",
+        "VerifyOOBV2Predictions-Test": "Issue 37947",
+        "HybridAnalysis-Test": "Issue 26599"
     },
     "skipped_integrations": {
         
