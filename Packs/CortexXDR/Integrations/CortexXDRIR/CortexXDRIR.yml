@@ -3506,6 +3506,35 @@ script:
     - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.policyId
       description: ''
       type: String
+  - arguments:
+    - default: false
+      description: The API call method.
+      isArray: false
+      name: method
+      required: true
+      secret: false
+      predefined:
+      - GET
+      - POST
+      - PATCH
+      - DELETE
+      - PUT
+    - default: false
+      description: API Endpoint to execute.
+      isArray: false
+      name: api_endpoint
+      required: true
+      secret: false
+    - default: false
+      description: 'Data to pass to the given endpoint. Should be a json format of the arguments, For example: {"stream_id": "563c5e24", "is_gzip_compressed": true}'
+      isArray: false
+      name: request_data
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns results from the accessed endpoint.
+    execution: false
+    name: xdr-generic-api-execution
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true

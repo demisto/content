@@ -1359,6 +1359,14 @@ class Client(BaseClient):
         )
         return res.get('reply', {})
 
+    def generic_api_execution(self, api_endpoint, method, data):
+        return self._http_request(
+            method=method,
+            url_suffix=api_endpoint,
+            json_data=data,
+        )
+
+
 def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
@@ -1896,6 +1904,28 @@ def endpoint_command(client, args):
             raw_response=endpoints,
         ))
     return command_results
+
+
+def generic_api_execution_command(client, args):
+    method = args.get('method')
+    if not method:
+        raise DemistoException('Please provide an API call method argument.')
+    api_endpoint = args.get('api_endpoint')
+    request_data = safe_load_json(args.get('request_data', {}))
+    if not api_endpoint:
+        raise DemistoException('Please provide an api_endpoint argument.')
+    data = {
+        'request_data': {
+        }
+    }
+    data['request_data'].update(request_data)
+    raw_response = client.generic_api_execution(api_endpoint, method, data)
+    return CommandResults(
+        readable_output=tableToMarkdown('Generic API Execution Results', {'results': raw_response}, headerTransform=string_to_table_header),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.GenericExecution',
+        outputs=raw_response,
+        raw_response=raw_response,
+    )
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -3266,6 +3296,8 @@ def filter_general_fields(alert: dict):
         for key in list(event):
             if key not in ALERTS_GENERAL_FIELDS:
                 event.pop(key)
+    else:
+        raise DemistoException('No XDR cloud analytics event.')
 
 
 def filter_vendor_fields(alert):
@@ -3303,12 +3335,11 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
         filter_vendor_fields(alert)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Original Alerts', alerts),
+        readable_output=tableToMarkdown('Original Alerts', alerts, headerTransform=string_to_table_header),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
         outputs_key_field='internal_id',
         outputs=alerts,
         raw_response=raw_response,
-        headerTransform=string_to_table_header
     )
 
 
@@ -3581,6 +3612,9 @@ def main():
 
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, args))
+
+        elif demisto.command() == 'xdr-generic-api-execution':
+            return_results(generic_api_execution_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
