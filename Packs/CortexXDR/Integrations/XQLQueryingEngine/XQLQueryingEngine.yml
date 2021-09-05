@@ -107,88 +107,88 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
-      description: ''
+      description: Result time.
       type: Date
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-      description: ''
+      description: Host mac address.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-      description: ''
+      description: Effective username.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-      description: ''
+      description: Initiator CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-      description: ''
+      description: Initiator PID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
-      description: ''
+      description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: ''
+      description: Initiator signature.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-      description: ''
+      description: CGO name.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-      description: ''
+      description: CGO path.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-      description: ''
+      description: CGO CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-      description: ''
+      description: CGO PID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: ''
+      description: CGO SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-      description: ''
+      description: CGO signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: ''
+      description: CGO signature.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-      description: ''
+      description: CGO type.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-      description: ''
+      description: OS parent name.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-      description: ''
+      description: OS parent path.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-      description: ''
+      description: OS parent CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-      description: ''
+      description: OS parent PID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-      description: ''
+      description: OS parent SHA256.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
-      description: ''
+      description: The result product.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
-      description: ''
+      description: Initiator install type.
       type: String
   - deprecated: false
     description: Retrieve the amount of query quota available and used.
@@ -229,114 +229,114 @@ script:
     polling: true
     name: xdr-xql-get-query-results
     outputs:
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution.
-        The execution_id value can be passed to the  xdr-xql-get-query-results command.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
-      description: The given name of the query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
-      description: |-
-        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
-      description: Integer representing the number of results returned.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
-      description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
-        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-      description: Float representing the number of query units available for you
-        to use.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-      description: ''
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-      description: ''
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
-      description: ''
-      type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+        description: An integer representing a unique ID of a successful XQL query execution.
+          The execution_id value can be passed to the xdr-xql-get-query-results command.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+        description: The given name of the query.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.status
+        description: |-
+          String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+          For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
+        description: Integer representing the number of results returned.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
+        description: |-
+          Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+          For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
+        description: Float representing the number of query units available for you
+          to use.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
+        description: Result time.
+        type: Date
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
+        description: The agent host name.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
+        description: The agent IP addresses.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
+        description: Host mac address.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
+        description: Effective username.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
+        description: Initiated by.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
+        description: Initiator path.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
+        description: Initiator CMD.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
+        description: Initiator PID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
+        description: Initiator SHA256.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
+        description: Initiator signer.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
+        description: Initiator signature.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
+        description: CGO name.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
+        description: CGO path.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
+        description: CGO CMD.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
+        description: CGO PID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
+        description: CGO SHA256.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
+        description: CGO signer.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
+        description: CGO signature.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
+        description: CGO type.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
+        description: OS parent name.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
+        description: OS parent path.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
+        description: OS parent CMD.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
+        description: OS parent PID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
+        description: OS parent SHA256.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
+        description: The result vendor.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
+        description: The result product.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
+        description: Initiator install type.
+        type: String
   - arguments:
     - default: false
       description: XDR endpoint ID to run the query on.
@@ -423,34 +423,34 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_path
-      description: ''
+      description: File path.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_sha256
-      description: ''
+      description: File SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.actor_process_file_create_time
-      description: ''
+      description: Initiator file create time.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -538,61 +538,61 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_sha256
-      description: ''
+      description: Target process SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_name
-      description: ''
+      description: Target process name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_path
-      description: ''
+      description: Target process image path.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_instance_id
-      description: ''
+      description: Target process instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_causality_id
-      description: ''
+      description: Target process casuality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_vendor
-      description: ''
+      description: Process execution signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_product
-      description: ''
+      description: Process signature product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_command_line
-      description: ''
+      description: Target process CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_causality_id
-      description: ''
+      description: Initiator casuality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -680,58 +680,58 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_effective_username
-      description: ''
+      description: Effective username.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_sha256
-      description: ''
+      description: Action module SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_path
-      description: ''
+      description: Action module path.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_file_info
-      description: ''
+      description: Action module file information.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_file_create_time
-      description: ''
+      description: Action module file create time.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_command_line
-      description: ''
+      description: Initiator CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_causality_id
-      description: ''
+      description: Initiator casuality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -832,61 +832,61 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username
-      description: ''
+      description: Effective username.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip
-      description: ''
+      description: Local IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip
-      description: ''
+      description: Remote IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port
-      description: ''
+      description: Remote port.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.dst_action_external_hostname
-      description: ''
+      description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_country
-      description: ''
+      description: Action country.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_command_line
-      description: ''
+      description: Initiator CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_causality_id
-      description: ''
+      description: Initiator casuality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -975,46 +975,46 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_type
-      description: ''
+      description: Host OS.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_sub_type
-      description: ''
+      description: Agent OS Sub Type.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.event_type
-      description: ''
+      description: Event type.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.event_sub_type
-      description: ''
+      description: Event sub type.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_key_name
-      description: ''
+      description: Registry key name.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_value_name
-      description: ''
+      description: Registry value name.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_data
-      description: ''
+      description: Registry data.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -1105,46 +1105,46 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_type
-      description: ''
+      description: Host OS.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_sub_type
-      description: ''
+      description: Agent OS Sub Type.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_event_id
-      description: ''
+      description: Event log ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.event_type
-      description: ''
+      description: Event type.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.event_sub_type
-      description: ''
+      description: Event sub type.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_message
-      description: ''
+      description: Event log message.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_provider_name
-      description: ''
+      description: event log provider name.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -1238,73 +1238,73 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_type
-      description: ''
+      description: Host OS.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_sub_type
-      description: ''
+      description: Agent OS Sub Type.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_local_ip
-      description: ''
+      description: Local IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_ip
-      description: ''
+      description: Remote IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_port
-      description: ''
+      description: Remote port.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.dst_action_external_hostname
-      description: ''
+      description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.dns_query_name
-      description: ''
+      description: DNS Query Name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
-      description: ''
+      description: List of application IDs action, actual activities that took place and recorded by the agent
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
-      description: ''
+      description: Total downloads.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_upload
-      description: ''
+      description: Total uploads.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_country
-      description: ''
+      description: Action country.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_as_data
-      description: ''
+      description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_image_path
-      description: ''
+      description: OS parent path.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_command_line
-      description: ''
+      description: OS Parent CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_causality_id
-      description: ''
+      description: Initiator casuality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -1399,79 +1399,79 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_sha256
-      description: ''
+      description: File SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_path
-      description: ''
+      description: File path.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_command_line
-      description: ''
+      description: Initiator CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_vendor
-      description: ''
+      description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_product
-      description: ''
+      description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_primary_normalized_user
-      description: ''
+      description: Normalized user.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_path
-      description: ''
+      description: OS parent path
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_command_line
-      description: ''
+      description: OS parent CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_vendor
-      description: ''
+      description: OS Parent Signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_product
-      description: ''
+      description: OS Parent Signer product.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256
-      description: ''
+      description: OS parent SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username
-      description: ''
+      description: OS parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host
-      description: ''
+      description: Remote host.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip
-      description: ''
+      description: remote IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -1560,79 +1560,79 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_local_ip
-      description: ''
+      description: Local IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_ip
-      description: ''
+      description: Remote IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port
-      description: ''
+      description: Remote port.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dst_action_external_hostname
-      description: ''
+      description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name
-      description: ''
+      description: DNS Query Name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
-      description: ''
+      description: List of application IDs action, actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download
-      description: ''
+      description: Total downloads.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_upload
-      description: ''
+      description: Total uploads.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_country
-      description: ''
+      description: Action country.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_as_data
-      description: ''
+      description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor
-      description: ''
+      description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_product
-      description: ''
+      description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id
-      description: ''
+      description: CID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line
-      description: ''
+      description: Image CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._product
-      description: ''
+      description: The result product.
       type: String
   - arguments:
     - default: false
@@ -1721,79 +1721,79 @@ script:
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname
-      description: ''
+      description: The agent host name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_ip_addresses
-      description: ''
+      description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_id
-      description: ''
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_local_ip
-      description: ''
+      description: Local IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_ip
-      description: ''
+      description: Remote IP.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port
-      description: ''
+      description: Remote port.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dst_action_external_hostname
-      description: ''
+      description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name
-      description: ''
+      description: DNS Query Name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
-      description: ''
+      description: List of application IDs action, actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download
-      description: ''
+      description: Total downloads.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_upload
-      description: ''
+      description: Total uploads.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_country
-      description: ''
+      description: Action country.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_as_data
-      description: ''
+      description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_sha256
-      description: ''
+      description: Initiator SHA256.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_name
-      description: ''
+      description: Initiated by.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path
-      description: ''
+      description: Initiator path.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor
-      description: ''
+      description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_product
-      description: ''
+      description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id
-      description: ''
+      description: CID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line
-      description: ''
+      description: Image CMD.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id
-      description: ''
+      description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._vendor
-      description: ''
+      description: The result vendor.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._time
-      description: ''
+      description: Result time.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.insert_timestamp
-      description: ''
+      description: Result insert timestamp.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
-      description: ''
+      description: The result product.
       type: String
   dockerimage: demisto/python3:3.9.6.24019
   feed: false

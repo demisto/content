@@ -1,19 +1,19 @@
-Cortex XDR - XQL query engine enables you to run XQL queries on your data sources using a series of APIs.
-This integration was integrated and tested with version 3.0 of Cortex XDR - XQL query engine
+Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
+This integration was integrated and tested with version 3.0 of Cortex XDR - XQL Query Engine
 
-## Configure Cortex XDR - XQL query engine on Cortex XSOAR
+## Configure Cortex XDR - XQL Query Engine on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex XDR - XQL query engine.
+2. Search for Cortex XDR - XQL Query Engine.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | API Key ID | The API Key ID to use for connection | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL | True |
+    | API Key ID | False |
+    | API Key | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xdr-xql-generic-query
 ***
-Execute an XQL query and retrieve results of an executed XQL query API.
+Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
 
 
 #### Base Command
@@ -31,58 +31,61 @@ Execute an XQL query and retrieve results of an executed XQL query API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | String of the XQL query. By default up to 200 results are returned, in order to get more results, enter a custom limit in the query. | Required | 
+| query | String of the XQL query. By default up to 100 results are returned, in order to get more results, enter a custom limit in the query. | Required | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll, (default is 10 seconds). | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| max_fields | The maximum number of returned fields per results. Default is 20. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given name of the query. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.GenericQuery.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.GenericQuery.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.GenericQuery.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.GenericQuery.results._time | Date |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.mac | Unknown |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256 | Unknown |  | 
-| PaloAltoNetworksXQL.GenericQuery.results._vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results._product | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_install_type | String |  | 
+| PaloAltoNetworksXQL.GenericQuery.results._time | Date | Result time. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.GenericQuery.results.mac | Unknown | Host mac address. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username | String | Effective username. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line | String | Initiator CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid | Number | Initiator PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor | String | Initiator signer. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status | String | Initiator signature. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name | String | CGO name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path | String | CGO path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line | String | CGO CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid | Number | CGO PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256 | String | CGO SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor | String | CGO signer. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status | String | CGO signature. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type | String | CGO type. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name | String | OS parent name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path | String | OS parent path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line | String | OS parent CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid | Number | OS parent PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256 | Unknown | OS parent SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.GenericQuery.results._product | String | The result product. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_install_type | String | Initiator install type. | 
 
 
 #### Command Example
 ```!xdr-xql-generic-query query=`dataset = xdr_data | fields action_evtlog_message, event_id | limit 10```
 
 #### Human Readable Output
+
 >### General Results
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|
 >|---|---|---|---|---|---|
@@ -101,7 +104,6 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| P1 | 2021-08-28T09:14:57.000Z | PANW |  | test8 | 2021-08-28T09:22:14.000Z |
 >| P1 | 2021-08-28T09:14:57.000Z | PANW |  | test9 | 2021-08-28T09:22:29.000Z |
 >| P1 | 2021-08-28T09:12:57.000Z | PANW |  | test10 | 2021-08-28T09:22:23.000Z |
-
 
 
 ### xdr-xql-get-quota
@@ -131,13 +133,12 @@ There are no input arguments for this command.
 #### Context Example
 ```json
 {
-    "PaloAltoNetworksXDR": {
-        "XQL": {
-            "Quota": {
-                "additional_purchased_quota": 0,
-                "license_quota": 1000,
-                "used_quota": 0
-            }
+    "PaloAltoNetworksXQL": {
+        "Quota": {
+            "additional_purchased_quota": 0,
+            "eval_quota": 0,
+            "license_quota": 1000,
+            "used_quota": 0.00488472222222222
         }
     }
 }
@@ -146,9 +147,9 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Quota Results
->|Additional Purchased Quota|License Quota|Used Quota|
->|---|---|---|
->| 0 | 1000 | 0.0 |
+>|Additional Purchased Quota|Eval Quota|License Quota|Used Quota|
+>|---|---|---|---|
+>| 0.0 | 0.0 | 1000 | 0.00488472222222222 |
 
 
 ### xdr-xql-get-query-results
@@ -164,48 +165,49 @@ Retrieve results of an executed XQL query API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query_id | Integer representing the unique execution ID generated by the response to Start an XQL Query API. | Required | 
+| max_fields | The maximum number of returned fields per results. Default is 20. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.GenericQuery.query_name | String | The given name of the query. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.GenericQuery.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.GenericQuery.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.GenericQuery.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.GenericQuery.results._time | Date |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.mac | Unknown |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid | Number |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256 | Unknown |  | 
-| PaloAltoNetworksXQL.GenericQuery.results._vendor | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results._product | String |  | 
-| PaloAltoNetworksXQL.GenericQuery.results.agent_install_type | String |  | 
+| PaloAltoNetworksXQL.GenericQuery.results._time | Date | Result time. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.GenericQuery.results.mac | Unknown | Host mac address. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username | String | Effective username. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line | String | Initiator CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid | Number | Initiator PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor | String | Initiator signer. | 
+| PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status | String | Initiator signature. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name | String | CGO name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path | String | CGO path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line | String | CGO CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid | Number | CGO PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256 | String | CGO SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor | String | CGO signer. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status | String | CGO signature. | 
+| PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type | String | CGO type. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name | String | OS parent name. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path | String | OS parent path. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line | String | OS parent CMD. | 
+| PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid | Number | OS parent PID. | 
+| PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256 | Unknown | OS parent SHA256. | 
+| PaloAltoNetworksXQL.GenericQuery.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.GenericQuery.results._product | String | The result product. | 
+| PaloAltoNetworksXQL.GenericQuery.results.agent_install_type | String | Initiator install type. | 
 
 
 #### Command Example
@@ -221,7 +223,6 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|---|---|---|---|---|
 >| XDR agent | 2021-08-29T07:40:07.000Z | PANW | test1 | 2021-08-29T07:45:08.000Z |
 >| XDR agent | 2021-08-29T07:40:06.000Z | PANW | test2 | 2021-08-29T07:45:08.000Z |
-
 
 
 ### xdr-xql-file-event-query
@@ -240,37 +241,37 @@ Query file events by file sha256.
 | file_sha256 | File sha256 to run the query on. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.FileEvent.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.FileEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.FileEvent.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.FileEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.FileEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.FileEvent.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.FileEvent.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.FileEvent.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.FileEvent.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.action_file_path | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.action_file_sha256 | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.actor_process_file_create_time | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results._vendor | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results._time | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.FileEvent.results._product | String |  | 
+| PaloAltoNetworksXQL.FileEvent.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.FileEvent.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.FileEvent.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.FileEvent.results.action_file_path | String | File path. | 
+| PaloAltoNetworksXQL.FileEvent.results.action_file_sha256 | String | File SHA256. | 
+| PaloAltoNetworksXQL.FileEvent.results.actor_process_file_create_time | String | Initiator file create time. | 
+| PaloAltoNetworksXQL.FileEvent.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.FileEvent.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.FileEvent.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.FileEvent.results._product | String | The result product. | 
 
 
 #### Command Example
 ```!xdr-xql-file-event-query file_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
-
 #### Human Readable Output
 >### General Results
 >|Execution Id|Number Of Results|Query|Query Cost|Remaining Quota|Status|Time Frame|
@@ -280,7 +281,6 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|Product|Time|Vendor|Action File Path|Action File Sha256|Actor Process File Create Time|Agent Hostname|Agent Id|Agent Ip Addresses|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-04T10:57:09.000Z | PANW | C:\Users\test1\test2 | Action File SHA | 2021-05-21T11:20:52.000Z | WIN10X64 | AgentID | IP | 2021-08-04T11:01:08.000Z |
-
 
 
 ### xdr-xql-process-event-query
@@ -299,41 +299,42 @@ Query process events by process sha256.
 | process_sha256 | Process sha256 the search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.ProcessEvent.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.ProcessEvent.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessEvent.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.ProcessEvent.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.ProcessEvent.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_name | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_path | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_causality_id | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_product | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_command_line | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_causality_id | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results._vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results._time | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.ProcessEvent.results._product | String |  | 
+| PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_sha256 | String | Target process SHA256. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_name | String | Target process name. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_path | String | Target process image path. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_instance_id | String | Target process instance ID. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_causality_id | String | Target process casuality ID. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_vendor | String | Process execution signer. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_product | String | Process signature product. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_command_line | String | Target process CMD. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.actor_process_causality_id | String | Initiator casuality ID. | 
+| PaloAltoNetworksXQL.ProcessEvent.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.ProcessEvent.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.ProcessEvent.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.ProcessEvent.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -369,40 +370,41 @@ Query DLL module events by DLL sha256.
 | loaded_module_sha256 | DLL Module sha256 the search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.DllModule.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.DllModule.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DllModule.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DllModule.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.DllModule.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.DllModule.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.DllModule.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_effective_username | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.action_module_sha256 | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.action_module_path | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.action_module_file_info | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.action_module_file_create_time | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.actor_process_causality_id | String |  | 
-| PaloAltoNetworksXQL.DllModule.results._vendor | String |  | 
-| PaloAltoNetworksXQL.DllModule.results._time | String |  | 
-| PaloAltoNetworksXQL.DllModule.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.DllModule.results._product | String |  | 
+| PaloAltoNetworksXQL.DllModule.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.DllModule.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.DllModule.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_effective_username | String | Effective username. | 
+| PaloAltoNetworksXQL.DllModule.results.action_module_sha256 | String | Action module SHA256. | 
+| PaloAltoNetworksXQL.DllModule.results.action_module_path | String | Action module path. | 
+| PaloAltoNetworksXQL.DllModule.results.action_module_file_info | String | Action module file information. | 
+| PaloAltoNetworksXQL.DllModule.results.action_module_file_create_time | String | Action module file create time. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_command_line | String | Initiator CMD. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.DllModule.results.actor_process_causality_id | String | Initiator casuality ID. | 
+| PaloAltoNetworksXQL.DllModule.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.DllModule.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.DllModule.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.DllModule.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -421,6 +423,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-28T22:52:11.000Z | PANW | 2021-01-12T21:25:51.000Z | {"company":"Test Corporation","description":"" | 3456 | NT AUTHORITY\SYSTEM | id_test | "C:\Program Files (x86)\test3" | test3.exe | "C:\Program Files (x86)\test3" | ID_3 | ID_3 | WIN10X64 | 1234 | IP Addr | 2021-08-28T22:55:50.000Z |
 
 
+
 ### xdr-xql-network-connection-query
 ***
 Query network connections between a source IP, destination IP and port.
@@ -434,46 +437,47 @@ Query network connections between a source IP, destination IP and port.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
-| local_ip | Source ip of the network connection query. | Optional | 
-| remote_ip | Destination ip of the network connection query. | Required | 
+| local_ip | Source IP of the network connection query. | Optional | 
+| remote_ip | Destination IP of the network connection query. | Required | 
 | port | Destination port of the network connection query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.NetworkConnection.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.NetworkConnection.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.NetworkConnection.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.NetworkConnection.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.NetworkConnection.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.NetworkConnection.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.dst_action_external_hostname | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_country | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_causality_id | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results._vendor | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results._time | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.NetworkConnection.results._product | String |  | 
+| PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username | String | Effective username. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip | String | Local IP. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip | String | Remote IP. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port | String | Remote port. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.dst_action_external_hostname | String | External hostname. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_country | String | Action country. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_command_line | String | Initiator CMD. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.actor_process_causality_id | String | Initiator casuality ID. | 
+| PaloAltoNetworksXQL.NetworkConnection.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.NetworkConnection.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.NetworkConnection.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -508,36 +512,37 @@ Query windows registry by registry key name.
 | reg_key_name | Registry key name to search (for example: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Environments\Windows x64\Drivers\Version-3\Remote Desktop Easy Print). | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.Registry.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.Registry.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.Registry.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.Registry.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.Registry.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.Registry.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.Registry.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.Registry.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.Registry.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.Registry.results.agent_os_type | String |  | 
-| PaloAltoNetworksXQL.Registry.results.agent_os_sub_type | String |  | 
-| PaloAltoNetworksXQL.Registry.results.event_type | String |  | 
-| PaloAltoNetworksXQL.Registry.results.event_sub_type | String |  | 
-| PaloAltoNetworksXQL.Registry.results.action_registry_key_name | String |  | 
-| PaloAltoNetworksXQL.Registry.results.action_registry_value_name | String |  | 
-| PaloAltoNetworksXQL.Registry.results.action_registry_data | String |  | 
-| PaloAltoNetworksXQL.Registry.results._vendor | String |  | 
-| PaloAltoNetworksXQL.Registry.results._time | String |  | 
-| PaloAltoNetworksXQL.Registry.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.Registry.results._product | String |  | 
+| PaloAltoNetworksXQL.Registry.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.Registry.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.Registry.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.Registry.results.agent_os_type | String | Host OS. | 
+| PaloAltoNetworksXQL.Registry.results.agent_os_sub_type | String | Agent OS Sub Type. | 
+| PaloAltoNetworksXQL.Registry.results.event_type | String | Event type. | 
+| PaloAltoNetworksXQL.Registry.results.event_sub_type | String | Event sub type. | 
+| PaloAltoNetworksXQL.Registry.results.action_registry_key_name | String | Registry key name. | 
+| PaloAltoNetworksXQL.Registry.results.action_registry_value_name | String | Registry value name. | 
+| PaloAltoNetworksXQL.Registry.results.action_registry_data | String | Registry data. | 
+| PaloAltoNetworksXQL.Registry.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.Registry.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.Registry.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.Registry.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -572,36 +577,37 @@ Query event logs by event ID.
 | event_id | event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.EventLog.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.EventLog.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.EventLog.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.EventLog.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.EventLog.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.EventLog.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.EventLog.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.agent_os_type | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.agent_os_sub_type | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.action_evtlog_event_id | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.event_type | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.event_sub_type | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.action_evtlog_message | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.action_evtlog_provider_name | String |  | 
-| PaloAltoNetworksXQL.EventLog.results._vendor | String |  | 
-| PaloAltoNetworksXQL.EventLog.results._time | String |  | 
-| PaloAltoNetworksXQL.EventLog.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.EventLog.results._product | String |  | 
+| PaloAltoNetworksXQL.EventLog.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.EventLog.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.EventLog.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.EventLog.results.agent_os_type | String | Host OS. | 
+| PaloAltoNetworksXQL.EventLog.results.agent_os_sub_type | String | Agent OS Sub Type. | 
+| PaloAltoNetworksXQL.EventLog.results.action_evtlog_event_id | String | Event log ID. | 
+| PaloAltoNetworksXQL.EventLog.results.event_type | String | Event type. | 
+| PaloAltoNetworksXQL.EventLog.results.event_sub_type | String | Event sub type. | 
+| PaloAltoNetworksXQL.EventLog.results.action_evtlog_message | String | Event log message. | 
+| PaloAltoNetworksXQL.EventLog.results.action_evtlog_provider_name | String | event log provider name. | 
+| PaloAltoNetworksXQL.EventLog.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.EventLog.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.EventLog.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.EventLog.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -617,7 +623,6 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-28T12:31:24.000Z | PANW | 4444 | Message  | Microsoft-Windows-Security-Auditing | DESKTOP-11 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | EVENT_LOG_AGENT_EVENT_LOG | EVENT_LOG | 2021-08-28T12:36:21.000Z |
 >| XDR agent | 2021-08-28T12:31:24.000Z | PANW | 5555 | Message  | Microsoft-Windows-Security-Auditing | DESKTOP-22 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | EVENT_LOG_AGENT_EVENT_LOG | EVENT_LOG | 2021-08-28T12:36:21.000Z |
-
 
 
 ### xdr-xql-dns-query
@@ -637,45 +642,46 @@ Query by DNS query or domain name.
 | dns_query | Query by dns query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.DNS.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.DNS.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DNS.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DNS.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.DNS.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.DNS.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.DNS.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.DNS.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.DNS.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.DNS.results.agent_os_type | String |  | 
-| PaloAltoNetworksXQL.DNS.results.agent_os_sub_type | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_local_ip | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_remote_ip | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_remote_port | String |  | 
-| PaloAltoNetworksXQL.DNS.results.dst_action_external_hostname | String |  | 
-| PaloAltoNetworksXQL.DNS.results.dns_query_name | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_app_id_transitions | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_total_download | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_total_upload | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_country | String |  | 
-| PaloAltoNetworksXQL.DNS.results.action_as_data | String |  | 
-| PaloAltoNetworksXQL.DNS.results.os_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.DNS.results.os_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.DNS.results.os_actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.DNS.results.os_actor_process_causality_id | String |  | 
-| PaloAltoNetworksXQL.DNS.results._vendor | String |  | 
-| PaloAltoNetworksXQL.DNS.results._time | String |  | 
-| PaloAltoNetworksXQL.DNS.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.DNS.results._product | String |  | 
+| PaloAltoNetworksXQL.DNS.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.DNS.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.DNS.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.DNS.results.agent_os_type | String | Host OS. | 
+| PaloAltoNetworksXQL.DNS.results.agent_os_sub_type | String | Agent OS Sub Type. | 
+| PaloAltoNetworksXQL.DNS.results.action_local_ip | String | Local IP. | 
+| PaloAltoNetworksXQL.DNS.results.action_remote_ip | String | Remote IP. | 
+| PaloAltoNetworksXQL.DNS.results.action_remote_port | String | Remote port. | 
+| PaloAltoNetworksXQL.DNS.results.dst_action_external_hostname | String | External hostname. | 
+| PaloAltoNetworksXQL.DNS.results.dns_query_name | String | DNS Query Name. | 
+| PaloAltoNetworksXQL.DNS.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent | 
+| PaloAltoNetworksXQL.DNS.results.action_total_download | String | Total downloads. | 
+| PaloAltoNetworksXQL.DNS.results.action_total_upload | String | Total uploads. | 
+| PaloAltoNetworksXQL.DNS.results.action_country | String | Action country. | 
+| PaloAltoNetworksXQL.DNS.results.action_as_data | String | The action as data. | 
+| PaloAltoNetworksXQL.DNS.results.os_actor_process_image_path | String | OS parent path. | 
+| PaloAltoNetworksXQL.DNS.results.os_actor_process_command_line | String | OS Parent CMD. | 
+| PaloAltoNetworksXQL.DNS.results.os_actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.DNS.results.os_actor_process_causality_id | String | Initiator casuality ID. | 
+| PaloAltoNetworksXQL.DNS.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.DNS.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.DNS.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.DNS.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -711,47 +717,48 @@ Search for the process who wrote the given file, by its sha256 or file path.
 | file_path | File path to search on XDR dataset. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.FileDropper.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.FileDropper.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.FileDropper.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.FileDropper.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.FileDropper.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.FileDropper.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.FileDropper.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.action_file_sha256 | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.action_file_path | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_product | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.actor_primary_normalized_user | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_command_line | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_product | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results._vendor | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results._time | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.FileDropper.results._product | String |  | 
+| PaloAltoNetworksXQL.FileDropper.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.FileDropper.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.FileDropper.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.FileDropper.results.action_file_sha256 | String | File SHA256. | 
+| PaloAltoNetworksXQL.FileDropper.results.action_file_path | String | File path. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_command_line | String | Initiator CMD. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_vendor | String | Initiator signer. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_product | String | Initiator product. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.FileDropper.results.actor_primary_normalized_user | String | Normalized user. | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_path | String | OS parent path | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_command_line | String | OS parent CMD. | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_vendor | String | OS Parent Signer. | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_product | String | OS Parent Signer product. | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256 | String | OS parent SHA256. | 
+| PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username | String | OS parent user name. | 
+| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host | String | Remote host. | 
+| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip | String | remote IP. | 
+| PaloAltoNetworksXQL.FileDropper.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.FileDropper.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.FileDropper.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.FileDropper.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -785,47 +792,48 @@ Search for network connection created by a given process instance ID.
 | process_instance_id | Process insatce ID to search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_local_ip | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_ip | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dst_action_external_hostname | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_upload | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_country | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_as_data | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_product | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._time | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._product | String |  | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_local_ip | String | Local IP. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_ip | String | Remote IP. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port | String | Remote port. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dst_action_external_hostname | String | External hostname. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name | String | DNS Query Name. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download | String | Total downloads. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_upload | String | Total uploads. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_country | String | Action country. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_as_data | String | The action as data. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor | String | Initiator signer. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_product | String | Initiator product. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id | String | CID. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line | String | Image CMD. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._product | String | The result product. | 
 
 
 #### Command Example
@@ -840,7 +848,6 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >|Product|Time|Vendor|Action App Id Transitions|Action As Data|Action Country|Action Local Ip|Action Remote Ip|Action Remote Port|Action Total Download|Action Total Upload|Actor Causality Id|Actor Process Image Command Line|Actor Process Image Name|Actor Process Image Path|Actor Process Image Sha256|Actor Process Instance Id|Actor Process Signature Product|Actor Process Signature Vendor|Agent Hostname|Agent Id|Agent Ip Addresses|Dns Query Name|Dst Action External Hostname|Insert Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| XDR agent | 2021-08-11T06:08:47.000Z | PANW |  |  | UNITED_KINGDOM | LOCAL_IP | REMOTE_IP | 443 |  |  | ID |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  |  |  |  | 2021-08-11T06:09:34.000Z |
-
 
 
 ### xdr-xql-process-causality-network-activity-query
@@ -859,47 +866,48 @@ Search for network connection created by a given process causality ID.
 | process_causality_id | Process causality ID to search on XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours. | Optional | 
-| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>        If limit=null or empty (default) up to 200 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 200. | Optional | 
+| limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned. Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
+| query_name | The name of the query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name | String | The given query name. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The value is used to call the Get XQL Query Results API. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name | String | The given name of the query. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_cost | Unknown | Float representing the number of query units collected for this API. For example, \{"local_tenant_id": 0.01\}.
 For multi-tenant queries, the field displays a value per child tenant. For example, \{"tenant_id_1": 0.01, "tenant_id_2": 2.3\}. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota | Number | Float representing the number of query units available for you to use. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_ip_addresses | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_id | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_local_ip | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_ip | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dst_action_external_hostname | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_upload | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_country | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_as_data | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_sha256 | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_name | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_product | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._vendor | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._time | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.insert_timestamp | String |  | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product | String |  | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname | String | The agent host name. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_ip_addresses | String | The agent IP addresses. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_id | String | Endpoint ID. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_local_ip | String | Local IP. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_ip | String | Remote IP. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port | String | Remote port. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dst_action_external_hostname | String | External hostname. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name | String | DNS Query Name. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download | String | Total downloads. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_upload | String | Total uploads. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_country | String | Action country. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_as_data | String | The action as data. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_sha256 | String | Initiator SHA256. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_name | String | Initiated by. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path | String | Initiator path. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor | String | Initiator signer. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_product | String | Initiator product. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id | String | CID. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line | String | Image CMD. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id | String | Initiator instance ID. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._vendor | String | The result vendor. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._time | String | Result time. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.insert_timestamp | String | Result insert timestamp. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product | String | The result product. | 
 
 
 #### Command Example
