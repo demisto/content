@@ -4515,9 +4515,12 @@
             ]
         },
         {
-            "integrations": "Grafana",
             "playbookID": "Grafana-Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Grafana",
+                "Demisto REST API"
+            ]
         }
     ],
     "skipped_tests": {
