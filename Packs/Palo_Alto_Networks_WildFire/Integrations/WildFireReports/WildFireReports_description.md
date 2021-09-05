@@ -1,8 +1,6 @@
-## BaseIntegration Help
-
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+#### How to retrieve a WildFire API key
+This API key is used in the *API Key* field in the integration configuration.
+1. First, navigate to your [WildFire Account](https://wildfire.paloaltonetworks.com/wildfire/account).
+2. Next, log in to your *WildFire* account.
+3. Select the *Account* tab from the menu.
+4. Lastly, copy the API key.
