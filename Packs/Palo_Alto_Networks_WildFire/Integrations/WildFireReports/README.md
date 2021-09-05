@@ -1,5 +1,4 @@
 generates a WildFire PDF report.
-This integration was integrated and tested with version xx of WildFire-Reports
 
 ## Configure WildFire Reports on Cortex XSOAR
 
