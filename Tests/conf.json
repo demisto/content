@@ -4520,7 +4520,7 @@
         },
         {
             "integrations": "Azure Sentinel",
-            "playbookID": "TestAzureSentinelUpdatedPlaybook"
+            "playbookID": "TestAzureSentinelPlaybook"
         }
     ],
     "skipped_tests": {

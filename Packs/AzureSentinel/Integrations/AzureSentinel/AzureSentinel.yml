@@ -770,7 +770,7 @@ script:
       - 'true'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets a single entity from Azure Sentinel. Use the azure-sentinel-list-incident-relations
       command, and get an entity ID to apply this command on. In the current Azure
       Sentinel API version the retention period for GetEntityByID is 30 days.
@@ -816,7 +816,7 @@ script:
       name: filter
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets a list of an entity's relations from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-entity-relations
@@ -1020,6 +1020,6 @@ script:
   subtype: python3
   type: python
 tests:
-- TestAzureSentinelUpdatedPlaybook
-- Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
+- TestAzureSentinelPlaybook
+- No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0

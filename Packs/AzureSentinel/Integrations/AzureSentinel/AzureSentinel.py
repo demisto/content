@@ -1006,7 +1006,7 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            return_outputs(test_connection(client))
+            return_results(test_connection(client))
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
