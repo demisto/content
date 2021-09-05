@@ -791,13 +791,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: true
-      description: Whether return an error when trying to isolate a disconnected endpoint. When sets to false, a warnning will be returned.
+      defaultValue: 'True'
+      description: Whether return an error when trying to isolate a disconnected endpoint.
+        When sets to false, a warnning will be returned.
       isArray: false
       name: disconnected_endpoint_should_return_error
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -818,13 +819,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: true
-      description: Whether return an error when trying to unisolate a disconnected endpoint. When sets to false, a warnning will be returned.
+      defaultValue: 'True'
+      description: Whether return an error when trying to unisolate a disconnected
+        endpoint. When sets to false, a warnning will be returned.
       isArray: false
       name: disconnected_endpoint_should_return_error
       predefined:
-        - true
-        - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -2836,7 +2838,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24019
   feed: false
   isfetch: true
   longRunning: false
