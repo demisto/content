@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 ALL_OPTION = 'All'
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
-COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}'
+COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}\n' \
+                    'Error details: {error}'
 ACTION_ON_CAMPAIGN_FIELD_NAME = 'actionsoncampaignincidents'
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = 'selectcampaignincidents'
 
@@ -47,7 +48,7 @@ def perform_link_unlink(ids, action):
                                  {"incidentId": demisto.incidents()[0]["id"],
                                   "linkedIncidentIDs": ids, "action": action})
     if isError(res):
-        return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids))
+        return_error(COMMAND_ERROR_MSG.format(action=action, ids=ids, error=get_error(res)))
 
     return COMMAND_SUCCESS.format(action=f'{action}ed', ids=ids)
 
@@ -57,7 +58,7 @@ def perform_close(ids, action):
     for incident_id in ids:
         res = demisto.executeCommand("closeInvestigation", {'id': incident_id, 'closeNotes': close_notes})
         if isError(res):
-            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids)))
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids), error=get_error(res)))
 
     return COMMAND_SUCCESS.format(action='closed', ids=','.join(ids))
 
@@ -66,7 +67,7 @@ def perform_reopen(ids, action):
     for incident_id in ids:
         res = demisto.executeCommand("reopenInvestigation", {'id': incident_id})
         if isError(res):
-            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids)))
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids), error=get_error(res)))
 
     return COMMAND_SUCCESS.format(action='reopened', ids=','.join(ids))
 
@@ -138,6 +139,29 @@ def perform_add_to_campaign(ids, action):
                                                              'value': incident_context})
             if is_error(res):
                 return_error('Failed to change current context. Error details:\n{}'.format(get_error(res)))
+     
+    return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
+
+
+def set_incident_owners(incident_ids, action, user_name):
+
+    incident_ids.append(demisto.incident()["id"])
+
+    for incident_id in incident_ids:
+        res = demisto.executeCommand("setIncident", {"id": incident_id, "owner": user_name})
+
+        if isError(res):
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(incident_ids), error=get_error(res)))
+
+
+def perform_take_ownership(ids, action):
+
+    current_user_name = demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
+
+    if not current_user_name:
+        return_error("Could not find the current user.")
+
+    set_incident_owners(ids, action, current_user_name)
 
     return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
 
@@ -150,6 +174,7 @@ ACTIONS_MAPPER = {
     'link & close': perform_link_and_close,
     'unlink & reopen': perform_unlink_and_reopen,
     'add to campaign': perform_add_to_campaign,
+    'take ownership': perform_take_ownership
 }
 
 
