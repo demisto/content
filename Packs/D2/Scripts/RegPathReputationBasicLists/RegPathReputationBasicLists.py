@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 WHITELIST = [r'HKEY_LOCAL_MACHINE\Software\wow6432node\Microsoft\Windows\CurrentVersion\Run\vmware-tray.exe']
 BLACKLIST = [r'HKEY_CURRENT_USER\Software\Locky',
-             r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run\Locky']
+             r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run\Locky']  # disable-secrets-detection
 SUSPICIOUS = [r"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\UrlSearchHooks",
               r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run",
               r"HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Htmlfile\Shell\Open\Command",
