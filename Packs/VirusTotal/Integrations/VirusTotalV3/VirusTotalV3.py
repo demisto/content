@@ -642,7 +642,7 @@ class ScoreCalculator:
             self.logs.append(
                 f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}'
             )
-            if average >= self.domain_popularity_ranking:
+            if average <= self.domain_popularity_ranking:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
             else:
