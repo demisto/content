@@ -562,16 +562,15 @@ def test_get_logs_sta_command(mocker, args, expected_output, expected_readable):
 
 # Tests sta-validate-tenant command function.
 @pytest.mark.parametrize(
-    "args, expected_output",
+    "args, expected_output, expected_readable",
     [
-        ({}, True)
+        ({}, {}, 'The requested tenant is accessible.')
     ])
-def test_validate_tenant_sta_command(mocker, args, expected_output):
+def test_validate_tenant_sta_command(mocker, args, expected_output, expected_readable):
 
     from SafeNetTrustedAccess import validate_tenant_sta_command
 
     mocker.patch.object(client, 'validate_tenant_sta', return_value=validate_tenant)
     response = validate_tenant_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.VALIDATE.TENANT'
-    assert response.outputs is True
+    assert 'not' not in response.readable_output
