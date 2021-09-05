@@ -1,10 +1,10 @@
 {
-    "id": "incident_actiononcampaignlowersimilarityincidents",
+    "id": "incident_PhishingCampaignactiononcampaignlowersimilarityincidents",
     "version": -1,
     "modified": "2021-09-05T09:31:07.58270829Z",
-    "name": "Action On Campaign Lower Similarity Incidents",
+    "name": "Phishing Campaign Action On Campaign Lower Similarity Incidents",
     "ownerOnly": false,
-    "cliName": "actiononcampaignlowersimilarityincidents",
+    "cliName": "phishingcampaignactiononcampaignlowersimilarityincidents",
     "type": "singleSelect",
     "closeForm": false,
     "editForm": true,

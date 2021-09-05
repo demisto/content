@@ -1,10 +1,10 @@
 {
-    "id": "incident_selectcampaignlowersimilarityincidents",
+    "id": "incident_PhishingCampaignSelectCampaignLowerSimilarityIncidents",
     "version": -1,
     "modified": "2021-09-02T17:52:21.377521772Z",
-    "name": "Select Campaign Lower Similarity Incidents",
+    "name": "Phishing Campaign Select Campaign Lower Similarity Incidents",
     "ownerOnly": false,
-    "cliName": "selectcampaignlowersimilarityincidents",
+    "cliName": "phishingcampaignselectcampaignlowersimilarityincidents",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
