@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any, Tuple
+from typing import Dict, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -44,7 +44,7 @@ https://www.demisto.com
             resp_type='response'
         )
 
-    def get_file_report(self, file_hash: str, file_format: str, resp_type: str = 'json') -> Dict[str, Any]:
+    def get_file_report(self, file_hash: str, file_format: str = 'xml', resp_type: str = 'json') -> Dict[str, Any]:
         return self._http_request(
             'POST',
             url_suffix='/get/report',
@@ -338,7 +338,7 @@ def wildfire_get_report_command(client, args, reliability):
 def main():
     command = demisto.command()
     params = demisto.params()
-    base_url = params.get('server')[-1]
+    base_url = params.get('server')
     if base_url and base_url[-1] == '/':
         base_url = base_url[:-1]
     if base_url and not base_url.endswith('/publicapi'):
@@ -346,7 +346,6 @@ def main():
     token = params.get('token')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    file_type_suppress_error = params.get('suppress_file_type_error')
     reliability = params.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
     args = demisto.args()
 
