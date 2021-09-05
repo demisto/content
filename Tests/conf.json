@@ -4519,7 +4519,7 @@
             ]
         },
         {
-            "integrations": "MISP Feed",
+            "integrations": "MISPFeed",
             "playbookID": "playbook-MISPFeed-test"
         }
     ],

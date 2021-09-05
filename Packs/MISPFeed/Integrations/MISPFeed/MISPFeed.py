@@ -441,7 +441,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     Returns:
         CommandResults object containing the indicators retrieved
     """
-    limit = int(args.get('limit', '10')) # TODO: fix
+    limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
     query = args.get('query', None)
