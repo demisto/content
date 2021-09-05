@@ -834,7 +834,7 @@ tasks:
       saveAsFile:
         simple: "yes"
       url:
-        simple: https://github.com/demisto/content/raw/01d2519a7afaeccae54c054efae85b58c95bd768/TestData/test-subject-raised-error-on-log.eml
+        simple: https://github.com/demisto/content/raw/eb26debb2b1682de403cef3804ed76123619988e/TestData/test-subject-raised-error-on-log.eml
     separatecontext: false
     view: |-
       {
