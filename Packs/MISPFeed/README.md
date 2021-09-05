@@ -1,6 +1,6 @@
 ## What does this content pack do? 
 
-- MISP Feed Fetches attributes from MISP and creates Demisto's indicators from them.
+- MISP Feed Fetches attributes from MISP and creates indicators from them.
 
 ## Authentication
 
