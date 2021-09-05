@@ -1,0 +1,2 @@
+!tanium-tr-get-process-children connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 ptid=72057594038504460
+!tanium-tr-get-parent-process connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 ptid=72057594038504451

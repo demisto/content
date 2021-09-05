@@ -1,0 +1,17 @@
+!tanium-tr-list-alerts limit=2
+!tanium-tr-get-alert-by-id id=1
+!tanium-tr-alert-update-state alert-ids=1 state=ignored
+!tanium-tr-create-snapshot connection-id=remote:EC2AMAZ-KGMRO60:9065264:2
+!tanium-tr-delete-snapshot snapshot-ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f
+!tanium-tr-list-snapshots limit=2
+!tanium-tr-delete-local-snapshot
+!tanium-tr-list-connections
+!tanium-tr-delete-connection connection-id=remote:hostname:123:2
+!tanium-tr-close-connection connection-id=remote:hostname:123:2
+!tanium-tr-list-labels limit=2
+!tanium-tr-get-label-by-id label-id=1
+!tanium-tr-list-events-by-connection cid=remote:EC2AMAZ-KGMRO60:9065264:2 event-type=File limit=3
+!tanium-tr-event-evidence-list limit=3
+!tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
+!tanium-tr-event-evidence-get-properties
+!tanium-tr-list-file-downloads limit=2
