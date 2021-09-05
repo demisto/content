@@ -795,11 +795,11 @@ def main() -> None:
     """
     args = demisto.args()
     params = demisto.params()
-    apikey = params.get('apikey', {})
-    apikey_id = params.get('apikey_id', {})
-    if not apikey or not apikey.get('password'):
+    apikey = params.get('apikey', {}).get('password', '')
+    apikey_id = params.get('apikey_id', {}).get('password', '')
+    if not apikey:
         raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-    if not apikey_id or not apikey_id.get('password'):
+    if not apikey_id:
         raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
     base_url = urljoin(params['url'], '/public_api/v1')
     verify_cert = not params.get('insecure', False)
@@ -812,7 +812,7 @@ def main() -> None:
         # get the current timestamp as milliseconds.
         timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
         # generate the auth key:
-        auth_key = f'{apikey.get("password", "")}{nonce}{timestamp}'
+        auth_key = f'{apikey}{nonce}{timestamp}'
         # convert to bytes object and calculate sha256
         api_key_hash = hashlib.sha256(auth_key.encode("utf-8")).hexdigest()
 
@@ -820,7 +820,7 @@ def main() -> None:
         headers = {
             "x-xdr-timestamp": timestamp,
             "x-xdr-nonce": nonce,
-            "x-xdr-auth-id": apikey_id.get('password', ''),
+            "x-xdr-auth-id": apikey_id,
             "Authorization": api_key_hash,
         }
 
