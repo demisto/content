@@ -3257,10 +3257,10 @@ def decode_dict_values(dict_to_decode: dict):
 
 
 def filter_general_fields(alert: dict):
-    alert.pop('external_id')
-    alert.pop('_detection_method')
-    alert.pop('alert_source')
-    alert.pop('severity')
+    alert.pop('external_id', None)
+    alert.pop('_detection_method', None)
+    alert.pop('alert_source', None)
+    alert.pop('severity', None)
     event = alert.get('raw_abioc', {}).get('event', {})
     if event and isinstance(event, dict):
         for key in list(event):
@@ -3298,11 +3298,9 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
             decode_dict_values(alert)
         except Exception:
             continue
-        alert.update(alert.pop('original_alert_json')) # remove original_alert_json field and add its content to alert.
+        alert.update(alert.pop('original_alert_json', None))  #remove original_alert_json field and add its content to alert.
         filter_general_fields(alert)
         filter_vendor_fields(alert)
-        x = 5
-
 
     return CommandResults(
         readable_output=tableToMarkdown('Original Alerts', alerts),
@@ -3310,6 +3308,7 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
         outputs_key_field='internal_id',
         outputs=alerts,
         raw_response=raw_response,
+        headerTransform=string_to_table_header
     )
 
 
