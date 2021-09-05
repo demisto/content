@@ -812,7 +812,7 @@ def main() -> None:
         # get the current timestamp as milliseconds.
         timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
         # generate the auth key:
-        auth_key = f'{apikey.get("password")}{nonce}{timestamp}'
+        auth_key = f'{apikey.get("password", "")}{nonce}{timestamp}'
         # convert to bytes object and calculate sha256
         api_key_hash = hashlib.sha256(auth_key.encode("utf-8")).hexdigest()
 
@@ -820,7 +820,7 @@ def main() -> None:
         headers = {
             "x-xdr-timestamp": timestamp,
             "x-xdr-nonce": nonce,
-            "x-xdr-auth-id": apikey_id.get('password'),
+            "x-xdr-auth-id": apikey_id.get('password', ''),
             "Authorization": api_key_hash,
         }
 
