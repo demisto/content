@@ -1113,6 +1113,7 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
             # safe to int parse without catch because regex checks for number
             user_offense_id = int(id_query.group(0).split(operator)[1].strip())
             user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            print_debug_msg(f'Found ID in user query: {user_lowest_offense_id}, last highest ID: {highest_offense_id}')
             return max(highest_offense_id, user_lowest_offense_id)
     return highest_offense_id
 
@@ -1415,6 +1416,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     user_query = f' AND {user_query}' if user_query else ''
 
     filter_fetch_query = f'id>{offense_highest_id}{user_query}'
+    print_debug_msg(f'Filter query to QRadar: {filter_fetch_query}')
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
@@ -1509,8 +1511,10 @@ def long_running_execution_command(client: Client, params: Dict):
                 continue
 
             incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                     'last_mirror_update': ctx.get('last_mirror_update')})
+            if incident_batch_for_sample:
+                print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
+                set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                         'last_mirror_update': ctx.get('last_mirror_update')})
 
             demisto.createIncidents(incidents)
 
@@ -2815,6 +2819,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
 
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
+    print_debug_msg(f'Saving New Highest ID: {ctx.get(LAST_FETCH_KEY, 0)}')
     set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
                              LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
 
