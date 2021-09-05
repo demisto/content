@@ -38,8 +38,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": -500
+          "x": 1700,
+          "y": -490
         }
       }
   "7":
@@ -66,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1100
+          "x": 760,
+          "y": 320
         }
       }
   "8":
@@ -97,8 +97,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
-                    Compute Engine'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND
+                    cloud.service = ''Google Compute Engine'' AND api.name = ''gcloud-compute-instances-list''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -112,20 +113,20 @@ tasks:
     task:
       brand: ""
       description: Search GCE instances in Prisma Cloud
-      id: c6789137-6f7f-4ba1-868f-560dae840a57
+      id: fc1bee60-2efe-45c8-8142-fac341a44269
       iscommand: true
       name: Search in GCE
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: c6789137-6f7f-4ba1-868f-560dae840a57
+    taskid: fc1bee60-2efe-45c8-8142-fac341a44269
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 240
+          "x": 1230,
+          "y": 150
         }
       }
   "11":
@@ -164,8 +165,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1350
+          "x": 760,
+          "y": 460
         }
       }
   "12":
@@ -199,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1580
+          "x": 570,
+          "y": 630
         }
       }
   "13":
@@ -224,8 +225,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1810
+          "x": 1700,
+          "y": 800
         }
       }
   "14":
@@ -254,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 60
+          "x": 770,
+          "y": 10
         }
       }
   "15":
@@ -310,8 +311,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": -150
+          "x": 1290,
+          "y": -160
         }
       }
   "16":
@@ -349,7 +350,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
+          "x": 1700,
           "y": -330
         }
       }
@@ -380,8 +381,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
-                    Cloud Load Balancing'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND
+                    cloud.service = ''Google Cloud Load Balancing'' AND api.name =
+                    ''gcloud-compute-global-forwarding-rule'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -397,20 +399,20 @@ tasks:
     task:
       brand: ""
       description: Search GCE instances in Prisma Cloud
-      id: 564a9147-51f1-45ed-8b0b-3bc3d55a1319
+      id: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
       iscommand: true
       name: Search in Google Cloud Load Balancing
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 564a9147-51f1-45ed-8b0b-3bc3d55a1319
+    taskid: 1ef4f6a9-1e5b-410d-8d44-0fa35f15118f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 240
+          "x": 770,
+          "y": 150
         }
       }
   "18":
@@ -440,8 +442,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''gcp'' AND cloud.service = ''Google
-                    Kubernetes Engine'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND
+                    cloud.service = ''Google Kubernetes Engine'' AND api.name = ''gcloud-container-describe-clusters''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -457,32 +460,36 @@ tasks:
     task:
       brand: ""
       description: Search GCE instances in Prisma Cloud
-      id: 1b2983de-58e1-48cb-833c-438102a79237
+      id: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
       iscommand: true
       name: Search in GKE
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 1b2983de-58e1-48cb-833c-438102a79237
+    taskid: 2c5ee418-ee55-4f6c-84b5-a21227fa2110
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -380,
-          "y": 240
+          "x": 340,
+          "y": 150
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "11_13_#default#": 0.12,
+      "15_13_#default#": 0.23,
+      "16_13_#default#": 0.34
+    },
     "paper": {
       "dimensions": {
-        "height": 2375,
-        "width": 2580,
-        "x": -380,
-        "y": -500
+        "height": 1355,
+        "width": 1740,
+        "x": 340,
+        "y": -490
       }
     }
   }
