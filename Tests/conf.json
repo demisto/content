@@ -624,10 +624,6 @@
             "playbookID": "Akamai_WAF-Test"
         },
         {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
-        },
-        {
             "integrations": "abuse.ch SSL Blacklist Feed",
             "playbookID": "SSL Blacklist test",
             "fromversion": "5.5.0"
@@ -2962,7 +2958,8 @@
         {
             "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
