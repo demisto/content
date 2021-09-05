@@ -38,8 +38,8 @@ configuration:
   name: suppress_file_type_error
   required: false
   type: 8
-description: generates a WildFire PDF report.
-display: WildFire Reports
+description: Generates a Palo Alto Networks WildFire PDF Reports.
+display: Palo Alto Networks WildFire Reports.
 name: WildFire-Reports
 script:
   commands:

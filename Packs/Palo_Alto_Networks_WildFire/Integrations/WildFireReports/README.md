@@ -1,9 +1,10 @@
-generates a WildFire PDF report.
+Generates a Palo Alto Networks WildFire PDF report.
+This integration was created and tested with version 10.1 of PAN-OS
 
-## Configure WildFire Reports on Cortex XSOAR
+## Configure Palo Alto Networks WildFire Reports on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for WildFire Reports.
+2. Search for Palo Alto Networks WildFire Reports.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -31,8 +32,8 @@ Retrieves results for a file hash using WildFire.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| md5 | MD5 hash to check. | Optional | 
 | sha256 | SHA256 hash to check. | Optional | 
+| md5 | MD5 hash to check. | Optional | 
 | hash | Deprecated - Use the sha256 argument instead. | Optional | 
 | verbose | Receive extended information from WildFire. Possible values are: true, false. Default is false. | Optional | 
 
@@ -78,7 +79,7 @@ Retrieves results for a file hash using WildFire.
 
 
 #### Command Example
-```!wildfire-report hash=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890```
+```!wildfire-report sha256=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890```
 
 #### Context Example
 ```json
