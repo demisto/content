@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT", "Network"],
-    "useCases": ["IT Services", "Asset Management", "Network Security"],
-    "keywords": []
+    "useCases": [],
+    "keywords": ["Asset Management", "Network Security"]
 }
