@@ -1,7 +1,6 @@
 commonfields:
-  id: 8f8fa909-7859-43be-8c89-3a48b206c1f7
-  version: 5
-vcShouldKeepItemLegacyProdMachine: false
+  id: GetCampaignLowerSimilarityIncidentsIdsAsOptions
+  version: -1
 name: GetCampaignLowerSimilarityIncidentsIdsAsOptions
 script: ''
 type: python
@@ -12,8 +11,9 @@ comment: Get the campaign lower similarity incident IDs as option values for Mul
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.9.6.24067
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
