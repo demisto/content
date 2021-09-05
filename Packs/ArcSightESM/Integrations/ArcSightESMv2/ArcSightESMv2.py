@@ -127,6 +127,10 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                     d[key] = parse_timestamp_to_datestring(value)
                 elif key in ['eventId', 'baseEventIds']:
                     d[key] = str(value)
+                elif isinstance(value, int) and value > 10000000000000000:
+                    # the platform rounds number larger than 10000000000000000
+                    # so we cast them to string to keep as is
+                    d[key] = str(value)
     return d
 
 
@@ -478,6 +482,8 @@ def get_case_command():
         case['events'] = raw_case.get('events')
 
     contents = decode_arcsight_output(raw_case)
+    if contents.get('events'):
+        contents['events'] = decode_arcsight_output(contents['events'])
     human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)

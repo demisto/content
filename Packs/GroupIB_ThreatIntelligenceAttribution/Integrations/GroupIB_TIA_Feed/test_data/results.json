@@ -12,7 +12,7 @@
                 "rawJSON": {
                     "value": "3765123456411567",
                     "type": "GIB Compromised Mule",
-                    "creationdate": "2020-11-11T16:09:00+00:00",
+                    "creationdate": "2020-11-11T16:09:00Z",
                     "source": "Botnet",
                     "gibcollection": "compromised/mule",
                     "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
@@ -22,7 +22,7 @@
                     "gibthreatactorname": "FRK48"
                 },
                 "fields": {
-                    "creationdate": "2020-11-11T16:09:00+00:00",
+                    "creationdate": "2020-11-11T16:09:00Z",
                     "source": "Botnet",
                     "gibcollection": "compromised/mule",
                     "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
@@ -183,7 +183,7 @@
                 "rawJSON": {
                     "value": "359223056231009",
                     "type": "GIB Compromised IMEI",
-                    "creationdate": "2018-01-11T01:18:43+00:00",
+                    "creationdate": "2018-01-11T01:18:43Z",
                     "devicemodel": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
                     "asn": "AS22222 Some Company",
                     "geocountry": "Netherlands",
@@ -196,7 +196,7 @@
                     "gibthreatactorname": "FRK48"
                 },
                 "fields": {
-                    "creationdate": "2018-01-11T01:18:43+00:00",
+                    "creationdate": "2018-01-11T01:18:43Z",
                     "devicemodel": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
                     "asn": "AS22222 Some Company",
                     "geocountry": "Netherlands",
@@ -262,14 +262,18 @@
                     "geocountry": "United States",
                     "geolocation": "Washington",
                     "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
+                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
+                    "firstseenbysource": "2020-10-16T02:58:53Z", 
+                    "lastseenbysource": "2020-10-16T02:58:55Z"
                 },
                 "fields": {
                     "asn": "AS1298 Comcast Cable Communications",
                     "geocountry": "United States",
                     "geolocation": "Washington",
                     "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
+                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
+                    "firstseenbysource": "2020-10-16T02:58:53Z", 
+                    "lastseenbysource": "2020-10-16T02:58:55Z"
                 }
             }
         ]
@@ -369,6 +373,7 @@
             {
                 "fields": {
                     "creationdate": "2013-11-15T13:41:30Z",
+                    "firstseenbysource": "2021-01-14T11:21:34Z",
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "gibphishingtitle": "",
@@ -379,6 +384,7 @@
                 },
                 "rawJSON": {
                     "creationdate": "2013-11-15T13:41:30Z",
+                    "firstseenbysource": "2021-01-14T11:21:34Z",
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "gibphishingtitle": "",
@@ -549,13 +555,17 @@
             {
                 "fields": {
                     "gibcollection": "suspicious_ip/tor_node",
-                    "gibid": "11.11.11.11"
+                    "gibid": "11.11.11.11",
+                    "firstseenbysource": "2020-09-03T14:15:25Z", 
+                    "lastseenbysource": "2021-01-20T22:07:33Z"
                 },
                 "rawJSON": {
                     "gibcollection": "suspicious_ip/tor_node",
                     "gibid": "11.11.11.11",
                     "type": "IP",
-                    "value": "11.11.11.11"
+                    "value": "11.11.11.11",
+                    "firstseenbysource": "2020-09-03T14:15:25Z", 
+                    "lastseenbysource": "2021-01-20T22:07:33Z"
                 },
                 "type": "IP",
                 "value": "11.11.11.11"
@@ -576,7 +586,9 @@
                     "gibid": "cc6a2856da2806b03839f81aa214f22dbcfd7369",
                     "gibproxyanonymous": "High anonymous / Elite proxy",
                     "gibproxyport": 80,
-                    "source": "free-proxy-list.net"
+                    "source": "free-proxy-list.net",
+                    "firstseenbysource": "2020-03-19T23:01:01Z", 
+                    "lastseenbysource": "2021-01-21T11:01:02Z"
                 },
                 "rawJSON": {
                     "geocountry": "Czech Republic",
@@ -586,7 +598,9 @@
                     "gibproxyport": 80,
                     "source": "free-proxy-list.net",
                     "type": "IP",
-                    "value": "11.11.11.11"
+                    "value": "11.11.11.11",
+                    "firstseenbysource": "2020-03-19T23:01:01Z", 
+                    "lastseenbysource": "2021-01-21T11:01:02Z"
                 },
                 "type": "IP",
                 "value": "11.11.11.11"
@@ -605,7 +619,9 @@
                     "asn": "AS60999 Libatech SAL",
                     "geocountry": "Lebanon",
                     "gibcollection": "suspicious_ip/socks_proxy",
-                    "gibid": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e"
+                    "gibid": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
+                    "firstseenbysource": "2021-01-19T07:41:11Z", 
+                    "lastseenbysource": "2021-01-21T08:35:46Z"
                 },
                 "rawJSON": {
                     "asn": "AS60999 Libatech SAL",
@@ -613,7 +629,9 @@
                     "gibcollection": "suspicious_ip/socks_proxy",
                     "gibid": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
                     "type": "IP",
-                    "value": "11.11.11.11"
+                    "value": "11.11.11.11",
+                    "firstseenbysource": "2021-01-19T07:41:11Z", 
+                    "lastseenbysource": "2021-01-21T08:35:46Z"
                 },
                 "type": "IP",
                 "value": "11.11.11.11"
@@ -631,14 +649,18 @@
                 "fields": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "rawJSON": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "URL",
                     "value": "https://some.ru",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "type": "URL",
                 "value": "https://some.ru"
@@ -647,14 +669,18 @@
                 "fields": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "rawJSON": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "Domain",
                     "value": "some.ru",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "type": "Domain",
                 "value": "some.ru"
@@ -665,7 +691,9 @@
                     "geocountry": "United States",
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "rawJSON": {
                     "asn": "AS3356 Level 3 Communications, Inc.",
@@ -674,7 +702,9 @@
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
                     "type": "IP",
                     "value": "11.11.11.11",
-                    "gibmalwarename": "JS Sniffer - Poter"
+                    "gibmalwarename": "JS Sniffer - Poter",
+                    "firstseenbysource": "2021-01-21T10:35:21Z", 
+                    "lastseenbysource": "2021-01-21T10:35:21Z"
                 },
                 "type": "IP",
                 "value": "11.11.11.11"
