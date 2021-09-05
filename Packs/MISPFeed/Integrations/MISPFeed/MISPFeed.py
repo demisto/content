@@ -144,10 +144,10 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     try:
         attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
         for attribute in attributes_list:
-            if get_attribute_indicator_type(attribute):
+            if indicator_type := get_attribute_indicator_type(attribute):
                 indicators_iterator.append({
                     'value': attribute,
-                    'type': get_attribute_indicator_type(attribute),
+                    'type': indicator_type,
                     'raw_type': attribute['type'],
                     'FeedURL': url,
                 })
@@ -441,20 +441,30 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     Returns:
         CommandResults object containing the indicators retrieved
     """
-    limit = int(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit', '10')) or 10
     tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
 
     indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
-    human_readable = f'Retrieved {len(indicators)} indicators.'
+
+    hr_indicators = []
+    for indicator in indicators:
+        hr_indicators.append({
+            'Value': indicator.get('value'),
+            'Type': indicator.get('type'),
+            'rawJSON': indicator.get('rawJSON'),
+            'fields': indicator.get('fields'),
+        })
+
+    human_readable = tableToMarkdown("Indicators from MISP:", hr_indicators,
+                                     headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISPFeed.Indicators',
         outputs_key_field='value',
         raw_response=indicators,
-        outputs=indicators,
     )
 
 
