@@ -1,7 +1,6 @@
 id: MISP V2 Test
 version: -1
 name: MISP V2 Test
-deprecate: true
 description: Test playbook for MISP V2 integration
 starttaskid: "0"
 tasks:
