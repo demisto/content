@@ -1,12 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 ALL_OPTION = 'All'
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}\n' \
                     'Error details: {error}'
 ACTION_ON_CAMPAIGN_FIELD_NAME = 'actionsoncampaignincidents'
+ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = 'actiononcampaignadditionalincidents'
+
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = 'selectcampaignincidents'
+SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'selectcampaignadditionalincidents'
 
 COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
@@ -120,8 +124,15 @@ ACTIONS_MAPPER = {
 
 def main():
     try:
-        action = get_custom_field(ACTION_ON_CAMPAIGN_FIELD_NAME).lower()
+        action = get_custom_field(ACTION_ON_CAMPAIGN_FIELD_NAME)
         ids = get_custom_field(SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME)
+
+        if not action or not ids:
+            action = get_custom_field(ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME)
+            ids = get_custom_field(SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME)
+
+        action = action.lower() if action else action
+
         if ALL_OPTION in ids:
             ids = get_campaign_incident_ids()
 
