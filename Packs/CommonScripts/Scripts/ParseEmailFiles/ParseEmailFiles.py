@@ -3434,9 +3434,6 @@ def convert_to_unicode(s, is_msg_header=True):
                 except UnicodeDecodeError:
                     demisto.debug('Failed to decode encoded_string')
                     replace_decoded = decoded_s.decode(encoding, errors='replace').encode('utf-8')
-                    if re.search('(.*)\?([B|Q])\?(.+)\?=(.*)', replace_decoded) or \
-                            re.search('(.*)=\?(.+)\?([B|Q])\?(.*)', replace_decoded):
-                        raise DemistoException("Decoded with replace as error handler did not succeed")
                     demisto.debug('Decoded string with replace usage {}'.format(replace_decoded))
                     res += replace_decoded
                 ENCODINGS_TYPES.add(encoding)
