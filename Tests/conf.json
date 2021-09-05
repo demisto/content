@@ -4515,8 +4515,11 @@
             ]
         },
         {
-            "integrations": "MISPFeed",
-            "playbookID": "playbook-MISPFeed-test"
+            "playbookID": "playbook-MISPFeed-test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "MISP Feed"
+            ]
         }
     ],
     "skipped_tests": {

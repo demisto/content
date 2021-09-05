@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISPFeed
+  id: MISP Feed
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -95,7 +95,6 @@ configuration:
     ',' , for example <tag1,tag2,tag3>.
   name: attribute_tags
   required: false
-  defaultvalue: "test"
   type: 0
 - display: Attribute Types
   additionalinfo: Attribute types to get. You can enter a list of types, separated
@@ -121,14 +120,9 @@ configuration:
   - WHITE
   required: false
   type: 15
-- name: feedTags
-  display: Tags
-  required: false
-  type: 0
-  additionalinfo: Supports CSV values.
 description: 'Indicators feed from MISP'
 display: MISP Feed
-name: MISPFeed
+name: MISP Feed
 script:
   commands:
   - arguments:
