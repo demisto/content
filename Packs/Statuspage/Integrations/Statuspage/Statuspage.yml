@@ -1,0 +1,5010 @@
+commonfields:
+  id: Statuspage
+  version: -1
+name: Statuspage
+display: Statuspage
+category: Utilities
+description: Easily communicate real-time status to your users. Check out https://statuspage.io for more information.
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://www.example.com
+  type: 0
+  required: true
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: ''
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: ''
+  type: 8
+  required: false
+- name: api_key
+  display: API Key
+  defaultvalue: ''
+  type: 4
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.6.24067
+  isfetch: false
+  commands:
+  - name: statuspage-add-components-for-page-access-user
+    description: Add components for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddComponentsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddComponentsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-replace-components-for-page-access-user
+    description: Replace components for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceComponentsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-remove-components-for-page-access-user
+    description: Remove components for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveComponentsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-get-components-for-page-access-user
+    description: Get components for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetComponentsForPageAccessUser..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetComponentsForPageAccessUser..updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetComponentsForPageAccessUser..group
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetComponentsForPageAccessUser..position
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetComponentsForPageAccessUser..showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetComponentsForPageAccessUser..only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetComponentsForPageAccessUser..automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetComponentsForPageAccessUser..start_date
+      description: ''
+  - name: statuspage-remove-component-for-page-access-user
+    description: Remove component for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveComponentForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-add-metrics-for-page-access-user
+    description: Add metrics for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddMetricsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddMetricsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddMetricsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-replace-metrics-for-page-access-user
+    description: Replace metrics for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceMetricsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-delete-metrics-for-page-access-user
+    description: Delete metrics for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteMetricsForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-get-metrics-for-page-access-user
+    description: Get metrics for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetMetricsForPageAccessUser..display
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetMetricsForPageAccessUser..backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetMetricsForPageAccessUser..y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetMetricsForPageAccessUser..y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetMetricsForPageAccessUser..y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetMetricsForPageAccessUser..decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetMetricsForPageAccessUser..most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetMetricsForPageAccessUser..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetMetricsForPageAccessUser..updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetMetricsForPageAccessUser..last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetMetricsForPageAccessUser..backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetMetricsForPageAccessUser..reference_name
+      description: ''
+  - name: statuspage-delete-metric-for-page-access-user
+    description: Delete metric for page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteMetricForPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-update-page-access-user
+    description: Update page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdatePageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdatePageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdatePageAccessUser.updated_at
+      description: ''
+  - name: statuspage-delete-page-access-user
+    description: Delete page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-get-page-access-user
+    description: Get page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-add-a-page-access-user
+    description: Add a page access user
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: external_login
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: subscribe_to_components
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddAPageAccessUser.page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddAPageAccessUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddAPageAccessUser.updated_at
+      description: ''
+  - name: statuspage-get-a-list-of-page-access-users
+    description: Get a list of page access users
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..external_login
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..page_access_group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessUsers..page_access_group_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPageAccessUsers..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPageAccessUsers..updated_at
+      description: ''
+  - name: statuspage-add-components-to-page-access-group
+    description: Add components to page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddComponentsToPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-replace-components-for-a-page-access-group
+    description: Replace components for a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ReplaceComponentsForAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-delete-components-for-a-page-access-group
+    description: Delete components for a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteComponentsForAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-list-components-for-a-page-access-group
+    description: List components for a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..group
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..position
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListComponentsForAPageAccessGroup..start_date
+      description: ''
+  - name: statuspage-remove-a-component-from-a-page-access-group
+    description: Remove a component from a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveAComponentFromAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-get-a-page-access-group
+    description: Get a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-update-a-page-access-group
+    description: Update a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: external_identifier
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-remove-a-page-access-group
+    description: Remove a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_group_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemoveAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemoveAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-get-a-list-of-page-access-groups
+    description: Get a list of page access groups
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPageAccessGroups..component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPageAccessGroups..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPageAccessGroups..updated_at
+      description: ''
+  - name: statuspage-create-a-page-access-group
+    description: Create a page access group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: external_identifier
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.page_access_user_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.external_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.metric_ids
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAPageAccessGroup.component_ids
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAPageAccessGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAPageAccessGroup.updated_at
+      description: ''
+  - name: statuspage-unsubscribe-a-subscriber
+    description: Unsubscribe a subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+    - name: skip_unsubscription_notification
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UnsubscribeASubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeASubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeASubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeASubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeASubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeASubscriber.created_at
+      description: ''
+  - name: statuspage-update-a-subscriber
+    description: Update a subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateASubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateASubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateASubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateASubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateASubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateASubscriber.created_at
+      description: ''
+  - name: statuspage-get-a-subscriber
+    description: Get a subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetASubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetASubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetASubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetASubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetASubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetASubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetASubscriber.created_at
+      description: ''
+  - name: statuspage-resend-confirmation-to-a-subscriber
+    description: Resend confirmation to a subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-create-a-subscriber
+    description: Create a subscriber. Not applicable for Slack subscribers.
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: endpoint
+      description: ''
+      required: false
+      isArray: false
+    - name: phone_country
+      description: ''
+      required: false
+      isArray: false
+    - name: phone_number
+      description: ''
+      required: false
+      isArray: false
+    - name: skip_confirmation_notification
+      description: ''
+      required: false
+      isArray: false
+    - name: page_access_user
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateASubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateASubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateASubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateASubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateASubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateASubscriber.created_at
+      description: ''
+  - name: statuspage-get-a-list-of-subscribers
+    description: Get a list of subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: q
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+    - name: state
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: sort_field
+      description: ''
+      required: false
+      isArray: false
+    - name: sort_direction
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfSubscribers..skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfSubscribers..obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfSubscribers..quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfSubscribers..purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfSubscribers..page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfSubscribers..created_at
+      description: ''
+  - name: statuspage-resend-confirmations-to-a-list-of-subscribers
+    description: Resend confirmations to a list of subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscribers
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-unsubscribe-a-list-of-subscribers
+    description: Unsubscribe a list of subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+    - name: state
+      description: ''
+      required: false
+      isArray: false
+    - name: skip_unsubscription_notification
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-reactivate-a-list-of-subscribers
+    description: Reactivate a list of quarantined subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-get-a-histogram-of-subscribers-by-type-and-then-state
+    description: Get a histogram of subscribers by type and then state
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.email.active
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.email.unconfirmed
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.email.quarantined
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.email.total
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.sms.active
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.sms.unconfirmed
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.sms.quarantined
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.sms.total
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.webhook.active
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.webhook.unconfirmed
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.webhook.quarantined
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.webhook.total
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.integration_partner.active
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.integration_partner.unconfirmed
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.integration_partner.quarantined
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.integration_partner.total
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.slack.active
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.slack.unconfirmed
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.slack.quarantined
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAHistogramOfSubscribersByTypeAndThenState.slack.total
+      description: ''
+  - name: statuspage-get-a-count-of-subscribers-by-type
+    description: Get a count of subscribers by type
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+    - name: state
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Statuspage.GetACountOfSubscribersByType.email
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetACountOfSubscribersByType.sms
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetACountOfSubscribersByType.webhook
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetACountOfSubscribersByType.integration_partner
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetACountOfSubscribersByType.slack
+      description: ''
+  - name: statuspage-get-a-list-of-unsubscribed-subscribers
+    description: Get a list of unsubscribed subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUnsubscribedSubscribers..created_at
+      description: ''
+  - name: statuspage-create-a-template
+    description: Create a template
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: title
+      description: ''
+      required: false
+      isArray: false
+    - name: body
+      description: ''
+      required: false
+      isArray: false
+    - name: group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: update_status
+      description: ''
+      required: false
+      isArray: false
+    - name: should_tweet
+      description: ''
+      required: false
+      isArray: false
+    - name: should_send_notifications
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateATemplate.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateATemplate.components.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateATemplate.components.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateATemplate.components.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateATemplate.components.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateATemplate.components.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateATemplate.components.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.components.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateATemplate.components.start_date
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.title
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.body
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateATemplate.update_status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateATemplate.should_tweet
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateATemplate.should_send_notifications
+      description: ''
+  - name: statuspage-get-a-list-of-templates
+    description: Get a list of templates
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfTemplates..components.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfTemplates..components.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfTemplates..components.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfTemplates..components.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfTemplates..components.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfTemplates..components.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..components.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfTemplates..components.start_date
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..title
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..body
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..group_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfTemplates..update_status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfTemplates..should_tweet
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfTemplates..should_send_notifications
+      description: ''
+  - name: statuspage-update-a-previous-incident-update
+    description: Update a previous incident update
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_update_id
+      description: ''
+      required: false
+      isArray: false
+    - name: wants_twitter_update
+      description: ''
+      required: false
+      isArray: false
+    - name: body
+      description: ''
+      required: false
+      isArray: false
+    - name: display_at
+      description: ''
+      required: false
+      isArray: false
+    - name: deliver_notifications
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.incident_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.affected_components.code
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.affected_components.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.affected_components.old_status
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.affected_components.new_status
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.body
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.created_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.custom_tweet
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.deliver_notifications
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.display_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.status
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.tweet_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.twitter_updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPreviousIncidentUpdate.wants_twitter_update
+      description: ''
+  - name: statuspage-unsubscribe-an-incident-subscriber
+    description: Unsubscribe an incident subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UnsubscribeAnIncidentSubscriber.created_at
+      description: ''
+  - name: statuspage-get-an-incident-subscriber
+    description: Get an incident subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAnIncidentSubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAnIncidentSubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAnIncidentSubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAnIncidentSubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAnIncidentSubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAnIncidentSubscriber.created_at
+      description: ''
+  - name: statuspage-resend-confirmation-to-an-incident-subscriber
+    description: Resend confirmation to an incident subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: subscriber_id
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-create-an-incident-subscriber
+    description: Create an incident subscriber
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: phone_country
+      description: ''
+      required: false
+      isArray: false
+    - name: phone_number
+      description: ''
+      required: false
+      isArray: false
+    - name: skip_confirmation_notification
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAnIncidentSubscriber.skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAnIncidentSubscriber.obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAnIncidentSubscriber.quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAnIncidentSubscriber.purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAnIncidentSubscriber.page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAnIncidentSubscriber.created_at
+      description: ''
+  - name: statuspage-get-a-list-of-incident-subscribers
+    description: Get a list of incident subscribers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..id
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..skip_confirmation_notification
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..mode
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..endpoint
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..phone_number
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..phone_country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..display_phone_number
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..obfuscated_channel_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..workspace_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..quarantined_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..purge_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..page_access_user_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfIncidentSubscribers..created_at
+      description: ''
+  - name: statuspage-get-postmortem
+    description: Get Postmortem
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetPostmortem.preview_key
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPostmortem.body
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPostmortem.body_updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPostmortem.body_draft
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPostmortem.body_draft_updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPostmortem.published_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetPostmortem.notify_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetPostmortem.notify_twitter
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetPostmortem.custom_tweet
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPostmortem.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetPostmortem.updated_at
+      description: ''
+  - name: statuspage-create-postmortem
+    description: Create Postmortem
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: body_draft
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreatePostmortem.preview_key
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreatePostmortem.body
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreatePostmortem.body_updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreatePostmortem.body_draft
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreatePostmortem.body_draft_updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreatePostmortem.published_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreatePostmortem.notify_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreatePostmortem.notify_twitter
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreatePostmortem.custom_tweet
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreatePostmortem.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreatePostmortem.updated_at
+      description: ''
+  - name: statuspage-delete-postmortem
+    description: Delete Postmortem
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-publish-postmortem
+    description: Publish Postmortem
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: notify_twitter
+      description: ''
+      required: false
+      isArray: false
+    - name: notify_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: custom_tweet
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.PublishPostmortem.preview_key
+      description: ''
+    - type: String
+      contextPath: Statuspage.PublishPostmortem.body
+      description: ''
+    - type: Date
+      contextPath: Statuspage.PublishPostmortem.body_updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.PublishPostmortem.body_draft
+      description: ''
+    - type: Date
+      contextPath: Statuspage.PublishPostmortem.body_draft_updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.PublishPostmortem.published_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.PublishPostmortem.notify_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.PublishPostmortem.notify_twitter
+      description: ''
+    - type: String
+      contextPath: Statuspage.PublishPostmortem.custom_tweet
+      description: ''
+    - type: Date
+      contextPath: Statuspage.PublishPostmortem.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.PublishPostmortem.updated_at
+      description: ''
+  - name: statuspage-revert-postmortem
+    description: Revert Postmortem
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RevertPostmortem.preview_key
+      description: ''
+    - type: String
+      contextPath: Statuspage.RevertPostmortem.body
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RevertPostmortem.body_updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.RevertPostmortem.body_draft
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RevertPostmortem.body_draft_updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RevertPostmortem.published_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RevertPostmortem.notify_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RevertPostmortem.notify_twitter
+      description: ''
+    - type: String
+      contextPath: Statuspage.RevertPostmortem.custom_tweet
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RevertPostmortem.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RevertPostmortem.updated_at
+      description: ''
+  - name: statuspage-delete-an-incident
+    description: Delete an incident
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.DeleteAnIncident.
+      description: ''
+  - name: statuspage-update-an-incident
+    description: Update an incident
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: impact_override
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_for
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_until
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_remind_prior
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_in_progress
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_completed
+      description: ''
+      required: false
+      isArray: false
+    - name: deliver_notifications
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_deliver_notifications_at_end
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_deliver_notifications_at_start
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_to_maintenance_state
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_to_operational_state
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_at_beginning
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_on_completion
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_on_creation
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_one_hour_before
+      description: ''
+      required: false
+      isArray: false
+    - name: backfill_date
+      description: ''
+      required: false
+      isArray: false
+    - name: backfilled
+      description: ''
+      required: false
+      isArray: false
+    - name: body
+      description: ''
+      required: false
+      isArray: false
+    - name: fl9frwst8231
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_transition
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.UpdateAnIncident.
+      description: ''
+  - name: statuspage-get-an-incident
+    description: Get an incident
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAnIncident.
+      description: ''
+  - name: statuspage-create-an-incident
+    description: Create an incident
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: impact_override
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_for
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_until
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_remind_prior
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_in_progress
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_completed
+      description: ''
+      required: false
+      isArray: false
+    - name: deliver_notifications
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_deliver_notifications_at_end
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_deliver_notifications_at_start
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_to_maintenance_state
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_transition_to_operational_state
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_at_beginning
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_on_completion
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_on_creation
+      description: ''
+      required: false
+      isArray: false
+    - name: auto_tweet_one_hour_before
+      description: ''
+      required: false
+      isArray: false
+    - name: backfill_date
+      description: ''
+      required: false
+      isArray: false
+    - name: backfilled
+      description: ''
+      required: false
+      isArray: false
+    - name: body
+      description: ''
+      required: false
+      isArray: false
+    - name: d1p30m113pht
+      description: ''
+      required: false
+      isArray: false
+    - name: component_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: scheduled_auto_transition
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.CreateAnIncident.
+      description: ''
+  - name: statuspage-get-a-list-of-incidents
+    description: Get a list of incidents
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: q
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAListOfIncidents.
+      description: ''
+  - name: statuspage-get-a-list-of-active-maintenances
+    description: Get a list of active maintenances
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAListOfActiveMaintenances.
+      description: ''
+  - name: statuspage-get-a-list-of-upcoming-incidents
+    description: Get a list of upcoming incidents
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAListOfUpcomingIncidents.
+      description: ''
+  - name: statuspage-get-a-list-of-scheduled-incidents
+    description: Get a list of scheduled incidents
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAListOfScheduledIncidents.
+      description: ''
+  - name: statuspage-get-a-list-of-unresolved-incidents
+    description: Get a list of unresolved incidents
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Unknown
+      contextPath: Statuspage.GetAListOfUnresolvedIncidents.
+      description: ''
+  - name: statuspage-remove-page-access-users-from-component
+    description: Remove page access users from component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessUsersFromComponent.start_date
+      description: ''
+  - name: statuspage-add-page-access-users-to-a-component
+    description: Add page access users to a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessUsersToAComponent.start_date
+      description: ''
+  - name: statuspage-remove-page-access-groups-from-a-component
+    description: Remove page access groups from a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.RemovePageAccessGroupsFromAComponent.start_date
+      description: ''
+  - name: statuspage-add-page-access-groups-to-a-component
+    description: Add page access groups to a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.AddPageAccessGroupsToAComponent.start_date
+      description: ''
+  - name: statuspage-update-a-component
+    description: Update a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: only_show_if_degraded
+      description: ''
+      required: false
+      isArray: false
+    - name: group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: showcase
+      description: ''
+      required: false
+      isArray: false
+    - name: start_date
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAComponent.start_date
+      description: ''
+  - name: statuspage-delete-a-component
+    description: Delete a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+  - name: statuspage-get-a-component
+    description: Get a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAComponent.start_date
+      description: ''
+  - name: statuspage-get-uptime-data-for-a-component
+    description: Get uptime data for a component that has uptime showcase enabled
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: component_id
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: end
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Date
+      contextPath: Statuspage.GetUptimeDataForAComponent.range_start
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetUptimeDataForAComponent.range_end
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponent.uptime_percentage
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponent.major_outage
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponent.partial_outage
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponent.warnings
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponent.related_events.id
+      description: ''
+  - name: statuspage-create-a-component
+    description: Create a component
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    - name: status
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: only_show_if_degraded
+      description: ''
+      required: false
+      isArray: false
+    - name: group_id
+      description: ''
+      required: false
+      isArray: false
+    - name: showcase
+      description: ''
+      required: false
+      isArray: false
+    - name: start_date
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAComponent.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAComponent.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAComponent.updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAComponent.group
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAComponent.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAComponent.showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAComponent.only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponent.automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAComponent.start_date
+      description: ''
+  - name: statuspage-get-a-list-of-components
+    description: Get a list of components
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: page
+      description: ''
+      required: false
+      isArray: false
+    - name: per_page
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..group_id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfComponents..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfComponents..updated_at
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfComponents..group
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..description
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfComponents..position
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..status
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfComponents..showcase
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfComponents..only_show_if_degraded
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponents..automation_email
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfComponents..start_date
+      description: ''
+  - name: statuspage-update-a-component-group
+    description: Update a component group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: id
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    - name: components
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.description
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAComponentGroup.position
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAComponentGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAComponentGroup.updated_at
+      description: ''
+  - name: statuspage-delete-a-component-group
+    description: Delete a component group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.description
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAComponentGroup.position
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAComponentGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAComponentGroup.updated_at
+      description: ''
+  - name: statuspage-get-a-component-group
+    description: Get a component group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.description
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAComponentGroup.position
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAComponentGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAComponentGroup.updated_at
+      description: ''
+  - name: statuspage-get-uptime-data-for-a-component-group
+    description: Get uptime data for a component group that has uptime showcase enabled
+      for at least one component.
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: id
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: end
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Date
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.range_start
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.range_end
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.uptime_percentage
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.major_outage
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.partial_outage
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.warnings
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.related_events.component_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetUptimeDataForAComponentGroup.related_events.incidents.id
+      description: ''
+  - name: statuspage-create-a-component-group
+    description: Create a component group
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: description
+      description: ''
+      required: false
+      isArray: false
+    - name: components
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.description
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.components
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAComponentGroup.position
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAComponentGroup.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAComponentGroup.updated_at
+      description: ''
+  - name: statuspage-get-a-list-of-component-groups
+    description: Get a list of component groups
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..description
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..components
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfComponentGroups..position
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfComponentGroups..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfComponentGroups..updated_at
+      description: ''
+  - name: statuspage-reset-data-for-a-metric
+    description: Reset data for a metric
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ResetDataForAMetric.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ResetDataForAMetric.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ResetDataForAMetric.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ResetDataForAMetric.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ResetDataForAMetric.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ResetDataForAMetric.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ResetDataForAMetric.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ResetDataForAMetric.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ResetDataForAMetric.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ResetDataForAMetric.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ResetDataForAMetric.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.ResetDataForAMetric.reference_name
+      description: ''
+  - name: statuspage-add-data-to-a-metric
+    description: Add data to a metric
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    - name: timestamp
+      description: ''
+      required: false
+      isArray: false
+    - name: value
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Statuspage.AddDataToAMetric.data.timestamp
+      description: ''
+    - type: Number
+      contextPath: Statuspage.AddDataToAMetric.data.value
+      description: ''
+  - name: statuspage-update-a-metric
+    description: Update a metric
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_identifier
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAMetric.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAMetric.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAMetric.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAMetric.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAMetric.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAMetric.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetric.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetric.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetric.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetric.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAMetric.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetric.reference_name
+      description: ''
+  - name: statuspage-delete-a-metric
+    description: Delete a metric
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.DeleteAMetric.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.DeleteAMetric.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.DeleteAMetric.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.DeleteAMetric.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.DeleteAMetric.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.DeleteAMetric.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetric.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetric.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetric.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetric.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.DeleteAMetric.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetric.reference_name
+      description: ''
+  - name: statuspage-get-a-metric
+    description: Get a metric
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAMetric.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAMetric.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAMetric.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAMetric.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAMetric.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAMetric.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAMetric.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetric.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetric.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetric.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetric.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAMetric.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetric.reference_name
+      description: ''
+  - name: statuspage-get-a-list-of-metrics
+    description: Get a list of metrics
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfMetrics.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfMetrics.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfMetrics.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfMetrics.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfMetrics.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfMetrics.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetrics.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetrics.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetrics.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetrics.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfMetrics.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetrics.reference_name
+      description: ''
+  - name: statuspage-add-data-points-to-metrics
+    description: Add data points to metrics
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: timestamp
+      description: ''
+      required: false
+      isArray: false
+    - name: value
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Statuspage.AddDataPointsToMetrics.x0cg6zfjt8df.timestamp
+      description: ''
+    - type: Number
+      contextPath: Statuspage.AddDataPointsToMetrics.x0cg6zfjt8df.value
+      description: ''
+  - name: statuspage-list-metrics-for-a-metric-provider
+    description: List metrics for a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metrics_provider_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListMetricsForAMetricProvider.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListMetricsForAMetricProvider.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ListMetricsForAMetricProvider.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ListMetricsForAMetricProvider.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.ListMetricsForAMetricProvider.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ListMetricsForAMetricProvider.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListMetricsForAMetricProvider.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListMetricsForAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListMetricsForAMetricProvider.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.ListMetricsForAMetricProvider.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.ListMetricsForAMetricProvider.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.ListMetricsForAMetricProvider.reference_name
+      description: ''
+  - name: statuspage-create-a-metric-for-a-metric-provider
+    description: Create a metric for a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metrics_provider_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_identifier
+      description: ''
+      required: false
+      isArray: false
+    - name: transform
+      description: ''
+      required: false
+      isArray: false
+    - name: suffix
+      description: ''
+      required: false
+      isArray: false
+    - name: y_axis_min
+      description: ''
+      required: false
+      isArray: false
+    - name: y_axis_max
+      description: ''
+      required: false
+      isArray: false
+    - name: y_axis_hidden
+      description: ''
+      required: false
+      isArray: false
+    - name: display
+      description: ''
+      required: false
+      isArray: false
+    - name: decimal_places
+      description: ''
+      required: false
+      isArray: false
+    - name: tooltip_description
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.metrics_provider_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.metric_identifier
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.name
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.display
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.tooltip_description
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.backfilled
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.y_axis_min
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.y_axis_max
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.y_axis_hidden
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.suffix
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.decimal_places
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.most_recent_data_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.updated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.last_fetched_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.backfill_percentage
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricForAMetricProvider.reference_name
+      description: ''
+  - name: statuspage-get-a-metric-provider
+    description: Get a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metrics_provider_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetricProvider.type
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAMetricProvider.disabled
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAMetricProvider.metric_base_uri
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetricProvider.last_revalidated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAMetricProvider.updated_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAMetricProvider.page_id
+      description: ''
+  - name: statuspage-update-a-metric-provider
+    description: Update a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metrics_provider_id
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_base_uri
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetricProvider.type
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAMetricProvider.disabled
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAMetricProvider.metric_base_uri
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetricProvider.last_revalidated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAMetricProvider.updated_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAMetricProvider.page_id
+      description: ''
+  - name: statuspage-delete-a-metric-provider
+    description: Delete a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: metrics_provider_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetricProvider.type
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.DeleteAMetricProvider.disabled
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAMetricProvider.metric_base_uri
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetricProvider.last_revalidated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAMetricProvider.updated_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.DeleteAMetricProvider.page_id
+      description: ''
+  - name: statuspage-get-a-list-of-metric-providers
+    description: Get a list of metric providers
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfMetricProviders..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetricProviders..type
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfMetricProviders..disabled
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfMetricProviders..metric_base_uri
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetricProviders..last_revalidated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetricProviders..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfMetricProviders..updated_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfMetricProviders..page_id
+      description: ''
+  - name: statuspage-create-a-metric-provider
+    description: Create a metric provider
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: password
+      description: ''
+      required: false
+      isArray: false
+    - name: api_key
+      description: ''
+      required: false
+      isArray: false
+    - name: api_token
+      description: ''
+      required: false
+      isArray: false
+    - name: application_key
+      description: ''
+      required: false
+      isArray: false
+    - name: type
+      description: ''
+      required: false
+      isArray: false
+    - name: metric_base_uri
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAMetricProvider.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricProvider.type
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.CreateAMetricProvider.disabled
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAMetricProvider.metric_base_uri
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricProvider.last_revalidated_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricProvider.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAMetricProvider.updated_at
+      description: ''
+    - type: Number
+      contextPath: Statuspage.CreateAMetricProvider.page_id
+      description: ''
+  - name: statuspage-get-status-embed-config-settings
+    description: Get status embed config settings
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.incident_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.incident_text_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.maintenance_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetStatusEmbedConfigSettings.maintenance_text_color
+      description: ''
+  - name: statuspage-update-status-embed-config-settings
+    description: Update status embed config settings
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: position
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_background_color
+      description: ''
+      required: false
+      isArray: false
+    - name: incident_text_color
+      description: ''
+      required: false
+      isArray: false
+    - name: maintenance_background_color
+      description: ''
+      required: false
+      isArray: false
+    - name: maintenance_text_color
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.page_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.position
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.incident_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.incident_text_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.maintenance_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateStatusEmbedConfigSettings.maintenance_text_color
+      description: ''
+  - name: statuspage-update-a-page
+    description: Update a page
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: domain
+      description: ''
+      required: false
+      isArray: false
+    - name: subdomain
+      description: ''
+      required: false
+      isArray: false
+    - name: url
+      description: ''
+      required: false
+      isArray: false
+    - name: branding
+      description: ''
+      required: false
+      isArray: false
+    - name: css_body_background_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_font_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_light_font_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_greens
+      description: ''
+      required: false
+      isArray: false
+    - name: css_yellows
+      description: ''
+      required: false
+      isArray: false
+    - name: css_oranges
+      description: ''
+      required: false
+      isArray: false
+    - name: css_reds
+      description: ''
+      required: false
+      isArray: false
+    - name: css_blues
+      description: ''
+      required: false
+      isArray: false
+    - name: css_border_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_graph_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_link_color
+      description: ''
+      required: false
+      isArray: false
+    - name: css_no_data
+      description: ''
+      required: false
+      isArray: false
+    - name: hidden_from_search
+      description: ''
+      required: false
+      isArray: false
+    - name: viewers_must_be_team_members
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_page_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_incident_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_email_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_sms_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_rss_atom_feeds
+      description: ''
+      required: false
+      isArray: false
+    - name: allow_webhook_subscribers
+      description: ''
+      required: false
+      isArray: false
+    - name: notifications_from_email
+      description: ''
+      required: false
+      isArray: false
+    - name: time_zone
+      description: ''
+      required: false
+      isArray: false
+    - name: notifications_email_footer
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.UpdateAPage.id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPage.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.UpdateAPage.updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.page_description
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.headline
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.branding
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.subdomain
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.domain
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.url
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.support_url
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.hidden_from_search
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_page_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_incident_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_email_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_sms_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_rss_atom_feeds
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.allow_webhook_subscribers
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.notifications_from_email
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.notifications_email_footer
+      description: ''
+    - type: Number
+      contextPath: Statuspage.UpdateAPage.activity_score
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.twitter_username
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.UpdateAPage.viewers_must_be_team_members
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.ip_restrictions
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.city
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.state
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.country
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.time_zone
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_body_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_light_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_greens
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_yellows
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_oranges
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_blues
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_reds
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_border_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_graph_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_link_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.css_no_data
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.favicon_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.transactional_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.hero_cover
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.email_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.UpdateAPage.twitter_logo
+      description: ''
+  - name: statuspage-get-a-page
+    description: Get a page
+    arguments:
+    - name: page_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAPage.id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAPage.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAPage.updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.page_description
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.headline
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.branding
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.subdomain
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.domain
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.url
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.support_url
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.hidden_from_search
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_page_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_incident_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_email_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_sms_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_rss_atom_feeds
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.allow_webhook_subscribers
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.notifications_from_email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.notifications_email_footer
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAPage.activity_score
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.twitter_username
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAPage.viewers_must_be_team_members
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.ip_restrictions
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.city
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.state
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.time_zone
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_body_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_light_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_greens
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_yellows
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_oranges
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_blues
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_reds
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_border_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_graph_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_link_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.css_no_data
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.favicon_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.transactional_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.hero_cover
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.email_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAPage.twitter_logo
+      description: ''
+  - name: statuspage-get-a-list-of-pages
+    description: Get a list of pages
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..id
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPages..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfPages..updated_at
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..page_description
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..headline
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..branding
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..subdomain
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..domain
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..url
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..support_url
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..hidden_from_search
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_page_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_incident_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_email_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_sms_subscribers
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_rss_atom_feeds
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..allow_webhook_subscribers
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..notifications_from_email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..notifications_email_footer
+      description: ''
+    - type: Number
+      contextPath: Statuspage.GetAListOfPages..activity_score
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..twitter_username
+      description: ''
+    - type: Boolean
+      contextPath: Statuspage.GetAListOfPages..viewers_must_be_team_members
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..ip_restrictions
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..city
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..state
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..country
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..time_zone
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_body_background_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_light_font_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_greens
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_yellows
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_oranges
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_blues
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_reds
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_border_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_graph_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_link_color
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..css_no_data
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..favicon_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..transactional_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..hero_cover
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..email_logo
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfPages..twitter_logo
+      description: ''
+  - name: statuspage-create-a-user
+    description: Create a user
+    arguments:
+    - name: organization_id
+      description: ''
+      required: false
+      isArray: false
+    - name: email
+      description: ''
+      required: false
+      isArray: false
+    - name: password
+      description: ''
+      required: false
+      isArray: false
+    - name: first_name
+      description: ''
+      required: false
+      isArray: false
+    - name: last_name
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.CreateAUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAUser.organization_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAUser.first_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.CreateAUser.last_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.CreateAUser.updated_at
+      description: ''
+  - name: statuspage-get-a-list-of-users
+    description: Get a list of users
+    arguments:
+    - name: organization_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.GetAListOfUsers..id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUsers..organization_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUsers..email
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUsers..first_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.GetAListOfUsers..last_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUsers..created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.GetAListOfUsers..updated_at
+      description: ''
+  - name: statuspage-delete-a-user
+    description: Delete a user
+    arguments:
+    - name: organization_id
+      description: ''
+      required: false
+      isArray: false
+    - name: user_id
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Statuspage.DeleteAUser.id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAUser.organization_id
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAUser.email
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAUser.first_name
+      description: ''
+    - type: String
+      contextPath: Statuspage.DeleteAUser.last_name
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAUser.created_at
+      description: ''
+    - type: Date
+      contextPath: Statuspage.DeleteAUser.updated_at
+      description: ''
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
