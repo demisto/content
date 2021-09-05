@@ -254,6 +254,7 @@ def init_commands_dict():
         'tanium-tr-list-connections': get_connections,
         'tanium-tr-create-connection': create_connection,
         'tanium-tr-delete-connection': delete_connection,
+        'tanium-tr-close-connection': close_connection,
 
         'tanium-tr-list-labels': get_labels,
         'tanium-tr-get-label-by-id': get_label,
@@ -1057,7 +1058,7 @@ def get_alerts(client, data_args):
                            computerName=computer_name,
                            computerIpAddress=ip_address,
                            limit=limit,
-                           offset=offset, state=state.lower())
+                           offset=offset, state=state.lower() if state else None)
 
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts/', params=params)
 
@@ -1121,10 +1122,13 @@ def list_snapshots(client, data_args):
 
     for snapshot in snapshots:
         if created := snapshot.get('created'):
-            snapshot['created'] = timestamp_to_datestring(created)
+            try:
+                snapshot['created'] = timestamp_to_datestring(created)
+            except ValueError:
+                pass
 
     context = createContext(snapshots, removeNull=True, keyTransform=lambda x: x[:1].upper()+x[1:])
-    headers = ['name', 'evidenceType', 'hostname', 'created']
+    headers = ['uuid', 'name', 'evidenceType', 'hostname', 'created']
     outputs = {'Tanium.Snapshot(val.Uuid === obj.Uuid)': context}
     human_readable = tableToMarkdown('Snapshots:', snapshots, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1132,22 +1136,16 @@ def list_snapshots(client, data_args):
 
 
 def create_snapshot(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
-    client.do_request('POST', f'/plugin/products/trace/conns/{con_name}/snapshots', resp_type='content')
-    return f'Initiated snapshot creation request for {con_name}.', {}, {}
+    connection_id = data_args.get('connection-id')
+    raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{connection_id}/snapshot')
+    return f'Initiated snapshot creation request for {connection_id}.', {}, raw_response
 
 
 def delete_snapshot(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
-    snapshot_id = data_args.get('snapshot-id')
-    client.do_request('DELETE', f'/plugin/products/trace/conns/{con_name}/snapshots/{snapshot_id}', resp_type='content')
-    context = {
-        'ConnectionName': con_name,
-        'ID': snapshot_id,
-        'Deleted': True
-    }
-    outputs = {'Tanium.Snapshot(val.ID === obj.ID && val.ConnectionName === obj.ConnectionName)': context}
-    return f'Snapshot {snapshot_id} deleted successfully.', outputs, {}
+    snapshot_ids = argToList(data_args.get('snapshot-ids'))
+    body = {'ids': snapshot_ids}
+    client.do_request('DELETE', '/plugin/products/threat-response/api/v1/snapshot', body=body)
+    return f'Snapshot {snapshot_ids} deleted successfully.', {}, {}
 
 
 def delete_local_snapshot(client, data_args):
@@ -1189,33 +1187,32 @@ def get_connections(client, data_args):
 
 
 def create_connection(client, data_args):
-    remote = bool(data_args.get('remote'))
-    dst_type = data_args.get('destination-type')
-    dst = validate_connection_name(client, data_args.get('destination'))
-    conn_timeout = data_args.get('connection-timeout')
+    ip = data_args.get('ip')  # TODO: check this
+    client_id = data_args.get('client_id')
 
     body = {
-        'remote': remote,
-        'dst': dst,
-        'dstType': dst_type,
-        'connTimeout': conn_timeout}
+        "target": {
+            "hostname": "localhost",
+            "clientId": client_id,
+            "platform": "Linux",
+            "ip": ip
+        }
+    }
 
-    if conn_timeout:
-        body['connTimeout'] = int(data_args.get('connection-timeout'))
+    connection = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body, resp_type='content')
+    return f'Initiated connection request to {connection}.', {}, {}
 
-    client.do_request('POST', '/plugin/products/trace/conns/', data=body, resp_type='content')
-    return f'Initiated connection request to {dst}.', {}, {}
+
+def close_connection(client, data_args):
+    cid = data_args.get('cid')
+    client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/close/{cid}')
+    return f'Connection {cid} closed successfully.', {}, {}
 
 
 def delete_connection(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
-    client.do_request('DELETE', '/plugin/products/trace/conns/{conn_name}', resp_type='text')
-    context = {
-        'Name': conn_name,
-        'Deleted': True
-    }
-    outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    return f'Connection {conn_name} deleted successfully.', outputs, {}
+    cid = data_args.get('cid')
+    client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/delete/{cid}')
+    return f'Connection {cid} deleted successfully.', {}, {}
 
 
 def get_events_by_connection(client, data_args):

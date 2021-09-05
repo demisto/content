@@ -495,3 +495,47 @@ def test_get_deploy_status(requests_mock):
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_deploy_status(MOCK_CLIENT, {})
     assert 'Intel deploy status' in human_readable
     assert outputs.get('Tanium.IntelDeployStatus', {}).get('CurrentRevision') == 10
+
+
+def test_get_alerts(requests_mock):
+    """
+    Given -
+        We want to get alerts list.
+
+    When -
+        Running get_alerts function.
+
+    Then -
+        The alerts list should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_alerts_raw_response.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts/',
+                      json=api_raw_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_alerts(MOCK_CLIENT, {})
+    assert 'Alerts' in human_readable
+    assert len(outputs.get('Tanium.Alert(val.ID && val.ID === obj.ID)', [])) == 2
+
+
+def test_get_alert(requests_mock):
+    """
+    Given -
+        We want to get alerts by id.
+
+    When -
+        Running get_alert function.
+
+    Then -
+        The alert should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_alert_raw_response.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts/1',
+                      json=api_raw_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_alert(MOCK_CLIENT, {'alert-id': 1})
+    assert 'Alert information' in human_readable
+    assert outputs.get('Tanium.Alert(val.ID && val.ID === obj.ID)', {}).get('ID') == 1

@@ -398,42 +398,26 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The connection name.
+      description: The connection id.
       isArray: false
-      name: connection-name
+      name: connection-id
       required: true
       secret: false
     deprecated: false
-    description: Captures a new snapshot by connection name.
+    description: Captures a new snapshot by connection id.
     execution: false
     name: tanium-tr-create-snapshot
   - arguments:
     - default: false
-      description: The connection name.
-      isArray: false
-      name: connection-name
-      required: true
-      secret: false
-    - default: false
-      description: The snapshot ID.
-      isArray: false
-      name: snapshot-id
+      description: The snapshot IDs to delete.
+      isArray: true
+      name: snapshot-ids
       required: true
       secret: false
     deprecated: false
     description: Deletes a snapshot by connection name and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
-    outputs:
-    - contextPath: Tanium.Snapshot.ID
-      description: The snapshot ID.
-      type: String
-    - contextPath: Tanium.Snapshot.ConnectionName
-      description: The connection name.
-      type: String
-    - contextPath: Tanium.Snapshot.Deleted
-      description: Whether the snapshot has been deleted.
-      type: Boolean
   - arguments:
     - default: false
       defaultValue: '50'
@@ -569,14 +553,10 @@ script:
       description: The connection's ???????
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Whether it is a remote connection. Can be "True" or "False".
+    - default: false
+      description: Computer name or IP address.
       isArray: false
-      name: remote
-      predefined:
-      - 'True'
-      - 'False'
+      name: client_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -592,15 +572,8 @@ script:
     - default: false
       description: Computer name or IP address.
       isArray: false
-      name: destination
+      name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30000'
-      description: connection timeout, in milliseconds.
-      isArray: false
-      name: connection-timeout
-      required: false
       secret: false
     deprecated: false
     description: Creates a local or remote connection.
@@ -608,22 +581,24 @@ script:
     name: tanium-tr-create-connection
   - arguments:
     - default: false
-      description: The name of the connection.
+      description: The connection id.
       isArray: false
-      name: connection-name
+      name: cid
       required: true
-      secret: false
     deprecated: false
-    description: Deletes a connection by connection name.
+    description: Deletes a connection by connection id.
     execution: false
     name: tanium-tr-delete-connection
-    outputs:
-    - contextPath: Tanium.Connection.Name
-      description: The connection name.
-      type: String
-    - contextPath: Tanium.Connection.Deleted
-      description: Whether the connection has been deleted.
-      type: Boolean
+  - arguments:
+    - default: false
+      description: The connection id.
+      isArray: false
+      name: cid
+      required: true
+    deprecated: false
+    description: Closes a connection by connection id.
+    execution: false
+    name: tanium-tr-close-connection
   - arguments:
     - default: false
       defaultValue: '50'
