@@ -67,7 +67,7 @@ Searches Shodan using facets to get summary information on properties.
                 "Asn": "AS9311",
                 "Domains": [],
                 "Hostnames": [],
-                "IP": "103.47.177.50",
+                "IP": "1.2.3.4",
                 "Isp": "HITRON TECHNOLOGY INC.",
                 "Location": {
                     "City": "Hong Kong",
@@ -90,7 +90,7 @@ Searches Shodan using facets to get summary information on properties.
                 "Asn": "AS9919",
                 "Domains": [],
                 "Hostnames": [],
-                "IP": "103.47.178.70",
+                "IP": "1.2.3.4",
                 "Isp": "New Century InfoComm Tech Co., Ltd.",
                 "Location": {
                     "City": "Hong Kong",
@@ -113,7 +113,7 @@ Searches Shodan using facets to get summary information on properties.
                 "Asn": "AS9311",
                 "Domains": [],
                 "Hostnames": [],
-                "IP": "103.47.177.23",
+                "IP": "1.2.3.4",
                 "Isp": "HITRON TECHNOLOGY INC.",
                 "Location": {
                     "City": "Hong Kong",
@@ -140,7 +140,7 @@ Searches Shodan using facets to get summary information on properties.
 >Search results for query "country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" - page 1, facets: None
 >|IP|Port|Timestamp|
 >|---|---|---|
->| 103.47.177.23 | 5353 | 2021-08-17T03:13:54.617598 |
+>| 1.2.3.4 | 5353 | 2021-08-17T03:13:54.617598 |
 
 
 ### ip
