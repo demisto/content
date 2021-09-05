@@ -1,3 +1,4 @@
+import itertools
 from typing import Tuple
 
 from dateparser import parse
@@ -594,7 +595,7 @@ def parse_date_to_timestamp(date_string: str) -> int:
     return int(date_time.timestamp()) * 1000
 
 
-def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str],
+def calculate_fetch_start_time(last_fetch: Optional[int], first_fetch: Optional[str],
                                fetch_delta_time: int) -> int:
     """
     Calculates the timestamp that fetch incident will start from.
@@ -611,9 +612,8 @@ def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[
             first_fetch = '3 days'
         return parse_date_to_timestamp(first_fetch)
     else:
-        last_fetch_timestamp = parse_date_to_timestamp(last_fetch)
-        fetch_delta_time_milliseconds = fetch_delta_time * 6000
-        return last_fetch_timestamp - fetch_delta_time_milliseconds
+        fetch_delta_time_milliseconds = fetch_delta_time * 60 * 1000
+        return last_fetch - fetch_delta_time_milliseconds
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -648,19 +648,22 @@ def convert_alert_to_incident(alert: Dict) -> Dict:
     return incident
 
 
-def convert_and_filter_alerts(alerts: List[Dict], fetched_ids: List[str]) -> Tuple[List[Dict], List[str]]:
+def get_fetched_ids(fetched_ids_dict: Dict, start_timestamp: int) -> Tuple[Dict, List]:
     """
-    Converts microsoft cloud app alerts to Demisto incidents and filter already fetched incidents.
+    Get all the unique ids that was fetched int the desired time interval (time >= current_timestamp)
     Args:
-        alerts([Dict]): List of raw alerts.
-        fetched_ids(List[str]): List of previous fetched alerts' ids.
+        fetched_ids_dict(Dict): The fetched ids dict {timestamp:[ids]}
+        start_timestamp(int): The start of the time interval in timestamp format
 
     Returns:
-        List of Demisto incidents.
+        New fetched_ids_dict without the old timestamps.
+        List of unique fetched ids.
+
     """
-    alerts_ids = [alert.get('_id', '') for alert in alerts]
-    incidents = [convert_alert_to_incident(alert) for alert in alerts if alert.get('_id', '') not in fetched_ids]
-    return incidents, alerts_ids
+    new_fetched_ids_dict = {timestamp: ids_list for timestamp, ids_list in fetched_ids_dict.items()
+                            if (timestamp // 1000) >= (start_timestamp // 1000)}  # remove older entries from the dict.
+    fetched_ids = itertools.chain(*new_fetched_ids_dict.values())  # chain all relevant ids to a single set.
+    return new_fetched_ids_dict, list(fetched_ids)
 
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, first_fetch: Optional[str],
@@ -682,18 +685,34 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, 
     """
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
     last_fetch = last_run.get('last_fetch')
-    fetched_ids = last_run.get('fetched_ids', list())
-    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch, fetch_delta_time)
-    filters["date"] = {"gte": fetch_start_time}
+    fetched_ids_dict = last_run.get('fetched_ids_dict', dict())
 
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch, fetch_delta_time)
+    fetched_ids_dict, fetched_ids = get_fetched_ids(fetched_ids_dict, fetch_start_time)
+
+    filters["date"] = {"gte": fetch_start_time}
+    filters['id'] = {'neq': fetched_ids}  # Get only new alerts
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
+
     alerts_response_data = client.list_incidents(filters, limit=max_results)
-    alerts = alerts_response_data.get('data')
+    alerts = alerts_response_data.get('data', [])
     alerts = arrange_alerts_by_incident_type(alerts)
-    incidents, new_fetched_ids = convert_and_filter_alerts(alerts, fetched_ids)
-    next_run = {'last_fetch': incidents[-1]['occurred'], 'fetched_ids': new_fetched_ids} if incidents else last_run
-    demisto.debug(f'setting last run to: {next_run}')
-    return next_run, incidents
+
+    if alerts:
+        # Extract the ids and timestamps from the alerts list and convert them to Demisto's incidents in single a pass.
+        ids_list, timestamp_list, incidents = zip(*[
+            (alert.get('_id', ''), alert.get('timestamp', 0), convert_alert_to_incident(alert)) for alert in alerts])
+
+        newest_timestamp = max(timestamp_list, default=None)
+        if timestamp_list:
+            fetched_ids_dict[newest_timestamp] = ids_list  # add recent fetch results to fetched_ids_dict
+
+        next_run = {'last_fetch': newest_timestamp, 'fetched_ids_dict': fetched_ids_dict}
+        demisto.debug(f'setting last run to: {next_run}')
+        return next_run, incidents
+    else:
+        # in case there are no alerts return the last run.
+        return last_run, []
 
 
 def params_to_filter(severity: List[str], resolution_status: str):

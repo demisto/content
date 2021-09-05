@@ -980,25 +980,8 @@
             "label": "Microsoft Exchange Online"
           }
         ],
-        "timestamp": 1615228302580,
+        "timestamp": 1615228302080,
         "title": "Impossible travel activity"
-      },
-      {
-        "_id": "id2",
-        "contextId": "contextId",
-        "entities": [
-          {
-            "em": "",
-            "entityType": 2,
-            "id": "1",
-            "inst": 0,
-            "label": "",
-            "pa": "",
-            "type": "account"
-          }
-        ],
-        "timestamp": 1615228302480,
-        "title": "Risky sign-in: Unfamiliar sign-in properties"
       }
     ],
     "hasNext": false,

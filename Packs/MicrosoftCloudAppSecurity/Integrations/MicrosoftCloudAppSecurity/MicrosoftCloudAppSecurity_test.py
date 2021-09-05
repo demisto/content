@@ -129,37 +129,37 @@ def test_params_to_filter(severity, resolution_status, expected):
 
 
 @pytest.mark.parametrize(
-    "fetched_ids, expected_incidents, expected_ids",
+    "incidents,last_run, expected_last_run, expected_incidents",
     [
-        ([],
-         [{'name': 'block0', 'occurred': datetime.fromtimestamp(1603378041000 / 1000.0).isoformat() + 'Z',
-           'rawJSON': '{"_id": "id1", "timestamp": 1603378041000, "title": "block0"}'},
-          {'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903000 / 1000.0).isoformat() + 'Z',
-           'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
-         ['id1', 'id2']),
-        (['id1'],
-         [{'name': 'block1', 'occurred': datetime.fromtimestamp(1603385903000 / 1000.0).isoformat() + 'Z',
-           'rawJSON': '{"_id": "id2", "timestamp": 1603385903000, "title": "block1"}'}],
-         ['id1', 'id2']),
+        ({}, {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}},
+         {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}}, []),
+        (get_fetch_data()["alerts_response_data"],
+         {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}},
+         {'last_fetch': 1615228302080, 'fetched_ids_dict': {1615228302580: ['id2'], 1615228302080: ('id1',)}},
+         [{'name': 'Impossible travel activity',
+           'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
+           'rawJSON':
+               '{"_id": "id1",'
+               ' "contextId": "contextId",'
+               ' "timestamp": 1615228302080,'
+               ' "title": "Impossible travel activity",'
+               ' "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]}'
+           }]),
+        (get_fetch_data()["alerts_response_data"], {},
+         {'last_fetch': 1615228302080, 'fetched_ids_dict': {1615228302080: ('id1',)}},
+         [{'name': 'Impossible travel activity',
+           'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
+           'rawJSON': '{"_id": "id1",'
+                      ' "contextId": "contextId",'
+                      ' "timestamp": 1615228302080,'
+                      ' "title": "Impossible travel activity",'
+                      ' "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]}'
+           }]
+         ),
+        ({}, {}, {}, [])
     ]
 )
-def test_convert_and_filter_alerts(fetched_ids, expected_incidents, expected_ids):
-    """
-    Given:
-        List of raw incidents and fetched ids list.
-    When:
-        Running convert_and_filter_alerts.
-    Then:
-        Check that only new incidents are converted.
-    """
-    from MicrosoftCloudAppSecurity import convert_and_filter_alerts
-    incidents = get_fetch_data()["incidents"]
-    res_incidents, new_fetched_ids = convert_and_filter_alerts(incidents, fetched_ids)
-    assert res_incidents == expected_incidents
-    assert new_fetched_ids == expected_ids
-
-
-def test_fetch_incidents(mocker):
+def test_fetch_incidents(mocker, incidents, last_run, expected_last_run, expected_incidents):
     """
     Given:
         `getLastRun` which holds `last_fetch` and `fetched_ids`.
@@ -169,24 +169,12 @@ def test_fetch_incidents(mocker):
         Fetch only the new incidents.
     """
     from MicrosoftCloudAppSecurity import fetch_incidents
-    incidents = get_fetch_data()["alerts_response_data"]
     mocker.patch('MicrosoftCloudAppSecurity.Client.list_incidents', return_value=incidents)
-    next_run, incidents = fetch_incidents(client=client_mocker, max_results=1,
-                                          last_run={'last_fetch': '2021-03-08T22:42:49Z', 'fetched_ids': ['id2']},
+    next_run, incidents = fetch_incidents(client=client_mocker, max_results=None,
+                                          last_run=last_run,
                                           first_fetch=None, filters={}, fetch_delta_time=30)
-    assert next_run == {'last_fetch': datetime.fromtimestamp(1615228302).isoformat() + 'Z', 'fetched_ids': ['id1', 'id2']}
-    assert incidents == [
-        {'name': 'Impossible travel activity',
-         'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
-         'rawJSON':
-             '{"_id": "id1",'
-             ' "contextId": "contextId",'
-             ' "timestamp": 1615228302580,'
-             ' "title": "Impossible travel activity",'
-             ' "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]'
-             '}'
-         }
-    ]
+    assert next_run == expected_last_run
+    assert list(incidents) == expected_incidents
 
 
 def test_convert_alert_to_incident():
@@ -210,7 +198,7 @@ def test_convert_alert_to_incident():
     "last_fetch,first_fetch,fetch_buffer_time,expected",
     [
         (None, None, 0, 1630255838000),
-        ('2021-08-19T06:30:42Z', None, 30, 1630255658000)
+        (1630255838000, None, 30, 1630254038000)
     ]
 )
 def test_calculate_fetch_start_time(mocker, last_fetch, first_fetch, fetch_buffer_time, expected):
