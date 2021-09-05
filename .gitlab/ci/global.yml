@@ -216,10 +216,9 @@
         echo "successfully merged public and private ID sets"
       fi
     - section_end "Merge public and private id sets"
-    - section_start "Update Tests"
-    - python3 ./Tests/scripts/update_conf_json.py
+    - section_start "Copy Tests To Artifact Folder"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - section_end "Update Tests"
+    - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
