@@ -325,10 +325,6 @@ class TestDisableUserCommand:
         assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
-def mock_get_access_token():
-    return 'mock token'
-
-
 class TestGetGroupCommand:
     def test_with_id(self, mocker):
         """
@@ -342,7 +338,6 @@ class TestGetGroupCommand:
             - Ensure the resulted 'CommandResults' object holds the correct group details
         """
 
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -368,7 +363,7 @@ class TestGetGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds the correct group details
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -396,7 +391,7 @@ class TestGetGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about an unsuccessful result.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -422,7 +417,6 @@ class TestGetGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": {}}
@@ -444,7 +438,7 @@ class TestCreateGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the created group.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -469,7 +463,6 @@ class TestCreateGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
@@ -493,7 +486,6 @@ class TestCreateGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": "{}"}
@@ -516,7 +508,7 @@ class TestUpdateGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the updated group.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -540,7 +532,6 @@ class TestUpdateGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
@@ -562,7 +553,7 @@ class TestDeleteGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the deleted group.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
+        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -586,7 +577,6 @@ class TestDeleteGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
@@ -610,7 +600,6 @@ class TestDeleteGroupCommand:
         Then:
             - Ensure that an error is raised with an expected message.
         """
-        mocker.patch.object(Client, 'get_access_token', side_effect=mock_get_access_token())
 
         client = mock_client()
         args = {"scim": "{}"}
