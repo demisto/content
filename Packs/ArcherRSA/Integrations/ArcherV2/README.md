@@ -9,7 +9,6 @@ The RSA Archer GRC Platform provides a common foundation for managing policies, 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
-| api_endpoint | api endpoint, Warning: add only if you have other API Endpoint | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
