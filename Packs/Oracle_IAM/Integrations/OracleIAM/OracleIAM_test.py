@@ -363,7 +363,6 @@ class TestGetGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds the correct group details
         """
-        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -391,7 +390,6 @@ class TestGetGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about an unsuccessful result.
         """
-        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -407,7 +405,7 @@ class TestGetGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
         assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
 
-    def test_id_and_display_name_empty(self, mocker):
+    def test_id_and_display_name_empty(self):
         """
         Given:
             - An app client object
@@ -438,7 +436,6 @@ class TestCreateGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the created group.
         """
-        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -453,7 +450,7 @@ class TestCreateGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
         assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
 
-    def test_group_already_exist(self, mocker):
+    def test_group_already_exist(self):
         """
         Given:
             - An app client object
@@ -476,7 +473,7 @@ class TestCreateGroupCommand:
         assert e.value.res.status_code == 400
         assert 'Group already exist' in str(e.value)
 
-    def test_display_name_empty(self, mocker):
+    def test_display_name_empty(self):
         """
         Given:
             - An app client object
@@ -508,7 +505,6 @@ class TestUpdateGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the updated group.
         """
-        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -522,7 +518,7 @@ class TestUpdateGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['success'] is True
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
 
-    def test_nothing_to_update(self, mocker):
+    def test_nothing_to_update(self):
         """
         Given:
             - An app client object
@@ -553,7 +549,6 @@ class TestDeleteGroupCommand:
         Then:
             - Ensure the resulted 'CommandResults' object holds information about the deleted group.
         """
-        
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
         client = mock_client()
@@ -567,7 +562,7 @@ class TestDeleteGroupCommand:
         assert mock_result.call_args.kwargs['outputs']['success'] is True
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
 
-    def test_non_existing_group(self, mocker):
+    def test_non_existing_group(self):
         """
         Given:
             - An app client object
@@ -590,7 +585,7 @@ class TestDeleteGroupCommand:
         assert e.value.res.status_code == 404
         assert 'Group Not Found' in str(e.value)
 
-    def test_id_is_empty(self, mocker):
+    def test_id_is_empty(self):
         """
         Given:
             - An app client object
