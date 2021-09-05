@@ -118,7 +118,7 @@ else
                 exit 1
             fi
         fi
-        virtualenv -p $PY3CMD venv
+        virtualenv --system-site-packages -p $PY3CMD venv
         if [ "$SETUP_PY2" == "yes" ]; then
             virtualenv -p python2 venv
         fi
