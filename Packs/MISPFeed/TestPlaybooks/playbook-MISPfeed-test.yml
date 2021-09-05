@@ -1,6 +1,5 @@
-id: 260f0ad7-fbbb-4a3c-8651-e5bf8532bffb
-version: 8
-vcShouldKeepItemLegacyProdMachine: false
+id: playbook-MISPfeed-test
+version: -1
 name: playbook-MISPfeed-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -152,6 +152,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
