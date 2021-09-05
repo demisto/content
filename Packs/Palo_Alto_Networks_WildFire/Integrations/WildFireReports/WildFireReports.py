@@ -281,10 +281,6 @@ def wildfire_get_report_command(client, args, reliability):
     inputs = hash_args_handler(sha256, md5)
 
     for element in inputs:
-        sha256 = element if sha256Regex.match(element) else None
-        md5 = element if md5Regex.match(element) else None
-        entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
-
         try:
             res = client.get_file_report(element)
             reports = res.get('wildfire', {}).get('task_info', {}).get('report')
@@ -299,8 +295,11 @@ def wildfire_get_report_command(client, args, reliability):
                 indicator = None
 
         except NotFoundError as exc:
-            human_readable = 'Report not found.'
+            sha256 = element if sha256Regex.match(element) else None
+            md5 = element if md5Regex.match(element) else None
+            entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
             entry_context['Status'] = 'NotFound'
+            human_readable = 'Report not found.'
             dbot_score_file = 0
             dbot_score_object = Common.DBotScore(
                 indicator=element,
@@ -315,11 +314,7 @@ def wildfire_get_report_command(client, args, reliability):
 
         finally:
             try:
-                wildfire_report_dt_file = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || " \
-                                          "val.MD5 && val.MD5 == obj.MD5)"
                 command_results = CommandResults(
-                    outputs_prefix=wildfire_report_dt_file,
-                    outputs=remove_empty_elements(entry_context),
                     readable_output=human_readable,
                     indicator=indicator,
                     raw_response=res,
