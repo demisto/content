@@ -3432,8 +3432,7 @@ def convert_to_unicode(s, is_msg_header=True):
                 try:
                     res += decoded_s.decode(encoding).encode('utf-8')
                 except UnicodeDecodeError:
-                    demisto.debug('Failed to decode encoded_string:'
-                                  'encoding: {}, encoded_text: {}'.format(encoding, decoded_s))
+                    demisto.debug('Failed to decode encoded_string with encoding {}'.format(encoding))
                     res += decoded_s.decode(encoding, errors='replace').encode('utf-8')
                 ENCODINGS_TYPES.add(encoding)
             else:
