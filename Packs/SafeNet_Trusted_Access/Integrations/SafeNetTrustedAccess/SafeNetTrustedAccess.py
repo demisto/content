@@ -864,6 +864,8 @@ def validate_tenant_sta_command(client: Client, args: Dict[str, Any]) -> Command
     client.validate_tenant_sta()
     return CommandResults(
         readable_output="## The requested tenant is accessible.",
+        outputs_prefix='STA.VALIDATE.TENANT',
+        outputs=True
     )
 
 

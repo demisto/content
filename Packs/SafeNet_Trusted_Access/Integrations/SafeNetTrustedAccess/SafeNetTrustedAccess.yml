@@ -639,7 +639,7 @@ script:
     - contextPath: STA.VALIDATE.TENANT
       description: Checks if you have permission to access the requested tenant.
       type: boolean
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.6.24067
   runonce: false
   script: ''
   subtype: python3

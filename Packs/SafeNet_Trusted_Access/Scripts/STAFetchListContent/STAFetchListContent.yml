@@ -11,7 +11,7 @@ commonfields:
 dependson:
   must:
   - Builtin|||getList
-dockerimage: demisto/python3:3.9.6.24019
+dockerimage: demisto/python3:3.9.6.24067
 enabled: true
 name: STA-FetchListContent
 outputs:
