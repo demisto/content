@@ -311,17 +311,14 @@ def get_all_user_profiles():
     query = 'type:"User Profile"'
     email_to_user_profile = {}
 
-    def handle_batch(user_profiles):
+    search_indicators = IndicatorsSearcher()
+    user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
+    while user_profiles:
         for user_profile in user_profiles:
             user_profile = user_profile.get('CustomFields', {})
             email_to_user_profile[user_profile.get('email')] = user_profile
 
-    search_indicators = IndicatorsSearcher()
-
-    query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
-    while query_result.get('iocs', []):
-        handle_batch(query_result.get('iocs', []))
-        query_result = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE)
+        user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
 
     return email_to_user_profile
 
