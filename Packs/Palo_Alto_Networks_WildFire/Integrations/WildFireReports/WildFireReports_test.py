@@ -16,8 +16,6 @@ def test_wildfire_report(mocker):
     mocker.patch.object(demisto, 'command', return_value='wildfire-report')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/publicapi/'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
-    mocker.patch('WildFireReports.fileResult', return_value={})  # prevent file creation
-    request_mock = mocker.patch('WildFireReports.return_results')
     response = {
         "wildfire": {
             "version": "2.0",
@@ -75,6 +73,9 @@ def test_wildfire_report(mocker):
             }
         }
     }
+    mocker.patch('WildFireReports.fileResult', return_value=response)  # prevent file creation
+    WildFireReports_mock = mocker.patch('WildFireReports.return_results')
+    demisto_mock = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
         m.post(f'https://test.com/publicapi/get/report?format=xml&hash={mock_sha256}', json=response)
@@ -82,5 +83,4 @@ def test_wildfire_report(mocker):
 
         main()
 
-    assert request_mock.call_args[0][0][0].outputs['Status'] == 'Success'
-    assert request_mock.call_args[0][0][0].outputs['SHA256'] == mock_sha256
+    assert mock_sha256 in str(WildFireReports_mock.call_args[0][0][0].readable_output)

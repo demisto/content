@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wildfire>
+    <version>2.0</version>
+    <file_info>
+        <file_signer>None</file_signer>
+        <malware>no</malware>
+        <sha1>d62f87db1ef4edba7f94acf56e3c51c4d6e9ad4b</sha1>
+        <filetype>PDF</filetype>
+        <sha256>ba39310abfd8d1155c85f690c34b141f9ed5927a80faa74c51be002cf6edc1f8</sha256>
+        <md5>ed4785aa72ae5fd25960c932c2c766a8</md5>
+        <size>102085</size>
+    </file_info>
+    <task_info>
+        <report>
+            <version>3.0</version>
+            <platform>100</platform>
+            <software>PDF Static Analyzer</software>
+            <sha256>ba39310abfd8d1155c85f690c34b141f9ed5927a80faa74c51be002cf6edc1f8</sha256>
+            <md5>ed4785aa72ae5fd25960c932c2c766a8</md5>
+            <malware>no</malware>
+            <doc_embedded_files/>
+            <extracted_urls>
+                <entry url="accounts.google.com/servicelogin?hl=en&amp;passive=true&amp;continue=https://www.google.com/&amp;ec=gazamgq" verdict="unknown"/>
+                <entry url="about.google/?utm_source=google-il&amp;utm_medium=referral&amp;utm_campaign=hp-footer&amp;fg=1" verdict="unknown"/>
+                <entry url="policies.google.com/privacy?hl=en-il&amp;fg=1" verdict="unknown"/>
+                <entry url="www.google.com/setprefs?sig=0_kytoymhehphkiyzcydqzqjxdbtk%3d&amp;hl=iw&amp;source=homepage&amp;sa=x&amp;ved=0ahukewi11p2txofyahu7qfedha8kchcq2zgbca8" verdict="unknown"/>
+                <entry url="www.google.co.il/imghp?hl=en&amp;ogbl" verdict="unknown"/>
+                <entry url="www.google.co.il/intl/en/about/products" verdict="unknown"/>
+                <entry url="google.com/search/howsearchworks/?fg=1" verdict="unknown"/>
+                <entry url="www.google.com/setprefs?sig=0_kytoymhehphkiyzcydqzqjxdbtk%3d&amp;hl=ar&amp;source=homepage&amp;sa=x&amp;ved=0ahukewi11p2txofyahu7qfedha8kchcq2zgbcba" verdict="unknown"/>
+                <entry url="policies.google.com/terms?hl=en-il&amp;fg=1" verdict="unknown"/>
+                <entry url="mail.google.com/mail/&amp;ogbl" verdict="unknown"/>
+                <entry url="www.google.com/intl/en_il/ads/?subid=ww-ww-et-g-awa-a-g_hpafoot1_1!o2&amp;utm_source=google.com&amp;utm_medium=referral&amp;utm_campaign=google_hpafooter&amp;fg=1" verdict="unknown"/>
+                <entry url="www.google.com/services/?subid=ww-ww-et-g-awa-a-g_hpbfoot1_1!o2&amp;utm_source=google.com&amp;utm_medium=referral&amp;utm_campaign=google_hpbfooter&amp;fg=1" verdict="unknown"/>
+            </extracted_urls>
+            <summary>
+                <entry score="0.0" id="394" details="An Action is performed in response to an event. Every triggered behavior in a PDF is ultimately a type of Action. Object key of Actions may be encoded to defeat static analysis.">PDF document contains an canonicalized object key of Action</entry>
+                <entry score="0.0" id="8016" details="File may reference external resources through the URL/domain name/IP address. Both benign and malicious samples can have this behavior.">File contains one or more URL/domain name/IP address</entry>
+            </summary>
+        </report>
+    </task_info>
+</wildfire>
