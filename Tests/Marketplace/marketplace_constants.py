@@ -170,7 +170,7 @@ class PackFolders(enum.Enum):
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.PREPROCESS_RULES.value
+            PackFolders.PREPROCESS_RULES.value
         }
 
 

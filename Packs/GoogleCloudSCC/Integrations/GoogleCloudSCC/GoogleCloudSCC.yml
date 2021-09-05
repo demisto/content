@@ -763,7 +763,7 @@ script:
       description: Specifies the identities that do not cause logging for this type
         of permission.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.23530
+  dockerimage: demisto/google-api-py3:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
