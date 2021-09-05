@@ -208,14 +208,9 @@ def main():
     email = args.get('user-profile').get('email')
     user_name = args.get('user-profile').get('username')
 
-    is_create_enabled = params.get("create_user_enabled")
-    is_enable_enabled = params.get("enable_user_enabled")
     is_disable_enabled = params.get("disable_user_enabled")
-    is_update_enabled = params.get("update_user_enabled")
-    create_if_not_exists = params.get("create_if_not_exists")
 
-    iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, 'username')
+    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out, attr='username')
 
     headers = {
         'Content-Type': 'application/json',
@@ -263,5 +258,5 @@ def main():
         return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
