@@ -4,7 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 """
 This Script is a duplicate of Packs/Campaign/Scripts/GetCampaignIncidentsIdsAsOptions with the only change of the context field
-the data is taken from. The reason is that these two scripts are used for two different fields (higher similarity and lower similarity incidents).
+the data is taken from. The reason is that these two scripts are used for two different fields 
+(higher similarity and lower similarity incidents fields).
 """
 
 
