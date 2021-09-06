@@ -173,9 +173,31 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-Flashpoint Indicator-default-main-fd9b73e0-064b-11ec-9295-eda4452e7415",
+                        "items": [
+
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
                         "y": 3
