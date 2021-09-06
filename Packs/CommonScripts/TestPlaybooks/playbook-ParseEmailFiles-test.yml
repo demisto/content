@@ -818,7 +818,7 @@ tasks:
     task:
       id: 8e82f75f-87d0-48fc-8eed-6b829b328a57
       version: -1
-      name: Subject with special chars
+      name: Organization header with MIME encoded-word
       scriptName: http
       type: regular
       iscommand: false
