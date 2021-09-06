@@ -710,7 +710,7 @@ script:
     - default: false
       description: The connection id.
       isArray: false
-      name: cid
+      name: connection_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -1295,49 +1295,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: Connection name.
+      description: Connection id.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     deprecated: false
     description: Requests a new file download.
     execution: false
     name: tanium-tr-request-file-download
-    outputs:
-    - contextPath: Tanium.FileDownload.Path
-      description: The file download path.
-      type: String
-    - contextPath: Tanium.FileDownload.ConnectionName
-      description: The file download host.
-      type: String
-    - contextPath: Tanium.FileDownload.Downloaded
-      description: Date of the download request.
-      type: Date
-    - contextPath: Tanium.FileDownload.Status
-      description: Status of the file download request.
-      type: String
-    - contextPath: Tanium.FileDownload.ID
-      description: ID of the file download.
-      type: Number
   - arguments:
     - default: false
       description: File download ID.
       isArray: false
-      name: file-id
+      name: file_id
       required: true
       secret: false
     deprecated: false
     description: Deletes a file download.
     execution: false
     name: tanium-tr-delete-file-download
-    outputs:
-    - contextPath: Tanium.FileDownload.ID
-      description: The file download ID.
-      type: String
-    - contextPath: Tanium.FileDownload.Deleted
-      description: Whether the file download has been deleted.
-      type: Boolean
   - arguments:
     - default: false
       description: Path to the directory.
@@ -1346,9 +1323,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Connection name.
+      description: Connection id.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
@@ -1369,37 +1346,12 @@ script:
     description: Gets a list of files in the given directory.
     execution: false
     name: tanium-tr-list-files-in-directory
-    outputs:
-    - contextPath: Tanium.File.Created
-      description: Time the file was created.
-      type: Date
-    - contextPath: Tanium.File.Size
-      description: The file size.
-      type: Number
-    - contextPath: Tanium.File.IsDirectory
-      description: Whether or not the file is a directory.
-      type: Boolean
-    - contextPath: Tanium.File.LastModified
-      description: The date that the file was last modified.
-      type: Date
-    - contextPath: Tanium.File.Path
-      description: The file path.
-      type: Boolean
-    - contextPath: Tanium.File.Permissions
-      description: The file permissions.
-      type: Date
-    - contextPath: Tanium.File.ConnectionName
-      description: The host of the file.
-      type: String
-    - contextPath: Tanium.File.Deleted
-      description: Whether the file has been deleted.
-      type: Boolean
   - arguments:
     - default: false
-      defaultValue: Connection name.
-      description: The name of the connection.
+      defaultValue: Connection id.
+      description: The id of the connection.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
@@ -1413,33 +1365,11 @@ script:
     description: Gets information about a file from a remote connection.
     execution: false
     name: tanium-tr-get-file-info
-    outputs:
-    - contextPath: Tanium.File.Created
-      description: The file creation timestamp.
-      type: Date
-    - contextPath: Tanium.File.Size
-      description: The file size.
-      type: Number
-    - contextPath: Tanium.File.IsDirectory
-      description: Whether or not the file is a directory.
-      type: Boolean
-    - contextPath: Tanium.File.LastModified
-      description: The date that the file was last modified.
-      type: Date
-    - contextPath: Tanium.File.Path
-      description: The file path.
-      type: String
-    - contextPath: Tanium.File.ConnectionName
-      description: The host of the file.
-      type: String
-    - contextPath: Tanium.File.Deleted
-      description: Whether the file has been deleted.
-      type: Boolean
   - arguments:
     - default: false
-      description: Connection name.
+      description: Connection id.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
@@ -1452,16 +1382,6 @@ script:
     description: Deletes a file from the given endpoint.
     execution: false
     name: tanium-tr-delete-file-from-endpoint
-    outputs:
-    - contextPath: Tanium.File.Path
-      description: The file path.
-      type: String
-    - contextPath: Tanium.File.ConnectionName
-      description: The host of the file.
-      type: String
-    - contextPath: Tanium.File.Deleted
-      description: Whether the file has been deleted.
-      type: Boolean
   - arguments:
     - default: false
       description: Connection name.

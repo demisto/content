@@ -1,3 +1,5 @@
+import copy
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -178,18 +180,6 @@ def convert_to_int(int_to_parse: Any) -> Optional[int]:
     return res
 
 
-def path_join(base, file_name):
-    if '\\' in base:
-        if not base.endswith('\\'):
-            return base + '\\' + file_name
-        return base + file_name
-    elif '/' in base:
-        if not base.endswith('/'):
-            return base + '/' + file_name
-        return base + file_name
-    return file_name
-
-
 def filter_to_tanium_api_syntax(filter_str):
     filter_dict = {}
     try:
@@ -284,72 +274,7 @@ def init_commands_dict():
     }
 
 
-''' PROCESS HELPER FUNCTIONS '''
-
-
-def get_process_tree_item(raw_item, level):
-    tree_item = {
-        'ID': raw_item.get('id'),
-        'PTID': raw_item.get('ptid'),
-        'PID': raw_item.get('pid'),
-        'Name': raw_item.get('name'),
-        'Parent': raw_item.get('parent'),
-        'Children': raw_item.get('children')
-    }
-
-    human_readable = tree_item.copy()
-    del human_readable['Children']
-
-    children = tree_item.get('Children')
-    if children and level == 1:
-        human_readable['ChildrenCount'] = len(children)
-    if not children and level == 1:
-        human_readable['ChildrenCount'] = 0
-    elif children and level == 0:
-        human_readable_arr = []
-        output_arr = []
-        for item in children:
-            tree_output, human_readable_res = get_process_tree_item(item, level + 1)
-            human_readable_arr.append(human_readable_res)
-            output_arr.append(tree_output)
-
-        human_readable['Children'] = human_readable_arr
-        tree_item['Children'] = output_arr
-
-    return tree_item, human_readable
-
-
-def get_process_item(raw_process):
-    return {
-        'CreateTime': raw_process.get('create_time'),
-        'Domain': raw_process.get('domain'),
-        'ExitCode': raw_process.get('exit_code'),
-        'ProcessCommandLine': raw_process.get('process_command_line'),
-        'ProcessID': raw_process.get('process_id'),
-        'ProcessName': raw_process.get('process_name'),
-        'ProcessTableId': raw_process.get('process_table_id'),
-        'SID': raw_process.get('sid'),
-        'Username': raw_process.get('username')
-    }
-
-
 ''' EVIDENCE HELPER FUNCTIONS '''
-
-
-def evidence_type_number_to_name(num: int) -> str:
-    """
-    Transforms evidence type number to it's corresponding name
-    :param num: The evidence type number
-    :return: The string name of the evidence type
-    """
-    name: str = str()
-    supported_types = ['Network', 'Process', 'File', 'Registry', 'Security', 'Image', 'DNS']
-    try:
-        name = supported_types[num - 1]
-    except IndexError:
-        name = 'Unknown'
-    finally:
-        return name
 
 
 def get_process_event_item(raw_event):
@@ -444,42 +369,6 @@ def get_event_item(raw_event, event_type):
     return {k: v for k, v in event.items() if v is not None}
 
 
-''' FILE HELPER FUNCTIONS '''
-
-
-def get_file_item(file, con_name, dir_path='', full_path=''):
-    file_item = {
-        'ConnectionName': con_name,
-        'Created': timestamp_to_datestring(file.get('created'), '%Y-%m-%d %H:%M:%S'),
-        'Path': file.get('file-path'),
-        'IsDirectory': file.get('is-directory'),
-        'LastModified': timestamp_to_datestring(file.get('last-modified'), '%Y-%m-%d %H:%M:%S'),
-        'Permissions': file.get('permissions'),
-        'Size': file.get('size'),
-        'Deleted': False
-    }
-    if not file_item['Path']:
-        file_item['Path'] = full_path
-    else:
-        file_item['Path'] = path_join(dir_path, file_item['Path'])
-
-    return {key: val for key, val in file_item.items() if val is not None}
-
-
-''' LABELS HELPER FUNCTIONS '''
-
-
-def get_label_item(label):
-    return {
-        'ID': label.get('id'),
-        'Name': label.get('name'),
-        'Description': label.get('description'),
-        'IndicatorCount': label.get('indicatorCount'),
-        'SignalCount': label.get('signalCount'),
-        'CreatedAt': label.get('createdAt'),
-        'UpdatedAt': label.get('updatedAt')}
-
-
 def validate_connection_name(client, arg_input):
     """ Tanium API's connection-name parameter is case sensitive - this function queries for the user input
     and returns the precise string to use in the API, or raises a ValueError if doesn't exist.
@@ -506,26 +395,6 @@ def validate_connection_name(client, arg_input):
     if results and len(results) == 1 and results[0].lower() == arg_input.lower():
         return results[0]
     raise ValueError('The specified connection name does not exist.')
-
-
-''' SANPSHOTS HELPER FUNCTIONS '''
-
-
-def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
-    snapshots = []
-    host_snapshots = raw_snapshots.get(conn_name, {})
-    snapshot_keys = sorted(host_snapshots)
-    from_idx = min(offset, len(snapshot_keys))
-    to_idx = min(offset + limit, len(snapshot_keys))
-
-    for key in snapshot_keys[from_idx:to_idx]:
-        snapshots.append({
-            'ConnectionName': conn_name,
-            'FileName': key,
-            'Deleted': False
-        })
-
-    return snapshots
 
 
 ''' INTEL DOCS HELPER FUNCTIONS '''
@@ -1209,7 +1078,7 @@ def delete_connection(client, data_args):
 def get_events_by_connection(client, data_args):
     limit = arg_to_number(data_args.get('limit')) - 1  # there ia a bug in the api, when send limit=2 it returns 3 items
     offset = arg_to_number(data_args.get('offset'))
-    cid = data_args.get('cid')
+    cid = data_args.get('connection_id')
     sort = data_args.get('sort')
     fields = data_args.get('fields')
     event_type = data_args.get('event-type').lower()
@@ -1330,35 +1199,31 @@ def get_file_download_info(client, data_args):
 
 
 def request_file_download(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    cid = data_args.get('connection_id')
     path = data_args.get('path')
-
-    # context object will help us to verify the request has succeed in the download file playbook.
-    context = {
-        'ConnectionName': con_name,
-        'Path': path,
-        'Downloaded': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
-    }
-    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-
-    data = {
+    body = {
         'path': path,
-        'connId': con_name
     }
-    client.do_request('POST', '/plugin/products/trace/filedownloads', data=data, resp_type='text')
+    raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{cid}/file', body=body)
+
     filename = os.path.basename(path)
-    return f'Download request of file {filename} has been sent successfully.', outputs, {}
+    hr = f'Download request of file {filename} has been sent successfully.'
+    if task_id := raw_response.get('taskInfo', {}).get('id'):
+        hr += f'Task id: {task_id}.'
+
+    context = copy.deepcopy(raw_response.get('taskInfo'))
+    context.update(context.get('metadata', {}))
+    del context['metadata']
+
+    outputs = {'Tanium.FileDownload(val.path === obj.path && val.connection === obj.connection)': context}
+
+    return hr, outputs, raw_response
 
 
 def delete_file_download(client, data_args):
-    file_id = data_args.get('file-id')
-    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{file_id}', resp_type='text')
-    context = {
-        'ID': int(file_id),
-        'Deleted': True
-    }
-    outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
-    return f'Delete request of file with ID {file_id} has been sent successfully.', outputs, {}
+    file_id = data_args.get('file_id')
+    client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/filedownload/{file_id}')
+    return f'Delete request of file with ID {file_id} has been sent successfully.',{}, {}
 
 
 def list_files_in_dir(client, data_args):
@@ -1373,52 +1238,50 @@ def list_files_in_dir(client, data_args):
         f'/plugin/products/threat-response/api/v1/conns/{connection_id}/file/list/{dir_path}'
     )
 
-    files = []
-    from_idx = min(offset, len(raw_response))
-    to_idx = min(offset + limit, len(raw_response))
+    files = raw_response.get('entries', [])
+    from_idx = min(offset, len(files))
+    to_idx = min(offset + limit, len(files))
+    files = files[from_idx:to_idx]
 
-    for file in raw_response[from_idx:to_idx]:
-        # TODO: get_file_item()
+    for file in files:
+        file['connection_id'] = connection_id
+        file['path'] = dir_path_name
         if created := file.get('createdDate'):
             file['createdDate'] = timestamp_to_datestring(created)
         if created := file.get('modifiedDate'):
             file['modifiedDate'] = timestamp_to_datestring(created)
 
     context = createContext(files, removeNull=True)
-    outputs = {'Tanium.File(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-    headers = ['Path', 'Size', 'Created', 'LastModified', 'Permissions', 'IsDirectory']
+    outputs = {'Tanium.File(val.name === obj.name && val.connection_id === obj.connection_id)': context}
     human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files,
-                                     headers=headers, headerTransform=pascalToSpace, removeNull=True)
+                                     headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
 def get_file_info(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    cid = data_args.get('connection_id')
     path_name = data_args.get('path')
     path = urllib.parse.quote(path_name, safe='')
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_name}/fileinfo/{path}')
-    file_info = get_file_item(raw_response, con_name, full_path=path_name)
+    raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/conns/{cid}/file/info/{path}')
 
-    context = createContext(file_info, removeNull=True)
-    outputs = {'Tanium.File(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-    headers = ['Path', 'ConnectionName', 'Size', 'Created', 'LastModified', 'Permissions', 'IsDirectory']
-    human_readable = tableToMarkdown(f'Information for file `{path_name}`', file_info,
-                                     headers=headers, headerTransform=pascalToSpace, removeNull=True)
+    info = raw_response.get('info')
+    context = copy.deepcopy(raw_response)
+    context.update(info)
+    if info:
+        del context['info']
+
+    outputs = {'Tanium.File(val.path === obj.path)': context}
+    human_readable = tableToMarkdown(f'Information for file `{path_name}`', info,
+                                     headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
 def delete_file_from_endpoint(client, data_args):
-    con_name = validate_connection_name(client, data_args.get('connection-name'))
+    cid = validate_connection_name(client, data_args.get('connection_id'))
     path = urllib.parse.quote(data_args.get('path'))
-    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_name}/{path}', resp_type='text')
-    context = {
-        'Path': data_args.get('path').replace('\\', '/'),
-        'ConnectionName': con_name,
-        'Deleted': True
-    }
-    outputs = {'Tanium.File(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-    return f'Delete request of file {path} from endpoint {con_name} has been sent successfully.', outputs, {}
+    client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/{cid}/file/delete/{path}')
+    return f'Delete request of file {path} from endpoint {cid} has been sent successfully.', {}, {}
 
 
 ''' PROCESS COMMANDS FUNCTIONS '''
@@ -1428,7 +1291,7 @@ def get_process_info(client, data_args):
     conn_name = validate_connection_name(client, data_args.get('connection-name'))
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processes/{ptid}')
-    process = get_process_item(raw_response)
+    process = raw_response
 
     context = createContext(process, removeNull=True)
     outputs = {'Tanium.Process(val.ProcessID && val.ProcessID === obj.ProcessID)': context}

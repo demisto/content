@@ -10,8 +10,10 @@
 !tanium-tr-close-connection connection-id=remote:hostname:123:2
 !tanium-tr-list-labels limit=2
 !tanium-tr-get-label-by-id label-id=1
-!tanium-tr-list-events-by-connection cid=remote:EC2AMAZ-KGMRO60:9065264:2 event-type=File limit=3
+!tanium-tr-list-events-by-connection connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 event-type=File limit=3
 !tanium-tr-event-evidence-list limit=3
 !tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
 !tanium-tr-event-evidence-get-properties
 !tanium-tr-list-file-downloads limit=2
+!tanium-tr-delete-file-download file_id=04828d87-a384-4a8b-a874-2438bf8b16ab
+!tanium-tr-delete-file-from-endpoint connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 path=
