@@ -2,40 +2,45 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 THRESHOLDS = {
-    'relatedIndicatorCount': 100,
+    'relatedIndicatorCount': 1000,
 }
 
-BODY = {
-    'page': 0,
-    'size': 10,
-    'query': '',
-    'sort': [{
-        'field': 'relatedIncCount',
-        'asc': False,
-    }],
-    'period': {
-        'by': 'day',
-        'fromValue': 90,
-    },
-}
+
+def build_body(tenant_name):
+    query = f"account:{tenant_name}" if tenant_name != "" else ""
+    body = {
+        'page': 0,
+        'size': 10,
+        'query': f'{query}',
+        'sort': [{
+            'field': 'relatedIncCount',
+            'asc': False,
+        }],
+        'period': {
+            'by': 'day',
+            'fromValue': 90,
+        }
+    }
+    return body
 
 
 def main(args):
     incident = demisto.incidents()[0]
-    account_name = incident.get('account')
-    account_name = f"acc_{account_name}/" if account_name != "" else ""
+    tenant_name = incident.get('account')
+    account_name = f"acc_{tenant_name}/" if tenant_name != "" else ""
+    body = build_body(tenant_name)
 
     indicator_thresholds = args.get('Thresholds', THRESHOLDS)
     indicator_res = execute_command('demisto-api-post', {
         'uri': f'{account_name}/indicators/search',
-        'body': BODY,
+        'body': body,
     })
 
     indicators = indicator_res['response']['iocObjects']
 
     res = []
     for indicator in indicators:
-        if indicator['relatedIncCount'] > indicator_thresholds['relatedIndicatorCount']:
+        if indicator.get('relatedIncCount', 0) > indicator_thresholds['relatedIndicatorCount']:
             res.append({
                 'category': 'Indicators',
                 'severity': 'Low',

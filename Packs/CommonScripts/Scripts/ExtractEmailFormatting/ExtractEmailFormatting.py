@@ -16,7 +16,7 @@ Third Group - [a-z]{2,} :
 
 The pattern will be: <First Group>@<Second Group>.<Third Group>
 """
-VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-z0-9.-]+\.[a-z]{2,}"
+VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]+(\[@\]|@)[a-z0-9.-]+\.[a-z]{2,}"
 VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
 
 
@@ -30,7 +30,7 @@ def verify_is_email(email_address: str) -> bool:
 def main():
     emails = argToList(demisto.args().get('input'))
 
-    list_results = [email_address for email_address in emails if verify_is_email(email_address)]
+    list_results = [email_address.replace("[@]", "@") for email_address in emails if verify_is_email(email_address)]
 
     if list_results:
         return_results(list_results)
