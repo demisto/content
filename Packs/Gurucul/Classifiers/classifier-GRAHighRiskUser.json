@@ -1,11 +1,11 @@
 {
-    "defaultIncidentType": "GraHighRiskUser",
+    "defaultIncidentType": "GRAHighRiskUser",
     "feed": false,
-    "id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03_custom",
+    "id": "GRAHighRiskUser-Classifier",
     "keyTypeMap": {
-        "HighRiskUser": "GraHighRiskUser"
+        "GRAHighRiskUser": "GRAHighRiskUser"
     },
-    "name": "Gurucul-HighRiskUsers - Classifier",
+    "name": "GRAHighRiskUser-Classifier",
     "transformer": {
         "complex": {
             "accessor": "",

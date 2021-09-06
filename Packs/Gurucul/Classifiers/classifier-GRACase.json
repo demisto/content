@@ -1,11 +1,11 @@
 {
-    "defaultIncidentType": "GraCase",
+    "defaultIncidentType": "GRACase",
     "feed": false,
-    "id": "Gurucul-GRACases",
+    "id": "GRACase-Classifier",
     "keyTypeMap": {
-        "GRACase": "GraCase"
+        "GRACase": "GRACase"
     },
-    "name": "Gurucul-GRACases - Classifier",
+    "name": "GRACase-Classifier",
     "transformer": {
         "complex": {
             "accessor": "",

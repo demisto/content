@@ -224,7 +224,7 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
         for record1 in users_data:
             incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
-            record1['incidentType'] = 'HighRiskUser'
+            record1['incidentType'] = 'GRAHighRiskUser'
             inc1 = {
                 'name': record1.get('employeeId'),
                 'occurred': timestamp_to_datestring(incident_created_time_ms),

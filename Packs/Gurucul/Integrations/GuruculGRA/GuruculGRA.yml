@@ -18,12 +18,12 @@ configuration:
   required: true
 - display: Fetch Incident Command
   name: fetch_incident_command
-  defaultvalue: GraCases
+  defaultvalue: GraCase
   type: 15
   required: false
   options:
   - GraHighRiskUser
-  - GraCases
+  - GraCase
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -959,7 +959,7 @@ script:
       description: Entities Flagged
       type: number
     description: Retrieve detailed anomaly summary of specified anomaly name.
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.6.24067
   isfetch: true
   runonce: false
   subtype: python3

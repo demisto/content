@@ -1,17 +1,17 @@
 {
     "brandName": "Gurucul-GRA",
     "custom": true,
-    "defaultIncidentType": "GraHighRiskUser",
+    "defaultIncidentType": "GRAHighRiskUser",
     "feed": false,
     "id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03",
     "isDefault": false,
     "toVersion": "5.9.9",
     "fromVersion": "5.0.0",
     "keyTypeMap": {
-        "HighRiskUser": "GraHighRiskUser"
+        "GRAHighRiskUser": "GRAHighRiskUser"
     },
     "mapping": {
-        "GraHighRiskUser": {
+        "GRAHighRiskUser": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "name": {

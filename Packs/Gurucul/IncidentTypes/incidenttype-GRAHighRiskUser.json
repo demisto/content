@@ -8,10 +8,10 @@
     "disabled": false,
     "hours": 0,
     "hoursR": 0,
-    "id": "GraHighRiskUser",
+    "id": "GRAHighRiskUser",
     "locked": false,
-    "name": "GraHighRiskUser",
-    "playbookId": "GraHighRiskUser",
+    "name": "GRAHighRiskUser",
+    "playbookId": "GRAHighRiskUser",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
@@ -19,5 +19,5 @@
     "weeks": 0,
     "weeksR": 0,
     "vcShouldIgnore": false,
-    "prevName": "GraHighRiskUser"
+    "prevName": "GRAHighRiskUser"
 }

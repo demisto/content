@@ -1,7 +1,7 @@
-id: GraHighRiskUser
+id: GRAHighRiskUser
 version: -1
 fromversion: 5.0.0
-name: GraHighRiskUser
+name: GRAHighRiskUser
 starttaskid: "0"
 description: Playbook for fetching high risk users and associated anomalies.
 tasks:

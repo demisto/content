@@ -1,8 +1,8 @@
 {
-    "defaultIncidentType": "GraHighRiskUser",
+    "defaultIncidentType": "GRAHighRiskUser",
     "description": "",
     "feed": false,
-    "id": "Gurucul-HighRiskUsers-mapper",
+    "id": "GRAHighRiskUser-Mapper",
     "mapping": {
         "GraHighRiskUser": {
             "dontMapEventToLabels": false,
@@ -19,7 +19,7 @@
             }
         }
     },
-    "name": "Gurucul-HighRiskUsers Incoming Mapper",
+    "name": "GRAHighRiskUser-Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
