@@ -267,6 +267,15 @@ class Client(BaseClient):
         else:
             return self.get_paged_results_sta(uri=uri)
 
+    # Returns output data for group members.
+    def user_groups_data(self, userName, limit=None):
+
+        response = self.get_user_groups_sta(userName=userName, limit=limit)
+        data = self.get_user_info_sta(userName=userName)
+        data['groups'] = response
+
+        return response, data
+
     # Get list of groups in the tenant.
     def get_group_list_sta(self, limit=None):
 
@@ -310,6 +319,15 @@ class Client(BaseClient):
                 return self.get_paged_results_sta(uri=uri, limit=limit)
         else:
             return self.get_paged_results_sta(uri=uri)
+
+    # Returns output data for group members.
+    def group_members_data(self, groupName, limit=None):
+
+        response = self.get_group_members_sta(groupName=groupName, limit=limit)
+        data = self.get_group_info_sta(groupName=groupName)
+        data['users'] = response
+
+        return response, data
 
     # Create a group in the tenant.
     def create_group_sta(self, args):
@@ -661,7 +679,7 @@ def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-get-user-groups command. Get all the groups associated with a specific user. """
 
-    response = client.get_user_groups_sta(userName=args.get('userName'), limit=args.get('limit'))
+    response, output_data = client.user_groups_data(userName=args.get('userName'), limit=args.get('limit'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
@@ -671,9 +689,9 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
         readable_output=tableToMarkdown(
             f"Groups associated with user - {args.get('userName')} : ", response, headers=header_sequence,
             headerTransform=pascalToSpace, removeNull=True),
-        outputs_prefix='STA.GROUP',
+        outputs_prefix='STA.USER',
         outputs_key_field=['id'],
-        outputs=response
+        outputs=output_data
     )
 
 
@@ -716,7 +734,7 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
 def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Function for sta-get-group-members command. Get list of users in a specific group. """
 
-    response = client.get_group_members_sta(groupName=args.get('groupName'), limit=args.get('limit'))
+    response, output_data = client.group_members_data(groupName=args.get('groupName'), limit=args.get('limit'))
     if not response:
         return CommandResults(
             readable_output=NO_RESULT_MSG,
@@ -726,9 +744,9 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     return CommandResults(
         readable_output=tableToMarkdown(f"Members of group - {args.get('groupName')} : ", response,
                                         headers=header_sequence, headerTransform=pascalToSpace, removeNull=True),
-        outputs_prefix='STA.USER',
+        outputs_prefix='STA.GROUP',
         outputs_key_field=['id'],
-        outputs=response
+        outputs=output_data
     )
 
 

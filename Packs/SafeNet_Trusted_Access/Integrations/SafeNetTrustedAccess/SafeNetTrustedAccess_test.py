@@ -62,7 +62,7 @@ delete_user = {
     "userName": "testuser1"
 }
 
-user_groups = [
+user_groups_response = [
     {
         "description": "Unusual Activity Group for Testing",
         "id": "50331650",
@@ -78,6 +78,33 @@ user_groups = [
         "schemaVersionNumber": "1.0"
     }
 ]
+
+user_groups_context = {
+    "email": "test.user@demisto.com",
+    "firstName": "Hello",
+    "groups": [
+        {
+            "description": "Unusual Activity Group for Testing",
+            "id": "50331650",
+            "isSynchronized": False,
+            "name": "Test Group",
+            "schemaVersionNumber": "1.0"
+        },
+        {
+            "description": "Group for testing.",
+            "id": "50331652",
+            "isSynchronized": False,
+            "name": "TestGroup0",
+            "schemaVersionNumber": "1.0"
+        }
+    ],
+    "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+    "isSynchronized": False,
+    "lastName": "User",
+    "schemaVersionNumber": "1.0",
+    "userName": "hellouser"
+}
+user_groups_data = (user_groups_response, user_groups_context)
 
 group_list = [
     {
@@ -111,7 +138,7 @@ group_info = {
     "schemaVersionNumber": "1.0"
 }
 
-group_members = [
+group_members_response = [
     {
         "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
         "links": {
@@ -129,6 +156,33 @@ group_members = [
         "type": "User"
     }
 ]
+
+group_members_context = {
+    "description": "Group for testing.",
+    "id": "50331652",
+    "isSynchronized": False,
+    "name": "TestGroup0",
+    "schemaVersionNumber": "1.0",
+    "users": [
+        {
+            "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
+            "links": {
+                "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=True"
+            },
+            "name": "demouser",
+            "type": "User"
+        },
+        {
+            "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+            "links": {
+                "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=True"
+            },
+            "name": "hellouser",
+            "type": "User"
+        }
+    ]
+}
+group_members_data = (group_members_response, group_members_context)
 
 create_group = {
     "description": "Group description.",
@@ -310,27 +364,18 @@ def test_delete_user_sta_command(mocker, args, expected_output):
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'userName': 'hellouser', 'limit': '5'},
-         [{"description": "Unusual Activity Group for Testing", "id": "50331650", "isSynchronized": False,
-           "name": "Test Group", "schemaVersionNumber": "1.0"},
-          {"description": "Group for testing.", "id": "50331652", "isSynchronized": False, "name": "TestGroup0",
-           "schemaVersionNumber": "1.0"}],
-         [{"id": "50331650", "schemaVersionNumber": "1.0", "name": "Test Group",
-           "description": "Unusual Activity Group for Testing", "isSynchronized": False},
-          {"id": "50331652", "schemaVersionNumber": "1.0", "name": "TestGroup0", "description": "Group for testing.",
-           "isSynchronized": False}]
-         )
+        ({'userName': 'hellouser', 'limit': '5'}, user_groups_context, user_groups_response)
     ])
 def test_get_user_groups_sta_command(mocker, args, expected_output, expected_readable):
 
     from SafeNetTrustedAccess import get_user_groups_sta_command
 
-    mocker.patch.object(client, 'get_user_groups_sta', return_value=user_groups)
+    mocker.patch.object(client, 'user_groups_data', return_value=user_groups_data)
     response = get_user_groups_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.GROUP'
-    assert 'Test Group' in response.outputs[0]['name']
-    assert 'TestGroup0' in response.outputs[1]['name']
+    assert response.outputs_prefix == 'STA.USER'
+    assert 'Test Group' in response.readable_output
+    assert 'TestGroup0' in response.readable_output
 
 
 # Tests sta-get-group-list command function.
@@ -388,26 +433,16 @@ def test_get_group_info_sta_command(mocker, args, expected_output, expected_read
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'groupName': 'TestGroup0'},
-         [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc",
-           "links": {
-               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=True"},
-           "name": "demouser", "type": "User"},
-          {"id": "CNlM6rvB0uQDXA4rWyUAAAAc",
-           "links": {
-               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=True"},
-           "name": "hellouser", "type": "User"}],
-         [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc", "name": "demouser", "type": "User"},
-          {"id": "CNlM6rvB0uQDXA4rWyUAAAAc", "name": "hellouser", "type": "User"}])
+        ({'groupName': 'TestGroup0'}, group_members_context, group_members_response)
     ])
 def test_get_group_members_sta_command(mocker, args, expected_output, expected_readable):
 
     from SafeNetTrustedAccess import get_group_members_sta_command
 
-    mocker.patch.object(client, 'get_group_members_sta', return_value=group_members)
+    mocker.patch.object(client, 'group_members_data', return_value=group_members_data)
     response = get_group_members_sta_command(client, args)
 
-    assert response.outputs_prefix == 'STA.USER'
+    assert response.outputs_prefix == 'STA.GROUP'
     assert 'demouser' in response.readable_output
     assert 'hellouser' in response.readable_output
 

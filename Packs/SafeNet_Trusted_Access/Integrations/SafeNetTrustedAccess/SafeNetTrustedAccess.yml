@@ -364,19 +364,73 @@ script:
     description: Return all the groups associated with a specific user.
     name: sta-get-user-groups
     outputs:
-    - contextPath: STA.GROUP.ID
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number for the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+    - contextPath: STA.USER.GROUP.ID
       description: Group ID of the group.
       type: string
-    - contextPath: STA.GROUP.SCHEMA
+    - contextPath: STA.USER.GROUP.SCHEMA
       description: Schema version for the group.
       type: string
-    - contextPath: STA.GROUP.NAME
+    - contextPath: STA.USER.GROUP.NAME
       description: Name of the group.
       type: string
-    - contextPath: STA.GROUP.DESCRIPTION
+    - contextPath: STA.USER.GROUP.DESCRIPTION
       description: Description of the group.
       type: string
-    - contextPath: STA.GROUP.SYNCHRONIZED
+    - contextPath: STA.USER.GROUP.SYNCHRONIZED
       description: Is group synchronized.
       type: boolean
   - arguments:
@@ -431,14 +485,32 @@ script:
     description: Get list of users in a specific group.
     name: sta-get-group-members
     outputs:
-    - contextPath: STA.USER.ID
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+    - contextPath: STA.GROUP.USER.ID
       description: User ID of the user.
       type: string
-    - contextPath: STA.USER.NAME
+    - contextPath: STA.GROUP.USER.NAME
       description: Username of the user.
       type: string
-    - contextPath: STA.USER.TYPE
+    - contextPath: STA.GROUP.USER.TYPE
       description: Type of the user.
+      type: string
+    - contextPath: STA.GROUP.USER.LINKS.SELF
+      description: Link for the user details.
       type: string
   - arguments:
     - description: Name of the group.

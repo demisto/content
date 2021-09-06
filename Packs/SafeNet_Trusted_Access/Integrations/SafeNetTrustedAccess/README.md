@@ -375,11 +375,29 @@ Return all the groups associated with a specific user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.GROUP.ID | string | Group ID of the group. | 
-| STA.GROUP.SCHEMA | string | Schema version for the group. | 
-| STA.GROUP.NAME | string | Name of the group. | 
-| STA.GROUP.DESCRIPTION | string | Description of the group. | 
-| STA.GROUP.SYNCHRONIZED | boolean | Is group synchronized. | 
+| STA.USER.ID | string | User ID of the user. | 
+| STA.USER.SCHEMA | string | Schema version number. | 
+| STA.USER.USERNAME | string | Username of the user. | 
+| STA.USER.FIRSTNAME | string | First name of the user. | 
+| STA.USER.LASTNAME | string | Last name of the user. | 
+| STA.USER.EMAIL | string | Email ID of the user. | 
+| STA.USER.MOBILENUMBER | number | Mobile number for the user. | 
+| STA.USER.ALIAS1 | string | Alias for the user. | 
+| STA.USER.ALIAS2 | string | Additional alias for the user. | 
+| STA.USER.CUSTOM1 | string | Custom value for the user. | 
+| STA.USER.CUSTOM2 | string | Additional custom value for the user. | 
+| STA.USER.CUSTOM3 | string | Additional custom value for the user. | 
+| STA.USER.ADDRESS | string | Address of the user. | 
+| STA.USER.CITY | string | City of the user. | 
+| STA.USER.STATE | string | State of the user. | 
+| STA.USER.COUNTRY | string | Country of the user. | 
+| STA.USER.POSTALCODE | number | Postal Code of the user. | 
+| STA.USER.SYNCHRONIZED | boolean | Is user synchronized. | 
+| STA.USER.GROUP.ID | string | Group ID of the group. | 
+| STA.USER.GROUP.SCHEMA | string | Schema version for the group. | 
+| STA.USER.GROUP.NAME | string | Name of the group. | 
+| STA.USER.GROUP.DESCRIPTION | string | Description of the group. | 
+| STA.USER.GROUP.SYNCHRONIZED | boolean | Is group synchronized. | 
 
 
 #### Command Example
@@ -389,22 +407,31 @@ Return all the groups associated with a specific user.
 ```json
 {
     "STA": {
-        "GROUP": [
-            {
-                "description": "Unusual Activity Group for Testing",
-                "id": "50331650",
-                "isSynchronized": false,
-                "name": "TestUnusualActivityGroup",
-                "schemaVersionNumber": "1.0"
-            },
-            {
-                "description": "Group for testing.",
-                "id": "50331652",
-                "isSynchronized": false,
-                "name": "TestGroup0",
-                "schemaVersionNumber": "1.0"
-            }
-        ]
+        "USER": {
+            "email": "test.user@demisto.com",
+            "firstName": "Hello",
+            "groups": [
+                {
+                    "description": "User would be added to unusual activity group on denying Push Notification.",
+                    "id": "50331650",
+                    "isSynchronized": false,
+                    "name": "TestUnusualActivityGroup",
+                    "schemaVersionNumber": "1.0"
+                },
+                {
+                    "description": "Group for testing.",
+                    "id": "50331652",
+                    "isSynchronized": false,
+                    "name": "TestGroup0",
+                    "schemaVersionNumber": "1.0"
+                }
+            ],
+            "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+            "isSynchronized": false,
+            "lastName": "User",
+            "schemaVersionNumber": "1.0",
+            "userName": "hellouser"
+        }
     }
 }
 ```
@@ -414,7 +441,7 @@ Return all the groups associated with a specific user.
 >### Groups associated with user - hellouser : 
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331650 | 1.0 | TestUnusualActivityGroup | Unusual Activity Group for Testing | false |
+>| 50331650 | 1.0 | TestUnusualActivityGroup | User would be added to unusual activity group on denying Push Notification. | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -560,9 +587,15 @@ Get list of users in a specific group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| STA.USER.ID | string | User ID of the user. | 
-| STA.USER.NAME | string | Username of the user. | 
-| STA.USER.TYPE | string | Type of the user. | 
+| STA.GROUP.ID | string | Group ID of the group. | 
+| STA.GROUP.SCHEMA | string | Schema version for the group. | 
+| STA.GROUP.NAME | string | Name of the group. | 
+| STA.GROUP.DESCRIPTION | string | Description of the group. | 
+| STA.GROUP.SYNCHRONIZED | boolean | Is group synchronized. | 
+| STA.GROUP.USER.ID | string | User ID of the user. | 
+| STA.GROUP.USER.NAME | string | Username of the user. | 
+| STA.GROUP.USER.TYPE | string | Type of the user. | 
+| STA.GROUP.USER.LINKS.SELF | string | Link for the user details. | 
 
 
 #### Command Example
@@ -572,24 +605,31 @@ Get list of users in a specific group.
 ```json
 {
     "STA": {
-        "USER": [
-            {
-                "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
-                "links": {
-                    "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
+        "GROUP": {
+            "description": "Group for testing.",
+            "id": "50331652",
+            "isSynchronized": false,
+            "name": "TestGroup0",
+            "schemaVersionNumber": "1.0",
+            "users": [
+                {
+                    "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
+                    "links": {
+                        "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6Pyq7nADXA4rWyUAAATc?isUid=true"
+                    },
+                    "name": "demouser",
+                    "type": "User"
                 },
-                "name": "demouser",
-                "type": "User"
-            },
-            {
-                "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
-                "links": {
-                    "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
-                },
-                "name": "hellouser",
-                "type": "User"
-            }
-        ]
+                {
+                    "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+                    "links": {
+                        "self": "https://api.stademo.com/api/v1/tenants/HNISOUTHA4/users/CNlM6rvB9uQDXA4rWyUAAATc?isUid=true"
+                    },
+                    "name": "hellouser",
+                    "type": "User"
+                }
+            ]
+        }
     }
 }
 ```
