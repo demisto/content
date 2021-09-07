@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "graweblink",
+    "cliName": "GRAWeblink",
     "closeForm": false,
     "content": true,
     "description": "GRA Weblink",

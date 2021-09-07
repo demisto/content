@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "gracasestatus",
+    "cliName": "GRACaseStatus",
     "closeForm": false,
     "content": true,
     "description": "GRA Case Status",

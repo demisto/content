@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "grariskaccepteddate",
+    "cliName": "GRARiskAcceptedDate",
     "closeForm": false,
     "content": true,
     "description": "GRA Risk Accepted Date",

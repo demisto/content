@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "graentity",
+    "cliName": "GRAEntity",
     "closeForm": false,
     "content": true,
     "description": "GRA Entity",

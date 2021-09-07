@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "graanomalyresourcename",
+    "cliName": "GRAAnomalyResourceName",
     "closeForm": false,
     "content": true,
     "description": "GRA Anomaly Resource Name",

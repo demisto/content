@@ -6,7 +6,7 @@
         "GRAHighRiskUser"
     ],
     "caseInsensitive": true,
-    "cliName": "graassignee",
+    "cliName": "GRAAssignee",
     "closeForm": false,
     "content": true,
     "description": "GRA Assignee",
