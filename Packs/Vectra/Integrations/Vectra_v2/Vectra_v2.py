@@ -136,14 +136,15 @@ class Client:
         query_string += f' and detection.certainty:>={self.c_score_gte}'
         query_string += f' and detection.last_timestamp:>{last_timestamp}'  # format: "%Y-%m-%dT%H%M"
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
-        demisto.info(f'\n\nQuery String:\n{query_string}\n\n')
+
         params = {
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
         }
+        demisto.debug(f'\n\nparams: {params}\n\n')
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
-        demisto.info("\n\n Queried Successfully\n\n")
+        demisto.debug("\n\n Queried Successfully\n\n")
         # Detections -> Incidents, if exists
         incidents = []
         if 'results' in raw_response:
@@ -152,18 +153,25 @@ class Client:
 
             try:
                 for detection in detections:
-                    incidents.append(create_incident_from_detection(detection))  # type: ignore
+                    demisto.debug(f'\ndetection found: {detection}\n')
+                    incident = create_incident_from_detection(detection)
+                    demisto.debug(f'\nincident found: {incident}\n')
+                    incidents.append(incident)  # type: ignore
                     # format from response: %Y-%m-%dT%H:%M:%SZ
                     response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),    # type: ignore
                                                                 "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
-                    last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
 
+                    demisto.debug(f'\nresponse_last_timestamp found: {response_last_timestamp}\n')
+                    demisto.debug(f'\ncurrent last_timestamp: {last_timestamp}\n')
+                    last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
+                    demisto.debug(f'\nnew last_timestamp: {last_timestamp}\n')
                 if incidents:
                     last_run = {'last_timestamp': last_timestamp}
 
             except ValueError:
                 raise
-        demisto.info(f"Last run is:\n {last_run}")
+        demisto.debug(f"\nLast run is: {last_run}\n")
+        demisto.debug(f"\nNumber of incidents found: {len(incidents)}\n, incidents: {incidents}\n")
         return last_run, incidents
 
 
