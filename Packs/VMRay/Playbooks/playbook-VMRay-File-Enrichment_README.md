@@ -38,6 +38,7 @@ This playbook does not use any sub-playbooks.
 | DBotScore.Type | The indicator type. | String |
 | DBotScore.Vendor | The vendor used to calculate the score. | String |
 | DBotScore.Score | The actual score. | Number |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | VMRay.Sample.SampleID | ID of the sample. | Number |
 | VMRay.Sample.SampleURL | URL to sample page. | String |
 | VMRay.Sample.FileName | File name of the sample. | String |

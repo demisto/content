@@ -14,6 +14,7 @@ SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
+RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -198,6 +199,7 @@ def dbot_score_by_hash(data):
                     'Type': 'hash',
                     'Vendor': 'VMRay',
                     'Score': DBOTSCORE.get(data.get('Verdict', 0)),
+                    'Reliability': RELIABILITY
                 }
             )
     return scores

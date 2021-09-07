@@ -579,6 +579,7 @@ Retrieves sample information by hash.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | VMRay.Sample.SampleID | Number | ID of the sample. | 
 | VMRay.Sample.SampleURL | String | URL to sample page. | 
 | VMRay.Sample.FileName | String | File name of the sample. | 
@@ -790,6 +791,7 @@ Retrieves Indicators of Compromise for a specified sample.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Domain.Name | String | The domain name | 
 | IP.Address | String | IP address | 
 | URL.Data | String | The URL | 
