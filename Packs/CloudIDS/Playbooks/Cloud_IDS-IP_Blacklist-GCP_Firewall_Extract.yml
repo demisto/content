@@ -1,7 +1,8 @@
-id: Cloud IDS-IP Blacklist-GCP Firewall_Extract
-version: -1
+id: 7e46b2e2-79d5-43e9-8e18-8991d5f42222
+version: 12
+vcShouldKeepItemLegacyProdMachine: false
 name: Cloud IDS-IP Blacklist-GCP Firewall_Extract
-description: Set a list of IP addresses in GCP firewall.
+description: Get Source IP
 starttaskid: "0"
 tasks:
   "0":
@@ -14,16 +15,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - "36"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 377.5,
-          "y": 50
+          "y": 90
         }
       }
     note: false
@@ -31,98 +31,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: fa63a6e8-acb5-4473-800f-fd66b6510cba
-    type: regular
-    task:
-      id: fa63a6e8-acb5-4473-800f-fd66b6510cba
-      version: -1
-      name: Get GCP Firewall
-      description: Returns the specified firewall.
-      script: '|||gcp-compute-get-firewall'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      name:
-        simple: ${inputs.GCPFirewallName}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: 810219d6-a1d8-40bb-85bf-ad8467c15ce0
-    type: condition
-    task:
-      id: 810219d6-a1d8-40bb-85bf-ad8467c15ce0
-      version: -1
-      name: Is Google Compute integration enabled?
-      description: Checks if Google Compute Integration is enable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "34"
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Google Cloud Compute
-                accessor: brand
-            iscontext: true
-          right:
-            value:
-              simple: Google Cloud Compute
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 7a1e8bf0-88a2-4633-8273-d3722a190768
@@ -134,13 +44,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 1055
+          "x": 377.5,
+          "y": 450
         }
       }
     note: false
@@ -148,54 +57,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "35":
-    id: "35"
-    taskid: 37f1a550-1c05-47b9-887a-325486ba7e57
-    type: condition
-    task:
-      id: 37f1a550-1c05-47b9-887a-325486ba7e57
-      version: -1
-      name: GCP Firewall found?
-      description: Checks if GCP Firewall is found
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "37"
-      "yes":
-      - "36"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GoogleCloudCompute.Firewalls.name
-            iscontext: true
-          right:
-            value:
-              simple: inputs.GCPFirewallName
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 20a62289-fa47-403e-8bb1-31e12a545459
+    taskid: 2cd3490c-4a7f-488b-8f8f-04acf3bab28c
     type: regular
     task:
-      id: 20a62289-fa47-403e-8bb1-31e12a545459
+      id: 2cd3490c-4a7f-488b-8f8f-04acf3bab28c
       version: -1
       name: Extract
       description: Loads a json from string input, and returns a json object result
@@ -207,16 +76,14 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      extend-context:
-        simple: srcIP=jsonPayload.source_ip_address
       input:
         simple: ${incident.labels.data}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 865
+          "x": 377.5,
+          "y": 250
         }
       }
     note: false
@@ -224,72 +91,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "37":
-    id: "37"
-    taskid: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
-    type: title
-    task:
-      id: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
-      version: -1
-      name: GCP Firewall Name Not Found
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "38"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "38":
-    id: "38"
-    taskid: 8c8f5514-a4f0-43df-8a99-b3723559847e
-    type: regular
-    task:
-      id: 8c8f5514-a4f0-43df-8a99-b3723559847e
-      version: -1
-      name: Engineer - Fix Firewall Name and rerun
-      description: Wait for Engineer to fix Firewall Name and rerun
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "29_22_yes": 0.3,
-      "29_34_#default#": 0.49,
-      "35_37_#default#": 0.36
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 920,
-        "x": 50,
-        "y": 50
+        "height": 425,
+        "width": 380,
+        "x": 377.5,
+        "y": 90
       }
     }
   }
@@ -301,7 +113,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -309,19 +121,13 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
-- key: GCPFirewallName
-  value:
-    simple: fw-test-ids-cortex
-  required: true
-  description: Name of the GCP Firewall where the playbook should set the IPs
-  playbookInputQuery:
 outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
+sourceplaybookid: Cloud IDS-IP Blacklist-GCP Firewall
 quiet: true
-fromversion: 6.0.0
