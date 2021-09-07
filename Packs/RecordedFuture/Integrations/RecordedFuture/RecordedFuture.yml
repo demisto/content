@@ -67,10 +67,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers;Global
-    Trends, Trending Operations;Global Trends, Trending Targets;Global Trends, Trending
-    Methods
-  display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
+- display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
     will be fetched
   name: rule_names
   required: false

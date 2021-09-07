@@ -1512,16 +1512,17 @@ def main() -> None:
                 client.whoami()
                 return_results("ok")
             except Exception as err:
+                message = str(err)
                 try:
                     error = json.loads(str(err).split("\n")[1])
-                    if "error" in error:
-                        message = error.get("error", {})["message"]
+                    if "fail" in error.get("result", {}).get("status", ""):
+                        message = error.get("result", {})["message"]
                 except Exception:
                     message = (
                         "Unknown error. Please verify that the API"
-                        " URL and Token are correctly configured."
+                        f" URL and Token are correctly configured. RAW Error: {err}"
                     )
-                raise DemistoException(f"Failed due to: {message}")
+                raise DemistoException(f"Failed due to - {message}")
 
         elif command in ["url", "ip", "domain", "file", "cve"]:
             entities = argToList(demisto_args.get(command))
