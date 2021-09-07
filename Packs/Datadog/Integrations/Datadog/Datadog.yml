@@ -1,0 +1,182 @@
+category: Analytics & SIEM
+commonfields:
+  id: Datadog
+  version: -1
+configuration:
+- defaultvalue: https://api.datadoghq.eu
+  display: Server URL (e.g. https://api.datadoghq.eu)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Application Key
+  name: applicationkey
+  required: false
+  type: 4
+- additionalinfo: Priority of events to pull
+  display: Event Priority
+  name: incidentPriority
+  options:
+  - low
+  - normal
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 30632433-c8d9-410f-83f5-cd62497fdb37
+    propagationLabels: []
+    toServerVersion: ""
+display: Datadog
+name: Datadog
+script:
+  commands:
+  - arguments:
+    - description: POSIX timestamp
+      name: start
+      required: true
+    - description: POSIX timestamp.
+      name: end
+      required: true
+    - auto: PREDEFINED
+      description: Priority of your events, either low or normal.
+      name: priority
+      predefined:
+      - low
+      - normal
+    - description: A comma separated string of sources.
+      name: sources
+    - description: A comma separated list indicating what tags, if any, should be
+        used to filter the list of monitors by scope.
+      name: tags
+    description: The event stream can be queried and filtered by time, priority, sources
+      and tags.
+    name: dd-get-events
+  - arguments:
+    - description: The ID of the event
+      name: id
+      required: true
+    description: This endpoint allows you to query for event details.
+    name: dd-get-event-id
+  - arguments: []
+    description: Get all incidents for the user’s organization
+    name: dd-get-incidents
+  - arguments:
+    - description: The UUID the incident.
+      name: id
+      required: true
+    description: Get the details of an incident by incident_id.
+    name: dd-get-incident-id
+  - arguments:
+    - description: String to filter search results.
+      name: filter
+    - default: true
+      defaultValue: "5"
+      description: Number of hosts to return. Max 1000.
+      name: count
+    description: This endpoint allows searching for hosts by name, alias, or tag.
+      Hosts live within the past 3 hours are included by default.
+    name: dd-list-hosts
+  - arguments:
+    - description: Name of the host to mute.
+      name: hostname
+      required: true
+    - description: Message to associate with the muting of this host.
+      name: message
+      required: true
+    - description: POSIX timestamp in seconds when the host is unmuted. If omitted,
+        the host remains muted until explicitly unmuted.
+      name: end
+    description: Mute a host.
+    name: dd-mute-host
+  - arguments:
+    - description: Name of the host to un-mute.
+      name: hostname
+      required: true
+    description: Un-mute a host.
+    name: dd-unmute-host
+  - arguments:
+    - description: Filter all users by the given string. Defaults to no filtering.
+      name: filter
+    - auto: PREDEFINED
+      description: Filter on status attribute
+      name: status
+      predefined:
+      - Active
+      - Pending
+      - Disabled
+    description: Get the list of all users in the organization. This list includes
+      all users even if they are deactivated or unverified.
+    name: dd-get-users
+  - arguments:
+    - description: Seconds since the Unix epoch.
+      name: from
+      required: true
+    - description: Hostname for filtering the list of metrics returned. If set, metrics
+        retrieved are those with the corresponding hostname tag.
+      name: host
+    - description: Filter metrics that have been submitted with the given tags. Supports
+        boolean and wildcard expressions. Cannot be combined with other filters.
+      name: tag_filter
+    description: Get the list of actively reporting metrics from a given time until
+      now.
+    name: dd-get-active-metrics-list
+  - arguments:
+    - description: The name of the host that produced the metric.
+      name: host
+      required: true
+    - description: If the type of the metric is rate or count, define the corresponding
+        interval.
+      name: interval
+    - description: The name of the timeseries. If the metric exist, it will be updated.
+        else it will be created.
+      name: metric
+      required: true
+    - description: Timestamps should be in POSIX time in seconds, and cannot be more
+        than ten minutes in the future or more than one hour in the past.
+      name: pointTimeStamp
+      required: true
+    - description: A scalar value (cannot be a string)
+      name: pointValue
+    - auto: PREDEFINED
+      description: The type of the metric either count or rate.
+      name: type
+      predefined:
+      - count
+      - rate
+      required: true
+    description: The metrics end-point allows you to post time-series data that can
+      be graphed on Datadog’s dashboards.
+    name: dd-submit-metics
+  dockerimage: demisto/python3:3.9.6.24067
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
