@@ -1,4 +1,4 @@
-Datadog is a monitoring service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
+Monitoring service for cloud-scale applications, providing monitoring through a SaaS-based data analytics platform
 This integration was integrated and tested with version xx of Datadog
 
 ## Configure Datadog on Cortex XSOAR
@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of Datadog
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://api.datadoghq.eu) |  | True |
+    | Server URL |  | True |
     | API Key |  | True |
     | Application Key |  | False |
     | Event Priority | Priority of events to pull | False |
