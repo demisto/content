@@ -2,7 +2,7 @@ id: File Enrichment - VMRay
 version: -1
 name: File Enrichment - VMRay
 description: Get file information using the VMRay integration.
-fromversion: 5.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

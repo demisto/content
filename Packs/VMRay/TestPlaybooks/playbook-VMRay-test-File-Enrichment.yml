@@ -97,7 +97,7 @@ tasks:
       id: f460de52-2b6f-4e1c-82b2-7a5df117436d
       version: -1
       name: Valid MD5
-      description: TODO
+      description: Test file enrichment with a valid MD5 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -144,7 +144,7 @@ tasks:
       id: 5a0f5737-e7ef-41de-808c-5abc69c5ca82
       version: -1
       name: Invalid MD5
-      description: TODO
+      description: Test file enrichment with an invalid MD5 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -191,7 +191,7 @@ tasks:
       id: 3784f3c2-79ec-4234-8be6-cbb2128d600d
       version: -1
       name: Unknown MD5
-      description: TODO
+      description: Test file enrichment with an unknown MD5 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -238,7 +238,7 @@ tasks:
       id: 36f34626-ee74-471a-8a5e-246ebe307101
       version: -1
       name: Valid SHA1
-      description: TODO
+      description: Test file enrichment with a valid SHA1 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -285,7 +285,7 @@ tasks:
       id: b3b711ba-592e-4c08-8247-1abbddae1008
       version: -1
       name: Unknown SHA1
-      description: TODO
+      description: Test file enrichment with an unknown SHA1 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -332,7 +332,7 @@ tasks:
       id: cc61427b-41ef-4924-88fe-4c4097ccede7
       version: -1
       name: Invalid SHA1
-      description: TODO
+      description: Test file enrichment with an invalid SHA1 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -379,7 +379,7 @@ tasks:
       id: a6c49ec1-43a1-42d5-8a86-cb443e867b13
       version: -1
       name: Valid SHA256
-      description: TODO
+      description: Test file enrichment with a valid SHA256 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -426,7 +426,7 @@ tasks:
       id: f05cadf1-2f04-4f69-8402-ab2b91218f67
       version: -1
       name: Unknown SHA256
-      description: TODO
+      description: Test file enrichment with an unknown SHA256 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -473,7 +473,7 @@ tasks:
       id: 9b100dcd-026d-4014-8eaf-74afff2085b1
       version: -1
       name: Invalid SHA256
-      description: TODO
+      description: Test file enrichment with an invalid SHA256 hash
       playbookName: File Enrichment - VMRay
       type: playbook
       iscommand: false
@@ -527,4 +527,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
+description: Test the VMRay File Enrichment playbook
