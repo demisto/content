@@ -1,0 +1,28 @@
+{
+    "name": "PingIdentity",
+    "description": "Integration with PingIdentity's PingOne identity platform",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Peter Holko",
+    "url": "https://docs.pingidentity.com/bundle/p14c/page/als1564020488261.html",
+    "email": "peterholko@pingidentity.com",
+    "categories": [
+        "Identity and Access Management",
+        "Authentication"
+    ],
+    "tags": [
+        "authentication",
+        "mfa",
+        "iam",
+        "identity",
+        "identity access management"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "peterholko@pingidentity.com"
+    ],
+    "githubUser": [
+        "peterholko-pingidentity"
+    ]
+}
