@@ -2913,7 +2913,7 @@ tlds = {
         "host": "whois.nic.immobilien"
     },
     "in": {
-        "host": "whois.inregistry.net"
+        "host": "in.whois-servers.net"
     },
     "inc": {
         "_group": "uniregistry",
@@ -8398,7 +8398,7 @@ def get_whois_ip(ip):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
         handler = ProxyHandler(proxies)
         proxy_opener = build_opener(handler)
-        ip_obj = IPWhois(ip, proxy_opener)
+        ip_obj = IPWhois(ip, proxy_opener=proxy_opener)
     else:
         ip_obj = IPWhois(ip)
 

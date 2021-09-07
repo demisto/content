@@ -32,7 +32,8 @@ configuration:
   required: true
   type: 0
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  display: Name of the folder from which to fetch incidents (supports Folder ID and
+    sub-folders e.g. Inbox/Phishing)
   name: folder_to_fetch
   required: true
   type: 0
@@ -62,8 +63,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph grants Demisto authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
-display: Microsoft Graph Mail Single User
+description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
+  Outlook mail data in a personal account or organization account.
+display: O365 Outlook Mail Single User (Using Graph API)
 name: Microsoft Graph Mail Single User
 script:
   commands:
@@ -112,7 +114,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
+      description: 'The flag value that indicates the status of the draft. Can be:
+        "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -134,25 +137,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".
+      description: A comma-separated list of additional headers in the format, headerName:headerValue.
+        For example, "headerName1:headerValue1,headerName2:headerValue2".
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to be displayed
+        in the draft. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the actual email.
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
       isArray: true
       name: attach_cids
       required: false
@@ -244,7 +251,7 @@ script:
       description: ID of the item to reply to.
     - default: false
       description: 'A CSV list of War Room entry IDs that contain files, and are used
-          to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
       name: attachIDs
       required: false
@@ -269,7 +276,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
       isArray: true
       name: attachNames
       required: false
@@ -290,27 +298,27 @@ script:
     execution: false
     name: reply-mail
     outputs:
-      - contextPath: MicrosoftGraph.SentMail.body
-        description: The body of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.bodyPreview
-        description: The body preview of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.subject
-        description: The subject of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.toRecipients
-        description: The 'To' recipients of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.ccRecipients
-        description: The CC recipients of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.bccRecipients
-        description: The BCC recipients of the email.
-        type: String
-      - contextPath: MicrosoftGraph.SentMail.ID
-        description: The immutable ID of the message.
-        type: String
+    - contextPath: MicrosoftGraph.SentMail.body
+      description: The body of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bodyPreview
+      description: The body preview of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.subject
+      description: The subject of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.toRecipients
+      description: The 'To' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bccRecipients
+      description: The BCC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ID
+      description: The immutable ID of the message.
+      type: String
   - arguments:
     - default: false
       description: A comma-separated list of email addresses for the 'to' field.
@@ -355,7 +363,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+      description: 'The flag value that indicates the status for the email. Can be:
+        "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -377,25 +386,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
+      description: 'A comma-separated list of additional headers in the format: headerName:headerValue.
+        For example: "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the actual email.
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
       isArray: true
       name: attach_cids
       required: false
@@ -470,7 +483,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.19032
+  dockerimage: demisto/crypto:1.0.0.23151
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -479,7 +492,8 @@ script:
   type: python
   subtype: python3
 tests:
-- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
+- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
+  NonCircleTests folder
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0

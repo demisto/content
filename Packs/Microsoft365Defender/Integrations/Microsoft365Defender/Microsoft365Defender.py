@@ -1,5 +1,4 @@
-from typing import Dict, Optional, List
-import dateparser
+from typing import Dict
 
 import urllib3
 
@@ -22,27 +21,35 @@ BASE_URL = "https://api.security.microsoft.com"
 
 class Client:
     @logger
-    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL):
+    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
+                 enc_key: str = None, client_credentials: bool = False):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        client_args = {
-            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+        self.client_credentials = client_credentials
+        client_args = assign_params(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            ok_codes=(200, 201, 202, 204),
+            scope='offline_access https://security.microsoft.com/mtp/.default',
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            'auth_id': app_id,
-            'token_retrieval_url': 'https://login.windows.net/organizations/oauth2/v2.0/token',
-            'grant_type': DEVICE_CODE,
-            'base_url': base_url,
-            'verify': verify,
-            'proxy': proxy,
-            'scope': 'offline_access https://security.microsoft.com/mtp/.default',
-            'ok_codes': (200, 201, 202, 204),
-            'resource': 'https://api.security.microsoft.com'
-        }
+
+            auth_id=app_id,
+            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+
+            # used for device code flow
+            resource='https://api.security.microsoft.com' if not client_credentials else None,
+            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+            # used for client credentials flow
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+        )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
@@ -163,7 +170,7 @@ def reset_auth() -> CommandResults:
 
 @logger
 def test_connection(client: Client) -> CommandResults:
-    test_context_for_token()
+    test_context_for_token(client)
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
@@ -171,13 +178,15 @@ def test_connection(client: Client) -> CommandResults:
 ''' HELPER FUNCTIONS '''
 
 
-def test_context_for_token() -> None:
+def test_context_for_token(client: Client) -> None:
     """test_context_for_token
     Checks if the user acquired token via the authentication process.
     Args:
     Returns:
 
     """
+    if client.client_credentials:
+        return
     if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
         raise DemistoException(
             "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
@@ -199,6 +208,9 @@ def test_module(client: Client) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
+    if client.client_credentials:
+        raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test"
+                               "command in order to test the connection")
 
     test_connection(client)
 
@@ -382,7 +394,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
         incidents, new last_run
     """
     start_time = time.time()
-    test_context_for_token()
+    test_context_for_token(client)
 
     last_run_dict = demisto.getLastRun()
 
@@ -508,21 +520,25 @@ def main() -> None:
     :return:
     :rtype:
     """
-
+    params = demisto.params()
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-    app_id = demisto.params().get('app_id')
-    base_url = demisto.params().get('base_url')
+    proxy = params.get('proxy', False)
+    app_id = params.get('app_id')
+    base_url = params.get('base_url')
 
-    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
-    fetch_limit = demisto.params().get('max_fetch', 10)
-    fetch_timeout = arg_to_number(demisto.params().get('fetch_timeout', TIMEOUT))
+    tenant_id = params.get('tenant_id')
+    client_credentials = params.get('client_credentials', False)
+    enc_key = params.get('enc_key')
+
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
+    fetch_limit = arg_to_number(params.get('max_fetch', 10))
+    fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -533,7 +549,11 @@ def main() -> None:
             app_id=app_id,
             verify=verify_certificate,
             base_url=base_url,
-            proxy=proxy)
+            proxy=proxy,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            client_credentials=client_credentials,
+        )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
@@ -551,15 +571,15 @@ def main() -> None:
             return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-incidents-list':
-            test_context_for_token()
+            test_context_for_token(client)
             return_results(microsoft_365_defender_incidents_list_command(client, args))
 
         elif command == 'microsoft-365-defender-incident-update':
-            test_context_for_token()
+            test_context_for_token(client)
             return_results(microsoft_365_defender_incident_update_command(client, args))
 
         elif command == 'microsoft-365-defender-advanced-hunting':
-            test_context_for_token()
+            test_context_for_token(client)
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
         elif command == 'fetch-incidents':

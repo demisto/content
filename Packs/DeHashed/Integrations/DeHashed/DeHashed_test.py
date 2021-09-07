@@ -27,7 +27,7 @@ def test_module_command(requests_mock):
 
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     res = test_module(client)
 
@@ -62,7 +62,7 @@ def test_search_command_using_is_operator_without_filter(requests_mock):
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(client, test_data["is_op_single"])
 
@@ -97,7 +97,7 @@ def test_search_command_using_contains_operator_without_filter(requests_mock):
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(
         client, test_data["contains_op_single"]
@@ -134,7 +134,7 @@ def test_search_command_using_regex_operator_without_filter(requests_mock):
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(
         client, test_data["regex_op_single"]
@@ -171,7 +171,7 @@ def test_search_command_using_is_operator_with_filter_and_multi_values(requests_
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(client, test_data["is_op_multi"])
 
@@ -208,7 +208,7 @@ def test_search_command_using_contains_operator_with_filter_and_multi_values(
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(
         client, test_data["contains_op_multi"]
@@ -247,7 +247,7 @@ def test_search_command_using_regex_operator_with_filter_and_multi_values(
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(
         client, test_data["regex_op_multi"]
@@ -286,7 +286,7 @@ def test_search_command_using_regex_operator_with_filter_and_change_result_range
     encoded = urllib.parse.urlencode(url_params)
     requests_mock.get(f"{DEHASHED_URL}search?{encoded}", json=test_data["api_response"])
 
-    client = Client(base_url=f"{DEHASHED_URL}")
+    client = Client(base_url=f"{DEHASHED_URL}", email='', api_key='')
     client._headers = {}
     markdown, context, raw = dehashed_search_command(
         client, test_data["regex_op_multi_range"]
@@ -318,7 +318,7 @@ def test_email_command_malicious_dbot_score(mocker):
             'Score': 3
         }
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='MALICIOUS')
+    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='MALICIOUS', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
     markdown, context, raw = email_command(client, test_data['email_command'])
 
@@ -348,7 +348,7 @@ def test_email_command_suspicious_dbot_score(mocker):
             'Score': 2
         }
     }
-    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS')
+    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
     markdown, context, raw = email_command(client, test_data['email_command'])
 
@@ -375,7 +375,7 @@ def test_email_command_no_entries_returned(mocker):
             'Score': 0
         }
     }
-    client = Client(base_url=f'{DEHASHED_URL}')
+    client = Client(base_url=f'{DEHASHED_URL}', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value={})
     markdown, context, raw = email_command(client, test_data['email_command'])
 

@@ -28,7 +28,8 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip
+    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
+    qradar_ips_source_get_command, qradar_ips_local_destination_get_command
 
 client = Client(
     server='https://192.168.0.1',
@@ -50,6 +51,7 @@ def util_load_json(path):
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 command_test_data = util_load_json('./test_data/command_test_data.json')
+ip_command_test_data = util_load_json('./test_data/ips_commands_data.json')
 
 event_columns_default_value = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
@@ -924,22 +926,25 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     assert result.entries == expected.entries
 
 
-@pytest.mark.parametrize('params, offense, enriched_offense, expected',
+@pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
                          [
                              (dict(), command_test_data['get_remote_data']['response'],
                               command_test_data['get_remote_data']['enrich_offenses_result'],
+                              None,
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
                                   [])),
 
                              (dict(), command_test_data['get_remote_data']['closed'],
                               command_test_data['get_remote_data']['enrich_closed_offense'],
+                              None,
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [])),
 
                              ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
                               command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [],
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [{
@@ -949,9 +954,41 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
                                           'closeReason': 'From QRadar: False-Positive, Tuned'
                                       },
                                       'ContentsFormat': EntryFormat.JSON
+                                  }])),
+
+                             ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [{'note_text': 'This offense was closed with reason: False-Positive, Tuned.'}],
+                              GetRemoteDataResponse(
+                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
+                                  [{
+                                      'Type': EntryType.NOTE,
+                                      'Contents': {
+                                          'dbotIncidentClose': True,
+                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned.'
+                                      },
+                                      'ContentsFormat': EntryFormat.JSON
+                                  }])),
+
+                             ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [{'note_text': 'This offense was closed with reason: False-Positive, Tuned. Notes: '
+                                             'Closed because it is on our white list.'}],
+                              GetRemoteDataResponse(
+                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
+                                  [{
+                                      'Type': EntryType.NOTE,
+                                      'Contents': {
+                                          'dbotIncidentClose': True,
+                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned. Notes: Closed because it is on our '
+                                                         'white list.'
+                                      },
+                                      'ContentsFormat': EntryFormat.JSON
                                   }]))
                          ])
-def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, enriched_offense,
+def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, enriched_offense, note_response,
                                                 expected: GetRemoteDataResponse):
     """
     Given:
@@ -962,12 +999,16 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     When:
      - Case a: Offense updated, not closed, no events.
      - Case b: Offense updated, closed, no events, close_incident is false.
-     - Case c: Offense updated, closed, no events, close_incident is true.
+     - Case c: Offense updated, closed, no events, close_incident is true, close was made through API call (no note).
+     - Case d: Offense updated, closed, no events, close_incident is true, close was made through QRadar UI, empty note.
+     - Case e: Offense updated, closed, no events, close_incident is true, close was made through QRadar UI, with note.
 
     Then:
      - Case a: Ensure that offense is returned as is.
      - Case b: Ensure that offense is returned as is.
      - Case c: Ensure that offense is returned, along with expected entries.
+     - Case d: Ensure that offense is returned, along with expected entries.
+     - Case e: Ensure that offense is returned, along with expected entries.
     """
     set_integration_context({'last_update': 1})
     mocker.patch.object(client, 'offenses_list', return_value=offense)
@@ -975,6 +1016,8 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     if 'close_incident' in params:
         mocker.patch.object(client, 'closing_reasons_list',
                             return_value=command_test_data['closing_reasons_list']['response'][0])
+    if note_response is not None:
+        mocker.patch.object(client, 'offense_notes_list', return_value=note_response)
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
@@ -1013,3 +1056,39 @@ def test_validate_long_running_params():
         params_without_required_param = {k: v for k, v in LONG_RUNNING_REQUIRED_PARAMS.items() if k is not param_name}
         with pytest.raises(DemistoException):
             validate_long_running_params(params_without_required_param)
+
+
+@pytest.mark.parametrize('command_func, command_name',
+                         [
+                             (qradar_ips_source_get_command, 'source_ip'),
+                             (qradar_ips_local_destination_get_command, 'local_destination')
+                         ])
+def test_ip_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+    """
+    Given:
+     - Command function.
+     - Demisto arguments.
+
+    When:
+     - Executing a command
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
+    args = dict()
+    response = ip_command_test_data[command_name]['response']
+    expected = ip_command_test_data[command_name]['expected']
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=expected.get('outputs'),
+        raw_response=response
+    )
+    mocker.patch.object(client, 'get_addresses', return_value=response)
+
+    results = command_func(client, args)
+
+    assert results.outputs_prefix == expected_command_results.outputs_prefix
+    assert results.outputs_key_field == expected_command_results.outputs_key_field
+    assert results.outputs == expected_command_results.outputs
+    assert results.raw_response == expected_command_results.raw_response

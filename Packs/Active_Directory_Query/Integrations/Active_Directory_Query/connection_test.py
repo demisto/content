@@ -1,5 +1,5 @@
 import demistomock as demisto
-from Active_Directory_Query import main
+from Active_Directory_Query import main, group_dn
 import socket
 import ssl
 from threading import Thread
@@ -8,6 +8,8 @@ import os
 import pytest
 import json
 from IAMApiModule import *
+from unittest.mock import patch
+
 
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
@@ -33,6 +35,7 @@ def test_bad_host_no_ssl(mocker):
     assert 'Failed to access' in err_msg
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_bad_ssl(mocker):
     params = BASE_TEST_PARAMS.copy()
     params['server_ip'] = '185.199.108.153'  # disable-secrets-detection
@@ -86,6 +89,7 @@ def ssl_bad_socket_server(port):
         raise
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_faulty_server(mocker):
     port = 9638
     t = Thread(target=ssl_bad_socket_server, args=(port,))
@@ -192,7 +196,7 @@ def test_create_user_iam(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test',
@@ -236,7 +240,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test'})
@@ -279,7 +283,7 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     "ou": "OU=Americas,OU=Demisto",
                                                                     'userPrincipalName': 'test'})
@@ -290,3 +294,102 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     assert outputs.get('success') is False
     assert outputs.get('email') == 'test@paloaltonetworks.com'
     assert 'User must have a sAMAccountName' in outputs.get('errorMessage')
+
+
+def test_group_entry_no_custom_attributes():
+    """
+    Given:
+         Custom attributes to filter the group object entry.
+    When:
+        The function filters the group object according to the custom attributes.
+    Then:
+        The function will return all the group object entry because custom attributes contain '*'.
+
+    """
+    from Active_Directory_Query import group_entry
+    custom_attributes_with_asterisk = group_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf'}, ['*'])
+    assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'ID': 'dn', 'Name': 'name', 'Type': 'AD'}
+
+
+def test_group_entry():
+    """
+    Given:
+         Custom attributes to filter the group object entry.
+    When:
+        The function filters the group object according to the custom attributes.
+    Then:
+        The function will return all the group object entry because custom attributes contain '*'.
+
+    """
+    from Active_Directory_Query import group_entry
+    custom_attributes_with_asterisk = group_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf',
+                                                   'displayName': 'display name'}, ['displayName'])
+    assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'ID': 'dn', 'Name': 'name', 'Type': 'AD',
+                                               'displayName': 'display name'}
+
+
+def test_search_group_members(mocker):
+    """
+    sanity test for search_group_members method
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            return
+
+    expected_results = {'ContentsFormat': 'json', 'Type': 1,
+                        'Contents': [{'dn': 'dn', 'attributes': {'memberOf': ['memberOf'], 'name': ['name']}}],
+                        'ReadableContentsFormat': 'markdown',
+                        'HumanReadable': '### Active Directory - Get Group Members\n|'
+                                         'dn|memberOf|name|\n|---|---|---|\n| dn | memberOf | name |\n',
+                        'EntryContext': {'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [
+                                        {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
+                                            [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
+                                            [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
+
+    expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
+
+    mocker.patch.object(demisto, 'args',
+                        return_value={'member-type': 'group', 'group-dn': 'dn'})
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('logging.Logger.info') as mock:
+        Active_Directory_Query.search_group_members('dc', 1)
+        mock.assert_called_with(expected_results)
+
+
+def test_group_dn_escape_characters():
+    """
+    Given:
+         Group name with parentheses
+    When:
+        Running the function group_dn
+    Then:
+        The function search gets the group name after escape special characters.
+
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('Active_Directory_Query.search', return_value=[EntryMocker()]) as mock:
+        group_dn('group(group)', '')
+
+        mock.assert_called_with('(&(objectClass=group)(cn=group\\28group\\29))', '')

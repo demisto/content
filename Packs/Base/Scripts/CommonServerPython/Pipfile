@@ -9,6 +9,7 @@ pytest = "*"
 flake8 = "*"
 pytest-mock = "*"
 requests-mock = "*"
+autopep8 = "*"
 
 [packages]
 lxml = "*"

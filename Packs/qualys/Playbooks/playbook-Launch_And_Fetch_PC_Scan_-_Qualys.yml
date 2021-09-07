@@ -1,0 +1,338 @@
+id: Launch And Fetch PC Scan - Qualys
+version: -1
+name: Launch And Fetch PC Scan - Qualys
+description: Launches a PC scan and fetches the scan when it's ready.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: feaf59d2-f107-4395-862c-895cd5406872
+    type: start
+    task:
+      id: feaf59d2-f107-4395-862c-895cd5406872
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5a084e75-4fa4-4898-8c5f-df7ca3d3185d
+    type: regular
+    task:
+      id: 5a084e75-4fa4-4898-8c5f-df7ca3d3185d
+      version: -1
+      name: qualys-pc-scan-launch
+      description: launch compliance scans.
+      script: QualysV2|||qualys-pc-scan-launch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asset_group_ids:
+        simple: ${inputs.asset_group_ids}
+      asset_groups:
+        simple: ${inputs.asset_groups}
+      default_scanner:
+        simple: ${inputs.default_scanner}
+      exclude_ip_per_scan:
+        simple: ${inputs.exclude_ip_per_scan}
+      ip:
+        simple: ${inputs.ip}
+      ip_network_id:
+        simple: ${inputs.ip_network_id}
+      iscanner_name:
+        simple: ${inputs.iscanner_name}
+      option_id:
+        simple: ${inputs.option_id}
+      option_title:
+        simple: ${inputs.option_title}
+      runtime_http_header:
+        simple: ${inputs.runtime_http_header}
+      scan_title:
+        simple: ${inputs.scan_title}
+      scanners_in_ag:
+        simple: ${inputs.scanners_in_ag}
+      tag_exclude_selector:
+        simple: ${inputs.tag_exclude_selector}
+      tag_include_selector:
+        simple: ${inputs.tag_include_selector}
+      tag_set_by:
+        simple: ${inputs.tag_set_by}
+      tag_set_exclude:
+        simple: ${inputs.tag_set_exclude}
+      tag_set_include:
+        simple: ${inputs.tag_set_include}
+      target_from:
+        simple: ${inputs.target_from}
+      use_ip_nt_range_tags:
+        simple: ${inputs.use_ip_nt_range_tags}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: db82d647-26b0-4c2f-8181-e13b888c35ed
+    type: regular
+    task:
+      id: db82d647-26b0-4c2f-8181-e13b888c35ed
+      version: -1
+      name: qualys-pc-scan-fetch
+      description: fetch scan results for a scan
+      script: QualysV2|||qualys-pc-scan-fetch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    scriptarguments:
+      execution-timeout:
+        simple: "180"
+      scan_ref:
+        simple: ${Qualys.Scan.[1].VALUE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fb4471b2-50ef-4cb7-875f-fa8d1b25a62d
+    type: playbook
+    task:
+      id: fb4471b2-50ef-4cb7-875f-fa8d1b25a62d
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${Qualys.Scan.[1].VALUE}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_ref
+      PollingCommandName:
+        simple: qualys-pc-scan-list
+      Timeout:
+        simple: "30"
+      dt:
+        simple: Qualys.Scan(val.STATUS.STATE != 'Finished').REF.
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: scan_title
+  value: {}
+  required: false
+  description: The scan title. This can be a maximum of 2000 characters (ascii).
+  playbookInputQuery:
+- key: target_from
+  value: {}
+  required: false
+  description: Specify “assets” (the default) when your scan target will include IP
+    addresses/ranges and/or asset groups. Specify “tags” when your scan target will
+    include asset tags.
+  playbookInputQuery:
+- key: ip
+  value: {}
+  required: false
+  description: 'The IP addresses to be scanned. You may enter individual IP addresses
+    and/or ranges. Multiple entries are comma separated. One of these parameters is
+    required: ip, asset_groups or asset_group_ids.'
+  playbookInputQuery:
+- key: asset_groups
+  value: {}
+  required: false
+  description: 'The titles of asset groups containing the hosts to be scanned. Multiple
+    titles are comma separated. One of these parameters is required: ip, asset_groups
+    or asset_group_ids.'
+  playbookInputQuery:
+- key: asset_group_ids
+  value: {}
+  required: false
+  description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
+    IDs are comma separated. One of these parameters is required: ip, asset_groups
+    or asset_group_ids.'
+  playbookInputQuery:
+- key: exclude_ip_per_scan
+  value: {}
+  required: false
+  description: The IP addresses to be excluded from the scan when the scan target
+    is specified as IP addresses (not asset tags). You may enter individual IP addresses
+    and/or ranges. Multiple entries are comma separated.
+  playbookInputQuery:
+- key: tag_include_selector
+  value: {}
+  required: false
+  description: Select “any” (the default) to include hosts that match at least one
+    of the selected tags. Select “all” to include hosts that match all of the selected
+    tags.
+  playbookInputQuery:
+- key: tag_exclude_selector
+  value: {}
+  required: false
+  description: Select “any” (the default) to exclude hosts that match at least one
+    of the selected tags. Select “all” to exclude hosts that match all of the selected
+    tags.
+  playbookInputQuery:
+- key: tag_set_by
+  value: {}
+  required: false
+  description: Specify “id” (the default) to select a tag set by providing tag IDs.
+    Specify “name” to select a tag set by providing tag names.
+  playbookInputQuery:
+- key: tag_set_include
+  value: {}
+  required: false
+  description: Specify a tag set to include. Hosts that match these tags will be included.
+    You identify the tag set by providing tag name or IDs. Multiple entries are comma
+    separated.
+  playbookInputQuery:
+- key: tag_set_exclude
+  value: {}
+  required: false
+  description: Specify a tag set to exclude. Hosts that match these tags will be excluded.
+    You identify the tag set by providing tag name or IDs. Multiple entries are comma
+    separated.
+  playbookInputQuery:
+- key: use_ip_nt_range_tags
+  value: {}
+  required: false
+  description: Specify “0” (the default) to select from all tags (tags with any tag
+    rule). Specify “1” to scan all IP addresses defined in tags. When this is specified,
+    only tags with the dynamic IP address rule called “IP address in Network Range(s)”
+    can be selected.
+  playbookInputQuery:
+- key: iscanner_name
+  value: {}
+  required: false
+  description: Specifies the name of the Scanner Appliance for the map, when the map
+    target has private use internal IPs. Using Express Lite, Internal Scanning must
+    be enabled in your account.
+  playbookInputQuery:
+- key: default_scanner
+  value: {}
+  required: false
+  description: Specify 1 to use the default scanner in each target asset group. For
+    an Express Lite user, Internal Scanning must be enabled in the user’s account.
+  playbookInputQuery:
+- key: scanners_in_ag
+  value: {}
+  required: false
+  description: Specify 1 to distribute the scan to the target asset groups’ scanner
+    appliances. Appliances in each asset group are tasked with scanning the IPs in
+    the group. By default up to 5 appliances per group will be used and this can be
+    configured for your account (please contact your Account Manager or Support).
+    For an Express Lite user, Internal Scanning must be enabled in the user’s account.
+  playbookInputQuery:
+- key: option_title
+  value: {}
+  required: false
+  description: 'The title of the compliance option profile to be used. One of these
+    parameters must be specified in a request: option_title or option_id. These are
+    mutually exclusive and cannot be specified in the same request.'
+  playbookInputQuery:
+- key: option_id
+  value: {}
+  required: false
+  description: 'The ID of the compliance option profile to be used. One of these parameters
+    must be specified in a request: option_title or option_id. These are mutually
+    exclusive and cannot be specified in the same request.'
+  playbookInputQuery:
+- key: ip_network_id
+  value: {}
+  required: false
+  description: The ID of a network used to filter the IPs/ranges specified in the“ip”
+    parameter. Set to a custom network ID (note this does not filter IPs/ranges specified
+    in “asset_groups” or “asset_group_ids”). Or set to “0” (the default) for the Global
+    Default Network - this is used to scan hosts outside of your custom networks.
+  playbookInputQuery:
+- key: runtime_http_header
+  value: {}
+  required: false
+  description: Set a custom value in order to drop defenses (such as logging, IPs,
+    etc) when an authorized scan is being run. The value you enter will be used in
+    the “Qualys-Scan:” header that will be set for many CGI and web application fingerprinting
+    checks. Some discovery and web server fingerprinting checks will not use this
+    header.
+  playbookInputQuery:
+outputs: []
+tests:
+- QualysVulnerabilityManagement-Test
+fromversion: 5.5.0

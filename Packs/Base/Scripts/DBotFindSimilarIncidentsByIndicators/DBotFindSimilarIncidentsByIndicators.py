@@ -8,6 +8,7 @@ import numpy as np
 from collections import Counter
 import re
 import math
+from typing import List, Dict
 
 STATUS_DICT = {
     0: "Pending",

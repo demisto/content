@@ -1,5 +1,5 @@
 <p>
-Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
+Azure Active Directory Groups enables you to create and manage different types of groups and group functionality according to your requirements.
 
 This integration was integrated and tested with version 1.0 of Microsoft Graph Groups API
 </p>
@@ -15,14 +15,14 @@ For more details about the authentication used in this integration, see <a href=
 <li>Directory.ReadWrite.All - Application</li>
 <li>Group.ReadWrite.All - Application</li>
 
-<h2>Configure Microsoft Graph Groups on Cortex XSOAR</h2>
+<h2>Configure Azure Active Directory Groups on Cortex XSOAR</h2>
 
 <li>Manage the organization groups.</li>
 
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Microsoft Graph Groups.</li>
+  <li>Search for Azure Active Directory Groups.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
@@ -195,7 +195,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -275,12 +275,6 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-groups-get-group">2. msgraph-groups-get-group</h3>
@@ -409,7 +403,7 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -491,12 +485,6 @@ If the collection includes DynamicMembership, the group has dynamic membership; 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-groups-create-group">3. msgraph-groups-create-group</h3>
@@ -640,7 +628,7 @@ If the group collection includes DynamicMembership, the group has dynamic member
     <tr>
       <td>MSGraphGroup.ProxyAddresses</td>
       <td>String</td>
-      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: support@demisto.com", "smtp: support@demisto.com"].</td>
+      <td>Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].</td>
     </tr>
     <tr>
       <td>MSGraphGroup.RenewedDateTime</td>
@@ -713,12 +701,6 @@ If the group collection includes DynamicMembership, the group has dynamic member
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-groups-delete-group">4. msgraph-groups-delete-group</h3>
@@ -796,14 +778,6 @@ If the group collection includes DynamicMembership, the group has dynamic member
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3 id="msgraph-groups-list-members">5. msgraph-groups-list-members</h3>
 <hr>
@@ -1008,12 +982,6 @@ The general format is alias@domain, where the domain must be present in the tena
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-groups-add-member">6. msgraph-groups-add-member</h3>
@@ -1076,11 +1044,6 @@ There are no context output for this command.
 <p>
 User {user_id} was added to the Group {group_id} successfully.
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-groups-remove-member">7. msgraph-groups-remove-member</h3>
@@ -1143,10 +1106,5 @@ There are no context output for this command.
 <p>
 User {user_id} was removed from the Group {group_id} successfully.
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>

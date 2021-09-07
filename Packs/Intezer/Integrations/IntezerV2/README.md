@@ -1,322 +1,585 @@
-<!-- HTML_DOC -->
-<p><span>Use the Intezer v2 integration to detect and analyze malware, based on code reuse.</span></p>
-<h2>Configure Intezer v2 on Cortex XSOAR</h2>
-<ol>
-<li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
-<li>Search for Intezer v2.</li>
-<li>Click<span> </span><strong>Add instance</strong><span> </span>to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>API Key</strong></li>
-<li><strong>Use system proxy</strong></li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-</ul>
-</li>
-<li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
-</ol>
-<h2> </h2>
-<h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_6feb063f-66b1-45e5-89f0-1b6ff5142114" target="_self">Check file reputation by hash: intezer-analyze-by-hash</a></li>
-<li><a href="#h_353b4e58-45be-474d-b171-b8b803d216d0" target="_self">Check file reputation by latest report: intezer-get-latest-report</a></li>
-<li><a href="#h_9127d647-9bbd-43c7-b567-812e4138e652" target="_self"> Check file reputation by uploading a file: intezer-analyze-by-file </a></li>
-<li><a href="#h_89b3941d-6b65-4083-96b6-f67d0c2cb528" target="_self"> Check analysis status and results: intezer-get-analysis-result </a></li>
-</ol>
-<h3 id="h_6feb063f-66b1-45e5-89f0-1b6ff5142114">1. Check file reputation by hash</h3>
-<hr>
-<p>Checks file reputation of the given hash, supports SHA256, SHA1, and MD5.</p>
-<h5>Base Command</h5>
-<p><code>intezer-analyze-by-hash</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 154px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 84px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 154px;">file_hash</td>
-<td style="width: 502px;">Hash of the file to query. Supports SHA256, MD5, and SHA1.</td>
-<td style="width: 84px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 333px;"><strong>Path</strong></th>
-<th style="width: 82px;"><strong>Type</strong></th>
-<th style="width: 325px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 333px;">Intezer.Analysis.ID</td>
-<td style="width: 82px;">string</td>
-<td style="width: 325px;">Intezer analysis ID.</td>
-</tr>
-<tr>
-<td style="width: 333px;">Intezer.Analysis.Status</td>
-<td style="width: 82px;">string</td>
-<td style="width: 325px;">Status of the analysis.</td>
-</tr>
-<tr>
-<td style="width: 333px;">Intezer.Analysis.Type</td>
-<td style="width: 82px;">string</td>
-<td style="width: 325px;">Analysis type.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>intezer-analyze-by-hash file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"</pre>
-<h5>Context Example</h5>
-<pre>{
+Use the Intezer v2 integration to detect and analyze malware, based on code reuse.
+
+## Configure Intezer v2 on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Intezer v2.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | True |
+    | Intezer Analyze Base URL | The API address to intezer Analyze - i.e. https://analyze.intezer.com/api/ | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### intezer-analyze-by-hash
+***
+Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
+
+
+#### Base Command
+
+`intezer-analyze-by-hash`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | Intezer analysis id | 
+| Intezer.Analysis.Status | string | status of the analysis | 
+| Intezer.Analysis.Type | string | type of the analysis | 
+
+
+#### Command Example
+``` 
+!intezer-analyze-by-hash file_hash="<file hash>"
+```
+
+#### Context Example
+```
+{
     "Intezer.Analysis": {
         "Status": "Created", 
         "type": "File", 
         "ID": "59e2f081-45f3-4822-bf45-407670dcb4d7"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7</p>
-<h3 id="h_353b4e58-45be-474d-b171-b8b803d216d0">2. Check file reputation by latest report</h3>
-<hr>
-<p>Checks file reputation of the given hash, supports SHA256, SHA1, and MD5.</p>
-<h5>Base Command</h5>
-<p><code>intezer-get-latest-report</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 154px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 84px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 154px;">file_hash</td>
-<td style="width: 502px;">Hash of the file to query. Supports SHA256, MD5, and SHA1.</td>
-<td style="width: 84px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>intezer-get-latest-report file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+```
+Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
+```
+
+
+### intezer-get-latest-report
+***
+Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
+
+
+#### Base Command
+
+`intezer-get-latest-report`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | Hash of the file to query. Supports SHA256, MD5 and SHA1. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | string | Hash SHA256 | 
+| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision | 
+| DBotScore.Indicator | string | The indicator we tested | 
+| DBotScore.Type | string | The type of the indicator | 
+| DBotScore.Vendor | string | Vendor used to calculate the score | 
+| DBotScore.Score | number | The actual score | 
+| File.Metadata | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
+| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database | 
+
+
+#### Command Example
+```
+intezer-get-latest-report file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"
+```
+
+#### Context Example
+```
+{
     "DBotScore": {
         "Vendor": "Intezer", 
-        "Indicator": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+        "Indicator": "<some sha>>", 
         "Score": 0, 
         "Type": "hash"
     }, 
     "File": {
         "ExistsInIntezer": true, 
-        "SHA256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+        "SHA256": "<some sha256>", 
         "Metadata": {
-            "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "verdict": "not_supported", 
-            "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+            "analysis_id": "006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "sub_verdict": "known_malicious", 
+            "analysis_url": "https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "verdict": "malicious", 
+            "family_id": "0b13c0d4-7779-4c06-98fa-4d33ca98f8a9",
+            "family_name": "WannaCry",
+            "sha256": "<some sha256>",
             "is_private": true, 
             "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
         }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3 id="h_9127d647-9bbd-43c7-b567-812e4138e652">3. Check file reputation by uploading it</h3>
-<hr>
-<p>Checks file reputation for an uploaded file. Maximum file size is 150 MB.</p>
-<h5>Base Command</h5>
-<p><code>intezer-analyze-by-file</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 222px;"><strong>Argument Name</strong></th>
-<th style="width: 396px;"><strong>Description</strong></th>
-<th style="width: 122px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 222px;">file_entry_id</td>
-<td style="width: 396px;">The entry ID of the file to upload.</td>
-<td style="width: 122px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 331px;"><strong>Path</strong></th>
-<th style="width: 84px;"><strong>Type</strong></th>
-<th style="width: 325px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 331px;">Intezer.Analysis.ID</td>
-<td style="width: 84px;">string</td>
-<td style="width: 325px;">Intezer analysis ID.</td>
-</tr>
-<tr>
-<td style="width: 331px;">Intezer.Analysis.Status</td>
-<td style="width: 84px;">string</td>
-<td style="width: 325px;">Status of the analysis.</td>
-</tr>
-<tr>
-<td style="width: 331px;">Intezer.Analysis.Type</td>
-<td style="width: 84px;">string</td>
-<td style="width: 325px;">Analysis type.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>intezer-analyze-by-file file_entry_id=1188@6</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+```
+Intezer File analysis result
+----
+SHA256: some-sha256
+Verdict: malicious (known_malicious)
+Family: WannaCry
+
+
+Analysis Report
+---
+analysis_id	006c54ba-3159-43a0-98a0-1c5032145f47
+analysis_time	Tue, 29 Jun 2021 13:40:01 GMT
+analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
+family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name	WannaCry
+is_private	false
+sha256          some-sha256
+sub_verdict	known_malicious
+verdict	        malicious
+```
+
+
+### intezer-analyze-by-file
+***
+Checks file reputation for uploaded file (up to 150MB)
+
+
+#### Base Command
+
+`intezer-analyze-by-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_entry_id | The file entry id to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | Intezer analysis id | 
+| Intezer.Analysis.Status | string | status of the analysis | 
+| Intezer.Analysis.Type | string | type of the analysis | 
+
+
+#### Command Example
+``` 
+intezer-analyze-by-file file_entry_id=1188@6
+```
+
+#### Context Example
+```
+{
     "Intezer.Analysis": {
         "Status": "Created", 
         "type": "File", 
         "ID": "675515a1-62e9-4d55-880c-fd46a7963a56"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>Analysis created successfully: 675515a1-62e9-4d55-880c-fd46a7963a56</p>
-<h3 id="h_89b3941d-6b65-4083-96b6-f67d0c2cb528">4. Check analysis status and results</h3>
-<hr>
-<p>Checks the analysis status and gets the analysis result, supports file and endpoint analysis.</p>
-<h5>Base Command</h5>
-<p><code>intezer-get-analysis-result</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 200px;"><strong>Argument Name</strong></th>
-<th style="width: 430px;"><strong>Description</strong></th>
-<th style="width: 110px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 200px;">analysis_id</td>
-<td style="width: 430px;">The analysis ID for which to get results.</td>
-<td style="width: 110px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 200px;">analysis_type</td>
-<td style="width: 430px;">The type of analysis.</td>
-<td style="width: 110px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 200px;">indicator_name</td>
-<td style="width: 430px;">Indicator to classify.</td>
-<td style="width: 110px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 151px;"><strong>Path</strong></th>
-<th style="width: 63px;"><strong>Type</strong></th>
-<th style="width: 526px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 151px;">File.SHA256</td>
-<td style="width: 63px;">string</td>
-<td style="width: 526px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 151px;">File.Malicious.Vendor</td>
-<td style="width: 63px;">string</td>
-<td style="width: 526px;">For malicious files, the vendor that made the decision.</td>
-</tr>
-<tr>
-<td style="width: 151px;">DBotScore.Indicator</td>
-<td style="width: 63px;">string</td>
-<td style="width: 526px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 151px;">DBotScore.Type</td>
-<td style="width: 63px;">string</td>
-<td style="width: 526px;">The indicator type.</td>
-</tr>
-<tr>
-<td style="width: 151px;">DBotScore.Vendor</td>
-<td style="width: 63px;">string</td>
-<td style="width: 526px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 151px;">DBotScore.Score</td>
-<td style="width: 63px;">number</td>
-<td style="width: 526px;">The actual score.</td>
-</tr>
-<tr>
-<td style="width: 151px;">File.Metadata</td>
-<td style="width: 63px;">Unknown</td>
-<td style="width: 526px;">Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will only be returned for supported files.</td>
-</tr>
-<tr>
-<td style="width: 151px;">Endpoint.Metadata</td>
-<td style="width: 63px;">Unknown</td>
-<td style="width: 526px;">Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families, verdict, host_name).</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"</pre>
-<h5>Context Example</h5>
-<pre>{
+```
+
+#### Human Readable Output
+```
+Analysis created successfully: 675515a1-62e9-4d55-880c-fd46a7963a56
+```
+
+
+### intezer-get-analysis-result
+***
+Check the analysis status and get analysis result, support file and endpoint analysis
+
+
+#### Base Command
+
+`intezer-get-analysis-result`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| analysis_id | The analysis ID we want to get results for. | Optional | 
+| analysis_type | The type of the analysis. Possible values are: File, Endpoint. Default is File. | Optional | 
+| indicator_name | indicator to classify. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.SHA256 | string | Hash SHA256 | 
+| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision | 
+| DBotScore.Indicator | string | The indicator we tested | 
+| DBotScore.Type | string | The type of the indicator | 
+| DBotScore.Vendor | string | Vendor used to calculate the score | 
+| DBotScore.Score | number | The actual score | 
+| File.Metadata | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
+| Endpoint.Metadata | Unknown | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families,  verdict, host_name\) | 
+| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database | 
+
+
+#### Command Example
+``` 
+intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"
+```
+
+#### Context Example
+```
+{
     "DBotScore": {
         "Vendor": "Intezer", 
-        "Indicator": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+        "Indicator": "<some sha>>", 
         "Score": 0, 
         "Type": "hash"
     }, 
-    "Intezer.Analysis": {
-        "Status": "Done", 
-        "ID": "9e3acdc3-b7ea-412b-88ae-7103eebc9398"
-    }, 
     "File": {
         "ExistsInIntezer": true, 
-        "SHA256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+        "SHA256": "<some sha256>", 
         "Metadata": {
-            "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "verdict": "not_supported", 
-            "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
+            "analysis_id": "006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "sub_verdict": "known_malicious", 
+            "analysis_url": "https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47", 
+            "verdict": "malicious", 
+            "family_id": "0b13c0d4-7779-4c06-98fa-4d33ca98f8a9",
+            "family_name": "WannaCry",
+            "sha256": "<some sha256>",
             "is_private": true, 
             "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
         }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h2>Intezer File analysis result</h2>
-<p>SHA256: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387<br> Verdict:<span> </span><strong>not_supported</strong><span> </span>(file_type_not_supported)<br> Analysis Link</p>
-<p> </p>
+```
+
+#### Human Readable Output
+```
+Intezer File analysis result
+----
+SHA256: some-sha256
+Verdict: malicious (known_malicious)
+Family: WannaCry
+
+
+Analysis Report
+---
+analysis_id	006c54ba-3159-43a0-98a0-1c5032145f47
+analysis_time	Tue, 29 Jun 2021 13:40:01 GMT
+analysis_url	https://analyze.intezer.com/analyses/006c54ba-3159-43a0-98a0-1c5032145f47
+family_id	0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name	WannaCry
+is_private	false
+sha256          some-sha256
+sub_verdict	known_malicious
+verdict	        malicious
+```
+
+
+### intezer-get-sub-analyses
+***
+Get a list of the analysis sub analyses
+
+
+#### Base Command
+
+`intezer-get-sub-analyses`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| analysis_id | The analysis ID we want to get the sub analyses for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | Intezer analysis id | 
+| Intezer.Analysis.SubAnalysesIDs | Unknown | List of all sub analyses of the give analysis | 
+
+
+#### Command Example
+```
+intezer-get-sub-analyses analysis_id=006c54ba-3159-43a0-98a0-1c5032145f47
+```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "SubAnalysesIDs": [
+            "2bf5baa9-6964-4171-b060-5e3d8de8741f"
+        ]
+    }
+}
+```
+
+
+#### Human Readable Output
+```
+Sub Analyses -
+[
+...
+List of analyses ids
+...
+]
+```
+
+
+### intezer-get-family-info
+***
+Get family information from Intezer Analyze
+
+
+#### Base Command
+
+`intezer-get-family-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| family_id | The Family ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Family.ID | string | Family id in intezer genome database | 
+| Intezer.Family.Name | string | Family name | 
+| Intezer.Family.Type | string | Family Type | 
+
+
+#### Command Example
+``` 
+intezer-get-family-info family_id=006c54ba-3159-43a0-98a0-1c5032145f47
+```
+
+
+#### Context Example
+```
+{
+    "Intezer.Family": {
+        "ID": "e710e4b3-3dd1-40ff-be74-9d8a95466ae4", 
+        "Type": "malware", 
+        "Name": "CobaltStrike"
+    }
+}
+```
+
+#### Human Readable Output
+```
+Family Info
+---
+
+FamilyId    006c54ba-3159-43a0-98a0-1c5032145f47
+FamilyName  Some Family Name
+FamilyType  Malware
+```
+
+
+### intezer-get-analysis-code-reuse
+***
+Get All code reuse report for an analysis or sub analysis
+To get the code reuse results of a sub analysis you also must specify the "parent analysis",
+
+For example - If you ran the command `intezer-get-sub-analyses analysis_id=123` 
+and got the sub analysis `456`, you need to specify both in the command
+
+#### Base Command
+
+`intezer-get-analysis-code-reuse`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| analysis_id | The analysis ID (parent analysis in case we're trying to get sub abalysis) we want to get the code reuse for. | Required | 
+| sub_analysis_id | The Sub Analysis we want to get the code reuse for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | The composed analysis ID |
+| Intezer.Analysis.CodeReuse | Unknown | General Code Reuse of the analysis | 
+| Intezer.Analysis.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
+| Intezer.Analysis.SubAnalyses.CodeReuse | Unknown | General Code Reuse of the analysis | 
+| Intezer.Analysis.SubAnalyses.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
+| Intezer.Analysis.SubAnalyses.RootAnalysis | string | The Composed analysis id | 
+
+
+#### Command Example
+``` 
+# Get the code reuse of an analysis
+intezer-get-analysis-code-reuse analysis_id=<Root analysis>
+
+# Get the root analysis sub analyses
+intezer-get-sub-analyses analysis_id=<Root analysis>
+
+# Use one of the results to get the sub analysis code reuse
+intezer-get-analysis-code-reuse analysis_id=<Root analysis> sub_analysis_id=<Sub Analysis Id>
+```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "SubAnalyses": [
+            {
+                "ID": "Some sub analysis id",
+                "RootAnalysis": "675515a1-62e9-4d55-880c-fd46a7963a56",
+                "CodeReuse": {
+                    "common_gene_count": 10,
+                    "gene_count": 100,
+                    "gene_type": "native_windows",
+                    "unique_gene_count": 50
+                },
+                "CodeReuseFamilies": [
+                    {
+                        "family_id": "5be245ca-793c-4991-9329-c42d6365a530",
+                        "family_name": "Microsoft Corporation",
+                        "family_type": "application",
+                        "reused_gene_count": 8
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+This will show information about the analysis code reuse and families
+
+```
+Code Reuse
+---
+common_gene_count   544
+gene_count          543
+gene_type           native_windows
+unique_gene_count   0
+
+Families:
+---
+
+WannaCry
+family_id	        0b13c0d4-7779-4c06-98fa-4d33ca98f8a9
+family_name	        WannaCry
+family_type	        malware
+reused_gene_count	362
+
+Lazarus
+family_id	        7ae9c0f1-5e81-4ed1-928d-d966a1b1525c
+family_name	        Lazarus
+family_type	        malware
+reused_gene_count	33
+
+... More Families if available
+```
+
+
+### intezer-get-analysis-metadata
+***
+Get metadata for an analysis or sub analysis
+To get the metadata of a sub analysis you also must specify the "parent analysis",
+
+For example - If you ran the command `intezer-get-sub-analyses analysis_id=123` 
+and got the sub analysis `456`, you need to specify both in the command
+
+
+#### Base Command
+
+`intezer-get-analysis-metadata`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| analysis_id | The analysis ID we want to get the metadata for. | Required | 
+| sub_analysis_id | The Sub Analysis we want to get the metadata for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | The composed analysis ID | 
+| Intezer.Analysis.Metadata | Unknown | The Analysis metadata | 
+| Intezer.Analysis.SubAnalyses.Metadata | Unknown | The Sub Analysis metadata | 
+
+#### Command Example
+``` 
+# Get the code reuse of an analysis
+intezer-get-analysis-metadata analysis_id=<Root analysis>
+
+# Get the root analysis sub analyses
+intezer-get-sub-analyses analysis_id=<Root analysis>
+
+# Use one of the results to get the sub analysis code reuse
+intezer-get-analysis-metadata analysis_id=<Root analysis> sub_analysis_id=<Sub Analysis Id>
+```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Done", 
+        "type": "File", 
+        "ID": "675515a1-62e9-4d55-880c-fd46a7963a56",
+        "SubAnalyses": [
+            {
+                "ID": "some sub analyses id",
+                "RootAnalysis": "675515a1-62e9-4d55-880c-fd46a7963a56",
+                "Metadata": {
+                    "sha1": "<sha1>",
+                    "sha256": "<sha256>",
+                    "md5": "<md5>",
+                    "product": "product name",
+                    "product_version": "5.4",
+                    "ssdeep": "<ssdeep>",
+                    "size_in_bytes": 15540,
+                    "architecture": "i386",
+                    "original_filename": "myfile.exe",
+                    "compilation_timestamp": "2019:07:26 18:23:19+00:00",
+                    "file_type": "pe",
+                    "company": "Microsoft"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+```
+Analysis Metadata
+---
+
+architecture	        i386
+company	                Microsoft Corporation
+compilation_timestamp	2009:07:13 23:19:35+00:00
+file_type	        pe
+md5	                md5
+original_filename	LODCTR.EXE
+product	                Microsoft® Windows® Operating System
+product_version	        6.1.7600.16385 ^^^
+sha1	                sha1
+sha256	                sha256
+size_in_bytes	        245760
+ssdeep	                ssdeep
+```
+

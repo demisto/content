@@ -5,22 +5,24 @@ from CommonServerPython import *
 
 RETURN_ERROR_TARGET = 'DigitalGuardian.return_error'
 
+auth_url = "https://authorization_url.com"
+arc_url = "https://arc_url.com"
+
+
+@pytest.fixture(scope='function', autouse=True)
+def setup_params(mocker):
+    demisto_params = {
+        "auth_url": auth_url,
+        "arc_url": arc_url,
+        "client_id": "client_id",
+        "client_secret": "client_secret"
+    }
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+
 
 def test_test_module(mocker, capfd):
     from DigitalGuardian import main
-
     with requests_mock.Mocker() as request_mocker:
-        auth_url = "https://authorization_url.com"
-        arc_url = "https://arc_url.com"
-
-        demisto_params = {
-            "auth_url": auth_url,
-            "arc_url": arc_url,
-            "client_id": "client_id",
-            "client_secret": "client_secret"
-        }
-
-        mocker.patch.object(demisto, 'params', return_value=demisto_params)
         mocker.patch.object(demisto, 'command', return_value='test-module')
 
         request_mocker.register_uri("POST", re.compile(auth_url), json={'access_token': 'access_token'},

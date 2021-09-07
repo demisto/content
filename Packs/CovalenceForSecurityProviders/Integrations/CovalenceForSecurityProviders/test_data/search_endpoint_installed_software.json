@@ -1,0 +1,20 @@
+[
+  {
+    "arch": 1,
+    "type": 1,
+    "packageManager": 0,
+    "installTimestamp": "1970-01-01T00:00:00.000Z",
+    "uninstallTimestamp": null,
+    "name": "Mozilla Firefox 86.0.1 (x86 fr)",
+    "version": "86.0.1",
+    "vendor": "Mozilla",
+    "installPath": "C:\\Program Files (x86)\\Mozilla Firefox",
+    "appDataPath": "",
+    "sharedDataPath": "",
+    "installedForUser": "",
+    "installSource": "",
+    "id": 366,
+    "agentUuid": "00437744-8a46-4467-8811-987fead6697f",
+    "softwareNotifyAction": "Invalid"
+  }
+]

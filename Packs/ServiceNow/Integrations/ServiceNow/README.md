@@ -3210,4 +3210,3 @@
 <h2>Troubleshooting</h2>
 <p>If there is an error within ServiceNow, the message is usually indicative, e.g., <code>User Not Authenticated, details: Required to provide Auth information </code>, <code>Invalid table</code> or <code>No Record found, details: Record doesn't exist or ACL restricts the record retrieval</code>.</p>
 <p>However there may be connection issues, e.g., when the ServiceNow server URL is incorrect or is unreachable.</p>
-<p>If you experience any issues, contact <a href="mailto:support@demisto.com">Cortex XSOAR Support</a>.</p>

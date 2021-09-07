@@ -162,9 +162,20 @@ args:
   secret: false
 - default: false
   defaultValue: '500'
-  description: Number of features per field
+  description: Number of features per field.
   isArray: false
   name: numberOfFeaturesPerField
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: char
+  description: 'Whether the feature should be made of word or character n-grams. Possible values: "char" and "word".'
+  isArray: false
+  name: analyzer
+  predefined:
+  - char
+  - word
   required: false
   secret: false
 comment: Train clustering model on any incident type.
@@ -180,7 +191,7 @@ tags:
 - ml
 timeout: 3.6µs
 type: python
-dockerimage: demisto/mlclustering:1.0.0.19269
+dockerimage: demisto/mlclustering:1.0.0.23151
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0

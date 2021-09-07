@@ -1,6 +1,7 @@
 !gibtia-get-available-collections
 !gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a
 !gibtia-get-compromised-card-info id=ecda6f4dc85596f447314ce01e2152db9c9d3cbc
+!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba
 !gibtia-get-phishing-kit-info id=044f3f2cb599228c1882884eb77eb073f68a25f2
 !gibtia-get-phishing-info id=fce7f92d0b64946cf890842d083953649b259952
 !gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691

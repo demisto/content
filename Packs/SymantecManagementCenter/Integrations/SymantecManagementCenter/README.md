@@ -2511,5 +2511,4 @@
 <p><strong>HTTP 500 Internal Server Error</strong> - Error in Symantec MC. Could occur if requests are made in parallel.</p>
 </div>
 <div class="cl-preview-section">
-<p>If you encounter any issues, contact us at <a href="mailto:support@demisto.com">support@demisto.com</a>.</p>
 </div>

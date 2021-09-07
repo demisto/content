@@ -6,6 +6,11 @@ import CommonServerPython
 GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
 
 
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'script': True})
+
+
 @pytest.mark.parametrize(
     "indicator, indicator_type, expected",
     [

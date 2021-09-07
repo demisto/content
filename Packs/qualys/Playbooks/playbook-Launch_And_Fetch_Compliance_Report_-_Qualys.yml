@@ -1,0 +1,265 @@
+id: Launch And Fetch Compliance Report - Qualys
+version: -1
+name: Launch And Fetch Compliance Report - Qualys
+description: Launches a compliance report and fetches the report when it's
+  ready.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: feaf59d2-f107-4395-862c-895cd5406872
+    type: start
+    task:
+      id: feaf59d2-f107-4395-862c-895cd5406872
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8369bec1-b364-4ce7-89b0-fcdc89901df2
+    type: regular
+    task:
+      id: 8369bec1-b364-4ce7-89b0-fcdc89901df2
+      version: -1
+      name: qualys-report-launch-compliance
+      description: Run compliance report
+      script: QualysV2|||qualys-report-launch-compliance
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asset_group_ids:
+        simple: ${inputs.asset_group_ids}
+      hide_header:
+        simple: ${inputs.hide_header}
+      ips:
+        simple: ${inputs.ips}
+      output_format:
+        simple: ${inputs.output_format}
+      pdf_password:
+        simple: ${inputs.pdf_password}
+      recipient_group:
+        simple: ${inputs.recipient_group}
+      recipient_group_id:
+        simple: ${inputs.recipient_group_id}
+      report_refs:
+        simple: ${inputs.report_refs}
+      report_title:
+        simple: ${inputs.report_title}
+      template_id:
+        simple: ${inputs.template_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 21498a36-da72-49fd-8b45-107750dc839e
+    type: regular
+    task:
+      id: 21498a36-da72-49fd-8b45-107750dc839e
+      version: -1
+      name: qualys-report-fetch
+      description: Download report
+      script: QualysV2|||qualys-report-fetch
+      type: regular
+      iscommand: true
+      brand: QualysV2
+    scriptarguments:
+      execution-timeout:
+        simple: "180"
+      file_format:
+        simple: ${inputs.output_format}
+      id:
+        simple: ${Qualys.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9fe76d77-ac51-4c04-862b-eb39c73eecb0
+    type: playbook
+    task:
+      id: 9fe76d77-ac51-4c04-862b-eb39c73eecb0
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        simple: ${Qualys.Report.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: qualys-report-list
+      Timeout:
+        simple: "30"
+      dt:
+        simple: Qualys.Report(val.STATUS.STATE != 'Finished').ID.
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: template_id
+  value: {}
+  required: true
+  description: The template ID of the report you want to launch. Can be found by running
+    the command qualys-report-template-list.
+  playbookInputQuery:
+- key: output_format
+  value: {}
+  required: true
+  description: One output format may be specified. When output_format=pdf is specified,
+    the Secure PDF Distribution may be used.
+  playbookInputQuery:
+- key: report_title
+  value: {}
+  required: false
+  description: A user-defined report title. The title may have a maximum of 128 characters.
+    For a PCI compliance report, the report title is provided by Qualys and cannot
+    be changed.
+  playbookInputQuery:
+- key: hide_header
+  value: {}
+  required: false
+  description: (Valid for CSV format report only). Specify hide_header=1 to omit the
+    header information from the report. By default this information is included.
+  playbookInputQuery:
+- key: recipient_group_id
+  value: {}
+  required: false
+  description: The report recipients in the form of one or more distribution group
+    IDs. Multiple distribution group IDs are comma separated. Where do I find this
+    ID? Log in to your Qualys account, go to Users > Distribution Groups and select
+    Info for a group in the list.
+  playbookInputQuery:
+- key: pdf_password
+  value: {}
+  required: false
+  description: (Required for secure PDF distribution, Manager or Unit Manager only)
+    Used for secure PDF report distribution when this feature is enabled in the user's
+    account (under Reports > Setup > Report Share). The password to be used for encryption.
+    - the password must have a minimum of 8 characters (ascii), and a maximum of 32
+    characters - the password must contain alpha and numeric characters - the password
+    cannot match the password for the user’s Qualys account. - the password must follow
+    the password security guidelines defined for your subscription (under Users >
+    Setup > Security)
+  playbookInputQuery:
+- key: recipient_group
+  value: {}
+  required: false
+  description: Used for secure PDF distribution. The report recipients in the form
+    of one or more distribution group names, as defined using the Qualys UI. Multiple
+    distribution groups are comma separated. A maximum of 50 distribution groups may
+    be entered.
+  playbookInputQuery:
+- key: ips
+  value: {}
+  required: false
+  description: (Optional for compliance report) For a compliance report (except a
+    PCI report), specify the IPs/ranges you want to include in the report. Multiple
+    IPs and/or ranges are comma separated.
+  playbookInputQuery:
+- key: asset_group_ids
+  value: {}
+  required: false
+  description: (Optional for compliance report) For a compliance report (except a
+    PCI report), specify asset groups IDs which identify hosts to include in the report.
+    Multiple asset group IDs are comma separated. Looking for asset group IDs? Use
+    the asset_group_list.php function (in the API v1 User Guide).
+  playbookInputQuery:
+- key: report_refs
+  value: {}
+  required: false
+  description: For a PCI compliance report, either the technical or executive report,
+    this parameter specifies the scan reference to include. A scan reference starts
+    with the string “scan/” followed by a reference ID number. The scan reference
+    must be for a scan that was run using the PCI Options profile. Only one scan reference
+    may be specified. Reference can be found by running the command qualys-pc-scan-list.
+  playbookInputQuery:
+outputs: []
+tests:
+- QualysVulnerabilityManagement-Test
+fromversion: 5.5.0

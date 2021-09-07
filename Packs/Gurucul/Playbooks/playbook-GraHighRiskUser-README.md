@@ -28,4 +28,4 @@ This playbook uses the following integrations,commands and scripts.
 | Gra.Anomalies.anomaly_name | Anomaly Name . |  String|
 
 
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/6bbd43a604ed992299a9db196509006da8414cf3/Packs/Gurucul/doc_files/GraHighRiskUser.png)
+![Playbook Image](https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/Gurucul/doc_files/GraHighRiskUser.png)

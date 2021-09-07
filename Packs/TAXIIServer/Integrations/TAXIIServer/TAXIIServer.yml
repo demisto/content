@@ -52,7 +52,7 @@ description: This integration provides TAXII Services for system indicators (Out
 display: TAXII Server
 name: TAXII Server
 script:
-  dockerimage: demisto/taxii-server:1.0.0.20933
+  dockerimage: demisto/taxii-server:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true

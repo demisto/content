@@ -1,0 +1,184 @@
+id: Carbon Black EDR - Enrich Process
+version: -1
+name: Carbon Black EDR - Enrich Process
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 88be698c-1313-4c4f-80de-4b0513c220fe
+    type: start
+    task:
+      id: 88be698c-1313-4c4f-80de-4b0513c220fe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ac928890-ed94-4fd1-8327-4e695992eccf
+    type: condition
+    task:
+      id: ac928890-ed94-4fd1-8327-4e695992eccf
+      version: -1
+      name: Is instance valid?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Carbon Black EDR
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6257b06f-4b2a-4b5e-82a0-f41e18fb0cca
+    type: regular
+    task:
+      id: 6257b06f-4b2a-4b5e-82a0-f41e18fb0cca
+      version: -1
+      name: Enrich Process
+      description: Gets basic process information for the segment of the process.
+      script: '|||cb-edr-process-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      get_related:
+        simple: ${inputs.Enrich with related processes?}
+      process_id:
+        simple: ${inputs.Process ID}
+      segment_id:
+        simple: ${inputs.Segment ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9b0191cf-a91a-4d71-89c2-3e495608591d
+    type: title
+    task:
+      id: 9b0191cf-a91a-4d71-89c2-3e495608591d
+      version: -1
+      name: Done.
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Process ID
+  value:
+    simple: ${incident.pid}
+  required: true
+  description: The ID of the requested process.
+  playbookInputQuery:
+- key: Segment ID
+  value:
+    simple: ${incident.carbonblackedrsegmentid}
+  required: true
+  description: The ID of the segment of the requested process.
+  playbookInputQuery:
+- key: Enrich with related processes?
+  value:
+    simple: "false"
+  required: true
+  description: Whether the data fetched should include related processes (parent, sibling
+    and child processes) if available?
+  playbookInputQuery:
+outputs: []
+tests:
+- Carbon Black Response Test
+- Carbon Black Edr - Test
+- CBFindIP - Test
+fromversion: 5.5.0
+description: Test Playbook for Carbon Black EDR

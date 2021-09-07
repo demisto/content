@@ -22,7 +22,7 @@ This integration was integrated and tested with Splunk v7.2.
 | host | The host name to the server, including the scheme (x.x.x.x). | True |
 | authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). | True |
 | port | The port affiliated with the server. | True |
-| fetchQuery | The notable events ES query to be fetched. | False |
+| fetchQuery | The events query to be fetched. | False |
 | fetch_limit | The limit of incidents to fetch. The maximum is 200. (It is recommended to fetch less than 50). | False |
 | isFetch | The incidents fetched. | False |
 | incidentType | The incident type. | False |
@@ -33,8 +33,6 @@ This integration was integrated and tested with Splunk v7.2.
 | extractFields | The CSV fields that will be parsed out of _raw notable events. | False |
 | useSplunkTime | Uses the Splunk clock time for the fetch. | False |
 | unsecure | When selected, certificates are not checked (not secure). | False |
-| earliest_fetch_time_fieldname | The earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch). | False |
-| latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
 | app | The context of the application's namespace. | False |
 | hec_token | The HEC token (HTTP Event Collector). | False |
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
@@ -55,32 +53,12 @@ The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameter
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
-### Configure Splunk to Produce Alerts for SplunkPy
-It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+## Splunk Enterprise Security Users
 
-1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
-2. Build a query to return relevant alerts.
-![image](https://user-images.githubusercontent.com/50324325/63265602-ae7fba00-c296-11e9-898c-afc98c56a1cb.png)
-3. Identify the fields list from the Splunk query and save it to a local file.
-![image](https://user-images.githubusercontent.com/50324325/63265613-b6d7f500-c296-11e9-81d7-854ee4ee9685.png)
-4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
-Use the following naming convention: (demisto_fields_{type}).
-![image](https://user-images.githubusercontent.com/50324325/63265773-08807f80-c297-11e9-86a1-355a261c356b.png)
-![image](https://user-images.githubusercontent.com/50324325/63265623-bccdd600-c296-11e9-9303-47b9791b0205.png)
-5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
-![image](https://user-images.githubusercontent.com/50324325/63265640-c5261100-c296-11e9-9bd6-426fb328c09c.png)
-6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
-![image](https://user-images.githubusercontent.com/50324325/63265665-d0793c80-c296-11e9-9919-cf6c6af33294.png)
-7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__
-![image](https://user-images.githubusercontent.com/50324325/63265677-d66f1d80-c296-11e9-95df-190ab18ae484.png)
-8. Navigate to __Settings > Integrations > Classification & Mapping__, and drag the value to the appropriate incident type.
-![image](https://user-images.githubusercontent.com/50324325/63265720-ea1a8400-c296-11e9-8062-dd40606c5a42.png)
-9. Click the __Edit mapping__ link to map the Splunk fields to Cortex XSOAR.
-![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
-10. (Optional) Create custom fields.
-11. Build a playbook and assign it as the default for this incident type.
+**Note:** The following information is for Splunk Enterprise Security Users.  
+For Splunk non-Enterprise Security Users, see [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users).
 
-### Fetching notable events.
+### Fetching notable events
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
 
 ### Enriching notable events
@@ -98,7 +76,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 #### How to configure
 1. Configure the integration to fetch incidents (see the Integration documentation for details).
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
-3. *Fetch notable events ES query*: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro. See the default query as an example.  
+3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
 
@@ -118,15 +96,19 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
-**NOTE: This feature is available from Cortex XSOAR version 6.0.0**
-**NOTE: This feature is supported by Splunk Enterprise Security only**
-
+**Imporatnt Notes*** 
+ - This feature is available from Cortex XSOAR version 6.0.0.
+ - This feature is supported by Splunk Enterprise Security only.
+ - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+ 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SplunkPy and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. You can go to the *Fetch events query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
@@ -143,10 +125,10 @@ Note: This will not effect existing incidents.
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
 Users who wish to enrich or mirror fetched notables and have already used the integration in the past:
 1. Might have to slightly change the existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc.) in order for them to work with the modified structure of the fetched events. 
-2. Will need to change the *Fetch notable events ES enrichment query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
+2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
 ```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
 ```
 
 ### Mapping fetched incidents using Select Schema
@@ -157,7 +139,7 @@ This enables you to map fields for an incident without having to generate a new 
 The ***get-mapping-fields*** command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
 To use this feature, you must set several integration instance parameters:
- - *Fetch notable events ES query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
+ - *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
  - *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
@@ -165,8 +147,55 @@ To use this feature, you must set several integration instance parameters:
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command. 
 When creating a new field mapping for fetched incidents, the *Pull Instances* option retrieves current alerts which can be clicked to visually map fields.
 If the user has configured the *Use CIM Schemas for Mapping* parameter then the *Select Schema* option retrieves fields based on Splunk CIM.
-For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview.
 The CIM mapping fields implemented in this integration are of 4.18.0 version.
+
+
+
+## Splunk non-Enterprise Security Users
+
+### Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
+
+It is recommended that Splunk is configured to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
+
+1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
+2. Build a query to return relevant alerts.
+![image](./../../doc_files/build-query.png)
+3. Identify the fields list from the Splunk query and save it to a local file.
+![image](./../../doc_files/identify-fields-list.png)
+4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
+Use the following naming convention: (demisto_fields_{type}).
+![image](./../../doc_files/micro-name.png)
+![image](./../../doc_files/macro.png)
+5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
+![image](./../../doc_files/scheduled-search.png)
+6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
+![image](./../../doc_files/summary-index.png)
+7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
+![image](./../../doc_files/incident_type.png)
+8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
+   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Click your classifier.
+   2. Select your instance.
+   3. Click the fetched data.
+   4. Drag the value to the appropriate incident type.
+![image](./../../doc_files/classify.png)
+9. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
+   1. Navigate to __Settings > Integrations > Classification & Mapping__.
+   1. Click your mapper.
+   2. Select your instance.
+   3. Click the __Choose data path__ link for the field you want to map.
+   4. Click the data from the Splunk fields to map it to Cortex XSOAR.
+![image](./../../doc_files/mapping.png)
+10. (Optional) Create custom fields.
+11. Build a playbook and assign it as the default for this incident type.
+
+### Constraints
+The following features are not supported in non-ES (Enterprise Security) Splunk.
+- Incident Mirroring
+- Enrichment.
+- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) for information.
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -917,18 +946,18 @@ There is no context output for this command.
 To get the HEC token
 1. Go to the Splunk UI.
 2. Under **Settings** > **Data** > **Data inputs**, click **HTTP Event Collector**.
-![Screen Shot 2020-01-20 at 10 22 50](https://user-images.githubusercontent.com/45915502/72710123-0f296080-3b6f-11ea-9eb4-a3cebb1e8700.png)
+![Screen Shot 2020-01-20 at 10 22 50](./../../doc_files/http-event-collector.png)
  
 4. Click **New Token**.
 5. Add all the relevant details until done.
 
 
 _For the HTTP Port number:_
-Click on Global settings (in the HtTP Event Collector page)
-![Screen Shot 2020-01-20 at 10 27 25](https://user-images.githubusercontent.com/45915502/72710342-8d860280-3b6f-11ea-8d66-4d60303aba48.png)
+Click on Global settings (in the HTTP Event Collector page)
+![Screen Shot 2020-01-20 at 10 27 25](./../../doc_files/http-port-number.png)
 
 The default port is 8088.
 
 ## Troubleshooting
 
-In case you encounter HTTP errors (e.g. IncompleteRead), we recommend using Python requests handler.
+In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.

@@ -7,7 +7,7 @@ There are 2 application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-In order to use Cortex XSOAR application and allow us access to Microsoft Graph Mail, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-mail).
+In order to use Cortex XSOAR application and allow us access to O365 Outlook Mail (Using Graph API), an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-mail).
 After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
 
 Important to know:

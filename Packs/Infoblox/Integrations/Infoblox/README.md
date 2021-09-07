@@ -229,12 +229,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-search-related-objects-by-ip">2. infoblox-search-related-objects-by-ip</h3>
@@ -335,12 +329,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-list-response-policy-zone-rules">3. infoblox-list-response-policy-zone-rules</h3>
@@ -380,6 +368,11 @@ This integration was integrated and tested with version V2 of Infoblox
     <tr>
       <td>next_page_id</td>
       <td>The next page ID that was returned when last running this command.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>view</td>
+      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -584,12 +577,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-list-response-policy-zones">4. infoblox-list-response-policy-zones</h3>
@@ -930,12 +917,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-response-policy-zone">5. infoblox-create-response-policy-zone</h3>
@@ -1091,12 +1072,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-rpz-rule">6. infoblox-create-rpz-rule</h3>
@@ -1151,6 +1126,11 @@ This integration was integrated and tested with version V2 of Infoblox
     <tr>
       <td>substitute_name</td>
       <td>The substitute name to assign (substitute domain only).</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>view</td>
+      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -1257,12 +1237,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-a-substitute-record-rule">7. infoblox-create-a-substitute-record-rule</h3>
@@ -1416,12 +1390,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-aaaa-substitute-record-rule">8. infoblox-create-aaaa-substitute-record-rule</h3>
@@ -1575,12 +1543,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-mx-substitute-record-rule">9. infoblox-create-mx-substitute-record-rule</h3>
@@ -1742,12 +1704,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-naptr-substitute-record-rule">10. infoblox-create-naptr-substitute-record-rule</h3>
@@ -1923,12 +1879,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-ptr-substitute-record-rule">11. infoblox-create-ptr-substitute-record-rule</h3>
@@ -2095,12 +2045,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-srv-substitute-record-rule">12. infoblox-create-srv-substitute-record-rule</h3>
@@ -2278,12 +2222,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-txt-substitute-record-rule">13. infoblox-create-txt-substitute-record-rule</h3>
@@ -2437,12 +2375,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-ipv4-substitute-record-rule">14. infoblox-create-ipv4-substitute-record-rule</h3>
@@ -2596,12 +2528,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-create-ipv6-substitute-record-rule">15. infoblox-create-ipv6-substitute-record-rule</h3>
@@ -2755,12 +2681,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-enable-rule">16. infoblox-enable-rule</h3>
@@ -2888,12 +2808,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-disable-rule">17. infoblox-disable-rule</h3>
@@ -3021,12 +2935,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-get-object-fields">18. infoblox-get-object-fields</h3>
@@ -3158,12 +3066,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-search-rule">19. infoblox-search-rule</h3>
@@ -3294,12 +3196,6 @@ This integration was integrated and tested with version V2 of Infoblox
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-delete-rpz-rule">20. infoblox-delete-rpz-rule</h3>
@@ -3352,11 +3248,6 @@ There are no context output for this command.
 Infoblox Integration - A rule with the following id was deleted: 
  record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="infoblox-delete-response-policy-zone">21. infoblox-delete-response-policy-zone</h3>
@@ -3409,11 +3300,6 @@ There are no context output for this command.
 Infoblox Integration - Response Policy Zone with the following id was deleted: 
  zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <h2>Additional Information</h2>
 <p>

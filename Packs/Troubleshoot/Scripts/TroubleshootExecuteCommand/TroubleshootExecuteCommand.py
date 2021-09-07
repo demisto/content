@@ -5,7 +5,7 @@ Command execute:
 from CommonServerPython import *
 
 
-def execute_command(command: str, arguments: dict):
+def _execute_command(command: str, arguments: dict):
     return demisto.executeCommand(command, arguments)
 
 
@@ -57,7 +57,7 @@ def main():
     instance_name = args.get('instance_name')
     arguments['using'] = instance_name
     arguments['debug-mode'] = True
-    response = execute_command(command, arguments)
+    response = _execute_command(command, arguments)
     errors = get_errors(response)
     log_files = get_log_file(response)
     for log_file in log_files:

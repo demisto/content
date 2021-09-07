@@ -1237,10 +1237,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Source Address, Destination Address, Application, Action, Rule &amp; Time Generated. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_cf65d1a7-d7ca-4a51-8e0d-1e6dbc499a41">6. Query threat logs</h3>
 <hr>
 <p>Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.</p>
@@ -1628,10 +1624,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Source Address, Destination Address, Application, Action, Rule &amp; Time Generated. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_453996b5-7677-4812-ae96-1947d005bd1c">7. Query Traps logs</h3>
 <hr>
 <p>Searches the Cortex tms.threat table, which is the threat logs table for the Traps endpoint protection and response.</p>
@@ -2194,10 +2186,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Severity, Event Type, User, Agent Address, Agent Name &amp; Agent Time. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_efdac8d4-7749-42ca-9da9-51a676dbd51f">8. Query analytics logs</h3>
 <hr>
 <p>Searches the Cortex tms.analytics table, which is the endpoint logs table for Traps Analytics.</p>
@@ -2909,9 +2897,5 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Severity, Event Type, User, Agent Address, Agent Name &amp; Agent Time. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p></div>

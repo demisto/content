@@ -1,0 +1,30 @@
+{
+    "id": "indicator_rssrawcontent",
+    "version": -1,
+    "modified": "2021-06-24T15:00:43.925791+03:00",
+    "name": "RSS Feed Raw Content",
+    "ownerOnly": false,
+    "cliName": "rssfeedrawcontent",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

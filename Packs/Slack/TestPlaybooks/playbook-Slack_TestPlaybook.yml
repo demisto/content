@@ -452,7 +452,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3890
         }
       }
   "13":
@@ -533,7 +533,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - "22"
     note: false
     quietmode: 0
     scriptarguments:
@@ -751,6 +751,87 @@ tasks:
           "y": 895
         }
       }
+  "22":
+    id: "22"
+    taskid: 4599b43c-2ac7-46b6-8698-cfcea7138e16
+    type: regular
+    task:
+      id: 4599b43c-2ac7-46b6-8698-cfcea7138e16
+      version: -1
+      name: Channels filter
+      description: Returns a list of channels matching criteria
+      script: '|||slack-filter-channels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNow2TimeNowUnix
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3315188f-2b77-4ba8-87b6-0370b12362c5
+    type: condition
+    task:
+      id: 3315188f-2b77-4ba8-87b6-0370b12362c5
+      version: -1
+      name: Verify filtered channel
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Slack.Channel.Name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: TimeNow2TimeNowUnix
+                transformers:
+                - operator: Stringify
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {

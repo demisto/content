@@ -266,7 +266,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `panorama-commit`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional | 
 
 #### Context Output
 
@@ -311,7 +313,10 @@ Pushes rules from PAN-OS to the configured device group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional |
+| validate-only | Pre policy validation. | Optional. |
+| include-template | Whether to include template changes. | Optional. |
+| description | Push description. | Optional |
 
 
 #### Context Output
@@ -2056,7 +2061,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2123,7 +2129,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -3031,7 +3038,8 @@ Checks whether a session matches a specified security policy. This command is on
 | to | The to zone. | Optional | 
 | protocol | The IP protocol value. | Required | 
 | source | The source IP address. | Required | 
-| source-user | The source user. | Optional | 
+| source-user | The source user. | Optional |
+| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 
 
 #### Context Output

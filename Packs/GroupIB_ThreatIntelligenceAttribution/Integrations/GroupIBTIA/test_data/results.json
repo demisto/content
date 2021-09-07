@@ -54,5 +54,19 @@
               "rawJSON": "{\"date\": \"2021-01-21T06:49:12+00:00\", \"dateAnalyzeEnded\": \"2021-01-21T09:53:23+00:00\", \"dateAnalyzeStarted\": \"2021-01-21T09:49:12+00:00\", \"evaluation\": {\"admiraltyCode\": \"A1\", \"credibility\": 100, \"reliability\": 100, \"severity\": \"red\", \"tlp\": \"red\", \"ttl\": null}, \"fileName\": \"some.txt\", \"fileType\": \"data\", \"fileVersion\": null, \"hasReport\": true, \"id\": \"5bbd38acf0b9e4f04123af494d485f6c49221e98\", \"injectDump\": \"saasadasdd\", \"injectMd5\": \"971cca2a0f04ced4crb8218624d88de2\", \"isFavourite\": false, \"isHidden\": false, \"malware\": {\"id\": \"b69fc9d439d2fd41e98a7e3c60b9a55340012eb6\", \"name\": \"Cobalt Strike\"}, \"md5\": \"11702f92313f5f5123d129809ca4f83d\", \"oldId\": \"396793259\", \"portalLink\": \"https://bt.group-ib.com/targeted_malware/Cobalt Strike/sample/5bbd38acf0b9e4f04123af494d485f6c49221e98/show\", \"seqUpdate\": 1614920439682, \"sha1\": \"93fce6228be5557c69d8eeaab5a5a2a643e7d450\", \"sha256\": \"630c88ca1d583f05283707730da5b1f4423807cd80cab108821157ad341b5003\", \"size\": 208178, \"source\": \"Sandbox service\", \"threatActor\": {\"country\": null, \"id\": \"d7ff75c35f93dce6f5410bba9a6c206bdff66555\", \"isAPT\": false, \"name\": \"FRK48\"}, \"name\": \"Targeted Malware: 971cca2a0f04ced4crb8218624d88de2\", \"gibType\": \"malware/targeted_malware\", \"relatedIndicatorsData\": [\"11702f92313f5f5123d129809ca4f83d\"], \"systemSeverity\": 3}"
             }
         ]
+    ],
+    "compromised/breached": [
+        {
+            "last_fetch": {
+                "compromised/breached": "2021-06-12T03:02:00"
+            }
+        },
+        [
+            {
+              "name": "Data Breach: some@gmail.com",
+              "occurred": "2021-06-12T03:02:00Z",
+              "rawJSON": "{\"addInfo\": {\"address\": [\"\"]}, \"email\": [\"some@gmail.com\"], \"id\": [\"277c4112d348c91f6dabe9467f0d11dd\"], \"leakName\": \"some.com\", \"password\": [\"CD91C480FDE9D7ACB8AC4B78310EA2ED\", \"1390DDDFA28AE085D23518A035707231\"], \"updateTime\": \"2021-06-12T03:02:00\", \"uploadTime\": \"2021-06-12T03:02:00\", \"name\": \"Data Breach: some@gmail.com\", \"gibType\": \"compromised/breached\", \"relatedIndicatorsData\": [], \"systemSeverity\": 0}"
+            }
+        ]
     ]
 }

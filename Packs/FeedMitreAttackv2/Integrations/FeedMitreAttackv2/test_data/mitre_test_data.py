@@ -102,7 +102,8 @@ ATTACK_PATTERN = {
                     'type': 'Attack Pattern',
                     'value': 'ATTACK_PATTERN 1'}],
                   [],
-                  {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': 'ATTACK_PATTERN 1'})
+                  {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': 'ATTACK_PATTERN 1'},
+                  {'T1047': 'ATTACK_PATTERN 1'})
 }
 
 STIX_ATTACK_PATTERN = {
@@ -208,7 +209,8 @@ COURSE_OF_ACTION = {
                     'type': 'Course of Action',
                     'value': 'COURSE_OF_ACTION 1'}],
                   [],
-                  {'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22': 'COURSE_OF_ACTION 1'})
+                  {'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22': 'COURSE_OF_ACTION 1'},
+                  {})
 }
 
 INTRUSION_SET = {
@@ -283,7 +285,8 @@ INTRUSION_SET = {
                     'type': 'Intrusion Set',
                     'value': 'INTRUSION_SET 1'}],
                   [],
-                  {'intrusion-set--03506554-5f37-4f8f-9ce4-0e9f01a1b484': 'INTRUSION_SET 1'})
+                  {'intrusion-set--03506554-5f37-4f8f-9ce4-0e9f01a1b484': 'INTRUSION_SET 1'},
+                  {})
 }
 
 MALWARE = {
@@ -336,7 +339,8 @@ MALWARE = {
                                'modified': '2021-01-06T19:32:28.378Z',
                                'operatingsystemrefs': ['Windows'],
                                'publications': [{
-                                   'link': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99',
+                                   'link': 'https://www.symantec.com/security_response/writeup.jsp?'
+                                           'docid=2012-051606-1005-99',
                                    'source': 'Symantec Wiarp May 2012',
                                    'title': 'Zhou, R. (2012, May 15). '
                                             'Backdoor.Wiarp. Retrieved February '
@@ -354,7 +358,8 @@ MALWARE = {
                                                                         '2018.',
                                                          'source_name': 'Symantec Wiarp May '
                                                                         '2012',
-                                                         'url': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99'}],
+                                                         'url': 'https://www.symantec.com/security_response/writeup.jsp'
+                                                                '?docid=2012-051606-1005-99'}],
                                 'id': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
                                 'labels': ['malware'],
                                 'modified': '2021-01-06T19:32:28.378Z',
@@ -366,7 +371,7 @@ MALWARE = {
                     'type': 'Malware',
                     'value': 'MALWARE 1'}],
                   [],
-                  {'malware--039814a0-88de-46c5-a4fb-b293db21880a': 'MALWARE 1'})
+                  {'malware--039814a0-88de-46c5-a4fb-b293db21880a': 'MALWARE 1'}, {})
 }
 
 STIX_MALWARE = {
@@ -473,7 +478,7 @@ TOOL = {
                     'type': 'Tool',
                     'value': 'TOOL 1'}],
                   [],
-                  {'tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d': 'TOOL 1'})
+                  {'tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d': 'TOOL 1'}, {})
 }
 
 STIX_TOOL = {
@@ -540,4 +545,103 @@ RELATION = {
                    'name': 'uses',
                    'reverseName': 'used-by',
                    'type': 'IndicatorToIndicator'}]
+}
+
+MALWARE_LIST_WITHOUT_PREFIX = [
+    {"type": "Intrusion Set", "value": "RTM", 'fields': {"stixid": "1111"}},
+    {"type": "Intrusion Set", "value": "Machete", 'fields': {"stixid": "2222"}},
+    {"type": "Intrusion Set", "value": "APT1", 'fields': {"stixid": "3333"}},
+    {"type": "Intrusion Set", "value": "ATP12", 'fields': {"stixid": "4444"}},
+    {"type": "Malware", "value": "RTM", 'fields': {"stixid": "5555"}},
+    {"type": "Malware", "value": "Machete", 'fields': {"stixid": "6666"}},
+    {"type": "Malware", "value": "ABK", 'fields': {"stixid": "7777"}},
+    {"type": "Malware", "value": "Adups", 'fields': {"stixid": "8888"}},
+    {"type": "Malware", "value": "4H RAT", 'fields': {"stixid": "9999"}},
+    {"type": "Attack Pattern", "value": "Access Token", 'fields': {"stixid": "0000"}},
+    {"type": "Tool", "value": "at", 'fields': {"stixid": "1212"}},
+    {"type": "Course of Action", "value": "Account Use Policies", 'fields': {"stixid": "2323"}}
+]
+
+MALWARE_LIST_WITH_PREFIX = [
+    {"type": "Intrusion Set", "value": "RTM", 'fields': {"stixid": "1111"}},
+    {"type": "Intrusion Set", "value": "Machete", 'fields': {"stixid": "2222"}},
+    {"type": "Intrusion Set", "value": "APT1", 'fields': {"stixid": "3333"}},
+    {"type": "Intrusion Set", "value": "ATP12", 'fields': {"stixid": "4444"}},
+    {"type": "Malware", "value": "RTM [Malware]", 'fields': {"stixid": "5555"}},
+    {"type": "Malware", "value": "Machete [Malware]", 'fields': {"stixid": "6666"}},
+    {"type": "Malware", "value": "ABK", 'fields': {"stixid": "7777"}},
+    {"type": "Malware", "value": "Adups", 'fields': {"stixid": "8888"}},
+    {"type": "Malware", "value": "4H RAT", 'fields': {"stixid": "9999"}},
+    {"type": "Attack Pattern", "value": "Access Token", 'fields': {"stixid": "0000"}},
+    {"type": "Tool", "value": "at", 'fields': {"stixid": "1212"}},
+    {"type": "Course of Action", "value": "Account Use Policies", 'fields': {"stixid": "2323"}}
+]
+
+INDICATORS_LIST = [
+    {"type": "Intrusion Set", "value": "RTM", "fields": {"mitreid": "T1111.111", "stixid": "1"}},
+    {"type": "Intrusion Set", "value": "Machete", "fields": {"mitreid": "T1111", "stixid": "2"}},
+    {"type": "Intrusion Set", "value": "APT1", "fields": {"mitreid": "T1251", "stixid": "3"}},
+    {"type": "Intrusion Set", "value": "ATP12", "fields": {"mitreid": "T1259", "stixid": "4"}},
+    {"type": "Malware", "value": "RTM [Malware]", "fields": {"mitreid": "T1256", "stixid": "5"}},
+    {"type": "Attack Pattern", "value": "Machete 1", "fields": {"mitreid": "T1254", "stixid": "6"}},
+    {"type": "Attack Pattern", "value": "ABK", "fields": {"mitreid": "T1789", "stixid": "7"}},
+    {"type": "Attack Pattern", "value": "Adups", "fields": {"mitreid": "T1254.001", "stixid": "8"}},
+    {"type": "Attack Pattern", "value": "4H RAT", "fields": {"mitreid": "T1254.002", "stixid": "9"}},
+    {"type": "Attack Pattern", "value": "Access Token", "fields": {"mitreid": "T1789.001", "stixid": "10"}},
+    {"type": "Tool", "value": "at", "fields": {"mitreid": "T7854", "stixid": "11"}},
+    {"type": "Course of Action", "value": "Account Use Policies", "fields": {"mitreid": "T1250", "stixid": "12"}}
+]
+
+NEW_INDICATORS_LIST = [
+    {"type": "Intrusion Set", "value": "RTM", "fields": {"mitreid": "T1111.111", "stixid": "1"}},
+    {"type": "Intrusion Set", "value": "Machete", "fields": {"mitreid": "T1111", "stixid": "2"}},
+    {"type": "Intrusion Set", "value": "APT1", "fields": {"mitreid": "T1251", "stixid": "3"}},
+    {"type": "Intrusion Set", "value": "ATP12", "fields": {"mitreid": "T1259", "stixid": "4"}},
+    {"type": "Malware", "value": "RTM [Malware]", "fields": {"mitreid": "T1256", "stixid": "5"}},
+    {"type": "Attack Pattern", "value": "Machete 1", "fields": {"mitreid": "T1254", "stixid": "6"}},
+    {"type": "Attack Pattern", "value": "ABK", "fields": {"mitreid": "T1789", "stixid": "7"}},
+    {"type": "Attack Pattern", "value": "Machete 1: Adups", "fields": {"mitreid": "T1254.001", "stixid": "8"}},
+    {"type": "Attack Pattern", "value": "Machete 1: 4H RAT", "fields": {"mitreid": "T1254.002", "stixid": "9"}},
+    {"type": "Attack Pattern", "value": "ABK: Access Token", "fields": {"mitreid": "T1789.001", "stixid": "10"}},
+    {"type": "Tool", "value": "at", "fields": {"mitreid": "T7854", "stixid": "11"}},
+    {"type": "Course of Action", "value": "Account Use Policies", "fields": {"mitreid": "T1250", "stixid": "12"}}
+]
+
+MITRE_ID_TO_MITRE_NAME = {
+    "T1254": "Machete 1",
+    "T1789": "ABK",
+    "T1254.001": "Adups",
+    "T1254.002": "4H RAT",
+    "T1789.001": "Access Token"
+}
+
+OLD_ID_TO_NAME = {
+    "1": "RTM",
+    "2": "Machete",
+    "3": "APT1",
+    "4": "ATP12",
+    "5": "RTM [Malware]",
+    "6": "Machete 1",
+    "7": "ABK",
+    "8": "Machete 1: Adups",
+    "9": "Machete 1: 4H RAT",
+    "10": "ABK: Access Token",
+    "11": "at",
+    "12": "Account Use Policies",
+
+}
+
+NEW_ID_TO_NAME = {
+    '1': 'RTM',
+    '10': 'ABK: Access Token',
+    '11': 'at',
+    '12': 'Account Use Policies',
+    '2': 'Machete',
+    '3': 'APT1',
+    '4': 'ATP12',
+    '5': 'RTM [Malware]',
+    '6': 'Machete 1',
+    '7': 'ABK',
+    '8': 'Machete 1: Adups',
+    '9': 'Machete 1: 4H RAT'
 }

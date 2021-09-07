@@ -1,5 +1,4 @@
 import uuid
-import traceback
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -12,7 +11,7 @@ from smbclient import (
     scandir,
     remove,
     mkdir,
-    rmdir
+    rmdir,
 )
 
 
@@ -184,19 +183,19 @@ def main():
     dc = params.get('dc', None)
     verify = params.get('require_secure_negotiate', True)
     client_guid = params.get('client_guid', None)
-    if client_guid:
-        try:
-            client_guid = uuid.UUID(client_guid)
-        except ValueError:
-            demisto.info(
-                f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
-            client_guid = None
 
     # Temporary workaround to an issue in the smbprotocol package.
     # Git issue: https://github.com/jborean93/smbprotocol/issues/109
-    config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify,
-                                    client_guid=client_guid)
+    config = smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify)
     config.domain_controller = dc
+
+    if client_guid:
+        try:
+            client_guid = uuid.UUID(client_guid)
+            config.client_guid = client_guid
+        except ValueError:
+            demisto.info(
+                f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
 
     client = SMBClient(hostname=hostname,
                        user=user,
