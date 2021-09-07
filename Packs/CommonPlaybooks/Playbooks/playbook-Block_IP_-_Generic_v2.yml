@@ -376,6 +376,13 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
     separatecontext: true
     loop:
       iscommand: false
@@ -410,6 +417,13 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
     separatecontext: true
     loop:
       iscommand: false
