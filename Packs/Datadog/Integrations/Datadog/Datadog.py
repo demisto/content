@@ -58,7 +58,11 @@ def get_event():
             'ContentsFormat': formats['json'],
             'EntryContext': {'dataDog.events': res['events']},
             'Contents': res['events'],
-            'HumanReadable': tableToMarkdown("Events", res['events'], ["id", "title", "alert_type", "date_happened", "priority", "url"])})
+            'HumanReadable': tableToMarkdown(
+                "Events",
+                res['events'],
+                ["id", "title", "alert_type", "date_happened", "priority", "url"]
+            )})
     else:
         demisto.results("No events returned")
 
@@ -71,7 +75,11 @@ def get_single_event():
             'ContentsFormat': formats['json'],
             'EntryContext': {'dataDog.event': res['event']},
             'Contents': res['event'],
-            'HumanReadable': tableToMarkdown("Details of Event ID: " + str(demisto.args()['id']), res['event'], ["id", "title", "alert_type", "date_happened", "priority", "url"])})
+            'HumanReadable': tableToMarkdown(
+                "Details of Event ID: " + str(demisto.args()['id']),
+                res['event'],
+                ["id", "title", "alert_type", "date_happened", "priority", "url"]
+            )})
     else:
         demisto.results("No event with id %s found" % (str(demisto.args()['id'])))
 
@@ -91,7 +99,11 @@ def get_incidents():
             'ContentsFormat': formats['json'],
             'EntryContext': {'dataDog.incidents': incidentList},
             'Contents': incidentList,
-            'HumanReadable': tableToMarkdown("Incidents", incidentList, ["id", "title", "created", "severity", "state"])})
+            'HumanReadable': tableToMarkdown(
+                "Incidents",
+                incidentList,
+                ["id", "title", "created", "severity", "state"]
+            )})
     else:
         demisto.results("No incidents returned")
 
@@ -108,7 +120,11 @@ def get_single_incident():
             'ContentsFormat': formats['json'],
             'EntryContext': {'dataDog.incident': incidentDetails},
             'Contents': incidentDetails,
-            'HumanReadable': tableToMarkdown("Details of Incident ID: " + str(demisto.args()['id']), incidentDetails, ["id", "title", "created", "severity", "state"])})
+            'HumanReadable': tableToMarkdown(
+                "Details of Incident ID: " + str(demisto.args()['id']),
+                incidentDetails,
+                ["id", "title", "created", "severity", "state"]
+            )})
     else:
         demisto.results("No incidents with id %s found" % (str(demisto.args()['id'])))
 

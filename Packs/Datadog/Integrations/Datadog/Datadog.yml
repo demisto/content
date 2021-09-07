@@ -3,8 +3,7 @@ commonfields:
   id: Datadog
   version: -1
 configuration:
-- defaultvalue: https://api.datadoghq.eu
-  display: Server URL (e.g. https://api.datadoghq.eu)
+- display: Server URL (e.g. https://api.datadoghq.eu)
   name: url
   required: true
   type: 0
@@ -49,9 +48,12 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
     itemVersion: ""
-    packID: 30632433-c8d9-410f-83f5-cd62497fdb37
+    packID: 664ad813-5597-4728-814b-730ba585f49b
     propagationLabels: []
     toServerVersion: ""
+description: Datadog is a monitoring service for cloud-scale applications, providing
+  monitoring of servers, databases, tools, and services, through a SaaS-based data
+  analytics platform.
 display: Datadog
 name: Datadog
 script:
