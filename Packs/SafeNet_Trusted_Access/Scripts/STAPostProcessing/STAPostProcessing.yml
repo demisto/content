@@ -14,6 +14,7 @@ subtype: python3
 tags:
 - post-processing
 - field-change-triggered
+- field-display
 type: python
 fromversion: 6.0.0
 tests:
