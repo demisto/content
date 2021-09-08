@@ -4517,7 +4517,7 @@
         }
     ],
     "skipped_tests": {
-        "MISP V2 Test" : "The integration is deprecated as we released MISP V3",
+        "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -4617,7 +4617,9 @@
         "palo_alto_panorama_test_pb": "Issue 34371",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599"
+        "HybridAnalysis-Test": "Issue 26599",
+        "Infoblox Test": "Issue 25651",
+        "Carbon Black Edr - Test": "Issue 40132"
     },
     "skipped_integrations": {
         
