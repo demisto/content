@@ -227,54 +227,55 @@ def get_domains_categorization(domains):
 
 
 def get_domain_categorization_command():
-    # Initialize
-    contents = []  # type: ignore
-    context = {}
-    headers = []  # type: ignore
     results = []
-    # Get vars
-    domain = extract_domain_name(demisto.args()['domain'])
-    # Fetch data
-    categorization = get_domain_categorization(domain)
-    if categorization:
-        # Process response - build context and markdown table
-        domain_context = {
-            'Name': domain
-        }
-
-        contents = {  # type: ignore
-            # Will be override in case result contains any
-            'Content Categories': 'No Content Categories Were Found',
-            'Malware Categories': 'No Security Categories Were Found'
-        }
-
+    domains_list = argToList(demisto.args()['domain'])
+    for domain in domains_list:
+        contents = []  # type: ignore
+        context = {}
+        headers = []  # type: ignore
+        # Get vars
+        domain = extract_domain_name(domain)
+        # Fetch data
+        categorization = get_domain_categorization(domain)
         if categorization:
-            if categorization.get('status'):
-                contents['Status'] = categorization['status']  # type: ignore
-        if categorization.get('content_categories'):
-            content_categories = ",".join(categorization['content_categories'])
-            contents['Content Categories'] = content_categories  # type: ignore
-            domain_context['ContentCategories'] = content_categories
-        if categorization.get('security_categories'):
-            security_categories = ",".join(categorization['security_categories'])
-            contents['Malware Categories'] = security_categories  # type: ignore
-            domain_context['SecurityCategories'] = security_categories
-        if categorization['status'] == -1:
-            domain_context['Malicious'] = {
-                'Vendor': 'Cisco Umbrella Investigate',
-                'Description': security_categories
+            # Process response - build context and markdown table
+            domain_context = {
+                'Name': domain
             }
 
-        context[outputPaths['domain']] = domain_context
+            contents = {  # type: ignore
+                # Will be override in case result contains any
+                'Content Categories': 'No Content Categories Were Found',
+                'Malware Categories': 'No Security Categories Were Found'
+            }
 
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Categorization:', contents, headers),
-        'EntryContext': context
-    })
+            if categorization:
+                if categorization.get('status'):
+                    contents['Status'] = categorization['status']  # type: ignore
+            if categorization.get('content_categories'):
+                content_categories = ",".join(categorization['content_categories'])
+                contents['Content Categories'] = content_categories  # type: ignore
+                domain_context['ContentCategories'] = content_categories
+            if categorization.get('security_categories'):
+                security_categories = ",".join(categorization['security_categories'])
+                contents['Malware Categories'] = security_categories  # type: ignore
+                domain_context['SecurityCategories'] = security_categories
+            if categorization['status'] == -1:
+                domain_context['Malicious'] = {
+                    'Vendor': 'Cisco Umbrella Investigate',
+                    'Description': security_categories
+                }
+
+            context[outputPaths['domain']] = domain_context
+
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Categorization:', contents, headers),
+            'EntryContext': context
+        })
 
     return results
 
@@ -1807,7 +1808,6 @@ def get_url_timeline(url):
         return False
     return timeline
 
-# trigger test playbook
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
