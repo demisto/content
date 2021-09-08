@@ -1808,6 +1808,7 @@ def get_url_timeline(url):
         return False
     return timeline
 
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
