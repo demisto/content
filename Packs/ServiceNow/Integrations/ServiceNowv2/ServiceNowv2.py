@@ -2230,9 +2230,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                     key = 'work_notes'
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
-                user = entry.get('user', 'dbot')
                 # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
-                user = 'dbot' if user == '' else user
+                user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
