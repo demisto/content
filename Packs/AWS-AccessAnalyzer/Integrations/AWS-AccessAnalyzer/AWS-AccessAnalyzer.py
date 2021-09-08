@@ -408,6 +408,7 @@ def fetch_incidents(last_run: dict = None):
 """EXECUTION BLOCK"""
 try:
     if demisto.command() == 'test-module':
+        sys.exit(1)
         result = test_function()
     elif demisto.command() == 'fetch-incidents':
         incidents = fetch_incidents(demisto.getLastRun())
