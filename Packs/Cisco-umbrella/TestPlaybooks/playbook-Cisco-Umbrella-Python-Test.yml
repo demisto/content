@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b92bbb38-b67f-4789-8e10-07cef2591a95
+    taskid: 0e945743-6d93-4241-8f72-9d9fdf61a849
     type: start
     task:
-      id: b92bbb38-b67f-4789-8e10-07cef2591a95
+      id: 0e945743-6d93-4241-8f72-9d9fdf61a849
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -100
+          "y": -300
         }
       }
     note: false
@@ -33,13 +33,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 864f2f88-9cae-494a-8757-f2b6e190344b
-    type: title
+    taskid: 34839f88-e53e-4bb8-8594-42a81f2ab0d1
+    type: regular
     task:
-      id: 864f2f88-9cae-494a-8757-f2b6e190344b
+      id: 34839f88-e53e-4bb8-8594-42a81f2ab0d1
       version: -1
-      name: Legacy Commands
-      type: title
+      name: Set list of domains to the Context Data
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
@@ -50,6 +52,11 @@ tasks:
       - "5"
       - "6"
       - "7"
+    scriptarguments:
+      key:
+        simple: TestDomainsList
+      value:
+        simple: '["cnn.com"]'
     separatecontext: false
     view: |-
       {
@@ -67,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 38266c2a-1ec6-4c65-88a8-c2ad02e9b1c7
+    taskid: 664e433b-d2b9-4658-898f-8057aef3a61d
     type: regular
     task:
-      id: 38266c2a-1ec6-4c65-88a8-c2ad02e9b1c7
+      id: 664e433b-d2b9-4658-898f-8057aef3a61d
       version: -1
       name: umbrella-domain-categorization
       script: '|||umbrella-domain-categorization'
@@ -82,7 +89,7 @@ tasks:
       - "8"
     scriptarguments:
       domain:
-        simple: cnn.com
+        simple: ${TestDomainsList}
     separatecontext: false
     view: |-
       {
@@ -100,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e1971be9-5e86-4574-8c72-4b760a9a9c60
+    taskid: 1d47d5ce-90ea-45b0-82f8-718b534355a4
     type: regular
     task:
-      id: e1971be9-5e86-4574-8c72-4b760a9a9c60
+      id: 1d47d5ce-90ea-45b0-82f8-718b534355a4
       version: -1
       name: umbrella-domain-co-occurrences
       script: '|||umbrella-domain-co-occurrences'
@@ -133,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 695193eb-3744-4daa-870e-898b522c9e1b
+    taskid: 4d03ceb4-301c-4205-8874-106409cb9518
     type: regular
     task:
-      id: 695193eb-3744-4daa-870e-898b522c9e1b
+      id: 4d03ceb4-301c-4205-8874-106409cb9518
       version: -1
       name: umbrella-domain-related
       script: '|||umbrella-domain-related'
@@ -166,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 410c06b0-41b6-4deb-8354-8df2378451d6
+    taskid: 8663b9ea-699d-473b-8363-8dc7b5e65f71
     type: regular
     task:
-      id: 410c06b0-41b6-4deb-8354-8df2378451d6
+      id: 8663b9ea-699d-473b-8363-8dc7b5e65f71
       version: -1
       name: umbrella-domain-security
       script: '|||umbrella-domain-security'
@@ -199,10 +206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: aa44db69-1ff6-448f-8227-e12765e62cbe
+    taskid: bb4438b2-9465-4f70-824d-c0c851c88075
     type: regular
     task:
-      id: aa44db69-1ff6-448f-8227-e12765e62cbe
+      id: bb4438b2-9465-4f70-824d-c0c851c88075
       version: -1
       name: umbrella-domain-dns-history
       script: '|||umbrella-domain-dns-history'
@@ -232,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d140e0b7-4dd9-452c-839c-095fe2883fe0
+    taskid: c9c62c3a-3ffe-4345-82f3-5eec4d765d19
     type: regular
     task:
-      id: d140e0b7-4dd9-452c-839c-095fe2883fe0
+      id: c9c62c3a-3ffe-4345-82f3-5eec4d765d19
       version: -1
       name: umbrella-ip-dns-history
       script: '|||umbrella-ip-dns-history'
@@ -265,10 +272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1649f1c1-89a8-42e0-8e51-9bb777e5ac2b
+    taskid: 0b81587d-1d68-4634-8e4f-653d41e328fe
     type: condition
     task:
-      id: 1649f1c1-89a8-42e0-8e51-9bb777e5ac2b
+      id: 0b81587d-1d68-4634-8e4f-653d41e328fe
       version: -1
       name: Test Domain Categorization Context
       type: condition
@@ -305,10 +312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: af2fb11c-d0d0-4d6a-8faf-da0a509487e6
+    taskid: 13be1173-778f-4f14-8e48-ec93b1fbca7a
     type: regular
     task:
-      id: af2fb11c-d0d0-4d6a-8faf-da0a509487e6
+      id: 13be1173-778f-4f14-8e48-ec93b1fbca7a
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -339,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7b3e9d03-4957-442f-8764-d06c24674b60
+    taskid: 904e615a-4cbc-483d-805e-19e4067c434a
     type: condition
     task:
-      id: 7b3e9d03-4957-442f-8764-d06c24674b60
+      id: 904e615a-4cbc-483d-805e-19e4067c434a
       version: -1
       name: Test domain co-occurrences context
       type: condition
@@ -379,10 +386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c7c82e13-d5ee-444a-82b5-f7c01b98ef57
+    taskid: 0e311a38-6248-4834-8804-1b557ba0546d
     type: condition
     task:
-      id: c7c82e13-d5ee-444a-82b5-f7c01b98ef57
+      id: 0e311a38-6248-4834-8804-1b557ba0546d
       version: -1
       name: Test related domains context
       type: condition
@@ -435,10 +442,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 676fe27b-ab9c-46ee-82d6-6c9b5b5355d2
+    taskid: 18a11ece-df81-462f-8fda-2a167b7f44b2
     type: condition
     task:
-      id: 676fe27b-ab9c-46ee-82d6-6c9b5b5355d2
+      id: 18a11ece-df81-462f-8fda-2a167b7f44b2
       version: -1
       name: Test domain security context
       type: condition
@@ -475,10 +482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: a710e45e-fad0-4b7c-892a-571d33312426
+    taskid: fcb039ef-760e-4a4e-8cff-b258f4ee0088
     type: condition
     task:
-      id: a710e45e-fad0-4b7c-892a-571d33312426
+      id: fcb039ef-760e-4a4e-8cff-b258f4ee0088
       version: -1
       name: Test domain dns history context
       type: condition
@@ -515,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 695d7328-4583-401a-83c0-5c42405e5089
+    taskid: 1eccba32-5699-4e96-8b2f-3f26d8b304ff
     type: condition
     task:
-      id: 695d7328-4583-401a-83c0-5c42405e5089
+      id: 1eccba32-5699-4e96-8b2f-3f26d8b304ff
       version: -1
       name: Test ip dns history context
       type: condition
@@ -555,10 +562,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a3285687-c6b4-4d19-853e-7708118c4d8d
+    taskid: e4e0af95-1119-4fd2-8046-5ac18ede64a5
     type: regular
     task:
-      id: a3285687-c6b4-4d19-853e-7708118c4d8d
+      id: e4e0af95-1119-4fd2-8046-5ac18ede64a5
       version: -1
       name: umbrella-ip-malicious-domains
       script: '|||umbrella-ip-malicious-domains'
@@ -588,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: dc4e5c7e-ea9a-47cd-8e9d-2dd28a2c0d58
+    taskid: 420edeb3-c721-4ed3-8e7f-83273540ec39
     type: condition
     task:
-      id: dc4e5c7e-ea9a-47cd-8e9d-2dd28a2c0d58
+      id: 420edeb3-c721-4ed3-8e7f-83273540ec39
       version: -1
       name: Test IP malicious domains context
       type: condition
@@ -660,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 323b2edb-24b1-44a5-80e9-976b93d89d28
+    taskid: 621ab96a-f7a1-4635-8883-baccbbca081d
     type: regular
     task:
-      id: 323b2edb-24b1-44a5-80e9-976b93d89d28
+      id: 621ab96a-f7a1-4635-8883-baccbbca081d
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -693,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 41f9b57a-0896-4a6c-882b-7959da68d31e
+    taskid: 432d3815-bd58-4057-8037-9461ea8f04b6
     type: regular
     task:
-      id: 41f9b57a-0896-4a6c-882b-7959da68d31e
+      id: 432d3815-bd58-4057-8037-9461ea8f04b6
       version: -1
       name: umbrella-domain-search
       description: Regex search in the service, may take up to 10 sec to retrieve
@@ -730,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 416a0a50-113e-49d6-80a8-f263353afe69
+    taskid: c72f8f72-517e-41d1-8440-f7803edf36db
     type: condition
     task:
-      id: 416a0a50-113e-49d6-80a8-f263353afe69
+      id: c72f8f72-517e-41d1-8440-f7803edf36db
       version: -1
       name: Test domain search context
       type: condition
@@ -770,10 +777,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 93c4b398-9f81-4ac3-8761-01c561719ded
+    taskid: fc37a340-84b0-4791-8196-7fb5926f9be0
     type: regular
     task:
-      id: 93c4b398-9f81-4ac3-8761-01c561719ded
+      id: fc37a340-84b0-4791-8196-7fb5926f9be0
       version: -1
       name: Domain reputation
       script: Cisco Umbrella Investigate|||domain
@@ -803,10 +810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 2cc68a85-780b-41f4-8df1-253a6579ca22
+    taskid: 51dde69e-49dd-4efd-8147-8780cffd272f
     type: condition
     task:
-      id: 2cc68a85-780b-41f4-8df1-253a6579ca22
+      id: 51dde69e-49dd-4efd-8147-8780cffd272f
       version: -1
       name: Test domain reputation context
       type: condition
@@ -873,10 +880,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 04ef9f98-037b-4056-82da-c9c6739fea3d
+    taskid: 4cf0105d-0137-4e24-8982-549b5c09cb78
     type: regular
     task:
-      id: 04ef9f98-037b-4056-82da-c9c6739fea3d
+      id: 4cf0105d-0137-4e24-8982-549b5c09cb78
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -911,10 +918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ea88bc95-f984-4ca4-8d07-c23a2a1eefcc
+    taskid: 9966a0ff-4b54-4c7d-8732-cab76d5f1760
     type: regular
     task:
-      id: ea88bc95-f984-4ca4-8d07-c23a2a1eefcc
+      id: 9966a0ff-4b54-4c7d-8732-cab76d5f1760
       version: -1
       name: umbrella-get-related-domains
       script: '|||umbrella-get-related-domains'
@@ -946,10 +953,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 1c124ee8-5b67-4e6f-8a4e-2874869fa35f
+    taskid: 99ab7351-0006-4f05-8c9e-2ffcfb54d9cf
     type: regular
     task:
-      id: 1c124ee8-5b67-4e6f-8a4e-2874869fa35f
+      id: 99ab7351-0006-4f05-8c9e-2ffcfb54d9cf
       version: -1
       name: umbrella-get-domain-classifiers
       script: '|||umbrella-get-domain-classifiers'
@@ -979,10 +986,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 673d0e9e-97a6-44e9-810d-22897fae4639
+    taskid: c619b399-404c-4e0e-8253-93d7480744a4
     type: regular
     task:
-      id: 673d0e9e-97a6-44e9-810d-22897fae4639
+      id: c619b399-404c-4e0e-8253-93d7480744a4
       version: -1
       name: umbrella-get-domain-queryvolume
       script: '|||umbrella-get-domain-queryvolume'
@@ -1018,10 +1025,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: bb3a6192-9c40-4f72-80c1-574b317e6417
+    taskid: 8d5684fa-bd9e-429c-8bdd-128249563966
     type: regular
     task:
-      id: bb3a6192-9c40-4f72-80c1-574b317e6417
+      id: 8d5684fa-bd9e-429c-8bdd-128249563966
       version: -1
       name: umbrella-get-domain-details
       script: '|||umbrella-get-domain-details'
@@ -1051,10 +1058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f604e7ce-1e42-4ecd-84e4-c0f9c85137c9
+    taskid: daad4135-191f-4a50-8a6e-a27f9579fbb9
     type: regular
     task:
-      id: f604e7ce-1e42-4ecd-84e4-c0f9c85137c9
+      id: daad4135-191f-4a50-8a6e-a27f9579fbb9
       version: -1
       name: umbrella-get-domains-for-email-registrar
       script: '|||umbrella-get-domains-for-email-registrar'
@@ -1084,10 +1091,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 039e94b3-d3d7-49cb-819f-510a2171e4c6
+    taskid: 6dfb29e2-151a-4346-8e5a-c7eed5ff442d
     type: regular
     task:
-      id: 039e94b3-d3d7-49cb-819f-510a2171e4c6
+      id: 6dfb29e2-151a-4346-8e5a-c7eed5ff442d
       version: -1
       name: umbrella-get-domains-for-nameserver
       script: '|||umbrella-get-domains-for-nameserver'
@@ -1121,10 +1128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: f42e9400-3a48-4b3e-856f-76c6f57357d6
+    taskid: 9902e751-0797-4636-839e-619294ad45b6
     type: regular
     task:
-      id: f42e9400-3a48-4b3e-856f-76c6f57357d6
+      id: 9902e751-0797-4636-839e-619294ad45b6
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1159,10 +1166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c4d3e103-fd85-4299-829b-7ebf46a03fff
+    taskid: 09125623-6784-43f7-891f-20091f1da1b1
     type: condition
     task:
-      id: c4d3e103-fd85-4299-829b-7ebf46a03fff
+      id: 09125623-6784-43f7-891f-20091f1da1b1
       version: -1
       name: Test umbrella-get-related-domains Context
       type: condition
@@ -1199,10 +1206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: dd7c3e2d-b851-432d-83e3-164a07f6cf55
+    taskid: 9dbe64ef-228b-4a99-843e-04456df9059d
     type: condition
     task:
-      id: dd7c3e2d-b851-432d-83e3-164a07f6cf55
+      id: 9dbe64ef-228b-4a99-843e-04456df9059d
       version: -1
       name: Test umbrella-get-domain-classifiers Context
       type: condition
@@ -1239,10 +1246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 04617739-2fbe-43e9-80c0-9fe1c57a671a
+    taskid: 5ab15a35-0555-4674-8483-389f391b9a5f
     type: condition
     task:
-      id: 04617739-2fbe-43e9-80c0-9fe1c57a671a
+      id: 5ab15a35-0555-4674-8483-389f391b9a5f
       version: -1
       name: Test umbrella-get-domain-queryvolume Context
       type: condition
@@ -1279,10 +1286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 14bc432c-8020-49a0-89e1-857a41442638
+    taskid: b9f8c190-0239-458b-86e5-ddc9935b6bec
     type: condition
     task:
-      id: 14bc432c-8020-49a0-89e1-857a41442638
+      id: b9f8c190-0239-458b-86e5-ddc9935b6bec
       version: -1
       name: Test umbrella-get-domain-details Context
       type: condition
@@ -1319,10 +1326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: ddc8ec81-2587-4519-83db-fd0bbe0dad08
+    taskid: b7da94bc-fd97-4603-8610-8a75ca7aff56
     type: condition
     task:
-      id: ddc8ec81-2587-4519-83db-fd0bbe0dad08
+      id: b7da94bc-fd97-4603-8610-8a75ca7aff56
       version: -1
       name: Test umbrella-get-domains-for-email-registrar Context
       type: condition
@@ -1356,10 +1363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: f9e6b969-828c-4c37-8b43-ea18017c03de
+    taskid: ff89610f-a02e-47de-899d-13188e75eb36
     type: condition
     task:
-      id: f9e6b969-828c-4c37-8b43-ea18017c03de
+      id: ff89610f-a02e-47de-899d-13188e75eb36
       version: -1
       name: Test umbrella-get-domains-for-nameserver Context
       type: condition
@@ -1404,10 +1411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 06dd5e3d-65ba-4bc3-87e9-bb221facfd82
+    taskid: f7d84557-dc22-4cb7-8d08-de6749f328fc
     type: regular
     task:
-      id: 06dd5e3d-65ba-4bc3-87e9-bb221facfd82
+      id: f7d84557-dc22-4cb7-8d08-de6749f328fc
       version: -1
       name: umbrella-get-whois-for-domain
       script: '|||umbrella-get-whois-for-domain'
@@ -1437,10 +1444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 4209cd31-3fa6-49eb-8bc4-9d606a015d39
+    taskid: 457c305a-12ff-4eeb-8dfd-6113efd4ea9d
     type: regular
     task:
-      id: 4209cd31-3fa6-49eb-8bc4-9d606a015d39
+      id: 457c305a-12ff-4eeb-8dfd-6113efd4ea9d
       version: -1
       name: umbrella-get-malicious-domains-for-ip
       script: '|||umbrella-get-malicious-domains-for-ip'
@@ -1470,10 +1477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 372ca09e-e238-48c8-87b5-17ae833ef714
+    taskid: 5c7aaca3-3b7d-47fb-83a0-eb73cd355186
     type: regular
     task:
-      id: 372ca09e-e238-48c8-87b5-17ae833ef714
+      id: 5c7aaca3-3b7d-47fb-83a0-eb73cd355186
       version: -1
       name: umbrella-get-domains-using-regex
       script: '|||umbrella-get-domains-using-regex'
@@ -1509,10 +1516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: d8940a45-fbe0-4d27-8fc3-883e79bb1b93
+    taskid: 025e6188-3a32-4c7f-8364-821519c9cb0f
     type: regular
     task:
-      id: d8940a45-fbe0-4d27-8fc3-883e79bb1b93
+      id: 025e6188-3a32-4c7f-8364-821519c9cb0f
       version: -1
       name: umbrella-get-domain-timeline
       script: '|||umbrella-get-domain-timeline'
@@ -1542,10 +1549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 925003d9-11b5-44e2-87bc-f397a7ccdf01
+    taskid: 74d88c0b-3643-43b4-8901-7ef92f59c028
     type: regular
     task:
-      id: 925003d9-11b5-44e2-87bc-f397a7ccdf01
+      id: 74d88c0b-3643-43b4-8901-7ef92f59c028
       version: -1
       name: umbrella-get-ip-timeline
       script: '|||umbrella-get-ip-timeline'
@@ -1575,10 +1582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 584709fc-0b6b-44f7-8596-ab4a0e19549b
+    taskid: 4ada9c34-2280-4a2f-8b70-d1d2d972d1f5
     type: regular
     task:
-      id: 584709fc-0b6b-44f7-8596-ab4a0e19549b
+      id: 4ada9c34-2280-4a2f-8b70-d1d2d972d1f5
       version: -1
       name: umbrella-get-url-timeline
       script: '|||umbrella-get-url-timeline'
@@ -1608,10 +1615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: da96b158-877a-447a-897a-2fa75d541a9a
+    taskid: dc381b11-4bc0-4ab5-8713-ea704c7b29d5
     type: condition
     task:
-      id: da96b158-877a-447a-897a-2fa75d541a9a
+      id: dc381b11-4bc0-4ab5-8713-ea704c7b29d5
       version: -1
       name: Test umbrella-get-whois-for-domain Context
       type: condition
@@ -1739,10 +1746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 93da8d28-48f3-4116-8895-cf40237e99aa
+    taskid: 81b1f4c4-920c-4d50-8a59-411914a472bc
     type: title
     task:
-      id: 93da8d28-48f3-4116-8895-cf40237e99aa
+      id: 81b1f4c4-920c-4d50-8a59-411914a472bc
       version: -1
       name: Check Bang Domain
       type: title
@@ -1768,10 +1775,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: fad294b4-b72a-4aa1-8e68-e40ea1a88b50
+    taskid: 97d646e9-63df-43e7-81dc-fded173a7204
     type: condition
     task:
-      id: fad294b4-b72a-4aa1-8e68-e40ea1a88b50
+      id: 97d646e9-63df-43e7-81dc-fded173a7204
       version: -1
       name: Test umbrella-get-malicious-domains-for-ip Context
       type: condition
@@ -1832,10 +1839,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 3d0c2290-2f25-4fa1-88c0-37e746839efa
+    taskid: 13cf407b-7a8d-4367-85b6-17d3211986a9
     type: condition
     task:
-      id: 3d0c2290-2f25-4fa1-88c0-37e746839efa
+      id: 13cf407b-7a8d-4367-85b6-17d3211986a9
       version: -1
       name: umbrella-get-domains-using-regex
       type: condition
@@ -1880,10 +1887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 923e971b-0735-46bb-8e54-6d13fca68493
+    taskid: 0db594fd-fd07-4e66-83e6-11ba05135166
     type: condition
     task:
-      id: 923e971b-0735-46bb-8e54-6d13fca68493
+      id: 0db594fd-fd07-4e66-83e6-11ba05135166
       version: -1
       name: Test umbrella-get-domain-timeline Context
       type: condition
@@ -1936,10 +1943,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: c6151edf-4540-4c67-8f7f-e11854f974d2
+    taskid: 8d557aee-667e-4dc6-8472-b9d1b0bbc6ff
     type: condition
     task:
-      id: c6151edf-4540-4c67-8f7f-e11854f974d2
+      id: 8d557aee-667e-4dc6-8472-b9d1b0bbc6ff
       version: -1
       name: Test umbrella-get-ip-timeline Context
       type: condition
@@ -1976,10 +1983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6f3d97ff-a334-40e0-86f9-5120b4ebf15e
+    taskid: fcf3dfab-a848-4e21-8030-0d7b633b28fe
     type: condition
     task:
-      id: 6f3d97ff-a334-40e0-86f9-5120b4ebf15e
+      id: fcf3dfab-a848-4e21-8030-0d7b633b28fe
       version: -1
       name: Test umbrella-get-url-timeline context
       type: condition
@@ -2016,10 +2023,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 1ed05c5c-bb02-4dd2-85b5-4c668d7a1948
+    taskid: 5a08a42d-2a3c-4ce1-8054-cdf475689e62
     type: regular
     task:
-      id: 1ed05c5c-bb02-4dd2-85b5-4c668d7a1948
+      id: 5a08a42d-2a3c-4ce1-8054-cdf475689e62
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -2028,7 +2035,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "56"
     scriptarguments:
       all:
         simple: "yes"
@@ -2037,7 +2044,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 20
+          "y": -150
         }
       }
     note: false
@@ -2049,10 +2056,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 7287a7cf-3019-4da1-876c-6b322e733ddb
+    taskid: a277b6ae-ecd8-422f-8921-c37c85a7a23d
     type: title
     task:
-      id: 7287a7cf-3019-4da1-876c-6b322e733ddb
+      id: a277b6ae-ecd8-422f-8921-c37c85a7a23d
       version: -1
       name: New Commands
       type: title
@@ -2078,10 +2085,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 0dafd447-d2f7-4a5b-82f2-75b04c1d1ae8
+    taskid: b4b6d2f4-0097-409d-8277-c8eb764963dc
     type: regular
     task:
-      id: 0dafd447-d2f7-4a5b-82f2-75b04c1d1ae8
+      id: b4b6d2f4-0097-409d-8277-c8eb764963dc
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -2112,10 +2119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: ec968388-8f91-42cf-8520-e2f944579afb
+    taskid: 50ddd422-d2be-474e-8149-4e773ba19ec1
     type: regular
     task:
-      id: ec968388-8f91-42cf-8520-e2f944579afb
+      id: 50ddd422-d2be-474e-8149-4e773ba19ec1
       version: -1
       name: domain
       description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
@@ -2148,10 +2155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: fc0657d6-e3df-4650-8d20-47f8740d88e1
+    taskid: 88463d1c-8f73-4dd0-8095-d7059e170d57
     type: condition
     task:
-      id: fc0657d6-e3df-4650-8d20-47f8740d88e1
+      id: 88463d1c-8f73-4dd0-8095-d7059e170d57
       version: -1
       name: Test domain context
       type: condition
@@ -2271,10 +2278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: b224c22d-3b8b-4fb4-802d-69776f9f68eb
+    taskid: 5f8dfaf6-a9e9-4f38-854e-d8520eb8bb7b
     type: title
     task:
-      id: b224c22d-3b8b-4fb4-802d-69776f9f68eb
+      id: 5f8dfaf6-a9e9-4f38-854e-d8520eb8bb7b
       version: -1
       name: Test is complete
       type: title
@@ -2295,15 +2302,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 7ea2176b-3e7c-4d97-8cba-1f95c7d621fa
+    type: title
+    task:
+      id: 7ea2176b-3e7c-4d97-8cba-1f95c7d621fa
+      version: -1
+      name: Legacy Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5255,
+        "height": 5455,
         "width": 4490,
         "x": -1580,
-        "y": -100
+        "y": -300
       }
     }
   }
