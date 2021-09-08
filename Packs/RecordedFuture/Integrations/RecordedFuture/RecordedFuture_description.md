@@ -31,4 +31,4 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
     * Takes a context, such as phishing or malware and one or more IOC as input.
     * Outputs a verdict (true/false) and related evidence (risk rules) for this context.
 
-Copyright 2020 Recorded Future, Inc.
+Copyright 2021 Recorded Future, Inc.
