@@ -11,14 +11,34 @@
         "Authentication"
     ],
     "tags": [
-        "authentication",
-        "mfa",
-        "iam",
-        "identity",
-        "identity access management"
+        "GDPR",
+        "HIPAA",
+        "IAM",
+        "IT",
+        "Security"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Access",
+        "Identity and Access Management",
+        "IT Services"
+    ],
+    "keywords": [
+        "PingIdentity",
+        "PingOne",
+        "Identity",
+        "Security",
+        "SSO",
+        "MFA",
+        "Federation",
+        "CIAM",
+        "Single Sign-On",
+        "Multi-factor authentication",
+        "Multi-factor",
+        "Passwordless",
+        "Accounts",
+        "Roles",
+        "Entitlements"
+    ],
     "devEmail": [
         "peterholko@pingidentity.com"
     ],

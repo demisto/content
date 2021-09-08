@@ -1,5 +1,4 @@
-Integrates with the PingOne Management API to unlock, create, delete and update users.  
-This integration was integrated and tested with version xx of PingOne
+Integrates with the PingOne Management API to unlock, deactivate, create, delete and update users.  
 
 ## Configure PingOne on Cortex XSOAR
 
@@ -9,10 +8,10 @@ This integration was integrated and tested with version xx of PingOne
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your PingOne Environment ID | Environment ID is available under the PingOne Dashboard-&amp;gt;Environment Properties | True |
+    | Your PingOne Environment ID | Environment ID is available under the PingOne Dashboard->Environment Properties | True |
     | PingOne Region | PingOne has 3 regions, US, EU and Asia | True |
-    | Client ID |  | True |
-    | Client Secret |  | True |
+    | Client ID | Client ID of a PingOne Worker Application | True |
+    | Client Secret | Client Secret of a PingOne Worker Application | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
     | Use system proxy settings | Use system proxy settings. | False |
 

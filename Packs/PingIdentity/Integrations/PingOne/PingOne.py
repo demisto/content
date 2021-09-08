@@ -1,8 +1,27 @@
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
 
 # IMPORTS
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+PROFILE_ARGS = [
+    'formatted',
+    'given',
+    'middle',
+    'family',
+    'nickname',
+    'title',
+    'locale',
+    'email',
+    'primaryPhone',
+    'mobilePhone',
+    'streetAddress',
+    'locality',
+    'region',
+    'postalCode',
+    'countryCode',
+    'type'
+]
 
 
 class Client(BaseClient):
@@ -32,8 +51,9 @@ class Client(BaseClient):
 
         response = self._http_request(
             method='POST',
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
             full_url=self.auth_url,
-            json_data=params
+            data=params
         )
         access_token = response.get('access_token')
         auth_header = {'Authorization': f'Bearer {access_token}'}
@@ -50,10 +70,12 @@ class Client(BaseClient):
             url_suffix=uri,
             params=query_params
         )
-        if res and len(res) == 1:
-            return res[0].get('id')
 
-    # Getting User Id with a given username
+        if '_embedded' in res and len(res.get('_embedded', {}).get('groups')) == 1:
+            return res.get('_embedded', {}).get('groups')[0].get('id')
+        raise Exception(f'Failed to find groupID for: {group_name} group name.')
+
+    # Return User Id from username
     def get_user_id(self, username):
         uri = 'users'
         query_params = {
@@ -65,22 +87,55 @@ class Client(BaseClient):
             params=query_params
 
         )
-        if res and len(res) == 1:
-            return res[0].get('id')
+
+        if '_embedded' in res and len(res.get('_embedded', {}).get('users')) == 1:
+            return res.get('_embedded', {}).get('users')[0].get('id')
         raise Exception(f'Failed to find userID for: {username} username.')
+
+    # Return user from username
+    def get_user_by_username(self, username):
+        uri = 'users'
+        query_params = {
+            'filter': encode_string_results(f'username eq "{username}"')
+        }
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri,
+            params=query_params
+
+        )
+
+        if '_embedded' in res and len(res.get('_embedded', {}).get('users')) == 1:
+            return res.get('_embedded', {}).get('users')[0]
+        raise Exception(f'Failed to find user for {username} username.')
+
+    # Return user from id
+    def get_user_by_id(self, user_id):
+        uri = f'users/{user_id}'
+
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri,
+        )
+
+        if res.get('code') == 'NOT_FOUND':
+            raise Exception(f'Failed to find user for {user_id}')
+
+        return res
 
     def unlock_user(self, user_id):
         """
         sending a POST request to unlock a specific user
         """
-        uri = f'users/{user_id}/unlock'
+        uri = f'users/{user_id}'
+
+        new_headers = self._headers
+        new_headers['Content-Type'] = 'application/vnd.pingidentity.account.unlock+json'
 
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            headers={
-                'Content-Type': 'application/vnd.pingidentity.account.unlock+json'
-            }
+            headers=new_headers
         )
 
     def deactivate_user(self, user_id):
@@ -91,42 +146,38 @@ class Client(BaseClient):
         }
 
         return self._http_request(
-            method="POST",
+            method="PUT",
             url_suffix=uri,
-            headers={
-                'Content-Type': 'application/json',
-            },
             json_data=body
-
         )
 
     def activate_user(self, user_id):
-        uri = f'users/{user_id}/enable'
+        uri = f'users/{user_id}/enabled'
 
         body = {
             "enabled": True
         }
 
         return self._http_request(
-            method="POST",
+            method="PUT",
             url_suffix=uri,
             json_data=body
         )
 
-    def set_password(self, user_id, password, force_change):
-        uri = f'users/{user_id}'
+    def set_password(self, user_id, password):
+        uri = f'users/{user_id}/password'
 
         body = {
-            "value": password,
-            "forceChange": force_change
+            "newPassword": password
         }
 
+        new_headers = self._headers
+        new_headers['Content-Type'] = 'application/vnd.pingidentity.password.reset+json'
+
         return self._http_request(
-            method="POST",
+            method="PUT",
             url_suffix=uri,
-            headers={
-                'Content-Type': 'application/vnd.pingidentity.password.set+json',
-            },
+            headers=new_headers,
             json_data=body
         )
 
@@ -145,88 +196,93 @@ class Client(BaseClient):
 
     def remove_user_from_group(self, user_id, group_id):
         uri = f'users/{user_id}/memberOfGroups/{group_id}'
-        return self._http_request(
+        self._http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            return_empty_response=True,
+            ok_codes=(204, 404)  # PingOne returns 404 if the group has already removed which results in a XSOAR error
         )
 
     def get_groups_for_user(self, user_id):
-        uri = f'users/{user_id}/memberOfGroupNames'
+        uri = f'users/{user_id}/memberOfGroups?expand=group&filter=type eq "DIRECT"'
+
+        query_params = {
+            'expand': 'group',
+            'filter': 'username eq "DIRECT"'
+        }
 
         return self._http_request(
             method="GET",
-            url_suffix=uri
+            url_suffix=uri,
+            params=query_params
         )
+
+    @staticmethod
+    def build_user_profile(args):
+        profile = {}
+        keys = args.keys()
+        for key in PROFILE_ARGS:
+            if key in keys:
+                if key in ['formatted', 'given', 'middle', 'family']:
+                    if 'name' not in profile:
+                        profile['name'] = {}
+                    profile['name'][key] = args[key]
+
+                elif key in ['streetAddress', 'locality', 'region', 'postalCode', 'countryCode']:
+                    if 'address' not in profile:
+                        profile['address'] = {}
+                    profile['address'][key] = args[key]
+
+                else:
+                    profile[key] = args[key]
+        return profile
 
     @staticmethod
     def get_readable_group_membership(raw_groups):
         groups = []
-        raw_groups = raw_groups if isinstance(raw_groups, list) else [raw_groups]
-        raw_groups = raw_groups[0].get('_embedded').get('groupMemberships')
+        raw_groups = raw_groups.get('_embedded', {}).get('groupMemberships', [])
 
         for group in raw_groups:
-            grp = {
-                'ID': group.get('id'),
-                'Name': group.get('name')
-            }
-            groups.append(grp)
+
+            if group.get('type') == 'DIRECT':
+                grp = {
+                    'ID': group.get('id'),
+                    'Name': group.get('name')
+                }
+                groups.append(grp)
 
         return groups
 
     @staticmethod
-    def get_users_context(raw_users):
-        users = []
-        raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
-        for user in raw_users:
-            user = {
-                'ID': user.get('id'),
-                'Username': user.get('username'),
-                'DisplayName':
-                    user.get('name', {}).get('formatted'),
-                'Email': user.get('email'),
-                'Enabled': user.get('enabled'),
-                'CreatedAt': user.get('createdAt'),
-                'UpdatedAt': user.get('updatedAt')
-            }
-            users.append(user)
-        return users
+    def get_user_context(raw_user):
+        user = {
+            'ID': raw_user.get('id'),
+            'Username': raw_user.get('username'),
+            'DisplayName':
+                raw_user.get('name', {}).get('formatted'),
+            'Email': raw_user.get('email'),
+            'Enabled': raw_user.get('enabled'),
+            'CreatedAt': raw_user.get('createdAt'),
+            'UpdatedAt': raw_user.get('updatedAt')
+        }
+        return user
 
     @staticmethod
-    def get_readable_users(raw_users, verbose='false'):
-        raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
-        if verbose == 'true':
-            users_verbose = []
-            for user in raw_users:
-                attrs = {
-                    'ID': user.get('id'),
-                    'Username': user.get('username'),
-                    'Email': user.get('email'),
-                    'First Name': user.get('name', {}).get('given'),
-                    'Last Name': user.get('name', {}).get('family'),
-                    'Enabled': user.get('enabled'),
-                    'Environment': user.get('environment', {}).get('id'),
-                    'PopulationID': user.get('population', {}).get('id'),
-                    'AccountStatus': user.get('account', {}).get('status'),
-                    'CreatedAt': user.get('createdAt'),
-                    'UpdatedAt': user.get('updatedAt'),
-                    'Groups': user.get('memberOfGroupNames')
-                }
-                users_verbose.append(attrs)
-            return users_verbose
-
-        else:
-            users = []
-            for user in raw_users:
-                attrs = {
-                    'ID': user.get('id'),
-                    'Username': user.get('username'),
-                    'Email': user.get('email'),
-                    'First Name': user.get('name', {}).get('given'),
-                    'Last Name': user.get('name', {}).get('family'),
-                    'Enabled': user.get('enabled')
-                }
-                users.append(attrs)
-            return users
+    def get_readable_user(raw_user):
+        user_attrs = {
+            'ID': raw_user.get('id'),
+            'Username': raw_user.get('username'),
+            'Email': raw_user.get('email'),
+            'First Name': raw_user.get('name', {}).get('given'),
+            'Last Name': raw_user.get('name', {}).get('family'),
+            'Enabled': raw_user.get('enabled'),
+            'Environment': raw_user.get('environment', {}).get('id'),
+            'PopulationID': raw_user.get('population', {}).get('id'),
+            'AccountStatus': raw_user.get('account', {}).get('status'),
+            'CreatedAt': raw_user.get('createdAt'),
+            'UpdatedAt': raw_user.get('updatedAt')
+        }
+        return user_attrs
 
     def get_user(self, user_id):
         uri = f'users/{user_id}'
@@ -240,16 +296,20 @@ class Client(BaseClient):
 
         body = {
             "population": {
-                "id": f'"{pop_id}"'
+                "id": f'{pop_id}'
             },
-            "username": f'"{username}'
+            "username": f'{username}'
         }
 
-        return self._http_request(
+        demisto.results(body)
+
+        res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=body
         )
+
+        return res
 
     def update_user(self, user_id, attrs):
         uri = f"users/{user_id}"
@@ -263,11 +323,13 @@ class Client(BaseClient):
         uri = f"users/{user_id}"
         return self._http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            return_empty_response=True,
+            ok_codes=(204, 404)  # PingOne returns 404 if the group has already removed which results in a XSOAR error
         )
 
 
-def test_module(client, args):
+def test_module(client, _args):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -277,7 +339,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
     uri = '/'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
@@ -321,36 +382,12 @@ def deactivate_user_command(client, args):
     )
 
 
-def suspend_user_command(client, args):
-    user_id = client.get_user_id(args.get('username'))
-    raw_response = client.suspend_user(user_id)
-
-    readable_output = f"### {args.get('username')} status is Suspended"
-    return (
-        readable_output,
-        {},
-        raw_response
-    )
-
-
-def unsuspend_user_command(client, args):
-    user_id = client.get_user_id(args.get('username'))
-    raw_response = client.unsuspend_user(user_id)
-
-    readable_output = f"### {args.get('username')} is no longer SUSPENDED"
-    return (
-        readable_output,
-        {},
-        raw_response
-    )
-
-
 def set_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     password = args.get('password')
 
-    raw_response = client.set_password(user_id, password, True)
-    readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+    raw_response = client.set_password(user_id, password)
+    readable_output = f"{args.get('username')} password was updated."
     return (
         readable_output,
         {},
@@ -368,6 +405,7 @@ def add_user_to_group_command(client, args):
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
+
     raw_response = client.add_user_to_group(user_id, group_id)
     readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
     return (
@@ -387,12 +425,14 @@ def remove_from_group_command(client, args):
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
-    raw_response = client.remove_user_from_group(user_id, group_id)
+
+    client.remove_user_from_group(user_id, group_id)
+
     readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
     return (
         readable_output,
         {},
-        raw_response)
+        '')
 
 
 def get_groups_for_user_command(client, args):
@@ -418,18 +458,22 @@ def get_groups_for_user_command(client, args):
 
 
 def get_user_command(client, args):
-    if not (args.get('username') or args.get('userId')):
-        raise Exception("You must supply either 'Username' or 'userId")
-    user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
-    verbose = args.get('verbose')
 
-    user_context = client.get_users_context(raw_response)
-    user_readable = client.get_readable_users(raw_response, verbose)
+    if args.get('userId'):
+        user_term = args.get('userId')
+        raw_response = client.get_user_by_id(args.get('userId'))
+    elif args.get('username'):
+        user_term = args.get('username')
+        raw_response = client.get_user_by_username(args.get('username'))
+    else:
+        raise Exception("You must supply either 'Username' or 'userId")
+
+    user_context = client.get_user_context(raw_response)
+    user_readable = client.get_readable_user(raw_response)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
+        'Account(val.ID && val.ID === obj.ID)': createContext([user_context])
     }
-    readable_output = f"{tableToMarkdown(f'User:{user_term}', user_readable)} "
+    readable_output = f"{tableToMarkdown(f'User:{user_term}', [user_readable])} "
     return (
         readable_output,
         outputs,
@@ -441,12 +485,12 @@ def create_user_command(client, args):
     username = args.get('username')
     pop_id = args.get('populationId')
     raw_response = client.create_user(username, pop_id)
-    user_context = client.get_users_context(raw_response)
+    user_context = client.get_user_context(raw_response)
     outputs = {
         'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
     }
-    readable_output = tableToMarkdown(f"PingOne User Created: {args.get('username')}:",
-                                      client.get_readable_users(raw_response))
+    readable_output = tableToMarkdown(f"PingOne user created: {args.get('username')}",
+                                      client.get_readable_user(raw_response))
 
     return (
         readable_output,
@@ -457,10 +501,10 @@ def create_user_command(client, args):
 
 def update_user_command(client, args):
     user_id = client.get_user_id(args.get('username'))
-    attrs = {}  # type: dict
+    attrs = Client.build_user_profile(args)
 
     raw_response = client.update_user(user_id, attrs)
-    readable_output = tableToMarkdown(f"PingOne user: {args.get('username')} Updated:", raw_response.get('id'))
+    readable_output = tableToMarkdown(f"PingOne user updated: {args.get('username')}", attrs)
 
     return (
         readable_output,
@@ -472,13 +516,19 @@ def update_user_command(client, args):
 def delete_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
-    user_id = args.get('userId')
-    raw_response = client.delete_user(user_id)
+
+    if args.get('username'):
+        user = client.get_user_by_username(args.get('username'))
+        user_id = user.get('id')
+    else:
+        user_id = args.get('userId')
+
+    client.delete_user(user_id)
     readable_output = f"User: {user_id} was Deleted successfully"
     return (
         readable_output,
         {},
-        raw_response)
+        '')
 
 
 def main():
@@ -498,8 +548,8 @@ def main():
     base_url = urljoin(f'https://api.pingone{tld}', f'/v1/environments/{environment_id}/')
     auth_url = urljoin(f'https://auth.pingone{tld}', f'/{environment_id}/as/token')
 
-    client_id = demisto.params().get('client_id')
-    client_secret = demisto.params().get('client_secret')
+    client_id = demisto.params().get('credentials', {}).get('identifier')
+    client_secret = demisto.params().get('credentials', {}).get('password')
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
