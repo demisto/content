@@ -404,7 +404,7 @@ tasks:
       closeNotes:
         simple: Duplicate incident. New Ticket ID - ${incident.id}
       closeReason:
-        simple: Duplicate incident. New Ticket ID - ${incident.id}
+        simple: Duplicate
       emailclassification: {}
       id:
         simple: ${foundIncidents.id}
