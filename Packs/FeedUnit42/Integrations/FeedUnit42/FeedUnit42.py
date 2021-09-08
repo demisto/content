@@ -36,7 +36,7 @@ class Client(BaseClient):
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
-                         proxy=argToBoolean(demisto.params().get('proxy') or ''))
+                         proxy=argToBoolean(demisto.params().get('proxy') or 'false'))
         self._api_key = api_key
         self._proxies = handle_proxy()
         self.objects_data = {}
