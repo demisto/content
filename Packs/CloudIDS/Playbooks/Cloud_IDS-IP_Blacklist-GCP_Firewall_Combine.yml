@@ -1,5 +1,5 @@
 id: b82813a7-3127-46c2-88bf-a5ce2463416a
-version: 11
+version: 14
 vcShouldKeepItemLegacyProdMachine: false
 name: Cloud IDS-IP Blacklist-GCP Firewall_Combine
 description: Set a list of IP addresses in GCP firewall.
@@ -296,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: b85c39f6-2053-4a94-87b5-78922246b0d2
+    taskid: 4f827db1-c89e-434e-8678-0b2230358740
     type: playbook
     task:
-      id: b85c39f6-2053-4a94-87b5-78922246b0d2
+      id: 4f827db1-c89e-434e-8678-0b2230358740
       version: -1
       name: Cloud IDS-IP Blacklist-GCP Firewall_Append
       description: Set a list of IP addresses in GCP firewall.
@@ -312,7 +312,7 @@ tasks:
       - "13"
     scriptarguments:
       GCPFirewallName:
-        simple: fw-test-ids-cortex
+        simple: ${inputs.GCPFirewallName}
       srcip:
         simple: ${JsonObject}
     separatecontext: true
@@ -403,10 +403,10 @@ inputs:
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 - key: GCPFirewallName
-  value:
-    simple: fw-test-ids-cortex
+  value: {}
   required: true
   description: Name of the GCP Firewall where the playbook should set the IPs
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Cloud IDS-IP Blacklist-GCP Firewall
+quiet: true
