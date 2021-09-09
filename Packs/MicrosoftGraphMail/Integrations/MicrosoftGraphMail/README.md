@@ -34,7 +34,8 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
 | first_fetch | The first fetched timestamp ((number) (time unit), e.g., 12 hours, 7 days). | False |
 | fetch_limit | The maximum number of emails to pull per fetch. | False |
-| insecure | Whether to trust any certificate (not secure). | False |
+| HTTP Timeout | The maximum number of emails to pull per fetch. | False |
+| insecure | The timeout of the HTTP requests sent to Microsoft Graph API (in seconds). | False |
 | proxy | Whether to use system proxy settings. | False |
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
@@ -1126,3 +1127,6 @@ Replies to an email using Graph Mail.
 |ID|body|bccRecipients|bodyPreview|ccRecipients|subject|toRecipients|
 |---|---|---|---|---|---|---|
 |AAMkAGY3OTQyM| content: This is the body. contentType: html | dev2@demistodev.onmicrosoft.com | This is the body | dev3@demistodev.onmicrosoft.com | Re: This is the subject | dev@demistodev.onmicrosoft.com |
+
+## Troubleshooting
+In case you encounter *Read timeout* error, you can increase the HTTP timeout in the *HTTP Timeout* integration parameter.
