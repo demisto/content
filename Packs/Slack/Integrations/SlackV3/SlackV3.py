@@ -1,23 +1,22 @@
+import asyncio
+import concurrent
+import ssl
+import threading
+from distutils.util import strtobool
 from typing import Tuple
+
+import aiohttp
+import slack_sdk
+from slack_sdk.errors import SlackApiError
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.socket_mode.request import SocketModeRequest
+from slack_sdk.socket_mode.response import SocketModeResponse
+from slack_sdk.web.async_client import AsyncWebClient
+from slack_sdk.web.slack_response import SlackResponse
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import ssl
-import asyncio
-import concurrent
-import slack_sdk
-import threading
-import aiohttp
-
-from distutils.util import strtobool
-from slack_sdk.web.async_client import AsyncWebClient
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.errors import SlackApiError
-from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.socket_mode.request import SocketModeRequest
-
 
 ''' CONSTANTS '''
 
