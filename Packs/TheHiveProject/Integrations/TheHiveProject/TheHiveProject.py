@@ -768,7 +768,7 @@ def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
     case = client.get_case(case_id)
     if not case:
-        return_error(f"No case found with id: {case_id}.")
+        raise DemistoException(f"No case found with id: {case_id}.")
     observables = case['observables']
     if observables:
         read = tableToMarkdown(f"Observables for Case {case_id}:", observables,
