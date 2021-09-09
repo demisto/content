@@ -34,7 +34,6 @@ class Client(BaseClient):
         Args:
             api_key: unit42 API Key.
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-            proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
 
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
