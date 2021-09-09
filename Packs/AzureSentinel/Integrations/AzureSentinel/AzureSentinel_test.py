@@ -730,7 +730,7 @@ class TestHappyPath:
 
         # prepare
         client = mock_client()
-        mocker.patch.object(client, 'get_access_token')
+        mocker.patch.object(client._client, 'get_access_token')
         mocker.patch.object(requests.Session, 'request')
 
         # run
@@ -771,7 +771,7 @@ class TestEdgeCases:
         args = {'incident_id': TEST_INCIDENT_ID, 'limit': '50'}
         not_exist_response = mock_404_response(resource_id=resource_id)
         mocker.patch.object(requests.Session, 'request', return_value=not_exist_response)
-        mocker.patch.object(client, 'get_access_token')
+        mocker.patch.object(client._client, 'get_access_token')
 
         # run
         with pytest.raises(ValueError) as error:

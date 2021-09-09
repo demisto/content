@@ -7,7 +7,6 @@ import json
 import requests
 import dateparser
 import uuid
-from MicrosoftApiModule import *  # noqa: E402
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -38,7 +37,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
                                     'for GetEntityByID is 30 days.'
 
 
-class AzureSentinelClient(MicrosoftClient):
+class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
                  resource_group_name: str, workspace_name: str,
@@ -76,8 +75,7 @@ class AzureSentinelClient(MicrosoftClient):
         server_url = f'{server_url}/subscriptions/{subscription_id}/'\
                      f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
                      f'{workspace_name}/providers/Microsoft.SecurityInsights'
-
-        super().__init__(
+        self._client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
             enc_key=client_secret,
@@ -92,13 +90,13 @@ class AzureSentinelClient(MicrosoftClient):
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
         """
-        Override the base `http_request` for adding some required params and headers
+        Wrapped the client's `http_request` for adding some required params and headers
         """
         if not full_url:
             params = params or {}
             params['api-version'] = API_VERSION
 
-        res = super().http_request(
+        res = self._client.http_request(
             method=method,  # disable-secrets-detection
             url_suffix=url_suffix,
             full_url=full_url,
@@ -111,6 +109,13 @@ class AzureSentinelClient(MicrosoftClient):
 
         if res.content:
             return res.json()
+
+    def test_connection(self):
+        """
+        Test the connectivity with Azure
+        """
+        self._client.get_access_token()
+        return 'ok'
 
 
 ''' INTEGRATION HELPER METHODS '''
@@ -397,11 +402,6 @@ def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_resu
 
 
 ''' INTEGRATION COMMANDS '''
-
-
-def test_connection(client):
-    client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return 'ok'
 
 
 def get_incident_by_id_command(client, args):
@@ -1006,7 +1006,7 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            return_results(test_connection(client))
+            return_results(client.test_connection())
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
@@ -1030,6 +1030,9 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
