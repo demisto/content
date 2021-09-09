@@ -60,7 +60,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     command_results.append(CommandResults(
         readable_output=readable_output,
         outputs_prefix='IP-API',
-        outputs_key_field='ip',
+        outputs_key_field='query',
         outputs=ip_data
     ))
     return command_results
