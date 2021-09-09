@@ -2,7 +2,7 @@ This integration will enrich IP addresses from IP-API with data about the geoloc
 
 This service is available for free (with a throttle) - or paid.
 
-This integration was integrated and tested with version xx of IP-API
+This integration was integrated and tested with IP-API
 
 ## Configure IP-API on Cortex XSOAR
 
