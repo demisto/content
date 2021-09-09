@@ -902,8 +902,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
                                             active=False)  # the user should be activated with the IAMInitADUser script
@@ -953,7 +953,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
     try:
         user_profile = args.get("user-profile")
         allow_enable = args.get('allow-enable') == 'true'
-        
+
         iam_user_profile, ad_user, sam_account_name = get_iam_user_profile(user_profile, mapper_out)
 
         if not sam_account_name:
@@ -1012,8 +1012,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             action=IAMActions.UPDATE_USER,
                                             details=ad_user,
                                             active=active)
@@ -1342,8 +1342,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
                 raise DemistoException('Failed to remove user from the group "' + disabled_users_group_cn + '".')
 
         iam_user_profile.set_result(success=True,
-                                    email=ad_user.get('email'),
-                                    username=ad_user.get('name'),
+                                    email=ad_user.get('mail'),
+                                    username=ad_user.get('sAMAccountName'),
                                     action=IAMActions.DISABLE_USER,
                                     details=ad_user,
                                     active=False)
