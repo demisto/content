@@ -16,6 +16,7 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 ## Required Permissions
 To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
  These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
  However, they may not suffice for viewing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
  
 ## Wrapper Scripts
