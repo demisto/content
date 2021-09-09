@@ -44,13 +44,13 @@ https://www.demisto.com
             resp_type='response'
         )
 
-    def get_file_report(self, file_hash: str, file_format: str = 'xml', resp_type: str = 'json') -> Dict[str, Any]:
+    def get_file_report(self, file_hash: str, file_format: str = 'xml') -> Dict[str, Any]:
         return self._http_request(
             'POST',
             url_suffix='/get/report',
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             params={'apikey': self.token, 'format': file_format, 'hash': file_hash},
-            resp_type=resp_type,
+            resp_type='response',
         )
 
 
@@ -236,7 +236,7 @@ def create_file_report(client, file_hash: str, reports, file_info):
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
                        feed_related_indicators=feed_related_indicators, tags=['malware'], behaviors=behavior)
 
-    res_pdf = client.get_file_report(file_hash, 'pdf', 'response')
+    res_pdf = client.get_file_report(file_hash, 'pdf')
 
     file_name = 'wildfire_report_' + file_hash + '.pdf'
     file_type = entryTypes['entryInfoFile']
@@ -283,8 +283,9 @@ def wildfire_get_report_command(client, args, reliability):
     for element in inputs:
         try:
             res = client.get_file_report(element)
-            reports = res.get('wildfire', {}).get('task_info', {}).get('report')
-            file_info = res.get('wildfire').get('file_info')
+            res_json = json.loads(xml2json(res.text))
+            reports = res_json.get('wildfire', {}).get('task_info', {}).get('report')
+            file_info = res_json.get('wildfire').get('file_info')
 
             if reports and file_info:
                 human_readable, entry_context, indicator = create_file_report(client, element, reports, file_info)
@@ -309,7 +310,7 @@ def wildfire_get_report_command(client, args, reliability):
                 reliability=reliability,
             )
             indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
-            res = ''
+            res_json = ''
             demisto.error(f'Report not found. Error: {exc}')
 
         finally:
@@ -317,7 +318,7 @@ def wildfire_get_report_command(client, args, reliability):
                 command_results = CommandResults(
                     readable_output=human_readable,
                     indicator=indicator,
-                    raw_response=res,
+                    raw_response=res_json,
                 )
             except Exception:
                 raise DemistoException('Error while trying to get the report from the API.')
