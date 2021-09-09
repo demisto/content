@@ -28,7 +28,8 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip
+    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
+    qradar_ips_source_get_command, qradar_ips_local_destination_get_command
 
 client = Client(
     server='https://192.168.0.1',
@@ -50,6 +51,7 @@ def util_load_json(path):
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 command_test_data = util_load_json('./test_data/command_test_data.json')
+ip_command_test_data = util_load_json('./test_data/ips_commands_data.json')
 
 event_columns_default_value = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
@@ -1054,3 +1056,39 @@ def test_validate_long_running_params():
         params_without_required_param = {k: v for k, v in LONG_RUNNING_REQUIRED_PARAMS.items() if k is not param_name}
         with pytest.raises(DemistoException):
             validate_long_running_params(params_without_required_param)
+
+
+@pytest.mark.parametrize('command_func, command_name',
+                         [
+                             (qradar_ips_source_get_command, 'source_ip'),
+                             (qradar_ips_local_destination_get_command, 'local_destination')
+                         ])
+def test_ip_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+    """
+    Given:
+     - Command function.
+     - Demisto arguments.
+
+    When:
+     - Executing a command
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
+    args = dict()
+    response = ip_command_test_data[command_name]['response']
+    expected = ip_command_test_data[command_name]['expected']
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=expected.get('outputs'),
+        raw_response=response
+    )
+    mocker.patch.object(client, 'get_addresses', return_value=response)
+
+    results = command_func(client, args)
+
+    assert results.outputs_prefix == expected_command_results.outputs_prefix
+    assert results.outputs_key_field == expected_command_results.outputs_key_field
+    assert results.outputs == expected_command_results.outputs
+    assert results.raw_response == expected_command_results.raw_response

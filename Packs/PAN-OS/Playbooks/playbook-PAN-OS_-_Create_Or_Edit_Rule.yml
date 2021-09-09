@@ -42,7 +42,7 @@ tasks:
       script: '|||panorama-list-rules'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -215,7 +215,7 @@ tasks:
       script: '|||panorama-edit-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -254,7 +254,7 @@ tasks:
       script: '|||panorama-edit-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -293,7 +293,7 @@ tasks:
       script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -349,7 +349,7 @@ tasks:
       script: '|||panorama-move-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -415,7 +415,7 @@ tasks:
       script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"

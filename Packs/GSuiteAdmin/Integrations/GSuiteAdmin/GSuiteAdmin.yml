@@ -1840,7 +1840,7 @@ script:
     - contextPath: GSuite.User.customSchemas
       description: Custom fields of the user.
       type: Unknown
-  dockerimage: demisto/googleapi-python3:1.0.0.12698
+  dockerimage: demisto/googleapi-python3:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

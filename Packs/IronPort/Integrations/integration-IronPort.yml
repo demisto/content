@@ -190,7 +190,7 @@ script:
       description: Use this attribute to retrieve reports based on a specified entity such as email address, IP address, and so on. You can choose whether to exactly match the specified text or look for items starting with the specified text (for instance, starts with "ex" will match "example.com").
     - name: starts_with
       description: Use this attribute to retrieve items starting with the specified entity value. This attribute must be used in conjunction with the entity attribute and value must be set to true , for example, entity=us&starts_with=true .
-    description: Retrieve email security appliance statistical reports
+    description: Retrieve email security appliance statistical reports.
   runonce: false
 tests:
 - No Tests

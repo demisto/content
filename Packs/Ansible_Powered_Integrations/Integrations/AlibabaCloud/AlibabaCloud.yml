@@ -18,8 +18,8 @@ configuration:
   name: alicloud_region
   required: true
   type: 0
-description: Manage Alibaba Cloud Elastic Compute Instances
-display: Alibaba Cloud
+description: Manage Alibaba Cloud Elastic Compute Instances. Deprecated. Use Ansible Alibaba Cloud (from the Ansible Alibaba Cloud Pack) instead.
+display: Ansible Alibaba Cloud (Deprecated)
 name: AlibabaCloud
 script:
   commands:
@@ -337,7 +337,7 @@ script:
       type: string
     - contextPath: AlibabaCloud.instances.vpc_id
       description: The ID of the VPC the instance is in.
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -345,3 +345,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true
