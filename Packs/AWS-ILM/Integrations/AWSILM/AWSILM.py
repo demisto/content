@@ -467,7 +467,7 @@ def update_group_command(client, args):
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
 
-    if member_ids_to_add == member_ids_to_delete is None:
+    if member_ids_to_add is member_ids_to_delete is None:
         raise Exception('You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the arguments')
 
     if member_ids_to_add:
