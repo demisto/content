@@ -22,8 +22,8 @@ configuration:
   type: 15
   required: false
   options:
-  - GraHighRiskUser
-  - GraCase
+  - GRAHighRiskUser
+  - GRACase
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -60,17 +60,6 @@ configuration:
   options:
   - Case Per Anomaly
   - Case For All Anomalies
-- display: Fetch Incident By Case Status
-  name: fetch_incident_by_case_status
-  defaultvalue: ALL
-  type: 15
-  required: false
-  options:
-  - ALL
-  - OPEN
-  - REOPENED
-  - CLOSED
-  - RISK ACCEPTED
 script:
   script: ''
   type: python
@@ -959,7 +948,27 @@ script:
       description: Entities Flagged
       type: number
     description: Retrieve detailed anomaly summary of specified anomaly name.
-  dockerimage: demisto/python3:3.9.6.24067
+  - name: gra-analytical-features-entity-value
+    arguments:
+    - name: entityValue
+      required: true
+      description: Entity Value
+    - name: modelName
+      required: true
+      description: Model Name
+    - name: fromDate
+      description: From Date ( yyyy-MM-dd )
+    - name: toDate
+      description: To Date ( yyyy-MM-dd )
+    outputs:
+    - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatures
+      description: Analytical Features
+      type: string
+    - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatureValues
+      description: Analytical Feature Values
+      type: string
+    description: Retrieve analytical features for specified entity value and model name.
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3

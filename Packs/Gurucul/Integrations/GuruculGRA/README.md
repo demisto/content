@@ -22,7 +22,6 @@ Please make sure you look at the integration source code and comments.
 | first_fetch | First fetch time | False |
 | max_fetch | Maximum number of incidents per fetch | False |
 | fetch_incident_cases | Fetch Incident Cases | False |
-| fetch_incident_by_case_status | Fetch Incident By Case Status | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -1020,6 +1019,62 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "anomaly6": 1
   },
   "entitiesFlagged": 0
+}
+```
+
+#### Human Readable Output
+
+
+### gra-analytical-features-entity-value
+***
+Retrieve analytical features for specified entity value and model name.
+
+#### Base Command
+
+`gra-analytical-features-entity-value`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entityValue | Entity Value | Required | 
+| modelName | Model Name | Required | 
+| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
+| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Analytical.Features.Entity.Value.analyticalFeatures | String | Analytical Features  | 
+| Gra.Analytical.Features.Entity.Value.analyticalFeatureValues | String | Analytical Feature Values | 
+
+
+#### Command Example
+```!gra-analytical-features-entity-value entityValue=EntityValue```
+
+#### Context Example
+```
+{
+    "analyticalFeatures": {
+        "analyticalFeature1": 7,
+        "analyticalFeature2": 1,
+        "analyticalFeature3": 0
+    },
+    "analyticalFeatureValues": {
+        "analyticalFeature1": {
+            "analyticalFeature1a": 2,
+            "analyticalFeature1b": 1,
+            "analyticalFeature1c": 1
+        },
+        "analyticalFeature2": {
+            "analyticalFeature2a": 6
+        },
+        "analyticalFeature3": {
+            "analyticalFeature3a": 13,
+            "analyticalFeature3b": 6
+        }
+    }
 }
 ```
 

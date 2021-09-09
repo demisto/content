@@ -23,7 +23,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Entity": {
+                "GRA Case Entity": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -32,7 +32,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Entity Id": {
+                "GRA Case Entity Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -41,7 +41,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Entity Type Id": {
+                "GRA Case Entity Type Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -50,7 +50,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Open Date": {
+                "GRA Case Open Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -59,7 +59,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Owner Id": {
+                "GRA Case Owner Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -68,7 +68,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Owner Name": {
+                "GRA Case Owner Name": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -77,7 +77,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Owner Type": {
+                "GRA Case Owner Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -86,7 +86,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Risk Date": {
+                "GRA Case Risk Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -122,7 +122,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Assignee": {
+                "GRA Anomaly Assignee": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -131,7 +131,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Assignee Type": {
+                "GRA Anomaly Assignee Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -140,7 +140,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Risk Accepted Date": {
+                "GRA Anomaly Risk Accepted Date": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -167,7 +167,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Anomalies": {
+                "GRA Case Anomaly Details": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -185,7 +185,7 @@
                     },
                     "simple": ""
                 },
-                "GRA Weblink": {
+                "GRA Case Weblink": {
 					"complex": {
 						"accessor": "",
 						"filters": [],
@@ -193,7 +193,16 @@
 						"transformers": []
 					},
 					"simple": ""
-				}
+				},
+                "GRA Case Risk Score": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskscore",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
             }
         }
     },

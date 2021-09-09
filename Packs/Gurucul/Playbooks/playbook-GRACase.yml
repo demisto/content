@@ -50,7 +50,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: ${incident.graanomalyname}${incident.graanomalies}
+        simple: ${incident.graanomalyname}${incident.gracaseanomalydetails}
     separatecontext: false
     view: |-
       {

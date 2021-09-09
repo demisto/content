@@ -114,7 +114,7 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], command_type: str
                     ) -> Tuple[Dict[str, int], List[dict]]:
-    if command_type == 'GraCases':
+    if command_type == 'GRACase':
         return_data = fetch_incidents_open_cases(client, max_results, last_run, first_fetch_time)
     else:
         return_data = fetch_incidents_high_risk_users(client, max_results, last_run, first_fetch_time)
@@ -126,10 +126,10 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                                ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
     case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
-    case_status = demisto.params().get('fetch_incident_by_case_status') or 'ALL'
+    case_status = 'OPEN'
     url_access_time = datetime.now().timestamp()
     endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
-    case_url = '/cases/history'
+    case_url = '/cases/opendate'
     if last_fetch is None:
         last_fetch = first_fetch_time
         startDate = (
@@ -169,6 +169,8 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                             'ownerName': record.get('ownerName'),
                             'riskDate': record.get('riskDate'),
                             'status': record.get('status'),
+                            'riskScore': record.get('riskScore'),
+                            'graweblink': record.get('graweblink'),
                             'anomalyName': anomaly.get('anomalyName'),
                             'anomalyResourceName': anomaly.get('resourceName'),
                             'assignee': anomaly.get('assignee'),
@@ -404,6 +406,18 @@ def main() -> None:
             else:
                 investigateAnomaly_url = '/investigateAnomaly/anomalySummary/' + modelName
             fetch_records(client, investigateAnomaly_url, 'Gra.Investigate.Anomaly.Summary', 'modelId', params)
+
+        elif demisto.command() == 'gra-analytical-features-entity-value':
+            fromDate = arguments.get('fromDate')
+            toDate = arguments.get('toDate')
+            modelName = arguments.get('modelName')
+            entityValue = arguments.get('entityValue')
+            if fromDate is not None and toDate is not None:
+                analyticalFeatures_url = 'profile/analyticalFeatures/' + entityValue + '?fromDate=' + fromDate \
+                                         + ' 00:00:00&toDate=' + toDate + ' 23:59:59&modelName=' + modelName
+            else:
+                analyticalFeatures_url = 'profile/analyticalFeatures/' + entityValue + '?modelName=' + modelName
+            fetch_records(client, analyticalFeatures_url, 'Gra.Analytical.Features.Entity.Value', 'entityID', params)
 
     # Log exceptions and return errors
     except Exception as e:
