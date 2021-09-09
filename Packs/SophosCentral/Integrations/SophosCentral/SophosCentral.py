@@ -271,7 +271,7 @@ class Client(BaseClient):
             "scope": "token",
         }
         response = requests.post(
-            headers=headers, data=body, url=f"https://id.sophos.com/api/v2/oauth2/token"
+            headers=headers, data=body, url="https://id.sophos.com/api/v2/oauth2/token"
         )
         if not response.ok:
             raise DemistoException(response.text)
