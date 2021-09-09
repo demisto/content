@@ -708,7 +708,7 @@ def test_module(client: Client, params: dict) -> None:
 
 def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, panel_id: str = None,
                     alert_name: str = None, state: str = None, limit: Optional[int] = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
-    limit = limit if limit else MAX_INCIDENTS_TO_FETCH
+    limit = limit or MAX_INCIDENTS_TO_FETCH
     last_fetch = demisto.getLastRun().get('last_fetch')
     last_id_fetched = demisto.getLastRun().get('last_id_fetched', -1)
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
