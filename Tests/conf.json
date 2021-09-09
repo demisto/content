@@ -4621,7 +4621,7 @@
         "palo_alto_panorama_test_pb": "Issue 34371",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599"
+        "HybridAnalysis-Test": "Issue 26599",
         "Cortex XDR - XQL Query - Test": "Issue 40892"
     },
     "skipped_integrations": {
