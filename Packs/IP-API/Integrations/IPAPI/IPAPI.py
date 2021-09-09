@@ -17,7 +17,7 @@ class Client(BaseClient):
                 url_suffix=ip,
                 params={
                     'key': demisto.params().get('apikey'),
-                    'fields': 536608767
+                    'fields': demisto.params().get('fields')
                 }
             )
         else:
@@ -25,7 +25,7 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix=ip,
                 params={
-                    'fields': 536608767
+                    'fields': demisto.params().get('fields')
                 }
             )
 
