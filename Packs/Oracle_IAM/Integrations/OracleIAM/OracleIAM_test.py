@@ -340,12 +340,13 @@ class TestGetGroupCommand:
 
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.get('https://test.com/admin/v1/Groups/1234', json=APP_GROUP_OUTPUT)
 
+            client = mock_client()
             get_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['success'] is True
@@ -365,15 +366,16 @@ class TestGetGroupCommand:
         """
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.get(
                 'https://test.com/admin/v1/Groups?filter=displayName eq "The+group+name"',
                 json={'totalResults': 1, 'Resources': [APP_GROUP_OUTPUT]},
             )
 
+            client = mock_client()
             get_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
@@ -392,12 +394,13 @@ class TestGetGroupCommand:
         """
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.get('https://test.com/admin/v1/Groups/1234', status_code=404, text='Group Not Found')
 
+            client = mock_client()
             get_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['success'] is False
@@ -416,11 +419,14 @@ class TestGetGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": {}}
 
-        with pytest.raises(Exception) as e:
-            get_group_command(client, args)
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
+            client = mock_client()
+
+            with pytest.raises(Exception) as e:
+                get_group_command(client, args)
 
         assert str(e.value) == 'You must supply either "id" or "displayName" in the scim data'
 
@@ -438,12 +444,13 @@ class TestCreateGroupCommand:
         """
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.post('https://test.com/admin/v1/Groups', status_code=201, json=APP_GROUP_OUTPUT)
 
+            client = mock_client()
             create_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['success'] is True
@@ -461,11 +468,13 @@ class TestCreateGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": "{\"displayName\": \"The group name\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.post('https://test.com/admin/v1/Groups', status_code=400, text="Group already exist")
+
+            client = mock_client()
 
             with pytest.raises(Exception) as e:
                 create_group_command(client, args)
@@ -484,11 +493,15 @@ class TestCreateGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": "{}"}
 
-        with pytest.raises(Exception) as e:
-            create_group_command(client, args)
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
+
+            client = mock_client()
+
+            with pytest.raises(Exception) as e:
+                create_group_command(client, args)
 
         assert str(e.value) == 'You must supply "displayName" of the group in the scim data'
 
@@ -507,12 +520,13 @@ class TestUpdateGroupCommand:
         """
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}", "memberIdsToAdd": ["111111"], "memberIdsToDelete": ["222222"]}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.patch('https://test.com/admin/v1/Groups/1234', status_code=200, json={})
 
+            client = mock_client()
             update_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['success'] is True
@@ -529,11 +543,15 @@ class TestUpdateGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
 
-        with pytest.raises(Exception) as e:
-            update_group_command(client, args)
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
+
+            client = mock_client()
+
+            with pytest.raises(Exception) as e:
+                update_group_command(client, args)
 
         assert str(e.value) == 'You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the scim data'
 
@@ -551,12 +569,13 @@ class TestDeleteGroupCommand:
         """
         mock_result = mocker.patch('OracleIAM.CommandResults')
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.delete('https://test.com/admin/v1/Groups/1234', status_code=204, json={})
 
+            client = mock_client()
             delete_group_command(client, args)
 
         assert mock_result.call_args.kwargs['outputs']['success'] is True
@@ -573,11 +592,13 @@ class TestDeleteGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": "{\"id\": \"1234\"}"}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
             m.delete('https://test.com/admin/v1/Groups/1234', status_code=404, text="Group Not Found")
+
+            client = mock_client()
 
             with pytest.raises(Exception) as e:
                 delete_group_command(client, args)
@@ -596,11 +617,15 @@ class TestDeleteGroupCommand:
             - Ensure that an error is raised with an expected message.
         """
 
-        client = mock_client()
         args = {"scim": "{}"}
 
-        with pytest.raises(Exception) as e:
-            delete_group_command(client, args)
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/oauth2/v1/token', json={})
+
+            client = mock_client()
+
+            with pytest.raises(Exception) as e:
+                delete_group_command(client, args)
 
         assert str(e.value) == 'You must supply "id" in the scim data'
 

@@ -664,8 +664,8 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = params['url'].strip('/')
-    client_id = params.get('credentials').get('identifier')
-    client_secret = params.get('credentials').get('password')
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
