@@ -1439,7 +1439,7 @@ class Actions():
             'start_time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%S.%fZ')
         })
 
-    def alert_writestatus(self, alert_id: str, status: str):
+    def alert_set_status(self, alert_id: str, status: str):
         data = [{
             "id": alert_id,
             "status": status,
@@ -1465,7 +1465,7 @@ class Actions():
                 )
         return result
 
-    def alert_setnote(self, alert_id: str, note: str):
+    def alert_set_note(self, alert_id: str, note: str):
         data = [{
             "id": alert_id,
             "note": note,
@@ -1584,16 +1584,16 @@ def main() -> None:
                     demisto_args.get("entity_type")
                 )
             )
-        elif command == "recordedfuture-alert-writestatus":
+        elif command == "recordedfuture-alert-set-status":
             return_results(
-                actions.alert_writestatus(
+                actions.alert_set_status(
                     demisto_args.get("alert_id"),
                     demisto_args.get("status"),
                 )
             )
-        elif command == "recordedfuture-alert-setnote":
+        elif command == "recordedfuture-alert-set-note":
             return_results(
-                actions.alert_setnote(
+                actions.alert_set_note(
                     demisto_args.get('alert_id'),
                     demisto_args.get('note'),
                 )

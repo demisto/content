@@ -2067,7 +2067,7 @@ script:
       description: Recorded Future Link Entity Risk Score
       type: Number
     description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
-  - name: recordedfuture-alert-writestatus
+  - name: recordedfuture-alert-set-status
     arguments:
     - name: alert_id
       required: true
@@ -2104,7 +2104,7 @@ script:
       description: Recorded Future alert get date
       type: date
     description: Set alert into predefined status
-  - name: recordedfuture-alert-setnote
+  - name: recordedfuture-alert-set-note
     arguments:
     - name: alert_id
       required: true

@@ -182,11 +182,11 @@ class RFTest(unittest.TestCase):
         self.assertTrue(context.get('Contents'))
 
     @vcr.use_cassette()
-    def test_get_alert_writestatus_command(self):
+    def test_get_alert_set_status_command(self):
         """Get Technical Links"""
         alert_status = 'no-action'
         alert_id = 'jrhrfx'
-        resp = self.actions.alert_writestatus(alert_id, alert_status)
+        resp = self.actions.alert_set_status(alert_id, alert_status)
         context = resp.to_context()
         self.assertIsInstance(resp, CommandResults)
         self.assertTrue(context.get('HumanReadable'))
@@ -194,11 +194,11 @@ class RFTest(unittest.TestCase):
         self.assertEqual(context['Contents']['status'], alert_status)
 
     @vcr.use_cassette()
-    def test_get_alert_setnote(self):
+    def test_get_alert_set_note(self):
         """Get Technical Links"""
         note_text = 'note unittest'
         alert_id = 'jrhrfx'
-        resp = self.actions.alert_setnote(alert_id, note_text)
+        resp = self.actions.alert_set_note(alert_id, note_text)
         context = resp.to_context()
         self.assertIsInstance(resp, CommandResults)
         self.assertTrue(context.get('HumanReadable'))
