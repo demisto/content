@@ -179,12 +179,17 @@ def mock_demisto_map_object(object, mapper_name, incident_type):
     }
 
 
-def mock_check_if_user_exists_by_attribute(default_base_dn, attr, val):
-    return val == 'test2'
+def test_get_iam_user_profile(mocker):
+    from Active_Directory_Query import get_iam_user_profile
+    mocker.patch.object(demisto, 'mapObject', side_effect=mock_demisto_map_object)
 
-
-def mock_get_user_activity_by_samaccountname(default_base_dn, samaccountname):
-    return samaccountname == 'test2'
+    user_profile = {"email": "test2@paloaltonetworks.com", "username": "test",
+                    "locationregion": "Americas",
+                    "olduserdata": {"email": "test@paloaltonetworks.com", "username": "test",
+                                    "locationregion": "Americas"}}
+    _, ad_user, sam_account_name = get_iam_user_profile(user_profile, 'mock_mapper_out')
+    assert sam_account_name == 'test'
+    assert ad_user
 
 
 def test_update_user_iam__username_change(mocker):
@@ -225,10 +230,8 @@ def test_update_user_iam__username_change(mocker):
                                                         "locationregion": "Americas"}})}
 
     mocker.patch.object(demisto, 'mapObject', side_effect=mock_demisto_map_object)
-    mocker.patch.object(Active_Directory_Query, 'check_if_user_exists_by_attribute',
-                        side_effect=mock_check_if_user_exists_by_attribute)
-    mocker.patch.object(Active_Directory_Query, 'get_user_activity_by_samaccountname',
-                        side_effect=mock_get_user_activity_by_samaccountname)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=True)
+    mocker.patch('Active_Directory_Query.get_user_activity_by_samaccountname', return_value=True)
     mocker.patch('Active_Directory_Query.user_dn', return_value='mock_dn')
 
     user_profile = Active_Directory_Query.update_user_iam(
@@ -241,7 +244,6 @@ def test_update_user_iam__username_change(mocker):
     outputs = get_outputs_from_user_profile(user_profile)
     assert outputs.get('action') == IAMActions.UPDATE_USER
     assert outputs.get('success') is True
-    assert outputs.get('active') is True
     assert outputs.get('email') == 'test2@paloaltonetworks.com'
     assert outputs.get('username') == 'test2'
 
