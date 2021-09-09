@@ -25,8 +25,8 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 | File | The file object of the file to detonate. The file is taken from the context. | None | File | Optional |
-| Interval | The duration for executing the pooling (in minutes). | 1 | - | Optional |
-| Timeout | The duration after which to stop pooling and to resume the playbook (in minutes). | 15 | - | Optional |
+| Interval | The duration for executing the polling (in minutes). | 1 | - | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook (in minutes). | 15 | - | Optional |
 | ReportFileType | The resource type to download. The default is "pdf". XML is also possible. | - | - | Optional |
 
 ## Playbook Outputs
