@@ -28,15 +28,16 @@ COURSE_OF_ACTION_HEADERS = ['name', 'title', 'description', 'impact statement', 
 
 class Client(BaseClient):
 
-    def __init__(self, api_key, verify):
+    def __init__(self, api_key, verify, proxy):
         """Implements class for Unit 42 feed.
 
         Args:
             api_key: unit42 API Key.
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+            proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
-                         proxy=argToBoolean(demisto.params().get('proxy') or 'false'))
+                         proxy=proxy)
         self._api_key = api_key
         self._proxies = handle_proxy()
         self.objects_data = {}
@@ -577,12 +578,12 @@ def main():
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
-
+    proxy = argToBoolean(params.get('proxy') or 'false')
     command = demisto.command()
     demisto.debug(f'Command being called in Unit42 feed is: {command}')
 
     try:
-        client = Client(api_key, verify)
+        client = Client(api_key, verify, proxy)
 
         if command == 'test-module':
             result = test_module(client)
