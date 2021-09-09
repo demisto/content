@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 
 BASE_URL = "https://api-eu02.central.sophos.com"
-TENANT_BASE_URL = "https://api-eu01.dev.central.sophos.com"
+TENANT_BASE_URL = "dummy_url"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -1840,7 +1840,7 @@ def test_get_tenant_base_url(requests_mock, creds_type):
         creds_type=creds_type,
     )
 
-    assert base_url == f"https://api-eu01.dev.central.sophos.com/{creds_type}"
+    assert base_url == f"dummy_url/{creds_type}"
 
 
 @pytest.mark.parametrize("creds_type", ["partner", "organization"])
@@ -2014,7 +2014,7 @@ def test_get_client_data_case3(requests_mock, creds_type) -> None:
         tenant_id=tenant_id, bearer_token="dummy-bearer-token"
     )
 
-    assert base_url == "https://api-eu01.dev.central.sophos.com/"
+    assert base_url == "dummy_url/"
     assert headers == {
         "Authorization": "Bearer dummy-bearer-token",
         "X-Tenant-ID": tenant_id,
@@ -2028,7 +2028,7 @@ def test_get_client_data_case3(requests_mock, creds_type) -> None:
     assert "base_url" in cache
     assert "tenant_id" in cache
 
-    assert cache.get("base_url") == "https://api-eu01.dev.central.sophos.com/"
+    assert cache.get("base_url") == "dummy_url/"
     assert cache.get("tenant_id") == tenant_id
 
     # clean up the cache
@@ -2218,7 +2218,7 @@ def test_get_client_data_case7(requests_mock, creds_type) -> None:
         tenant_id=tenant_id, bearer_token="dummy-bearer-token"
     )
 
-    assert base_url == "https://api-eu01.dev.central.sophos.com/"
+    assert base_url == "dummy_url/"
     assert headers == {
         "Authorization": "Bearer dummy-bearer-token",
         "X-Tenant-ID": tenant_id,
@@ -2234,7 +2234,7 @@ def test_get_client_data_case7(requests_mock, creds_type) -> None:
     assert "tenant_id" in cache
 
     # cache should be updated
-    assert cache.get("base_url") == "https://api-eu01.dev.central.sophos.com/"
+    assert cache.get("base_url") == "dummy_url/"
     assert cache.get("tenant_id") == tenant_id
 
     # clean up the cache

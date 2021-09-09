@@ -10,6 +10,6 @@
     "organization": {
         "id": "b7823fd8-84b2-4213-ba05-d9109e08e858"
     },
-    "apiHost": "https://api-eu01.dev.central.sophos.com",
+    "apiHost": "dummy_url",
     "status": "active"
 }

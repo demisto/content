@@ -8,7 +8,6 @@ from CommonServerUserPython import *
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
-ID_BASE_URL = "https://id.sophos.com"
 
 
 class Client(BaseClient):
@@ -272,7 +271,7 @@ class Client(BaseClient):
             "scope": "token",
         }
         response = requests.post(
-            headers=headers, data=body, url=f"{ID_BASE_URL}/api/v2/oauth2/token"
+            headers=headers, data=body, url=f"https://id.sophos.com/api/v2/oauth2/token"
         )
         if not response.ok:
             raise DemistoException(response.text)
