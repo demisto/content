@@ -11,13 +11,14 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        if demisto.params().get('https'):
+        params = demisto.params()
+        if params.get('https'):
             return self._http_request(
                 method='GET',
                 url_suffix=ip,
                 params={
-                    'key': demisto.params().get('apikey'),
-                    'fields': demisto.params().get('fields')
+                    'key': params.get('apikey'),
+                    'fields': params.get('fields')
                 }
             )
         else:
@@ -25,7 +26,7 @@ class Client(BaseClient):
                 method='GET',
                 url_suffix=ip,
                 params={
-                    'fields': demisto.params().get('fields')
+                    'fields': params.get('fields')
                 }
             )
 
@@ -66,14 +67,14 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
 
 def main() -> None:
-
-    if demisto.params().get('https'):
+    params = demisto.params()
+    if params.get('https'):
         base_url = "https://pro.ip-api.com/json/"
     else:
         base_url = "http://ip-api.com/json/"
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
