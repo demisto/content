@@ -8,79 +8,71 @@ def test_wildfire_report(mocker):
     Given:
         A sha256 represents a file uploaded to WildFire.
     When:
-        wildfire-report command is running.
+        wildfire-get-report command is running.
     Then:
         Ensure that the command is running as expected.
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
-    mocker.patch.object(demisto, 'command', return_value='wildfire-report')
-    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/publicapi/'})
+    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
-    response = {
-        "wildfire": {
-            "version": "2.0",
-            "file_info": {
-                "file_signer": "None",
-                "malware": "no",
-                "sha1": "abcdef1234567890abcdef1234567890",
-                "filetype": "PDF",
-                "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                "md5": "abcdef1234567890abcdef1234567890",
-                "size": "10000"
-            },
-            "task_info": {
-                "report": {
-                    "version": "3.0",
-                    "platform": "100",
-                    "software": "PDF Static Analyzer",
-                    "sha256": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                    "md5": "abcdef1234567890abcdef1234567890",
-                    "malware": "no",
-                    "doc_embedded_files": {
-                        "-self-closing": "true"
-                    },
-                    "extracted_urls": {
-                        "entry": [
-                            {
-                                "-url": "test.com",
-                                "-verdict": "unknown",
-                                "-self-closing": "true"
-                            },
-                            {
-                                "-url": "test1.com",
-                                "-verdict": "unknown",
-                                "-self-closing": "true"
-                            }
-                        ]
-                    },
-                    "summary": {
-                        "entry": [
-                            {
-                                "-score": "0.0",
-                                "-id": "1234",
-                                "-details": "test description",
-                                "#text": "test text"
-                            },
-                            {
-                                "-score": "0.0",
-                                "-id": "1234",
-                                "-details": "test description",
-                                "#text": "test text"
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-    }
-    mocker.patch('WildFireReports.fileResult', return_value=response)  # prevent file creation
-    WildFireReports_mock = mocker.patch('WildFireReports.return_results')
-    demisto_mock = mocker.patch.object(demisto, 'results')
+
+    with open('test_data/response.pdf', 'rb') as file:
+        file_content = b''
+        while byte := file.read(1):
+            file_content += byte
+
+        mocker.patch('WildFireReports.fileResult', return_value=file_content)  # prevent file creation
+        demisto_mock = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.post(f'https://test.com/publicapi/get/report?format=xml&hash={mock_sha256}', json=response)
-        m.post(f'https://test.com/publicapi/get/report?format=pdf&hash={mock_sha256}', json=response)
+        m.post(f'https://test.com/publicapi/get/report?format=pdf&hash={mock_sha256}', content=file_content)
 
         main()
 
-    assert mock_sha256 in str(WildFireReports_mock.call_args[0][0][0].readable_output)
+    assert demisto_mock.call_args_list[0][0][0] == file_content
+
+
+def test_report_not_found(mocker):
+    """
+    Given:
+        A sha256 represents a file not uploaded to WildFire.
+    When:
+        wildfire-get-report command is running.
+    Then:
+        Ensure that the command is running as expected.
+    """
+    mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567891'
+    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
+    mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
+    demisto_mock = mocker.patch.object(demisto, 'results')
+
+    with requests_mock.Mocker() as m:
+        m.post(f'https://test.com/publicapi/get/report?format=pdf&hash={mock_sha256}', status_code=404)
+
+        main()
+
+    assert demisto_mock.call_args[0][0][0] == 'Report not found.'
+
+
+def test_incorrect_sha256(mocker):
+    """
+    Given:
+        An incorrect sha256.
+    When:
+        wildfire-get-report command is running.
+    Then:
+        Ensure that the command is running as expected.
+    """
+    mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456789'  # The length is 63 insteadof 64
+    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
+    mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
+    mocker.patch.object(demisto, 'error')
+    mock_error = mocker.patch('WildFireReports.return_error')
+
+    # with pytest.raises(SystemExit):
+    main()
+
+    assert 'Invalid hash. Only SHA256 and MD5 are supported.' in str(mock_error.call_args.args[0])

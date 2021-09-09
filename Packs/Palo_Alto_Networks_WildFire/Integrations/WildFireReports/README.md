@@ -20,14 +20,14 @@ This integration was created and tested with version 10.1 of PAN-OS
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### wildfire-report
+### wildfire-get-report
 ***
 Retrieves results for a file hash using WildFire.
 
 
 #### Base Command
 
-`wildfire-report`
+`wildfire-get-report`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,12 +43,19 @@ Retrieves results for a file hash using WildFire.
 There is no context output for this command.
 
 #### Command Example
-```!wildfire-report sha256=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890```
+```!wildfire-get-report sha256=abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890```
 
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "123456",
+        "Extension": "pdf",
+        "Info": "application/pdf",
+        "Name": "wildfire_report_abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890.pdf",
+        "Size": 27575,
+        "Type": "PDF document, version 1.4"
+    }
+}
+```
 #### Human Readable Output
-
->### WildFire File Report - PDF format
->|FileType|MD5|SHA256|Size|Status|
->|---|---|---|---|---|
->| PDF | abcdef1234567890abcdef1234567890 | abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890 | 1000 | Completed |
-
