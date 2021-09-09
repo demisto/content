@@ -39,7 +39,8 @@ def hash_args_handler(sha256=None, md5=None):
 
 def test_module(client):
     try:
-        client.get_file_report('dca86121cc7427e375fd24fe5871d727')
+        wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
+        client.get_file_report(wildfire_hash_example)
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
