@@ -35,14 +35,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: String of the XQL query. By default up to 100 results are returned, in order to get more results, enter a custom limit in the query.
+      description: String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -51,7 +51,7 @@ script:
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -63,7 +63,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of returned fields per results.
+      description: The maximum number of returned fields per result.
       isArray: false
       name: max_fields
       required: false
@@ -92,18 +92,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.GenericQuery.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
@@ -116,70 +116,70 @@ script:
       description: The agent IP addresses.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-      description: Host mac address.
+      description: Host MAC address.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-      description: Effective username.
+      description: Parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-      description: Initiator CMD.
+      description: Command line arguments of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-      description: Initiator PID.
+      description: Initiator process ID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
       description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: Initiator signature.
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-      description: CGO name.
+      description: The name of the process that initiated the causality chain.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-      description: CGO path.
+      description: Causality group owner path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-      description: CGO CMD.
+      description: Command line arguments of the causality group owner.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-      description: CGO PID.
+      description: Causality group owner process ID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: CGO SHA256.
+      description: The SHA256 value of the causality group owner. 
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-      description: CGO signer.
+      description: Causality group owner signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: CGO signature.
+      description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-      description: CGO type.
+      description: The type of the causality group owner.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-      description: OS parent name.
+      description: The name of the operating system that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-      description: OS parent path.
+      description: Operating system parent path.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-      description: OS parent CMD.
+      description: Command line arguments of the operating system parent.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-      description: OS parent PID.
+      description: Operating system parent process ID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-      description: OS parent SHA256.
+      description: The SHA256 value of the operating system parent.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
       description: The result vendor.
@@ -209,13 +209,13 @@ script:
   - arguments:
     - default: false
       description: Integer representing the unique execution ID generated by the response
-        to Start an XQL Query API.
+        to start an XQL query API.
       isArray: false
       name: query_id
       required: true
       secret: false
     - default: false
-      description: The maximum number of returned fields per results.
+      description: The maximum number of returned fields per result.
       isArray: false
       name: max_fields
       required: false
@@ -239,18 +239,18 @@ script:
       - contextPath: PaloAltoNetworksXQL.GenericQuery.status
         description: |-
           String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-          For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+          For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
         description: Integer representing the number of results returned.
         type: Number
       - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
         description: |-
-          Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+          Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
           For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
         type: Unknown
       - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-        description: Float representing the number of query units available for you
+        description: Floating number representing the number of query units available for you
           to use.
         type: Number
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
@@ -263,70 +263,70 @@ script:
         description: The agent IP addresses.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-        description: Host mac address.
+        description: Host MAC address.
         type: Unknown
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-        description: Effective username.
+        description: Parent user name.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-        description: Initiated by.
+        description: The name of the process that initiated the activity.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-        description: Initiator path.
+        description: Path of the initiating process.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-        description: Initiator CMD.
+        description: Command line arguments of the initiator.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-        description: Initiator PID.
+        description: Initiator process ID.
         type: Number
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-        description: Initiator SHA256.
+        description: The SHA256 value of the initiator.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
         description: Initiator signer.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-        description: Initiator signature.
+        description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-        description: CGO name.
+        description: The name of the process that initiated the causality chain.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-        description: CGO path.
+        description: Causality group owner path of the initiating process.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-        description: CGO CMD.
+        description: Command line arguments of the causality group owner.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-        description: CGO PID.
+        description: Causality group owner process ID.
         type: Number
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-        description: CGO SHA256.
+        description: The SHA256 value of the causality group owner.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-        description: CGO signer.
+        description: Causality group owner signer.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-        description: CGO signature.
+        description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-        description: CGO type.
+        description: The type of the causality group owner.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-        description: OS parent name.
+        description: The name of the operating system that initiated the activity.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-        description: OS parent path.
+        description: Operating system parent path.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-        description: OS parent CMD.
+        description: Command line arguments of the operating system parent.
         type: String
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-        description: OS parent PID.
+        description: Operating system parent process ID.
         type: Number
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-        description: OS parent SHA256.
+        description: The SHA256 value of the operating system parent.
         type: Unknown
       - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
         description: The result vendor.
@@ -345,7 +345,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: File sha256 to run the query on.
+      description: SHA256 file to run the query on.
       isArray: true
       name: file_sha256
       required: true
@@ -358,7 +358,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -368,7 +368,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -380,7 +381,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -392,7 +393,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query file events by file sha256.
+    description: Query file events by the SHA256 file.
     execution: false
     hidden: false
     polling: true
@@ -408,18 +409,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.FileEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileEvent.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_hostname
@@ -432,10 +433,10 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_path
-      description: File path.
+      description: File path of the action.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.action_file_sha256
-      description: File SHA256.
+      description: SHA256 hash value of the file.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.actor_process_file_create_time
       description: Initiator file create time.
@@ -460,7 +461,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Process sha256 the search on XDR dataset.
+      description:  The SHA256 hash of the primary involved process to search on the XDR dataset.
       isArray: true
       name: process_sha256
       required: true
@@ -473,7 +474,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -483,7 +484,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -495,7 +497,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -507,7 +509,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query process events by process sha256.
+    description: Query process events by the SHA256 process.
     execution: false
     hidden: false
     polling: true
@@ -523,18 +525,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname
@@ -547,7 +549,7 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_sha256
-      description: Target process SHA256.
+      description: Target SHA256 process.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_name
       description: Target process name.
@@ -559,7 +561,7 @@ script:
       description: Target process instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_causality_id
-      description: Target process casuality ID.
+      description: Target process causality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_signature_vendor
       description: Process execution signer.
@@ -568,19 +570,19 @@ script:
       description: Process signature product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.action_process_image_command_line
-      description: Target process CMD.
+      description: Target process command line.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_instance_id
       description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.actor_process_causality_id
-      description: Initiator casuality ID.
+      description: Initiator causality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._vendor
       description: The result vendor.
@@ -602,7 +604,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: DLL Module sha256 the search on XDR dataset.
+      description: SHA256 DLL module to search on the XDR dataset.
       isArray: true
       name: loaded_module_sha256
       required: true
@@ -615,7 +617,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -625,7 +627,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -637,7 +640,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -649,7 +652,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query DLL module events by DLL sha256.
+    description: Query DLL module events by the SHA256 DLL.
     execution: false
     hidden: false
     polling: true
@@ -665,18 +668,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.DllModule.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DllModule.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_hostname
@@ -689,10 +692,10 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_effective_username
-      description: Effective username.
+      description: Parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_sha256
-      description: Action module SHA256.
+      description: Action SHA256 module.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.action_module_path
       description: Action module path.
@@ -704,22 +707,22 @@ script:
       description: Action module file create time.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_command_line
-      description: Initiator CMD.
+      description: Command line arguments of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_instance_id
       description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results.actor_process_causality_id
-      description: Initiator casuality ID.
+      description: Initiator causality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.results._vendor
       description: The result vendor.
@@ -766,7 +769,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago").The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -776,7 +779,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -788,7 +792,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -817,18 +821,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname
@@ -841,7 +845,7 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username
-      description: Effective username.
+      description: Parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip
       description: Local IP.
@@ -859,22 +863,22 @@ script:
       description: Action country.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_command_line
-      description: Initiator CMD.
+      description: Command line arguments of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_instance_id
       description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.actor_process_causality_id
-      description: Initiator casuality ID.
+      description: Initiator causality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._vendor
       description: The result vendor.
@@ -910,7 +914,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -920,7 +924,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -932,7 +937,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -960,18 +965,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.Registry.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.Registry.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_hostname
@@ -984,16 +989,16 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_type
-      description: Host OS.
+      description: Host operating system.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_os_sub_type
-      description: Agent OS Sub Type.
+      description: Agent operating system subtype.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.event_type
       description: Event type.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.event_sub_type
-      description: Event sub type.
+      description: Event subtype.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.results.action_registry_key_name
       description: Registry key name.
@@ -1024,10 +1029,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'event log ID to search. - Windows: Event ID of the event-log -
-        Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown
-        1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed
-        login, but should include a username) 4 = Logout'
+      description: 'event log ID to search. 
+        - Windows: Event ID of the event-log 
+        - Linux: For action_evtlog_source = AuthLog, one of the following: 
+        0 = Unknown
+        1 = Successful Login 
+        2 = Failed Login 
+        3 = Failed Password (Same as failed
+        login, but should include a username) 
+        4 = Logout'
       isArray: true
       name: event_id
       required: true
@@ -1040,7 +1050,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1050,7 +1060,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -1062,7 +1073,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -1090,18 +1101,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.EventLog.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.EventLog.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_hostname
@@ -1114,10 +1125,10 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_type
-      description: Host OS.
+      description: Host operating system.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_os_sub_type
-      description: Agent OS Sub Type.
+      description: Agent operating system subtype.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_event_id
       description: Event log ID.
@@ -1126,13 +1137,13 @@ script:
       description: Event type.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.event_sub_type
-      description: Event sub type.
+      description: Event subtype.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_message
       description: Event log message.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results.action_evtlog_provider_name
-      description: event log provider name.
+      description: Event log provider name.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.results._vendor
       description: The result vendor.
@@ -1154,13 +1165,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Query by extrenal domain name.
+      description: Query by external domain name.
       isArray: true
       name: external_domain
       required: false
       secret: false
     - default: false
-      description: Query by dns query.
+      description: Query by DNS query.
       isArray: true
       name: dns_query
       required: false
@@ -1173,7 +1184,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1183,7 +1194,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -1195,7 +1207,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -1223,18 +1235,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.DNS.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DNS.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_hostname
@@ -1247,16 +1259,16 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_type
-      description: Host OS.
+      description: Host operating system.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_os_sub_type
-      description: Agent OS Sub Type.
+      description: Agent operating system subtype.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_local_ip
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_ip
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_remote_port
       description: Remote port.
@@ -1265,7 +1277,7 @@ script:
       description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.dns_query_name
-      description: DNS Query Name.
+      description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
       description: List of application IDs action, actual activities that took place and recorded by the agent
@@ -1283,16 +1295,16 @@ script:
       description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_image_path
-      description: OS parent path.
+      description: Operating system parent path.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_command_line
-      description: OS Parent CMD.
+      description: Command line arguments of the operating system parent.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_instance_id
       description: Initiator instance ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.os_actor_process_causality_id
-      description: Initiator casuality ID.
+      description: Initiator causality ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results._vendor
       description: The result vendor.
@@ -1314,13 +1326,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: File sha256 to search on XDR dataset.
+      description: SHA256 file to search on the XDR dataset.
       isArray: true
       name: file_sha256
       required: false
       secret: false
     - default: false
-      description: File path to search on XDR dataset.
+      description: File path to search on the XDR dataset.
       isArray: true
       name: file_path
       required: false
@@ -1333,7 +1345,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1343,7 +1355,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -1355,7 +1368,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -1367,7 +1380,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Search for the process who wrote the given file, by its sha256 or
+    description: Search for the process that wrote the given file, by its SHA256 or
       file path.
     execution: false
     hidden: false
@@ -1384,18 +1397,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.FileDropper.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileDropper.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_hostname
@@ -1408,22 +1421,19 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_sha256
-      description: File SHA256.
+      description: SHA256 hash value of the file.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.action_file_path
-      description: File path.
+      description: File path of the action.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
-      description: Initiator path.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_command_line
-      description: Initiator CMD.
+      description: Command line arguments of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_signature_vendor
       description: Initiator signer.
@@ -1432,28 +1442,28 @@ script:
       description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.actor_primary_normalized_user
       description: Normalized user.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_path
-      description: OS parent path
+      description: Operating system parent path.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_command_line
-      description: OS parent CMD.
+      description: Command line arguments of the operating system parent.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_vendor
-      description: OS Parent Signer.
+      description: Operating system parent signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_signature_product
-      description: OS Parent Signer product.
+      description: Operating system parent signer product.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256
-      description: OS parent SHA256.
+      description: The SHA256 value of the operating system parent.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username
-      description: OS parent user name.
+      description: Operating system parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host
       description: Remote host.
@@ -1481,7 +1491,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Process insatce ID to search on XDR dataset.
+      description: Process instance ID to search on the XDR dataset.
       isArray: true
       name: process_instance_id
       required: true
@@ -1494,7 +1504,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1504,7 +1514,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -1516,7 +1527,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -1545,18 +1556,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname
@@ -1569,10 +1580,10 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_local_ip
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_ip
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port
       description: Remote port.
@@ -1581,7 +1592,7 @@ script:
       description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name
-      description: DNS Query Name.
+      description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
       description: List of application IDs action, actual activities that took place and recorded by the agent.
@@ -1599,13 +1610,13 @@ script:
       description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor
       description: Initiator signer.
@@ -1617,7 +1628,7 @@ script:
       description: CID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line
-      description: Image CMD.
+      description: Image command line.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id
       description: Initiator instance ID.
@@ -1642,7 +1653,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Process causality ID to search on XDR dataset.
+      description: Process causality ID to search on the XDR dataset.
       isArray: true
       name: process_causality_id
       required: true
@@ -1655,7 +1666,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). Cortex XDR calls by default the last 24 hours.
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
       isArray: false
       name: time_frame
       required: false
@@ -1665,7 +1676,8 @@ script:
         Integer representing the maximum number of results to return. For example:
         If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
         If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) up to 100 results are returned. For example, if limit=5000, only 5,000 results are returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
       isArray: false
       name: limit
       required: false
@@ -1677,7 +1689,7 @@ script:
 
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
 
-        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
+        For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
       name: tenant_id
       required: false
@@ -1706,18 +1718,18 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status
       description: |-
         String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS—At least one tenant failed to execute the query. Only partial results are available.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results
       description: Integer representing the number of results returned.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_cost
       description: |-
-        Float representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota
-      description: Float representing the number of query units available for you
+      description: Floating number representing the number of query units available for you
         to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname
@@ -1730,10 +1742,10 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_local_ip
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_ip
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port
       description: Remote port.
@@ -1742,7 +1754,7 @@ script:
       description: External hostname.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name
-      description: DNS Query Name.
+      description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
       description: List of application IDs action, actual activities that took place and recorded by the agent.
@@ -1760,13 +1772,13 @@ script:
       description: The action as data.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_sha256
-      description: Initiator SHA256.
+      description: The SHA256 value of the initiator.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_name
-      description: Initiated by.
+      description: The name of the process that initiated the activity.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path
-      description: Initiator path.
+      description: Path of the initiating process.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor
       description: Initiator signer.
@@ -1778,7 +1790,7 @@ script:
       description: CID.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line
-      description: Image CMD.
+      description: Image command line.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id
       description: Initiator instance ID.
