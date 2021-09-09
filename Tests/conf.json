@@ -53,7 +53,11 @@
         {
             "integrations": "Azure Active Directory Identity Protection",
             "playbookID": "AzureADTest",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 2400,
+            "instance_names": [
+                'Azure Active Directory Identity Protection'
+            ]
         },
         {
             "integrations": "GoogleCalendar",
