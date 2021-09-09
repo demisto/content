@@ -705,7 +705,12 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, 
 
         if timestamp_list:
             newest_timestamp = str(max(timestamp_list))
-            fetched_ids_dict[newest_timestamp] = ids_list  # add recent fetch results to fetched_ids_dict
+            # add recent fetch results to fetched_ids_dict
+            if fetched_ids_dict.get(newest_timestamp):
+                # if there are incidents with the same timestamp and fetched in two different cycles
+                fetched_ids_dict[newest_timestamp] += ids_list
+            else:
+                fetched_ids_dict[newest_timestamp] = ids_list
             next_run = {'last_fetch': newest_timestamp, 'fetched_ids_dict': fetched_ids_dict}
             demisto.debug(f'setting last run to: {next_run}')
             return next_run, incidents
