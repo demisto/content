@@ -817,6 +817,7 @@ Isolates the specified endpoint.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints | Required | 
+| suppress_disconnected_endpoint_error | Whether to return an error when trying to isolate a disconnected endpoint. When sets to false, a warning will be returned. Possible values are: true, false. Default is True. | Optional | 
 
 
 ##### Context Output
@@ -842,6 +843,7 @@ Reverses the isolation of an endpoint.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints | Required | 
+| suppress_disconnected_endpoint_error | Whether to return an error when trying to unisolate a disconnected endpoint. When sets to false, a warning will be returned. Possible values are: true, false. Default is True. | Optional | 
 
 
 ##### Context Output

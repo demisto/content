@@ -793,7 +793,7 @@ script:
       default: false
       defaultValue: 'True'
       description: Whether to return an error when trying to isolate a disconnected endpoint.
-        When sets to false, a warnning will be returned.
+        When sets to false, a warning will be returned.
       isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
@@ -821,7 +821,7 @@ script:
       default: false
       defaultValue: 'True'
       description: Whether to return an error when trying to unisolate a disconnected
-        endpoint. When sets to false, a warnning will be returned.
+        endpoint. When sets to false, a warning will be returned.
       isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
