@@ -1,7 +1,5 @@
-The integration requires both the Sophos Central API ID and secret.
-The Sophos API secret should be placed in the password field.
-
-The two values can be found in the Sophos Central global settings.
-If a user has access to the API keys, he will have access to all of the integration commands.
-
-The region is automatically configured based on the credentials given.
+- The integration requires both the Sophos Central API client ID and secret.
+- Client ID and secret can be found in the Sophos Central global settings.
+- If these credentials are of partner or organization level, a valid tenant ID belonging to partner or organization is also required.
+- The region is automatically configured based on the given credentials if credentials are of tenant level. Hence tenant ID is not required in this case.
+- If a user has access to the API keys, he will have access to all of the integration commands.
