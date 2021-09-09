@@ -511,26 +511,31 @@ script:
       name: client_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Type of destination. Can be "ip_address" or "computer_name".
-      isArray: false
-      name: destination-type
-      predefined:
-      - ip_address
-      - computer_name
-      required: true
-      secret: false
     - default: false
-      description: Computer name or IP address.
+      description: IP address to connect.
       isArray: false
       name: ip
       required: true
       secret: false
+    - default: false
+      description: Commputers platform - "Windows", "Linux", etc.
+      isArray: false
+      name: platform
+      required: true
+      secret: false
+    - default: false
+      description: Hostname of the computer to connect.
+      isArray: false
+      name: hostname
+      required: false
     deprecated: false
     description: Creates a local or remote connection.
     execution: false
     name: tanium-tr-create-connection
+    outputs:
+    - contextPath: Tanium.Connection.id
+      description: New connection id.
+      type: String
   - arguments:
     - default: false
       description: The connection id.
@@ -699,7 +704,7 @@ script:
     - default: false
       description: The file ID.
       isArray: false
-      name: file-id
+      name: file_id
       required: true
       secret: false
     deprecated: false
@@ -719,7 +724,7 @@ script:
       description: The type of event. Can be "File", "Network", "Registry", "Process",
         "Driver", "Combined", "DNS", or "Image". The default is "Combined".
       isArray: false
-      name: event-type
+      name: type
       predefined:
       - File
       - Network
@@ -907,64 +912,15 @@ script:
       `path` or `id` agument for the command to run successfully.
     execution: false
     name: tanium-tr-get-file-download-info
-    outputs:
-    - contextPath: Tanium.FileDownload.Size
-      description: The size of the file, in bytes.
-      type: Number
-    - contextPath: Tanium.FileDownload.Path
-      description: The path of the file.
-      type: String
-    - contextPath: Tanium.FileDownload.Downloaded
-      description: The date when this file was downloaded.
-      type: Date
-    - contextPath: Tanium.FileDownload.Host
-      description: The hostname of the downloaded file.
-      type: String
-    - contextPath: Tanium.FileDownload.Created
-      description: The date when the file was created.
-      type: Date
-    - contextPath: Tanium.FileDownload.Hash
-      description: The file hash.
-      type: String
-    - contextPath: Tanium.FileDownload.SPath
-      description: The file SPath.
-      type: String
-    - contextPath: Tanium.FileDownload.ID
-      description: The downloaded file ID.
-      type: Number
-    - contextPath: Tanium.FileDownload.LastModified
-      description: The date when the file was last modified.
-      type: Date
-    - contextPath: Tanium.FileDownload.CreatedBy
-      description: The user that created this file.
-      type: String
-    - contextPath: Tanium.FileDownload.CreatedByProc
-      description: The process path that created this file.
-      type: String
-    - contextPath: Tanium.FileDownload.LastModifiedBy
-      description: The user that last modified this file.
-      type: String
-    - contextPath: Tanium.FileDownload.LastModifiedByProc
-      description: The process path that modified this file.
-      type: String
-    - contextPath: Tanium.FileDownload.Comments
-      description: The downloaded file comments.
-      type: String
-    - contextPath: Tanium.FileDownload.Tags
-      description: The downloaded file tags.
-      type: String
-    - contextPath: Tanium.FileDownload.Deleted
-      description: Whether the file download has been deleted.
-      type: Boolean
   - arguments:
     - default: false
-      description: The connection name.
+      description: The connection id.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
-      description: The process instance ID.
+      description: The process table ID.
       isArray: false
       name: ptid
       required: true
@@ -974,44 +930,35 @@ script:
     execution: false
     name: tanium-tr-get-process-info
     outputs:
-    - contextPath: Tanium.Process.CreateTime
-      description: Time when the process was created.
-      type: Date
-    - contextPath: Tanium.Process.Domain
-      description: The domain of the process.
-      type: String
-    - contextPath: Tanium.Process.ExitCode
-      description: The process exit code.
-      type: Number
-    - contextPath: Tanium.Process.ProcessCommandLine
-      description: The process command line.
-      type: String
-    - contextPath: Tanium.Process.ProcessID
-      description: The ID of the process.
-      type: Number
-    - contextPath: Tanium.Process.ProcessName
-      description: File of the process.
-      type: String
-    - contextPath: Tanium.Process.ProcessTableId
-      description: The ID of the process table.
-      type: Number
-    - contextPath: Tanium.Process.SID
-      description: The security ID of the process.
-      type: String
-    - contextPath: Tanium.Process.Username
-      description: The username who created the process.
-      type: String
   - arguments:
     - default: false
       description: The connection name.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
       description: The process instance ID.
       isArray: false
       name: ptid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: combined
+      description: The type of event. Can be "File", "Network", "Registry", "Process",
+        "Driver", "Combined", "DNS", or "Image". The default is "Combined".
+      isArray: false
+      name: type
+      predefined:
+      - File
+      - Network
+      - Registry
+      - Process
+      - Driver
+      - Combined
+      - DNS
+      - Image
       required: true
       secret: false
     - default: false
@@ -1033,19 +980,19 @@ script:
     execution: false
     name: tanium-tr-get-events-by-process
     outputs:
-    - contextPath: Tanium.ProcessEvent.ID
+    - contextPath: Tanium.ProcessEvent.id
       description: The ID of the event.
       type: Number
-    - contextPath: Tanium.ProcessEvent.Detail
+    - contextPath: Tanium.ProcessEvent.detail
       description: The event details.
       type: Unknown
-    - contextPath: Tanium.ProcessEvent.Operation
+    - contextPath: Tanium.ProcessEvent.operation
       description: The event operation.
       type: String
-    - contextPath: Tanium.ProcessEvent.Timestamp
+    - contextPath: Tanium.ProcessEvent.timestamp
       description: Time when the event was created.
       type: Date
-    - contextPath: Tanium.ProcessEvent.Type
+    - contextPath: Tanium.ProcessEvent.type
       description: The event type.
       type: String
   - arguments:
@@ -1120,9 +1067,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The connection name.
+      description: The connection id.
       isArray: false
-      name: connection-name
+      name: connection_id
       required: true
       secret: false
     - default: false
@@ -1135,25 +1082,6 @@ script:
     description: Gets the process tree for the process instance.
     execution: false
     name: tanium-tr-get-process-tree
-    outputs:
-    - contextPath: Tanium.ProcessTree.ID
-      description: The process ID.
-      type: Number
-    - contextPath: Tanium.ProcessTree.Name
-      description: File of the process.
-      type: String
-    - contextPath: Tanium.ProcessTree.PID
-      description: The process PID.
-      type: Number
-    - contextPath: Tanium.ProcessTree.PTID
-      description: The process instance ID.
-      type: Number
-    - contextPath: Tanium.ProcessTree.Parent
-      description: The parent process name.
-      type: String
-    - contextPath: Tanium.ProcessTree.Children
-      description: The process children.
-      type: Unknown
   - arguments:
     - default: false
       defaultValue: '50'
@@ -1215,50 +1143,13 @@ script:
     - default: false
       description: The ID of the evidence.
       isArray: false
-      name: evidence-id
+      name: evidence_id
       required: true
       secret: false
     deprecated: false
     description: Gets evidence by evidence ID.
     execution: false
     name: tanium-tr-get-evidence-by-id
-    outputs:
-    - contextPath: Tanium.Evidence.ID
-      description: The evidence ID.
-      type: Number
-    - contextPath: Tanium.Evidence.CreatedAt
-      description: Time when the process was created.
-      type: Date
-    - contextPath: Tanium.Evidence.LastModified
-      description: The date that the file was last modified.
-      type: Date
-    - contextPath: Tanium.Evidence.User
-      description: The user of the evidence.
-      type: String
-    - contextPath: Tanium.Evidence.ConnectionName
-      description: The evidence connection name.
-      type: String
-    - contextPath: Tanium.Evidence.Type
-      description: The evidence type.
-      type: Number
-    - contextPath: Tanium.Evidence.ProcessTableId
-      description: The evidence process table ID.
-      type: Number
-    - contextPath: Tanium.Evidence.Timestamp
-      description: The evidence timestamp.
-      type: Date
-    - contextPath: Tanium.Evidence.Summary
-      description: The evidence summary.
-      type: String
-    - contextPath: Tanium.Evidence.Comments
-      description: The evidence comments.
-      type: String
-    - contextPath: Tanium.Evidence.Tags
-      description: The evidence tags.
-      type: String
-    - contextPath: Tanium.Evidence.Deleted
-      description: Whether the evident has been deleted.
-      type: Boolean
   - arguments:
     - default: false
       description: The name of the connection.

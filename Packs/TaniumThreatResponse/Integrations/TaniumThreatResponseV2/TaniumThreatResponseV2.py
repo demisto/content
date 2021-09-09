@@ -1003,7 +1003,10 @@ def list_snapshots(client, data_args):
 def create_snapshot(client, data_args):
     connection_id = data_args.get('connection-id')
     raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{connection_id}/snapshot')
-    return f'Initiated snapshot creation request for {connection_id}.', {}, raw_response
+    hr = f'Initiated snapshot creation request for {connection_id}.'
+    if task_id := raw_response.get('taskInfo', {}).get('id'):
+        hr += f'Task id: {task_id}.'
+    return hr, {}, raw_response
 
 
 def delete_snapshot(client, data_args):
@@ -1046,21 +1049,20 @@ def get_connections(client, data_args):
 
 
 def create_connection(client, data_args):
-    ip = data_args.get('ip')  # TODO: check this
+    ip = data_args.get('ip')
     client_id = data_args.get('client_id')
+    hostname = data_args.get('hostname')
+    platform = data_args.get('platform')
 
+    target = assign_params(hostname=hostname, clientId=client_id, ip=ip, platform=platform)
     body = {
-        "target": {
-            "hostname": "localhost",
-            "clientId": client_id,
-            "platform": "Linux",
-            "ip": ip
-        }
+        "target": target
     }
 
-    connection = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body,
-                                   resp_type='content')
-    return f'Initiated connection request to {connection}.', {}, {}
+    connection_id = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body,
+                                      resp_type='content')
+    outputs = {'Tanium.Connection(val.id === obj.id)': {'id': connection_id}}
+    return f'Initiated connection request to {connection_id}.', outputs, {}
 
 
 def close_connection(client, data_args):
@@ -1081,7 +1083,7 @@ def get_events_by_connection(client, data_args):
     cid = data_args.get('connection_id')
     sort = data_args.get('sort')
     fields = data_args.get('fields')
-    event_type = data_args.get('event-type').lower()
+    event_type = data_args.get('type').lower()
     filter_dict = filter_to_tanium_api_syntax(data_args.get('filter'))
     match = data_args.get('match')
 
@@ -1169,33 +1171,18 @@ def get_file_downloads(client, data_args):
 
 
 def get_downloaded_file(client, data_args):
-    file_id = data_args.get('file-id')
-    file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}',
-                                                   resp_type='content')
+    file_id = data_args.get('file_id')
+    file_content, content_desc = \
+        client.do_request('GET', f'plugin/products/threat-response/api/v1/filedownload/data/{file_id}',
+                          resp_type='content')
 
-    filename = re.findall(r'filename\*=UTF-8\'\'(.+)', content_desc)[0]
+    filename = re.findall('(?<=filename=)(?s)(.*$)', content_desc)[0]
 
     demisto.results(fileResult(filename, file_content))
 
 
 def get_file_download_info(client, data_args):
-    if not data_args.get('path') and not data_args.get('id'):
-        raise ValueError('At least one of the arguments `path` or `id` must be set.')
-
-    data_args = {key: val for key, val in data_args.items() if val is not None}
-
-    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params=data_args)
-    if not raw_response:
-        raise ValueError('File download does not exist.')
-
-    file = raw_response[0]
-    context = createContext(file, removeNull=True)
-    outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Host', 'Path', 'Hash', 'Downloaded', 'Size', 'Created', 'CreatedBy', 'CreatedByProc',
-               'LastModified', 'LastModifiedBy', 'LastModifiedByProc', 'SPath', 'Comments', 'Tags']
-    human_readable = tableToMarkdown(f"File download metadata for file `{file['Path']}`", file, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
+    pass
 
 
 def request_file_download(client, data_args):
@@ -1223,7 +1210,7 @@ def request_file_download(client, data_args):
 def delete_file_download(client, data_args):
     file_id = data_args.get('file_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/filedownload/{file_id}')
-    return f'Delete request of file with ID {file_id} has been sent successfully.',{}, {}
+    return f'Delete request of file with ID {file_id} has been sent successfully.', {}, {}
 
 
 def list_files_in_dir(client, data_args):
@@ -1288,37 +1275,37 @@ def delete_file_from_endpoint(client, data_args):
 
 
 def get_process_info(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    connection_id = data_args.get('connection_id')
     ptid = data_args.get('ptid')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processes/{ptid}')
-    process = raw_response
+    raw_response = client.do_request(
+        'GET',
+        f'/plugin/products/threat-response/api/v1/conns/{connection_id}/processtrees/{ptid}',
+        params={'context': 'node'})
 
-    context = createContext(process, removeNull=True)
-    outputs = {'Tanium.Process(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
-    headers = ['ProcessID', 'ProcessName', 'ProcessCommandLine', 'ProcessTableId', 'SID', 'Username', 'Domain',
-               'ExitCode', 'CreateTime']
-    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process, headers=headers,
+    context = createContext(raw_response, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.ProcessChildren(val.id === obj.id)': context}
+    headers = ['pid', 'processTableId', 'parentProcessTableId', "processPath"]
+    human_readable = tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
 def get_events_by_process(client, data_args):
-    limit = int(data_args.get('limit'))
-    offset = int(data_args.get('offset'))
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
+    cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processevents/{ptid}',
+    event_type = data_args.get('type').lower()
+    raw_response = client.do_request('GET',
+                                     f'plugin/products/threat-response/api/v1/conns/{cid}/processevents/{ptid}/{event_type}',
                                      params={'limit': limit, 'offset': offset})
 
-    events = []
-    for item in raw_response:
-        event = get_process_event_item(item)
-        events.append(event)
-
-    context = createContext(events, removeNull=True)
-    outputs = {'Tanium.ProcessEvent(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Detail', 'Type', 'Timestamp', 'Operation']
-    human_readable = tableToMarkdown(f'Events for process {ptid}', events, headers=headers,
+    context = createContext(raw_response, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.ProcessEvent(val.id && val.id === obj.id)': context}
+    headers = ['id', 'detail', 'type', 'timestamp', 'operation']
+    human_readable = tableToMarkdown(f'Events for process {ptid}', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1358,63 +1345,23 @@ def get_parent_process(client, data_args):
 
 
 def get_parent_process_tree(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
-    ptid = data_args.get('ptid')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesstrees/{ptid}')
-
-    if not raw_response:
-        raise ValueError('Failed to parse tanium-tr-get-parent-process-tree response.')
-
-    tree, readable_output = get_process_tree_item(raw_response[0], 0)
-
-    children_item = readable_output.get('Children')
-
-    headers = ['ID', 'Name', 'PID', 'PTID', 'Parent', 'Children', 'ChildrenCount']
-    if children_item:
-        process_tree = readable_output.copy()
-        del process_tree['Children']
-        headers = ['ID', 'Name', 'PID', 'PTID', 'Parent', 'Children', 'ChildrenCount']
-
-        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree, headers=headers,
-                                         headerTransform=pascalToSpace, removeNull=True)
-        human_readable += tableToMarkdown('Processes with the same parent', children_item, headers=headers,
-                                          headerTransform=pascalToSpace, removeNull=True)
-    else:
-        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', readable_output, headers=headers,
-                                         headerTransform=pascalToSpace, removeNull=True)
-
-    context = createContext(tree, removeNull=True)
-    outputs = {'Tanium.ParentProcessTree(val.ID && val.ID === obj.ID)': context}
-
-    return human_readable, outputs, raw_response
+    pass
 
 
 def get_process_tree(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+    cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processtrees/{ptid}')
+    raw_response = client.do_request('GET', f'plugin/products/threat-response/api/v1/conns/{cid}/processtrees/{ptid}')
 
-    if not raw_response:
-        raise ValueError('Failed to parse tanium-tr-get-process-tree response.')
+    headers = ['id', 'pid', 'processTableId', 'parentProcessTableId']
 
-    tree, readable_output = get_process_tree_item(raw_response[0], 0)
-    headers = ['ID', 'Name', 'PID', 'PTID', 'Parent', 'Children', 'ChildrenCount']
+    context = createContext(raw_response, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
 
-    children_item = readable_output.get('Children')
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', context,
+                                     headers=headers, headerTransform=pascalToSpace, removeNull=True)
 
-    if children_item:
-        process_tree = readable_output.copy()
-        del process_tree['Children']
-        human_readable = tableToMarkdown(f'Process information for process with PTID {ptid}', process_tree,
-                                         headers=headers, headerTransform=pascalToSpace, removeNull=True)
-        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item,
-                                          headers=headers, headerTransform=pascalToSpace, removeNull=True)
-    else:
-        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', readable_output,
-                                         headers=headers, headerTransform=pascalToSpace, removeNull=True)
-
-    context = createContext(tree, removeNull=True)
-    outputs = {'Tanium.ProcessTree(val.ID && val.ID === obj.ID)': context}
+    outputs = {'Tanium.ProcessTree(val.id && val.id === obj.id)': context}
 
     return human_readable, outputs, raw_response
 
@@ -1458,17 +1405,21 @@ def event_evidence_get_properties(client, data_args):
 
 
 def get_evidence(client, data_args):
-    evidence_id = data_args.get('evidence-id')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/evidence/{evidence_id}')
-    if not raw_response:
-        raise DemistoException(f'Evidence {evidence_id} was not found.')
+    evidence_id = data_args.get('evidence_id')
+    raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/event-evidence/{evidence_id}')
 
-    evidence = {}
-    context = createContext(evidence, removeNull=True)
-    outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Timestamp', 'Host', 'User', 'Summary', 'ConntectionID', 'Type', 'CreatedAt', 'UpdatedAt',
-               'ProcessTableId', 'Comments', 'Tags']
-    human_readable = tableToMarkdown('Label information', evidence, headers=headers,
+    evidence = raw_response.get('evidence')
+    data = evidence.get('data')
+    context = copy.deepcopy(evidence)
+    context.update(data)
+    if data:
+        del context['data']
+
+    context = createContext(context, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
+    headers = ['uuid', 'timestamp', 'hostname', 'username', 'summary', 'evidenceType', 'created',
+               'processTableId']
+    human_readable = tableToMarkdown('Evidence information', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
