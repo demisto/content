@@ -15,7 +15,6 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             url_suffix='/get/report',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
             params={'apikey': self.token, 'format': 'pdf', 'hash': file_hash},
             resp_type='response',
             ok_codes=(200, 404),
@@ -59,13 +58,7 @@ def wildfire_get_report_command(client, args):
 
     """
     command_results_list = []
-
-    if 'sha256' in args:
-        sha256 = args.get('sha256')
-    elif 'hash' in args:
-        sha256 = args.get('hash')
-    else:
-        sha256 = None
+    sha256 = args.get('sha256')
     md5 = args.get('md5')
     inputs = hash_args_handler(sha256, md5)
 
