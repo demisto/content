@@ -486,7 +486,7 @@ def update_case_command(client: Client, args: dict):
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
-        raise Exception(f'Could not find case ID {case_id}.')
+        raise DemistoException(f'Could not find case ID {case_id}.')
     del args['id']
     for k, v in args.items():
         v = v.split(",") if k in ['tags'] and "," in v else v
@@ -768,7 +768,7 @@ def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
     case = client.get_case(case_id)
     if not case:
-        return_error(f"No case found with id: {case_id}.")
+        raise DemistoException(f"No case found with id: {case_id}.")
     observables = case['observables']
     if observables:
         read = tableToMarkdown(f"Observables for Case {case_id}:", observables,
