@@ -131,11 +131,11 @@ def test_params_to_filter(severity, resolution_status, expected):
 @pytest.mark.parametrize(
     "incidents,last_run, expected_last_run, expected_incidents",
     [
-        ({}, {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}},
-         {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}}, []),
+        ({}, {'last_fetch': '1615228302580', 'fetched_ids_dict': {'1615228302580': ['id2']}},
+         {'last_fetch': '1615228302580', 'fetched_ids_dict': {'1615228302580': ['id2']}}, []),
         (get_fetch_data()["alerts_response_data"],
-         {'last_fetch': 1615228302580, 'fetched_ids_dict': {1615228302580: ['id2']}},
-         {'last_fetch': 1615228302080, 'fetched_ids_dict': {1615228302580: ['id2'], 1615228302080: ('id1',)}},
+         {'last_fetch': '1615228302580', 'fetched_ids_dict': {'1615228302580': ['id2']}},
+         {'last_fetch': '1615228302080', 'fetched_ids_dict': {'1615228302580': ['id2'], '1615228302080': ('id1',)}},
          [{'name': 'Impossible travel activity',
            'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
            'rawJSON':
@@ -146,7 +146,7 @@ def test_params_to_filter(severity, resolution_status, expected):
                ' "service": [{"id": 1, "type": "service", "label": "Microsoft Exchange Online"}]}'
            }]),
         (get_fetch_data()["alerts_response_data"], {},
-         {'last_fetch': 1615228302080, 'fetched_ids_dict': {1615228302080: ('id1',)}},
+         {'last_fetch': '1615228302080', 'fetched_ids_dict': {'1615228302080': ('id1',)}},
          [{'name': 'Impossible travel activity',
            'occurred': datetime.fromtimestamp(1615228302).isoformat() + 'Z',
            'rawJSON': '{"_id": "id1",'
