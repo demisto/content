@@ -1,23 +1,4 @@
 """HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
-
-This feed integration is a good example on you can build a Cortex XSOAR feed
-using Python 3. Please follow the documentation links below and make sure that
-your feed integration follows the Code Conventions and required parameters, and passes the Linting phase.
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Feed Required Parameters: https://xsoar.pan.dev/docs/integrations/feeds#required-parameters
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-
-The API
---------------
-
-For this template, the feed used as API is OpenPhish, supplying a feed of URLs.
-This API's output is of type freetext, and the suitable handling for this type can be seen in the function
-'fetch_indicators'. Other APIs may have different formats, so when using this template for other feed APIs
-make sure you handle the output properly according to its format.
-
 """
 
 from typing import Dict, List, Optional
@@ -30,6 +11,10 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
+
+''' CONSTANTS '''
+
+
 BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
 
 MAP_TAG_CLASS = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
@@ -37,6 +22,9 @@ MAP_TAG_CLASS = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
                  'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
                  'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN
                  }
+
+
+''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
@@ -88,6 +76,55 @@ class Client(BaseClient):
         return result
 
 
+''' HELPER FUNCTIONS '''
+
+
+def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[str]:
+    """
+    Returns the tag class as demisto indicator type.
+    Args:
+        tag_class: tag class name
+        source: tag source
+
+    Returns:
+        The tag class as demisto indicator type, None if class is not specified.
+    """
+
+    if not tag_class:
+        return None
+    if (tag_class != 'malicious_behavior') or (tag_class == 'malicious_behavior' and source == 'Unit 42'):
+        return MAP_TAG_CLASS.get(tag_class)
+    return None
+
+
+def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Returns the indicator fields
+    Args:
+        tag_details:
+
+    Returns:
+
+    """
+    fields: Dict[str, Any] = {}
+    refs = tag_details.get('refs')
+    fields['Publications.Link'] = refs.get('url')
+    fields['Publications.Source'] = refs.get('source')
+    fields['Publications.Timestamp'] = refs.get('created')
+    fields['Aliases'] = tag_details.get('aliases')
+    fields['Description'] = tag_details.get('description')
+    # TODO new field
+    fields['Last Seen'] = tag_details.get('lasthit')
+    fields['Updated Date'] = tag_details.get('updated_at')
+    fields['Threat Types.Threat Category'] = tag_details.get('tag_groups')
+    # TODO new field
+    fields['Source'] = tag_details.get('source')
+    return fields
+
+
+''' COMMAND FUNCTIONS '''
+
+
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -117,9 +154,13 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         iterator = iterator[:limit]
 
     # extract values from iterator
-    for item in iterator:
-        value_ = item.get('value')
-        type_ = item.get('type')
+    for tag_details in iterator:
+        value_ = tag_details.get('public_tag_name')
+        tag_class = tag_details.get('tag_class')
+        source = tag_details.get('source')
+        type_ = get_tag_class(tag_class, source)
+        if not type_:
+            continue
         raw_data = {
             'value': value_,
             'type': type_,
@@ -127,21 +168,13 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
-        for key, value in item.items():
+        for key, value in tag_details.items():
             raw_data.update({key: value})
         indicator_obj = {
-            # The indicator value.
             'value': value_,
-            # The indicator type as defined in Cortex XSOAR.
-            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
             'type': type_,
-            # The name of the service supplying this feed.
-            'service': 'HelloWorld',
-            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
-            # One can use this section in order to map custom indicator fields previously defined
-            # in Cortex XSOAR to their values.
-            'fields': {},
-            # A dictionary of the raw data returned from the feed source about the indicator.
+            'service': 'AutoFocus',
+            'fields': get_fields(tag_details),
             'rawJSON': raw_data
         }
 
@@ -172,7 +205,7 @@ def get_indicators_command(client: Client,
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
-    human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators,
+    human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators,
                                      headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
@@ -197,6 +230,9 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     return indicators
 
 
+''' MAIN FUNCTION '''
+
+
 def main():
     """
     main function, parses params and runs command functions
@@ -204,31 +240,18 @@ def main():
 
     params = demisto.params()
 
-    # Get the service API url
-    base_url = params.get('url')
-
-    # If your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     insecure = not params.get('insecure', False)
-
-    # If your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
+    api_key = params.get('api_key', '')
 
     command = demisto.command()
     args = demisto.args()
 
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
     demisto.debug(f'Command being called is {command}')
 
     try:
         client = Client(
-            base_url=base_url,
+            api_key=api_key,
             verify=insecure,
             proxy=proxy,
         )
@@ -237,7 +260,7 @@ def main():
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'helloworld-get-indicators':
+        elif command == 'autofocus-tags-feed-get-indicators':
             # This is the command that fetches a limited number of indicators from the feed source
             # and displays them in the war room.
             return_results(get_indicators_command(client, params, args))
