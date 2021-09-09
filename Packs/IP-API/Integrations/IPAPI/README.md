@@ -71,7 +71,7 @@ Return IP information
 
 
 #### Command Example
-``` ```
+```!ip ip=8.8.8.8```
 
 #### Human Readable Output
 
