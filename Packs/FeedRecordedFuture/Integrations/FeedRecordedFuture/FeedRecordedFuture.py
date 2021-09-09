@@ -331,7 +331,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
     Returns:
         list. List of indicators from the feed
     """
-
+    # indicators_value_set: Set[str] = set()
     for service in client.services:
         client.build_iterator(service, indicator_type)
         feed_batches = client.get_batches_from_file(limit)
@@ -340,6 +340,9 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             for item in feed_dicts:
                 raw_json = dict(item)
                 raw_json['value'] = value = item.get('Name')
+                # if value in indicators_value_set:
+                #     continue
+                # indicators_value_set.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
                 risk = item.get('Risk')
