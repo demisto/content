@@ -1,6 +1,7 @@
-id: playbook-MISPfeed-test
-version: -1
-name: playbook-MISPfeed-test
+id: MISPfeed Test
+version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: MISPfeed Test
 starttaskid: "0"
 tasks:
   "0":
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -81,7 +81,7 @@ tasks:
       brand: MISP Feed
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       attribute_type:
         simple: ip-src
@@ -104,29 +104,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 85c596c5-4c6a-46b3-8244-89e89fee1620
-    type: condition
+  "5":
+    id: "5"
+    taskid: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
+    type: title
     task:
-      id: 85c596c5-4c6a-46b3-8244-89e89fee1620
+      id: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
       version: -1
-      name: Verify Outputs
-      type: condition
+      name: Test Done
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "5"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: MISPFeed.Indicators
-            iscontext: true
     view: |-
       {
         "position": {
@@ -141,39 +130,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
-    type: title
-    task:
-      id: d880ddb0-b0d2-4c5b-8d39-76bbaaa8f1d8
-      version: -1
-      name: Test Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 560,
         "width": 380,
         "x": 50,
         "y": 50

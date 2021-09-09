@@ -117,7 +117,7 @@ class Client(BaseClient):
         Returns: bytes representing the response from MISP API
         """
         headers = {
-            'Authorization': demisto.params().get('apikey'),
+            'Authorization': demisto.get(demisto.params(), 'credentials.password'),
             "Accept": "application/json",
             'Content-Type': 'application/json'
         }
@@ -211,7 +211,7 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, A
         },
         'tags': {
             'OR': tags if tags else [],
-        }
+        },
     }
     return params
 
@@ -272,7 +272,7 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[s
         'type': type_,
         'service': 'MISP',
         'fields': {},
-        'rawJSON': raw_data
+        'rawJSON': raw_data,
     }
     return indicator_obj
 
@@ -517,5 +517,5 @@ def main():
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
     main()

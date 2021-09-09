@@ -1,9 +1,9 @@
 Indicators feed from MISP
-This integration was integrated and tested with version 1.0 of MISPFeed
-## Configure MISPFeed on Cortex XSOAR
+This integration was integrated and tested with version 1.0 of MISP Feed
+## Configure MISP Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MISPFeed.
+2. Search for MISP Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
