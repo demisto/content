@@ -2457,7 +2457,6 @@ class Pack(object):
                 else:
                     changelog[changelog_entry].pop('breakingChangesNotes', None)
             else:
-                logging.info('Version no BC!')
                 changelog[changelog_entry].pop('breakingChanges', None)
             predecessor_version = rn_loose_version
 
