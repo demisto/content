@@ -792,10 +792,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether return an error when trying to isolate a disconnected endpoint.
+      description: Whether to return an error when trying to isolate a disconnected endpoint.
         When sets to false, a warnning will be returned.
       isArray: false
-      name: disconnected_endpoint_should_return_error
+      name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
       - 'false'
@@ -820,10 +820,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether return an error when trying to unisolate a disconnected
+      description: Whether to return an error when trying to unisolate a disconnected
         endpoint. When sets to false, a warnning will be returned.
       isArray: false
-      name: disconnected_endpoint_should_return_error
+      name: suppress_disconnected_endpoint_error
       predefined:
       - 'true'
       - 'false'
