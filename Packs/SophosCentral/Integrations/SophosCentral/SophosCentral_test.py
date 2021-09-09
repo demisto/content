@@ -131,27 +131,6 @@ def test_sophos_central_alert_get_command_exception() -> None:
     assert result.readable_output == f"Unable to find the following alert: {alert_id}"
 
 
-def test_sophos_central_alert_get_command_exception() -> None:
-    """
-    Scenario: Exception raised while getting a single alert.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - sophos_central_alert_get is called.
-    Then:
-     - Ensure that the valid result is returned when any exception is raised.
-    """
-    from SophosCentral import sophos_central_alert_get_command
-
-    alert_id = "56931431-9faf-480c-ba1d-8d7541eae259"
-    client = mock.Mock()
-    client.get_alert.side_effect = DemistoException("Demisto Exception")
-
-    result = sophos_central_alert_get_command(client, {"alert_id": alert_id})
-    assert result.readable_output == f"Unable to find the following alert: {alert_id}"
-
-
 def test_sophos_central_alert_action_command(requests_mock) -> None:
     """
     Scenario: Take an action against one or more alerts.
@@ -546,7 +525,7 @@ def test_sophos_central_blocked_item_list_command(requests_mock) -> None:
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from SophosCentral import Client, sophos_central_blocked_item_list_command
+    from SophosCentral import sophos_central_blocked_item_list_command
 
     mock_response = load_mock_response("blocked_item_list.json")
     requests_mock.get(
@@ -626,7 +605,7 @@ def test_sophos_central_blocked_item_add_command(requests_mock) -> None:
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from SophosCentral import Client, sophos_central_blocked_item_add_command
+    from SophosCentral import sophos_central_blocked_item_add_command
 
     mock_response = load_mock_response("blocked_item_single.json")
     requests_mock.post(
@@ -1555,7 +1534,7 @@ def test_test_module(requests_mock) -> None:
     Then:
      - Ensure the returns value is correct.
     """
-    from SophosCentral import Client, test_module
+    from SophosCentral import test_module
 
     mock_response = load_mock_response("alert_list.json")
     requests_mock.get(f"{BASE_URL}/common/v1/alerts", json=mock_response)
@@ -2026,7 +2005,7 @@ def test_get_client_data_case3(requests_mock, creds_type) -> None:
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
     # mock search tenant response
-    mock_client_data = load_mock_response(f"tenant_search.json")
+    mock_client_data = load_mock_response("tenant_search.json")
     requests_mock.get(
         f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data
     )
@@ -2086,7 +2065,10 @@ def test_get_client_data_case4(requests_mock, creds_type) -> None:
         f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", status_code=404
     )
 
-    error_msg = f"Value provided in tenant ID is not from managed tenants of configured {creds_type} whose credentials are entered"
+    error_msg = (
+        f"Value provided in tenant ID is not from managed tenants of "
+        f"configured {creds_type} whose credentials are entered"
+    )
     with raises(DemistoException, match=error_msg):
         Client.get_client_data(tenant_id=tenant_id, bearer_token="dummy-bearer-token")
 
@@ -2166,7 +2148,7 @@ def test_get_client_data_case6(requests_mock) -> None:
     tenant_id = ""
 
     # mock whoami response
-    mock_client_data = load_mock_response(f"whoami_tenant.json")
+    mock_client_data = load_mock_response("whoami_tenant.json")
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
     headers, base_url = Client.get_client_data(
@@ -2227,7 +2209,7 @@ def test_get_client_data_case7(requests_mock, creds_type) -> None:
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
     # mock search tenant response
-    mock_client_data = load_mock_response(f"tenant_search.json")
+    mock_client_data = load_mock_response("tenant_search.json")
     requests_mock.get(
         f"{COMMON_BASE_URL}/{creds_type}/v1/tenants/{tenant_id}", json=mock_client_data
     )
@@ -2286,7 +2268,7 @@ def test_get_client_data_case8(requests_mock) -> None:
     tenant_id = ""
 
     # mock whoami response
-    mock_client_data = load_mock_response(f"whoami_tenant.json")
+    mock_client_data = load_mock_response("whoami_tenant.json")
     requests_mock.get(f"{COMMON_BASE_URL}/whoami/v1", json=mock_client_data)
 
     headers, base_url = Client.get_client_data(
@@ -2455,7 +2437,7 @@ def test_cache_with_tenant_level_creds(requests_mock):
 
     # mock whoami response
     requests_mock.get(
-        f"{COMMON_BASE_URL}/whoami/v1", json=load_mock_response(f"whoami_tenant.json")
+        f"{COMMON_BASE_URL}/whoami/v1", json=load_mock_response("whoami_tenant.json")
     )
 
     Client.get_client_data("", "dummy-token")
@@ -2552,7 +2534,7 @@ def test_deisolate_endpoint_command(requests_mock) -> None:
      - Ensure the request body is correct.
      - Ensure the response is correct in case of success.
     """
-    from SophosCentral import Client, sophos_central_deisolate_endpoint_command
+    from SophosCentral import sophos_central_deisolate_endpoint_command
 
     endpoint_id = "25de27bc-b07a-4728-b7b2-a021365ebbcd"
     mock_response = load_mock_response("deisolate_endpoint.json")
@@ -2584,7 +2566,7 @@ def test_deisolate_endpoint_command_exception(requests_mock) -> None:
      - Ensure the request body is correct.
      - Ensure the response is correct in case of failure.
     """
-    from SophosCentral import Client, sophos_central_deisolate_endpoint_command
+    from SophosCentral import sophos_central_deisolate_endpoint_command
 
     endpoint_id = "25de27bc-b07a-4728-b7b2-a021365ebbcd"
     mock_response = load_mock_response("isolate_endpoint.json")

@@ -124,18 +124,13 @@ class Client(BaseClient):
             response = requests.get(f"{COMMON_BASE_URL}/{url_suffix}", headers=headers)
 
             if response.status_code == 200:
-                response = response.json()
-                return response.get("apiHost", "")
+                return response.json().get("apiHost", "")
             elif response.status_code == 404:
                 return ""
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
             raise DemistoException(
                 f"An HTTP error occurred while validating the given tenant ID: {str(err)}"
-            )
-        except requests.exceptions.ConnectionError as err:
-            raise DemistoException(
-                f"Connection error occurred while validating the given tenant ID: {str(err)}"
             )
         except requests.exceptions.SSLError as err:
             raise DemistoException(f"SSL Certificate Verification Failed: {str(err)}")
@@ -145,6 +140,10 @@ class Client(BaseClient):
                 " selected, try clearing the checkbox."
             )
             raise DemistoException(err_msg, err)
+        except requests.exceptions.ConnectionError as err:
+            raise DemistoException(
+                f"Connection error occurred while validating the given tenant ID: {str(err)}"
+            )
         except requests.exceptions.Timeout as err:
             raise DemistoException(
                 f"Request timed out while validating the given tenant ID: {str(err)}"
@@ -157,6 +156,7 @@ class Client(BaseClient):
             raise DemistoException(
                 f"An error occurred while processing the API response: {str(err)}"
             )
+        return ""
 
     @staticmethod
     def _update_integration_context(new_context: dict):
@@ -204,7 +204,7 @@ class Client(BaseClient):
             whoami = Client._whoami(bearer_token)
             creds_type, entity_id, base_url = (
                 str(whoami.get("idType")).lower(),
-                whoami.get("id"),
+                whoami.get("id", ""),
                 whoami.get("apiHosts", {}).get("dataRegion"),
             )
             # if tenant ID is provided even with tenant level credentials and it's different from
