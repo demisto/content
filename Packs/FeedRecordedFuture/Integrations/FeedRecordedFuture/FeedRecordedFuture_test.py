@@ -143,11 +143,9 @@ def test_fetch_indicators_command(mocker):
     indicator_type = 'ip'
     client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
-    with open('test_data/response.txt', 'r') as f:
-        dict_reader_generator = DictReaderGenerator(DictReader(f))
     mocker.patch(
         'FeedRecordedFuture.Client.get_batches_from_file',
-        return_value=dict_reader_generator
+        return_value=DictReaderGenerator(DictReader(open('test_data/response.txt')))
     )
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
