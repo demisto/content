@@ -1002,6 +1002,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
         collect_tests_and_content_packs._FAILED = False
 
 
+@pytest.mark.skip(reason='Issue 41189. Will be fixed.')
 def test_pack_ignore_test_is_skipped(mocker):
     """
     Given
