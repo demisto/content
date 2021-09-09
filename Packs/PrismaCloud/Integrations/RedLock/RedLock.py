@@ -542,7 +542,9 @@ def fetch_incidents():
     if demisto.getParam('policySeverity'):
         payload['filters'].append({'name': 'policy.severity', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policySeverity')})
-
+    if demisto.getParam('policyName'):
+        payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
