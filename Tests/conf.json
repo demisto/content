@@ -3407,7 +3407,8 @@
         },
         {
             "integrations": "HPEArubaClearPass",
-            "playbookID": "HPEArubaClearPass_TestPlaybook"
+            "playbookID": "HPEArubaClearPass_TestPlaybook",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -4520,7 +4521,7 @@
         }
     ],
     "skipped_tests": {
-        "MISP V2 Test" : "The integration is deprecated as we released MISP V3",
+        "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -4614,13 +4615,14 @@
         "Microsoft Teams Management - Test": "Issue 33410",
         "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "Cisco Umbrella Test": "Issue 24338",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
-        "HybridAnalysis-Test": "Issue 26599"
+        "HybridAnalysis-Test": "Issue 26599",
+        "Infoblox Test": "Issue 25651",
+        "Carbon Black Edr - Test": "Issue 40132"
     },
     "skipped_integrations": {
         
