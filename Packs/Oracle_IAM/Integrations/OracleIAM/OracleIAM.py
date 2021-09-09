@@ -62,10 +62,7 @@ class Client(BaseClient):
             'scope': 'urn:opc:idm:__myscopes__',
         }
 
-        try:
-            token = self._http_request('POST', url_suffix='/oauth2/v1/token', headers=headers, data=data)
-        except DemistoException as e:
-            return e
+        token = self._http_request('POST', url_suffix='/oauth2/v1/token', headers=headers, data=data)
         return token.get('access_token')
 
     def test(self):
@@ -551,7 +548,7 @@ def update_group_command(client, args):
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
 
-    if member_ids_to_add == member_ids_to_delete is None:
+    if member_ids_to_add is member_ids_to_delete is None:
         raise Exception('You must supply either "memberIdsToAdd" or "memberIdsToDelete" in the scim data')
 
     operations = []
@@ -667,8 +664,8 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = params['url'].strip('/')
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+    client_id = params.get('credentials').get('identifier')
+    client_secret = params.get('credentials').get('password')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)

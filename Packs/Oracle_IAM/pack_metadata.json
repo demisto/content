@@ -1,6 +1,6 @@
 {
-    "name": "OracleIAM",
-    "description": "OracleIAM",
+    "name": "Oracle IAM",
+    "description": "Oracle IAM",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
