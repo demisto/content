@@ -26,7 +26,8 @@ This integration was integrated and tested with Recorded Future Feed
     | Malicious Threshold | The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
+## Important
+It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.
 ## Notes
 The feed size can be change according to the chosen indicator type:
 - IP - As of September 24, 2020, this risk list includes over 5.9k records.

@@ -1,3 +1,5 @@
+## Important
+It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.
 ## Recorded Future Feed
 This integration downloads from Recorded Future a list of IP addresses, domains, URLs, or file hashes with known risk associations.
 The risk list includes risk scores and supporting evidence details.
