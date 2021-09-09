@@ -78,8 +78,7 @@ def fetch_indicators_command(
 
     # add filter for indicator types by default
     # filter_args = {"type": "indicator"}
-    filter_args = {"type": "report"}
-    # filter_args = {}
+    filter_args = {}
 
     if client.collection_to_fetch is None:
         # fetch all collections
