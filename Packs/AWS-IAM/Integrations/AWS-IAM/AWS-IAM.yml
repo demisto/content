@@ -74,7 +74,7 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services Identity and Access Management (IAM)
-display: AWS - Identity Access Management
+display: AWS - Identity and Access Management
 name: AWS - IAM
 script:
   commands:

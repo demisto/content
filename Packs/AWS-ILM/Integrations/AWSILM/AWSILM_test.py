@@ -326,7 +326,7 @@ class TestGetGroupCommand:
     """
     Given:
         - An app client object
-        - A scim argument that contains an ID of a group
+        - A scim argument that contains a displayName of a group
     When:
         - The group exists in the application
         - Calling the main function with 'iam-get-group' command
