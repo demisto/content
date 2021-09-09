@@ -812,9 +812,9 @@ def main() -> None:
         # get the current timestamp as milliseconds.
         timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
         # generate the auth key:
-        auth_key = f'{apikey}{nonce}{timestamp}'
+        auth_key = f'{apikey}{nonce}{timestamp}'.encode("utf-8")
         # convert to bytes object and calculate sha256
-        api_key_hash = hashlib.sha256(auth_key.encode("utf-8")).hexdigest()
+        api_key_hash = hashlib.sha256(auth_key).hexdigest()
 
         # generate HTTP call headers
         headers = {
