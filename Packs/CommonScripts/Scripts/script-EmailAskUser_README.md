@@ -93,4 +93,4 @@ Requires an instance of one of the available email integrations.
 
 ## Troubleshooting
 ---
-1. In case the incident, in which the automation script runs in, has permissions limited to it (e.g. has certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.
+In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.
