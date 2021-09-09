@@ -2324,6 +2324,35 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
+def test_get_original_alerts_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Alert IDs
+    When
+        - Running get_original_alerts_command command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import get_original_alerts_command, Client
+    api_response = load_test_data('./test_data/get_original_alerts_results.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_id_list': '2',
+    }
+
+    response = get_original_alerts_command(client, args)
+    event = response.outputs[0].get('raw_abioc',{}).get('event', {})
+    assert event.get('_time') == 'DATE'  # assert general filter is correct
+    assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
+    assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+    assert '| 0 | 0 | 333 | 3 - Persistence | 3 | 3.3 - Create Account:' in response.readable_output
+
+
 def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
