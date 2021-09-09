@@ -1500,7 +1500,6 @@ def long_running_execution_command(client: Client, params: Dict):
         try:
             is_reset_triggered(handle_reset=True)
             ctx = get_integration_context()
-            print_debug_msg(f'LONG: ctx = {ctx}')
             print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
             incidents, new_highest_id = get_incidents_long_running_execution(
                 client=client,
@@ -2813,7 +2812,6 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
     ctx = get_integration_context()
-    print_debug_msg(f'MIRROR: ctx = {ctx}')
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = json.loads(ctx.get(LAST_FETCH_KEY, '0'))
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
