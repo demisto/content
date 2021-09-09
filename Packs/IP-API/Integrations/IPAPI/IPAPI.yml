@@ -30,14 +30,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d86a16d8-549f-4283-83f4-fcc03351d069
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: |
   This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
 
@@ -51,6 +43,7 @@ script:
       description: List of IPs.
       isArray: true
       name: ip
+      required: true
     description: Return IP information
     name: ip
     outputs:
@@ -135,8 +128,11 @@ script:
     - contextPath: IP-API.regionName
       description: regionName
       type: string
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
