@@ -613,7 +613,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[
         return parse_date_to_timestamp(first_fetch)
     else:
         fetch_delta_time_milliseconds = fetch_delta_time * 60 * 1000
-        return arg_to_number(last_fetch) - fetch_delta_time_milliseconds
+        return int(last_fetch) - fetch_delta_time_milliseconds
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -660,8 +660,9 @@ def get_fetched_ids(fetched_ids_dict: Dict, start_timestamp: int) -> Tuple[Dict,
         List of unique fetched ids.
 
     """
+    # remove older entries from fetched_ids_dict.
     new_fetched_ids_dict = {timestamp: ids_list for timestamp, ids_list in fetched_ids_dict.items()
-                            if (arg_to_number(timestamp) // 1000) >= (start_timestamp // 1000)}  # remove older entries from the dict.
+                            if (int(timestamp) // 1000) >= (start_timestamp // 1000)}
     fetched_ids = itertools.chain(*new_fetched_ids_dict.values())  # chain all relevant ids to a single set.
     return new_fetched_ids_dict, list(fetched_ids)
 
