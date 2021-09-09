@@ -1,0 +1,13 @@
+### Alerts from Flashpoint collected sources.
+|FPID|Keyword Text|Site Title|Created Date (UTC)|Last Observed Date (UTC)|
+|---|---|---|---|---|
+| fa952cac-8432-5876-85d3-a928e9546d3d | "user manager" | 4chan | Jun 15, 2021  23:44 | Jun 19, 2021  04:50 |
+### Alerts with data exposures.
+|FPID|Keyword Text|File|Owner|Repo|Source|
+|---|---|---|---|---|---|
+| 479091c7-0e3c-5e93-883a-95aff86f646d | "onelogin" | src/main/resources/onelogin.sdk.properties | onelogin | onelogin-java-sdk | github |
+To retrieve the next set of result use,
+scroll_id = f97c16ab5408f3bb7df60e58c5b24a57$1623810166.258678
+since = 2021-06-16T02:22:14Z
+size = 1
+until = 2021-06-16T02:45:00Z

@@ -1,0 +1,6 @@
+#### Total number of records found: 1302
+
+### Compromised Credential(s)
+|FPID|Email|Breach Source|Breach Source Type|Password|Created Date (UTC)|First Observed Date (UTC)|
+|---|---|---|---|---|---|---|
+| YOBETNFzX0Ohjiq0xi_2Eg | jaka789@example.com | Analyst Research | Analyst Research | yellow246 | Nov 21, 2019  12:43 | Nov 25, 2019  16:55 |
