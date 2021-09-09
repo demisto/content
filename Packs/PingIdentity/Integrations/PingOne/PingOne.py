@@ -407,7 +407,7 @@ def add_user_to_group_command(client, args):
         group_id = client.get_group_id(args.get('groupName'))
 
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
+    readable_output = f"User: {user_id} added to group: {raw_response.get('name')} successfully"
     return (
         readable_output,
         {},
