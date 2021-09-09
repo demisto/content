@@ -3538,7 +3538,8 @@
         },
         {
             "integrations": "TheHive Project",
-            "playbookID": "Playbook_TheHiveProject_Test"
+            "playbookID": "Playbook_TheHiveProject_Test",
+            "fromversion": "6.0.0",
         },
         {
             "integrations": [
