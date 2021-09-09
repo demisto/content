@@ -137,10 +137,6 @@
     "userPrincipalName": {
      "complex": null,
      "simple": "username"
-    },
-    "ou":{
-     "complex": null,
-     "simple": ""
     }
    }
   },
@@ -272,10 +268,6 @@
     "manageremail": {
      "complex": null,
      "simple": "manageremail"
-    },
-    "ou":{
-     "complex": null,
-     "simple": ""
     }
    }
   }
