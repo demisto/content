@@ -31,13 +31,25 @@ class Client(BaseClient):
             'status.statusReason'
         }
 
-    def get_pools(self):
+    def get_pools(self, expand_collection=False):
 
-        url_suffix = 'ltm/pool'
+        url_suffix = f'ltm/pool?expandSubcollections={str(expand_collection).lower()}&' \
+                     f'$select=membersReference,name,partition,monitor&$filter=partition eq {self.partition}'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
-
-        return response.get('items')
+        if str(expand_collection).lower() == 'true':
+            pools = []
+            for x in response.get('items'):
+                if 'items' in x['membersReference']:
+                    pools.append({
+                        'name': x['name'],
+                        'partition': x['partition'],
+                        'monitor': x['monitor'],
+                        'members': x['membersReference']['items']
+                    })
+        else:
+            pools = response.get('items')
+        return pools
 
     def get_pool(self, pool):
         url_suffix = f'ltm/pool/~{self.partition}~{pool}'
@@ -55,11 +67,9 @@ class Client(BaseClient):
         }
 
     def get_nodes(self):
-
-        url_suffix = 'ltm/node'
+        url_suffix = 'ltm/node?$select=name,partition,address,ration,session,state'
         response = self._http_request(method='GET', url_suffix=url_suffix,
                                       headers=self.headers, params={})
-
         return response.get('items')
 
     def get_node(self, node):
@@ -143,8 +153,9 @@ def test_module(client: Client):
     return 'ok'
 
 
-def ltm_get_pools_command(client) -> CommandResults:
-    results = client.get_pools()
+def ltm_get_pools_command(client, args) -> CommandResults:
+    expand = args.get('expand')
+    results = client.get_pools(expand)
 
     return CommandResults(
         outputs_prefix='F5.LTM.Pools',
@@ -239,6 +250,41 @@ def ltm_get_node_stats_command(client, args) -> CommandResults:
     )
 
 
+def ltm_get_node_by_address_command(client, args) -> CommandResults:
+    ip_address = args.get('address')
+    node = None
+    results = client.get_nodes()
+    for x in results:
+        if x['address'] == ip_address:
+            node = x
+            break
+    return CommandResults(
+        outputs_prefix='F5.LTM.Nodes',
+        outputs_key_field='name',
+        outputs=node,
+    )
+
+
+def ltm_get_pools_by_node_command(client, args) -> CommandResults:
+    node = args.get('node')
+    pools = []
+    results = client.get_pools(expand_collection='true')
+    for x in results:
+        for y in x['members']:
+            if y['name'].split(':')[0] == node:
+                pools.append(x['name'])
+                break
+    node_mapping = {
+        "name": node,
+        "pools": pools
+    }
+    return CommandResults(
+        outputs_prefix='F5.LTM.Nodes',
+        outputs_key_field='name',
+        outputs=node_mapping,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -273,7 +319,7 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'f5-ltm-get-pools':
-            return_results(ltm_get_pools_command(client))
+            return_results(ltm_get_pools_command(client, args))
 
         elif demisto.command() == 'f5-ltm-get-pool':
             return_results(ltm_get_pool_command(client, args))
@@ -298,6 +344,12 @@ def main() -> None:
 
         elif demisto.command() == 'f5-ltm-get-node-stats':
             return_results(ltm_get_node_stats_command(client, args))
+
+        elif demisto.command() == 'f5-ltm-get-node-by-address':
+            return_results(ltm_get_node_by_address_command(client, args))
+
+        elif demisto.command() == 'f5-ltm-get-pool-by-node':
+            return_results(ltm_get_pools_by_node_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
