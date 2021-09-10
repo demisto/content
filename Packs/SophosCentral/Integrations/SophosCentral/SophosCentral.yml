@@ -80,6 +80,12 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  defaultvalue: 'false'
+  hidden: true
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
