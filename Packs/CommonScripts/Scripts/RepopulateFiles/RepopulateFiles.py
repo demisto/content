@@ -104,7 +104,7 @@ def main():
     for file_field in file_fields:
         files = demisto.incident().get(file_field)
         if files is None:
-            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}', [])
+            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}') or []
         if files:
             attachment_ents = [ent for ent in iterate_entries(None, {'categories': ['attachments']})]
             for file in files:
