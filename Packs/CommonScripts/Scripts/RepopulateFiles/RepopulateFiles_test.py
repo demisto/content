@@ -1,3 +1,4 @@
+from RepopulateFiles import main
 
 class TestRepopulateFiles:
 
