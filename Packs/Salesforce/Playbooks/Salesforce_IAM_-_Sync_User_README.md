@@ -1,13 +1,13 @@
-Sync users into Salesforce.
+Based on based on the User Profile's Org Level 1/2/3 fields and other fields, syncs the extended user information, permission sets, permission sets licenses, package licenses and freeze statuses.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* 40102808-670f-4424-81cd-de6437e79e85
-* f548aa32-1aed-4459-8d15-59aafb709788
-* b12324a1-d668-482d-80eb-6c2b31255acf
-* 1b509870-e890-4c31-8bca-d025dfb3730d
+* Salesforce IAM - Post Deprovisioning
+* Salesforce IAM - Freeze Account
+* Salesforce IAM - Unfreeze Account
+* Salesforce IAM - Post Provisioning
 
 ### Integrations
 * Salesforce_IAM
@@ -29,7 +29,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | salesforceInstance | Salesforce app instance name | lists.app-provisioning-settings | Required |
 | ITNotificationEmail | Email to notify about errors in the provisioning process. |  | Required |
-| welcomeEmailBody |  | &lt;p&gt;Hi, <br/>&lt;BR/&gt;&lt;BR/&gt; <br/>Your Salesforce account has been created successfully. Please click on the link below and enter your network credentials to login to Salesforce. <br/>&lt;BR/&gt;&lt;BR/&gt;<br/>https://paloaltonetworks.my.salesforce.com<br/>&lt;BR/&gt;&lt;BR/&gt;<br/>Please feel free to create a ticket with IT Services at https://panservicedesk.service-now.com/services, if you have any questions or issues. <br/>&lt;BR/&gt;&lt;BR/&gt;<br/>Regards,<br/>&lt;BR/&gt;Salesforce Admin Team&lt;BR/&gt; | Optional |
+| welcomeEmailBody |  | Hi, <br/><br/>Your Salesforce account has been created successfully. To login into Salesforce, enter your network credentials. <br/><br/>Please feel free to create a ticket with IT Services if you have any questions or issues. <br/><br/>Regards, <br/>Salesforce Admin Team<br/> | Optional |
 | PreviousRun | Provisioning results from previous run. |  | Optional |
 
 ## Playbook Outputs
@@ -41,4 +41,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Salesforce IAM - Sync User](./../doc_files/Salesforce_IAM_-Sync_User.png)
+![Salesforce IAM - Sync User](./../doc_files/Salesforce_IAM_-_Sync_User.png)

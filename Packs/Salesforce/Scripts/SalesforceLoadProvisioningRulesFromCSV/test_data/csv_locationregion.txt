@@ -1,0 +1,5 @@
+locationRegion,theatre
+Americas,NAM
+Asia Pacific,APAC
+"Europe, Middle East & Africa",EMEA
+Japan,JP

@@ -15,7 +15,7 @@ comment: Reads the *salesforce-provisioning-settings* list and and extends the u
 commonfields:
   id: SalesforceIAMExtendUserProfileData
   version: -1
-dockerimage: demisto/python3:3.7.5.4583
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: SalesforceIAMExtendUserProfileData
 outputs:

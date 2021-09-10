@@ -1,0 +1,14 @@
+{
+    "americas": {
+        "theatre": "NAM"
+    },
+    "asia pacific": {
+        "theatre": "APAC"
+    },
+    "europe, middle east & africa": {
+        "theatre": "EMEA"
+    },
+    "japan": {
+        "theatre": "JP"
+    }
+}

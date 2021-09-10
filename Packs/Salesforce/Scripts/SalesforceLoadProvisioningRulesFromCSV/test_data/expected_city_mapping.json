@@ -1,0 +1,14 @@
+{
+    "santa clara": {
+        "Support_Engineer_Location__c": "Santa Clara",
+        "TimeZoneSidKey": "America/Los_Angeles"
+    },
+    "singapore": {
+        "Support_Engineer_Location__c": "Singapore",
+        "TimeZoneSidKey": "Asia/Singapore"
+    },
+    "tel aviv - yafo": {
+        "Support_Engineer_Location__c": "Israel",
+        "TimeZoneSidKey": "Asia/Jerusalem"
+    }
+}

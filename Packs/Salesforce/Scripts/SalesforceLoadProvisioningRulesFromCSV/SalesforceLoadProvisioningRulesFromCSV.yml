@@ -1,0 +1,34 @@
+args:
+- description: Name of the list where Salesforce CSV Org Unit mapping is stored
+  name: orgunit_mapping_csv_list
+  required: true
+  defaultValue: 'salesforce-csv-orgunit-mapping'
+- description: Name of the list where Salesforce CSV City mapping is stored
+  name: city_mapping_csv_list
+  required: true
+  defaultValue: 'salesforce-csv-city-mapping'
+- description: Name of the list where Salesforce CSV city mapping is stored
+  name: location_region_mapping_csv_list
+  required: true
+  defaultValue: 'salesforce-csv-locationRegion-mapping'
+comment: Given CSV strings read from lists, builds a JSON list named "salesforce-provisioning-settings" 
+  that is used for Salesforce Provisioning process.
+commonfields:
+  id: SalesforceLoadProvisioningRulesFromCSV
+  version: -1
+dependson:
+  must: []
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: SalesforceLoadProvisioningRulesFromCSV
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

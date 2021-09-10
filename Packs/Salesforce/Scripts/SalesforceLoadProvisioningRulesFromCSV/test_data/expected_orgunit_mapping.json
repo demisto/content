@@ -1,0 +1,62 @@
+{
+  "gcs": {
+      "keyFormat": "jobfunction|jobfamily|orglevel1|orglevel2|orglevel3|peoplemanagerflag|directorflag|vpflag|locationregion",
+      "profileMappings": {
+          "professional services function|professional services engineering|services cos|global customer support|professional services & focused services|y|n|n|americas": {
+              "ProfileId": "MOCK_PROFILE_ID_1",
+              "profileDescription": "Support PS Manager",
+              "UserRoleId": "MOCK_USER_ROLE_ID_1",
+              "roleDescription": "Professional Services",
+              "CallCenterId": "",
+              "callCenterDescription": "",
+              "My_Sales_Level__c": "Non-Sales",
+              "UserPermissionsSupportUser": true,
+              "UserPermissionsMobileUser": true,
+              "UserPermissionsSFContentUser": true,
+              "permissionSets": [
+                  "MOCK_PERMISSION_SET_1"
+              ],
+              "permissionSetsNames": [
+                  "Service_Team_Edit_Access"
+              ]
+          },
+          "information technology function|it project management|services cos|global customer support|professional services & focused services|y|y|n|americas": {
+              "ProfileId": "MOCK_PROFILE_ID_2",
+              "profileDescription": "Support PS Manager",
+              "UserRoleId": "MOCK_USER_ROLE_ID_2",
+              "roleDescription": "Professional Services",
+              "CallCenterId": "",
+              "callCenterDescription": "",
+              "My_Sales_Level__c": "Non-Sales",
+              "UserPermissionsSupportUser": false,
+              "UserPermissionsMobileUser": true,
+              "UserPermissionsSFContentUser": true,
+              "permissionSets": "",
+              "permissionSetsNames": ""
+          }
+      }
+  },
+  "field marketing": {
+      "keyFormat": "orglevel1|orglevel2|locationregion",
+      "profileMappings": {}
+  },
+  "marketing": {
+      "keyFormat": "orglevel1|orglevel2",
+      "profileMappings": {}
+  },
+  "legal": {
+      "keyFormat": "jobfunction|jobfamily|orglevel3",
+      "profileMappings": {}
+  },
+  "sales": {
+      "keyFormat": "jobfunction|jobfamily|suporglevel2|suporglevel3",
+      "profileMappings": {}
+  },
+  "orgUnitMapping": {
+      "gcs": "gcs",
+      "field marketing": "field marketing",
+      "marketing": "marketing",
+      "legal": "legal",
+      "sales": "sales"
+  }
+}

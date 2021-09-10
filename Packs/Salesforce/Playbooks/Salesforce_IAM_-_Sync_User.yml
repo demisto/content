@@ -1,4 +1,6 @@
-description: Sync users into Salesforce.
+description: Based on based on the User Profile's Org Level 1/2/3 fields and other fields, 
+  syncs the extended user information, permission sets, permission sets licenses, package 
+  licenses and freeze statuses.
 id: Salesforce IAM - Sync User
 inputs:
 - description: Salesforce app instance name
@@ -36,9 +38,8 @@ inputs:
   required: false
   value:
     simple: "<p>Hi, \n<BR/><BR/> \nYour Salesforce account has been created successfully.\
-      \ Please click on the link below and enter your network credentials to login\
-      \ to Salesforce. \n<BR/><BR/>\nhttps://paloaltonetworks.my.salesforce.com\n\
-      <BR/><BR/>\nPlease feel free to create a ticket with IT Services at https://panservicedesk.service-now.com/services,\
+      \ To login into Salesforce, enter your network credentials.\n\
+      <BR/><BR/>\nPlease feel free to create a ticket with IT Services\
       \ if you have any questions or issues. \n<BR/><BR/>\nRegards,\n<BR/>Salesforce\
       \ Admin Team<BR/>"
 - description: Provisioning results from previous run.
@@ -396,8 +397,8 @@ tasks:
       brand: ""
       id: 3c2b5d66-e170-4ae7-84ee-adc830ef0ff8
       iscommand: false
-      name: 1b509870-e890-4c31-8bca-d025dfb3730d
-      playbookId: 1b509870-e890-4c31-8bca-d025dfb3730d
+      name: Post Provisioning
+      playbookId: Salesforce IAM - Post Provisioning
       type: playbook
       version: -1
       description: ''
@@ -443,8 +444,8 @@ tasks:
       brand: ""
       id: c44727dc-d822-495b-877c-d3fb392225db
       iscommand: false
-      name: 40102808-670f-4424-81cd-de6437e79e85
-      playbookId: 40102808-670f-4424-81cd-de6437e79e85
+      name: Post Deprovisioning
+      playbookId: Salesforce IAM - Post Deprovisioning
       type: playbook
       version: -1
       description: ''
@@ -696,8 +697,8 @@ tasks:
       brand: ""
       id: d2eec8a6-3ae3-47fa-8ab4-8ee8dfdbc904
       iscommand: false
-      name: f548aa32-1aed-4459-8d15-59aafb709788
-      playbookId: f548aa32-1aed-4459-8d15-59aafb709788
+      name: Freeze Account
+      playbookId: Salesforce IAM - Freeze Account
       type: playbook
       version: -1
       description: ''
@@ -1258,8 +1259,8 @@ tasks:
       brand: ""
       id: 9f985127-59d2-43e6-8eaa-9412ed4d9e56
       iscommand: false
-      name: b12324a1-d668-482d-80eb-6c2b31255acf
-      playbookId: b12324a1-d668-482d-80eb-6c2b31255acf
+      name: Unfreeze Account
+      playbookId: Salesforce IAM - Unfreeze Account
       type: playbook
       version: -1
       description: ''
