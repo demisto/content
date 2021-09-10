@@ -46,8 +46,10 @@ List alerts.
 | SophosCentral.Alert.groupKey | String | Alert group key. | 
 | SophosCentral.Alert.id | String | The alert ID. | 
 | SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
+| SophosCentral.Alert.managedAgentName | String | The alert source name. |
 | SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. | 
 | SophosCentral.Alert.person | String | The ID of the referenced person object. | 
+| SophosCentral.Alert.personName | String | The name of the referenced person object. |
 | SophosCentral.Alert.product | String | Product type. | 
 | SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
 | SophosCentral.Alert.severity | String | Severity level for the alert. | 
