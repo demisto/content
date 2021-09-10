@@ -2537,7 +2537,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
         LOG(f'Found uncommitted item:\n{url_filter_prev}')
-        raise Exception('Please commit the instance prior to editing the URL Filter.')
+        raise DemistoException('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
@@ -2548,34 +2548,44 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         'key': API_KEY,
     }
 
+    major_version = get_pan_os_major_version()
+    # it seems that in major 10.x pan-os changed the terminology from allow-list/block-list to allow/block
+    # with regards to url filter xpaths
+    if major_version >= 10:
+        allow_name = 'allow'
+        block_name = 'block'
+    else:
+        allow_name = 'allow-list'
+        block_name = 'block-list'
+
     if element_to_change == 'description':
-        params['xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
 
     elif element_to_change == 'override_allow_list':
-        prev_override_allow_list = argToList(url_filter_prev['allow-list']['member'])
+        prev_override_allow_list = argToList(url_filter_prev.get(allow_name).get('member', []))
         if add_remove_element == 'add':
             new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
         else:
             new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
 
-        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
-        params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{allow_name}"
+        params['element'] = add_argument_list(new_override_allow_list, allow_name, True)
         result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_allow_list
 
     # element_to_change == 'override_block_list'
     else:
-        prev_override_block_list = argToList(url_filter_prev['block-list']['member'])
+        prev_override_block_list = argToList(url_filter_prev.get(block_name).get('member', []))
         if add_remove_element == 'add':
             new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
         else:
             new_override_block_list = [url for url in prev_override_block_list if url != element_value]
 
-        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
-        params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{block_name}"
+        params['element'] = add_argument_list(new_override_block_list, block_name, True)
         result = http_request(URL, 'POST', body=params)
         url_filter_output[element_to_change] = new_override_block_list
 
