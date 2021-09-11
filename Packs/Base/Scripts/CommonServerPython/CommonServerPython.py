@@ -1,4 +1,3 @@
-
 """Common functions script
 This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
