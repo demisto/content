@@ -3408,7 +3408,7 @@ def mime_decode(word_mime_encoded):
     if encoding.lower() == 'b':
         byte_string = base64.b64decode(encoded_text)
     elif encoding.lower() == 'q':
-        byte_string = quopri.decodestring(encoded_text)
+        byte_string = quopri.decodestring(encoded_text, header=True)
     return prefix + byte_string.decode(charset) + suffix
 
 
@@ -3432,9 +3432,10 @@ def convert_to_unicode(s, is_msg_header=True):
                 try:
                     res += decoded_s.decode(encoding).encode('utf-8')
                 except UnicodeDecodeError:
-                    demisto.debug('Failed to decode encoded_string:'
-                                  'encoding: {}, encoded_text: {}'.format(encoding, decoded_s))
-                    res += decoded_s.decode(encoding, errors='replace').encode('utf-8')
+                    demisto.debug('Failed to decode encoded_string')
+                    replace_decoded = decoded_s.decode(encoding, errors='replace').encode('utf-8')
+                    demisto.debug('Decoded string with replace usage {}'.format(replace_decoded))
+                    res += replace_decoded
                 ENCODINGS_TYPES.add(encoding)
             else:
                 res += decoded_s
