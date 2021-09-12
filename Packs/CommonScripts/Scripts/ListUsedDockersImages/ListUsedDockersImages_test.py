@@ -6,10 +6,15 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
+<<<<<<< HEAD
 import json
 import io
 
 def util_get_content(file_name :str) -> dict:
+=======
+
+def util_get_content(file_name: str) -> dict:
+>>>>>>> 9c09e1f6d1 (introduce ListUsedDockersImages - New script that list all used dockers images by Integrations and/or automations)
     with open(file_name) as fp:
         content = fp.read()
         fp.close()
@@ -21,10 +26,21 @@ def test_api_response_parsing():
         Tests REST API responses parsing content.
     """
     from ListUsedDockersImages import extract_dockers_from_automation_search_result, \
-        extract_dockers_from_integration_search_result
+        extract_dockers_from_integration_search_result, merge_result, MAX_PER_DOCKER, format_result_for_markdown
+
     integration_response = extract_dockers_from_integration_search_result(
         util_get_content('test_data/integration_search_response.json'))
     automation_response = extract_dockers_from_automation_search_result(
         util_get_content('test_data/automation_search_response.json'))
 
-    assert len(integration_response) == 29 or len(integration_response) == 226
+    assert len(integration_response) == 29 or len(automation_response) == 226
+
+    result_dict = {}
+    result_dict = merge_result(integration_response, result_dict, MAX_PER_DOCKER)
+    result_dict = merge_result(automation_response, result_dict, MAX_PER_DOCKER)
+
+    assert len(result_dict) == 88
+
+    result_str = format_result_for_markdown(result_dict)
+
+    assert len(result_dict) == len(result_str)
