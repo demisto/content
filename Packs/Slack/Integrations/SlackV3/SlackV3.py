@@ -1304,7 +1304,7 @@ def slack_send():
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
         if message_type != MIRROR_TYPE:
-            demisto.info(f"message type is not permitted options")
+            demisto.info("message type is not in permitted options")
             return
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
