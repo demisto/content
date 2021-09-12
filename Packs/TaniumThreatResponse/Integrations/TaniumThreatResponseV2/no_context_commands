@@ -1,9 +1,0 @@
-!tanium-tr-get-process-children connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 ptid=72057594038504460
-!tanium-tr-get-parent-process connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 ptid=72057594038504451
-!tanium-tr-get-file-info connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 path="C:\\Program Files (x86)\\Tanium\\Tanium Client\\Logs\\log1.txt"
-!tanium-tr-request-file-download connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 path="C:\\Users\\Administrator\\Desktop\\testD.txt"
-!tanium-tr-list-files-in-directory connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 path=`C:\Users\Administrator\Desktop\`
-!tanium-tr-get-process-tree connection_id=remote:EC2AMAZ-KGMRO60:9065264: ptid=72057594038504457
-!tanium-tr-get-downloaded -file file_id=c0531415-87a6-4d28-a226-b485784b1881
-!tanium-tr-get-process-info ptid=72057594038504457 connection_id=remote:EC2AMAZ-KGMRO60:9065264:
-!tanium-tr-get-evidence-by-id evidence_id=5c2f3839-d3f2-4d7a-8b74-de53a32ac4aa

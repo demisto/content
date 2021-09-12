@@ -271,20 +271,12 @@ def init_commands_dict():
         'tanium-tr-list-files-in-directory': list_files_in_dir,
         'tanium-tr-get-file-info': get_file_info,
         'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
+
+        'tanium-tr-get-task-by-id': get_task,
     }
 
 
 ''' EVIDENCE HELPER FUNCTIONS '''
-
-
-def get_process_event_item(raw_event):
-    return {
-        'ID': raw_event.get('id'),
-        'Detail': raw_event.get('detail'),
-        'Operation': raw_event.get('operation'),
-        'Timestamp': raw_event.get('timestamp'),
-        'Type': raw_event.get('type')
-    }
 
 
 def get_event_header(event_type):
@@ -318,83 +310,6 @@ def get_event_header(event_type):
         headers = ['id', 'timestamp', 'imagePath', 'processTableID', 'processID', 'processName', 'username', 'hash',
                    'signature']
     return headers
-
-
-def get_event_item(raw_event, event_type):
-    event = {
-        'ID': raw_event.get('id'),
-        'Domain': raw_event.get('domain'),
-        'File': raw_event.get('file'),
-        'Operation': raw_event.get('operation'),
-        'ProcessID': raw_event.get('process_id'),
-        'ProcessName': raw_event.get('process_name'),
-        'ProcessTableID': raw_event.get('process_table_id'),
-        'Timestamp': raw_event.get('timestamp'),
-        'Username': raw_event.get('username'),
-        'DestinationAddress': raw_event.get('destination_addr'),
-        'DestinationPort': raw_event.get('destination_port'),
-        'SourceAddress': raw_event.get('source_addr'),
-        'SourcePort': raw_event.get('source_port'),
-        'KeyPath': raw_event.get('key_path'),
-        'ValueName': raw_event.get('value_name'),
-        'CreationTime': raw_event.get('create_time'),
-        'EndTime': raw_event.get('end_time'),
-        'ExitCode': raw_event.get('exit_code'),
-        'ProcessCommandLine': raw_event.get('process_command_line'),
-        'ProcessHash': raw_event.get('process_hash'),
-        'SID': raw_event.get('sid'),
-        'Hashes': raw_event.get('Hashes'),
-        'ImageLoaded': raw_event.get('ImageLoaded'),
-        'Signature': raw_event.get('Signature'),
-        'Signed': raw_event.get('Signed'),
-        'EventID': raw_event.get('event_id'),
-        'EventOpcode': raw_event.get('event_opcode'),
-        'EventRecordID': raw_event.get('event_record_id'),
-        'EventTaskID': raw_event.get('event_task_id'),
-        'EventTaskName': raw_event.get('event_task_name'),
-        'Query': raw_event.get('query'),
-        'Response': raw_event.get('response')
-    }
-
-    if event_type == 'security':
-        event['Property'] = [{k.title(): v for k, v in prop.items()}
-                             for prop in raw_event.get('properties')]
-
-    if event_type == 'combined':
-        event['Type'] = raw_event.get('type')
-    else:
-        event['Type'] = event_type.upper() if event_type in ['dns', 'sid'] else event_type.title()
-
-    # remove empty values from the event item
-    return {k: v for k, v in event.items() if v is not None}
-
-
-def validate_connection_name(client, arg_input):
-    """ Tanium API's connection-name parameter is case sensitive - this function queries for the user input
-    and returns the precise string to use in the API, or raises a ValueError if doesn't exist.
-
-    Args:
-        client: (Client) the client class object.
-        arg_input: (str) the user input for a command's connection name argument.
-
-    Returns:
-        (str) The precise connection name.
-
-    """
-    if arg_input.startswith('local-'):  # don't check snapshots
-        return arg_input
-    if is_ip_valid(arg_input):
-        # if input is IP, try with the format a-b-c-d first because it will replace the IP with the real connection name
-        # and prevents the user from using the IP - which we prefer because that way the connections list won't contain
-        # the IP with 'timeout' state (it doesn't happen in Tanium UI).
-        ip_input = arg_input.replace('.', '-')
-        results = client.do_request('GET', f'/plugin/products/trace/computers?name={ip_input}')
-        if results and len(results) == 1:
-            return results[0]
-    results = client.do_request('GET', f'/plugin/products/trace/computers?name={arg_input}')
-    if results and len(results) == 1 and results[0].lower() == arg_input.lower():
-        return results[0]
-    raise ValueError('The specified connection name does not exist.')
 
 
 ''' INTEL DOCS HELPER FUNCTIONS '''
@@ -907,7 +822,18 @@ def get_deploy_status(client: Client, data_args: dict) -> Tuple[str, dict, Union
 ''' ALERTS COMMANDS FUNCTIONS '''
 
 
-def get_alerts(client, data_args):
+def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get alerts from tanium.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     ip_address = data_args.get('computer-ip-address')
@@ -945,7 +871,18 @@ def get_alerts(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_alert(client, data_args):
+def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get alert by id.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     alert_id = data_args.get('alert-id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/alerts/{alert_id}')
     alert = get_alert_item(raw_response)
@@ -959,7 +896,18 @@ def get_alert(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def alert_update_state(client, data_args):
+def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Update alert status by alert ids.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     alert_ids = argToList(data_args.get('alert-ids'))
     state = data_args.get('state')
 
@@ -975,7 +923,18 @@ def alert_update_state(client, data_args):
 ''' SANPSHOTS COMMANDS FUNCTIONS '''
 
 
-def list_snapshots(client, data_args):
+def list_snapshots(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ List all snapshots at the system.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
 
@@ -1000,8 +959,19 @@ def list_snapshots(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def create_snapshot(client, data_args):
-    connection_id = data_args.get('connection-id')
+def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Create new snapshot of the connection.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    connection_id = data_args.get('connection_id')
     raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{connection_id}/snapshot')
     hr = f'Initiated snapshot creation request for {connection_id}.'
     if task_id := raw_response.get('taskInfo', {}).get('id'):
@@ -1009,14 +979,36 @@ def create_snapshot(client, data_args):
     return hr, {}, raw_response
 
 
-def delete_snapshot(client, data_args):
+def delete_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete exsisting snapshot from the system.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     snapshot_ids = argToList(data_args.get('snapshot-ids'))
     body = {'ids': snapshot_ids}
     client.do_request('DELETE', '/plugin/products/threat-response/api/v1/snapshot', body=body)
     return f'Snapshot {",".join(snapshot_ids)} deleted successfully.', {}, {}
 
 
-def delete_local_snapshot(client, data_args):
+def delete_local_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete local snapshot from the system.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     connection_id = data_args.get('connection_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/{connection_id}', resp_type='content')
     return f'Local snapshot of connection {connection_id} was deleted successfully.', {}, {}
@@ -1025,7 +1017,18 @@ def delete_local_snapshot(client, data_args):
 ''' CONNECTIONS COMMANDS FUNCTIONS '''
 
 
-def get_connections(client, data_args):
+def get_connections(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ List all connections.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns')
@@ -1048,7 +1051,18 @@ def get_connections(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def create_connection(client, data_args):
+def create_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Create new connection.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     ip = data_args.get('ip')
     client_id = data_args.get('client_id')
     hostname = data_args.get('hostname')
@@ -1059,25 +1073,58 @@ def create_connection(client, data_args):
         "target": target
     }
 
-    connection_id = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body,
-                                      resp_type='content')
-    outputs = {'Tanium.Connection(val.id === obj.id)': {'id': connection_id}}
-    return f'Initiated connection request to {connection_id}.', outputs, {}
+    connection_id, _ = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body,
+                                         resp_type='content')
+    outputs = {'Tanium.Connection(val.id === obj.id)': {'id': connection_id.decode("utf-8")}}
+    return f'Initiated connection request to {connection_id.decode("utf-8")}.', outputs, {}
 
 
-def close_connection(client, data_args):
+def close_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Close exsisting connection
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     cid = data_args.get('connection_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/close/{cid}')
     return f'Connection {cid} closed successfully.', {}, {}
 
 
-def delete_connection(client, data_args):
+def delete_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete exsisting connection
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     cid = data_args.get('connection_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/delete/{cid}')
     return f'Connection {cid} deleted successfully.', {}, {}
 
 
-def get_events_by_connection(client, data_args):
+def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ List all events in the given connection.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit')) - 1  # there ia a bug in the api, when send limit=2 it returns 3 items
     offset = arg_to_number(data_args.get('offset'))
     cid = data_args.get('connection_id')
@@ -1117,7 +1164,18 @@ def get_events_by_connection(client, data_args):
 ''' LABELS COMMANDS FUNCTIONS '''
 
 
-def get_labels(client, data_args):
+def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """List all labels.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
@@ -1134,7 +1192,18 @@ def get_labels(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_label(client, data_args):
+def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get label by label id.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     label_id = data_args.get('label-id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/labels/{label_id}')
 
@@ -1149,7 +1218,18 @@ def get_label(client, data_args):
 ''' FILES COMMANDS FUNCTIONS '''
 
 
-def get_file_downloads(client, data_args):
+def get_file_downloads(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get list all file downloads.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     sort = data_args.get('sort')
@@ -1171,6 +1251,17 @@ def get_file_downloads(client, data_args):
 
 
 def get_downloaded_file(client, data_args):
+    """ Download file by file id. Return file result.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     file_id = data_args.get('file_id')
     file_content, content_desc = \
         client.do_request('GET', f'plugin/products/threat-response/api/v1/filedownload/data/{file_id}',
@@ -1181,11 +1272,46 @@ def get_downloaded_file(client, data_args):
     demisto.results(fileResult(filename, file_content))
 
 
-def get_file_download_info(client, data_args):
-    pass
+def get_file_download_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get file download info by file id.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    file_id = data_args.get('file_id')
+    raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/filedownload/{file_id}')
+
+    file = raw_response.get('evidence', {})
+    if evidence_type := file.get('evidenceType'):
+        file['evidence_type'] = evidence_type
+        del file['evidenceType']
+
+    context = createContext(file, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.FileDownload(val.uuid === obj.uuid)': context}
+    headers = ['path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
+    human_readable = tableToMarkdown('File download', context, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
 
 
-def request_file_download(client, data_args):
+def request_file_download(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Request file download at the given path.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     cid = data_args.get('connection_id')
     path = data_args.get('path')
     body = {
@@ -1207,13 +1333,35 @@ def request_file_download(client, data_args):
     return hr, outputs, raw_response
 
 
-def delete_file_download(client, data_args):
+def delete_file_download(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete file download from tanium system.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     file_id = data_args.get('file_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/filedownload/{file_id}')
     return f'Delete request of file with ID {file_id} has been sent successfully.', {}, {}
 
 
-def list_files_in_dir(client, data_args):
+def list_files_in_dir(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ List all files in the given directory path.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     connection_id = data_args.get('connection_id')
     dir_path_name = data_args.get('path')
     dir_path = urllib.parse.quote(dir_path_name, safe='')
@@ -1231,7 +1379,7 @@ def list_files_in_dir(client, data_args):
     files = files[from_idx:to_idx]
 
     for file in files:
-        file['connection_id'] = connection_id
+        file['connectionId'] = connection_id
         file['path'] = dir_path_name
         if created := file.get('createdDate'):
             file['createdDate'] = timestamp_to_datestring(created)
@@ -1245,36 +1393,78 @@ def list_files_in_dir(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_file_info(client, data_args):
+def get_file_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get file info by file path.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     cid = data_args.get('connection_id')
     path_name = data_args.get('path')
     path = urllib.parse.quote(path_name, safe='')
 
     raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/conns/{cid}/file/info/{path}')
 
-    info = raw_response.get('info')
     context = copy.deepcopy(raw_response)
+    info = context.get('info')
+    context['connection_id'] = cid
+    try:
+        if created := info.get('createdDate'):
+            info['createdDate'] = timestamp_to_datestring(created)
+        if modified := info.get('modifiedDate'):
+            info['modifiedDate'] = timestamp_to_datestring(modified)
+    except ValueError:
+        pass
     context.update(info)
     if info:
         del context['info']
 
-    outputs = {'Tanium.File(val.path === obj.path)': context}
+    outputs = {'Tanium.File(val.path === obj.path && val.connection_id === obj.connection_id)': context}
     human_readable = tableToMarkdown(f'Information for file `{path_name}`', info,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def delete_file_from_endpoint(client, data_args):
-    cid = validate_connection_name(client, data_args.get('connection_id'))
-    path = urllib.parse.quote(data_args.get('path'))
+def delete_file_from_endpoint(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete file by file path from connection.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    cid = data_args.get('connection_id')
+    full_path = data_args.get('path')
+    path = urllib.parse.quote(full_path)
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/{cid}/file/delete/{path}')
-    return f'Delete request of file {path} from endpoint {cid} has been sent successfully.', {}, {}
+    return f'Delete request of file {full_path} from endpoint {cid} has been sent successfully.', {}, {}
 
 
 ''' PROCESS COMMANDS FUNCTIONS '''
 
 
-def get_process_info(client, data_args):
+def get_process_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get process info
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     connection_id = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     raw_response = client.do_request(
@@ -1291,7 +1481,18 @@ def get_process_info(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_events_by_process(client, data_args):
+def get_events_by_process(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get events by type by proccess.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     cid = data_args.get('connection_id')
@@ -1310,7 +1511,18 @@ def get_events_by_process(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_process_children(client, data_args):
+def get_process_children(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get all process childrens data
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     connection_id = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     raw_response = client.do_request(
@@ -1327,7 +1539,18 @@ def get_process_children(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_parent_process(client, data_args):
+def get_parent_process(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get parent process data, using ptid
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     connection_id = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     raw_response = client.do_request(
@@ -1348,10 +1571,24 @@ def get_parent_process_tree(client, data_args):
     pass
 
 
-def get_process_tree(client, data_args):
+def get_process_tree(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get all proccess related data - process tree
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
-    raw_response = client.do_request('GET', f'plugin/products/threat-response/api/v1/conns/{cid}/processtrees/{ptid}')
+    context = data_args.get('context')
+    params = {'context': context} if context else {}
+    raw_response = client.do_request('GET', f'plugin/products/threat-response/api/v1/conns/{cid}/processtrees/{ptid}',
+                                     params=params)
 
     headers = ['id', 'pid', 'processTableId', 'parentProcessTableId']
 
@@ -1369,7 +1606,18 @@ def get_process_tree(client, data_args):
 ''' EVIDENCE COMMANDS FUNCTIONS '''
 
 
-def list_evidence(client, data_args):
+def list_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get all evidences, can sort them using sort param
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     sort = data_args.get('sort')
@@ -1395,7 +1643,18 @@ def list_evidence(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def event_evidence_get_properties(client, data_args):
+def event_evidence_get_properties(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get evidences properties
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     evidence_properties = client.do_request('GET', 'plugin/products/threat-response/api/v1/event-evidence/properties')
 
     outputs = {'Tanium.EvidenceProperties(val.type === obj.type)': evidence_properties}
@@ -1404,7 +1663,18 @@ def event_evidence_get_properties(client, data_args):
     return human_readable, outputs, evidence_properties
 
 
-def get_evidence(client, data_args):
+def get_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get evidence by id
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     evidence_id = data_args.get('evidence_id')
     raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/event-evidence/{evidence_id}')
 
@@ -1415,7 +1685,8 @@ def get_evidence(client, data_args):
     if data:
         del context['data']
 
-    context = createContext(context, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    context = createContext(context, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
     headers = ['uuid', 'timestamp', 'hostname', 'username', 'summary', 'evidenceType', 'created',
                'processTableId']
@@ -1424,34 +1695,84 @@ def get_evidence(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def create_evidence(client, data_args):
-    conn_name = validate_connection_name(client, data_args.get('connection-name'))
+def create_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Create evidence from event, using client id and process table id
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
 
     params = {'match': 'all', 'f1': 'process_table_id', 'o1': 'eq', 'v1': ptid}
-    process_data = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/process/events', params=params)
+    process_data = client.do_request('GET', f'/plugin/products/threat-response/api/v1/conns/{cid}/views/process/events',
+                                     params=params)
 
     if not process_data:
-        raise ValueError('Invalid connection-name or ptid.')
+        raise ValueError('Invalid connection_id or ptid.')
 
     data = {
-        'host': conn_name,
+        'hostname': cid,
         'user': client.username,
         'data': process_data[0],
-        'connId': conn_name,
-        'type': 'ProcessEvent',
-        'sTimestamp': process_data[0].get('create_time'),
-        'sId': ptid
+        'eventType': 'ProcessEvent',
+        'created': process_data[0].get('create_time'),
     }
 
-    client.do_request('POST', '/plugin/products/trace/evidence', data=data, resp_type='content')
+    client.do_request('POST', '/plugin/products/threat-response/api/v1/evidence', body=data, resp_type='content')
     return 'Evidence have been created.', {}, {}
 
 
-def delete_evidence(client, data_args):
+def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Delete evidence from tanuim, using evidence ids.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     evidence_ids = argToList(data_args.get('evidence-ids'))
     client.do_request('DELETE', '/plugin/products/threat-response/api/v1/evidence')
     return f'Evidence {",".join(evidence_ids)} has been deleted successfully.', {}, {}
+
+
+def get_task(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get task status by task id.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    task_id = data_args.get('task_id')
+    raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/tasks/{task_id}')
+
+    data = raw_response.get('data')
+    context = copy.deepcopy(raw_response)
+    context.update(data)
+    if data:
+        del context['data']
+
+    context = createContext(context, removeNull=True)
+    outputs = {'Tanium.Task(val.id === obj.id)': context}
+    headers = ['id', 'status']
+    human_readable = tableToMarkdown('Task information', context, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
