@@ -376,6 +376,8 @@ def manage_tests(tests_settings: SettingsTester):
 def main():
     install_logging('Run_Tests.log')
     tests_settings = options_handler()
+    logging.info(f"Build Name: {tests_settings.buildName}")
+    logging.info(f" Build Number: {tests_settings.buildNumber}")
     manage_tests(tests_settings)
 
 

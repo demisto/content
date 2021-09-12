@@ -1,22 +1,48 @@
 {
   "description": "LandingPage sections. The banners will show all packs with matching tag. When adding a section, add also the corresponding section entry with the relevant Pack IDs",
   "sections": [
+    "Getting Started",
     "Featured",
     "New",
-    "Threat Intelligence",
-    "Compliance",
-    "Trending"
+    "Partner Spotlight",
+    "Trending",
+    "Threat Intelligence"
   ],
-  "Featured": [
-    "MajorBreachesInvestigationandResponse",
-    "ML",
-    "Ransomware",
+  "Getting Started":[
+    "Phishing", 
+    "CaseManagement-Generic",
     "ShiftManagement",
-    "CrisisManagement",
-    "BruteForce",
-    "NIST",
-    "GenericWebhook",
-    "GraphQL",
-    "GenericSQL"
-  ]
-}
+    "Malware", 
+    "TIM_Processing", 
+    "TIM_SIEM",
+    "HelloWorld",
+    "IntegrationsAndIncidentsHealthCheck",
+    "PANWComprehensiveInvestigation",
+    "Compliance"
+    ],
+  "Featured": [
+    "SlashNextPhishingIncidentResponse",
+    "Pcysys", 
+    "MajorBreachesInvestigationandResponse", 
+    "MITRECoA",
+    "Flashpoint",
+    "FeedIntel471",
+    "VirusTotal",
+    "Zimperium",
+    "Sixgill-Darkfeed"
+    
+  ],
+  "Partner Spotlight":[
+   "Infinipoint",
+   "SailPointIdentityIQ",
+   "SailPointIdentityNow",
+   "Code42", 
+   "SafeBreach",
+   "ReversingLabs_Titanium_Cloud",
+   "CommonTypes",
+   "RecordedFuture",
+   "AgariPhishingDefense",
+   "Claroty",
+   "UrlScan"
+    ]
+} 

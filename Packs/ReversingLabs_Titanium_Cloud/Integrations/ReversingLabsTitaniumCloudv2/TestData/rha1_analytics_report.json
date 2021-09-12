@@ -1,0 +1,32 @@
+{
+    "rl": {
+        "rha1_counters": {
+            "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+            "rha1_type": "pe01",
+            "rha1_first_seen": "2015-05-26T03:53:56",
+            "rha1_last_seen": "2020-04-20T00:42:11",
+            "sample_counters": {
+                "known": 0,
+                "malicious": 144,
+                "suspicious": 0,
+                "total": 144
+            },
+            "sample_metadata": {
+                "md5": "3133c2231fcee5d6b0b4c988a5201da1",
+                "sha256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+                "classification": "MALICIOUS",
+                "sample_type": "PE/Exe/UPX",
+                "sample_size": 636416,
+                "sample_available": true,
+                "trust_factor": 5,
+                "threat_level": 5,
+                "threat_name": "Win32.Ransomware.Tox",
+                "malware_family": "Tox",
+                "malware_type": "Ransomware",
+                "platform": "Win32",
+                "first_seen": "2015-05-30T22:04:00",
+                "last_seen": "2021-04-19T11:10:35.567000"
+            }
+        }
+    }
+}

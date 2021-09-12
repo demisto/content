@@ -1,0 +1,288 @@
+id: Cluster Report Categorization - Cofense Triage v3
+version: -1
+name: Cluster Report Categorization - Cofense Triage v3
+description: Cluster Report Categorization playbook is used to retrieve the reports
+  of specific clusters and perform the categorization of reports.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fb59559b-83c6-4ece-8489-ab68aa1bd2fc
+    type: start
+    task:
+      id: fb59559b-83c6-4ece-8489-ab68aa1bd2fc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a4de689e-1d44-4b7e-8198-52e4313d3e18
+    type: regular
+    task:
+      id: a4de689e-1d44-4b7e-8198-52e4313d3e18
+      version: -1
+      name: Get the Clusters based on tags and match priority
+      description: Retrieves clusters based on the filter values provided in the command
+        arguments.
+      script: '|||cofense-cluster-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      created_at: {}
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      match_priority:
+        complex:
+          root: inputs.MatchPriority
+      page_number: {}
+      page_size: {}
+      sort_by: {}
+      tags:
+        complex:
+          root: inputs.Tags
+      total_reports_count: {}
+      updated_at: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 62af86fd-adb1-4390-82c5-13fb1f9fe7d3
+    type: regular
+    task:
+      id: 62af86fd-adb1-4390-82c5-13fb1f9fe7d3
+      version: -1
+      name: Get Reports of specific cluster
+      description: Retrieves a report or a list of reports based on the filter values
+        provided in the command arguments.
+      script: '|||cofense-report-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      categorization_tags: {}
+      category_id: {}
+      cluster_id:
+        complex:
+          root: Cofense.Cluster
+          accessor: id
+      created_at: {}
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      mailbox_location: {}
+      match_priority: {}
+      page_number: {}
+      page_size: {}
+      report_location: {}
+      sort_by: {}
+      tags: {}
+      updated_at: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f4a95f06-ab9b-45a5-8002-e879fd651ad4
+    type: title
+    task:
+      id: f4a95f06-ab9b-45a5-8002-e879fd651ad4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5b608776-932a-4d52-8dd3-f2618b4bd2fe
+    type: condition
+    task:
+      id: 5b608776-932a-4d52-8dd3-f2618b4bd2fe
+      version: -1
+      name: Is Cofense Triage v3 Integration enabled?
+      description: Retrieves clusters based on the filter values provided in the command
+        arguments.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cofense Triage v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c35694e9-f2fb-4832-8724-f0c27dde547f
+    type: playbook
+    task:
+      id: c35694e9-f2fb-4832-8724-f0c27dde547f
+      version: -1
+      name: Report Categorization - Cofense Triage v3
+      playbookName: Report Categorization - Cofense Triage v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AutoCategorize:
+        simple: "False"
+      MaliciousCategory: {}
+      NonMaliciousCategory: {}
+      OnCall:
+        simple: "false"
+      ReportID:
+        complex:
+          root: Cofense.Report
+          accessor: id
+      ResponseID: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 380,
+        "x": 50,
+        "y": 150
+      }
+    }
+  }
+inputs:
+- key: Tags
+  value: {}
+  required: true
+  description: Specify the tags to retrieve the cluster.
+  playbookInputQuery:
+- key: MatchPriority
+  value: {}
+  required: true
+  description: Specify the priority to retrieve the cluster based on the priority
+    of the rules that match the reports in the cluster.
+  playbookInputQuery:
+outputs: []
+tests:
+- Cofense Triage v3-Test
+fromversion: 6.0.0

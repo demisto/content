@@ -26,6 +26,20 @@ configuration:
   - very-high
   required: true
   type: 15
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -1640,7 +1654,7 @@ script:
     - contextPath: URL.Tags
       description: (List) Tags of the URL.
       type: Unknown
-  dockerimage: demisto/emoji:1.0.0.19032
+  dockerimage: demisto/emoji:1.0.0.23151
   feed: false
   isfetch: false
   longRunning: false

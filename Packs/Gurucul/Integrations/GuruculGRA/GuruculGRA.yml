@@ -52,6 +52,14 @@ configuration:
   defaultvalue: "25"
   type: 0
   required: false
+- display: Fetch Incident Cases
+  name: fetch_incident_cases
+  defaultvalue: Case Per Anomaly
+  type: 15
+  required: false
+  options:
+  - Case Per Anomaly
+  - Case For All Anomalies
 script:
   script: ''
   type: python
@@ -773,6 +781,9 @@ script:
     - contextPath: Gra.Cases.status
       description: satus
       type: string
+    - contextPath: Gra.Cases.anomalies
+      description: Anomalies
+      type: string
     description: Retrieve List of All Cases for a Given Status
   - name: gra-user-anomalies
     arguments:
@@ -937,7 +948,7 @@ script:
       description: Entities Flagged
       type: number
     description: Retrieve detailed anomaly summary of specified anomaly name.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3

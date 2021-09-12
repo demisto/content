@@ -74,7 +74,7 @@ tasks:
       id: c1e0c60a-755f-4f33-8786-26453ce41437
       version: -1
       name: ip
-      script: '|||ip'
+      script: 'ipinfo_v2|||ip'
       type: regular
       iscommand: true
       brand: ""

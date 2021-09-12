@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 BASE_URL = "/api/v1/ip_lists"
 TABLE_HEADERS_GET_OBJECTS = ['ID', 'CIDR Range', 'Created At', 'Updated At']
-PAGE_NUMBER_PATTERN = "(?<=page\[number]=).*?(?=&)"
+PAGE_NUMBER_PATTERN = r"(?<=page\[number]=).*?(?=&)"
 
 
 class Client(BaseClient):

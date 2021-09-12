@@ -466,7 +466,7 @@ tasks:
       registrarname: {}
       reportedby: {}
       reputation: {}
-      riskrules:
+      recordedfutureriskrules:
         simple: ${RecordedFuture.File.rules}
       service: {}
       sha1: {}

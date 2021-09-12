@@ -1,0 +1,37 @@
+category: Utilities
+commonfields:
+  id: LINENotify
+  version: -1
+configuration:
+- display: Token of LINE Group
+  name: apitoken
+  required: true
+  type: 4
+description: LINE API Integration is used for sending a message to LINE Group.
+display: LINENotify
+name: LINENotify
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Message to be sent.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Send message/notification to LINE Group
+    execution: false
+    name: line-send-message
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

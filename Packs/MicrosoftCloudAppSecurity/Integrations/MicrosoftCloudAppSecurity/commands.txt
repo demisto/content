@@ -1,0 +1,7 @@
+!microsoft-cas-activities-list limit=4
+!microsoft-cas-users-accounts-list status=Active limit=3
+!microsoft-cas-files-list file_type=Text skip=4 limit=5
+!microsoft-cas-alerts-list custom_filter=`{"filters": {"date": {"gte_ndays":30}}, "limit": "3"}`
+!microsoft-cas-alert-close-benign alert_ids=60eaf3cccdbeaf0b87d1a775
+!microsoft-cas-alert-close-false-positive alert_ids=60cf6d10cdbeaf0b87acdfa9 reason="Alert is not accurate"
+!microsoft-cas-alert-close-true-positive alert_ids=60ced07dcdbeaf0b876fc7d3

@@ -1,0 +1,536 @@
+{
+  "computer": {
+    "general": {
+      "id": 1,
+      "name": "Computer 95",
+      "network_adapter_type": "",
+      "mac_address": "12:5B:35:CA:12:56",
+      "alt_network_adapter_type": "",
+      "alt_mac_address": "A1:34:95:EC:97:C4",
+      "ip_address": "123.243.192.12",
+      "last_reported_ip": "192.168.1.15",
+      "serial_number": "AB40F81C60A1",
+      "udid": "AB40F812-60A3-11E4-90B8-12DF261F2C7E",
+      "jamf_version": "9.6.29507.c",
+      "platform": "Mac",
+      "barcode_1": "",
+      "barcode_2": "",
+      "asset_tag": "",
+      "remote_management": {
+        "managed": false,
+        "management_username": "",
+        "management_password_sha256": "abcdc44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "supervised": false,
+      "mdm_capable": false,
+      "mdm_capable_users": {},
+      "report_date": "2021-03-29 12:44:12",
+      "report_date_epoch": 1617021852595,
+      "report_date_utc": "2021-03-29T12:44:12.595+0000",
+      "last_contact_time": "2014-10-24 10:26:55",
+      "last_contact_time_epoch": 1414146415335,
+      "last_contact_time_utc": "2014-10-24T10:26:55.335+0000",
+      "initial_entry_date": "2021-03-29",
+      "initial_entry_date_epoch": 1617021852322,
+      "initial_entry_date_utc": "2021-03-29T12:44:12.322+0000",
+      "last_cloud_backup_date_epoch": 0,
+      "last_cloud_backup_date_utc": "",
+      "last_enrolled_date_epoch": 1414146339607,
+      "last_enrolled_date_utc": "2014-10-24T10:25:39.607+0000",
+      "mdm_profile_expiration_epoch": 0,
+      "mdm_profile_expiration_utc": "",
+      "distribution_point": "",
+      "sus": "",
+      "netboot_server": "",
+      "site": {
+        "id": -1,
+        "name": "None"
+      },
+      "itunes_store_account_is_active": false
+    },
+    "location": {
+      "username": "user91",
+      "realname": "User 91",
+      "real_name": "User 91",
+      "email_address": "User91@email.com",
+      "position": "",
+      "phone": "612-605-6625",
+      "phone_number": "612-605-6625",
+      "department": "",
+      "building": "",
+      "room": "100 Walker Street\t \r\nLevel 14, Suite 3"
+    },
+    "purchasing": {
+      "is_purchased": true,
+      "is_leased": false,
+      "po_number": "",
+      "vendor": "",
+      "applecare_id": "",
+      "purchase_price": "",
+      "purchasing_account": "",
+      "po_date": "",
+      "po_date_epoch": 0,
+      "po_date_utc": "",
+      "warranty_expires": "",
+      "warranty_expires_epoch": 0,
+      "warranty_expires_utc": "",
+      "lease_expires": "",
+      "lease_expires_epoch": 0,
+      "lease_expires_utc": "",
+      "life_expectancy": 0,
+      "purchasing_contact": "",
+      "os_applecare_id": "",
+      "os_maintenance_expires": "",
+      "attachments": []
+    },
+    "peripherals": [],
+    "hardware": {
+      "make": "Apple",
+      "model": "13-inch MacBook Pro (Mid 2012)",
+      "model_identifier": "MacBookPro9,2",
+      "os_name": "Mac OS X",
+      "os_version": "10.10.0",
+      "os_build": "14A389",
+      "master_password_set": false,
+      "active_directory_status": "Not Bound",
+      "service_pack": "",
+      "processor_type": "Intel Core i5",
+      "processor_architecture": "i386",
+      "processor_speed": 2500,
+      "processor_speed_mhz": 2500,
+      "number_processors": 2,
+      "number_cores": -1,
+      "total_ram": 4096,
+      "total_ram_mb": 4096,
+      "boot_rom": "MBP91.00D3.B09",
+      "bus_speed": 0,
+      "bus_speed_mhz": 0,
+      "battery_capacity": 90,
+      "cache_size": 3072,
+      "cache_size_kb": 3072,
+      "available_ram_slots": 0,
+      "optical_drive": "MATSHITA DVD-R   UJ-8A8",
+      "nic_speed": "n/a",
+      "smc_version": "2.2f44",
+      "ble_capable": true,
+      "supports_ios_app_installs": false,
+      "sip_status": "Not collected",
+      "gatekeeper_status": "Not collected",
+      "xprotect_version": "",
+      "institutional_recovery_key": "Not Present",
+      "disk_encryption_configuration": "",
+      "filevault2_users": [],
+      "storage": [
+        {
+          "disk": "disk0",
+          "model": "APPLE HDD HTS545050A7E362",
+          "revision": "GG2AB990",
+          "serial_number": "TNS5193T0BTYVH",
+          "size": 512113,
+          "drive_capacity_mb": 512113,
+          "connection_type": "NO",
+          "smart_status": "Verified",
+          "partitions": [
+            {
+              "name": "Macintosh HD (Boot Partition)",
+              "size": 237851,
+              "type": "boot",
+              "partition_capacity_mb": 237851,
+              "percentage_full": 5,
+              "available_mb": 1,
+              "filevault_status": "Encrypted",
+              "filevault_percent": 100,
+              "filevault2_status": "Encrypted",
+              "filevault2_percent": 100,
+              "boot_drive_available_mb": 1,
+              "lvgUUID": "",
+              "lvUUID": "",
+              "pvUUID": ""
+            },
+            {
+              "name": "BOOTCAMP",
+              "size": 238211,
+              "type": "other",
+              "partition_capacity_mb": 238211,
+              "percentage_full": 1,
+              "available_mb": 1,
+              "filevault_status": "Encrypted",
+              "filevault_percent": 100,
+              "filevault2_status": "Encrypted",
+              "filevault2_percent": 100
+            }
+          ]
+        }
+      ],
+      "mapped_printers": []
+    },
+    "certificates": [],
+    "security": {
+      "activation_lock": false,
+      "secure_boot_level": "unknown",
+      "external_boot_level": "unknown"
+    },
+    "software": {
+      "unix_executables": [],
+      "licensed_software": [],
+      "installed_by_casper": [],
+      "installed_by_installer_swu": [],
+      "cached_by_casper": [],
+      "available_software_updates": [],
+      "available_updates": {},
+      "running_services": [],
+      "applications": [
+        {
+          "name": "Activity Monitor.app",
+          "path": "/Applications/Utilities/Activity Monitor.app",
+          "version": "10.10.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "AirPort Utility.app",
+          "path": "/Applications/Utilities/AirPort Utility.app",
+          "version": "6.3.4",
+          "bundle_id": ""
+        },
+        {
+          "name": "App Store.app",
+          "path": "/Applications/App Store.app",
+          "version": "2.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Audio MIDI Setup.app",
+          "path": "/Applications/Utilities/Audio MIDI Setup.app",
+          "version": "3.0.6",
+          "bundle_id": ""
+        },
+        {
+          "name": "Automator.app",
+          "path": "/Applications/Automator.app",
+          "version": "2.5",
+          "bundle_id": ""
+        },
+        {
+          "name": "Bluetooth File Exchange.app",
+          "path": "/Applications/Utilities/Bluetooth File Exchange.app",
+          "version": "4.3.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Boot Camp Assistant.app",
+          "path": "/Applications/Utilities/Boot Camp Assistant.app",
+          "version": "5.1.2",
+          "bundle_id": ""
+        },
+        {
+          "name": "Calculator.app",
+          "path": "/Applications/Calculator.app",
+          "version": "10.8",
+          "bundle_id": ""
+        },
+        {
+          "name": "Calendar.app",
+          "path": "/Applications/Calendar.app",
+          "version": "8.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Chess.app",
+          "path": "/Applications/Chess.app",
+          "version": "3.10",
+          "bundle_id": ""
+        },
+        {
+          "name": "ColorSync Utility.app",
+          "path": "/Applications/Utilities/ColorSync Utility.app",
+          "version": "4.10.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Console.app",
+          "path": "/Applications/Utilities/Console.app",
+          "version": "10.10",
+          "bundle_id": ""
+        },
+        {
+          "name": "Contacts.app",
+          "path": "/Applications/Contacts.app",
+          "version": "9.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Dashboard.app",
+          "path": "/Applications/Dashboard.app",
+          "version": "1.8",
+          "bundle_id": ""
+        },
+        {
+          "name": "Dictionary.app",
+          "path": "/Applications/Dictionary.app",
+          "version": "2.2.1",
+          "bundle_id": ""
+        },
+        {
+          "name": "Digital Color Meter.app",
+          "path": "/Applications/Utilities/Digital Color Meter.app",
+          "version": "5.10",
+          "bundle_id": ""
+        },
+        {
+          "name": "Disk Utility.app",
+          "path": "/Applications/Utilities/Disk Utility.app",
+          "version": "13",
+          "bundle_id": ""
+        },
+        {
+          "name": "DVD Player.app",
+          "path": "/Applications/DVD Player.app",
+          "version": "5.7",
+          "bundle_id": ""
+        },
+        {
+          "name": "FaceTime.app",
+          "path": "/Applications/FaceTime.app",
+          "version": "3.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Font Book.app",
+          "path": "/Applications/Font Book.app",
+          "version": "5.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Game Center.app",
+          "path": "/Applications/Game Center.app",
+          "version": "2.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Grab.app",
+          "path": "/Applications/Utilities/Grab.app",
+          "version": "1.8",
+          "bundle_id": ""
+        },
+        {
+          "name": "Grapher.app",
+          "path": "/Applications/Utilities/Grapher.app",
+          "version": "2.5",
+          "bundle_id": ""
+        },
+        {
+          "name": "iBooks.app",
+          "path": "/Applications/iBooks.app",
+          "version": "1.1",
+          "bundle_id": ""
+        },
+        {
+          "name": "Image Capture.app",
+          "path": "/Applications/Image Capture.app",
+          "version": "6.6",
+          "bundle_id": ""
+        },
+        {
+          "name": "iTunes.app",
+          "path": "/Applications/iTunes.app",
+          "version": "12.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Keychain Access.app",
+          "path": "/Applications/Utilities/Keychain Access.app",
+          "version": "9.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Launchpad.app",
+          "path": "/Applications/Launchpad.app",
+          "version": "1.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Mail.app",
+          "path": "/Applications/Mail.app",
+          "version": "8.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Maps.app",
+          "path": "/Applications/Maps.app",
+          "version": "2.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Messages.app",
+          "path": "/Applications/Messages.app",
+          "version": "8.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Migration Assistant.app",
+          "path": "/Applications/Utilities/Migration Assistant.app",
+          "version": "5",
+          "bundle_id": ""
+        },
+        {
+          "name": "Mission Control.app",
+          "path": "/Applications/Mission Control.app",
+          "version": "1.2",
+          "bundle_id": ""
+        },
+        {
+          "name": "Notes.app",
+          "path": "/Applications/Notes.app",
+          "version": "3.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Photo Booth.app",
+          "path": "/Applications/Photo Booth.app",
+          "version": "7.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Preview.app",
+          "path": "/Applications/Preview.app",
+          "version": "8.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "QuickTime Player.app",
+          "path": "/Applications/QuickTime Player.app",
+          "version": "10.4",
+          "bundle_id": ""
+        },
+        {
+          "name": "Reminders.app",
+          "path": "/Applications/Reminders.app",
+          "version": "3.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Safari.app",
+          "path": "/Applications/Safari.app",
+          "version": "8.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Script Editor.app",
+          "path": "/Applications/Utilities/Script Editor.app",
+          "version": "2.7",
+          "bundle_id": ""
+        },
+        {
+          "name": "Stickies.app",
+          "path": "/Applications/Stickies.app",
+          "version": "10.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "System Information.app",
+          "path": "/Applications/Utilities/System Information.app",
+          "version": "10.10",
+          "bundle_id": ""
+        },
+        {
+          "name": "System Preferences.app",
+          "path": "/Applications/System Preferences.app",
+          "version": "14.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "Terminal.app",
+          "path": "/Applications/Utilities/Terminal.app",
+          "version": "2.5",
+          "bundle_id": ""
+        },
+        {
+          "name": "TextEdit.app",
+          "path": "/Applications/TextEdit.app",
+          "version": "1.10",
+          "bundle_id": ""
+        },
+        {
+          "name": "Time Machine.app",
+          "path": "/Applications/Time Machine.app",
+          "version": "1.3",
+          "bundle_id": ""
+        },
+        {
+          "name": "VoiceOver Utility.app",
+          "path": "/Applications/Utilities/VoiceOver Utility.app",
+          "version": "7.0",
+          "bundle_id": ""
+        },
+        {
+          "name": "X11.app",
+          "path": "/Applications/Utilities/X11.app",
+          "version": "1.0.1",
+          "bundle_id": ""
+        }
+      ],
+      "fonts": [],
+      "plugins": []
+    },
+    "extension_attributes": [
+      {
+        "id": 5,
+        "name": "Battery Cycle Count",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 4,
+        "name": "JNUC-2019-LabUser",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 1,
+        "name": "Local Password",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 2,
+        "name": "Test",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 6,
+        "name": "Tomer test",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 7,
+        "name": "tomer test 2",
+        "type": "Number",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 3,
+        "name": "Usage Policy Violation",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      }
+    ],
+    "groups_accounts": {
+      "computer_group_memberships": [],
+      "local_accounts": [],
+      "user_inventories": {
+        "disable_automatic_login": true
+      }
+    },
+    "iphones": [],
+    "configuration_profiles": []
+  }
+}

@@ -39,7 +39,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use Digital Guardian Integration to fetch incidents and to programmatically add or remove entries from watchlists and component lists.
+description: Use Digital Guardian Integration to fetch incidents and to programmatically
+  add or remove entries from watchlists and component lists.
 display: Digital Guardian
 name: Digital Guardian
 script:
@@ -154,7 +155,7 @@ script:
     description: Remove Componentlist Entry
     execution: false
     name: digitalguardian-remove-componentlist-entry
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

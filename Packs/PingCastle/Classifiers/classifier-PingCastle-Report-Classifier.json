@@ -1,0 +1,15 @@
+{
+    "defaultIncidentType": "PingCastle",
+    "description": "",
+    "feed": false,
+    "id": "PingCastle-Report-Classifier",
+    "keyTypeMap": {},
+    "name": "PingCastle-Report-Classifier",
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

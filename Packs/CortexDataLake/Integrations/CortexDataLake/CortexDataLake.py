@@ -220,6 +220,7 @@ class Client(BaseClient):
         """
         query_data = {'query': self.add_instance_id_to_query(query),
                       'language': 'csql'}
+        demisto.debug('Query being executed in CDL: {}'.format(str(query_data)))
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()

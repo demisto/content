@@ -1,6 +1,6 @@
 id: CompareIncidentsLabels-test-playbook
 version: -1
-name: CompareIncidentsLabels test playbook
+name: CompareIncidentsLabels-test-playbook
 starttaskid: "0"
 tasks:
   "0":

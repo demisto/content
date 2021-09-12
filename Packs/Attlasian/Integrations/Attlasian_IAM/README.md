@@ -15,9 +15,10 @@ Integrate with Atlassian's services to execute generic ILM management operations
     | Directory ID |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Enabled The Command iam-create-user | If set to false, iam-create-user command will be skipped, and user will not be created. | False |
-    | Enabled The Command iam-update-user |  | False |
-    | Enabled The Command iam-disable-user |  | False |
+    | create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
+    | update_user_enabled | Allow updating users | False |
+    | enable_user_enabled | Allow enabling users | False |
+    | disable_user_enabled | Allow disabling users | False |
     | Automatically create user if not found in update command |  | False |
     | Incoming Mapper | Incoming Mapper | True |
     | Outgoing Mapper | Outgoing Mapper | True |

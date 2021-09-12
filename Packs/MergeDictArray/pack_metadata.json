@@ -1,0 +1,17 @@
+{
+    "name": "MergeDictArray",
+    "description": "Each entry in an array is merged into the existing array if the keyed-value matches.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-07-27T09:35:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ]
+}

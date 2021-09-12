@@ -54,6 +54,7 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
+    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
@@ -65,6 +66,8 @@ class PackTags(object):
     NEW = "New"
     TIM = "TIM"
     USE_CASE = "Use Case"
+    TRANSFORMER = "Transformer"
+    FILTER = "Filter"
 
 
 class Metadata(object):
@@ -78,6 +81,44 @@ class Metadata(object):
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
     CERTIFIED = "certified"
     EULA_URL = "https://github.com/demisto/content/blob/master/LICENSE"  # disable-secrets-detection
+    CURRENT_VERSION = 'currentVersion'
+    SERVER_MIN_VERSION = 'serverMinVersion'
+    HIDDEN = 'hidden'
+    NAME = 'name'
+    ID = 'id'
+    DESCRIPTION = 'description'
+    CREATED = 'created'
+    UPDATED = 'updated'
+    LEGACY = 'legacy'
+    SUPPORT = 'support'
+    SUPPORT_DETAILS = 'supportDetails'
+    EULA_LINK = 'eulaLink'
+    AUTHOR = 'author'
+    AUTHOR_IMAGE = 'authorImage'
+    CERTIFICATION = 'certification'
+    PRICE = 'price'
+    VERSION_INFO = 'versionInfo'
+    COMMIT = 'commit'
+    DOWNLOADS = 'downloads'
+    TAGS = 'tags'
+    CATEGORIES = 'categories'
+    CONTENT_ITEMS = 'contentItems'
+    SEARCH_RANK = 'searchRank'
+    INTEGRATIONS = 'integrations'
+    USE_CASES = 'useCases'
+    KEY_WORDS = 'keywords'
+    DEPENDENCIES = 'dependencies'
+    PREMIUM = 'premium'
+    VENDOR_ID = 'vendorId'
+    PARTNER_ID = 'partnerId'
+    PARTNER_NAME = 'partnerName'
+    CONTENT_COMMIT_HASH = 'contentCommitHash'
+    PREVIEW_ONLY = 'previewOnly'
+    MANDATORY = 'mandatory'
+
+    DISPLAYED_IMAGES = 'displayedImages'
+    EMAIL = 'email'
+    URL = 'url'
 
 
 class PackFolders(enum.Enum):
@@ -98,6 +139,12 @@ class PackFolders(enum.Enum):
     CLASSIFIERS = 'Classifiers'
     INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
+    GENERIC_DEFINITIONS = "GenericDefinitions"
+    GENERIC_FIELDS = "GenericFields"
+    GENERIC_MODULES = "GenericModules"
+    GENERIC_TYPES = "GenericTypes"
+    LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -105,7 +152,9 @@ class PackFolders(enum.Enum):
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
+            PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
         }
 
     @classmethod
@@ -115,10 +164,14 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
-                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.WIDGETS.value}
+        return {
+            PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+            PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
+            PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
+            PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value
+        }
 
 
 class PackIgnored(object):
@@ -165,3 +218,14 @@ class PackStatus(enum.Enum):
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
+    FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
+
+
+class Changelog(object):
+    """
+    A class that represents all the keys that are present in a Changelog entry.
+    """
+
+    RELEASE_NOTES = 'releaseNotes'
+    DISPLAY_NAME = 'displayName'
+    RELEASED = 'released'

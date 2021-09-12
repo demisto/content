@@ -26,9 +26,10 @@ configuration:
   name: verify
   required: false
   type: 8
-description: ReversingLabs A1000 Malware Analysis Platform
-display: ReversingLabs A1000
+description: Deprecated. Use the ReversingLabs A1000 v2 integration instead.
+display: ReversingLabs A1000 (Deprecated)
 name: ReversingLabs A1000
+deprecated: true
 script:
   commands:
   - arguments:
@@ -38,7 +39,7 @@ script:
       name: file
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve file reputation data from an A1000 appliance
     execution: false
     name: file
@@ -103,7 +104,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Upload a sample to A1000 for analysis
     execution: true
     name: reversinglabs-upload
@@ -114,7 +115,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Delete an uploaded sample
     execution: true
     name: reversinglabs-delete
@@ -125,7 +126,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: List extracted files from a sample
     execution: false
     name: reversinglabs-extracted-files
@@ -167,7 +168,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Download a sample to the investigation
     execution: false
     name: reversinglabs-download
@@ -178,7 +179,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Re-analyze sample
     execution: true
     name: reversinglabs-analyze
@@ -189,7 +190,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Download samples obtained through the unpacking process
     execution: false
     name: reversinglabs-download-unpacked
@@ -201,4 +202,5 @@ script:
   script: ''
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 fromversion: 5.0.0

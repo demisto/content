@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Continuously Process Survey Responses
 
 ### Integrations
-* Microsoft Graph User
+* Azure Active Directory Users
 
 ### Scripts
 * Set

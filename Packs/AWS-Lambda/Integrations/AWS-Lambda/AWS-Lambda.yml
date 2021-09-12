@@ -175,7 +175,7 @@ script:
     - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
       description: The memory allocated to the function
       type: number
-    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified '
+    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified'
       description: The date and time that the function was last updated, in ISO-8601
         format (YYYY-MM-DDThh:mm:ss.sTZD).
       type: date
@@ -693,7 +693,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.20516
+  dockerimage: demisto/boto3py3:1.0.0.24037
   isfetch: false
   runonce: false
   subtype: python3

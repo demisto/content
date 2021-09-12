@@ -617,6 +617,7 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
 
 def main() -> None:
     initialize_global_values()
+    global AUTH_HEADERS
     headers = AUTH_HEADERS
     base_url = urljoin(demisto.params()['url'])
     verify_certificate = not demisto.params().get('insecure', True)

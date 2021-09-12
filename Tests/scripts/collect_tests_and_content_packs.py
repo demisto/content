@@ -143,7 +143,7 @@ if os.path.isfile('./artifacts/id_set.json'):
         ID_SET = json.load(conf_file)
 
 if os.path.isfile('./artifacts/conf.json'):
-    with open('./Tests/conf.json', 'r') as conf_file:
+    with open('./artifacts/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
 
@@ -1009,7 +1009,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
-        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        logging.info(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests
@@ -1256,6 +1256,8 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     min_from_version = LooseVersion('99.99.99')
     max_from_version = LooseVersion('0.0.0')
 
+    logging.info("\n\n Tests list:")
+    logging.info(modified_packs)
     for pack_name in modified_packs:
         pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
         pack_metadata = get_pack_metadata(pack_metadata_path)
@@ -1319,6 +1321,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         'Server Master': True,
         'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
         'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
+        'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
+        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
+
     }
 
     if documentation_changes_only:
@@ -1328,6 +1333,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server Master': False,
             'Server 5.0': False,
             'Server 6.0': False,
+            'Server 6.1': False,
+            'Server 6.2': False,
         }
     # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
     # server in release branches.
@@ -1379,13 +1386,16 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
-                packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
-                files_string += f"\n{packs_diff}"
+                packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+                files_string = '\n'.join([files_string, packs_diff])
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+            logging.debug(f'commit string: {commit_string}')
+
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+
         logging.debug(f'Files string: {files_string}')
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)

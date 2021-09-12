@@ -1,0 +1,42 @@
+{
+    "udid": "dummy-udid",
+    "serialNumber": "ABCD123",
+    "macAddress": "ABABABABABAB",
+    "imei": "",
+    "friendlyName": "user123-laptop2 Inspiron 15",
+    "organizationGroupName": "M12345678",
+    "batteryLevelPercentage": "700",
+    "supervised": false,
+    "dataEncrypted": false,
+    "platformInfo": {
+        "deviceType": "WinRT",
+        "platformName": "WinRT",
+        "modelName": "Inspiron 15 7000 Gaming",
+        "osVersion": "10.0.19042"
+    },
+    "carrierInfo": {
+        "phoneNumber": "",
+        "roamingEnabled": false
+    },
+    "enrollmentInfo": {
+        "enrollmentStatus": "ENROLLED",
+        "compliant": false,
+        "enrollmentTimestamp": "2021-06-28T01:59:29.077Z",
+        "lastSeenTimestamp": "2021-07-07T10:06:04.433Z",
+        "ownership": "EMPLOYEE",
+        "organizationGroupId": "dummy-uuid",
+        "organizationGroupName": "M12345678",
+        "userName": "user123-laptop2",
+        "userEmailAddress": "dummy-email",
+        "enrollmentUserUuid": "dummy-uuid",
+        "managedBy": "MDM"
+    },
+    "OSBuildVersion": "1052",
+    "Links": [
+        {
+            "Rel": "self",
+            "Href": "http://as1687.awmdm.com/API/mdm/devices/12345678-1234-1234-1234-123456789ABC"
+        }
+    ],
+    "uuid": "12345678-1234-1234-1234-123456789ABC"
+}

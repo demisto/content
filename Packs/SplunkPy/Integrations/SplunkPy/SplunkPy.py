@@ -112,11 +112,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1078,16 +1079,16 @@ def update_remote_system_command(args, params, service, auth_token):
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
                 session_key = service.token if not auth_token else None
-                response_info = updateNotableEvents(
+                response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
                     auth_token=auth_token, sessionKey=session_key
                 )
-                msg = response_info.get('message')
                 if 'success' not in response_info or not response_info['success']:
-                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
                 else:
-                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id,
+                                                                                   response_info.get('message')))
 
             except Exception as e:
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
@@ -1149,11 +1150,12 @@ def get_mapping_fields_command(service):
     start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
     last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1403,8 +1405,11 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
-            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-            for key_val in raw_response:
+            # search for the pattern: `key="value", `
+            # (the double quotes are optional)
+            # we append `, ` to the end of the string to catch the last value
+            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
+            for key_val, _ in raw_response:
                 key_value = key_val.replace('"', '').strip()
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
@@ -1422,8 +1427,8 @@ def convert_to_str(obj):
     return str(obj)
 
 
-def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                        searchID=None, auth_token=None, sessionKey=None):
+def update_notable_events(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
+                          searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
@@ -1861,30 +1866,31 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(service, auth_token):
-    params = demisto.params()
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = service.token if not auth_token else None
+def splunk_edit_notable_event_command(base_url, token, auth_token, args):
+    session_key = token if not auth_token else None
 
-    eventIDs = None
-    if demisto.get(demisto.args(), 'eventIDs'):
-        eventIDsStr = demisto.args()['eventIDs']
-        eventIDs = eventIDsStr.split(",")
+    event_ids = None
+    if args.get('eventIDs'):
+        event_ids_str = args['eventIDs']
+        event_ids = event_ids_str.split(",")
+
     status = None
-    if demisto.get(demisto.args(), 'status'):
-        status = int(demisto.args()['status'])
+    if args.get('status'):
+        status = int(args['status'])
 
-    response_info = updateNotableEvents(baseurl=base_url,
-                                        comment=demisto.get(demisto.args(), 'comment'), status=status,
-                                        urgency=demisto.get(demisto.args(), 'urgency'),
-                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
-                                        auth_token=auth_token, sessionKey=sessionKey)
+    response_info = update_notable_events(baseurl=base_url,
+                                          comment=args.get('comment'), status=status,
+                                          urgency=args.get('urgency'),
+                                          owner=args.get('owner'), eventIDs=event_ids,
+                                          auth_token=auth_token, sessionKey=session_key)
+
     if 'success' not in response_info or not response_info['success']:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Could not update notable "
-                                     "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-
-    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+        demisto.results({
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['error'],
+            'Contents': "Could not update notable events: " + args.get('eventIDs') + ' : ' + str(response_info)})
+    else:
+        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
@@ -2172,6 +2178,7 @@ def main():
         'verify': VERIFY_CERTIFICATE
     }
 
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
@@ -2219,7 +2226,7 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(service, auth_token)
+        splunk_edit_notable_event_command(base_url, service and service.token, auth_token, demisto.args())
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':

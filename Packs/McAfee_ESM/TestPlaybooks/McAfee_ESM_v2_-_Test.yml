@@ -345,8 +345,10 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      customEnd: {}
-      customStart: {}
+      customEnd: 
+        simple: 2021-01-01T00:00:00
+      customStart: 
+        simple: 2019-01-01T00:00:00
       fields: {}
       filters:
         simple: '[{"type":"EsmFieldFilter","field":{"name":"SrcIP"},"operator":"IN"}]'
@@ -355,8 +357,7 @@ tasks:
       queryType: {}
       timeOut:
         simple: "30"
-      timeRange:
-        simple: CURRENT_YEAR
+      timeRange: {}
     separatecontext: false
     view: |-
       {

@@ -1,0 +1,31 @@
+{
+    "id": "incident_cofensetriagereportmd5",
+    "version": -1,
+    "modified": "2021-06-02T20:06:08.527475489+05:30",
+    "name": "Cofense Triage Report MD5",
+    "ownerOnly": false,
+    "description": "MD5 hash signature of the reported email.",
+    "cliName": "cofensetriagereportmd5",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cofense Triage Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

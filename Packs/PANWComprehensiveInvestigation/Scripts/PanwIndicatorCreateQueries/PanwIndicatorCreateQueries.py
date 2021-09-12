@@ -1,12 +1,10 @@
 """
 The script accepts indicators and creates relevant queries in Panw products
 """
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 
-def generate_ip_queries(ips):
+def generate_ip_queries(ips: list):
     ips = [ip for ip in ips if is_ip_valid(ip)]
     if not ips:
         return {}
@@ -56,7 +54,7 @@ def generate_ip_queries(ips):
     return queries
 
 
-def generate_hash_queries(hashes):
+def generate_hash_queries(hashes: list):
     if not hashes:
         return {}
 
@@ -81,7 +79,7 @@ def generate_hash_queries(hashes):
 
     # Autofocus Hash
     children = [{
-        'field': 'alias.hash',
+        'field': 'alias.hash_lookup',
         'operator': 'contains',
         'value': hash
     } for hash in hashes]
@@ -99,7 +97,7 @@ def generate_hash_queries(hashes):
     return queries
 
 
-def generate_domain_queries(domains):
+def generate_domain_queries(domains: list):
     if not domains:
         return {}
 
@@ -131,28 +129,33 @@ def generate_domain_queries(domains):
     return queries
 
 
-def main(args):
-    ips = argToList(args.get('ip'))
-    hashes = argToList(args.get('hash'))
-    domains = argToList(args.get('domain'))
+def main() -> None:
+    try:
+        args = demisto.args()
+        ips = argToList(args.get('ip'))
+        hashes = argToList(args.get('hash'))
+        domains = argToList(args.get('domain'))
 
-    ip_queries = generate_ip_queries(ips)
-    hash_queries = generate_hash_queries(hashes)
-    domain_queries = generate_domain_queries(domains)
+        ip_queries = generate_ip_queries(ips)
+        hash_queries = generate_hash_queries(hashes)
+        domain_queries = generate_domain_queries(domains)
 
-    human_readable = ''.join([
-        tableToMarkdown('IP Queries', ip_queries),
-        tableToMarkdown('Hashes Queries', hash_queries),
-        tableToMarkdown('Domains Queries', domain_queries),
-    ])
-    outputs = {
-        'Query.IP': ip_queries,
-        'Query.Hash': hash_queries,
-        'Query.Domain': domain_queries,
-    }
+        human_readable = ''.join([
+            tableToMarkdown('IP Queries', ip_queries),
+            tableToMarkdown('Hashes Queries', hash_queries),
+            tableToMarkdown('Domains Queries', domain_queries),
+        ])
+        outputs = {
+            'Query.IP': ip_queries,
+            'Query.Hash': hash_queries,
+            'Query.Domain': domain_queries,
+        }
 
-    return_outputs(human_readable, outputs)
+        return_outputs(human_readable, outputs)
+
+    except Exception as err:
+        return_error(f'Unexpected error: {err}.\ntraceback: {traceback.format_exc()}')
 
 
 if __name__ in ('builtins', '__builtin__'):
-    main(demisto.args())
+    main()

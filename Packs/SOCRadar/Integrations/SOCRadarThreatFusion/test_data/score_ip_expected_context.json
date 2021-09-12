@@ -1,0 +1,66 @@
+{
+  "Risk Score (Out of 1000)": 640.0,
+  "Score Details": {
+    "Attacker IP": 160.0,
+    "Botnet & Malware": 480.0
+  },
+  "Total Encounters": 2,
+  "IP": "1.1.1.1",
+  "Whois Details": {
+    "asn": "45899",
+    "asn_cidr": "Mock ASN CIDR",
+    "asn_country_code": "VN",
+    "asn_date": "2010-08-16",
+    "asn_description": "VNPT-AS-VN VNPT Corp, VN",
+    "asn_registry": "apnic",
+    "nets": [
+      {
+        "address": "Address",
+        "cidr": "Mock CIDR",
+        "city": null,
+        "country": "VN",
+        "created": null,
+        "description": "Description",
+        "emails": [
+          "Email 1",
+          "Email 2"
+        ],
+        "handle": "PTH13-AP",
+        "name": "VNPT-VN",
+        "postal_code": null,
+        "range": "IP Range",
+        "state": null,
+        "updated": null
+      }
+    ],
+    "nir": null,
+    "query": "1.1.1.1",
+    "raw_referral": null,
+    "referral": null
+  },
+  "DNS Details": {
+    "PTR": [
+      "Mock PTR Record"
+    ]
+  },
+  "Geo Location": {
+    "AsnCode": 45899,
+    "AsnName": "VNPT Corp",
+    "Cidr": "Mock CIDR",
+    "CityName": "Ha Giang",
+    "CountryCode": "VN",
+    "CountryName": "Viet Nam",
+    "Latitude": 22.83333,
+    "Longitude": 104.98333,
+    "RegionName": "Ha Giang",
+    "Timezone": "+07:00",
+    "ZipCode": "310000",
+    "ASN": "[45899] VNPT-AS-VN VNPT Corp, VN"
+  },
+  "DBotScore": {
+    "Indicator": "1.1.1.1",
+    "Type": "ip",
+    "Vendor": "SOCRadar ThreatFusion",
+    "Score": 2
+  }
+}

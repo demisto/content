@@ -1,6 +1,7 @@
 ## AutoFocus Feed
-Gets Custom feeds from AutoFocus.
-The Daily Feed is deprecated. Use the AutoFocus Daily Feed instead. 
+Gets Custom and Sample feeds from AutoFocus.
+
+**Note:** The `Daily Threat Feed` option is deprecated. Use the separate **AutoFocus Daily Feed** instead. 
 
 For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
@@ -14,7 +15,7 @@ https://autofocus.paloaltonetworks.com/IOCFeed/{Output_Feed_ID}/{Output_Feed_Nam
 To connect to a sample AutoFocus feed you need to provide the following parameters:
 * Scope Type - Either **public**, **private** or **global**.
 * Query - A JSON styled AutoFocus query. For example: 
-<pre>
+```json
 {
   "operator":"all",
   "children":[{
@@ -23,4 +24,4 @@ To connect to a sample AutoFocus feed you need to provide the following paramete
       "value":["2020-03-01T00:00:00","2020-03-02T23:59:59"]
     }]
 }
-</pre>
+```

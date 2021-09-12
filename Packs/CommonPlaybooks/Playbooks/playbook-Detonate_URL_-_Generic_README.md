@@ -151,7 +151,3 @@ This playbook does not use any commands.
 | URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision. | String |
 | URL.Malicious.Description | For malicious URLs, the reason for the vendor to make the decision. | String |
 | ANYRUN.Task.Status | Task analysis status. | String |
-
-## Playbook Image
----
-![Detonate URL - Generic](Insert the link to your image here)
