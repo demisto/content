@@ -206,6 +206,10 @@ script:
     description: Get pool information by node
     execution: false
     name: f5-ltm-get-pool-by-node
+    outputs:
+    - contextPath: F5.LTM.Nodes.pools
+      description: Pool names
+      type: Unknown
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
