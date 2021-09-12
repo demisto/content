@@ -1092,8 +1092,10 @@ def test_get_mapping_fields_command():
     """
     from CortexXDRIR import get_mapping_fields_command
     expected_mapping = {"Cortex XDR Incident": {
-        "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
-                  "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
+        "status": "Current status of the incident: \"new\",\"under_"
+                              "investigation\",\"resolved_known_issue\","
+                              "\"resolved_duplicate\",\"resolved_false_positive\","
+                              "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
         "assigned_user_mail": "Email address of the assigned user.",
         "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
         "resolve_comment": "Comments entered by the user when the incident was resolved.",

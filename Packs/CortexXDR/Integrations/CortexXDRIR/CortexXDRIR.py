@@ -1154,8 +1154,8 @@ class Client(BaseClient):
             'operator': 'in',
             'value': endpoint_ids
         }]
-        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters, 'incident_id': incident_id,
-                                        'parameters_values': parameters}
+        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
+                                        'incident_id': incident_id, 'parameters_values': parameters}
 
         return self._http_request(
             method='POST',
@@ -1165,8 +1165,8 @@ class Client(BaseClient):
         )
 
     @logger
-    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list, incident_id: Optional[int] = None) -> Dict[
-        str, Any]:
+    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list,
+                                incident_id: Optional[int] = None) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/scripts/run_snippet_code_script',
@@ -1520,7 +1520,7 @@ def get_last_mirrored_in_time(args):
 
 
 def get_incident_extra_data_command(client, args):
-    incident_id = arg_to_number(args.get('incident_id'))
+    incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
