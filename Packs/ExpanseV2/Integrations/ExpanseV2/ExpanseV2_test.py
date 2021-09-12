@@ -252,75 +252,293 @@ def test_fetch_incidents(requests_mock):
     assert result == mock_incidents
 
 
-def test_get_remote_data_command_should_update(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - arguments (id and lastUpdate time set to a lower than incident modification time)
-        - a raw update (get-issue-updates results)
-    When
-        - running get_remote_data_command with changes to make
-    Then
-        - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
-        - the entries in the GetRemoteDataResponse contain expected entries
-    """
-    from ExpanseV2 import Client, get_remote_data_command
+class TestMirroringFunctionality:
 
-    MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
-    MOCK_LIMIT = "5"
+    def test_get_remote_data_command_should_update(self, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - arguments (id and lastUpdate time set to a lower than incident modification time)
+            - a raw update (get-issue-updates results)
+        When
+            - running get_remote_data_command with changes to make
+        Then
+            - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
+            - the entries in the GetRemoteDataResponse contain expected entries
+        """
+        from ExpanseV2 import Client, get_remote_data_command
 
-    args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
+        MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
+        MOCK_LIMIT = "5"
 
-    MOCK_UPDATES = {
-        'progressStatus': 'Investigating',
-        'priority': 'Critical',
-        'xsoar_severity': 4,
-        'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
-    }
+        args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
 
-    MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries.json")
+        MOCK_UPDATES = {
+            'progressStatus': 'Investigating',
+            'priority': 'Critical',
+            'xsoar_severity': 4,
+            'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
+        }
 
-    mock_updates = util_load_json("test_data/expanse_get_issue_updates.json")
-    mock_updates["data"] = mock_updates["data"][: int(MOCK_LIMIT)]
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries.json")
 
-    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json=mock_updates)
+        mock_updates = util_load_json("test_data/expanse_get_issue_updates.json")
+        mock_updates["data"] = mock_updates["data"][: int(MOCK_LIMIT)]
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
-    result = get_remote_data_command(client, args)
+        requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json=mock_updates)
 
-    assert result.mirrored_object == MOCK_UPDATES
-    assert result.entries == MOCK_ENTRIES
+        result = get_remote_data_command(client, args)
 
+        assert result.mirrored_object == MOCK_UPDATES
+        assert result.entries == MOCK_ENTRIES
 
-def test_get_remote_data_command_no_update(requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - arguments (id and lastUpdate time set to a lower than incident modification time)
-        - no updates (get-issue-updates empty results)
-    When
-        - running get_remote_data_command with no changes to make
-    Then
-        - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
-        - the entries in the GetRemoteDataResponse contain expected entries
-    """
-    from ExpanseV2 import Client, get_remote_data_command
+    def test_get_remote_data_command_should_close_incident(self, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - arguments (id and lastUpdate time set to a lower than incident modification time)
+            - a raw update (get-issue-updates results)
+            - the incident was closed in expanse
+        When
+            - running get_remote_data_command with changes to make
+        Then
+            - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
+            - the entries in the GetRemoteDataResponse contain expected entries, specifically an incident closure entry,
+        """
+        from ExpanseV2 import Client, get_remote_data_command
 
-    MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
+        MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
 
-    args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
+        args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
 
-    MOCK_UPDATES = {}
-    MOCK_ENTRIES = []
+        MOCK_UPDATES = {
+            'closeReason': 'Resolved',
+            'closeNotes': '',
+            'progressStatus': 'Resolved',
+            'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c'
+        }
 
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries_incident_closure.json")
 
-    requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json={})
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+        mock_issue_updates = {
+            "data": [
+                {
+                    "created": "2020-11-10T16:14:46.754804Z",
+                    "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
+                    "previousValue": "Investigating",
+                    "updateType": "ProgressStatus",
+                    "user": {
+                        "username": "Expanse Bot"
+                    },
+                    "value": "Resolved"
+                }
+            ],
+            "pagination": {
+                "next": None,
+                "pref": None
+            },
+            "meta": {
+                "totalCount": 9
+            }
+        }
+        requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100",
+                          json=mock_issue_updates)
 
-    result = get_remote_data_command(client, args)
+        result = get_remote_data_command(client, args)
 
-    assert result.mirrored_object == MOCK_UPDATES
-    assert result.entries == MOCK_ENTRIES
+        assert result.mirrored_object == MOCK_UPDATES
+        assert result.entries == MOCK_ENTRIES
+
+    def test_get_remote_data_command_should_reopen_incident(self, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - arguments (id and lastUpdate time set to a lower than incident modification time)
+            - a raw update (get-issue-updates results)
+            - the incident was reopened in expanse.
+        When
+            - running get_remote_data_command with changes to make
+        Then
+            - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
+            - the entries in the GetRemoteDataResponse contain expected entries, specifically an incident reopen entry.
+        """
+        from ExpanseV2 import Client, get_remote_data_command
+
+        MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
+
+        args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
+
+        MOCK_UPDATES = {
+            'closeNotes': None,
+            'closeReason': None,
+            'id': 'a827f1a5-f223-4bf6-80e0-e8481bce8e2c',
+            'progressStatus': 'Investigating'
+        }
+
+        MOCK_ENTRIES = util_load_json("test_data/get_remote_data_updated_entries_incident_reopening.json")
+
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+        mock_issue_updates = {
+            "data": [
+                {
+                    "created": "2020-11-10T16:14:46.754804Z",
+                    "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
+                    "previousValue": "Resolved",
+                    "updateType": "ProgressStatus",
+                    "user": {
+                        "username": "Expanse Bot"
+                    },
+                    "value": "Investigating"
+                }
+            ],
+            "pagination": {
+                "next": None,
+                "pref": None
+            },
+            "meta": {
+                "totalCount": 9
+            }
+        }
+        requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100",
+                          json=mock_issue_updates)
+
+        result = get_remote_data_command(client, args)
+
+        assert result.mirrored_object == MOCK_UPDATES
+        assert result.entries == MOCK_ENTRIES
+
+    def test_get_remote_data_command_no_update(self, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - arguments (id and lastUpdate time set to a lower than incident modification time)
+            - no updates (get-issue-updates empty results)
+        When
+            - running get_remote_data_command with no changes to make
+        Then
+            - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
+            - the entries in the GetRemoteDataResponse contain expected entries
+        """
+        from ExpanseV2 import Client, get_remote_data_command
+
+        MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
+
+        args = {"id": MOCK_ISSUE_ID, "lastUpdate": 0}
+
+        MOCK_UPDATES = {}
+        MOCK_ENTRIES = []
+
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+        requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json={})
+
+        result = get_remote_data_command(client, args)
+
+        assert result.mirrored_object == MOCK_UPDATES
+        assert result.entries == MOCK_ENTRIES
+
+    def test_update_remote_system_command(self, mocker, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - incident changes (a comment and 3 field changes)
+        When
+            - outgoing mirroring triggered by a change in the incident
+        Then
+            - a comment is created in the Expanse issue
+            - the Expanse issue is updated with the corresponding updates type and values
+            - the returned result corresponds to the Expanse issue id
+        """
+        from ExpanseV2 import Client, update_remote_system_command
+        import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
+
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+        MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
+        MOCK_EMAIL = "some@test.email"
+        MOCK_COMMENT_ENTRIES = [{
+            "type": 1,
+            "contents": "Investigation being performed",
+            "contentsformat": "text",
+            "note": True,
+            "tags": [],
+            'category': 'chat'
+        }]
+
+        MOCK_DELTA = {
+            "owner": "testuser",
+            "severity": 4,
+            "expanseprogressstatus": "InProgress",
+        }
+
+        args = {
+            "entries": MOCK_COMMENT_ENTRIES,
+            "delta": MOCK_DELTA,
+            "remoteId": MOCK_ISSUE_ID,
+            "incidentChanged": True,
+            "inc_status": 1
+        }
+
+        mocker.patch.object(demisto, 'findUser', return_value={"email": MOCK_EMAIL})
+        mock_upd = mocker.patch.object(client, 'update_issue')
+
+        requests_mock.post(f"/v1/issues/issues/{MOCK_ISSUE_ID}/updates", json={})
+
+        result = update_remote_system_command(client, args, True)
+
+        assert result == MOCK_ISSUE_ID
+        assert mock_upd.call_count == 4
+        assert mock_upd.call_args_list[0][1]["issue_id"] == MOCK_ISSUE_ID
+        assert mock_upd.call_args_list[0][1]["update_type"] == 'Comment'
+        assert mock_upd.call_args_list[0][1]["value"] == 'Investigation being performed'
+        assert mock_upd.call_args_list[1][1]["issue_id"] == MOCK_ISSUE_ID
+        assert mock_upd.call_args_list[1][1]["update_type"] == 'Assignee'
+        assert mock_upd.call_args_list[1][1]["value"] == MOCK_EMAIL
+        assert mock_upd.call_args_list[2][1]["issue_id"] == MOCK_ISSUE_ID
+        assert mock_upd.call_args_list[2][1]["update_type"] == 'Priority'
+        assert mock_upd.call_args_list[2][1]["value"] == 'Critical'
+        assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
+        assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
+        assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
+        assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
+        assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
+        assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
+
+    def test_get_modified_remote_data_command(self, requests_mock):
+        """
+        Given:
+            - an Expanse client
+            - arguments - lastUpdate time
+            - raw incidents (result of client.get_issues)
+        When
+            - running get_modified_remote_data_command
+        Then
+            - the method is returning a list of incidents IDs that were modified
+        """
+        from ExpanseV2 import get_modified_remote_data_command, Client
+
+        get_incidents_list_response = util_load_json('./test_data/expanse_get_issues.json')
+
+        client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
+
+        requests_mock.get(
+            "https://example.com/api/v1/issues/issues?limit=100&modifiedAfter=2020-11-18T11%3A16%3A52.005381Z",
+            json=get_incidents_list_response)
+        args = {
+            'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
+        }
+
+        response = get_modified_remote_data_command(client, args)
+
+        assert response.modified_incident_ids == [
+            '62089967-7b41-3d49-a21d-d12753d8fd91',
+            '6295b21f-f2e5-3189-9d6d-338cb129014c',
+            '62a4bfb9-4107-3a9c-9c2f-e3bb9c2f27e9',
+            'a4091781-373c-36c4-b928-c57e55f514f0',
+            'a41ceb18-72f6-3335-a791-98afacd8da5b'
+        ]
 
 
 def test_update_issue_command(requests_mock):
@@ -368,74 +586,6 @@ def test_update_issue_command(requests_mock):
     assert result.outputs_prefix == "Expanse.IssueUpdate"
     assert result.outputs_key_field == "id"
     assert result.outputs == MOCK_ISSUE_UPDATE
-
-
-def test_update_remote_system_command(mocker, requests_mock):
-    """
-    Given:
-        - an Expanse client
-        - incident changes (a comment and 3 field changes)
-    When
-        - outgoing mirroring triggered by a change in the incident
-    Then
-        - a comment is created in the Expanse issue
-        - the Expanse issue is updated with the corresponding updates type and values
-        - the returned result corresponds to the Expanse issue id
-    """
-    from ExpanseV2 import Client, update_remote_system_command
-    import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
-
-    client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
-
-    MOCK_ISSUE_ID = "a827f1a5-f223-4bf6-80e0-e8481bce8e2c"
-    MOCK_EMAIL = "some@test.email"
-    MOCK_COMMENT_ENTRIES = [{
-        "type": 1,
-        "contents": "Investigation being performed",
-        "contentsformat": "text",
-        "note": True,
-        "tags": [],
-        'category': 'chat'
-    }]
-
-    MOCK_DELTA = {
-        "owner": "testuser",
-        "severity": 4,
-        "expanseprogressstatus": "InProgress",
-    }
-
-    args = {
-        "entries": MOCK_COMMENT_ENTRIES,
-        "delta": MOCK_DELTA,
-        "remoteId": MOCK_ISSUE_ID,
-        "incidentChanged": True,
-        "inc_status": 1
-    }
-
-    mocker.patch.object(demisto, 'findUser', return_value={"email": MOCK_EMAIL})
-    mock_upd = mocker.patch.object(client, 'update_issue')
-
-    requests_mock.post(f"/v1/issues/issues/{MOCK_ISSUE_ID}/updates", json={})
-
-    result = update_remote_system_command(client, args, True)
-
-    assert result == MOCK_ISSUE_ID
-    assert mock_upd.call_count == 4
-    assert mock_upd.call_args_list[0][1]["issue_id"] == MOCK_ISSUE_ID
-    assert mock_upd.call_args_list[0][1]["update_type"] == 'Comment'
-    assert mock_upd.call_args_list[0][1]["value"] == 'Investigation being performed'
-    assert mock_upd.call_args_list[1][1]["issue_id"] == MOCK_ISSUE_ID
-    assert mock_upd.call_args_list[1][1]["update_type"] == 'Assignee'
-    assert mock_upd.call_args_list[1][1]["value"] == MOCK_EMAIL
-    assert mock_upd.call_args_list[2][1]["issue_id"] == MOCK_ISSUE_ID
-    assert mock_upd.call_args_list[2][1]["update_type"] == 'Priority'
-    assert mock_upd.call_args_list[2][1]["value"] == 'Critical'
-    assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
-    assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
-    assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
-    assert mock_upd.call_args_list[3][1]["issue_id"] == MOCK_ISSUE_ID
-    assert mock_upd.call_args_list[3][1]["update_type"] == 'ProgressStatus'
-    assert mock_upd.call_args_list[3][1]["value"] == 'InProgress'
 
 
 def test_expanse_get_issue(requests_mock):

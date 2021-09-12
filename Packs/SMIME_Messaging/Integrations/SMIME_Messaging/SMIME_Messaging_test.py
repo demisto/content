@@ -11,13 +11,12 @@ with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)
-note_msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command ' \
-           'again and pass the encoding code as argument.\n'
+note_msg = 'Note: encoding detection ended with warning: Trying to detect encoding from a tiny portion'
 
 test_data = [
     (
         b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
-        'Za¿ó³æ gê¶l± ja¼ñ',
+        'Zaæó³ę gź¶l± ja¼ń',
         note_msg,
         ''
     ),

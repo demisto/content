@@ -17,7 +17,7 @@ JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-###Required Permissions
+### Required Permissions
 In order to run JAMF V2 commands, the user should have a set of minimum permissions on the Jamf Pro server. Changing permissions on Jamf Pro server can be done using the following steps inside the Jamf Pro management GUI:
 
 1.Go to “Management Settings → All Settings → Jamf Pro User Accounts & Group”
@@ -34,18 +34,18 @@ In order to run JAMF V2 commands, the user should have a set of minimum permissi
 
 | Combined permissions for all of the commands: |
 | --- |
-| Jamf Pro Server Objects → Computers → Read
-| Jamf Pro Server Objects → Computers → Create
-| Jamf Pro Server Objects → Users → Read
-| Jamf Pro Server Objects → Mobile Devices → Read
-| Jamf Pro Server Objects → Mobile Devices → Create
-| Jamf Pro Server Objects → Advanced Computer Searches → Read
-| Jamf Pro Server Settings → Apple Education Support → Read
-| Jamf Pro Server Actions → Send Computer Remote Lock Command
-| Jamf Pro Server Actions → Send Computer Remote Wipe Command
-| Jamf Pro Server Actions → Send Mobile Device Lost Mode Command
-| Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command
-| Jamf Pro Server Actions → View Mobile Device Lost Mode Location
+| Jamf Pro Server Objects → Computers → Read |
+| Jamf Pro Server Objects → Computers → Create |
+| Jamf Pro Server Objects → Users → Read |
+| Jamf Pro Server Objects → Mobile Devices → Read |
+| Jamf Pro Server Objects → Mobile Devices → Create |
+| Jamf Pro Server Objects → Advanced Computer Searches → Read |
+| Jamf Pro Server Settings → Apple Education Support → Read |
+| Jamf Pro Server Actions → Send Computer Remote Lock Command |
+| Jamf Pro Server Actions → Send Computer Remote Wipe Command |
+| Jamf Pro Server Actions → Send Mobile Device Lost Mode Command |
+| Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command |
+| Jamf Pro Server Actions → View Mobile Device Lost Mode Location |
 
 
 ## Commands

@@ -1,7 +1,7 @@
 id: Detonate File - Group-IB TDS Polygon
 version: -1
 name: Detonate File - Group-IB TDS Polygon
-description: 'Detonate file using Group-IB TDS Polygon integration. This playbook
+description: 'Detonate file using Group-IB THF Polygon integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab,
   chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe,
@@ -159,7 +159,7 @@ tasks:
       id: d2123158-1ae0-4f5e-87fd-ed63ac94647f
       version: -1
       name: polygon-export-report
-      description: Export an archive with TDS Polygon report to War Room
+      description: Export an archive with THF Polygon report to War Room
       script: Group-IB TDS Polygon|||polygon-export-report
       type: regular
       iscommand: true
@@ -193,7 +193,7 @@ tasks:
       id: 4a79b7e8-4212-4b47-8078-bfb2dde6e1b4
       version: -1
       name: polygon-analysis-info
-      description: Get TDS Polygon analysis information
+      description: Get THF Polygon analysis information
       script: Group-IB TDS Polygon|||polygon-analysis-info
       type: regular
       iscommand: true
@@ -300,7 +300,7 @@ tasks:
     task:
       id: 6bf891c0-3f7e-4265-8eb9-17931764bff6
       version: -1
-      name: Is TDS Polygon integration enabled?
+      name: Is THF Polygon integration enabled?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -482,7 +482,7 @@ outputs:
   description: Process end time
   type: date
 - contextPath: Polygon.Analysis.ID
-  description: Analysis ID in TDS
+  description: Analysis ID in THF
   type: number
 - contextPath: Polygon.Analysis.Name
   description: File Name

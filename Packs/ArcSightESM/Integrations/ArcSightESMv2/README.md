@@ -156,7 +156,6 @@ Gets information about a single case.
 | resourceId | Resource ID of the case to get information for | Required | 
 | withBaseEvents | If "true", then will return case and base events of that case | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |

@@ -16,22 +16,6 @@ configuration:
   name: customer
   required: false
   type: 0
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: unsecure
-  required: false
-  type: 8
-- display: Fetch only incidents matching this rule name
-  name: ruleName
-  required: false
-  type: 0
-- display: Fetch only incidents with this severity
-  name: policySeverity
-  required: false
-  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -40,6 +24,32 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Fetch only incidents matching this rule name
+  name: ruleName
+  required: false
+  type: 0
+- display: Fetch only incidents matching this policy name
+  name: policyName
+  required: false
+  type: 0
+- display: Fetch only incidents with this severity
+  name: policySeverity
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
 description: Cloud threat defense
 display: Prisma Cloud (RedLock)
 name: RedLock
@@ -682,11 +692,11 @@ script:
   isfetch: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
 defaultclassifier: RedLock
 defaultmapperin: RedLock-mapper
 tests:
-- No tests (auto formatted)
+- RedLockTest

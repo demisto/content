@@ -5,10 +5,13 @@
 	"description": "CrowdStrike Falcon Incident Classifier",
 	"version": -1,
 	"defaultIncidentType": "CrowdStrike Falcon Incident",
+	"keyTypeMap": {
+		"detection": "CrowdStrike Falcon Detection",
+		"incident": "CrowdStrike Falcon Incident"
+	},
 	"transformer": {
 		"complex": null,
-		"simple": ""
+		"simple": "incident_type"
 	},
-	"keyTypeMap": {},
 	"fromVersion": "6.0.0"
 }

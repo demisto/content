@@ -278,8 +278,8 @@ class TestArcherV2:
         assert field_id == '6969'
 
     def test_get_level_by_app_id(self, requests_mock):
-        requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
-                                                                                           }, 'IsSuccessful': True})
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '')
@@ -333,7 +333,7 @@ class TestArcherV2:
 
     def test_get_record_failed(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
         client = Client(BASE_URL, '', '', '', '')
         record, res, errors = client.get_record(75, 1010)
@@ -343,7 +343,7 @@ class TestArcherV2:
 
     def test_get_record_success(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
@@ -364,7 +364,7 @@ class TestArcherV2:
 
     def test_search_records(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
 
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
@@ -383,7 +383,7 @@ class TestArcherV2:
         demisto.setIntegrationContext(cache)
 
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '')
@@ -402,7 +402,7 @@ class TestArcherV2:
         demisto.setIntegrationContext(cache)
 
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 

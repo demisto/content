@@ -1,13 +1,13 @@
-TDS Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
-This integration was integrated and tested with version 3.1 of Group-IB TDS Polygon
+THF Polygon is a Malware Detonation & Research platform designed for deep dynamic analysis and enhanced indicators extraction. THF Polygon analyzes submitted files and urls and extracts deep IOCs that appear when malicious code is triggered and executed. Polygon could be used either for application-level tasks (like smtp-based mail filtering) and analytical purposes (files/urls analysis for verdict, report and indicators).
+This integration was integrated and tested with version 3.1 of Group-IB THF Polygon
 
-## Configure Group-IB TDS Polygon on Cortex XSOAR
+## Configure Group-IB THF Polygon on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Group-IB TDS Polygon.
+2. Search for Group-IB THF Polygon.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
+| **Parameter** | **Description** | **Required** |f
 | --- | --- | --- |
 | server | Server URL (e.g., `https://huntbox.group-ib.com`) | True |
 | api_key | API Key | True |
@@ -39,7 +39,7 @@ Upload file for analysis
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Polygon.Analysis.ID | string | Analysis ID in TDS | 
+| Polygon.Analysis.ID | string | Analysis ID in THF | 
 | Polygon.Analysis.EntryID | string | File id in Demisto | 
 | Polygon.Analysis.FileName | string | Original file name | 
 | Polygon.Analysis.Status | string | The analysis status | 
@@ -85,7 +85,7 @@ Upload URL for analysis
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Polygon.Analysis.ID | string | Analysis ID in TDS | 
+| Polygon.Analysis.ID | string | Analysis ID in THF | 
 | Polygon.Analysis.URL | string | URL analyzed | 
 | Polygon.Analysis.Status | string | Polygon analysis status | 
 
@@ -112,7 +112,7 @@ Upload URL for analysis
 
 ### polygon-analysis-info
 ***
-Get TDS Polygon analysis info
+Get THF Polygon analysis info
 
 
 #### Base Command
@@ -122,7 +122,7 @@ Get TDS Polygon analysis info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in TDS | Required | 
+| tds_analysis_id | Analysis ID in THF | Required | 
 
 
 #### Context Output
@@ -154,7 +154,7 @@ Get TDS Polygon analysis info
 | Process.Path | String | Process path | 
 | Process.StartTime | date | Process start time | 
 | Process.EndTime | date | Process end time | 
-| Polygon.Analysis.ID | string | TDS File ID | 
+| Polygon.Analysis.ID | string | THF File ID | 
 | Polygon.Analysis.Name | string | File Name | 
 | Polygon.Analysis.Size | number | File Size | 
 | Polygon.Analysis.Started | date | Analysis start timestamp | 
@@ -190,67 +190,67 @@ Get TDS Polygon analysis info
             "Indicator": "ba9fe2cb8ee2421ea24a55306ce9d923",
             "Score": 3,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
             "Score": 0,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Score": 0,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "3a29353e30ddd1af92f07ee0f61a3a706ee09a64",
             "Score": 0,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "c41542c7dd5a714adfeafec77022ae0a722ff3a8",
             "Score": 0,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "svettenkirch.de",
             "Score": 0,
             "Type": "domain",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "super.esu.as",
             "Score": 0,
             "Type": "domain",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "8.8.8.8",
             "Score": 0,
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "79.98.29.14",
             "Score": 0,
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "217.114.216.252",
             "Score": 0,
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         },
         {
             "Indicator": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg",
             "Score": 0,
             "Type": "url",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         }
     ],
     "Domain": [
@@ -268,7 +268,7 @@ Get TDS Polygon analysis info
             "MD5": "ba9fe2cb8ee2421ea24a55306ce9d923",
             "Malicious": {
                 "Description": "Verdict probability: 64.8%, iocs: JS:Trojan.Agent.DQBF",
-                "Vendor": "Group-IB TDS Polygon"
+                "Vendor": "Group-IB THF Polygon"
             },
             "Name": "link.pdf",
             "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
@@ -828,7 +828,7 @@ Get TDS Polygon analysis info
 
 ### polygon-export-report
 ***
-Export an archive with TDS Polygon report to War Room
+Export an archive with THF Polygon report to War Room
 
 
 #### Base Command
@@ -838,7 +838,7 @@ Export an archive with TDS Polygon report to War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in TDS | Required | 
+| tds_analysis_id | Analysis ID in THF | Required | 
 
 
 #### Context Output
@@ -885,7 +885,7 @@ Network activity dump export
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in TDS | Required | 
+| tds_analysis_id | Analysis ID in THF | Required | 
 
 
 #### Context Output
@@ -932,7 +932,7 @@ Screen activity video export
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tds_analysis_id | Analysis ID in TDS | Required | 
+| tds_analysis_id | Analysis ID in THF | Required | 
 
 
 #### Context Output
@@ -1015,13 +1015,13 @@ Check file reputation
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Score": 3,
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon"
+            "Vendor": "Group-IB THF Polygon"
         }
     ],
     "File": {
         "Malicious": {
-            "Description": "TDS Polygon score: 24.0",
-            "Vendor": "Group-IB TDS Polygon"
+            "Description": "THF Polygon score: 24.0",
+            "Vendor": "Group-IB THF Polygon"
         },
         "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"
     },

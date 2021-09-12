@@ -1,0 +1,17 @@
+[
+    {
+        "Type": 1,
+        "Contents": {
+            "dbotIncidentClose": true,
+            "closeReason": "Resolved",
+            "closeNotes": ""
+        },
+        "ContentsFormat": "json"
+    },
+    {
+        "Type": 1,
+        "Contents": "Mirroring: Expanse Bot updated field [progressStatus] from [Investigating] to [Resolved]",
+        "ContentsFormat": "text",
+        "Note": false
+    }
+]

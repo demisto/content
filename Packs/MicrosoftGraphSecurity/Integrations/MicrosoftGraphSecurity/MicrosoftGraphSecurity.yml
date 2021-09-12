@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -52,17 +53,24 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: Fetch incidents of the given providers only. Multiple providers can be inserted, seperated by a comma, e.g. "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
+- display: Fetch incidents of the given providers only. Multiple providers can be
+    inserted, seperated by a comma, e.g. "{first_provider},{second_provioder}". If
+    empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false
   type: 0
-- display: Use this field to filter the incidents that are being fetched according to any of the alert properties. Filter should be in the format "{property} eq '{property-value}'", multiple filters can be applied seperated with " and ", e.g. "createdDateTime eq YYYY-MM-DD and severity eq 'high'". Overrides the providers list, if given.
+- display: Use this field to filter the incidents that are being fetched according
+    to any of the alert properties. Filter should be in the format "{property} eq
+    '{property-value}'", multiple filters can be applied seperated with " and ", e.g.
+    "createdDateTime eq YYYY-MM-DD and severity eq 'high'". Overrides the providers
+    list, if given.
   hidden: false
   name: fetch_filter
   required: false
   type: 0
-description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph
+  Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
 script:
@@ -70,7 +78,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: When the alert was last modified in the following string format - YYYY-MM-DD
+      description: When the alert was last modified in the following string format
+        - YYYY-MM-DD
       isArray: false
       name: last_modified
       predefined:
@@ -93,31 +102,36 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
+      description: Category of the alert, e.g. credentialTheft, ransomware (Categories
+        can be added or removed by vendors.)
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
+      description: The start time (creation time of alert) for the search in the following
+        string format - YYYY-MM-DD
       isArray: false
       name: time_from
       required: false
       secret: false
     - default: false
-      description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
+      description: The end time (creation time of alert) for the search in the following
+        string format -  YYYY-MM-DD
       isArray: false
       name: time_to
       required: false
       secret: false
     - default: false
-      description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
+      description: Use this field to filter on any of the alert properties in the
+        format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
       isArray: false
       name: filter
       required: false
       secret: false
     deprecated: false
-    description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
+    description: List alerts (security issues) within a customer's tenant that Microsoft
+      or partner security solutions have identified.
     execution: false
     name: msg-search-alerts
     outputs:
@@ -163,7 +177,9 @@ script:
       secret: false
     - default: false
       defaultValue: All
-      description: 'Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
+      description: 'Fields to fetch for specified Alert apart from the basic properties,
+        given as comma separated values, e.g. NetworkConnections,Processes. Optional
+        values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
       isArray: false
       name: fields_to_include
       required: false
@@ -208,13 +224,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
+      description: Name of the analyst the alert is assigned to for triage, investigation,
+        or remediation.
       isArray: false
       name: assigned_to
       required: false
       secret: false
     - default: false
-      description: Time at which the alert was closed in the following string format - MM/DD/YYYY
+      description: Time at which the alert was closed in the following string format
+        - MM/DD/YYYY
       isArray: false
       name: closed_date_time
       required: false
@@ -250,7 +268,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: User-definable labels that can be applied to an alert and can serve as filter conditions, e.g.  "HVA", "SAW).
+      description: User-definable labels that can be applied to an alert and can serve
+        as filter conditions, e.g.  "HVA", "SAW).
       isArray: false
       name: tags
       required: false
@@ -262,13 +281,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: Details about the security service vendor, e.g. Windows Defender ATP
+      description: Details about the security service vendor, e.g. Windows Defender
+        ATP
       isArray: false
       name: provider_information
       required: true
       secret: false
     deprecated: false
-    description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
+    description: Update an editable alert property within any integrated solution
+      to keep alert status and assignments in sync across solutions using its reference
+      ID.
     execution: false
     name: msg-update-alert
     outputs:
@@ -279,7 +301,7 @@ script:
       description: Alert status
       type: string
   - deprecated: true
-    description: Deprecated. Use the Microsoft Graph User integration instead.
+    description: Deprecated. Use the Azure Active Directory Users integration instead.
     execution: false
     name: msg-get-users
     outputs:
@@ -303,7 +325,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated. Use the Microsoft Graph User integration instead.
+    description: Deprecated. Use the Azure Active Directory Users integration instead.
     execution: false
     name: msg-get-user
     outputs:
@@ -319,7 +341,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
