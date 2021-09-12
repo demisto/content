@@ -78,7 +78,7 @@ function create_new_pack {
   done
   update_conf_json_file $pack_name $new_pack_name
 
-  demisto-sdk update-release-notes -i ${new_pack_path} -v 1.0.0 --force
+  demisto-sdk update-release-notes -i Packs/${new_pack_path} -v 1.0.0 --force
 
   cd "${original_path}" || fail
   git add "$new_pack_path"
