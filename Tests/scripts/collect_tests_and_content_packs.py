@@ -19,7 +19,7 @@ from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
-    should_install_content_pack
+    should_install_content_pack, is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
 
@@ -393,6 +393,8 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 tests.add(test)
 
             else:
+                # pack_name = tools.get_pack_name(file_path)
+                # if pack_name and is_pack_xsoar_supported(pack_name):
                 message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 logging.error(message)
                 global _FAILED

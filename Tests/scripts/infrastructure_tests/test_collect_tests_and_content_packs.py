@@ -17,7 +17,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch)
+    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch, update_with_tests_sections)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
 from Tests.scripts.utils import content_packs_util
 
@@ -1285,3 +1285,28 @@ def test_is_release_branch_negative(mocked_branch_name):
     """
     with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
         assert not is_release_branch()
+
+def test_update_with_tests_sections(tmpdir):
+    """
+    Given:
+    - Modified YML file that has a test playbook.
+
+    When:
+    - Test playbook is not listed in conf JSON file.
+    - Pack is not xsoar supported.
+
+    Then:
+    - Ensure FAILED global does not change to true.
+    """
+    from Tests.scripts import collect_tests_and_content_packs
+    os.mkdir(f'{tmpdir}/Packs')
+    os.mkdir(f'{tmpdir}/Packs/PartnerPack')
+    os.mkdir(f'{tmpdir}/Packs/PartnerPack/TestPlaybooks')
+    with open(f'{tmpdir}/Packs/PartnerPack/pack_metadata.json', 'w') as f:
+        f.write(json.dumps({'support': 'partner'}))
+    modified_yml = f'{tmpdir}/Packs/PartnerPack/TestPlaybooks/PartnerTestPlaybook.yml'
+    with open(modified_yml, 'w') as f:
+        f.write('tests:\n- PartnerTest')
+    collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
+    update_with_tests_sections(set(), [modified_yml], set(), [])
+    assert not collect_tests_and_content_packs._FAILED
