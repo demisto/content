@@ -30,7 +30,7 @@ name: OpenPhish_v2
 display: OpenPhish v2
 defaultEnabled: false
 script:
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   commands:
     - name: url
       arguments:
