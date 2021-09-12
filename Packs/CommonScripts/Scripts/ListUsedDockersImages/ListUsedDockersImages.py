@@ -101,14 +101,14 @@ def extract_dockers_from_automation_search_result(content: str) -> dict:
     return dockers
 
 
-def merge_result(docker_list: dict, result_str: dict = {}, max_entries_per_docker: int = 5) -> dict:
+def merge_result(docker_list: dict, result_dict: dict = {}, max_entries_per_docker: int = 5) -> dict:
     """Returns a python dict of the merge result
 
     :type docker_list: ``dict``
     :param docker_list: dictionary representation for the docker image used by integration or script
 
-    :type result_str: ``dict``
-    :param result_str: dictionary representation for the docker image and the integration/scripts belongs to it
+    :type result_dict: ``dict``
+    :param result_dict: dictionary representation for the docker image and the integration/scripts belongs to it
                        merge the current result to it
 
     :type max_entries_per_docker: ``int``
@@ -118,7 +118,7 @@ def merge_result(docker_list: dict, result_str: dict = {}, max_entries_per_docke
     :rtype: dict
 
     """
-    result = result_str or {}
+    result = result_dict or {}
     for integration_script, docker_image in docker_list.items():
         if integration_script in ['CommonServerUserPowerShell', 'CommonServerUserPython']:
             continue
@@ -138,7 +138,7 @@ def get_used_dockers_images() -> CommandResults:
     md = None
     active_docker_list_integration = {}
     active_docker_list_automation = {}
-    result_str = ''
+    result_dict = {}
 
     active_integration_instances = demisto.internalHttpRequest(POST_COMMAND, "%s" % SETTING_INTEGRATION_SEARCH,
                                                                REQUEST_INTEGRATION_SEARCH_BODY)
@@ -158,12 +158,12 @@ def get_used_dockers_images() -> CommandResults:
     demisto.debug("entries in list active_docker_list_integration", active_docker_list_integration)
     demisto.debug("entries in list active_docker_list_automation", active_docker_list_automation)
 
-    result_str = merge_result(active_docker_list_integration, result_str, MAX_PER_DOCKER)
-    result_str = merge_result(active_docker_list_automation, result_str, MAX_PER_DOCKER)
+    result_dict = merge_result(active_docker_list_integration, result_dict, MAX_PER_DOCKER)
+    result_dict = merge_result(active_docker_list_automation, result_dict, MAX_PER_DOCKER)
 
     ''' format the result for Markdown view'''
     result_output = []
-    for docker_image, integration_script in result_str.items():
+    for docker_image, integration_script in result_dict.items():
         result_output.append({
             'Docker Image': docker_image,
             'Integrations/Automations': integration_script
