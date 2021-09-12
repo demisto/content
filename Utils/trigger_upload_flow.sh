@@ -95,6 +95,7 @@ function update_conf_json_file {
 
   python - << EOF
 import json
+
 def copy_and_replace_dict(dictionary,original_name, new_name):
     return {k: v.replace(original_name, new_name) if isinstance(v,str) else v for k,v in dictionary.items()}
 
@@ -102,6 +103,8 @@ with open('${CONTENT_PATH}/Tests/conf.json') as f:
   conf_file = json.load(f)
   relevant_tests = [copy_and_replace_dict(d,"$pack_name","$new_pack_name") for d in conf_file.get('tests') if d.get('integrations') == "$pack_name" and "$pack_name" in d.get('playbookID','')]
   conf_file['tests'] += relevant_tests
+
+with open('${CONTENT_PATH}/Tests/conf.json', 'w') as f:
   json.dump(conf_file,f)
 EOF
 
