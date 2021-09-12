@@ -1,6 +1,5 @@
-id: a0bed461-8bc9-4d13-867c-028a9e641ae4
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: WildFire Detonate File - Test
+version: -1
 name: WildFire Detonate File - Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -91,6 +91,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -198,3 +199,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: PA wildfire test playbook for detonate file
