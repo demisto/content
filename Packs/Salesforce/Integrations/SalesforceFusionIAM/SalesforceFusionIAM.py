@@ -26,7 +26,7 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.username = username
         self.password = password
-        self.headers = headers
+        self.headers = headers if headers else {}
         self.headers['Authorization'] = f'Bearer {self.create_login()}'
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
@@ -355,7 +355,7 @@ def main():
         client_id=client_id,
         client_secret=client_secret,
         username=username,
-        password=password+secret_token,
+        password=password+secret_token if password and secret_token else None,
         manager_email=manager_email,
     )
 

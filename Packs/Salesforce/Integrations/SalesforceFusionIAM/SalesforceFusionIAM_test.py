@@ -58,12 +58,12 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the resulted User Profile object holds the correct user details
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_USER_OUTPUT)
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
@@ -72,6 +72,7 @@ class TestSalesforceFusionIAM:
                 json={"searchRecords": [{"Id": "mock_id"}]}
             )
 
+            client = mock_client()
             user_profile = IAMCommand().get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -95,10 +96,10 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the resulted User Profile object holds information about an unsuccessful result.
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
                 f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
@@ -106,6 +107,7 @@ class TestSalesforceFusionIAM:
                 json={}
             )
 
+            client = mock_client()
             user_profile = IAMCommand().get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -128,13 +130,13 @@ class TestSalesforceFusionIAM:
         """
 
         import demistomock as demisto
-        client = mock_client()
 
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
         error_msg = {"detail": "something has gone wrong on the website's server", "message": "INTERNAL SERVER ERROR"}
         mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
                 f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
@@ -142,6 +144,7 @@ class TestSalesforceFusionIAM:
                 status_code=500, json=error_msg
             )
 
+            client = mock_client()
             user_profile = IAMCommand().get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -161,10 +164,10 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure a User Profile object with the user data is returned
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             # User does not exist
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
@@ -175,6 +178,7 @@ class TestSalesforceFusionIAM:
             # Create the user
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c', json=APP_USER_OUTPUT)
 
+            client = mock_client()
             user_profile = IAMCommand().create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -199,10 +203,10 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the command is considered successful and the user is still disabled
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             # User already exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
             m.get(
@@ -214,6 +218,7 @@ class TestSalesforceFusionIAM:
             # Update the user
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
 
+            client = mock_client()
             user_profile = IAMCommand().create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -241,10 +246,10 @@ class TestSalesforceFusionIAM:
             - Ensure the create action is executed
             - Ensure a User Profile object with the user data is returned
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             # User does not exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
             m.get(
@@ -258,6 +263,7 @@ class TestSalesforceFusionIAM:
             # The update user endpoint
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
 
+            client = mock_client()
             user_profile = IAMCommand(create_if_not_exists=True).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -281,8 +287,12 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the command is considered successful and skipped
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+
+        with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
+
+            client = mock_client()
 
         user_profile = IAMCommand(is_update_enabled=False).update_user(client, args)
 
@@ -305,11 +315,11 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the user is enabled at the end of the command execution.
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'},
                 'allow-enable': 'true'}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
@@ -319,6 +329,7 @@ class TestSalesforceFusionIAM:
             )
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
 
+            client = mock_client()
             user_profile = IAMCommand().update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -343,10 +354,10 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure the command is considered successful and skipped
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             # User does not exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
             m.get(
@@ -356,6 +367,7 @@ class TestSalesforceFusionIAM:
                 json={"searchRecords": [{"Id": "mock_id"}]}
             )
 
+            client = mock_client()
             user_profile = IAMCommand().disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -377,7 +389,7 @@ class TestSalesforceFusionIAM:
         """
         import demistomock as demisto
         mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com'})
+        mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com', 'secret_token': '123456'})
         mock_result = mocker.patch('SalesforceFusionIAM.return_results')
 
         schema = {
@@ -388,6 +400,7 @@ class TestSalesforceFusionIAM:
         }
 
         with requests_mock.Mocker() as m:
+            m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
 
             main()
