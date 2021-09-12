@@ -1,30 +1,30 @@
+import base64
+import fnmatch
+import glob
 import json
+import logging
 import os
+import re
+import shutil
 import stat
 import subprocess
-import fnmatch
-import re
-import glob
-import git
-import sys
-import shutil
-import yaml
-import google.auth
-from google.cloud import storage
-import base64
 import urllib.parse
-import logging
 import warnings
+from datetime import datetime, timedelta
 from distutils.util import strtobool
 from distutils.version import LooseVersion
-from datetime import datetime, timedelta
+from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
-from typing import Tuple, Any, Union
 
+import git
+import google.auth
+import sys
+import yaml
+from google.cloud import storage
+
+import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
-import Tests.Marketplace.marketplace_statistics as mp_statistics
-
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 
 
@@ -69,7 +69,7 @@ class Pack(object):
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = None  # initialized in load_user_metadata function
-        self.eula_link = None   # initialized in load_user_metadata function
+        self.eula_link = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -362,6 +362,7 @@ class Pack(object):
             list: list of sorted integration images
 
         """
+
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -650,7 +651,8 @@ class Pack(object):
 
         return dependencies_data_result, self._is_missing_dependencies
 
-    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
+    @staticmethod
+    def _get_updated_changelog_entry(changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
                                      released_time: str = None):
         """
@@ -669,9 +671,11 @@ class Pack(object):
         version_display_name = \
             version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
         build_number_with_prefix = \
-            build_number_with_prefix if build_number_with_prefix else changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+            build_number_with_prefix if build_number_with_prefix else \
+            changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[
+            Changelog.RELEASE_NOTES]
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
 
@@ -784,7 +788,7 @@ class Pack(object):
             pack_name (str): The name of the pack that should be encrypted.
             encryption_key (str): The key which we can decrypt the pack with.
             extract_destination_path (str): The path in which the pack resides.
-            private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+            private_artifacts_dir (str): The chosen name for the private artifacts directory.
             secondary_encryption_key (str) : A second key which we can decrypt the pack with.
         """
         try:
@@ -913,11 +917,11 @@ class Pack(object):
 
         Returns:
             bool: whether the operation succeeded.
-            list: list of files that were modified.
+            list: list of RN files that were modified.
             bool: whether pack was modified and override will be required.
         """
         task_status = False
-        modified_files_paths = []
+        modified_rn_files_paths = []
         pack_was_modified = False
 
         try:
@@ -944,18 +948,20 @@ class Pack(object):
                         if not is_ignored_pack_file(modified_file_path_parts):
                             logging.info(f"Detected modified files in {self._pack_name} pack")
                             task_status, pack_was_modified = True, True
-                            modified_files_paths.append(modified_file.a_path)
+                            modified_rn_files_paths.append(modified_file.a_path)
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
+                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
+                # Filter modifications in release notes config JSON file - they will be handled later on.
+                modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
-            return task_status, modified_files_paths, pack_was_modified
+            return task_status, modified_rn_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
                           private_content=False, pack_artifacts_path=None):
@@ -1014,7 +1020,8 @@ class Pack(object):
                     blob.upload_from_file(pack_zip)
 
                 print(
-                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
+                    f"packs/{self._pack_name}.zip")
                 shutil.copy(secondary_encryption_key_artifacts_path,
                             f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
@@ -1148,7 +1155,7 @@ class Pack(object):
         modified_versions_dict = {}
 
         for rn_filename in modified_rn_files:
-            version = release_notes_file_to_version(rn_filename)
+            version = underscore_file_name_to_dotted_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
             if version in new_release_notes_versions:
                 continue
@@ -1193,8 +1200,8 @@ class Pack(object):
         higher_nearest_version = min(higher_versions)
         lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
         lower_nearest_version = max(lower_versions)
-        for rn_filename in os.listdir(release_notes_dir):
-            current_version = release_notes_file_to_version(rn_filename)
+        for rn_filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
+            current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < LooseVersion(current_version) <= higher_nearest_version:
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
@@ -1217,9 +1224,8 @@ class Pack(object):
         """
         found_versions: list = list()
         pack_versions_dict: dict = dict()
-
-        for filename in sorted(os.listdir(release_notes_dir)):
-            version = release_notes_file_to_version(filename)
+        for filename in sorted(filter_dir_files_by_extension(release_notes_dir, '.md')):
+            version = underscore_file_name_to_dotted_version(filename)
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if LooseVersion(version) > changelog_latest_rn_version:
@@ -1274,11 +1280,11 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_files_paths):
+    def get_rn_files_names(self, modified_rn_files_paths):
         """
 
         Args:
-            modified_files_paths: a list containing all modified files in the current pack, generated
+            modified_rn_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes files out of the given list only,
@@ -1286,14 +1292,14 @@ class Pack(object):
 
         """
         modified_rn_files = []
-        for file_path in modified_files_paths:
+        for file_path in modified_rn_files_paths:
             modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
             if self.RELEASE_NOTES in modified_file_path_parts:
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False,
-                              modified_files_paths=None):
+                              modified_rn_files_paths=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1301,7 +1307,7 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             pack_was_modified (bool): whether the pack modified or not.
-            modified_files_paths (list): list of paths of the pack's modified file
+            modified_rn_files_paths (list): list of paths of the pack's modified file
 
         Returns:
             bool: whether the operation succeeded.
@@ -1309,9 +1315,9 @@ class Pack(object):
         """
         task_status = False
         not_updated_build = False
+        release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        if not modified_files_paths:
-            modified_files_paths = []
+        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
 
         try:
             # load changelog from downloaded index
@@ -1320,7 +1326,6 @@ class Pack(object):
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version, changelog_latest_rn = \
                     self.get_changelog_latest_rn(changelog_index_path)
-                release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
@@ -1330,7 +1335,7 @@ class Pack(object):
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_files_paths)
+                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
@@ -1403,6 +1408,9 @@ class Pack(object):
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
                 return task_status, not_updated_build
+
+            # Update change log entries with BC flag.
+            self.add_bc_entries_if_needed(release_notes_dir, changelog)
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -2408,6 +2416,185 @@ class Pack(object):
             os.path.basename(file_path).endswith('.yml')
         ])
 
+    def add_bc_entries_if_needed(self, release_notes_dir: str, changelog: Dict[str, Any]) -> None:
+        """
+        Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
+        zipped into few RN versions, check if at least one of the versions is BC).
+        Check if RN is BC is done by doing the following:
+         1) Check if RN has corresponding config file, e.g 1_0_1.md has corresponding 1_0_1.json file.
+         2) If it does, check if `isBreakingChanges` field is true
+        If such version exists, adds a
+        true value to 'breakingChanges' field.
+        if JSON file also has breakingChangesNotes configures, adds `breakingChangesNotes` field to changelog file.
+        This function iterates every entry in changelog because it takes into consideration four scenarios:
+          a) Entry without breaking changes, changes to entry with breaking changes (because at least one of the
+             versions in the entry was marked as breaking changes).
+          b) Entry without breaking changes, does not change.
+          c) Entry with breaking changes, changes to entry without breaking changes (because all the BC versions
+             corresponding to the changelog entry were re-marked as not BC).
+          d) Entry with breaking changes, does not change.
+        Args:
+            release_notes_dir (str): RN dir path.
+            changelog (Dict[str, Any]): Changelog data represented as a dict.
+
+        Returns:
+            (None): Modifies changelog, adds bool value to 'breakingChanges' and `breakingChangesNotes` fields to every
+             changelog entry, according to the logic described above.
+        """
+        if not os.path.exists(release_notes_dir):
+            return
+        bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
+        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
+        predecessor_version: LooseVersion = LooseVersion('0.0.0')
+        for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
+            rn_loose_version: LooseVersion = LooseVersion(changelog_entry)
+            if bc_versions := self._changelog_entry_bc_versions(predecessor_version, rn_loose_version, loose_versions,
+                                                                bc_version_to_text):
+                logging.info(f'Changelog entry {changelog_entry} contains BC versions')
+                changelog[changelog_entry]['breakingChanges'] = True
+                if bc_text := self._calculate_bc_text(release_notes_dir, bc_versions):
+                    changelog[changelog_entry]['breakingChangesNotes'] = bc_text
+                else:
+                    changelog[changelog_entry].pop('breakingChangesNotes', None)
+            else:
+                changelog[changelog_entry].pop('breakingChanges', None)
+            predecessor_version = rn_loose_version
+
+    def _calculate_bc_text(self, release_notes_dir: str, bc_version_to_text: Dict[str, Optional[str]]) -> Optional[str]:
+        """
+        Receives BC versions to text dict for current changelog entry. Calculates text for BC entry.
+        Args:
+            release_notes_dir (str): RN dir path.
+            bc_version_to_text (Dict[str, Optional[str]): {bc version, bc_text}
+
+        Returns:
+            (Optional[str]): Text for entry if such was added.
+            If none is returned, server will list the full RN as the BC notes instead.
+        """
+        # Handle cases of one BC version in entry.
+        if len(bc_version_to_text) == 1:
+            return list(bc_version_to_text.values())[0]
+        # Handle cases of two or more BC versions in entry.
+        text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
+        # Case one: Not even one BC version contains breaking text.
+        if len(text_of_bc_versions) == 0:
+            return None
+        # Case two: Only part of BC versions contains breaking text.
+        elif len(text_of_bc_versions) < len(bc_version_to_text):
+            return self._handle_many_bc_versions_some_with_text(release_notes_dir, text_of_bc_versions, bc_without_text)
+        # Case 3: All BC versions contains text.
+        else:
+            # Important: Currently, implementation of aggregating BCs was decided to concat between them
+            # In the future this might be needed to re-thought.
+            return '\n'.join(bc_version_to_text.values())
+
+    def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
+                                                bc_versions_without_text: List[str], ) -> str:
+        """
+        Calculates text for changelog entry where some BC versions contain text and some don't.
+        Important: Currently, implementation of aggregating BCs was decided to concat between them (and if BC version
+        does not have a BC text - concat the whole RN). In the future this might be needed to re-thought.
+        Args:
+            release_notes_dir (str): RN dir path.
+            text_of_bc_versions ([List[str]): List of text of BC versions with text.
+            bc_versions_without_text ([List[str]): List of BC versions without text.
+
+        Returns:
+            (str): Text for BC entry.
+        """
+        bc_with_text_str = '\n'.join(text_of_bc_versions)
+        rn_file_names_without_text = [f'''{bc_version.replace('.', '_')}.md''' for
+                                      bc_version in bc_versions_without_text]
+        other_rn_text: str = self._get_release_notes_concat_str(release_notes_dir, rn_file_names_without_text)
+        if not other_rn_text:
+            logging.error('No RN text, although text was expected to be found for versions'
+                          f' {rn_file_names_without_text}.')
+        return f'{bc_with_text_str}{other_rn_text}'
+
+    @staticmethod
+    def _get_release_notes_concat_str(release_notes_dir: str, rn_file_names: List[str]) -> str:
+        """
+        Concat all RN data found in given `rn_file_names`.
+        Args:
+            release_notes_dir (str): RN dir path.
+            rn_file_names (List[str]): List of all RN files to concat their data.
+
+        Returns:
+            (str): Concat RN data
+        """
+        concat_str: str = ''
+        for rn_file_name in rn_file_names:
+            rn_file_path = os.path.join(release_notes_dir, rn_file_name)
+            with open(rn_file_path, 'r') as f:
+                # Will make the concat string start with new line on purpose.
+                concat_str = f'{concat_str}\n{f.read()}'
+        return concat_str
+
+    @staticmethod
+    def _split_bc_versions_with_and_without_text(bc_versions: Dict[str, Optional[str]]) -> Tuple[List[str], List[str]]:
+        """
+        Splits BCs to tuple of BCs text of BCs containing text, and BCs versions that do not contain BC text.
+        Args:
+            bc_versions (Dict[str, Optional[str]): BC versions mapped to text if exists.
+
+        Returns:
+            (Tuple[List[str], List[str]]): (text of bc versions with text, bc_versions_without_text).
+        """
+        text_of_bc_versions_with_tests: List[str] = []
+        bc_versions_without_text: List[str] = []
+        for bc_version, bc_text in bc_versions.items():
+            if bc_text:
+                text_of_bc_versions_with_tests.append(bc_text)
+            else:
+                bc_versions_without_text.append(bc_version)
+        return text_of_bc_versions_with_tests, bc_versions_without_text
+
+    @staticmethod
+    def _breaking_changes_versions_to_text(release_notes_dir: str) -> Dict[str, Optional[str]]:
+        """
+        Calculates every BC version in given RN dir and maps it to text if exists.
+        Currently, text from a BC version is calculated in the following way:
+        - If RN has `breakingChangesNotes` entry in its corresponding config file, then use the value of that field
+          as the text of the BC to be represented.
+        - Else, use the whole RN text as BC text.
+        Args:
+            release_notes_dir (str): RN dir path.
+
+        Returns:
+            (Dict[str, Optional[str]]): {dotted_version, text}.
+        """
+        bc_version_to_text: Dict[str, Optional[str]] = dict()
+        # Get all config files in RN dir
+        rn_config_file_names = filter_dir_files_by_extension(release_notes_dir, '.json')
+
+        for file_name in rn_config_file_names:
+            file_data: Dict = load_json(os.path.join(release_notes_dir, file_name))
+            # Check if version is BC
+            if file_data.get('breakingChanges'):
+                # Processing name for easier calculations later on
+                processed_name: str = underscore_file_name_to_dotted_version(file_name)
+                bc_version_to_text[processed_name] = file_data.get('breakingChangesNotes')
+        return bc_version_to_text
+
+    @staticmethod
+    def _changelog_entry_bc_versions(predecessor_version: LooseVersion, rn_version: LooseVersion,
+                                     breaking_changes_versions: List[LooseVersion],
+                                     bc_version_to_text: Dict[str, Optional[str]]) -> Dict[str, Optional[str]]:
+        """
+        Gets all BC versions of given changelog entry, every BC s.t predecessor_version < BC version <= rn_version.
+        Args:
+            predecessor_version (LooseVersion): Predecessor version in numeric version order.
+            rn_version (LooseVersion): RN version of current processed changelog entry.
+            breaking_changes_versions (List[LooseVersion]): List of BC versions.
+            bc_version_to_text (Dict[str, Optional[str]): List of all BC to text in the given RN dir.
+
+        Returns:
+            Dict[str, Optional[str]]: Partial list of `bc_version_to_text`, containing only relevant versions between
+                                      given versions.
+        """
+        return {bc_ver.vstring: bc_version_to_text.get(bc_ver.vstring) for bc_ver in breaking_changes_versions if
+                predecessor_version < bc_ver <= rn_version}
+
 
 # HELPER FUNCTIONS
 
@@ -2535,7 +2722,7 @@ def init_storage_client(service_account=None):
     """Initialize google cloud storage client.
 
     In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+    Otherwise, client will be initialized from service account json that is stored in CircleCI.
 
     Args:
         service_account (str): full path to service account json.
@@ -2773,6 +2960,21 @@ def is_ignored_pack_file(modified_file_path_parts):
     return False
 
 
+def filter_dir_files_by_extension(release_notes_dir: str, extension: str) -> List[str]:
+    """
+    Receives path to RN dir, filters only files in RN dir corresponding to the extension.
+    Needed because RN directory will be extended to contain JSON files for configurations,
+    see 'release_notes_bc_calculator.py'
+    Args:
+        release_notes_dir (str): Path to RN dir
+        extension (str): Extension to filter by.
+
+    Returns:
+        (List[str]): List of all of the files in directory corresponding to the extension.
+    """
+    return [file_name for file_name in os.listdir(release_notes_dir) if file_name.endswith(extension)]
+
+
 def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dict):
     """
     Check if the given version is a key of an aggregated changelog block, as in its value in the changelog
@@ -2801,8 +3003,8 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
         return False
     all_rn_versions = []
     lowest_version = [LooseVersion('1.0.0')]
-    for filename in os.listdir(release_notes_dir):
-        current_version = release_notes_file_to_version(filename)
+    for filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
+        current_version = underscore_file_name_to_dotted_version(filename)
         all_rn_versions.append(LooseVersion(current_version))
     lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
     lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
@@ -2810,5 +3012,16 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
 
 
-def release_notes_file_to_version(rn_file_name):
-    return rn_file_name.replace('.md', '').replace('_', '.')
+def underscore_file_name_to_dotted_version(file_name: str) -> str:
+    """
+    Receives file name with expected format of x_x_x<extension>, and transforms it to dotted string.
+    Examples
+        - underscore_file_name_to_dotted_version(1_2_3.md) --> 1.2.3
+        - underscore_file_name_to_dotted_version(1_4_2.json) --> 1.4.2
+    Args:
+        file_name (str): File name.
+
+    Returns:
+        (str): Dotted version of file name
+    """
+    return os.path.splitext(file_name)[0].replace('_', '.')

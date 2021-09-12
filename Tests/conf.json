@@ -530,6 +530,11 @@
             "timeout": 400
         },
         {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -618,10 +623,6 @@
         {
             "integrations": "Akamai WAF",
             "playbookID": "Akamai_WAF-Test"
-        },
-        {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
         },
         {
             "integrations": "abuse.ch SSL Blacklist Feed",
@@ -797,11 +798,6 @@
         {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
-        },
-        {
-            "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test",
-            "timeout": 300
         },
         {
             "integrations": "MISP V3",
@@ -2142,6 +2138,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "GetIndicatorDBotScoreFromCache-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
@@ -2918,6 +2918,10 @@
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
         {
+            "integrations": "SaasSecurity",
+            "playbookID": "SaasSecurity-Test"
+        },
+        {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
@@ -2955,7 +2959,8 @@
         {
             "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
@@ -3399,7 +3404,8 @@
         },
         {
             "integrations": "HPEArubaClearPass",
-            "playbookID": "HPEArubaClearPass_TestPlaybook"
+            "playbookID": "HPEArubaClearPass_TestPlaybook",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -4516,6 +4522,7 @@
         }
     ],
     "skipped_tests": {
+        "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -4609,10 +4616,17 @@
         "Microsoft Teams Management - Test": "Issue 33410",
         "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "Cisco Umbrella Test": "Issue 24338",
-        "Detonate URL - WildFire v2.1 - Test": "Issue 40834"
+        "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862",
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "TestIPQualityScorePlaybook": "Issue 40915",
+        "VerifyOOBV2Predictions-Test": "Issue 37947",
+        "HybridAnalysis-Test": "Issue 26599",
+        "Infoblox Test": "Issue 25651",
+        "Carbon Black Edr - Test": "Issue 40132"
     },
     "skipped_integrations": {
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4705,13 +4719,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -4723,11 +4740,10 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance",
-        "AutoFocus V2": "Nightly build troubleshooting"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988"
     },
     "nightly_integrations": [
-        "Lastline v2",
+        "Laline v2",
         "TruSTAR",
         "VulnDB"
     ],
@@ -4885,9 +4901,11 @@
         "Create-Mock-Feed-Relationships"
     ],
     "private_tests": [
-        "HelloWorldPremium_Scan-Test"
+        "HelloWorldPremium_Scan-Test",
+        "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

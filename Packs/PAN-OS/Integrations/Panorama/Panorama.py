@@ -2801,7 +2801,7 @@ def panorama_create_rule_command(args: dict):
     negate_source = args.get('negate_source')
     negate_destination = args.get('negate_destination')
     action = args.get('action')
-    service = args.get('service')
+    service = argToList(args.get('service'))
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
@@ -2903,7 +2903,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/' + element_to_change
+    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
