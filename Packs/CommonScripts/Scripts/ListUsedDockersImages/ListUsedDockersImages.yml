@@ -1,0 +1,19 @@
+comment: 'List the used dockers images by the installed integrations and/or automations'
+commonfields:
+  id: ListUsedDockersImages
+  version: -1
+enabled: false
+name: ListUsedDockersImages
+outputs:
+- contextPath: BaseScript.Output
+  description: 'Table of dockers images that are used by the XSOAR system'
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
