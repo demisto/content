@@ -1301,7 +1301,6 @@ def slack_send():
     blocks = args.get('blocks')
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
-    demisto.info(f"Message type is - {message_type}")
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
         if message_type != MIRROR_TYPE:
@@ -2081,7 +2080,7 @@ def init_globals(command_name: str = ''):
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
-    PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications')
+    PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
 
 
 def print_thread_dump():
