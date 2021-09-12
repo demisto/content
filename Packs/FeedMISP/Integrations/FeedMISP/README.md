@@ -1,5 +1,5 @@
-Indicators feed from MISP
-This integration was integrated and tested with version 1.0 of MISP Feed
+Indicators feed from MISP.
+This integration was integrated and tested with version 1.0 of MISP Feed.
 ## Configure MISP Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,21 +9,21 @@ This integration was integrated and tested with version 1.0 of MISP Feed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | API Key | The API Key to use for connection | True |
+    | API Key | The API Key to use for the connection. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch indicators |  | False |
-    | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified. | False |
+    | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     |  |  | False |
     |  |  | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Attribute Tags | Attribute tags to get. You can enter a list of tags, separated by ',' , for example &amp;lt;tag1,tag2,tag3&amp;gt;. | False |
-    | Attribute Types | Attribute types to get. You can enter a list of types, separated by ',' , for example &amp;lt;type1,type2,type3&amp;gt;. | False |
-    | Query | JSON query to filter MISP attributes. When query parameter is used Attribute Types and Attribute Tags parameters wont be used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Attribute Tags | Attribute tags to get. You can enter a comma-separated list of tags, for example &amp;lt;tag1,tag2,tag3&amp;gt;. | False |
+    | Attribute Types | Attribute types to get. You can enter a comma-separated list of types, for example &amp;lt;type1,type2,type3&amp;gt;. | False |
+    | Query | JSON query to filter MISP attributes. When a query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&amp;lt;Your MISP url&amp;gt;/servers/openapi\#operation/restSearchAttributes | False |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed, | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -44,7 +44,7 @@ Gets indicators from the feed.
 | limit | The maximum number of results to return. Default is 10. | Optional | 
 | tags | Tags of the attributes to search for. | Optional | 
 | attribute_type | Types of the attributes to search for. | Optional | 
-| query | JSON query to filter MISP attributes. When query argument is used attribute_type and tags arguemtns wont be used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional | 
+| query | JSON query to filter MISP attributes. When a query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional | 
 
 
 #### Context Output
