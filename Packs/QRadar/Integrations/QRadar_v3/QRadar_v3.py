@@ -2870,7 +2870,8 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     }
     return fields
 
-def update_events_mirroring_status(offense: Dict, mirror_options: str, events_limit: int) -> Dict:
+
+def update_events_mirroring_status(offense: Dict, mirror_options: str, events_limit: int, failure_message: str) -> Dict:
     if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
         offense['mirroring_events_status'] = 'Not Enabled'
         return offense
@@ -2880,15 +2881,18 @@ def update_events_mirroring_status(offense: Dict, mirror_options: str, events_li
 
     if events_mirrored < min(events_count, events_limit):
         offense['mirroring_events_status'] = 'Failed'
+        if failure_message:
+            offense['mirroring_events_message'] = failure_message
     elif events_mirrored == events_limit:
         offense['mirroring_events_status'] = 'Completed and Stopped'
+        offense['mirroring_events_message'] = 'Mirroring events has reached events limit in this incident.'
     elif events_mirrored == events_count:
         offense['mirroring_events_status'] = 'Completed'
+        offense['mirroring_events_message'] = 'All available events in the offense were mirrored.'
     else:
         offense['mirroring_events_status'] = 'Unknown'
 
     return offense
-
 
 
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
@@ -2960,6 +2964,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         is_waiting_to_be_updated = True
         evented_offense = None
         retries = 0
+        failure_message = 'Failed communicating with long running container.'
         while ((not evented_offense) or is_waiting_to_be_updated) and retries < max_retries:
             if retries != 0:
                 time.sleep(FAILURE_SLEEP)
@@ -2978,6 +2983,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             demisto.debug(f"Mirror Events: Offense {offense.get('id')} events were updated, updating incident.")
             if evented_offense[0].get('events'):
                 offense['events'] = evented_offense[0].get('events')
+                failure_message = ''
                 demisto.debug(f"Mirror Events: Offense {offense.get('id')} now has {offense.get('events')} "
                               f"fetched events.")
 
@@ -2995,9 +3001,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
     enriched_offense = update_events_mirroring_status(offense=enriched_offense[0], mirror_options=mirror_options,
-                                                      events_limit=events_limit)
+                                                      events_limit=events_limit, failure_message=failure_message)
 
-    final_offense_data = sanitize_outputs(enriched_offense)[0]
+    final_offense_data = sanitize_outputs(enriched_offense)
 
     return GetRemoteDataResponse(final_offense_data, entries)
 
