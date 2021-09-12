@@ -11,7 +11,9 @@ outputs:
 script: '-'
 system: false
 tags:
-- basescript
+- Utility
+- General
+- Dockers
 timeout: '0'
 type: python
 subtype: python3
