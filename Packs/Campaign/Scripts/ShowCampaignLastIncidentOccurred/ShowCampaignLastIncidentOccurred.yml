@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: Displays the date of the last campaign incident occurred.
+comment: Displays the occurrence date of the last campaign incident.
 enabled: true
 scripttarget: 0
 subtype: python3

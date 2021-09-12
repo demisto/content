@@ -6,8 +6,7 @@ script: ''
 type: python
 tags:
 - field-display
-comment: Get the campaign lower similarity incident IDs as option values for Multi
-  Select field.
+comment: Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select "Phishing Campaign Select Campaign Lower Similarity Incidents" incident field.
 enabled: true
 scripttarget: 0
 subtype: python3
