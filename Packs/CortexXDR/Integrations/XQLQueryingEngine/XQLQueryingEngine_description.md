@@ -17,5 +17,3 @@ XQL Query Engine enables you to run XQL queries on your data sources.
 ### URL
 1. In your Cortex XDR platform, go to **Settings**.
 2. Click the **Copy URL** button in the top right corner.
-
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr)

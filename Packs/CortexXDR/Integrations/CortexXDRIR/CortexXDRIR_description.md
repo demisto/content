@@ -11,3 +11,6 @@ Cortex XDR is the world's first detection and response app that natively integra
 ### URL
 1. In your Cortex XDR platform, go to **Settings**.
 2. Click the **Copy URL** button in the top right corner.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)
