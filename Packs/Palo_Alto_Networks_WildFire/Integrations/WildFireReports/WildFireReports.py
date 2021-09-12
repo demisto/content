@@ -7,8 +7,9 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, token=None):
-        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+    def __init__(self, base_url: str, verify: bool = True, proxy: bool = False, ok_codes=tuple(), headers: dict = None,
+                 token: str = None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
 
     def get_file_report(self, file_hash: str):
@@ -24,7 +25,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def hash_args_handler(sha256=None, md5=None):
+def hash_args_handler(sha256: str = None, md5: str = None) -> List['str']:
     inputs = argToList(sha256) if sha256 else argToList(md5)
     for element in inputs:
         if sha256Regex.match(element) or md5Regex.match(element):
@@ -37,7 +38,7 @@ def hash_args_handler(sha256=None, md5=None):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client: Client) -> str:
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
         client.get_file_report(wildfire_hash_example)
@@ -49,14 +50,14 @@ def test_module(client):
     return 'ok'
 
 
-def wildfire_get_report_command(client, args):
+def wildfire_get_report_command(client: Client, args: Dict[str, Any]) -> List[str]:
     """
     Args:
-        args: the command arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
+        client: the Client object
+        args: the command arguments from demisto.args(), file hash (sha256 or md5) to query on
 
     Returns:
-        A single or list of CommandResults, and the status of the reports of the url or file of interest.
-
+        A list.
     """
     command_results_list = []
     sha256 = args.get('sha256')
@@ -67,7 +68,7 @@ def wildfire_get_report_command(client, args):
         res = client.get_file_report(element)
 
         if res.status_code == 200:
-            file_name = 'wildfire_report_' + element + '.pdf'
+            file_name = f'wildfire_report_{element}.pdf'
             file_type = entryTypes['entryInfoFile']
             result = fileResult(file_name, res.content, file_type)  # will be saved under 'InfoFile' in the context.
             demisto.results(result)

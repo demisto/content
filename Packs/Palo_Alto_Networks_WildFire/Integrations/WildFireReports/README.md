@@ -1,5 +1,5 @@
 Generates a Palo Alto Networks WildFire PDF report.
-This integration was created and tested with version 10.1 of PAN-OS
+This integration was created and tested with version 10.1 of WildFire
 
 ## Configure Palo Alto Networks WildFire Reports on Cortex XSOAR
 
