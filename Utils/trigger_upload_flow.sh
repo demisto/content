@@ -46,7 +46,7 @@ function check_arguments {
   fi
 }
 
-# copy_pack
+# create_new_pack
 # Copies a pack and changing the name in the files to the new name.
 # :param $1: pack name
 # :param $2: new pack name
@@ -76,11 +76,34 @@ function create_new_pack {
     new_name="${original_name}${new_pack_suffix}"
     rename_files_and_folders "$original_name" "$new_name"
   done
-
+  update_conf_json_file pack_name new_pack_name
   cd "${original_path}" || fail
   git add "$new_pack_path"
 
   git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
+
+}
+
+# update_conf_json_file
+# Add new playbooks to the conf.json file
+# :param $1: original name
+# :param $2: new name
+# :return:
+function update_conf_json_file {
+  local pack_name=$1
+  local new_pack_name=$2
+
+  python - << EOF
+import json
+def copy_and_replace_dict(dictionary,original_name, new_name):
+    return {k: v.replace(original_name, new_name) if isinstance(v,str) else v for k,v in dictionary.items()}
+
+with open('${CONTENT_PATH}/Tests/conf.json') as f:
+  conf_file = json.load(f)
+  relevant_tests = [copy_and_replace_dict(d,"$pack_name","$new_pack_name") for d in conf_file.get('tests') if d.get('integrations') == "$pack_name" and "$pack_name" in d.get('playbookID','')]
+  conf_file['tests'] += relevant_tests
+  json.dump(f)
+EOF
 
 }
 
