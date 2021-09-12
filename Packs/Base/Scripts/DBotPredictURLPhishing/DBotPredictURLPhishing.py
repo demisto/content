@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 from urllib.parse import urlparse
 import urllib.parse
-from tldextract import extract
 from typing import Type, Tuple, List, Dict, Union
 import dill
 
@@ -16,8 +15,15 @@ import dill
 import copy
 import datetime
 import numpy as np
+from tldextract import TLDExtract
+NO_FETCH_EXTRACT = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
-MSG_INVALID_URL = "URL does not seem to be valid. Reason: "
+OOB_MAJOR_VERSION_INFO_KEY = 'major'
+OOB_MINOR_VERSION_INFO_KEY = 'minor'
+MAJOR_VERSION = 0
+MINOR_DEFAULT_VERSION = 0
+
+MSG_INVALID_URL = "Error: URL does not seem to be valid. Reason: "
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
@@ -25,8 +31,6 @@ MSG_WHITE_LIST = "White List"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
-SCRIPT_MODEL_VERSION = '0.0'
-OOB_VERSION_INFO_KEY = 'oob_version'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 THRESHOLD_NEW_DOMAIN_YEAR = 0.5
 DOMAIN_AGE_KEY = 'New domain (less than %s year)' %str(THRESHOLD_NEW_DOMAIN_YEAR)
@@ -43,15 +47,17 @@ SCORE_INVALID_URL = -1
 SCORE_BENIGN = 0
 
 
-GREEN_COLOR = "{{color:#15ff2c}}(%s)"
-RED_COLOR = "{{color:#fd0800}}(%s)"
+GREEN_COLOR = "{{color:#1DB846}}(%s)"
+RED_COLOR = "{{color:#D13C3C}}(%s)"
 
-VERDICT_MALICIOUS_COLOR = "{{background:#fd0800}}({{color:#ffffff}}(**%s**))"
-VERDICT_SUSPICIOUS_COLOR = "{{background:#fd9a14}}({{color:#ffffff}}(**%s**))"
-VERDICT_BENIGN_COLOR = "{{background:#15ff2c}}({{color:#ffffff}}(**%s**))"
-VERDICT_ERROR_COLOR = "{{background:#feff2b}}({{color:#000000}}(**%s**))"
-MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT:VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT:VERDICT_BENIGN_COLOR,
-                         SUSPICIOUS_VERDICT:VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST:VERDICT_BENIGN_COLOR}
+
+
+VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)" #"{{background:#fd0800}}({{color:#ffffff}}(**%s**))"
+VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)" #"{{background:#fd9a14}}({{color:#ffffff}}(**%s**))"
+VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)" #{{background:#15ff2c}}({{color:#ffffff}}(**%s**))"
+VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)" #{{background:#feff2b}}({{color:#000000}}(**%s**))"
+MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT: VERDICT_BENIGN_COLOR,
+                         SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
 SCORE_THRESHOLD = 0.7
 
@@ -65,6 +71,14 @@ MODEL_KEY_LOGO_LOGIN_FORM = 'login_form'
 
 WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 1, MODEL_KEY_LOGO_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
                     MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
+
+
+MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
+    MODEL_KEY_SEO: {True: RED_COLOR %'Malicious', False: GREEN_COLOR %'Benign'},
+    MODEL_KEY_LOGO_FOUND: {True: RED_COLOR %'Suspicious', False: GREEN_COLOR %'Not Suspicious'},
+    MODEL_KEY_LOGO_LOGIN_FORM: {True: RED_COLOR %'Yes', False: GREEN_COLOR %'No'},
+    DOMAIN_AGE_KEY: {True: RED_COLOR %'Less than 6 months ago', False: GREEN_COLOR %'More than 6 months ago'}
+                                      }
 
 
 def get_model_data(model_name: str) -> Union[str, str]:
@@ -106,7 +120,12 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
     return model_64
 
 
-def load_oob_model(path: str = OUT_OF_THE_BOX_MODEL_PATH):
+def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
+    model = dill.load(open(path, 'rb'))
+    return model
+
+
+def load_oob_model(path: str):
     """
     Load and save model from the model in the docker
     :return: None
@@ -122,7 +141,37 @@ def load_oob_model(path: str = OUT_OF_THE_BOX_MODEL_PATH):
                                                    'modelHidden': True,
                                                    'modelType': 'url_phishing',
                                                    'modelExtraInfo': {
-                                                       OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION
+                                                       OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
+                                                       OOB_MINOR_VERSION_INFO_KEY: MINOR_DEFAULT_VERSION
+                                                   }
+                                                   })
+    demisto.results("Update demisto model from docker model version %s.%s" %(MAJOR_VERSION, MINOR_DEFAULT_VERSION))
+    if is_error(res):
+        return_error(get_error(res))
+
+
+def load_oob_model_updated(path: str, demisto_major_version, demisto_minor_version):
+    """
+    Load and save model from the model in the docker
+    :return: None
+    """
+    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
+    model_demisto = decode_model_data(model_64_str)
+    try:
+        model_docker = decode_model_data(load_oob(OUT_OF_THE_BOX_MODEL_PATH).decode('utf-8'))
+    except Exception:
+        return_error(traceback.format_exc())
+    model_docker.logos_dict = model_demisto.logos_dict
+    model_docker.minor = model_demisto.minor
+    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
+                                                   'modelName': URL_PHISHING_MODEL_NAME,
+                                                   'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
+                                                   'modelOverride': 'true',
+                                                   'modelHidden': True,
+                                                   'modelType': 'url_phishing',
+                                                   'modelExtraInfo': {
+                                                       OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
+                                                       OOB_MINOR_VERSION_INFO_KEY: model_demisto.minor
                                                    }
                                                    })
     if is_error(res):
@@ -136,9 +185,10 @@ def oob_model_exists_and_updated() -> bool:
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
     if is_error(res_model):
-        return False
-    existing_model_version = res_model['Contents']['model']['extra'].get(OOB_VERSION_INFO_KEY, -1)
-    return existing_model_version == SCRIPT_MODEL_VERSION
+        return False, None, None
+    existing_model_version_major = res_model['Contents']['model']['extra'].get(OOB_MAJOR_VERSION_INFO_KEY, -1)
+    existing_model_version_minor = res_model['Contents']['model']['extra'].get(OOB_MINOR_VERSION_INFO_KEY, -1)
+    return True, existing_model_version_major, existing_model_version_minor
 
 
 def image_from_base64_to_bytes(base64_message: str):
@@ -152,14 +202,9 @@ def image_from_base64_to_bytes(base64_message: str):
     return message_bytes
 
 
-def extract_domainv2(url: str):
-    """
-    Return domain (SLD + TLD)
-    :param url: URL from which to extract domain name
-    :return:str
-    """
-    parts = extract(url)
-    return parts.domain + "." + parts.suffix
+def extract_domainv2(url):
+    ext = NO_FETCH_EXTRACT(url)
+    return ext.domain + "." + ext.suffix
 
 
 def in_white_list(model, url: str) -> bool:
@@ -175,6 +220,7 @@ def in_white_list(model, url: str) -> bool:
         return False
 
 
+
 def get_colored_pred_json(pred_json: Dict) -> Dict:
     """
     Create copy and color json values according to their values.
@@ -182,13 +228,10 @@ def get_colored_pred_json(pred_json: Dict) -> Dict:
     :return: json
     """
     pred_json_colored = copy.deepcopy(pred_json)
-    pred_json_colored[MODEL_KEY_SEO] = GREEN_COLOR % pred_json[MODEL_KEY_SEO] if not pred_json[MODEL_KEY_SEO] else RED_COLOR % pred_json[MODEL_KEY_SEO]
-    pred_json_colored[MODEL_KEY_LOGO_FOUND] = GREEN_COLOR % pred_json[MODEL_KEY_LOGO_FOUND] if not pred_json[
-        MODEL_KEY_LOGO_FOUND] else RED_COLOR % pred_json[MODEL_KEY_LOGO_FOUND]
-    pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM] = GREEN_COLOR % pred_json[MODEL_KEY_LOGO_LOGIN_FORM] if not pred_json[
-        MODEL_KEY_LOGO_LOGIN_FORM] else RED_COLOR % pred_json[MODEL_KEY_LOGO_LOGIN_FORM]
-    pred_json_colored[DOMAIN_AGE_KEY] = GREEN_COLOR % pred_json[DOMAIN_AGE_KEY] if not pred_json[
-        DOMAIN_AGE_KEY] else RED_COLOR % pred_json[DOMAIN_AGE_KEY]
+    pred_json_colored[MODEL_KEY_SEO] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_SEO][pred_json[MODEL_KEY_SEO]]
+    pred_json_colored[MODEL_KEY_LOGO_FOUND] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_FOUND][pred_json[MODEL_KEY_LOGO_FOUND]]
+    pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_LOGIN_FORM][pred_json[MODEL_KEY_LOGO_LOGIN_FORM]]
+    pred_json_colored[DOMAIN_AGE_KEY] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[DOMAIN_AGE_KEY][pred_json[DOMAIN_AGE_KEY]]
     return pred_json_colored
 
 
@@ -254,7 +297,7 @@ def is_valid_url(url: str) -> bool:
         return False, response.reason
 
 
-def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: bool):
+def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: bool, output_rasterize: Dict):
     """
     Return entry to demisto
     :param pred_json: json with output of the model
@@ -267,10 +310,10 @@ def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: boo
         return
     if whitelist:
         url_score = SCORE_BENIGN
-        url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
+        url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % st(
             url_score)  # GREEN_COLOR%'0'
     else:
-        url_score = pred_json[MODEL_KEY_URL_SCORE]
+        url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
         url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(url_score)
     pred_json_colored = get_colored_pred_json(pred_json)
     domain = extract_domainv2(url)
@@ -284,17 +327,17 @@ def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: boo
         "ContentBasedVerdict": str(pred_json[MODEL_KEY_SEO])
     }
     explain_hr = {
-        "Domain from the URL": domain,
-        "Has the domain bad SEO ?": str(pred_json_colored[MODEL_KEY_SEO]),
+        "Domain": domain,
+        "Domain reputation": str(pred_json_colored[MODEL_KEY_SEO]),
         DOMAIN_AGE_KEY: str(pred_json_colored[DOMAIN_AGE_KEY]),
-        "Has the website a login form?": str(pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM]),
-        "Logo found that does not correspond to the given domain": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
+        "Is there a Login form ?": str(pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM]),
+        "Suspiscious use of company logo": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
         "URL severity score (from 0 to 1)": url_score
     }
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
-        "HumanReadable": tableToMarkdown("Report %s" %domain, explain_hr),
+        "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" %domain, explain_hr),
         "Contents": explain,
         "EntryContext": {'DBotPredictURLPhishing': explain}
     }
@@ -302,7 +345,6 @@ def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: boo
     # Get rasterize image or logo detection if logo was found
     image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
     if not image:
-        return
         image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
     res = fileResult(filename='Logo detection engine', data=image)
     res['Type'] = entryTypes['image']
@@ -368,7 +410,6 @@ def get_score(pred_json):
     return score
 
 
-
 def get_verdict(pred_json: Dict, is_white_listed: bool) -> Union[float, str]:
     """
     Return verdict of the url based on the output of the model
@@ -388,8 +429,10 @@ def get_verdict(pred_json: Dict, is_white_listed: bool) -> Union[float, str]:
         else:
             return score, MALICIOUS_VERDICT
 
-def create_dict_context(url, verdict, pred_json, score, is_white_listed):
-    return {'url': url, 'verdict': verdict, 'pred_json': pred_json, 'score': score, 'is_white_listed': is_white_listed}
+
+def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize):
+    return {'url': url, 'verdict': verdict, 'pred_json': pred_json, 'score': score, 'is_white_listed': is_white_listed, 'output_rasterize': output_rasterize}
+
 
 def extract_created_date(entry_list: List) -> bool:
     """
@@ -397,6 +440,8 @@ def extract_created_date(entry_list: List) -> bool:
     :param entry_list: output of the whois command
     :return: bool
     """
+    if not entry_list:  #REMOVE
+        return True
     for entry in entry_list:
         if is_error(entry):
             continue
@@ -408,26 +453,31 @@ def extract_created_date(entry_list: List) -> bool:
                 return date > threshold_date
     return  False
 
+
 def get_prediction_single_url(model, url, force_model):
     is_white_listed = False
     # Check if URL is valid and accessible
     valid_url, error = is_valid_url(url)
+
     if not valid_url:
-        return create_dict_context(url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed)
+        return create_dict_context(url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed, {})
 
     #Check domain age from WHOIS command
     domain = extract_domainv2(url)
-    res = demisto.executeCommand('whois', {'query': domain,
-                                       })
+    start_time = time.time()
+    res = None #demisto.executeCommand('whois', {'query': domain,
+          #                             })
+    print("--- %s seconds WHOIS---" % (time.time() - start_time))
+
     is_new_domain = extract_created_date(res)
 
     # Check is domain in white list -  If yes we don't run the model
     if in_white_list(model, url):
         if not force_model:
-            return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed)
+            return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
-
+    #sys.exit(0)
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
@@ -440,34 +490,37 @@ def get_prediction_single_url(model, url, force_model):
     # Create X_pred
     if isinstance(output_rasterize, str):
         return_error(output_rasterize)
+    #demisto.results(output_rasterize['image_b64'])
     X_pred = create_X_pred(output_rasterize, url)
 
-    # Prediction of the model
     pred_json = model.predict(X_pred)
+    print('20')
+
     pred_json[DOMAIN_AGE_KEY] = is_new_domain
 
     score, verdict = get_verdict(pred_json, is_white_listed)
 
-    return create_dict_context(url, verdict, pred_json, score, is_white_listed)
+    return create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize)
 
 
 def return_general_summary(results, tag="Summary"):
     df_summary = pd.DataFrame()
-    df_summary['url'] = [x.get('url') for x in results]
-    df_summary['verdict'] = [MAPPING_VERDICT_COLOR[x.get('verdict')] %x.get('verdict') if x.get('verdict')
+    df_summary['Url'] = [x.get('url') for x in results]
+    df_summary['Final Verdict'] = [MAPPING_VERDICT_COLOR[x.get('verdict')] %x.get('verdict') if x.get('verdict')
                                                                                            in MAPPING_VERDICT_COLOR.keys()
                              else VERDICT_ERROR_COLOR %x.get('verdict') for x in results ]
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
-        "HumanReadable": tableToMarkdown("Summary", df_summary_json),
+        "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json),
         "Contents": df_summary_json,
         "EntryContext": {'DBotPredictURLPhishing': df_summary_json}
     }
     if tag is not None:
         return_entry["Tags"] = ['SimilarIncidents_{}'.format(tag)]
     demisto.results(return_entry)
+
 
 def return_detailed_summary(results, number_entries_to_return):
     severity_list = [x.get('score') for x in results]
@@ -478,25 +531,111 @@ def return_detailed_summary(results, number_entries_to_return):
         url = results[index].get('url')
         verdict = results[index].get('verdict')
         is_white_listed = results[index].get('is_white_listed')
-        return_entry_summary(pred_json, url, verdict, is_white_listed)
+        output_rasterize = results[index].get('output_rasterize')
+        return_entry_summary(pred_json, url, verdict, is_white_listed, output_rasterize)
 
+
+def save_model_in_demisto(model):
+    encoded_model = base64.b64encode(dill.dumps(model))
+    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
+                                               'modelName': URL_PHISHING_MODEL_NAME,
+                                               'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
+                                               'modelOverride': 'true',
+                                               'modelHidden': True,
+                                               'modelType': 'url_phishing',
+                                               'modelExtraInfo': {
+                                                   OOB_MAJOR_VERSION_INFO_KEY: model.major,
+                                                   OOB_MINOR_VERSION_INFO_KEY: model.minor
+                                               }
+                                               })
+    if is_error(res):
+        return_error(get_error(res))
+
+
+def load_demisto_model():
+    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
+    model = decode_model_data(model_64_str)
+    return model
 
 
 def main():
-    if not oob_model_exists_and_updated():
-        load_oob_model()
+    import time
+    start_time = time.time()
+
+    exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
+    demisto.results("Actual demisto major version: " + str(demisto_major_version))
+    demisto.results("Actual demisto minor version: " + str(demisto_minor_version))
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    reset_model = demisto.args().get('resetModel', 'False') == 'True'
+    start_time = time.time()
+    if exist:
+        demisto.results("Model version in demisto: %s.%s" %(demisto_major_version, demisto_minor_version))
+    else:
+        demisto.results("There is no existing model version in demisto")
+
+    if reset_model or not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
+        demisto.results('4')
+        #sys.exit(0)
+        load_oob_model(OUT_OF_THE_BOX_MODEL_PATH)
+
+    elif (demisto_major_version == MAJOR_VERSION):
+        demisto.results('5')
+        pass
+    elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
+        model_docker = load_model_from_docker()
+        demisto.results('1')
+        model_docker_minor = model_docker.minor
+        model =  load_demisto_model()
+        demisto.results('2')
+        model_docker.logos_dict = model.logos_dict
+        model_docker.minor += 1
+        save_model_in_demisto(model_docker)
+        demisto.results('3')
+        demisto.results("Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s" %(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
+    else:
+        return_error('Wrong configuration of the model')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+
+    demisto.results('6')
+    start_time = time.time()
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
+    demisto.results('7')
+    print("--- %s seconds ---" % (time.time() - start_time))
 
+
+
+
+    # psg64 = model.logos_dict['psg']
+    # image = image_from_base64_to_bytes(psg64)
+    # res = fileResult(filename='Logo detection engine', data=image)
+    # res['Type'] = entryTypes['image']
+    #demisto.results(res)
+    #demisto.results(psg64)
+
+
+    #demisto.results(list(model.logos_dict.keys()))
+    demisto.results('8')
+    demisto.results('6')
     force_model = demisto.args().get('forceModel', 'False') == 'True'
     urls = [x.strip() for x in demisto.args().get('urls', '').split(',') if x]
+    demisto.results('9')
     if not urls:
         return_error(MSG_NO_URL_GIVEN)
     number_entries_to_return = int(demisto.args().get('numberEntryToReturn'))
+    demisto.results('10')
+    start_time = time.time()
     results = [get_prediction_single_url(model, x, force_model) for x in urls]
-
+    print("--- %s seconds ---" % (time.time() - start_time))
+    #sys.exit(0)
+    demisto.results('11')
+    demisto.results('Here')
     return_general_summary(results)
     return_detailed_summary(results, number_entries_to_return)
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 
