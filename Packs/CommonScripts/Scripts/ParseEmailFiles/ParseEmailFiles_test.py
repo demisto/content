@@ -419,7 +419,11 @@ def test_email_with_special_character(mocker):
         '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
         '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
         'メール�と�日本語文字が表示されない文字のテスト'
-    )
+    ),
+    (
+        '=?UTF-8?Q?TEST_UNDERSCORE?=',
+        'TEST UNDERSCORE'
+    ),
     # (
     #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
     #   '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
