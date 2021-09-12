@@ -1004,14 +1004,14 @@ def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in modified_packs:
-        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack, modified_packs))
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set))
     for pack in content_packs:
-        test = tools.get_ignore_pack_skipped_tests(pack, modified_packs)
+        test = tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set)
         ignored_tests_set.update(test)
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
-        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        logging.info(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests
@@ -1389,8 +1389,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
-                packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
-                files_string += f"\n{packs_diff}"
+                packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+                files_string = '\n'.join([files_string, packs_diff])
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             logging.debug(f'commit string: {commit_string}')
