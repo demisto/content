@@ -1286,6 +1286,7 @@ def test_is_release_branch_negative(mocked_branch_name):
     with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
         assert not is_release_branch()
 
+
 def test_update_with_tests_sections(tmpdir):
     """
     Given:
