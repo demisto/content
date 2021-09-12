@@ -59,14 +59,9 @@ def extract_dockers_from_integration_search_result(content: str) -> dict:
         if (INTEGRATION_SCRIPT not in conf) or (conf[INTEGRATION_SCRIPT] is None):
             continue
         else:
-            if (INTEGRATION_SCRIPT_TYPE not in conf[INTEGRATION_SCRIPT]) or \
-                    ((conf[INTEGRATION_SCRIPT][SCRIPT_TYPE] != PYTHON_SCRIPT)
-                     and
-                     (conf[INTEGRATION_SCRIPT][SCRIPT_TYPE] != POWERSHELL_SCRIPT)):
-                continue
-            else:
-                if (DOCKER_IMAGE not in conf[INTEGRATION_SCRIPT]) or ((conf[INTEGRATION_SCRIPT][DOCKER_IMAGE] is None)
-                                                                      and (conf[INTEGRATION_SCRIPT][DOCKER_IMAGE] == '')):
+            if INTEGRATION_SCRIPT_TYPE in conf[INTEGRATION_SCRIPT] and conf[INTEGRATION_SCRIPT][SCRIPT_TYPE] in (
+                    PYTHON_SCRIPT, POWERSHELL_SCRIPT):
+                if DOCKER_IMAGE not in conf[INTEGRATION_SCRIPT] or conf[INTEGRATION_SCRIPT][DOCKER_IMAGE] in (None, ''):
                     docker_image = 'Default Image Name'
                 else:
                     docker_image = conf[INTEGRATION_SCRIPT][DOCKER_IMAGE]
@@ -88,16 +83,15 @@ def extract_dockers_from_automation_search_result(content: str) -> dict:
     dockers = {}
     for script in json_content[SCRIPTS]:
         if (SCRIPT_TYPE not in script) or \
-                ((script[SCRIPT_TYPE] != PYTHON_SCRIPT)
-                 and
-                 (script[SCRIPT_TYPE] != POWERSHELL_SCRIPT)):
+                ((script[SCRIPT_TYPE] != PYTHON_SCRIPT) and (script[SCRIPT_TYPE] != POWERSHELL_SCRIPT)):
             continue
         else:
-            if DOCKER_IMAGE in script and ((script[DOCKER_IMAGE] is not None) or (script[DOCKER_IMAGE] != '')):
-                docker_image = script[DOCKER_IMAGE]
-            else:
+            if DOCKER_IMAGE in script and script[DOCKER_IMAGE] in (None, ''):
                 docker_image = 'Default Image Name'
+            else:
+                docker_image = script[DOCKER_IMAGE]
             dockers[script[SCRIPT_ID]] = docker_image
+
     return dockers
 
 
@@ -131,6 +125,16 @@ def merge_result(docker_list: dict, result_dict: dict = {}, max_entries_per_dock
     return result
 
 
+def format_result_for_markdown(result_dict) -> list:
+    result_output = []
+    for docker_image, integration_script in result_dict.items():
+        result_output.append({
+            'Docker Image': docker_image,
+            'Integrations/Automations': integration_script
+        })
+    return result_output
+
+
 ''' COMMAND FUNCTION '''
 
 
@@ -138,42 +142,38 @@ def get_used_dockers_images() -> CommandResults:
     md = None
     active_docker_list_integration = {}
     active_docker_list_automation = {}
-    result_dict = {}
+    result_dict: Dict[str, List[str]] = {}
 
     active_integration_instances = demisto.internalHttpRequest(POST_COMMAND, "%s" % SETTING_INTEGRATION_SEARCH,
                                                                REQUEST_INTEGRATION_SEARCH_BODY)
     demisto.debug(
-        f"called demisto.internalHttpRequest(\"{POST_COMMAND}\", \"{SETTING_INTEGRATION_SEARCH}\", \"{REQUEST_INTEGRATION_SEARCH_BODY}\")")
+        f"called demisto.internalHttpRequest(\"{POST_COMMAND}\", \"{SETTING_INTEGRATION_SEARCH}\", "
+        f"\"{REQUEST_INTEGRATION_SEARCH_BODY}\")")
+
+    demisto.debug(f'respose code = {0}', active_integration_instances['statusCode'])
     if active_integration_instances and active_integration_instances['statusCode'] == 200:
         active_docker_list_integration = extract_dockers_from_integration_search_result(
             active_integration_instances['body'])
 
-    active_automation_instances = demisto.internalHttpRequest(POST_COMMAND, "%s" % AUTOMATION_SEARCH, REQUEST_INTEGRATION_SEARCH_BODY)
-    demisto.debug(f"called demisto.internalHttpRequest(\"{POST_COMMAND}\", \"{AUTOMATION_SEARCH}\", \"{REQUEST_INTEGRATION_SEARCH_BODY}\")")
+    active_automation_instances = demisto.internalHttpRequest(POST_COMMAND, "%s" % AUTOMATION_SEARCH,
+                                                              REQUEST_INTEGRATION_SEARCH_BODY)
+    demisto.debug(f"called demisto.internalHttpRequest(\"{POST_COMMAND}\", \"{AUTOMATION_SEARCH}\", "
+                  f"\"{REQUEST_INTEGRATION_SEARCH_BODY}\")")
     demisto.debug(f'respose code = {0}', active_automation_instances['statusCode'])
     if active_automation_instances and active_automation_instances['statusCode'] == 200:
         active_docker_list_automation = extract_dockers_from_automation_search_result(
             active_automation_instances['body'])
-
-    demisto.debug("entries in list active_docker_list_integration", active_docker_list_integration)
-    demisto.debug("entries in list active_docker_list_automation", active_docker_list_automation)
 
     result_dict = merge_result(active_docker_list_integration, result_dict, MAX_PER_DOCKER)
     result_dict = merge_result(active_docker_list_automation, result_dict, MAX_PER_DOCKER)
 
     ''' format the result for Markdown view'''
     result_output = []
-    for docker_image, integration_script in result_dict.items():
-        result_output.append({
-            'Docker Image': docker_image,
-            'Integrations/Automations': integration_script
-        })
+    result_output = format_result_for_markdown(result_dict)
 
     md = tableToMarkdown('Dockers Images In use:', result_output, )
 
-    return CommandResults(
-          readable_output=md
-    )
+    return CommandResults(readable_output=md)
 
 
 ''' MAIN FUNCTION '''

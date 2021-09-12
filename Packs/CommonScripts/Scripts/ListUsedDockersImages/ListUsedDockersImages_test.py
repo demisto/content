@@ -6,15 +6,8 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
-<<<<<<< HEAD
-import json
-import io
-
-def util_get_content(file_name :str) -> dict:
-=======
 
 def util_get_content(file_name: str) -> dict:
->>>>>>> 9c09e1f6d1 (introduce ListUsedDockersImages - New script that list all used dockers images by Integrations and/or automations)
     with open(file_name) as fp:
         content = fp.read()
         fp.close()
