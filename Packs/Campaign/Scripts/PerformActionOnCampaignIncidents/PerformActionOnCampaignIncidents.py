@@ -7,10 +7,10 @@ NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}\n' \
                     'Error details: {error}'
 ACTION_ON_CAMPAIGN_FIELD_NAME = 'actionsoncampaignincidents'
-ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = 'phishingcampaignactiononcampaignlowersimilarityincidents'
+ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = 'actionsoncampaignlowersimilarityincidents'
 
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = 'selectcampaignincidents'
-SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'phishingcampaignselectcampaignlowersimilarityincidents'
+SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'selectcampaignlowersimilarityincidents'
 
 COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
