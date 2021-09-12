@@ -814,7 +814,7 @@ def main() -> None:
         # generate the auth key:
         auth_key = f'{apikey}{nonce}{timestamp}'.encode("utf-8")
         # convert to bytes object and calculate sha256
-        api_key_hash = hashlib.sha256(auth_key).hexdigest()
+        api_key_hash = hashlib.sha256(auth_key).hexdigest()  # lgtm [py/weak-sensitive-data-hashing]
 
         # generate HTTP call headers
         headers = {
