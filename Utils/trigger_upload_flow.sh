@@ -76,14 +76,36 @@ function create_new_pack {
     new_name="${original_name}${new_pack_suffix}"
     rename_files_and_folders "$original_name" "$new_name"
   done
-  update_conf_json_file $pack_name $new_pack_name
 
-  demisto-sdk update-release-notes -i Packs/${new_pack_path} -v 1.0.0 --force
+  update_conf_json_file $pack_name $new_pack_name
+  update_pack_version "${new_pack_path}/pack_metadata.json" "1.0.0"
 
   cd "${original_path}" || fail
   git add "$new_pack_path"
 
   git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
+
+}
+
+# update_pack_version
+# update the version on the pack metadata
+# :param $1: pack metadta path
+# :param $2: new version
+# :return:
+function update_pack_version {
+  local pack_metadata=$1
+  local new_version=$2
+
+  python - << EOF
+import json
+
+with open('${pack_metadata}') as f:
+  metadata = json.load(f)
+  metadata['currentVersion'] = ${new_version}
+
+with open('${pack_metadata}') as f:
+  json.dump(metadata,f)
+EOF
 
 }
 
