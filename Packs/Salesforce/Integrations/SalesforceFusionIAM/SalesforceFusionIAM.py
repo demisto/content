@@ -54,7 +54,7 @@ class Client(BaseClient):
             "password": self.password,
             "grant_type": "password",
         }
-        
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -62,7 +62,7 @@ class Client(BaseClient):
         )
 
         return res.get('access_token')
-    
+
     def test(self):
         """ Tests connectivity with the application. """
 
@@ -355,7 +355,7 @@ def main():
         client_id=client_id,
         client_secret=client_secret,
         username=username,
-        password=password+secret_token if password and secret_token else None,
+        password=password + secret_token if password and secret_token else None,
         manager_email=manager_email,
     )
 
