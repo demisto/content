@@ -8,7 +8,7 @@
     | Domain | 2 Hours. |
     | Hash | 1 Day. |
     | URL | 2 Hours. |
-3. It is recommended to use either `connectApi` or `fusion` as a service, as most of the data between both is duplicated.
+3. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.
 ## Recorded Future Feed
 This integration downloads from Recorded Future a list of IP addresses, domains, URLs, or file hashes with known risk associations.
 The risk list includes risk scores and supporting evidence details.
