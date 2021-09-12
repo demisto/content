@@ -4932,7 +4932,8 @@
         "Cortex Data Lake",
         "Mail Listener v2",
         "EDL",
-        "Create-Mock-Feed-Relationships"
+        "Create-Mock-Feed-Relationships",
+        "QualysV2"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
