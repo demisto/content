@@ -30,6 +30,7 @@ This playbook does not use any integrations.
 
 ### Commands
 * image-ocr-extract-text
+* rasterize-pdf
 
 ## Playbook Inputs
 ---
