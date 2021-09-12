@@ -18,6 +18,7 @@ def get_campaign_incidents():
     res = demisto.executeCommand('getContext', {'id': incident_id})
     if isError(res):
         return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
+
     return demisto.get(res[0], 'Contents.context.EmailCampaign.incidents')
 
 
@@ -41,6 +42,7 @@ def get_incident_ids_as_options(incidents):
 
 
 def main():
+
     try:
         incidents = get_campaign_incidents()
         if incidents:
