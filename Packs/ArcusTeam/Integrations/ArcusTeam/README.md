@@ -736,8 +736,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firmware_id |  ArcusTeam Firmware ID. | Required | 
-| device_id |  ArcusTeam Device ID. | Required | 
+| firmware_id |  ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command). | Required | 
+| device_id |  ArcusTeam Device ID (as returned by the arcusteam-get-devices command). | Required | 
 | page_size | Page size. Minimum page size is 1, maximum is 100. Default is 10. | Optional |
 | page_number |  Page number. Default is 1. | Optional | 
 | sort_order |  Sorting order (“asc”,”desc”). Possible values are: desc, asc. Default is desc. | Optional | 
