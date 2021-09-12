@@ -4,7 +4,7 @@ commonfields:
 name: SplitIncidentBySimilarity
 script: ''
 type: python
-comment: Split incident with similarity in context data to below and above threshold.
+comment: Splits incident with similarity in context data to below and above threshold.
 tags: []
 enabled: true
 args:
