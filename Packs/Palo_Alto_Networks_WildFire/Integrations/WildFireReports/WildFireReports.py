@@ -22,19 +22,6 @@ class Client(BaseClient):
         )
 
 
-''' HELPER FUNCTIONS '''
-
-
-def hash_args_handler(sha256: str = None, md5: str = None) -> List['str']:
-    inputs = argToList(sha256) if sha256 else argToList(md5)
-    for element in inputs:
-        if sha256Regex.match(element) or md5Regex.match(element):
-            continue
-        raise Exception('Invalid hash. Only SHA256 and MD5 are supported.')
-
-    return inputs
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -50,37 +37,26 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def wildfire_get_report_command(client: Client, args: Dict[str, Any]) -> List[str]:
+def wildfire_get_report_command(client: Client, args: Dict[str, Any]):
     """
     Args:
         client: the Client object
-        args: the command arguments from demisto.args(), file hash (sha256 or md5) to query on
-
-    Returns:
-        A list.
+        args: the command arguments from demisto.args(), file hash (sha256) to query on
     """
-    command_results_list = []
     sha256 = args.get('sha256')
-    md5 = args.get('md5')
-    inputs = hash_args_handler(sha256, md5)
+    if not sha256Regex.match(sha256):
+        raise Exception('Invalid hash. Only SHA256 are supported.')
 
-    for element in inputs:
-        res = client.get_file_report(element)
+    res = client.get_file_report(sha256)
 
-        if res.status_code == 200:
-            file_name = f'wildfire_report_{element}.pdf'
-            file_type = entryTypes['entryInfoFile']
-            result = fileResult(file_name, res.content, file_type)  # will be saved under 'InfoFile' in the context.
-            demisto.results(result)
-            command_results = ''
-        elif res.status_code == 404:
-            command_results = 'Report not found.'
-        else:
-            command_results = res.content
+    if res.status_code == 200:
+        file_name = f'wildfire_report_{sha256}.pdf'
+        file_type = entryTypes['entryInfoFile']
+        result = fileResult(file_name, res.content, file_type)  # will be saved under 'InfoFile' in the context.
+        demisto.results(result)
 
-        command_results_list.append(command_results)
-
-    return command_results_list
+    elif res.status_code == 404:
+        return_results('Report not found.')
 
 
 ''' MAIN FUNCTION '''
@@ -118,7 +94,7 @@ def main():
             return_results(result)
 
         elif command == 'wildfire-get-report':
-            return_results(wildfire_get_report_command(client, args))
+            wildfire_get_report_command(client, args)
 
     # Log exceptions and return errors
     except Exception as e:

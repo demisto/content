@@ -22,6 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Retrieves results for a file hash using WildFire.
 
+
 #### Base Command
 
 `wildfire-get-report`
@@ -29,8 +30,7 @@ Retrieves results for a file hash using WildFire.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha256 | SHA256 hash to check. | Optional | 
-| md5 | MD5 hash to check. | Optional | 
+| sha256 | SHA256 hash to check. | Required | 
 
 
 #### Context Output
@@ -53,4 +53,7 @@ There is no context output for this command.
     }
 }
 ```
+
 #### Human Readable Output
+
+

@@ -27,16 +27,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: MD5 hash to check.
-      isArray: true
-      name: md5
-      required: false
-      secret: false
-    - default: false
       description: SHA256 hash to check
-      isArray: true
+      isArray: false
       name: sha256
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Retrieves results for a file hash using WildFire.
