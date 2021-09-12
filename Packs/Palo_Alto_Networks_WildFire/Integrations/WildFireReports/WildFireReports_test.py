@@ -53,7 +53,7 @@ def test_report_not_found(mocker):
 
         main()
 
-    assert demisto_mock.call_args[0][0][0] == 'Report not found.'
+    assert demisto_mock.call_args[0][0] == 'Report not found.'
 
 
 def test_incorrect_sha256(mocker):
@@ -72,7 +72,6 @@ def test_incorrect_sha256(mocker):
     mocker.patch.object(demisto, 'error')
     mock_error = mocker.patch('WildFireReports.return_error')
 
-    # with pytest.raises(SystemExit):
     main()
 
-    assert 'Invalid hash. Only SHA256 and MD5 are supported.' in str(mock_error.call_args.args[0])
+    assert 'Invalid hash. Only SHA256 are supported.' in str(mock_error.call_args.args)
