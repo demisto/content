@@ -53,10 +53,10 @@ RED_COLOR = "{{color:#D13C3C}}(%s)"
 
 
 
-VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)" #"{{background:#fd0800}}({{color:#ffffff}}(**%s**))"
-VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)" #"{{background:#fd9a14}}({{color:#ffffff}}(**%s**))"
-VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)" #{{background:#15ff2c}}({{color:#ffffff}}(**%s**))"
-VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)" #{{background:#feff2b}}({{color:#000000}}(**%s**))"
+VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)"
+VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)"
+VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)"
+VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)"
 MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT: VERDICT_BENIGN_COLOR,
                          SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
@@ -151,35 +151,6 @@ def load_oob_model(path: str):
         return_error(get_error(res))
 
 
-
-def load_oob_model_updated(path: str, demisto_major_version, demisto_minor_version):
-    """
-    Load and save model from the model in the docker
-    :return: None
-    """
-    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
-    model_demisto = decode_model_data(model_64_str)
-    try:
-        model_docker = decode_model_data(load_oob(OUT_OF_THE_BOX_MODEL_PATH).decode('utf-8'))
-    except Exception:
-        return_error(traceback.format_exc())
-    model_docker.logos_dict = model_demisto.logos_dict
-    model_docker.minor = model_demisto.minor
-    res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
-                                                   'modelName': URL_PHISHING_MODEL_NAME,
-                                                   'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
-                                                   'modelOverride': 'true',
-                                                   'modelHidden': True,
-                                                   'modelType': 'url_phishing',
-                                                   'modelExtraInfo': {
-                                                       OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
-                                                       OOB_MINOR_VERSION_INFO_KEY: model_demisto.minor
-                                                   }
-                                                   })
-    if is_error(res):
-        return_error(get_error(res))
-
-
 def oob_model_exists_and_updated() -> bool:
     """
     Check is the model exist and is updated in demisto
@@ -203,17 +174,6 @@ def image_from_base64_to_bytes(base64_message: str):
     message_bytes = base64.b64decode(base64_bytes)
     return message_bytes
 
-
-# def extract_domainv2(url: str):
-#     """
-#     Return domain (SLD + TLD)
-#     :param url: URL from which to extract domain name
-#     :return:str
-#     """
-#     parts = extract(url)
-#     return parts.domain + "." + parts.suffix
-
-
 def extract_domainv2(url):
     ext = NO_FETCH_EXTRACT(url)
     return ext.domain + "." + ext.suffix
@@ -230,9 +190,6 @@ def in_white_list(model, url: str) -> bool:
         return True
     else:
         return False
-
-
-
 
 
 def get_colored_pred_json(pred_json: Dict) -> Dict:
