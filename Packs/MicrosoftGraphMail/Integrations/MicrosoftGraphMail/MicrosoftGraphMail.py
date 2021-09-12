@@ -67,13 +67,12 @@ class MsGraphClient:
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, timeout = timeout)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
-        self._timeout = timeout
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -119,7 +118,7 @@ class MsGraphClient:
         if odata:
             suffix += f'?{odata}'
         demisto.debug(f"URL suffix is {suffix}")
-        response = self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
     def delete_mail(self, user_id: str, message_id: str, folder_id: str = None) -> bool:
@@ -136,7 +135,7 @@ class MsGraphClient:
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'  # type: ignore
         no_folder = f'/users/{user_id}/messages/{message_id}'
         suffix = with_folder if folder_id else no_folder
-        self.ms_client.http_request('DELETE', suffix, resp_type="", timeout=self._timeout)
+        self.ms_client.http_request('DELETE', suffix, resp_type="")
         return True
 
     def get_attachment(self, message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
@@ -157,7 +156,7 @@ class MsGraphClient:
                        f'messages/{message_id}/attachments/{attachment_id}/'
                        f'?$expand=microsoft.graph.itemattachment/item')
         suffix = with_folder if folder_id else no_folder
-        response = self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        response = self.ms_client.http_request('GET', suffix)
         return response
 
     def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
@@ -179,7 +178,7 @@ class MsGraphClient:
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
-        response = self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        response = self.ms_client.http_request('GET', suffix)
 
         # Add user ID
         response['userId'] = user_id
@@ -199,7 +198,7 @@ class MsGraphClient:
         no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
         suffix = with_folder if folder_id else no_folder
-        return self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        return self.ms_client.http_request('GET', suffix)
 
     def list_folders(self, user_id: str, limit: str = '20') -> dict:
         """List folder under root folder (Top of information store)
@@ -212,7 +211,7 @@ class MsGraphClient:
             dict: Collection of folders under root folder
         """
         suffix = f'/users/{user_id}/mailFolders?$top={limit}'
-        return self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        return self.ms_client.http_request('GET', suffix)
 
     def list_child_folders(self, user_id: str, parent_folder_id: str, limit: str = '20') -> list:
         """List child folder under specified folder.
@@ -227,7 +226,7 @@ class MsGraphClient:
         """
         # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
         suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
-        return self.ms_client.http_request('GET', suffix, timeout=self._timeout)
+        return self.ms_client.http_request('GET', suffix)
 
     def create_folder(self, user_id: str, new_folder_name: str, parent_folder_id: str = None) -> dict:
         """Create folder under specified folder with given display name
@@ -246,7 +245,7 @@ class MsGraphClient:
             suffix += f'/{parent_folder_id}/childFolders'
 
         json_data = {'displayName': new_folder_name}
-        return self.ms_client.http_request('POST', suffix, json_data=json_data, timeout=self._timeout)
+        return self.ms_client.http_request('POST', suffix, json_data=json_data)
 
     def update_folder(self, user_id: str, folder_id: str, new_display_name: str) -> dict:
         """Update folder under specified folder with new display name
@@ -262,7 +261,7 @@ class MsGraphClient:
 
         suffix = f'/users/{user_id}/mailFolders/{folder_id}'
         json_data = {'displayName': new_display_name}
-        return self.ms_client.http_request('PATCH', suffix, json_data=json_data, timeout=self._timeout)
+        return self.ms_client.http_request('PATCH', suffix, json_data=json_data)
 
     def delete_folder(self, user_id: str, folder_id: str):
         """Deletes folder under specified folder
@@ -273,7 +272,7 @@ class MsGraphClient:
         """
 
         suffix = f'/users/{user_id}/mailFolders/{folder_id}'
-        return self.ms_client.http_request('DELETE', suffix, resp_type="", timeout=self._timeout)
+        return self.ms_client.http_request('DELETE', suffix, resp_type="")
 
     def move_email(self, user_id: str, message_id: str, destination_folder_id: str) -> dict:
         """Moves email to destination folder
@@ -289,7 +288,7 @@ class MsGraphClient:
 
         suffix = f'/users/{user_id}/messages/{message_id}/move'
         json_data = {'destinationId': destination_folder_id}
-        return self.ms_client.http_request('POST', suffix, json_data=json_data, timeout=self._timeout)
+        return self.ms_client.http_request('POST', suffix, json_data=json_data)
 
     def get_email_as_eml(self, user_id: str, message_id: str) -> str:
         """Returns MIME content of specified message
@@ -303,7 +302,7 @@ class MsGraphClient:
         """
 
         suffix = f'/users/{user_id}/messages/{message_id}/$value'
-        return self.ms_client.http_request('GET', suffix, resp_type='text', timeout=self._timeout)
+        return self.ms_client.http_request('GET', suffix, resp_type='text')
 
     @staticmethod
     def _build_recipient_input(recipients):
@@ -549,7 +548,7 @@ class MsGraphClient:
         :rtype: ``list``
         """
         suffix_endpoint = f'/users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250'
-        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [], timeout=self._timeout)
+        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])
         return folder_children
 
     def _get_folder_info(self, user_id, folder_id):
@@ -569,7 +568,7 @@ class MsGraphClient:
         """
 
         suffix_endpoint = f'/users/{user_id}/mailFolders/{folder_id}'
-        folder_info = self.ms_client.http_request('GET', suffix_endpoint, timeout=self._timeout)
+        folder_info = self.ms_client.http_request('GET', suffix_endpoint)
         if not folder_info:
             raise Exception(f'No info found for folder {folder_id}')
         return folder_info
@@ -587,7 +586,7 @@ class MsGraphClient:
         rtype: ``list``
         """
         suffix_endpoint = f'/users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
-        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None, timeout=self._timeout)
+        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None)
         if not root_folder_children:
             raise Exception("No folders found under Top Of Information Store folder")
 
@@ -677,7 +676,7 @@ class MsGraphClient:
         }
 
         fetched_emails = self.ms_client.http_request(
-            'GET', suffix_endpoint, params=params, timeout=self._timeout
+            'GET', suffix_endpoint, params=params
         ).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
@@ -725,7 +724,7 @@ class MsGraphClient:
         :rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text', timeout=self._timeout)
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
 
         return mime_content
 
@@ -742,7 +741,7 @@ class MsGraphClient:
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
-        attachments = self.ms_client.http_request('Get', suffix_endpoint, timeout=self._timeout).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -1429,7 +1428,7 @@ def create_draft_command(client: MsGraphClient, args):
     suffix_endpoint = f'/users/{email}/messages'
     draft = client.build_message(**prepared_args)
 
-    created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft, timeout=client._timeout)
+    created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
 
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
@@ -1467,9 +1466,7 @@ def send_email_command(client: MsGraphClient, args):
     email = args.get('from', client._mailbox_to_fetch)
     suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
-    client.ms_client.http_request(
-        'POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text", timeout=client._timeout
-    )
+    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
 
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
@@ -1528,7 +1525,7 @@ def reply_email_command(client: MsGraphClient, args):
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
                                           attach_names, attach_cids)
     client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
-                                  resp_type="text", timeout=client._timeout)
+                                  resp_type="text")
 
     return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
 
@@ -1543,7 +1540,7 @@ def reply_to_command(client: MsGraphClient, args):
 
     suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
     reply = client.build_reply(to_recipients, comment)
-    client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text", timeout=client._timeout)
+    client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
 
@@ -1552,7 +1549,7 @@ def send_draft_command(client: MsGraphClient, args):
     email = args.get('from')
     draft_id = args.get('draft_id')
     suffix_endpoint = f'/users/{email}/messages/{draft_id}/send'
-    client.ms_client.http_request('POST', suffix_endpoint, resp_type="text", timeout=client._timeout)
+    client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
 
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
