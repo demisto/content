@@ -76,7 +76,7 @@ function create_new_pack {
     new_name="${original_name}${new_pack_suffix}"
     rename_files_and_folders "$original_name" "$new_name"
   done
-  update_conf_json_file pack_name new_pack_name
+  update_conf_json_file $pack_name $new_pack_name
   cd "${original_path}" || fail
   git add "$new_pack_path"
 
