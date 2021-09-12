@@ -20,7 +20,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Generates Palo Alto Networks WildFire PDF reports.
+description: Generates a Palo Alto Networks WildFire PDF report.
 display: Palo Alto Networks WildFire Reports.
 name: WildFire-Reports
 script:
