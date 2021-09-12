@@ -598,5 +598,5 @@ outputs:
   description: The size of the submission.
   type: number
 tests:
-- WildFire Detonate File - Test
+- No tests (auto formatted)
 fromversion: 5.0.0
