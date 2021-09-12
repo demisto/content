@@ -1,0 +1,173 @@
+category: Data Enrichment & Threat Intelligence#
+commonfields:
+  id: BotDefender
+  version: -1
+configuration:
+- defaultvalue: https://k986g.mocklab.io
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ebfb7ff0-b2f6-41c8-bef3-4fba17be410c
+  display: API Key
+  name: apikey
+  required: true
+  type: 9
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: DBot Scoring - Bad Score Threshold
+  name: dbotBadThreshold
+  required: true
+  defaultValue: 90
+  type: 0
+- display: DBot Scoring - Suspicious Score Threshold
+  name: dbotSuspiciousThreshold
+  required: true
+  defaultValue: 50
+  type: 0
+- display: DBot Scoring - Good Score Threshold
+  name: dbotGoodThreshold
+  required: true
+  defaultValue: 5
+  type: 0
+description: Gathers PerimeterX related data
+detaileddescription: This integration will query the PerimeterX API for useful information regarding the supplied item (IP, User Agent, path, etc...)
+display: PerimeterX BotDefender
+image: data:image/png;base64,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RXPQpaeP5CWzOBDFWUvNhyhrKZ1ipenYsNxakRnErAQMn8DwuFigK4aIxpnCKISmd/nkynN7B6JRuiexo9LIDGokXC2lSy+Ly+TwJH/HlDzJP5en3eNp7t9edVmz6dpvDnQt9HjWZGrNq5t9//KvRzoqOxNLHcx1OphBj4Srqc3cajGNTI1lBugGgemYQQVmppj4MebSmr7x1pTYxHbts+oVvfmruv6A3eavX92s/+glu51aJkK64sLzOv96Yyqdez981m7/XvSGXn/87OKZrukWgemYYQRmpjiz2XrLDc22n/yw2X7//c0j6x9otq/bsNsDTIy4etrUPs28xQt7k2TG5Jh7veClY/nEduyjWHP+oZu++4RJI+Mgu/CVz+8tnDVua5tEWB/6/q1P+BAy8/Xuc/Rb3cyfQALTMcMODMBsuckPQAqBASCFwACQQmAASCEwAKQQGABSCAwAKQQGgBQCA0AKgQEghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYABIITAApBAYAFIIDAApBAaAFAIDQAqBASCFwACQQmAASCEwHTP/0KnWG7zPqldM6F4DhkFgOuYZH3hPM2/pnnPe6D2POLCZevOJE773gEGaN71126P2ePdM33z9rLd5jyX7Nnu/+KhJ32XAgAkMAClcIgMghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYABIITAApBAYAFIIDAApBAaAFAIDQAqBASCFwACQQmAASCEwAKQQGABSCAwAKQQGgBQCA0AKgQEghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYABIITAApBAYAFIIDAApBAaAFAIDQAqBASCFwACQQmAASCEwAKQQGABSCAwAKQQGgBQCA0AKgQEghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYABIITAApBAYAFIIDAApBAaAFAIDQAqBASCFwACQQmAASCEwAKQQGABSCAwAKQQGgBQCA0AKgQEghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYABIITAApBAYAFIIDAApBAaAFAIDQAqBASCFwACQQmAASCEwAKQQGABSCAwAKQQGgBQCA0AKgQEghcAAkEJgAEghMACkEBgAUggMACkEBoAUAgNACoEBIIXAAJBCYACor2ma/wf34CF6870/4wAAAABJRU5ErkJggg==
+name: BotDefender
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The custom parameter value or IP address for which the report is requested
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the PerimeterX DBotScore decision for a particular IP
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+  - arguments:
+    - default: false
+      description: The custom parameter value or IP address for which the report is requested
+      isArray: false
+      name: search_term
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The field to search against for the query (socket_ip, true_ip, name)
+      isArray: false
+      name: search_type
+      predefined:
+      - true_ip
+      - socket_ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the PerimeterX related details for a particular IP
+    execution: false
+    name: perimeterx-get-investigate-details
+    outputs:
+    - contextPath: PerimeterX.TopUserAgents.UserAgentName
+      description: The user agent string
+      type: String
+    - contextPath: PerimeterX.TopUserAgents.Count
+      description: The number of requests seen using this user agent string
+      type: Number
+    - contextPath: PerimeterX.TopURLPaths.UrlPath
+      description: Path portion of the full URL
+      type: String
+    - contextPath: PerimeterX.TopURLPaths.Count
+      description: The number of requests made to this path
+      type: Number
+    - contextPath: PerimeterX.TopBlockedURLPaths.BlockedURLPath
+      description: Path portion of the full blocked URL
+      type: String
+    - contextPath: PerimeterX.TopBlockedURLPaths.Count
+      description: The number of requests blocked on this path
+      type: Number
+    - contextPath: PerimeterX.TopIncidentTypes.IncidentType
+      description: Incident type for queried item
+      type: String
+    - contextPath: PerimeterX.TopIncidentTypes.Count
+      description: The number of requests categorized for the incident type
+      type: Number
+    - contextPath: PerimeterX.CatpchaSolves
+      description: Total number of captchas solved by queried item
+      type: Number
+    - contextPath: PerimeterX.PageTypeDistributions.pageType
+      description: Page type name
+      type: String
+    - contextPath: PerimeterX.PageTypeDistributions.Count
+      description: Count of requests classified under the page type
+      type: Number
+    - contextPath: PerimeterX.MaxRiskScore
+      description: Maximum risk score observed by PerimeterX
+      type: Number
+    - contextPath: PerimeterX.IpClassifications.Class
+      description: Class associated with the IP classification type
+      type: String
+    - contextPath: PerimeterX.IpClassifications.Name
+      description: Name associated with the IP classification
+      type: String
+    - contextPath: IP.Address
+      description: Bad IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.3.8715
