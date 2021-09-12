@@ -9,7 +9,7 @@ This integration was created and tested with version 10.1 of WildFire
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server base URL (e.g. https://192.168.0.1/publicapi) |  | True |
+    | Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
     | API Key |  | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
     | Use system proxy settings | Use system proxy settings. | False |
