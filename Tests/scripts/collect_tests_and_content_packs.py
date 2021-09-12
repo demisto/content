@@ -393,12 +393,12 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 tests.add(test)
 
             else:
-                # pack_name = tools.get_pack_name(file_path)
-                # if pack_name and is_pack_xsoar_supported(pack_name):
-                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-                logging.error(message)
-                global _FAILED
-                _FAILED = True
+                pack_name = tools.get_pack_name(file_path)
+                if pack_name and is_pack_xsoar_supported(pack_name):
+                    message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
+                    logging.error(message)
+                    global _FAILED
+                    _FAILED = True
 
     return missing_ids
 
