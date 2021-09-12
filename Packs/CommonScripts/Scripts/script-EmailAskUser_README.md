@@ -89,3 +89,8 @@ There are no outputs for this script.
 ## Prerequisites
 ---
 Requires an instance of one of the available email integrations.
+
+
+## Troubleshooting
+---
+In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.
