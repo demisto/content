@@ -1,0 +1,27 @@
+{
+  "id": "assets_module",
+  "name": "Assets Module",
+  "definitions": [
+    {
+        "id": "assets",
+        "name": "Assets",
+        "partitioned": true,
+        "auditable":  true
+     }
+  ],
+  "views": [
+    {
+      "name": "AssetsPage",
+      "icon": "icon-menu-box-24-r",
+      "title": "Assets Page",
+      "tabs": [
+        {
+          "name": "Asset Groups",
+          "dashboardId": "assets-dashboards",
+          "newButtonDefinitionId": "assets"
+        }
+      ]
+    }
+  ],
+  "fromVersion": "6.5.0"
+}

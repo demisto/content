@@ -268,7 +268,7 @@ tasks:
       output_fields:
         complex:
           root: ${Infoblox
-          accessor: ObjectFields.SupportedFields}
+          accessor: GenericFields.SupportedFields}
           transformers:
           - operator: join
             args:

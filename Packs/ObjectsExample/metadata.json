@@ -1,0 +1,41 @@
+{
+    "name": "RBVM Example",
+    "id": "RBVMExample",
+    "description": "RBVM pack with files structures, to help defining the API between the content and the platform",
+    "created": "2020-03-10T08:37:18Z",
+    "updated": "2020-07-26T10:46:51Z",
+    "legacy": true,
+    "support": "partner",
+    "supportDetails": {
+        "url": "https://www.paloaltonetworks.com/cortex"
+    },
+    "eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+    "author": "PICMESH",
+    "authorImage": "https://storage.cloud.google.com/marketplace-dist-dev/content/packs/images/large_picmesh.png",
+    "certification": "certified",
+    "price": 0,
+    "serverMinVersion": "6.5.0",
+    "currentVersion": "1.0.0",
+    "versionInfo": "73938",
+    "commit": "3b149fc72cba37d458407787823272e048ad6a3b",
+    "tags": [],
+    "categories": [
+        "Utilities"
+    ],
+    "premium": true,
+    "contentItems": {
+        "integration": [
+            {
+                "name": "Random Image Generator",
+                "description": "Generate random images",
+                "Category": "Utilities",
+                "commands": [{
+                    "name": "genarate-random-image",
+                    "description": "Genarates random image with given size in px"
+                }]
+            }
+        ],
+        "TODO": "ADD ITEMS"
+    },
+    "dependencies": {}
+}
