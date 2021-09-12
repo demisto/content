@@ -35,10 +35,11 @@ UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 THRESHOLD_NEW_DOMAIN_YEAR = 0.5
 DOMAIN_AGE_KEY = 'New domain (less than %s year)' %str(THRESHOLD_NEW_DOMAIN_YEAR)
 
-MALICIOUS_VERDICT = "malicious"
-BENIGN_VERDICT = "benign"
-BENIGN_VERDICT_WHITELIST = "benign - whitelist"
-SUSPICIOUS_VERDICT = "suspicious"
+MALICIOUS_VERDICT = "Malicious"
+BENIGN_VERDICT = "Benign"
+SUSPICIOUS_VERDICT = "Suspicious"
+BENIGN_VERDICT_WHITELIST = "Benign - whitelist"
+
 
 BENIGN_THRESHOLD = 0.5
 SUSPICIOUS_THRESHOLD = 0.7
@@ -150,6 +151,7 @@ def load_oob_model(path: str):
         return_error(get_error(res))
 
 
+
 def load_oob_model_updated(path: str, demisto_major_version, demisto_minor_version):
     """
     Load and save model from the model in the docker
@@ -202,6 +204,16 @@ def image_from_base64_to_bytes(base64_message: str):
     return message_bytes
 
 
+# def extract_domainv2(url: str):
+#     """
+#     Return domain (SLD + TLD)
+#     :param url: URL from which to extract domain name
+#     :return:str
+#     """
+#     parts = extract(url)
+#     return parts.domain + "." + parts.suffix
+
+
 def extract_domainv2(url):
     ext = NO_FETCH_EXTRACT(url)
     return ext.domain + "." + ext.suffix
@@ -218,6 +230,8 @@ def in_white_list(model, url: str) -> bool:
         return True
     else:
         return False
+
+
 
 
 
@@ -410,6 +424,7 @@ def get_score(pred_json):
     return score
 
 
+
 def get_verdict(pred_json: Dict, is_white_listed: bool) -> Union[float, str]:
     """
     Return verdict of the url based on the output of the model
@@ -429,10 +444,8 @@ def get_verdict(pred_json: Dict, is_white_listed: bool) -> Union[float, str]:
         else:
             return score, MALICIOUS_VERDICT
 
-
 def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize):
     return {'url': url, 'verdict': verdict, 'pred_json': pred_json, 'score': score, 'is_white_listed': is_white_listed, 'output_rasterize': output_rasterize}
-
 
 def extract_created_date(entry_list: List) -> bool:
     """
@@ -452,7 +465,6 @@ def extract_created_date(entry_list: List) -> bool:
                 threshold_date = datetime.datetime.now() - datetime.timedelta(days=THRESHOLD_NEW_DOMAIN_YEAR * 365)
                 return date > threshold_date
     return  False
-
 
 def get_prediction_single_url(model, url, force_model):
     is_white_listed = False
@@ -551,7 +563,6 @@ def save_model_in_demisto(model):
     if is_error(res):
         return_error(get_error(res))
 
-
 def load_demisto_model():
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
@@ -563,8 +574,8 @@ def main():
     start_time = time.time()
 
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
-    demisto.results("Actual demisto major version: " + str(demisto_major_version))
-    demisto.results("Actual demisto minor version: " + str(demisto_minor_version))
+    # demisto.results("Actual demisto major version: " + str(demisto_major_version))
+    # demisto.results("Actual demisto minor version: " + str(demisto_minor_version))
     print("--- %s seconds ---" % (time.time() - start_time))
 
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
@@ -589,6 +600,7 @@ def main():
         model =  load_demisto_model()
         demisto.results('2')
         model_docker.logos_dict = model.logos_dict
+        model_docker.clf.named_steps.preprocessor.named_transformers_['image'].named_steps.trans.logo_dict = model.logos_dict
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         demisto.results('3')
@@ -603,6 +615,7 @@ def main():
     start_time = time.time()
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
+    #demisto.results(list(model.logos_dict.keys()))
     demisto.results('7')
     print("--- %s seconds ---" % (time.time() - start_time))
 
