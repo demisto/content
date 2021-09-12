@@ -2870,6 +2870,26 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     }
     return fields
 
+def update_events_mirroring_status(offense: Dict, mirror_options: str, events_limit: int) -> Dict:
+    if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
+        offense['mirroring_events_status'] = 'Not Enabled'
+        return offense
+
+    events_count = offense.get('events_count')
+    events_mirrored = len(offense.get('events'))
+
+    if events_mirrored < min(events_count, events_limit):
+        offense['mirroring_events_status'] = 'Failed'
+    elif events_mirrored == events_limit:
+        offense['mirroring_events_status'] = 'Completed and Stopped'
+    elif events_mirrored == events_count:
+        offense['mirroring_events_status'] = 'Completed'
+    else:
+        offense['mirroring_events_status'] = 'Unknown'
+
+    return offense
+
+
 
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
     """
@@ -2894,6 +2914,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
     context_data = get_integration_context()
+    events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     processed_offenses = print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
                                                                  f"Offense {str(offense.get('id'))}")
 
@@ -2973,6 +2994,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         set_integration_context(context_data)
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
+    enriched_offense = update_events_mirroring_status(offense=enriched_offense[0], mirror_options=mirror_options,
+                                                      events_limit=events_limit)
+
     final_offense_data = sanitize_outputs(enriched_offense)[0]
 
     return GetRemoteDataResponse(final_offense_data, entries)
