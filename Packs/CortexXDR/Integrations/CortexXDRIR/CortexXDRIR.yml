@@ -660,6 +660,8 @@ script:
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
       - RESOLVED_OTHER
+      - RESOLVED_SECURITY_TESTING
+      - RESOLVED_TRUE_POSSITIVE
       required: false
       secret: false
     - default: false
@@ -783,6 +785,12 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) to isolate. You can retrieve the string
         from the xdr-get-endpoints command.
       isArray: false
@@ -798,6 +806,12 @@ script:
       description: The endpoint ID.
       type: String
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: The endpoint ID (string) for which to reverse the isolation. You
         can retrieve it from the xdr-get-endpoints command.
@@ -1567,6 +1581,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents a list of hashed files you want to blacklist.
         Must be a valid SHA256 hash.
       isArray: true
@@ -1585,6 +1605,12 @@ script:
     execution: false
     name: xdr-blacklist-files
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: String that represents a list of hashed files you want to whitelist.
         Must be a valid SHA256 hash.
@@ -1630,6 +1656,12 @@ script:
     name: xdr-quarantine-files
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String the represents the endpoint ID.
       isArray: false
       name: endpoint_id
@@ -1653,6 +1685,12 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents the file in hash. Must be a valid SHA256
         hash.
       isArray: false
@@ -1672,6 +1710,12 @@ script:
     execution: false
     name: xdr-restore-file
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1780,6 +1824,12 @@ script:
       description: Was the scan aborted.
       type: Boolean
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -2219,6 +2269,12 @@ script:
       type: string
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
@@ -2415,6 +2471,12 @@ script:
       type: number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2455,6 +2517,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
@@ -2635,6 +2703,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2666,6 +2740,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
@@ -2702,6 +2782,12 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: true
@@ -2734,6 +2820,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
