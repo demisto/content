@@ -7,16 +7,14 @@ import argparse
 import glob
 import json
 import logging
-import os
 import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple, Union
 
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from demisto_sdk.commands.common.constants import *  # noqa: E402
-from configparser import ConfigParser, MissingSectionHeaderError
 
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
