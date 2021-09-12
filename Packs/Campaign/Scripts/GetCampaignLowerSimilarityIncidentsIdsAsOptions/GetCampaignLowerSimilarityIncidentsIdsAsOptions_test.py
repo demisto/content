@@ -80,7 +80,7 @@ def test_there_is_no_id_in_incident(mocker):
         Try to get the ids for the multi select field
 
     Then -
-        Validate the
+        Validate the error result as expected
 
     """
 
