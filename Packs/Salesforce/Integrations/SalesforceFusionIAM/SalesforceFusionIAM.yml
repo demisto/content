@@ -7,10 +7,22 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: User name
   name: credentials
   required: true
   type: 9
+- display: Client ID
+  name: client_id
+  type: 0
+  required: true
+- display: Client secret
+  name: client_secret
+  type: 4
+  required: true
+- display: Secret token
+  name: secret_token
+  type: 4
+  required: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled

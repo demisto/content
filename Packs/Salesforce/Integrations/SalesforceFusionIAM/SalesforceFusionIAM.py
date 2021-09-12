@@ -18,9 +18,16 @@ URI_PREFIX = '/services/data/v51.0/'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, manager_email=None):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, client_id=None,
+                 username=None, password=None, client_secret=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.manager_id = self.get_manager_id(manager_email)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.username = username
+        self.password = password
+        self.headers = headers
+        self.headers['Authorization'] = f'Bearer {self.create_login()}'
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -38,6 +45,24 @@ class Client(BaseClient):
                 manager_id = res.id
         return manager_id
 
+    def create_login(self):
+        uri = '/services/oauth2/token'
+        params = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "username": self.username,
+            "password": self.password,
+            "grant_type": "password",
+        }
+        
+        res = self._http_request(
+            method='POST',
+            url_suffix=uri,
+            params=params,
+        )
+
+        return res.get('access_token')
+    
     def test(self):
         """ Tests connectivity with the application. """
 
@@ -294,8 +319,11 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'))
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
+    secret_token = params.get('secret_token')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
@@ -324,7 +352,10 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password),
+        client_id=client_id,
+        client_secret=client_secret,
+        username=username,
+        password=password+secret_token,
         manager_email=manager_email,
     )
 
