@@ -179,7 +179,10 @@ Returns all services that have been found on the IP address of the searched host
 | Shodan.IP.OS | String | The operating system on which the searched device is running. |
 | Shodan.IP.Port | Number | The port number on which the service is operating. |
 | Shodan.IP.Address | String | The IP address of the host as a string. |
-
+| DBotScore.Indicator | String | The indicator value. |
+| DBotScore.Score | Number | The indicator score according to the vendor. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor name. |
 
 #### Command Example
 ```!ip ip="8.8.8.8" using-brand="Shodan_v2"```
@@ -212,6 +215,12 @@ Returns all services that have been found on the IP address of the searched host
             ],
             "Tag": []
         }
+    },
+    "DBotScore": {
+        "Indicator": "8.8.8.8",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "Shodan_v2"
     }
 }
 ```
