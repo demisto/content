@@ -1214,6 +1214,12 @@
             "fromversion": "5.0.0",
             "toversion": "6.1.9"
         },
+                {
+            "integrations": "WildFire-v2",
+            "playbookID": "WildFire Detonate File - Test",
+            "is_mockable": false,
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test With Polling",

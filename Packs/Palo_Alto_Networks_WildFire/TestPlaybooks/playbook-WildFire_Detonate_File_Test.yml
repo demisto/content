@@ -1,0 +1,200 @@
+id: a0bed461-8bc9-4d13-867c-028a9e641ae4
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: WildFire Detonate File - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 97249e61-abd4-4728-832f-04d37b4cb722
+    type: start
+    task:
+      id: 97249e61-abd4-4728-832f-04d37b4cb722
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b6898e51-b693-4622-82db-315d0bfb32b9
+    type: playbook
+    task:
+      id: b6898e51-b693-4622-82db-315d0bfb32b9
+      version: -1
+      name: WildFire - Detonate file
+      description: |-
+        Detonate one or more files using the Wildfire integration. This playbook
+        returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: efd2beb0-3feb-44d3-844a-9ea415f6c8de
+    type: title
+    task:
+      id: efd2beb0-3feb-44d3-844a-9ea415f6c8de
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2da7979d-a597-4c7a-80b7-fba306326d80
+    type: regular
+    task:
+      id: 2da7979d-a597-4c7a-80b7-fba306326d80
+      version: -1
+      name: Download PA test file
+      description: Download a test PE file.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://wildfire.paloaltonetworks.com/publicapi/test/pe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8b18478e-0ae8-4587-8c41-929aa177364a
+    type: condition
+    task:
+      id: 8b18478e-0ae8-4587-8c41-929aa177364a
+      version: -1
+      name: Was the file downloaded?
+      description: Checking if the file was downloaded.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_1_yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 380,
+        "x": 850,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
