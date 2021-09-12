@@ -25,9 +25,9 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_threat_handled\","
-                              "\"resolved_known_issue\",\"resolved_duplicate\","
-                              "\"resolved_false_positive\",\"resolved_other\"",
+                              "investigation\",\"resolved_known_issue\","
+                              "\"resolved_duplicate\",\"resolved_false_positive\","
+                              "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
                "xsoar_field_name": 'xdrstatusv2'},
     "assigned_user_mail": {"description": "Email address of the assigned user.",
                            'xsoar_field_name': "xdrassigneduseremail"},
@@ -41,18 +41,20 @@ XDR_INCIDENT_FIELDS = {
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_threat_handled': 'Resolved',
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
+    'resolved_true_positive': 'True Positive',
+    'resolved_security_testing': 'Security',
     'resolved_other': 'Other'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Resolved': 'resolved_threat_handled',
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive'
+    'False Positive': 'resolved_false_positive',
+    'True Positive': 'resolved_true_positive',
+    'Security': 'resolved_security_testing'
 }
 
 MIRROR_DIRECTION = {
