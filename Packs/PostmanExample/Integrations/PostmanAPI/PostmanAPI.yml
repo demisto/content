@@ -1,0 +1,1338 @@
+category: Utilities
+commonfields:
+  id: PostmanAPI
+  version: -1
+configuration:
+- defaultvalue: https://www.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 21e58d8d-9b5e-4048-8a16-6e147d28761f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "The Postman API allows you to programmatically access data stored in\
+  \ Postman account with ease.\n\nThe easiest way to get started with the API is to\
+  \ click the **fork** button to fork this collection to your own workspace and use\
+  \ Postman to send requests.\n\n\n# Overview\n\n1. You need a valid <a href=\"#authentication\"\
+  >API Key</a> to send requests to the API endpoints. You can get your key from the\
+  \ [integrations dashboard](https://go.postman.co/settings/me/api-keys).\n\n1. The\
+  \ API has an access <a href=\"#rate-limits\">rate limit</a> applied to it.\n\n1.\
+  \ The Postman API will only respond to secured communication done over HTTPS. HTTP\
+  \ requests will be sent a `301` redirect to corresponding HTTPS resources.\n\n1.\
+  \ Response to every request is sent in [JSON format](https://en.wikipedia.org/wiki/JSON).\
+  \ In case the API request results in an error, it is represented by an `\"error\"\
+  : {}` key in the JSON response.\n\n1. The request method (verb) determines the nature\
+  \ of action you intend to perform. A request made using the `GET` method implies\
+  \ that you want to fetch something from Postman, and `POST` implies you want to\
+  \ save something new to Postman.\n\n1. The API calls will respond with appropriate\
+  \ [HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for\
+  \ all requests. Within Postman Client, when a response is received, the status code\
+  \ is highlighted and is accompanied by a help text that indicates the possible meaning\
+  \ of the response code. A `200 OK` indicates all went well, while `4XX` or `5XX`\
+  \ response codes indicate an error from the requesting client or our API servers\
+  \ respectively.\n\n1. Individual resources in your Postman Account is accessible\
+  \ using its unique id (`uid`). The `uid` is a simple concatenation of the resource\
+  \ owner's user-id and the resource-id. For example, a collection's `uid` is `{{owner_id}}-{{collection_id}}`.\n\
+  \n# Authentication\n\nAn API Key is required to be sent as part of every request\
+  \ to the Postman API, in the form of an `X-Api-Key` request header.\n\n> If you\
+  \ do not have an API Key, you can easily generate one by heading over to the [Postman\
+  \ Integrations Dashboard](https://go.postman.co/integrations/services/pm_pro_api).\n\
+  \nAn API Key tells our API server that the request it received came from you. Everything\
+  \ that you have access to in Postman is accessible with an API Key that is generated\
+  \ by you.\n\nFor ease of use inside Postman, you could store your API key in an\
+  \ [environment variable](https://www.getpostman.com/docs/environments) called `postman_api_key`\
+  \ and this [Collection](https://www.getpostman.com/docs/collections) will automatically\
+  \ use it to make API calls.\n\n## API Key related error response\n\nIf an API Key\
+  \ is missing, malformed, or invalid, you will receive a `401 Unauthorised` response\
+  \ code and the following JSON response:\n\n```\n{\n  \"error\": { \n    \"name\"\
+  : \"AuthenticationError\",\n    \"message\": \"API Key missing. Every request requires\
+  \ an API Key to be sent.\"\n  }\n}\n```\n\n## Using the API Key as a query parameter\n\
+  \nEvery request that accepts API Key as `X-Api-Key` request header, also accepts\
+  \ the key when sent as `apikey` URL query parameter.\n\nAPI key sent as part of\
+  \ the header has a higher priority in case you send the key using both request header\
+  \ and query parameter.\n\n\n# Rate Limits\n\nAPI access rate limits are applied\
+  \ at a per-key basis in unit time. Access to the API using a key is limited to **60\
+  \ requests per minute**. In addition, every API response is accompanied by the following\
+  \ set of headers to identify the status of your consumption.\n\n\n| Header     \
+  \             | Description |\n|-------------------------|-------------|\n| `X-RateLimit-Limit`\
+  \     | The maximum number of requests that the consumer is permitted to make per\
+  \ minute. |\n| `X-RateLimit-Remaining` | The number of requests remaining in the\
+  \ current rate limit window. |\n| `X-RateLimit-Reset`     | The time at which the\
+  \ current rate limit window resets in UTC epoch seconds. |\n\n\nOnce you hit the\
+  \ rate limit, you will receive a response similar to the following JSON, with a\
+  \ status code of `429 Too Many Requests`.\n\n```json\n{\n  \"error\": {\n    \"\
+  name\": \"rateLimitError\",\n    \"message\": \"Rate Limit exceeded. Please retry\
+  \ at 1465452702843\"\n  }\n}\n```\n\n\n# Support\n\nFor help regarding accessing\
+  \ the Postman API, feel free to discuss it in our [Discourse Community](https://community.getpostman.com).\
+  \ You can also drop in a line at [help@getpostman.com](mailto:help@getpostman.com).\n\
+  \nIn the event you receive a `503` response from our servers, it implies that we\
+  \ have hit an unexpected spike in API access traffic and would usually be operational\
+  \ within the next 5 minutes. If the outage persists, or your receive any other form\
+  \ of `5XX` error, kindly let us know.\n\n\n# Terms of Use\n\nFor information on\
+  \ API terms of use and privacy, refer to our terms at [http://postman.com/legal/terms/](http://postman.com/legal/terms/)\
+  \ and our privacy policy at [https://www.postman.com/legal/privacy-policy/](https://www.postman.com/legal/privacy-policy/).\n\
+  \n\n# API Reference"
+display: Postman API
+name: PostmanAPI
+script:
+  commands:
+  - arguments: []
+    description: |-
+      The `/collections` endpoint returns a list of all [collections](https://www.getpostman.com/docs/collections) that are accessible by you. The list includes your own collections and the collections that you have subscribed to.
+
+      The response contains an array of collection information containing the `name`, `id`, `owner` and `uid` of each collection.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-all-collections
+  - arguments:
+    - name: collection_uid
+    description: |-
+      Access the contents of a collection that is accessible to you using its unique id (`uid`).
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-single-collection
+  - arguments:
+    - name: name
+    - name: description
+    - name: schema
+    - name: name
+    - name: name
+    - name: url
+    - name: method
+    - name: key
+    - name: value
+    - name: mode
+    - name: raw
+    - name: description
+    - name: url
+    - name: method
+    - name: description
+    description: |-
+      This endpoint allows you to create collections using the Postman Collection v2 format. For more information about the v2 schema, check the format [here](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html).
+
+      On successful creation of the collection, the response returns the collection `name`, `id` and the `uid`.
+
+      You can also specify the context of a workspace to create a collection in directly by passing the `workspace` as a query param.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-create-collection
+  - arguments:
+    - name: collection_uid
+    - name: name
+    - name: description
+    - name: _postman_id
+    - name: schema
+    - name: name
+    - name: name
+    - name: url
+    - name: method
+    - name: key
+    - name: value
+    - name: mode
+    - name: raw
+    - name: description
+    - name: url
+    - name: method
+    - name: description
+    description: |-
+      This endpoint allows you to update an existing collection using the Postman Collection v2 format. For more information about the v2 schema, check the format [here](https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html).
+
+      On successful updation of the collection, the response returns the collection `name`, `id` and `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+
+      Note: Please be careful when trying to update the collection, as the existing collection will be replaced by the request body.
+    name: postmanapi-update-collection
+  - arguments:
+    - name: collection_uid
+    description: |-
+      This endpoint allows you to delete an existing collection.
+
+      On successful deletion of the collection, the response returns the `id` and `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-delete-collection
+  - arguments:
+    - name: collection_uid
+    - name: workspace
+    - name: label
+    description: |-
+      This endpoint allows you to create a fork from an existing collection.
+
+      On successful creation of the collection, the response returns the collection `name`, `id`, `uid` along with `fork` information.
+
+      You can also specify the context of a workspace to fork a collection in by passing the `workspace` as a query param.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-create-a-fork
+    outputs:
+    - contextPath: PostmanAPI.CreateAFork.collection.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateAFork.collection.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateAFork.collection.fork.label
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateAFork.collection.fork.createdAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.CreateAFork.collection.fork.from
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateAFork.collection.uid
+      description: ""
+      type: String
+  - arguments:
+    - name: strategy
+    - name: source
+    - name: destination
+    description: |-
+      This endpoint allows you to merge a forked collection back to its destination collection.
+
+      On successful creation of the collection, the response returns the collection `name`, `id` and `uid`.
+
+      You need to specify the fork UID (as `source`) and destination collection UID (as `destination`) in the request body.
+
+      Optionally, you can also specify the merge strategy as either `deleteSource` or `updateSourceWithDestination`. Following is an explanation of the merge strategies
+
+      | Merge Strategy | Behaviour |
+      | --- | --- |
+      | deleteSource | Forked collection is deleted after merging |
+      | updateSourceWithDestination | Forked collection is up to date with changes in destination collection |
+
+      If the collections cannot be merged (due to conflicts), appropriate error messages will be returned.
+
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-merge-a-fork
+  - arguments: []
+    description: |-
+      The `/environments` endpoint returns a list of all [environments](https://www.getpostman.com/docs/environments) that belong to you..
+
+      The response contains an array of environments' information containing the `name`, `id`, `owner` and `uid` of each environment.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-all-environments
+    outputs:
+    - contextPath: PostmanAPI.AllEnvironments.environments.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.AllEnvironments.environments.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.AllEnvironments.environments.createdAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.AllEnvironments.environments.updatedAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.AllEnvironments.environments.owner
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.AllEnvironments.environments.uid
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.AllEnvironments.environments.isPublic
+      description: ""
+      type: Boolean
+  - arguments:
+    - name: environment_uid
+    description: |-
+      Access the contents of an environment that is accessible to you using its unique id (`uid`).
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-single-environment
+    outputs:
+    - contextPath: PostmanAPI.SingleEnvironment.environment.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SingleEnvironment.environment.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SingleEnvironment.environment.owner
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SingleEnvironment.environment.createdAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.SingleEnvironment.environment.updatedAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.SingleEnvironment.environment.values.key
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SingleEnvironment.environment.values.value
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SingleEnvironment.environment.values.enabled
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.SingleEnvironment.environment.isPublic
+      description: ""
+      type: Boolean
+  - arguments:
+    - name: name
+    - name: key
+    - name: value
+    description: |-
+      A sample body is added to the request that conforms to the following JSON schema:
+
+      ```json
+      {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "object",
+            "properties": {
+              "name": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "minLength": 1
+                  },
+              "values": {
+                "type": "array",
+                "maxItems": 100,
+                "additionalItems": false,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "maxLength": 254
+                        "minLength": 1
+                      },
+                      "value": { "type": "string" },
+                      "enabled": { "type": "boolean" }
+                    },
+                    "required": ["key", "value"]
+                  }
+              }
+            },
+            "required": ["name"]
+          }
+        },
+        "required": ["environment"]
+      }
+      ```
+
+      On successful creation of the environment, the API returns the environment name and `id`.
+
+      You can also specify the context of a workspace to create an environment in directly by passing the `workspace` as a query param.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-create-environment
+    outputs:
+    - contextPath: PostmanAPI.CreateEnvironment.environment.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateEnvironment.environment.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateEnvironment.environment.uid
+      description: ""
+      type: String
+  - arguments:
+    - name: environment_uid
+    - name: name
+    - name: key
+    - name: value
+    description: "This endpoint replaces an existing environment.\n\nA sample body\
+      \ is added to the request that conforms to the following JSON schema:\n\n```json\n\
+      {\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"environment\": {\n\t\t\
+      \t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"name\": {\n\t\t\t\
+      \t\t\"type\": \"string\",\n\t\t\t\t\t\"maxLength\": 254,\n\t\t\t\t\t\"minLength\"\
+      : 1\n\t\t\t\t},\n\t\t\t\t\"values\": {\n\t\t\t\t\t\"type\": \"array\",\n\t\t\
+      \t\t\t\"maxItems\": 100,\n\t\t\t\t\t\"additionalItems\": false,\n\t\t\t\t\t\"\
+      items\": {\n\t\t\t\t\t\t\"type\": \"object\",\n\t\t\t\t\t\t\"properties\": {\n\
+      \t\t\t\t\t\t\t\"key\": {\n\t\t\t\t\t\t\t\t\"type\": \"string\",\n\t\t\t\t\t\t\
+      \t\t\"maxLength\": 254,\n\t\t\t\t\t\t\t\t\"minLength\": 1\n\t\t\t\t\t\t\t},\n\
+      \t\t\t\t\t\t\t\"value\": {\n\t\t\t\t\t\t\t\t\"type\": \"string\",\n\t\t\t\t\t\
+      \t\t\t\"maxLength\": 254,\n\t\t\t\t\t\t\t\t\"minLength\": 1\n\t\t\t\t\t\t\t\
+      },\n\t\t\t\t\t\t\t\"type\": {\n\t\t\t\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t\
+      \t\t\t},\n\t\t\t\t\t\t\t\"enabled\": {\n\t\t\t\t\t\t\t\t\"type\": \"boolean\"\
+      \n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"required\": [\n\t\t\t\t\t\t\
+      \t\"key\",\n\t\t\t\t\t\t\t\"value\"\n\t\t\t\t\t\t]\n\t\t\t\t\t}\n\t\t\t\t}\n\
+      \t\t\t}\n\t\t}\n\t},\n\t\"required\": [\n\t\t\"environment\"\n\t]\n}\n```\n\n\
+      On successful updation of the environment, the API returns the environment name\
+      \ and `id`.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key`\
+      \ request header or `apikey` URL query parameter."
+    name: postmanapi-update-environment
+    outputs:
+    - contextPath: PostmanAPI.UpdateEnvironment.error.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateEnvironment.error.message
+      description: ""
+      type: String
+  - arguments:
+    - name: environment_uid
+    description: |-
+      This endpoint allows you to delete a single environment based on an environment's unique `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-delete-environment
+    outputs:
+    - contextPath: PostmanAPI.DeleteEnvironment.environment.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.DeleteEnvironment.environment.uid
+      description: ""
+      type: String
+  - arguments: []
+    description: |-
+      This endpoint fetches all the mocks that you have created.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-all-mocks
+  - arguments:
+    - name: mock_uid
+    description: |-
+      This endpoint fetches you the basic information about a single mock using its `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-single-mock
+  - arguments:
+    - name: collection
+    - name: environment
+    description: |-
+      This endpoint allows you to create a mock on a collection. You can also provide an environment UID to resolve any environment variables in the collection.
+
+      You can also specify the context of a workspace to create a mock in directly by passing the `workspace` as a query param.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-create-mock
+  - arguments:
+    - name: mock_uid
+    - name: name
+    - name: environment
+    - name: description
+    - name: private
+    - name: versiontag
+    description: |-
+      This endpoint allows you to update a mock you have created using its `uid`. The endpoint allows you to edit fields,
+      * name
+      * environment
+      * description
+      * private
+      * versionTag
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-update-mock
+  - arguments:
+    - name: mock_uid
+    description: |-
+      This endpoint allows you to delete an existing mock using its `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-delete-mock
+  - arguments:
+    - name: mock_uid
+    description: |-
+      This endpoint publishes the mock you have created using its `uid`
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key ` request header or `apikey` URL query parameter.
+    name: postmanapi-publish-mock
+  - arguments:
+    - name: mock_uid
+    description: |-
+      This endpoint unpublishes the mock you have created using its `uid`
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key ` request header or `apikey` URL query parameter.
+    name: postmanapi-unpublish-mock
+  - arguments: []
+    description: |-
+      The `/monitors` endpoint returns a list of all [monitors](https://monitor.getpostman.com/) that are accessible by you.
+
+      The response contains an array of monitors information containing the `name`, `id`, `owner` and `uid` of each monitor.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-all-monitors
+  - arguments:
+    - name: monitor_uid
+    description: |-
+      This endpoint fetches you basic information about the monitor using its `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-single-monitor
+  - arguments:
+    - name: name
+    - name: cron
+    - name: timezone
+    - name: collection
+    - name: environment
+    description: "This endpoint allows you to create a monitor.\n\nSome sample `cron`\
+      \ values are:\n\n| Frequency                  | Cron Pattern   |\n|-----------------------|----------------|\n\
+      | Every 5 minutes       | `*/5 * * * *`  |\n| Every 30 minutes     | `*/30 *\
+      \ * * *` |\n| Every Hour         | `0 */1 * * *`  |\n| Every 6 Hours      |\
+      \ `0 */6 * * *`  |\n| Every day at 5pm    | `0 17 * * *`   |\n| Every Monday\
+      \ at 12pm  | `0 12 * * MON` |\n| Every weekday (Monday - Friday) at 6am | `0\
+      \ 6 * * MON-FRI` |\n\nNote: Currently, you can only create monitors at some\
+      \ limited schedules. You can head to [Postman Monitors](https://monitor.getpostman.com)\
+      \ to see the allowed schedules. \n\nFor more information about the format of\
+      \ the `timezone` value, check this [list of time zones.](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n\
+      \nYou can also specify the context of a workspace to create a monitor in directly\
+      \ by passing the `workspace` as a query param.\n\n\n> Requires <a href=\"#authentication\"\
+      >API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+    name: postmanapi-create-monitor
+  - arguments:
+    - name: monitor_uid
+    - name: name
+    - name: cron
+    - name: timezone
+    description: "This endpoint allows you to update a monitor using its `uid`. Only\
+      \ the monitor name and its schedule can be updated.\n\nSome example `cron` values\
+      \ are:\n\n| Frequency                  | Cron Pattern   |\n|-----------------------|----------------|\n\
+      | Every 5 minutes       | `*/5 * * * *`  |\n| Every 30 minutes     | `*/30 *\
+      \ * * *` |\n| Every Hour         | `0 */1 * * *`  |\n| Every 6 Hours      |\
+      \ `0 */6 * * *`  |\n| Every day at 5pm    | `0 17 * * *`   |\n| Every Monday\
+      \ at 12pm  | `0 12 * * MON` |\n| Every weekday (Monday - Friday) at 6am | `0\
+      \ 6 * * MON-FRI` |\n\nNote: Currently, you can only create monitors at some\
+      \ limited schedules. You can head to [Postman Monitors](https://monitor.getpostman.com)\
+      \ to see the allowed schedules. \n\nFor more information about the format of\
+      \ the `timezone` value, check this [list of time zones.](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)\n\
+      \n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request\
+      \ header or `apikey` URL query parameter."
+    name: postmanapi-update-monitor
+  - arguments:
+    - name: monitor_uid
+    description: |-
+      This endpoint can be used to delete an existing monitor using its `uid`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-delete-monitor
+  - arguments:
+    - name: monitor_uid
+    description: |-
+      This endpoint will run the monitor instantly and wait for the monitor to run completely. It responds with the run results.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-run-a-monitor
+  - arguments: []
+    description: |-
+      The `/workspaces` endpoint returns a list of all [workspaces](https://www.getpostman.com/docs/v6/postman/workspaces/intro_to_workspaces) that is accessible by you. The list includes your own workspaces and the workspaces that you have access to.
+
+      The response contains an array of collection information containing the `name`, `id`, and `type` of each workspace.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-all-workspaces
+  - arguments:
+    - name: workspace_id
+    description: |-
+      Access the contents of a workspace that is accessible to you using its id (`id`). Includes the collections, environments, mocks and monitors of that workspace.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-single-workspace
+  - arguments:
+    - name: name
+    - name: type
+    - name: description
+    - name: id
+    - name: name
+    - name: uid
+    - name: id
+    - name: name
+    - name: uid
+    - name: id
+    - name: id
+    description: |-
+      This endpoint allows you to create a workspace and populate it with entities like `collections`, `environments`, `mocks` and `monitors` using their `uid`.
+
+      On successful creation of the workspace, the response returns the workspcae `name` and `id`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-create-workspace
+  - arguments:
+    - name: workspace_id
+    - name: name
+    - name: description
+    - name: id
+    - name: name
+    - name: uid
+    - name: id
+    - name: name
+    - name: uid
+    - name: id
+    - name: id
+    description: |-
+      This endpoint allows you to update a workspace and update it's association to entities like `collections`, `environments`, `mocks` and `monitors` using their `uid`.
+
+      On successful updation of the workspace, the response returns the workspcae `name` and `id`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+
+      **Note** : The endpoint expects you to send the desired state of the workspace in terms of the associated entities so be careful when trying to update these entities.
+
+      For eg. if your workspace has collections A and B, and in the update call, you send C's uid in the collections array, then A and B would be removed from the workspace and C would be added.
+    name: postmanapi-update-workspace
+  - arguments:
+    - name: workspace_id
+    description: |-
+      This endpoint allows you to delete an existing workspace.
+
+      On successful deletion of the workspace, the response returns the `id`.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-delete-workspace
+  - arguments: []
+    description: |-
+      the `/me` Postman API endpoint lets you access information about the authenticated user. You can retrieve the authenticated user's username, full name, e-mail address, and any other available information.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-api-key-owner
+    outputs:
+    - contextPath: PostmanAPI.ApiKeyOwner.user.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.user.username
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.user.email
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.user.fullName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.user.avatar
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.user.isPublic
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ApiKeyOwner.operations.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ApiKeyOwner.operations.limit
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.ApiKeyOwner.operations.usage
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.ApiKeyOwner.operations.overage
+      description: ""
+      type: Number
+  - arguments:
+    - name: type
+    - name: openapi
+    - name: version
+    - name: title
+    - name: name
+    - name: url
+    - name: summary
+    - name: operationid
+    - name: name
+    - name: in
+    - name: description
+    - name: required
+    - name: type
+    - name: format
+    - name: description
+    - name: required
+    - name: type
+    - name: format
+    - name: type
+    description: |-
+      This endpoint allows you to import external API specifications into Postman.
+
+      Currently, this endpoint only supports the <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md">OpenAPI</a> specification, for which the `importType` will be `openapi`.
+
+      On a successful import, the response will be an array with each element contaning `id`, `name` and `uid` of entities created.
+
+      Supported `type`s:
+
+      - string
+      - json
+      - file
+
+      The `input` parameter should be defined based on the `type`.
+
+      > To import a file, request body must be form-data with `type` param set to `file`.
+
+      **Note**: Refer to examples for different scenarios.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header.
+    name: postmanapi-import-external-api-specification
+  - arguments: []
+    description: |-
+      This endpoint allows you to import your exported Postman data.
+      For more information about how you can export your data, refer <a href="https://go.postman.co/me/export">Export your Postman data.</a>
+
+      On successful imports, the response will be an array with Each element contaning `id`, `name` and `uid` of entities created.
+
+      **Note**: Refer to examples for different scenarios.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header.
+    name: postmanapi-import-exported-data
+  - arguments:
+    - name: apiid
+    - name: name
+    - name: id
+    - name: schema
+    - name: monitor
+    - name: mock
+    - name: documentation
+    description: "This call creates a new API version in the specified API.  \n\n\
+      Request body should contain a `version` object which should have fields:\n\n\
+      <table>\n<tr>\n\t<td>name</td>\n\t<td>Required. Name of the API Version</td>\n\
+      </tr>\n<tr>\n\t<td>source</td>\n\t<td>\n\t\tIf specified, it will copy the contents\
+      \ of the specified api version to create a new api verison.\n\t\t<table>\n\t\
+      \t\t<tr>\n\t\t\t\t<td>id</td>\n\t\t\t\t<td>Required. Id of the apiversion from\
+      \ where the details are to be copied</td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t\
+      <td>schema</td>\n\t\t\t\t<td>Boolean. If true then copies the schema from the\
+      \ specified api version</td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t<td>relations</td>\n\
+      \t\t\t\t<td>Object. {\"&lt;relationType&gt;\": true/false}.  \n\t\t\t\t\tAllowed\
+      \ relation types are `mock`, `monitor`, `documentation`, `contracttest`, `integrationtest`,\
+      \ `testsuite`, `environment`\n\t\t\t\tRelation types which should be copied\
+      \ over to the new api verison</td>\n\t\t\t</tr>\n\t\t</table>\n\t</td>\n</tr>\n\
+      </table>\n\nResponse contains a `version` object with all the details related\
+      \ to the created API Version, namely, `id`, `name`, `api`.\n\n> Requires <a\
+      \ href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey`\
+      \ URL query parameter."
+    name: postmanapi-create-api-version
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: name
+    description: "This call updates an existing API Version.  \n\nRequest body should\
+      \ contain a `version` object with the fields which need to be updated. Only\
+      \ field which can be updated is `name`.\n\nResponse contains a `version` object\
+      \ with all the details related to the created API Version, namely, `id`, `name`,\
+      \ `api` etc.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key`\
+      \ request header or `apikey` URL query parameter."
+    name: postmanapi-update-an-api-version
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: "This call deletes an existing API Version having the specified id.\
+      \  \n\nResponse contains an `version` object with `id` of the API Version which\
+      \ was deleted.\n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key`\
+      \ request header or `apikey` URL query parameter."
+    name: postmanapi-delete-an-api-version
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches details about the specified API Version.
+
+      The response will contain a `version` object which would contain all the details of the API Version.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-an-api-version
+  - arguments:
+    - name: apiid
+    description: |-
+      This call fetches details about the all the API Versions in the specified API.
+
+      The response will contain an array `versions` object which would be a list of all the API Version along with their details.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-all-api-versions
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: language
+    - name: schema
+    - name: type
+    description: "This call creates a new schema.\n\nRequest body should contain a\
+      \ `schema` object which should atleast have these properties with `string` values:\n\
+      \n- **`type`**: Allowed types are `openapi3`, `openapi2`, `openapi1`, `raml`\
+      \ and `graphql`.\n- **`language`** : Allowed languages are `json` and `yaml`\
+      \ for OpenAPI and RAML schema types. GraphQL schema type accepts only `graphql`\
+      \ language.\n- **`schema`**: Optional. If passed, must be the content of the\
+      \ schema as a `string`.\n\nResponse contains a `schema` object with all the\
+      \ details related to the created schema, namely, `id`, `language`, `type` etc.\
+      \ \n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request\
+      \ header or `apikey` URL query parameter."
+    name: postmanapi-create-schema
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: schemaid
+    - name: language
+    - name: schema
+    - name: type
+    description: "This call updates an existing schema.\n\nRequest body should contain\
+      \ a `schema` object which should atleast have these properties with `string`\
+      \ values:\n\n- **`type`**: Allowed types are `openapi3`, `openapi2`, `openapi1`,\
+      \ `raml` and `graphql`.\n- **`language`** : Allowed languages are `json` and\
+      \ `yaml` for OpenAPI and RAML schema types. GraphQL schema type accepts only\
+      \ `graphql` language.\n- **`schema`**: Optional. If passed, must be the content\
+      \ of the schema as a `string`.\n\nResponse contains a `schema` object with all\
+      \ the details related to the created schema, namely, `id`, `language`, `type`\
+      \ etc. \n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key`\
+      \ request header or `apikey` URL query parameter."
+    name: postmanapi-update-schema
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: schemaid
+    description: "This call fetches a single schema having the specified id.\n\nResponse\
+      \ contains a `schema` object with all the details related to the schema, namely,\
+      \ `id`, `language`, `type`, `schema` etc. \n\n> Requires <a href=\"#authentication\"\
+      >API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+    name: postmanapi-get-schema
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: schemaid
+    - name: workspace
+    - name: name
+    - name: type
+    description: "This call creates a collection and links it to an API as one or\
+      \ multiple relations. \n\nRequest body requires two keys:\n- `name` - Name of\
+      \ the collection to be created.\n- `relations` - A list of relation(s) to be\
+      \ created.\n\nThe allowed relation types are `contracttest`, `integrationtest`,\
+      \ `testsuite`, and `documentation`.\n\n> Requires <a href=\"#authentication\"\
+      >API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+    name: postmanapi-create-collection-from-schema
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: "This call fetches all the relations which are linked to the specified\
+      \ API version along with their details.\n\nThe response will contain a `relations`\
+      \ object which lists all the relation types which are linked to the API version.\
+      \ Each of the relation type will be an object which details the relations of\
+      \ this type. \n\n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key`\
+      \ request header or `apikey` URL query parameter."
+    name: postmanapi-get-linked-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-documentation-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-environment-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-test-suite-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-contract-test-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-integration-test-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    description: |-
+      This call fetches all the relations by type which are linked to the specified API version along with their details.
+
+      The response will contain an array with key `{{relationType}}`. Each of the item will consist of all the details related each of the relation.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-monitor-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: contracttest
+    - name: testsuite
+    - name: documentation
+    - name: mock
+    description: "This call allows you to add existing Postman entities as new relations\
+      \ to an API. The request body should contain the relations to be created along\
+      \ with an array of entity IDs. \n\n<table>\n  <tr>\n    <th>Relation</th>\n\
+      \    <th>Entity ID type</th>\n  <tr>\n  <tr>\n    <td>contracttest</td>\n  \
+      \  <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>integrationtest</td>\n\
+      \    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>documentation</td>\n\
+      \    <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>testsuite</td>\n   \
+      \ <td>Collection UIDs</td>\n  </tr>\n  <tr>\n    <td>environment</td>\n    <td>Environment\
+      \ UIDs</td>\n  </tr>\n  <tr>\n    <td>mock</td>\n    <td>Mock IDs</td>\n  </tr>\n\
+      \  <tr>\n    <td>monitor</td>\n    <td>Monitor IDs</td>\n  </tr>\n</table>\n\
+      \n> Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request\
+      \ header or `apikey` URL query parameter."
+    name: postmanapi-create-relations
+  - arguments:
+    - name: apiid
+    - name: apiversionid
+    - name: entitytype
+    - name: entityid
+    description: |-
+      This call allows you to keep the relation in sync with the API schema.
+
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-sync-relations-with-schema
+    outputs:
+    - contextPath: PostmanAPI.SyncRelationsWithSchema.error.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.SyncRelationsWithSchema.error.message
+      description: ""
+      type: String
+  - arguments:
+    - name: workspace
+    - name: name
+    - name: summary
+    - name: description
+    description: "This call creates a new API with a default API Version.  \n\nRequest\
+      \ body should contain an `api` object which should atleast have a property `name`.\n\
+      \nResponse contains an `api` object with all the details related to the created\
+      \ API, namely, `id`, `name`, `summary`, `description`, etc. \n\n> Requires <a\
+      \ href=\"#authentication\">API Key</a> as `X-Api-Key` request header or `apikey`\
+      \ URL query parameter."
+    name: postmanapi-create-api
+  - arguments:
+    - name: apiid
+    - name: name
+    - name: description
+    description: "This call updates an existing API .  \n\nRequest body should contain\
+      \ an `api` object which should have the fields to be updated. Only `name`, `summary`\
+      \ and `description` fields can be edited for an API.\n\nResponse contains an\
+      \ `api` object with all the details related to the created API, namely, `id`,\
+      \ `name`, `summary`, `description` etc. \n\n> Requires <a href=\"#authentication\"\
+      >API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter."
+    name: postmanapi-update-an-api
+  - arguments:
+    - name: apiid
+    description: "This call deletes an existing API having the specified id.  \n\n\
+      Response contains an `api` object with `id` of the API which was deleted.\n\n\
+      > Requires <a href=\"#authentication\">API Key</a> as `X-Api-Key` request header\
+      \ or `apikey` URL query parameter."
+    name: postmanapi-delete-an-api
+  - arguments:
+    - name: workspace
+    - name: since
+    - name: until
+    - name: createdby
+    - name: updatedby
+    - name: ispublic
+    - name: name
+    - name: summary
+    - name: description
+    - name: sort
+    - name: direction
+    description: |-
+      This call fetches all the APIs present in the specified workspace
+
+      Response contains an array named `apis` which would contain all the details of APIs present in the workspace.
+
+      > Requires <a href="#authentication">API Key</a> as `X-Api-Key` request header or `apikey` URL query parameter.
+    name: postmanapi-get-all-apis
+    outputs:
+    - contextPath: PostmanAPI.GetAllApis..createdBy
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.GetAllApis..updatedBy
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.GetAllApis..id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetAllApis..name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetAllApis..summary
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetAllApis..description
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetAllApis..createdAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.GetAllApis..updatedAt
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.GetAllApis..isPublic
+      description: ""
+      type: Boolean
+  - arguments:
+    - name: apiid
+    description: "This call fetches a single API having the specified id.\n\nResponse\
+      \ contains an `api` object with all the details related to the queried API,\
+      \ namely, `id`, `name`, `summary`, `description` etc. \n\n> Requires <a href=\"\
+      #authentication\">API Key</a> as `X-Api-Key` request header or `apikey` URL\
+      \ query parameter."
+    name: postmanapi-single-api
+  - arguments:
+    - name: workspace
+    - name: name
+    - name: collection
+    description: |-
+      Create a webhook that triggers a collection with your custom payload.
+
+      You can specify the webhook name and the collection to trigger by using the following attributes of the `webhook` object on your JSON body:
+
+      * `name`: the name of the webhook that you're creating.
+      * `collection`: the UID of the collection that you want to trigger once this webhook is called.
+
+      Once created, the webhook URL can be retrieved by accessing the `webhookUrl` attribute of the `webhook` object on the response JSON payload.
+    name: postmanapi-create-webhook
+    outputs:
+    - contextPath: PostmanAPI.CreateWebhook.webhook.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateWebhook.webhook.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateWebhook.webhook.collection
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateWebhook.webhook.webhookUrl
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateWebhook.webhook.uid
+      description: ""
+      type: String
+  - arguments:
+    - name: id
+    description: Fetches an individual Postman team member's information.
+    name: postmanapi-fetch-user-resource
+    outputs:
+    - contextPath: PostmanAPI.FetchUserResource.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.userName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.name.givenName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.name.familyName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.externalId
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.active
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.FetchUserResource.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchUserResource.meta.created
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.FetchUserResource.meta.lastModified
+      description: ""
+      type: Date
+  - arguments:
+    - name: startindex
+    - name: count
+    - name: filter
+    description: |-
+      Fetches information on all Postman team members. You can fetch information for a particular user with filters.
+
+      Note: By default, this endpoint will return a list of hundred users. To overwrite the default setting, update the 'startIndex=1&count=100' value in the request.
+    name: postmanapi-fetch-all-user-resource
+    outputs:
+    - contextPath: PostmanAPI.FetchAllUserResource.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.totalResults
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.FetchAllUserResource.startIndex
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.FetchAllUserResource.itemsPerPage
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.userName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.name.givenName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.name.familyName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.externalId
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.active
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.meta.created
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.FetchAllUserResource.Resources.meta.lastModified
+      description: ""
+      type: Date
+  - arguments:
+    - name: schemas
+    - name: username
+    - name: givenname
+    - name: familyname
+    - name: externalid
+    - name: locale
+    - name: active
+    description: |-
+      Creates a new user account in Postman, adds the user to your organization's Postman team, and activates the user to authenticate into your Postman team, provided an account with the same email ID does not already exist in Postman. The newly added user will have the `developer` role in Postman by default. You can later [update user roles in Postman](/docs/administration/managing-your-team/managing-your-team/#managing-roles).
+
+      If an account with the same email ID does exist, an [email invite](https://learning.postman.com/docs/administration/managing-your-team/managing-your-team/#invites) to join your Postman team is sent to the user. Once the user accepts the invite, they will be added to your team.
+    name: postmanapi-create-user
+    outputs:
+    - contextPath: PostmanAPI.CreateUser.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.userName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.name.givenName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.name.familyName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.externalId
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.active
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.CreateUser.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.CreateUser.meta.created
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.CreateUser.meta.lastModified
+      description: ""
+      type: Date
+  - arguments:
+    - name: id
+    - name: schemas
+    - name: username
+    - name: givenname
+    - name: familyname
+    - name: externalid
+    - name: locale
+    - name: active
+    description: "Updates a user’s first and last name in Postman. \n\n> Only updates\
+      \ made to the user’s given and family name via the SCIM API will be pushed to\
+      \ Postman. No other user attributes can be updated in Postman using the SCIM\
+      \ API."
+    name: postmanapi-update-user-information
+    outputs:
+    - contextPath: PostmanAPI.UpdateUserInformation.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.userName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.name.givenName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.name.familyName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.externalId
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.active
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.created
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.lastModified
+      description: ""
+      type: Date
+  - arguments:
+    - name: id
+    - name: schemas
+    - name: op
+    - name: active
+    description: |-
+      Updates user state in Postman:
+        * **Activate User**: Creates a new user on your Postman team, if one does not already exist, and activates the user to authenticate into your Postman team.
+        * **Deactivate User**: Removes a user from your Postman team and deactivates their account, blocking the account from authenticating into Postman.
+        > The user account and the data corresponding to it will not be deleted. To permanently delete the user account and their data, [contact Postman support](https://www.postman.com/support/).
+        * **Reactivate Users**: Reactivates an existing deactivated user by unblocking the account's authentication into Postman and adds the account back on to your Postman team.
+    name: postmanapi-update-team-user-information
+    outputs:
+    - contextPath: PostmanAPI.UpdateUserInformation.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.userName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.name.givenName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.name.familyName
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.externalId
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.active
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.created
+      description: ""
+      type: Date
+    - contextPath: PostmanAPI.UpdateUserInformation.meta.lastModified
+      description: ""
+      type: Date
+  - arguments: []
+    description: Returns configuration details for Postman's SCIM API, including the
+      list of operations that are supported.
+    name: postmanapi-service-provider-config
+    outputs:
+    - contextPath: PostmanAPI.ServiceProviderConfig.schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.documentationUri
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.patch.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.bulk.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.bulk.maxOperations
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.ServiceProviderConfig.bulk.maxPayloadSize
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.ServiceProviderConfig.filter.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.filter.maxResults
+      description: ""
+      type: Number
+    - contextPath: PostmanAPI.ServiceProviderConfig.changePassword.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.sort.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.etag.supported
+      description: ""
+      type: Boolean
+    - contextPath: PostmanAPI.ServiceProviderConfig.authenticationSchemes.name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.authenticationSchemes.description
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.authenticationSchemes.specUri
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.authenticationSchemes.type
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.meta.resourceType
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.ServiceProviderConfig.meta.location
+      description: ""
+      type: String
+  - arguments: []
+    description: Returns all the resource types supported by Postman's SCIM API.
+    name: postmanapi-get-resourcetypes
+    outputs:
+    - contextPath: PostmanAPI.GetResourcetypes..schemas
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..id
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..name
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..endpoint
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..description
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..schema
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..schemaExtensions.schema
+      description: ""
+      type: String
+    - contextPath: PostmanAPI.GetResourcetypes..schemaExtensions.required
+      description: ""
+      type: Boolean
+  dockerimage: demisto/python3:3.9.6.24019
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
