@@ -103,7 +103,7 @@ with open('${pack_metadata}') as f:
   metadata = json.load(f)
   metadata['currentVersion'] = ${new_version}
 
-with open('${pack_metadata}') as f:
+with open('${pack_metadata}','w') as f:
   json.dump(metadata,f)
 EOF
 
