@@ -747,5 +747,5 @@ script:
   runonce: false
   dockerimage: demisto/python:2.7.18.24066
 tests:
-- No tests
+  - No tests
 fromversion: 5.0.0
