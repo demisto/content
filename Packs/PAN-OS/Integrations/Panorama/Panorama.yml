@@ -1363,7 +1363,7 @@ script:
       predefined:
       - Yes
       - No
-    - description: Service object names for the rule (service object) to create.
+    - description: A comma-separated list of service object names for the rule.
       isArray: true
       name: service
     - auto: PREDEFINED
@@ -1374,7 +1374,7 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object namesfor the rule
+      description: A comma-separated list of application object names for the rule.
         to create.
       isArray: true
       name: application
@@ -3414,7 +3414,7 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
