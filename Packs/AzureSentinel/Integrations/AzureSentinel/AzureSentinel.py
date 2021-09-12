@@ -110,13 +110,6 @@ class AzureSentinelClient:
         if res.content:
             return res.json()
 
-    def test_connection(self):
-        """
-        Test the connectivity with Azure
-        """
-        self._client.get_access_token()
-        return 'ok'
-
 
 ''' INTEGRATION HELPER METHODS '''
 
@@ -421,6 +414,14 @@ def get_incident_by_id_command(client, args):
         outputs_key_field='ID',
         raw_response=result
     )
+
+
+def test_module(client):
+    """
+    Test connection to Azure by calling the list incidents API with limit=1
+    """
+    client.http_request('GET', 'incidents', params={'$top': 1})
+    return 'ok'
 
 
 def list_incidents_command(client, args, is_fetch_incidents=False):
@@ -1006,7 +1007,7 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            return_results(client.test_connection())
+            return_results(test_module(client))
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
