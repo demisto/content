@@ -605,6 +605,7 @@ def test_start_xql_query_polling_not_supported(mocker):
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('XQLQueryingEngine.is_demisto_version_ge', return_value=False)
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'PENDING',
                                        'execution_id': 'query_id_mock',
