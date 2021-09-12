@@ -1240,7 +1240,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'lastUpdate': 0
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    raw_incident['reply']['incident']['status'] = 'resolved_threat_handled'
+    raw_incident['reply']['incident']['status'] = 'resolved_true_positive'
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
@@ -1250,7 +1250,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['closeReason'] = 'Resolved'
+    expected_modified_incident['closeReason'] = 'True Positive'
     expected_modified_incident['closeNotes'] = 'Handled'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
@@ -1261,7 +1261,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'Type': 1,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': 'Resolved',
+            'closeReason': 'True Positive',
             'closeNotes': 'Handled'
         },
         'ContentsFormat': 'json'
@@ -2103,6 +2103,7 @@ def test_run_script_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': json.loads(parameters)
         }
     }
@@ -2150,6 +2151,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {}
         }
     }
@@ -2193,7 +2195,8 @@ def test_run_snippet_code_script_command(requests_mock):
                 'field': 'endpoint_id_list',
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
-            }]
+            }],
+            'incident_id': None
         }
     }
 
@@ -2366,6 +2369,7 @@ def test_run_script_execute_commands_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'commands_list': commands.split(',')}
         }
     }
@@ -2411,6 +2415,7 @@ def test_run_script_delete_file_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'file_path': args.get('file_path')}
         }
     }
@@ -2456,6 +2461,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'file_path': 'my_file.txt'}
         }
     }
@@ -2468,6 +2474,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'file_path': 'test.txt'}
         }
     }
@@ -2513,6 +2520,7 @@ def test_run_script_file_exists_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'path': args.get('file_path')}
         }
     }
@@ -2558,6 +2566,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'path': 'my_file.txt'}
         }
     }
@@ -2570,6 +2579,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'path': 'test.txt'}
         }
     }
@@ -2615,6 +2625,7 @@ def test_run_script_kill_process_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'process_name': process_name}
         }
     }
@@ -2660,6 +2671,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'process_name': 'process1.exe'}
         }
     }
@@ -2672,6 +2684,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': None,
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }
