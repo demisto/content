@@ -76,7 +76,7 @@ PAN_OS_ERROR_DICT = {
     # 19,20: success
     '21': 'Internal error - Check with technical support when seeing these errors.',
     '22': 'Session timed out - The session for this query timed out.',
-    '23': 'Hello!!'
+    '23': 'Hello'
 }
 
 
