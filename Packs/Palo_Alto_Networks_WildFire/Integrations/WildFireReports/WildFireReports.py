@@ -37,13 +37,13 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def wildfire_get_report_command(client: Client, args: Dict[str, Any]):
+def wildfire_get_report_command(client: Client, args: Dict[str, str]):
     """
     Args:
         client: the Client object
         args: the command arguments from demisto.args(), file hash (sha256) to query on
     """
-    sha256 = args.get('sha256')
+    sha256 = str(args.get('sha256'))
     if not sha256Regex.match(sha256):
         raise Exception('Invalid hash. Only SHA256 are supported.')
 
