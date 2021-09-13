@@ -1,39 +1,27 @@
-# SecurityScorecard
+The SecurityScorecard Ratings Content Pack is an integrated offering that provides an alerting system triggered by configurable conditions such as changes in organization grades and vulnerabilities found.
 
-According to Gartner:
+This Content Pack enables security teams to create an alert in SecurityScorecard with particular conditions, which allows them to delete, update and interact with the alerts. A Cortex XSOAR Incident is created when an alert is triggered in SecurityScorecard. Alerts can be retrieved for factor grade drops, overall score drops, new vulnerabilities found, new issues, and CVEs detected.
 
->cybersecurity ratings will become as important as credit ratings when assessing the risk of existing and new business relationships…these services will become a precondition for business relationships and part of the standard of due care for providers and procurers of services.
+### What does this pack do?
 
-SecurityScorecard is an information security company focused on third party management and IT risk management. It provides a platform designed to rate cybersecurity postures of corporate entities through the scored analysis of cyber threat intelligence signals.
+- Manage (create, delete, list) score or threshold-based alerts.
+- Fetches SecurityScorecard alerts into Cortex XSOAR Incidents.
+- Retrieves current and historical security scores for organization with the ability to choose specific risk factors such as:
+  - **DNS health**: Measurement of DNS configuration presence.
+  - **IP Reputation**: Quantity and duration of malware infections.
+  - **Web Application Security**: Found web app vulnerabilities such as XSS/SQLi.
+  - **Hacker Chatter**: Collection of communications from multiple streams of underground chatter, including hard-to-access or private hacker forums.
+  - **Endpoint Security**: Protection involved regarding an organization’s devices that access that company’s network.
+  - **Patching Cadence**: How diligently a company is patching its operating systems.
+  - **Cubit Score**: Measures a collection of critical security and configuration issues related to exposed administrative portals.
 
-## What does this pack do?
-
-* Manage (create, delete, list) score or threshold-based alerts.
-* Creates Cortex XSOAR Incidents based on SecurityScorecard alerts.
-* Retrieves current and historical security scores for organization with the ability to choose specific risk factors explained below:
-
-  * **DNS health**: Measurement of DNS configuration presence.
-
-  * **IP Reputation**: Quantity and duration of malware infections.
-
-  * **Web Application Security**: Found web app vulnerabilities such `XSS/SQLi`.
-
-  * **Hacker Chatter**: Collection of communications from multiple streams of underground chatter, including hard-to-access or private hacker forums.
-
-  * **Endpoint Security**: Protection involved regarding an organization’s devices that access that company’s network.
-
-  * **Patching Cadence**: How diligently a company is patching its operating systems.
-
-  * **Cubit Score**: Measures a collection of critical security and configuration issues related to exposed administrative portals.
-
-* Retrieves list of 3rd party services used by the organization.
-* List portfolios and companies included within those portfolios.
+- List portfolios and companies included within those portfolios.
+- List companies' 3rd-party services.
 
 The pack includes customized:
 
-* Incident Fields
-* Incident Type
-* Mapper
-* Dashboards
-* Layout
-* Integration
+- Integration
+- Incident Fields
+- Incident Type
+- Mapper
+- Layout
