@@ -97,18 +97,25 @@ class Client(BaseClient):
         my_tags = [tag for tag in tags if tag.get('is_galaxy')]
         relationships = []
         for tag in my_tags:
-            entity_b = tag.get('name')
-            if entity_b:
-                if 'misp-galaxy:mitre-enterprise-attack' in entity_b:
-                    name = entity_b.split("=")
-                    entity_b = name[1].replace('\"', "")
+            name = tag.get('name')
+            if name and 'misp-galaxy:mitre-enterprise-attack' in name:
+                # operations for entity_b
+                names = name.split("=")
+                entity_b_value = names[1].replace('\"', "")
+                entity_b_values = entity_b_value.split("-")
+                entity_b = entity_b_values[0].strip()
+
+                # operations for entity_b_type
+                entity_b_types = names[0].split("misp-galaxy:mitre-enterprise-attack-")
+                entity_b_type = ' '.join(w[0].upper() + w[1:] for w in entity_b_types[1].split('-'))
+                entity_b_type = entity_b_type.replace(' Of ', ' of ')
 
                 obj = EntityRelationship(
                     name=EntityRelationship.Relationships.INDICATOR_OF,
                     entity_a=entity_a,
                     entity_a_type=entity_a_type,
                     entity_b=entity_b,
-                    entity_b_type='Attack Pattern'
+                    entity_b_type=entity_b_type
                 )
                 obj = obj.to_indicator()
                 relationships.append(obj)
