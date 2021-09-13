@@ -46,6 +46,7 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 timeout: Optional[int] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -91,18 +92,19 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint
+        self.timeout = timeout
 
         self.multi_resource = multi_resource
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
+
     def http_request(
             self, *args, resp_type='json', headers=None,
             return_empty_response=False, scope: Optional[str] = None,
             resource: str = '', **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
-
         Args:
             resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
             headers: Headers to add to the request.
@@ -123,6 +125,10 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
+
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
@@ -161,11 +167,9 @@ class MicrosoftClient(BaseClient):
         Access token is used and stored in the integration context
         until expiration time. After expiration, new refresh token and access token are obtained and stored in the
         integration context.
-
         Args:
             resource (str): The resource identifier for which the generated token will have access to.
             scope (str): A scope to get instead of the default on the API.
-
         Returns:
             str: Access token that will be added to authorization header.
         """
@@ -311,10 +315,8 @@ class MicrosoftClient(BaseClient):
     def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
-
         Args:
             scope; A scope to add to the headers. Else will get self.scope.
-
         Returns:
             tuple: An access token and its expiry.
         """
@@ -395,7 +397,6 @@ class MicrosoftClient(BaseClient):
     ) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
-
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
@@ -438,13 +439,10 @@ class MicrosoftClient(BaseClient):
     @staticmethod
     def error_parser(error: requests.Response) -> str:
         """
-
         Args:
             error (requests.Response): response with error
-
         Returns:
             str: string of error
-
         """
         try:
             response = error.json()
@@ -465,7 +463,6 @@ class MicrosoftClient(BaseClient):
     def epoch_seconds(d: datetime = None) -> int:
         """
         Return the number of seconds for given date. If no date, return current.
-
         Args:
             d (datetime): timestamp
         Returns:
@@ -490,7 +487,6 @@ class MicrosoftClient(BaseClient):
         Args:
             content: Content to encrypt
             key: encryption key from oproxy
-
         Returns:
             timestamp: Encrypted content
         """
@@ -504,7 +500,6 @@ class MicrosoftClient(BaseClient):
             Args:
                 string: String to encrypt
                 enc_key: Encryption key
-
             Returns:
                 bytes: Encrypted value
             """
@@ -574,7 +569,6 @@ and enter the code **{user_code}** to authenticate.
 
 class NotFoundError(Exception):
     """Exception raised for 404 - Not Found errors.
-
     Attributes:
         message -- explanation of the error
     """
