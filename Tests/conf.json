@@ -51,14 +51,13 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Azure Active Directory Identity Protection",
-            "playbookID": "AzureADTest",
-            "fromversion": "6.0.0",
-            "timeout": 3000,
-            "instance_names": [
+            "integrations": [
                 "Azure Active Directory Identity Protection",
                 "Demisto REST API"
-            ]
+            ],
+            "playbookID": "AzureADTest",
+            "fromversion": "6.0.0",
+            "timeout": 3000
         },
         {
             "integrations": "GoogleCalendar",
