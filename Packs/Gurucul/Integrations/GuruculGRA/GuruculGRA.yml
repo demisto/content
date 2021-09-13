@@ -18,7 +18,7 @@ configuration:
   required: true
 - display: Fetch Incident Command
   name: fetch_incident_command
-  defaultvalue: GraCase
+  defaultvalue: GRACase
   type: 15
   required: false
   options:
@@ -967,7 +967,8 @@ script:
     - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatureValues
       description: Analytical Feature Values
       type: string
-    description: Retrieve analytical features for specified entity value and model name.
+    description: Retrieve analytical features for specified entity value and model
+      name.
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
