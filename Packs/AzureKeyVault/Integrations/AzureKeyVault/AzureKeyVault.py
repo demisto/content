@@ -46,7 +46,8 @@ class KeyVaultClient:
             ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
         )
 
-    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = {},
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None,
+                     params: dict = {},
                      data: dict = None,
                      resource: str = MANAGEMENT_RESOURCE):
         """
@@ -75,7 +76,8 @@ class KeyVaultClient:
     def create_or_update_key_vault_request(self, vault_name: str, object_id: str, location: str,
                                            sku_name: str,
                                            keys: List[str], secrets: List[str],
-                                           certificates: List[str], storage: List[str], enabled_for_deployment: bool,
+                                           certificates: List[str], storage: List[str],
+                                           enabled_for_deployment: bool,
                                            enabled_for_disk_encryption: bool,
                                            enabled_for_template_deployment: bool,
                                            default_action: str, bypass: str, vnet_subnet_id: str,
@@ -86,7 +88,8 @@ class KeyVaultClient:
 
         Args:
             vault_name (str): Key Vault name.
-            object_id (str): The object ID of a user, service principal or security group in the Azure Active Directory.
+            object_id (str): The object ID of a user, service principal or security group
+                             in the Azure Active Directory.
             location (str): Key Vault supported Azure location.
             sku_name (str): Sku name.
             keys (List[str]): Permissions to keys.
