@@ -1,5 +1,6 @@
 # CloudIDS
-Google Cloud IDS, a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware, and command-and-control attacks.
+Google Cloud IDS is a next-generation advanced intrusion detection service that provides threat detection for intrusions, malware, spyware, and command-and-control attacks.
+
 
 
 
