@@ -1,0 +1,48 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Hatching Triage Sandbox
+  version: -1
+configuration:
+- defaultvalue: https://api.tria.ge/v0/
+  display: Hatching Triage API URL
+  name: api_url
+  required: true
+  type: 0
+- defaultvalue: Hatching Triage API Key
+  display: ""
+  name: api_key
+  required: true
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c544f290-dc25-4115-89d3-96e62865bf3a
+    propagationLabels: []
+    toServerVersion: ""
+description: |-
+  Submit Password Protected ZIP File.
+
+  Use "Picard-2399" as your zip password.
+display: Hatching Triage Sandbox
+name: Hatching Triage Sandbox
+script:
+  commands:
+  - arguments:
+    - description: File EntryID
+      name: FileEntryID
+      required: true
+    description: Submit File To SandBox
+    execution: true
+    name: HatchingSubmitFile
+  - arguments:
+    - description: Sample ID
+      name: SampleID
+      required: true
+    description: Get Report From SandBox
+    name: HatchingGetReport
+  dockerimage: demisto/python3:3.9.5.21272
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
