@@ -71,9 +71,9 @@ configuration:
   name: custom_filter
   required: false
   type: 0
-- additionalinfo: The time delta in minutes that each fetch will start from.
+- additionalinfo: The time delta in minutes each fetch will look back to search for missed events. 
   defaultvalue: '0'
-  display: Fetch Time Delta
+  display: Fetch Look back 
   hidden: false
   name: fetch_delta_time
   required: false
