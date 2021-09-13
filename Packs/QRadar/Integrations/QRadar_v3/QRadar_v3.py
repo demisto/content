@@ -1404,6 +1404,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         return offense
 
     failure_message = ''
+    events = []
+    min_events_size = min(offense.get('event_count', 0), events_limit)
     # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
     for i in range(max_retries):
         # retry to check if we got all the event (its not an error retry), see docstring
@@ -2887,7 +2889,7 @@ def update_events_mirroring_status(offense: Dict, mirror_options: str, events_li
         offense['mirroring_events_status'] = 'Not Enabled'
         return offense
 
-    events_count = offense.get('events_count')
+    events_count = int(offense.get('events_count', 1))
     events_mirrored = len(offense.get('events'))
 
     if events_mirrored < min(events_count, events_limit):
@@ -3011,10 +3013,10 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         set_integration_context(context_data)
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
-    enriched_offense = update_events_mirroring_status(offense=enriched_offense[0], mirror_options=mirror_options,
+    enriched_offense = update_events_mirroring_status(offense=enriched_offense, mirror_options=mirror_options,
                                                       events_limit=events_limit, failure_message=failure_message)
 
-    final_offense_data = sanitize_outputs(enriched_offense)
+    final_offense_data = sanitize_outputs(enriched_offense)[0]
 
     return GetRemoteDataResponse(final_offense_data, entries)
 
