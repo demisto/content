@@ -1,10 +1,10 @@
 {
-    "id": "incident_SelectCampaignLowerSimilarityIncidents",
+    "id": "incident_SelectLowSimilarityIncidents",
     "version": -1,
     "modified": "2021-09-02T17:52:21.377521772Z",
-    "name": "Select Campaign Lower Similarity Incidents",
+    "name": "Select Low Similarity Incidents",
     "ownerOnly": false,
-    "cliName": "selectcampaignlowersimilarityincidents",
+    "cliName": "selectlowsimilarityincidents",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,

@@ -26,7 +26,7 @@
         }
     },
     "itemPrefix": [
-        "Actions On Campaign",
-        "Select Campaign"
+        "Actions On Low Similarity",
+        "Select Low Similarity"
     ]
 }

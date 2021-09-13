@@ -1,10 +1,10 @@
 {
-    "id": "incident_actionsoncampaignlowersimilarityincidents",
+    "id": "incident_actionsonlowsimilarityincidents",
     "version": -1,
     "modified": "2021-09-05T09:31:07.58270829Z",
-    "name": "Actions On Campaign Lower Similarity Incidents",
+    "name": "Actions On Low Similarity Incidents",
     "ownerOnly": false,
-    "cliName": "actionsoncampaignlowersimilarityincidents",
+    "cliName": "actionsonlowsimilarityincidents",
     "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
@@ -12,11 +12,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "Close",
-        "Link",
-        "Link \u0026 Close",
-        "Reopen",
-        "Unlink",
         "Add To Campaign"
     ],
     "useAsKpi": false,
