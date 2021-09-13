@@ -45,8 +45,10 @@ configuration:
   required: false
   type: 13
 description: IRONSCLAES, a self-learning email security platform integration
+defaultvalue: Ironscales
 display: Ironscales
 name: Ironscales
+defaultmapperin: Ironscales - Incoming Mapper
 script:
   commands:
   - arguments:
