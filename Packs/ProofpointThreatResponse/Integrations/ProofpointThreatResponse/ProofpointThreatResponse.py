@@ -245,7 +245,10 @@ def get_emails_context(event):
                 'body': email.get('body'),
                 'body_type': email.get('bodyType'),
                 'headers': email.get('headers'),
-                'urls': email.get('urls')
+                'urls': email.get('urls'),
+                'sender_vap': email.get('sender', {}).get('vap'),
+                'recipient_vap': email.get('recipient', {}).get('vap'),
+                'attachments': email.get('attachments'),
             }))
 
     return emails_context
@@ -321,6 +324,7 @@ def get_incident_command():
     """
     args = demisto.args()
     incident_id = args.pop('incident_id')
+    expand_events = args.get('expand_events')
     fullurl = BASE_URL + 'api/incidents/{}.json'.format(incident_id)
     incident_data = requests.get(
         fullurl,
@@ -328,7 +332,10 @@ def get_incident_command():
             'Content-Type': 'application/json',
             'Authorization': API_KEY
         },
-        verify=VERIFY_CERTIFICATE
+        params={
+            'expand_events': expand_events,
+        },
+        verify=VERIFY_CERTIFICATE,
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:

@@ -98,6 +98,7 @@ class Client(BaseClient):
                 'Authorization': f'KSCBasic user="{encoded_username}", pass="{encoded_password}"',
                 'Content-Type': 'application/json',
             },
+            resp_type='response'
         )
 
     def _raise_for_error(self, res: Dict):

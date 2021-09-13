@@ -341,7 +341,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
