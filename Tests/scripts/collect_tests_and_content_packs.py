@@ -240,8 +240,8 @@ def collect_tests_and_content_packs(
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
-            caught_missing_test = test_should_not_be_missed(test_playbook_data.get('file_path', ''),
-                                                            test_playbook_name)
+            caught_missing_test = check_if_test_should_not_be_missed(test_playbook_data.get('file_path', ''),
+                                                                     test_playbook_name)
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -267,7 +267,7 @@ def collect_tests_and_content_packs(
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
 
 
-def test_should_not_be_missed(test_playbook_path: str, test_playbook_name: str) -> bool:
+def check_if_test_should_not_be_missed(test_playbook_path: str, test_playbook_name: str) -> bool:
     """
     Checks if a missing test from conf JSON should be missed or not.
     Test should be missed if the support level is not XSOAR.
@@ -414,7 +414,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
                 tests.add(test)
 
             else:
-                if test_should_not_be_missed(file_path, test):
+                if check_if_test_should_not_be_missed(file_path, test):
                     global _FAILED
                     _FAILED = True
                 else:

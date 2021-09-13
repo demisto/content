@@ -17,7 +17,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch, test_should_not_be_missed)
+    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch, check_if_test_should_not_be_missed)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
 from Tests.scripts.utils import content_packs_util
 
@@ -1288,7 +1288,7 @@ def test_is_release_branch_negative(mocked_branch_name):
 
 
 @pytest.mark.parametrize('support_level, expected', [('partner', False), ('community', False), ('xsoar', True)])
-def test_test_should_not_be_missed(tmpdir, support_level: str, expected: bool):
+def test_check_if_test_should_not_be_missed(tmpdir, support_level: str, expected: bool):
     """
     Given:
     - Modified YML file that has a test playbook.
@@ -1310,4 +1310,4 @@ def test_test_should_not_be_missed(tmpdir, support_level: str, expected: bool):
     with open(f'{tmpdir}/Packs/Testpack/pack_metadata.json', 'w') as f:
         f.write(json.dumps({'support': support_level}))
     modified_yml = f'{tmpdir}/Packs/Testpack/TestPlaybooks/TestPlaybook.yml'
-    assert test_should_not_be_missed(modified_yml, 'Test Playbook') == expected
+    assert check_if_test_should_not_be_missed(modified_yml, 'Test Playbook') == expected
