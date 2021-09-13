@@ -6951,8 +6951,10 @@ if 'requests' in sys.modules:
 
         def __del__(self):
             try:
-                if hasattr(self, '_session'):
-                    self._session.close()
+                self._session.close()
+            except AttributeError:
+                # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
+                pass
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 

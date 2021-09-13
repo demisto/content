@@ -1,0 +1,721 @@
+category: Authentication
+commonfields:
+  id: SafeNet Trusted Access
+  version: -1
+configuration:
+- additionalinfo: The URL consists of the root part of the REST API Endpoint URL provided
+    in SafeNet Trusted Access, and has the form https://api.[name].com
+  display: URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Tenant code for your virtual server or account.
+  display: Tenant Code
+  name: tenant_code
+  required: true
+  type: 0
+- additionalinfo: API key for authentication.
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This integration enables you to process alerts from SafeNet Trusted Access
+  (STA) indicating security risks to end user accounts, and apply security remediation
+  actions on SafeNet Trusted Access through security orchestration playbooks.
+display: SafeNet Trusted Access
+name: SafeNet Trusted Access
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get list of users in the tenant.
+    name: sta-get-user-list
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number of the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS3
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS4
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is the user synchronized.
+      type: boolean
+  - arguments:
+    - description: Username of the user.
+      name: userName
+      required: true
+    description: Get the profile information for a specific user.
+    execution: true
+    name: sta-get-user-info
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number of the user.
+      type: string
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS3
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS4
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: string
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+  - arguments:
+    - description: User ID of the user.
+      name: userName
+      required: true
+    - description: First name of the user.
+      name: first_name
+      required: true
+    - description: Last name of the user.
+      name: last_name
+      required: true
+    - description: Email ID of the user.
+      name: email
+      required: true
+    - description: Mobile number of the user.
+      name: mobile_number
+    - description: Alias for the user.
+      name: alias1
+    - description: Additional alias for the user.
+      name: alias2
+    - description: Custom value for the user.
+      name: custom1
+    - description: Additional custom value for the user.
+      name: custom2
+    - description: Additional custom value for the user.
+      name: custom3
+    - description: Address of the user.
+      name: address
+    - description: City of the user.
+      name: city
+    - description: State of the user.
+      name: state
+    - description: Country of the user.
+      name: country
+    - description: Postal Code of the user.
+      name: postal_code
+    - description: Is user synchronized.
+      name: synchronized
+    description: Create new user in the tenant
+    name: sta-create-user
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number of the user.
+      type: string
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: string
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+  - arguments:
+    - description: User ID of the user.
+      name: userName
+      required: true
+    - description: First name of the user.
+      name: first_name
+    - description: Last name of the user.
+      name: last_name
+    - description: Email ID of the user.
+      name: email
+    - description: Mobile number of the user.
+      name: mobile_number
+    - description: Alias for the user.
+      name: alias1
+    - description: Additional alias for the user.
+      name: alias2
+    - description: Address of the user.
+      name: address
+    - description: City of the user.
+      name: city
+    - description: State of the user.
+      name: state
+    - description: Country of the user.
+      name: country
+    - description: Postal Code of the user.
+      name: postal_code
+    - description: New userName to be updated.
+      name: userName_new
+    description: Update the profile for a specific user.
+    name: sta-update-user-info
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number for the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+  - arguments:
+    - description: Username of the user to be deleted.
+      name: userName
+      required: true
+    description: Delete user from the tenant.
+    execution: true
+    name: sta-delete-user
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user to be deleted from the tenant.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user to be deleted from the tenant.
+      type: string
+    - contextPath: STA.USER.DELETED
+      description: Returns true, if the user deleted from the tenant.
+      type: boolean
+  - arguments:
+    - description: Username of the user.
+      name: userName
+      required: true
+    - description: The maximum number of results to return.
+      name: limit
+    description: Return all the groups associated with a specific user.
+    name: sta-get-user-groups
+    outputs:
+    - contextPath: STA.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.USER.SCHEMA
+      description: Schema version number.
+      type: string
+    - contextPath: STA.USER.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.USER.FIRSTNAME
+      description: First name of the user.
+      type: string
+    - contextPath: STA.USER.LASTNAME
+      description: Last name of the user.
+      type: string
+    - contextPath: STA.USER.EMAIL
+      description: Email ID of the user.
+      type: string
+    - contextPath: STA.USER.MOBILENUMBER
+      description: Mobile number for the user.
+      type: number
+    - contextPath: STA.USER.ALIAS1
+      description: Alias for the user.
+      type: string
+    - contextPath: STA.USER.ALIAS2
+      description: Additional alias for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM1
+      description: Custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM2
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.CUSTOM3
+      description: Additional custom value for the user.
+      type: string
+    - contextPath: STA.USER.ADDRESS
+      description: Address of the user.
+      type: string
+    - contextPath: STA.USER.CITY
+      description: City of the user.
+      type: string
+    - contextPath: STA.USER.STATE
+      description: State of the user.
+      type: string
+    - contextPath: STA.USER.COUNTRY
+      description: Country of the user.
+      type: string
+    - contextPath: STA.USER.POSTALCODE
+      description: Postal Code of the user.
+      type: number
+    - contextPath: STA.USER.SYNCHRONIZED
+      description: Is user synchronized.
+      type: boolean
+    - contextPath: STA.USER.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.USER.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.USER.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.USER.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.USER.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+  - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get list of groups in the tenant.
+    name: sta-get-group-list
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+  - arguments:
+    - description: Name of the group.
+      name: groupName
+      required: true
+    description: Get information for a specific group.
+    name: sta-get-group-info
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+  - arguments:
+    - description: Name of the group.
+      name: groupName
+      required: true
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get list of users in a specific group.
+    name: sta-get-group-members
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+    - contextPath: STA.GROUP.USER.ID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.GROUP.USER.NAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.GROUP.USER.TYPE
+      description: Type of the user.
+      type: string
+    - contextPath: STA.GROUP.USER.LINKS.SELF
+      description: Link for the user details.
+      type: string
+  - arguments:
+    - description: Name of the group.
+      name: groupName
+      required: true
+    - description: Description of the group.
+      name: description
+    - description: Is group synchronized.
+      name: synchronized
+    description: Create a new group in the tenant.
+    name: sta-create-group
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+  - arguments:
+    - description: Name of the group to be deleted.
+      name: groupName
+      required: true
+    description: Delete group from the tenant.
+    execution: true
+    name: sta-delete-group
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group to be deleted.
+      type: string
+    - contextPath: STA.GROUP.GROUPNAME
+      description: Name of the group to be deleted.
+      type: string
+    - contextPath: STA.GROUP.DELETED
+      description: Returns true, if the group deleted from the tenant.
+      type: boolean
+  - arguments:
+    - description: Name of the group to be updated.
+      name: groupName
+      required: true
+    - description: Description of the group.
+      name: description
+    - description: New name in case you want to update the group name.
+      name: groupName_new
+    description: Update information for a specific group.
+    name: sta-update-group-info
+    outputs:
+    - contextPath: STA.GROUP.ID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.GROUP.SCHEMA
+      description: Schema version for the group.
+      type: string
+    - contextPath: STA.GROUP.NAME
+      description: Name of the group.
+      type: string
+    - contextPath: STA.GROUP.DESCRIPTION
+      description: Description of the group.
+      type: string
+    - contextPath: STA.GROUP.SYNCHRONIZED
+      description: Is group synchronized.
+      type: boolean
+  - arguments:
+    - description: Username of the user to be checked.
+      name: userName
+      required: true
+    - description: Group name in which you want to search for the user.
+      name: groupName
+      required: true
+    description: Check if user exists in a specific group.
+    name: sta-user-exist-group
+    outputs:
+    - contextPath: STA.EXIST.USER.GROUP
+      description: Check if user exists in group. Returns true, if the user is a member
+        of the group.
+      type: boolean
+  - arguments:
+    - description: User name of the user to be added.
+      name: userName
+      required: true
+    - description: Name of the group in which the user needs to be added.
+      name: groupName
+      required: true
+    description: Add user to a specific group.
+    name: sta-add-user-group
+    outputs:
+    - contextPath: STA.UPDATE.USER.GROUP.USERID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPNAME
+      description: Groupname of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.STATUS
+      description: Returns true, if the user successfully added to the group.
+      type: boolean
+  - arguments:
+    - description: User name of the user to be deleted from the group.
+      name: userName
+      required: true
+    - description: Group name from which the user needs to be deleted.
+      name: groupName
+      required: true
+    description: Remove user from a group.
+    name: sta-remove-user-group
+    outputs:
+    - contextPath: STA.UPDATE.USER.GROUP.USERID
+      description: User ID of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPID
+      description: Group ID of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.GROUPNAME
+      description: Groupname of the group.
+      type: string
+    - contextPath: STA.UPDATE.USER.GROUP.STATUS
+      description: Returns false, if the user successfully removed from the group.
+      type: boolean
+  - arguments:
+    - description: Username of the user.
+      name: userName
+    - description: 'Filter logs since the specified date and time in Universal Time
+        Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z'
+      name: since
+    - description: 'Filter logs until the specified date and time in Universal Time
+        Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z'
+      name: until
+    - description: The maximum number of results to return.
+      name: limit
+    description: Get access, authentication, and audit logs.
+    name: sta-get-logs
+    outputs:
+    - contextPath: STA.LOGS.TIMESTAMP
+      description: Timestamp of event.
+      type: string
+    - contextPath: STA.LOGS.USERNAME
+      description: Username of the user.
+      type: string
+    - contextPath: STA.LOGS.TYPE
+      description: Type of event log.
+      type: string
+    - contextPath: STA.LOGS.CREDENTIAL
+      description: Credential type of the event.
+      type: string
+    - contextPath: STA.LOGS.ACTION
+      description: Authentication action.
+      type: string
+    - contextPath: STA.LOGS.RESULT
+      description: Authentication Action Result.
+      type: string
+    - contextPath: STA.LOGS.MESSAGE
+      description: Message or description of the event.
+      type: string
+    - contextPath: STA.LOGS.APPLICATION
+      description: Application name.
+      type: string
+    - contextPath: STA.LOGS.POLICY
+      description: Policy applied for the application.
+      type: string
+    - contextPath: STA.LOGS.STATE
+      description: State of the access request.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONTYPE
+      description: Operation type.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONOBJECT
+      description: Operation object type.
+      type: string
+    - contextPath: STA.LOGS.OPERATIONNAME
+      description: Operation object name.
+      type: string
+    - contextPath: STA.LOGS.SERIAL
+      description: Serial number of authentication.
+      type: string
+    - contextPath: STA.LOGS.IP
+      description: IP address of the user.
+      type: string
+  - arguments: []
+    description: Checks if you have permission to access the requested tenant.
+    name: sta-validate-tenant
+    outputs:
+    - contextPath: STA.VALIDATE.TENANT
+      description: Checks if you have permission to access the requested tenant.
+      type: boolean
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
