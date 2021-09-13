@@ -1,8 +1,8 @@
-!azure-key-vault-create-update object_id=d2e31ea2-4d20-4288-9964-6be71766fba5 vault_name=xsoar-test-create-1 keys=create,decrypt
+!azure-key-vault-create-update object_id=YOUR_OBJECT_ID vault_name=xsoar-test-create-1 keys=create,decrypt
 !azure-key-vault-list limit=1
 !azure-key-vault-get vault_name=xsoar-test-vault
 !azure-key-vault-delete vault_name=xsoar-test-45
-!azure-key-vault-access-policy-update object_id=d2e31ea2-4d20-4288-9964-6be71766fba5 operation_kind=add vault_name=xsoar-test-create-1 keys=import,list
+!azure-key-vault-access-policy-update object_id=YOUR_OBJECT_ID operation_kind=add vault_name=xsoar-test-create-1 keys=import,list
 !azure-key-vault-key-list vault_name=xsoar-test-vault limit=1
 !azure-key-vault-key-get key_name=test-key-1 vault_name=xsoar-test-vault
 !azure-key-vault-key-delete key_name=test-key-10 vault_name=xsoar-test-vault

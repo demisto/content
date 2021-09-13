@@ -83,20 +83,20 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 
 
 #### Command Example
-```!azure-key-vault-create-update object_id=d2e31ea2-4d20-4288-9964-6be71766fba5 vault_name=xsoar-test-create-1 keys=create,decrypt```
+```!azure-key-vault-create-update object_id=YOUR_OBJECT_ID vault_name=xsoar-test-create-1 keys=create,decrypt```
 
 #### Context Example
 ```json
 {
     "AzureKeyVault": {
         "KeyVault": {
-            "id": "/subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1",
+            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1",
             "location": "westus",
             "name": "xsoar-test-create-1",
             "properties": {
                 "accessPolicies": [
                     {
-                        "objectId": "d2e31ea2-4d20-4288-9964-6be71766fba5",
+                        "objectId": "YOUR_OBJECT_ID",
                         "permissions": {
                             "certificates": [
                                 "get",
@@ -129,7 +129,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
                                 "restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     }
                 ],
                 "enableSoftDelete": true,
@@ -141,7 +141,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
                     "family": "A",
                     "name": "standard"
                 },
-                "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                "tenantId": "YOUR_TENANT_ID",
                 "vaultUri": "https://xsoar-test-create-1.vault.azure.net"
             },
             "tags": {},
@@ -156,7 +156,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 >### xsoar-test-create-1 Information
 >|Id|Name|Type|Location|
 >|---|---|---|---|
->| /subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1 | xsoar-test-create-1 | Microsoft.KeyVault/vaults | westus |
+>| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1 | xsoar-test-create-1 | Microsoft.KeyVault/vaults | westus |
 
 
 ### azure-key-vault-delete
@@ -231,7 +231,7 @@ Get the specified key vault.
 {
     "AzureKeyVault": {
         "KeyVault": {
-            "id": "/subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault",
+            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault",
             "location": "eastus",
             "name": "xsoar-test-vault",
             "properties": {
@@ -278,7 +278,7 @@ Get the specified key vault.
                                 "Restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     },
                     {
                         "objectId": "29a0b3b6-e8ea-4586-ae25-bc39cace0e67",
@@ -321,10 +321,10 @@ Get the specified key vault.
                                 "Restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     },
                     {
-                        "objectId": "d2e31ea2-4d20-4288-9964-6be71766fba5",
+                        "objectId": "YOUR_OBJECT_ID",
                         "permissions": {
                             "certificates": [
                                 "Get",
@@ -373,7 +373,7 @@ Get the specified key vault.
                                 "Purge"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     },
                     {
                         "objectId": "a20e3391-8dba-4189-b8f4-23035e92a183",
@@ -416,7 +416,7 @@ Get the specified key vault.
                                 "Restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     }
                 ],
                 "enableRbacAuthorization": false,
@@ -430,7 +430,7 @@ Get the specified key vault.
                     "name": "Standard"
                 },
                 "softDeleteRetentionInDays": 90,
-                "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                "tenantId": "YOUR_TENANT_ID",
                 "vaultUri": "https://xsoar-test-vault.vault.azure.net/"
             },
             "tags": {},
@@ -445,7 +445,7 @@ Get the specified key vault.
 >### xsoar-test-vault Information
 >|Id|Name|Type|Location|
 >|---|---|---|---|
->| /subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault | xsoar-test-vault | Microsoft.KeyVault/vaults | eastus |
+>| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault | xsoar-test-vault | Microsoft.KeyVault/vaults | eastus |
 
 
 ### azure-key-vault-list
@@ -495,7 +495,7 @@ The List operation gets information about the vaults associated with the subscri
 {
     "AzureKeyVault": {
         "KeyVault": {
-            "id": "/subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3",
+            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3",
             "location": "eastus",
             "name": "james-delete3",
             "properties": {
@@ -541,7 +541,7 @@ The List operation gets information about the vaults associated with the subscri
                                 "Restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     }
                 ],
                 "enableRbacAuthorization": false,
@@ -555,7 +555,7 @@ The List operation gets information about the vaults associated with the subscri
                     "name": "Standard"
                 },
                 "softDeleteRetentionInDays": 90,
-                "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd",
+                "tenantId": "YOUR_TENANT_ID",
                 "vaultUri": "https://james-delete3.vault.azure.net/"
             },
             "tags": {},
@@ -570,7 +570,7 @@ The List operation gets information about the vaults associated with the subscri
 >### Key Vaults List
 >|Id|Name|Type|Location|
 >|---|---|---|---|
->| /subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3 | james-delete3 | Microsoft.KeyVault/vaults | eastus |
+>| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3 | james-delete3 | Microsoft.KeyVault/vaults | eastus |
 
 
 ### azure-key-vault-access-policy-update
@@ -608,18 +608,18 @@ Update access policies in a key vault in the specified subscription. The update 
 
 
 #### Command Example
-```!azure-key-vault-access-policy-update object_id=d2e31ea2-4d20-4288-9964-6be71766fba5 operation_kind=add vault_name=xsoar-test-create-1 keys=import,list```
+```!azure-key-vault-access-policy-update object_id=YOUR_OBJECT_ID operation_kind=add vault_name=xsoar-test-create-1 keys=import,list```
 
 #### Context Example
 ```json
 {
     "AzureKeyVault": {
         "VaultAccessPolicy": {
-            "id": "/subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1/accessPolicies/",
+            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1/accessPolicies/",
             "properties": {
                 "accessPolicies": [
                     {
-                        "objectId": "d2e31ea2-4d20-4288-9964-6be71766fba5",
+                        "objectId": "YOUR_OBJECT_ID",
                         "permissions": {
                             "certificates": [
                                 "get",
@@ -654,7 +654,7 @@ Update access policies in a key vault in the specified subscription. The update 
                                 "restore"
                             ]
                         },
-                        "tenantId": "0dd6c060-d39a-4e06-873c-48a43c2e24dd"
+                        "tenantId": "YOUR_TENANT_ID"
                     }
                 ]
             },
@@ -669,7 +669,7 @@ Update access policies in a key vault in the specified subscription. The update 
 >### xsoar-test-create-1 Updated Access Policy
 >|Id|Type|
 >|---|---|
->| /subscriptions/a213e459-7e7b-4d5d-b46a-26a8a71f6214/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1/accessPolicies/ | Microsoft.KeyVault/vaults/accessPolicies |
+>| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-create-1/accessPolicies/ | Microsoft.KeyVault/vaults/accessPolicies |
 
 
 ### azure-key-vault-key-get
