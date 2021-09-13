@@ -61,8 +61,7 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         return self.ms_client.http_request(method='GET',
-                                           url_suffix=f'identityProtection/riskyUsers'
-                                                      f'/{id}')
+                                           url_suffix=f'identityProtection/riskyUsers/{id}')
 
     def risk_detections_list(self, risk_state: str, risk_level: str, limit: int,
                              skip_token: str = None) -> dict:
@@ -97,8 +96,7 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         return self.ms_client.http_request(method='GET',
-                                           url_suffix=f'/identityProtection/riskDetections/'
-                                                      f'{id}')
+                                           url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
 def build_query_filter(risk_state: str, risk_level: str) -> str:
@@ -119,7 +117,7 @@ def build_query_filter(risk_state: str, risk_level: str) -> str:
     elif risk_level:
         return f"riskLevel eq '{risk_level}'"
     else:
-        return None
+        return
 
 
 def create_event_or_incident_output(item: Dict,
@@ -134,8 +132,7 @@ def create_event_or_incident_output(item: Dict,
     Returns:
         object_data (dict(str)): The output dictionary.
     """
-    alert_data = {field: item.get(field) for field in table_headers}
-    return remove_empty_elements(alert_data)
+    return remove_empty_elements({field: item.get(field) for field in table_headers})
 
 
 def risky_users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
