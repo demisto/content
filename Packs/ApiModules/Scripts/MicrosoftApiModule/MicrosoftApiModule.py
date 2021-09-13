@@ -46,7 +46,6 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
-                 timeout: Optional[int] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -92,13 +91,11 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint
-        self.timeout = timeout
 
         self.multi_resource = multi_resource
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
-
     def http_request(
             self, *args, resp_type='json', headers=None,
             return_empty_response=False, scope: Optional[str] = None,
@@ -126,10 +123,6 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-
-        if self.timeout:
-            kwargs['timeout'] = self.timeout
-
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
@@ -305,6 +298,14 @@ class MicrosoftClient(BaseClient):
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
+            if self.multi_resource:
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    self.resource = resource
+                    access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials()
+                    self.resource_to_access_token[resource] = access_token
+                self.resource = ''
+                return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
     def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:

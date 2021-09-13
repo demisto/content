@@ -5,8 +5,7 @@ from datetime import datetime
 import copy
 
 '''CONSTANTS'''
-# APP_NAME = 'azure-key-vault'
-APP_NAME = 'ms-azure-sentinel'
+APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTHORIZATION_CODE = 'authorization_code'
 MANAGEMENT_RESOURCE = 'https://management.azure.com'
