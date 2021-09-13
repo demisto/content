@@ -103,8 +103,8 @@
     - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_end "Creating new clean logs folder"
     - source $NVM_DIR/nvm.sh
-    - nvm use
     - nvm use default
+    - npm ci
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
