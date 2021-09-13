@@ -235,6 +235,7 @@ tasks:
           root: inputs.MD5
           transformers:
           - operator: uniq
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -270,6 +271,7 @@ tasks:
           root: inputs.SHA256
           transformers:
           - operator: uniq
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -305,6 +307,7 @@ tasks:
           root: inputs.SHA1
           transformers:
           - operator: uniq
+    continueonerror: true
     separatecontext: false
     view: |-
       {
