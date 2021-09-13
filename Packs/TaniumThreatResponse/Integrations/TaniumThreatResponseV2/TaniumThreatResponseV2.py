@@ -448,7 +448,7 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     fetch_time = demisto.params().get('first_fetch')
-    max_fetch = arg_to_number(demisto.params().get('max_fetch'))
+    max_fetch = int(demisto.params().get('max_fetch', '50'))
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
