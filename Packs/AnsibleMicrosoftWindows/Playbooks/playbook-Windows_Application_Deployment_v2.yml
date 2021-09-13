@@ -1,0 +1,689 @@
+id: Windows Application Deployment v2
+version: -1
+name: Windows Application Deployment v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c629dd12-7ff8-494f-8fd8-21f6064a7c91
+    type: start
+    task:
+      id: c629dd12-7ff8-494f-8fd8-21f6064a7c91
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a5a65b45-50af-4cf8-8b88-50c3b9d2557e
+    type: collection
+    task:
+      id: a5a65b45-50af-4cf8-8b88-50c3b9d2557e
+      version: -1
+      name: 'Prompt: Which package(s) and host?'
+      description: Prompt for which packages to deploy
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which Packages to Deploy?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: AdobeReader
+        - simple: O365Business
+        - simple: GoogleChrome
+        - simple: jre8
+        - simple: Firefox
+        - simple: 7zip.install
+        - simple: VLC
+        - simple: notepadplusplus.install
+        - simple: git.install
+        - simple: python
+        - simple: vscode
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which host?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: dns name or ip address
+        tooltip: ""
+        readonly: false
+      title: Package Selection
+      description: Prompt for which packages to deploy
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d752b7e5-8a70-44ce-894c-132ed64a058b
+    type: regular
+    task:
+      id: d752b7e5-8a70-44ce-894c-132ed64a058b
+      version: -1
+      name: Test connectivity to endpoint
+      description: |-
+        A windows version of the classic ping module
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html
+      script: '|||win-ping'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data: {}
+      host:
+        simple: ${Package Selection.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9a087d26-7e18-46c0-8b5a-07764823c1f7
+    type: condition
+    task:
+      id: 9a087d26-7e18-46c0-8b5a-07764823c1f7
+      version: -1
+      name: Is Workstation currently Online?
+      description: Check if workstation is online
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinPing.ping
+            iscontext: true
+          right:
+            value:
+              simple: pong
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 3f831c8e-5d31-4f1f-8440-8d945c471aaf
+    type: condition
+    task:
+      id: 3f831c8e-5d31-4f1f-8440-8d945c471aaf
+      version: -1
+      name: Keep retrying or allow user to trigger install?
+      description: Prompt for retry behaviour
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Keep Retrying:
+      - "5"
+      User to Trigger:
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 55d578b4-606f-4d73-8080-e380a84bfc1a
+    type: playbook
+    task:
+      id: 55d578b4-606f-4d73-8080-e380a84bfc1a
+      version: -1
+      name: Wait Until Windows Host Online v2
+      playbookName: Wait Until Windows Host Online v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      host:
+        simple: ${Package Selection.Answers.1}
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isExists
+          left:
+            value:
+              simple: exitloop
+            iscontext: true
+      exitCondition: ""
+      wait: 300
+      max: 10000
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e6490ad5-6d53-40dc-8175-0989508d4e25
+    type: collection
+    task:
+      id: e6490ad5-6d53-40dc-8175-0989508d4e25
+      version: -1
+      name: What is the users email?
+      description: Prompt for end users email
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the users email address?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: What is the users email?
+      description: Prompt for end users email address
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ea9782c1-5250-43ef-85a4-bb94e622ea85
+    type: regular
+    task:
+      id: ea9782c1-5250-43ef-85a4-bb94e622ea85
+      version: -1
+      name: Ask user by email
+      description: Ask a user a question via email and process the reply directly
+        into the investigation.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      additionalOptions: {}
+      attachIds: {}
+      bcc: {}
+      bodyType: {}
+      cc: {}
+      email:
+        simple: ${What is the users email?.Answers.0}
+      message:
+        complex:
+          root: Package Selection.Questions
+          accessor: "0"
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: "\n* "
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "Your IT department attempted to install new software packages\
+                    \ on your workstation but the machine was not accessible at the\
+                    \ time. \n\nThe software package(s) they are attempting to install\
+                    \ are:\n* "
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Package Selection.Answers.1
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |2-
+
+
+                    When it is convenient to install this software, ensure your workstation is powered on, connected to the network. To start the install reply to this email with word "ready"
+      option1:
+        simple: ready
+      option2: {}
+      persistent: {}
+      playbookTaskID: {}
+      replyAddress: {}
+      replyEntriesTag: {}
+      retries: {}
+      roles: {}
+      subject:
+        simple: Software Install Pending
+      task:
+        simple: UserFeedback
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 019d509a-929a-4fe9-8aca-03f8f9dad572
+    type: condition
+    task:
+      id: 019d509a-929a-4fe9-8aca-03f8f9dad572
+      version: -1
+      name: Waiting for User to say they are ready
+      description: Wait for ready email
+      tags:
+      - UserFeedback
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Ready:
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ddf5de77-1202-4c9c-88c7-45bd59f3ab9e
+    type: regular
+    task:
+      id: ddf5de77-1202-4c9c-88c7-45bd59f3ab9e
+      version: -1
+      name: Choco Install
+      description: |-
+        Manage packages using chocolatey
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+      script: '|||win-chocolatey'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      allow_empty_checksums: {}
+      allow_multiple: {}
+      allow_prerelease: {}
+      architecture: {}
+      force: {}
+      host:
+        simple: ${Package Selection.Answers.1}
+      ignore_checksums: {}
+      ignore_dependencies: {}
+      install_args: {}
+      name:
+        complex:
+          root: Package Selection.Answers
+          accessor: "0"
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      package_params: {}
+      pinned: {}
+      proxy_password: {}
+      proxy_url: {}
+      proxy_username: {}
+      skip_scripts: {}
+      source: {}
+      source_password: {}
+      source_username: {}
+      state: {}
+      timeout: {}
+      validate_certs: {}
+      version: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 11aad3a1-a686-45c4-880f-df4635e2b390
+    type: title
+    task:
+      id: 11aad3a1-a686-45c4-880f-df4635e2b390
+      version: -1
+      name: Post Install Review
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3f99c3d7-0596-4c96-8ca8-55fdc8410890
+    type: condition
+    task:
+      id: 3f99c3d7-0596-4c96-8ca8-55fdc8410890
+      version: -1
+      name: Software installed successfully?
+      description: Check if the software was installed successfully
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftWindows.WinChocolatey(val.rc==0).host
+            iscontext: true
+    - label: "No"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftWindows.WinChocolatey(val.rc!=0).host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: dbba151c-e5e7-4ff6-8b99-847d62d4826e
+    type: regular
+    task:
+      id: dbba151c-e5e7-4ff6-8b99-847d62d4826e
+      version: -1
+      name: Notify end user of Success via popup
+      description: |-
+        Sends a message to logged in users on Windows hosts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
+      script: '|||win-msg'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      display_seconds: {}
+      host:
+        complex:
+          root: MicrosoftWindows.WinChocolatey(val.rc==0)
+          accessor: host
+      msg:
+        complex:
+          root: Package Selection.Answers
+          accessor: "0"
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: |2-
+
+                    *
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |-
+                    New software has been installed on your machine:
+                    *
+              suffix: {}
+      to: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 3e706765-6ebf-4e2d-837e-7577a2ca5ca6
+    type: regular
+    task:
+      id: 3e706765-6ebf-4e2d-837e-7577a2ca5ca6
+      version: -1
+      name: Gather System Facts for troubleshooting
+      description: |-
+        Gathers facts about remote hosts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+      script: '|||win-gather-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      host:
+        simple: MicrosoftWindows.WinChocolatey(val.rc!=0).host
+      parallel: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2155,
+        "width": 905,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: This playbook helps an operator install Windows applications to workstations
+  using the Chocolatey package manager.
