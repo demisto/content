@@ -7,22 +7,20 @@ import argparse
 import glob
 import json
 import logging
-import os
-import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple, Union
+
+import sys
 
 import demisto_sdk.commands.common.tools as tools
-from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
-from demisto_sdk.commands.common.constants import *  # noqa: E402
-
 from Tests.scripts.utils import collect_helpers
+from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
-    should_install_content_pack
+    should_install_content_pack, is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
-
+from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
@@ -279,7 +277,7 @@ def check_if_test_should_not_be_missed(test_playbook_path: str, test_playbook_na
         (bool): Whether test should be missed.
     """
     pack_name: Optional[str] = tools.get_pack_name(test_playbook_path)
-    if tools.get_pack_metadata(test_playbook_path).get(PACK_METADATA_SUPPORT, '') == 'xsoar':
+    if is_pack_xsoar_supported(test_playbook_path):
         logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
                       " which means no test with it will run. please update the conf.json file accordingly."
                       )

@@ -2,6 +2,7 @@ import json
 import os
 from typing import Tuple
 
+import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME)
 
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
@@ -20,20 +21,17 @@ def get_pack_metadata(file_path: str) -> dict:
         return json.load(pack_metadata)
 
 
-def is_pack_xsoar_supported(pack_path: str) -> bool:
+def is_pack_xsoar_supported(file_path: str) -> bool:
     """Checks whether the pack is XSOAR supported.
     Tests are not being collected for non XSOAR  packs.
 
     Args:
-        pack_path (str): The pack path
+        file_path (str): The file path.
 
     Returns:
-        True if the pack is certified, False otherwise
+        True if the pack that the file path resides in is certified, False otherwise
     """
-    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
-    if not os.path.isfile(pack_metadata_path):
-        return False
-    pack_metadata = get_pack_metadata(pack_metadata_path)
+    pack_metadata = tools.get_pack_metadata(file_path)
     return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar"
 
 
