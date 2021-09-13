@@ -1,25 +1,25 @@
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
-This integration was integrated and tested with version ***2021-04-01*** of Azure Sentinel
+This integration was integrated and tested with version 2021-04-01 of Azure Sentinel.
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
 Follow these steps for a self-deployed configuration.
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. In your registered app - create new Client secret.
-   - navigate in the Azure Portal to ***App registrations > yor registered application > Certificates & secrets*** and click on ***+ New client secret***
-   - copy and save the new secret value to use in the add credentials step.
-3. In Cortex XSOAR, go to  **Settings -> Integrations -> Credentials** and create new credentials set. 
+2. In your registered app - create a new Client secret.
+   1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
+   2. Copy and save the new secret value to use in the add credentials step.
+3. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
 4. Enter your registered app Application (client) ID in the ***Username*** parameter.
-5. Enter the secret value you created in the ***Password*** parameter.
+5. Enter the secret value you created in the *Password* parameter.
 6. Copy your tenant ID for the integration configuration usage.
 
-## Configure the server url
-If you have dedicated server url - enter it in the ***Server Url*** parameter otherwith the server url will calculated according your. 
+## Configure the server URL
+If you have a dedicated server URL, enter it in the *Server Url* parameter. 
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
+To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, in the Azure Portal navigate  to **Azure Sentinel** > your workspace > **Settings** and click the **Workspace Settings** tab.
 
 
 ## Configure Azure Sentinel on Cortex XSOAR
@@ -156,7 +156,7 @@ Gets a list of incidents from Azure Sentinel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of incidents to return. The default and maximum value is 50. Default is 50. | Optional | 
+| limit | The maximum number of incidents to return. The default and maximum value is 50. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
 
@@ -186,8 +186,8 @@ Gets a list of incidents from Azure Sentinel.
 | AzureSentinel.Incident.Tactics | String | The incident's tactics. | 
 | AzureSentinel.Incident.FirstActivityTimeGenerated | Date | The incident's generated first activity time. | 
 | AzureSentinel.Incident.LastActivityTimeGenerated | Date | The incident's generated last activity time. | 
-| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description of nextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.Incident.Etag | String | The Etag of the incident. | 
 
 
@@ -402,13 +402,13 @@ Gets a list of watchlists from Azure Sentinel.
 | AzureSentinel.Watchlist.Source | String | The source of the watchlist. | 
 | AzureSentinel.Watchlist.Created | Date | The time the watchlist was created. | 
 | AzureSentinel.Watchlist.Updated | Date | The last time the watchlist was updated. | 
-| AzureSentinel.Watchlist.CreatedBy | String | The name of the user created the Watchlist. | 
-| AzureSentinel.Watchlist.UpdatedBy | String | The name of the user updated the Watchlist. | 
+| AzureSentinel.Watchlist.CreatedBy | String | The name of the user who created the watchlist. | 
+| AzureSentinel.Watchlist.UpdatedBy | String | The name of the user who updated the Watchlist. | 
 | AzureSentinel.Watchlist.Alias | String | The alias of the watchlist. | 
 | AzureSentinel.Watchlist.Label | unknown | Label that will be used to tag and filter on. | 
 | AzureSentinel.Watchlist.ItemsSearchKey | String | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | 
-| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description of nextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns partial results. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 
 #### Command Example
@@ -521,7 +521,7 @@ There is no context output for this command.
 
 ### azure-sentinel-watchlist-create-update
 ***
-Create or update a watchlists in Azure Sentinel.
+Create or update a watchlist in Azure Sentinel.
 
 
 #### Base Command
@@ -537,18 +537,18 @@ Create or update a watchlists in Azure Sentinel.
 | provider | The provider of the watchlist. Default is XSOAR. | Optional | 
 | source | The source of the watchlist. Possible values are: Local file, Remote storage. | Required | 
 | labels | The labels of the watchlist. | Optional | 
-| lines_to_skip | The number of lines in a csv content to skip before the header. Default is 0. | Optional | 
-| raw_content | A file entry with raw content that represents to watchlist items to create. | Required | 
+| lines_to_skip | The number of lines in a CSV content to skip before the header. Default is 0. | Optional | 
+| raw_content | A file entry with raw content that represents the watchlist items to create. | Required | 
 | items_search_key | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | Required | 
-| content_type | The content type of the raw content. For now, only text/csv is valid. Default is Text/Csv. | Optional | 
+| content_type | The content type of the raw content. For now, only text/CSV is valid. Default is Text/Csv. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.Watchlist.Name | String | The name of watchlist. | 
-| AzureSentinel.Watchlist.ID | String | The id \(a Guid\) of the watchlist. | 
+| AzureSentinel.Watchlist.Name | String | The name of the watchlist. | 
+| AzureSentinel.Watchlist.ID | String | The ID \(GUID\) of the watchlist. | 
 | AzureSentinel.Watchlist.Description | String | A description of the watchlist. | 
 | AzureSentinel.Watchlist.Provider | String | The provider of the watchlist. | 
 | AzureSentinel.Watchlist.Source | String | The source of the watchlist. | 
@@ -751,7 +751,7 @@ Gets the comments of an incident from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The maximum number of incident comments to return. The default and maximum value is 50. Default is 50. | Optional | 
+| limit | The maximum number of incident comments to return. The default and maximum value is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 
 
@@ -765,8 +765,8 @@ Gets the comments of an incident from Azure Sentinel.
 | AzureSentinel.IncidentComment.AuthorName | String | The name of the author of the incident comment. | 
 | AzureSentinel.IncidentComment.AuthorEmail | String | The email address of the author of the incident comment. | 
 | AzureSentinel.IncidentComment.CreatedTimeUTC | Date | The date and time that the incident comment was created. | 
-| AzureSentinel.NextLink.Description | String | Description of NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | Description of nextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 
 #### Command Example
@@ -895,7 +895,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | incident_id | The incident ID. | Required | 
 | limit | The maximum number of related entities to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. Possible values are: . | Optional | 
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 
 
@@ -905,8 +905,8 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | --- | --- | --- |
 | AzureSentinel.IncidentRelatedResource.ID | String | The ID of the incident's related resource. | 
 | AzureSentinel.IncidentRelatedResource.Kind | String | The kind of the incident's related resource. | 
-| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| AzureSentinel.NextLink.Description | String | The description about nextLink. | 
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a nextLink element, its value specifies a starting point to use for subsequent calls. | 
 | AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. | 
 
 
@@ -1040,7 +1040,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | AzureSentinel.IncidentAlert.ConfidenceLevel | String | The confidence level of this alert. | 
 | AzureSentinel.IncidentAlert.Severity | String | The severity of the alert. | 
 | AzureSentinel.IncidentAlert.VendorName | String | The name of the vendor that raise the alert. | 
-| AzureSentinel.IncidentAlert.ProductName | String | The name of the product which published this alert. | 
+| AzureSentinel.IncidentAlert.ProductName | String | The name of the product that published this alert. | 
 | AzureSentinel.IncidentAlert.ProductComponentName | String | The name of a component inside the product which generated the alert. | 
 
 
@@ -1102,19 +1102,19 @@ Get single watchlist item or list of watchlist items.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | The alias of the watchlist. | Required | 
-| watchlist_item_id | The id of the sigle watchlist item. | Optional | 
+| watchlist_item_id | The ID of the single watchlist item. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist | 
-| AzureSentinel.WatchlistItem.ID | String | The id \(a Guid\) of the watchlist item. | 
+| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist. | 
+| AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. | 
 | AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. | 
 | AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. | 
 | AzureSentinel.WatchlistItem.CreatedBy | String | The name of the user. | 
-| AzureSentinel.WatchlistItem.UpdatedBy | String | The of the user update this item. | 
+| AzureSentinel.WatchlistItem.UpdatedBy | String | The user who updated this item. | 
 | AzureSentinel.WatchlistItem.ItemsKeyValue | Unknown | Key-value pairs for a watchlist item. | 
 
 
@@ -1179,7 +1179,7 @@ Delete a watchlist item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | The watchlist alias. | Required | 
-| watchlist_item_id | The watchlist item id to be deleted. | Required | 
+| watchlist_item_id | The watchlist item ID to be deleted. | Required | 
 
 
 #### Context Output
@@ -1206,7 +1206,7 @@ Create or update a watchlist item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | The watchlist alias. | Required | 
-| watchlist_item_id | The watchlist item id (GUID) to update. | Optional | 
+| watchlist_item_id | The watchlist item ID (GUID) to update. | Optional | 
 | item_key_value | The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist). | Required | 
 
 
@@ -1215,11 +1215,11 @@ Create or update a watchlist item.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist | 
-| AzureSentinel.WatchlistItem.ID | String | The id \(a Guid\) of the watchlist item. | 
+| AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. | 
 | AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. | 
 | AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. | 
 | AzureSentinel.WatchlistItem.CreatedBy | String | The name of the user. | 
-| AzureSentinel.WatchlistItem.UpdatedBy | String | The of the user update this item. | 
+| AzureSentinel.WatchlistItem.UpdatedBy | String | The user who update this item. | 
 | AzureSentinel.WatchlistItem.ItemsKeyValue | Unknown | Key-value pairs for a watchlist item. | 
 
 
