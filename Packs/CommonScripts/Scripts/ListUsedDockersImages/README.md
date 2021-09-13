@@ -7,7 +7,7 @@ Script Data
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility, Dockers, General |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.1.0 |
 
 Inputs
 ---
