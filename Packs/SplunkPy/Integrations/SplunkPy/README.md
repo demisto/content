@@ -96,9 +96,13 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
-**NOTE: This feature is available from Cortex XSOAR version 6.0.0**
-**NOTE: This feature is supported by Splunk Enterprise Security only**
-
+**Imporatnt Notes*** 
+ - This feature is available from Cortex XSOAR version 6.0.0.
+ - This feature is supported by Splunk Enterprise Security only.
+ - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+ 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
