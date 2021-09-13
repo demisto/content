@@ -1,0 +1,20 @@
+twitter-get-user-info:
+
+!twitter-get-user-info usernames="PaloAltoNtwks"
+!twitter-get-user-info usernames="walmart,PaloAltoNtwks,Nintendo,target"
+!twitter-get-user-info usernames="nikesharora"
+
+twitter-get-users:
+
+!twitter-get-users name="Palo Alto Networks"
+!twitter-get-users name="Golden Sun” page=2
+!twitter-get-users name="Simon" count=8 page=2
+
+twitter-get-tweets:
+
+!twitter-get-tweets q="Palo Alto Networks"
+!twitter-get-tweets q="hi" result_type="popular"
+!twitter-get-tweets q="Cyber" geocode="37.383266,-121.983840,800mi"
+!twitter-get-tweets q=" " count="70" include_entities="True" from_user="Unit42_Intel"
+!twitter-get-tweets q="Hack" include_entities="True" result_type=popular
+!twitter-get-tweets q="water" lang=pl
