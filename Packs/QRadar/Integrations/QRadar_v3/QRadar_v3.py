@@ -1327,7 +1327,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
-                                   max_retries: int = EVENTS_FAILURE_LIMIT) -> List[Dict]:
+                                   max_retries: int = EVENTS_FAILURE_LIMIT) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
     Afterwards, performs a call to retrieve the events returned by the search.
@@ -1342,14 +1342,16 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
         max_retries (int): Number of retries.
 
     Returns:
-        (List[Dict]): List of events returned by query. Returns empty list if number of retries exceeded limit.
+        (List[Dict], str): List of events returned by query. Returns empty list if number of retries exceeded limit,
+                           A failure message in case an error occured.
     """
     num_of_failures = 0
     start_time = time.time()
+    failure_message = ''
     while num_of_failures <= max_retries:
         try:
             if is_reset_triggered():
-                return []
+                return [], 'Reset was triggered for integration.'
             search_status_response = client.search_status_get(search_id)
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
@@ -1359,7 +1361,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 events = search_results_response.get('events', [])
                 sanitized_events = sanitize_outputs(events)
                 print_debug_msg(f'Fetched {len(sanitized_events)} events for offense {offense_id}.')
-                return sanitized_events
+                return sanitized_events, failure_message
             elapsed = time.time() - start_time
             if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
                 print_debug_msg(f'Still fetching offense {offense_id} events, search_id: {search_id}.')
@@ -1372,8 +1374,11 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             num_of_failures += 1
             if num_of_failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
+            else:
+                failure_message = f'{str(e)} \n {traceback.format_exc()} \n See logs for further details.'
+
     print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array.')
-    return []
+    return [], failure_message
 
 
 def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int,
@@ -1398,6 +1403,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     if is_reset_triggered():
         return offense
 
+    failure_message = ''
     # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
     for i in range(max_retries):
         # retry to check if we got all the event (its not an error retry), see docstring
@@ -1407,7 +1413,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
             continue
 
         offense_id = offense['id']
-        events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
         min_events_size = min(offense.get('event_count', 0), events_limit)
         if len(events) >= min_events_size:
             offense = dict(offense, events=events)
@@ -1416,6 +1422,11 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                         f'for offense ID: {offense_id}. Retry number {i}/{max_retries}')
         if i < max_retries - 1:
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
+
+    if failure_message:
+        offense['mirroring_events_message'] = failure_message
+    elif len(events) >= min_events_size:
+        offense['mirroring_events_message'] = 'Events were not yet indexed in QRadar.'
 
     return offense
 
@@ -2957,6 +2968,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             'ContentsFormat': EntryFormat.JSON
         })
 
+    failure_message = 'Failed communicating with long running container.'
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
         offenses_waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
@@ -2964,7 +2976,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         is_waiting_to_be_updated = True
         evented_offense = None
         retries = 0
-        failure_message = 'Failed communicating with long running container.'
         while ((not evented_offense) or is_waiting_to_be_updated) and retries < max_retries:
             if retries != 0:
                 time.sleep(FAILURE_SLEEP)
