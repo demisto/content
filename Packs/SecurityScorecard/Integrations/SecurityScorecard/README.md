@@ -576,7 +576,7 @@ Retrieve company historical scores
 
 #### Human Readable Output
 
->### Historical Scores for Domain [`somecompany.com`](https:<span>//</span>somecompany.com)
+>### Historical Scores for Domain `somecompany.com`
 >|date|score|
 >|---|---|
 >| 2021-06-05T00:00:00.000Z | 76 |
@@ -1131,6 +1131,6 @@ Retrieve the service providers of a domain
 
 #### Human Readable Output
 
->### Services for domain [somecompany.com](https:<span>//</span>somecompany.com)
+>### Services for domain `somecompany.com`
 
 >**No entries.**
