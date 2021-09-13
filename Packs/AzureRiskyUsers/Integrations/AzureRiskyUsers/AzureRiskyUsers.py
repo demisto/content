@@ -145,8 +145,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = arg_to_number(args['limit'])
-    page = arg_to_number(args['page'])
+    limit = int(args['limit'])
+    page = int(args['page'])
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
@@ -239,8 +239,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = args['limit']
-    page = arg_to_number(args['page'])
+    limit = int(args['limit'])
+    page = int(args['page'])
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
