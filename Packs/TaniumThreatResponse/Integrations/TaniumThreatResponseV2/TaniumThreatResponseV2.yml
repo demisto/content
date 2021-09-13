@@ -1007,79 +1007,79 @@ script:
     execution: false
     name: tanium-tr-get-process-info
     outputs:
-    - contextPath: Tanium.ProcessChildren.childrenCount
+    - contextPath: Tanium.ProcessInfo.childrenCount
       description: Nuber of process children.
       type: Number
-    - contextPath: Tanium.ProcessChildren.context
+    - contextPath: Tanium.ProcessInfo.context
       description: Process tree context.
       type: String
-    - contextPath: Tanium.ProcessChildren.createTime
+    - contextPath: Tanium.ProcessInfo.createTime
       description: Time when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.createTimeRaw
+    - contextPath: Tanium.ProcessInfo.createTimeRaw
       description: Timestamp when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.dnsEventsCount
+    - contextPath: Tanium.ProcessInfo.dnsEventsCount
       description: Number of DNS events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.driverEventsCount
+    - contextPath: Tanium.ProcessInfo.driverEventsCount
       description: Number of Driver events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.endTime
+    - contextPath: Tanium.ProcessInfo.endTime
       description: Process termination time.
       type: Date
-    - contextPath: Tanium.ProcessChildren.endTimeRaw
+    - contextPath: Tanium.ProcessInfo.endTimeRaw
       description: Process termination timestamp.
       type: Date
-    - contextPath: Tanium.ProcessChildren.exitCode
+    - contextPath: Tanium.ProcessInfo.exitCode
       description: Process exit code.
       type: Number
-    - contextPath: Tanium.ProcessChildren.fileEventsCount
+    - contextPath: Tanium.ProcessInfo.fileEventsCount
       description: Number of File events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.groupName
+    - contextPath: Tanium.ProcessInfo.groupName
       description: Process group name.
       type: String
-    - contextPath: Tanium.ProcessChildren.hashTypeName
+    - contextPath: Tanium.ProcessInfo.hashTypeName
       description: Hash type.
       type: String
-    - contextPath: Tanium.ProcessChildren.id
+    - contextPath: Tanium.ProcessInfo.id
       description: Process id at the tunium system.
       type: String
-    - contextPath: Tanium.ProcessChildren.imageEventsCount
+    - contextPath: Tanium.ProcessInfo.imageEventsCount
       description: Number of Image events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.networkEventsCount
+    - contextPath: Tanium.ProcessInfo.networkEventsCount
       description: Number of network events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.parentProcessTableId
+    - contextPath: Tanium.ProcessInfo.parentProcessTableId
       description: Parent process table id.
       type: String
-    - contextPath: Tanium.ProcessChildren.pid
+    - contextPath: Tanium.ProcessInfo.pid
       description: The ID of the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processEventsCount
+    - contextPath: Tanium.ProcessInfo.processEventsCount
       description: Number of process events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processHash
+    - contextPath: Tanium.ProcessInfo.processHash
       description: Process hash.
       type: String
-    - contextPath: Tanium.ProcessChildren.processPath
+    - contextPath: Tanium.ProcessInfo.processPath
       description: The process path.
       type: String
-    - contextPath: Tanium.ProcessChildren.processTableId
+    - contextPath: Tanium.ProcessInfo.processTableId
       description: The ID of the process table.
       type: String
-    - contextPath: Tanium.ProcessChildren.registryEventsCount
+    - contextPath: Tanium.ProcessInfo.registryEventsCount
       description: Number of registry events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.securityEventsCount
+    - contextPath: Tanium.ProcessInfo.securityEventsCount
       description: Number of security events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.uniqueProcessId
+    - contextPath: Tanium.ProcessInfo.uniqueProcessId
       description: Unique process id.
       type: String
-    - contextPath: Tanium.ProcessChildren.userName
+    - contextPath: Tanium.ProcessInfo.userName
       description: The username who created the process.
       type: String
   - arguments:
@@ -1159,6 +1159,20 @@ script:
       isArray: false
       name: ptid
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing entries.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
     description: Gets the children of this process instance.
@@ -1258,79 +1272,79 @@ script:
     execution: false
     name: tanium-tr-get-parent-process
     outputs:
-    - contextPath: Tanium.ProcessChildren.childrenCount
+    - contextPath: Tanium.ProcessParent.childrenCount
       description: Nuber of process children.
       type: Number
-    - contextPath: Tanium.ProcessChildren.context
+    - contextPath: Tanium.ProcessParent.context
       description: Process tree context.
       type: String
-    - contextPath: Tanium.ProcessChildren.createTime
+    - contextPath: Tanium.ProcessParent.createTime
       description: Time when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.createTimeRaw
+    - contextPath: Tanium.ProcessParent.createTimeRaw
       description: Timestamp when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.dnsEventsCount
+    - contextPath: Tanium.ProcessParent.dnsEventsCount
       description: Number of DNS events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.driverEventsCount
+    - contextPath: Tanium.ProcessParent.driverEventsCount
       description: Number of Driver events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.endTime
+    - contextPath: Tanium.ProcessParent.endTime
       description: Process termination time.
       type: Date
-    - contextPath: Tanium.ProcessChildren.endTimeRaw
+    - contextPath: Tanium.ProcessParent.endTimeRaw
       description: Process termination timestamp.
       type: Date
-    - contextPath: Tanium.ProcessChildren.exitCode
+    - contextPath: Tanium.ProcessParent.exitCode
       description: Process exit code.
       type: Number
-    - contextPath: Tanium.ProcessChildren.fileEventsCount
+    - contextPath: Tanium.ProcessParent.fileEventsCount
       description: Number of File events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.groupName
+    - contextPath: Tanium.ProcessParent.groupName
       description: Process group name.
       type: String
-    - contextPath: Tanium.ProcessChildren.hashTypeName
+    - contextPath: Tanium.ProcessParent.hashTypeName
       description: Hash type.
       type: String
-    - contextPath: Tanium.ProcessChildren.id
+    - contextPath: Tanium.ProcessParent.id
       description: Process id at the tunium system.
       type: String
-    - contextPath: Tanium.ProcessChildren.imageEventsCount
+    - contextPath: Tanium.ProcessParent.imageEventsCount
       description: Number of Image events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.networkEventsCount
+    - contextPath: Tanium.ProcessParent.networkEventsCount
       description: Number of network events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.parentProcessTableId
+    - contextPath: Tanium.ProcessParent.parentProcessTableId
       description: Parent process table id.
       type: String
-    - contextPath: Tanium.ProcessChildren.pid
+    - contextPath: Tanium.ProcessParent.pid
       description: The ID of the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processEventsCount
+    - contextPath: Tanium.ProcessParent.processEventsCount
       description: Number of process events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processHash
+    - contextPath: Tanium.ProcessParent.processHash
       description: Process hash.
       type: String
-    - contextPath: Tanium.ProcessChildren.processPath
+    - contextPath: Tanium.ProcessParent.processPath
       description: The process path.
       type: String
-    - contextPath: Tanium.ProcessChildren.processTableId
+    - contextPath: Tanium.ProcessParent.processTableId
       description: The ID of the process table.
       type: String
-    - contextPath: Tanium.ProcessChildren.registryEventsCount
+    - contextPath: Tanium.ProcessParent.registryEventsCount
       description: Number of registry events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.securityEventsCount
+    - contextPath: Tanium.ProcessParent.securityEventsCount
       description: Number of security events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.uniqueProcessId
+    - contextPath: Tanium.ProcessParent.uniqueProcessId
       description: Unique process id.
       type: String
-    - contextPath: Tanium.ProcessChildren.userName
+    - contextPath: Tanium.ProcessParent.userName
       description: The username who created the process.
       type: String
   - arguments:
@@ -1345,6 +1359,20 @@ script:
       isArray: false
       name: ptid
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing entries.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
     description: Gets the parent process tree for the process instance.
@@ -1399,79 +1427,79 @@ script:
     execution: false
     name: tanium-tr-get-process-tree
     outputs:
-    - contextPath: Tanium.ProcessChildren.childrenCount
+    - contextPath: Tanium.ProcessTree.childrenCount
       description: Nuber of process children.
       type: Number
-    - contextPath: Tanium.ProcessChildren.context
+    - contextPath: Tanium.ProcessTree.context
       description: Process tree context.
       type: String
-    - contextPath: Tanium.ProcessChildren.createTime
+    - contextPath: Tanium.ProcessTree.createTime
       description: Time when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.createTimeRaw
+    - contextPath: Tanium.ProcessTree.createTimeRaw
       description: Timestamp when the process was created.
       type: Date
-    - contextPath: Tanium.ProcessChildren.dnsEventsCount
+    - contextPath: Tanium.ProcessTree.dnsEventsCount
       description: Number of DNS events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.driverEventsCount
+    - contextPath: Tanium.ProcessTree.driverEventsCount
       description: Number of Driver events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.endTime
+    - contextPath: Tanium.ProcessTree.endTime
       description: Process termination time.
       type: Date
-    - contextPath: Tanium.ProcessChildren.endTimeRaw
+    - contextPath: Tanium.ProcessTree.endTimeRaw
       description: Process termination timestamp.
       type: Date
-    - contextPath: Tanium.ProcessChildren.exitCode
+    - contextPath: Tanium.ProcessTree.exitCode
       description: Process exit code.
       type: Number
-    - contextPath: Tanium.ProcessChildren.fileEventsCount
+    - contextPath: Tanium.ProcessTree.fileEventsCount
       description: Number of File events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.groupName
+    - contextPath: Tanium.ProcessTree.groupName
       description: Process group name.
       type: String
-    - contextPath: Tanium.ProcessChildren.hashTypeName
+    - contextPath: Tanium.ProcessTree.hashTypeName
       description: Hash type.
       type: String
-    - contextPath: Tanium.ProcessChildren.id
+    - contextPath: Tanium.ProcessTree.id
       description: Process id at the tunium system.
       type: String
-    - contextPath: Tanium.ProcessChildren.imageEventsCount
+    - contextPath: Tanium.ProcessTree.imageEventsCount
       description: Number of Image events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.networkEventsCount
+    - contextPath: Tanium.ProcessTree.networkEventsCount
       description: Number of network events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.parentProcessTableId
+    - contextPath: Tanium.ProcessTree.parentProcessTableId
       description: Parent process table id.
       type: String
-    - contextPath: Tanium.ProcessChildren.pid
+    - contextPath: Tanium.ProcessTree.pid
       description: The ID of the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processEventsCount
+    - contextPath: Tanium.ProcessTree.processEventsCount
       description: Number of process events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.processHash
+    - contextPath: Tanium.ProcessTree.processHash
       description: Process hash.
       type: String
-    - contextPath: Tanium.ProcessChildren.processPath
+    - contextPath: Tanium.ProcessTree.processPath
       description: The process path.
       type: String
-    - contextPath: Tanium.ProcessChildren.processTableId
+    - contextPath: Tanium.ProcessTree.processTableId
       description: The ID of the process table.
       type: String
-    - contextPath: Tanium.ProcessChildren.registryEventsCount
+    - contextPath: Tanium.ProcessTree.registryEventsCount
       description: Number of registry events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.securityEventsCount
+    - contextPath: Tanium.ProcessTree.securityEventsCount
       description: Number of security events in the process.
       type: Number
-    - contextPath: Tanium.ProcessChildren.uniqueProcessId
+    - contextPath: Tanium.ProcessTree.uniqueProcessId
       description: Unique process id.
       type: String
-    - contextPath: Tanium.ProcessChildren.userName
+    - contextPath: Tanium.ProcessTree.userName
       description: The username who created the process.
       type: String
   - arguments:
@@ -2130,7 +2158,7 @@ script:
     - contextPath: Tanium.SystemStatus.status
       description: Host status.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

@@ -1000,7 +1000,7 @@ def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         del context['metadata']
 
     outputs = \
-        {'Tanium.SnapshotTask(val.id === obj.id && val.connection === obj.connection)': context} if context else {}
+        {'Tanium.SnapshotTask(val.taskId === obj.taskId && val.connection === obj.connection)': context} if context else {}
     return hr, outputs, raw_response
 
 
@@ -1118,7 +1118,7 @@ def close_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     cid = data_args.get('connection_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/close/{cid}')
-    return f'Connection {cid} closed successfully.', {}, {}
+    return f'Connection `{cid}` closed successfully.', {}, {}
 
 
 def delete_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
@@ -1135,7 +1135,7 @@ def delete_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     cid = data_args.get('connection_id')
     client.do_request('DELETE', f'/plugin/products/threat-response/api/v1/conns/delete/{cid}')
-    return f'Connection {cid} deleted successfully.', {}, {}
+    return f'Connection `{cid}` deleted successfully.', {}, {}
 
 
 def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
@@ -1503,9 +1503,9 @@ def get_process_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     context = createContext(raw_response, removeNull=True,
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
-    outputs = {'Tanium.ProcessChildren(val.id === obj.id)': context}
+    outputs = {'Tanium.ProcessInfo(val.id === obj.id)': context}
     headers = ['pid', 'processTableId', 'parentProcessTableId', "processPath"]
-    human_readable = tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', context, headers=headers,
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1552,12 +1552,14 @@ def get_process_children(client, data_args) -> Tuple[str, dict, Union[list, dict
         :rtype: ``tuple``
 
     """
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     connection_id = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     raw_response = client.do_request(
         'GET',
         f'/plugin/products/threat-response/api/v1/conns/{connection_id}/processtrees/{ptid}',
-        params={'context': 'children'})
+        params={'context': 'children', 'limit': limit, 'offset': offset})
 
     context = createContext(raw_response, removeNull=True,
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
@@ -1612,10 +1614,12 @@ def get_process_tree(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
     cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     context = data_args.get('context')
-    params = {'context': context} if context else {}
+    params = assign_params(context=context, limit=limit, offset=offset)
     raw_response = client.do_request('GET', f'plugin/products/threat-response/api/v1/conns/{cid}/processtrees/{ptid}',
                                      params=params)
 
