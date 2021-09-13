@@ -41,11 +41,11 @@ configuration:
   required: false
   type: 8
 - display: Incident type
+  defaultvalue: Ironscales
   name: incidentType
   required: false
   type: 13
 description: IRONSCLAES, a self-learning email security platform integration
-defaultvalue: Ironscales
 display: Ironscales
 name: Ironscales
 defaultmapperin: Ironscales - Incoming Mapper
