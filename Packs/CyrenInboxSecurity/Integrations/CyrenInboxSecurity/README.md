@@ -69,3 +69,28 @@ resolve a case and remediate incidents
 >| ok |
 >
 >*** end of results ***
+
+### cyren-reset-sample-fetch
+***
+resets integration to fetch a sample incident
+
+
+#### Base Command
+
+`cyren-reset-sample-fetch`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cyren-reset-sample-fetch```
+
+#### Human Readable Output
+
+>A sample incident will be created on the next execution of system *fetch-incidents* command

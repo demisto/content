@@ -1,50 +1,5 @@
 """Cyren Inbox Security Integration for Cortex XSOAR - Unit Tests file
 
-This file contains the Unit Tests for the Cyren Inbox Security Integration
-based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
-
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/CyrenInboxSecurity/Integrations/CyrenInboxSecurity
-
-Coverage
---------
-
-There is at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests are self contained and do not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the CyrenInboxSecurity API.
-This way we can have full control of the API behavior and focus only on
-testing the logic inside the integration code.
-
-See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-
 """
 
 import json
@@ -64,7 +19,7 @@ def test_simulate_fetch():
     incidents = simulate_fetch()
 
     assert incidents[0]["name"] ==\
-        'Cyren Inbox Security Sample - phishing (System)'
+        'Cyren Inbox Security Sample - phishing (admin@sample.com)'
 
 
 def test_test_module(requests_mock):

@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 # noqa: F401
 # noqa: F401
 # noqa: F401
@@ -140,6 +142,11 @@ def simulate_fetch():
     """
     Ingesting a sample incient to demisto
     """
+
+    if get_integration_context().get("sample_fetched", False):
+        return []
+
+    set_integration_context({"sample_fetched": True})
 
     now_time = datetime.now()
     now_time_timestamp_seconds = int(date_to_timestamp(now_time) / 1000)
@@ -361,7 +368,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     token = client.get_token(client_id, client_secret).\
         get('data').get('access_token')
     cyren_incidents = client.get_incidents(token, date_from, max_fetch)
-    for ci in cyren_incidents.get('data',[]):
+    for ci in cyren_incidents.get('data', []):
         incident_name = 'Cyren Inbox Security - {} ({})'.format(
             ci.get('threat_type', 'phishing'), ci.get('reported_by', 'System')
         )
@@ -385,6 +392,22 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     })
 
     return incidents
+
+
+def reset_sample_fetch_command(client):
+    """
+    Reset sample mode to allow next call to fetch-incidents to create a sample incident
+    """
+
+    set_integration_context({"sample_fetched": False})
+
+    readable_output = (
+        'A sample incident will be created on the next execution of system *fetch-incidents* command'
+    )
+
+    return CommandResults(
+        readable_output=readable_output
+    )
 
 
 def resolve_and_remediate_command(client, args, client_id, client_secret):
@@ -440,6 +463,9 @@ def main() -> None:
                                        get('first_fetch', '3 days').strip())
     max_results = arg_to_number(arg=demisto.params().get('max_fetch', 50))
 
+    if max_results is None:
+        max_results = 1
+
     if max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
 
@@ -457,6 +483,9 @@ def main() -> None:
                 result = test_module(client, client_id, client_secret)
                 return_results(result)
 
+        if demisto.command() == 'cyren-reset-sample-fetch':
+            return_results(reset_sample_fetch_command(client))
+
         if demisto.command() == 'fetch-incidents':
             if url == client_id == client_secret == "sample":
                 incidents = simulate_fetch()
@@ -473,12 +502,12 @@ def main() -> None:
                 demisto.incidents(incidents)
 
         if demisto.command() == 'cyren-resolve-and-remediate':
-                return_results(resolve_and_remediate_command(
-                    client,
-                    demisto.args(),
-                    client_id=client_id,
-                    client_secret=client_secret)
-                )
+            return_results(resolve_and_remediate_command(
+                client,
+                demisto.args(),
+                client_id=client_id,
+                client_secret=client_secret)
+            )
 
     # Log exceptions and return errors
     except Exception as e:

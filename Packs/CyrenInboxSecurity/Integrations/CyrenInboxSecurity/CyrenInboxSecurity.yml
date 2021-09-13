@@ -24,13 +24,11 @@ configuration:
 - additionalinfo: 1 day, 2 days, etc...
   defaultvalue: 3 days
   display: First fetch time
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: "10"
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -42,39 +40,29 @@ configuration:
   name: isFetch
   required: false
   type: 8
-defaultclassifier: 'Cyren Inbox Security Classifier'
-defaultmapperin: 'Cyren Inbox Security Mapper'
 description: Cyren Inbox Security is an innovative solution that safeguards Office
   365 mailboxes in your organization against evasive phishing, business email compromise
   (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into
   XSOAR, and includes a playbook for incident resolution.
-display: Cyren Inbox Security
+display: Cyren Inbox Security (Partner Contribution)
 name: Cyren Inbox Security
 script:
   commands:
   - arguments:
-    - default: false
-      description: case ID
-      isArray: false
+    - description: case ID
       name: case_id
       required: true
-      secret: false
     - auto: PREDEFINED
       default: true
       description: resolution
-      isArray: false
       name: resolution
       predefined:
       - phishing
       - malware
       - clean
       - other
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: the reason of the resolution
-      isArray: false
       name: resolution_reason
       predefined:
       - Identified phishing URL
@@ -82,16 +70,9 @@ script:
       - Other
       - Scam
       - Spam
-      required: false
-      secret: false
-    - default: false
-      description: free text for resolution reason
-      isArray: false
+    - description: free text for resolution reason
       name: resolution_reason_text
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: remediation actions to perform
       isArray: true
       name: actions
@@ -102,25 +83,23 @@ script:
       - SOFT_DELETE
       - MOVE_TO_INBOX
       - REMOVE_BANNER
-      required: false
-      secret: false
-    deprecated: false
     description: resolve a case and remediate incidents
-    execution: false
     name: cyren-resolve-and-remediate
     outputs:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
-  feed: false
+  - arguments: []
+    description: resets integration to fetch a sample incident
+    name: cyren-reset-sample-fetch
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+defaultclassifier: Cyren Inbox Security Classifier
+defaultmapperin: Cyren Inbox Security Mapper

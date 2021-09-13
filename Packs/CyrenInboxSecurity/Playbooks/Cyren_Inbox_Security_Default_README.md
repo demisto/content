@@ -13,8 +13,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* cyren-resolve-and-remediate
 * closeInvestigation
+* cyren-resolve-and-remediate
 
 ## Playbook Inputs
 ---
