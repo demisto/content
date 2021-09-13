@@ -1,1 +1,2 @@
-Use the Tanium Threat Response integration to hunt, detect, investigate, and remediate threats and vulnerabilities.
+In order to retrieve API Token, connect Tanium UI, navigate to `Administration`. In `Configuration` tab choose 
+`API Tokens`. Press on `New API Token` in order to create new API Token.

@@ -13,7 +13,6 @@
 !tanium-tr-get-label-by-id label-id=1
 !tanium-tr-list-events-by-connection connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 type=File limit=3
 !tanium-tr-event-evidence-list limit=3
-!tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
 !tanium-tr-event-evidence-get-properties
 !tanium-tr-list-file-downloads limit=2
 !tanium-tr-delete-file-download file_id=0367c8b2-eed9-4124-b173-1c83cbf3ba6f
@@ -30,3 +29,12 @@
 !tanium-tr-get-process-info ptid=72057594038504457 connection_id=remote:EC2AMAZ-KGMRO60:9065264:
 !tanium-tr-get-evidence-by-id evidence_id=5c2f3839-d3f2-4d7a-8b74-de53a32ac4aa
 !tanium-tr-get-task-by-id task_id=833
+!tanium-tr-intel-docs-add-label intel-doc-id=509 label-id=1
+!tanium-tr-intel-docs-labels-list intel-doc-id=509
+!tanium-tr-intel-docs-remove-label intel-doc-id=509 label-id=1
+!tanium-tr-list-intel-docs
+!tanium-tr-get-intel-doc-by-id intel-doc-id=509
+!tanium-tr-intel-deploy
+!tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
+!tanium-tr-create-evidence ptid=72057594038462925 connection_id=remote:EC2AMAZ-KGMRO60:9065264: hostname=EC2AMAZ-KGMRO60 summary="Create Process"
+!tanium-tr-get-system-status

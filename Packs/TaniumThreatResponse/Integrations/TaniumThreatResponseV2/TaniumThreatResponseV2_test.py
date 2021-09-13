@@ -174,20 +174,6 @@ BASE_URL = 'https://test.com'
 MOCK_CLIENT = mock_client()
 
 
-def test_get_process_tree_item():
-    tree, readable_output = TaniumThreatResponseV2.get_process_tree_item(PROCESS_TREE_RAW[0], 0)
-
-    assert tree == PROCESS_TREE_ITEM_RES
-    assert readable_output == PROCESS_TREE_READABLE_RES
-
-
-def test_get_process_tree_item_two_generations():
-    tree, readable_output = TaniumThreatResponseV2.get_process_tree_item(PROCESS_TREE_TWO_GENERATIONS_RAW[0], 0)
-
-    assert tree == PROCESS_TREE_ITEM_TWO_GENERATIONS_RES
-    assert readable_output == PROCESS_TREE_TWO_GENERATIONS_READABLE_RES
-
-
 ''' GENERAL HELPER FUNCTIONS TESTS'''
 
 

@@ -1,9 +1,0 @@
-!tanium-tr-get-intel-doc-by-id intel-doc-id=509
-!tanium-tr-intel-deploy
-!tanium-tr-intel-deploy-status ????
-!tanium-tr-intel-doc-create
-!tanium-tr-intel-doc-update
-!tanium-tr-intel-docs-add-label intel-doc-id=509 label-id=1
-!tanium-tr-intel-docs-labels-list intel-doc-id=509
-!tanium-tr-intel-docs-remove-label intel-doc-id=509 label-id=1
-!tanium-tr-list-intel-docs

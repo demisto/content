@@ -273,6 +273,7 @@ def init_commands_dict():
         'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
 
         'tanium-tr-get-task-by-id': get_task,
+        'tanium-tr-get-system-status': get_system_status,
     }
 
 
@@ -407,7 +408,7 @@ def alarm_to_incident(client, alarm):
 
     return {
         'name': f'{host} found {intel_doc}',
-        'occurred': alarm.get('alertedAt'),
+        'occurred': alarm.get('createdAt'),
         'rawJSON': json.dumps(alarm)}
 
 
@@ -445,11 +446,15 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_run = demisto.getLastRun()
     # Get the last fetch time and data if it exists
     last_fetch = last_run.get('time')
+    last_id = int(last_run.get('id', '0'))
     fetch_time = demisto.params().get('first_fetch')
+    max_fetch = arg_to_number(demisto.params().get('max_fetch'))
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT)
+
+    demisto.debug(f'Get last run: last_id {last_id}, last_time: {last_fetch}.\n')
 
     last_fetch = parse(last_fetch)
     current_fetch = last_fetch
@@ -466,13 +471,21 @@ def fetch_incidents(client, alerts_states_to_retrieve):
 
         # update last run
         if temp_date > last_fetch:
-            last_fetch = temp_date + timedelta(seconds=1)
+            last_fetch = temp_date
 
         # avoid duplication due to weak time query
-        if temp_date > current_fetch:
+        if temp_date > current_fetch and (new_id := alarm.get('id', last_id)) > last_id:
             incidents.append(incident)
+            last_id = new_id
 
-    demisto.setLastRun({'time': datetime.strftime(last_fetch, DATE_FORMAT)})
+        if len(incidents) >= max_fetch:
+            break
+
+    demisto.setLastRun({'time': datetime.strftime(last_fetch, DATE_FORMAT), 'id': str(last_id)})
+
+    demisto.debug(f'Set last run: last_id {last_id}, last_time: {last_fetch}.\n')
+    demisto.debug(f'Fetched {len(incidents)} incidents.')
+
     return demisto.incidents(incidents)
 
 
@@ -915,7 +928,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         'state': state.lower(),
         'id': alert_ids
     }
-    client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/', data=body)
+    client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body)
 
     return f'Alert state updated to {state}.', {}, {}
 
@@ -974,9 +987,21 @@ def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     connection_id = data_args.get('connection_id')
     raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{connection_id}/snapshot')
     hr = f'Initiated snapshot creation request for {connection_id}.'
+
+    context = {}
     if task_id := raw_response.get('taskInfo', {}).get('id'):
-        hr += f'Task id: {task_id}.'
-    return hr, {}, raw_response
+        hr += f' Task id: {task_id}.'
+
+        context = copy.deepcopy(raw_response.get('taskInfo'))
+        context.update(context.get('metadata', {}))
+        context['taskId'] = task_id
+
+        del context['id']
+        del context['metadata']
+
+    outputs = \
+        {'Tanium.SnapshotTask(val.id === obj.id && val.connection === obj.connection)': context} if context else {}
+    return hr, outputs, raw_response
 
 
 def delete_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
@@ -993,7 +1018,7 @@ def delete_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     snapshot_ids = argToList(data_args.get('snapshot-ids'))
     body = {'ids': snapshot_ids}
-    client.do_request('DELETE', '/plugin/products/threat-response/api/v1/snapshot', body=body)
+    client.do_request('DELETE', '/plugin/products/threat-response/api/v1/snapshot', data=body)
     return f'Snapshot {",".join(snapshot_ids)} deleted successfully.', {}, {}
 
 
@@ -1034,7 +1059,7 @@ def get_connections(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns')
 
     from_idx = min(offset, len(raw_response))
-    to_idx = min(offset + limit, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
     connections = raw_response[from_idx:to_idx]
     for connection in connections:
@@ -1125,7 +1150,7 @@ def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, 
         :rtype: ``tuple``
 
     """
-    limit = arg_to_number(data_args.get('limit')) - 1  # there ia a bug in the api, when send limit=2 it returns 3 items
+    limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     cid = data_args.get('connection_id')
     sort = data_args.get('sort')
@@ -1181,7 +1206,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
 
     from_idx = min(offset, len(raw_response))
-    to_idx = min(offset + limit, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
     labels = raw_response[from_idx:to_idx]
 
@@ -1317,18 +1342,22 @@ def request_file_download(client, data_args) -> Tuple[str, dict, Union[list, dic
     body = {
         'path': path,
     }
-    raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{cid}/file', body=body)
+    raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{cid}/file', data=body)
 
     filename = os.path.basename(path)
     hr = f'Download request of file {filename} has been sent successfully.'
+    context = {}
     if task_id := raw_response.get('taskInfo', {}).get('id'):
-        hr += f'Task id: {task_id}.'
+        hr += f' Task id: {task_id}.'
 
-    context = copy.deepcopy(raw_response.get('taskInfo'))
-    context.update(context.get('metadata', {}))
-    del context['metadata']
+        context = copy.deepcopy(raw_response.get('taskInfo'))
+        context.update(context.get('metadata', {}))
+        context['taskId'] = task_id
 
-    outputs = {'Tanium.FileDownload(val.path === obj.path && val.connection === obj.connection)': context}
+        del context['id']
+        del context['metadata']
+
+    outputs = {'Tanium.FileDownloadTask(val.id === obj.id && val.connection === obj.connection)': context}
 
     return hr, outputs, raw_response
 
@@ -1626,7 +1655,7 @@ def list_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
 
     from_idx = min(offset, len(raw_response))
-    to_idx = min(offset + limit, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))  # type: ignore
     evidences = raw_response[from_idx:to_idx]
     for item in evidences:
         if created := item.get('createdAt'):
@@ -1709,28 +1738,35 @@ def create_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
+    hostname = data_args.get('hostname')
+    summary = data_args.get('summary')
 
     params = {'match': 'all', 'f1': 'process_table_id', 'o1': 'eq', 'v1': ptid}
-    process_data = client.do_request('GET', f'/plugin/products/threat-response/api/v1/conns/{cid}/views/process/events',
-                                     params=params)
+    process_data = \
+        client.do_request('GET',
+                          f'/plugin/products/threat-response/api/v1/conns/{cid}/views/process/events',
+                          params=params)
 
     if not process_data:
         raise ValueError('Invalid connection_id or ptid.')
 
-    data = {
-        'hostname': cid,
-        'user': client.username,
+    evidence = {
+        'recorderId': ptid,
+        'connectionId': cid,
+        'hostname': hostname,
         'data': process_data[0],
         'eventType': 'ProcessEvent',
-        'created': process_data[0].get('create_time'),
+        'summary': summary if summary else process_data[0].get('process_path'),
     }
 
-    client.do_request('POST', '/plugin/products/threat-response/api/v1/evidence', body=data, resp_type='content')
+    body = {'evidence': evidence}
+
+    client.do_request('POST', '/plugin/products/threat-response/api/v1/event-evidence', data=body)
     return 'Evidence have been created.', {}, {}
 
 
 def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
-    """ Delete evidence from tanuim, using evidence ids.
+    """ Delete event evidence from tanuim, using evidence ids.
 
         :type client: ``Client``
         :param client: client which connects to api.
@@ -1742,7 +1778,8 @@ def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     """
     evidence_ids = argToList(data_args.get('evidence-ids'))
-    client.do_request('DELETE', '/plugin/products/threat-response/api/v1/evidence')
+    body = {'ids': evidence_ids}
+    client.do_request('DELETE', '/plugin/products/threat-response/api/v1/event-evidence', data=body)
     return f'Evidence {",".join(evidence_ids)} has been deleted successfully.', {}, {}
 
 
@@ -1771,6 +1808,42 @@ def get_task(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     outputs = {'Tanium.Task(val.id === obj.id)': context}
     headers = ['id', 'status']
     human_readable = tableToMarkdown('Task information', context, headers=headers,
+                                     headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
+
+
+def get_system_status(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+    """ Get system status, to get client-id for `create-connection` command.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    limit = arg_to_number(data_args.get('limit'))
+    offset = arg_to_number(data_args.get('offset'))
+
+    raw_response = client.do_request('GET', '/api/v2/system_status')
+    data = raw_response.get('data', [{}])
+    active_computers = []
+
+    from_idx = min(offset, len(data))
+    to_idx = min(offset + limit, len(data))  # type: ignore
+
+    for item in data[from_idx:to_idx]:
+        if client_id := item.get('computer_id'):
+            item['client_id'] = client_id
+            active_computers.append(item)
+
+    context = createContext(active_computers, removeNull=True,
+                            keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
+    outputs = {'Tanium.SystemStatus(val.clientId === obj.clientId)': context}
+    headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
+    human_readable = tableToMarkdown('System Status', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
