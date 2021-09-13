@@ -1178,11 +1178,11 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
     """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs.tools, 'get_ignore_pack_skipped_tests',
                         return_value=ignored_tests)
-    mocker.patch('logging.debug')
+    mocker.patch('logging.info')
     res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
     if ignored_tests:
-        logging.debug.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
+        logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
             '\n'.join(ignored_tests)))
 
 
