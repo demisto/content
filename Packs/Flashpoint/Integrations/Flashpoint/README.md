@@ -1,5 +1,5 @@
 Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
-This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint
+This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator
 The incident type "Flashpoint Alerts" and "Flashpoint Compromised Credentials" supports auto extraction feature by default that extract indicator and enriches their reputations using commands and scripts defined for the indicator type (Refer [this](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/auto-extract-indicators.html) for more detail).
