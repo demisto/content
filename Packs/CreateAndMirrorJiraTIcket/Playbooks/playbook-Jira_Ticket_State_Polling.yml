@@ -1,0 +1,282 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: 6.0.0
+    itemVersion: ""
+    packID: 5e3c77a7-39f1-4ff3-860e-142c150e9a2e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  Use Jira Incident State Polling as a sub-playbook when required to pause the execution of a master playbook until the Jira ticket state is either resolved or closed.
+  This playbook implements polling by continuously running the jira-get-issue command until the state is either resolved or closed.
+id: 1959bed2-0a39-4427-8ae0-0ad5ef50ccf4
+inputs:
+- description: The Jira TicketId  to poll for its state.
+  key: TicketId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Frequency that the polling command will run (minutes).
+  key: Interval
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  key: Timeout
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: |-
+    Set the Jira Instance that will be used by the polling command.
+    Only relevant when there is more than one Jira instance.
+  key: InstanceName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: "Additional polling commands are relevant when using StatePolling,
+    and there is more than one Jira instance. It will specify the polling command
+    to use a specific instance to run on. \nIf so, please add \"Using\" to the value.
+    \nThe polling command will then take the instance name as the instance to use. "
+  key: AdditionalPollingCommandName
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Jira Ticket State Polling
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: '-'
+      id: e1036674-3cf0-471a-88e3-2e9e0d4ec98c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e1036674-3cf0-471a-88e3-2e9e0d4ec98c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      dt:
+        simple: Ticket(val.Status != 'Done').Id
+      ids:
+        complex:
+          root: inputs.TicketId
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: jira-get-issue
+      pollingCommandArgName:
+        simple: issueId
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Schedule Polling Task
+      id: ca4d2050-e8e0-4d98-8df3-5520d87a4600
+      iscommand: false
+      name: Schedule Ticket State Polling  Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      version: -1
+    taskid: ca4d2050-e8e0-4d98-8df3-5520d87a4600
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This task will complete automatically when polling is complete.
+      id: 6ebd1e05-52fb-4637-886b-b3b22970da88
+      iscommand: false
+      name: Waiting for Ticket State Polling to complete (Automated Task)
+      tags:
+      - polling
+      type: condition
+      version: -1
+    taskid: 6ebd1e05-52fb-4637-886b-b3b22970da88
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      ids:
+        complex:
+          root: inputs.TicketId
+      pollingCommand:
+        simple: jira-get-issue
+      pollingCommandArgName:
+        simple: issueId
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: RunPollingCommand
+      id: b5e01822-451f-4254-8b0a-36209522c8b7
+      iscommand: false
+      name: Run Ticket State Polling Command
+      scriptName: RunPollingCommand
+      type: regular
+      version: -1
+    taskid: b5e01822-451f-4254-8b0a-36209522c8b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done
+      id: c7560098-586a-448c-83a6-285b5d70385e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c7560098-586a-448c-83a6-285b5d70385e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Scheduled Task Failed
+      id: 6ec7cb2a-b8ba-4e75-8274-df447acb6170
+      iscommand: false
+      name: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 6ec7cb2a-b8ba-4e75-8274-df447acb6170
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }

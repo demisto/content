@@ -1,0 +1,17 @@
+{
+    "name": "Create and Mirror Jira TIcket",
+    "description": "Create Jira Ticket allows you to open new tickets as a task from a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's status, which will wait for the ticket to resolve or close with StatePolling.\nAlternatively, you can select to mirror the Jira ticket and incident fields.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "silviudm",
+    "url": "",
+    "email": "",
+    "created": "2021-09-13T13:39:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "silviudm"
+    ]
+}

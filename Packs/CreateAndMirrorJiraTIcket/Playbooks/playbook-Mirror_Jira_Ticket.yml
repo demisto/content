@@ -1,0 +1,276 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: 6.0.0
+    itemVersion: ""
+    packID: 5e3c77a7-39f1-4ff3-860e-142c150e9a2e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceNow.
+  It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
+
+  To enable OOTB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
+
+  FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as either resolved or closed.
+
+  In Addition to the playbook, we recommend that you use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex xSOAR.
+  You can add the new layout as a tab to existing layouts using the Edit Layout page.
+id: 37a558e4-5e10-4f3f-8e2c-82b75fe244f8
+inputs:
+- description: Jira Ticket ID to mirror.
+  key: TicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Set the mirror instance name to enable mirroring with Jira.
+  key: MirrorInstanceName
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: "Set the mirror direction, should be one of the following: \n1. In\n2.
+    Out\n3. Both"
+  key: MirrorDirection
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Both
+- description: Set tags for mirror comments and files to ServiceNow
+  key: MirrorCommentTags
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: comment
+- description: |
+    Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
+    This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.
+  key: 'FieldPolling '
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Set interval time for the polling to run
+    (In minutes)
+  key: FieldPollingInterval
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |2-
+
+    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+    (In minutes)
+  key: FieldPollingTimeout
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Mirror Jira Ticket
+outputs: []
+sourceplaybookid: Mirror ServiceNow Ticket
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2571d85f-7978-4100-8277-612a215d5641
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 2571d85f-7978-4100-8277-612a215d5641
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dbotMirrorDirection:
+        complex:
+          root: inputs.MirrorDirection
+      dbotMirrorId:
+        complex:
+          root: inputs.TicketId
+      dbotMirrorInstance:
+        complex:
+          root: inputs.MirrorInstanceName
+      dbotMirrorTags:
+        complex:
+          root: inputs.MirrorCommentTags
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident.
+      id: 32e3f59e-2e4a-43d7-8823-09e183baed5e
+      iscommand: true
+      name: Set Mirroring fields
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 32e3f59e-2e4a-43d7-8823-09e183baed5e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f7d7e9e0-b53a-4df8-8186-f8d80e29bccb
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f7d7e9e0-b53a-4df8-8186-f8d80e29bccb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: 'inputs.FieldPolling '
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Conditional task to verify if FieldPolliung value = true.
+      id: ff07c610-a09e-494f-8f4b-7d1be8dde6e3
+      iscommand: false
+      name: Is FieldPolling set to true?
+      type: condition
+      version: -1
+    taskid: ff07c610-a09e-494f-8f4b-7d1be8dde6e3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: jirastatus
+      frequency:
+        complex:
+          root: inputs.FieldPollingInterval
+      timeout:
+        complex:
+          root: inputs.FieldPollingTimeout
+      value:
+        simple: Done
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook polls a field to check if a specific value exists.
+      id: bcde2f47-0d26-40f0-8b09-f09d1048d7c3
+      iscommand: false
+      name: Field Polling - Generic
+      playbookId: Field Polling - Generic
+      type: playbook
+      version: -1
+    taskid: bcde2f47-0d26-40f0-8b09-f09d1048d7c3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_8_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 400
+      }
+    }
+  }

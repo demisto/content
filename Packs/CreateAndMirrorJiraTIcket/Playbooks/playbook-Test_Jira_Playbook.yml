@@ -1,0 +1,148 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5e3c77a7-39f1-4ff3-860e-142c150e9a2e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 6789f38c-0c18-4c21-8564-429858877a67
+inputs: []
+name: Test Jira Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5fde8253-793d-416a-8c75-93c154106450
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5fde8253-793d-416a-8c75-93c154106450
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandName:
+        simple: using
+      Description:
+        simple: Test Incident from XSOAR description
+      FieldPolling:
+        simple: "false"
+      InstanceName:
+        simple: jira-v2_instance_1
+      IssueTypeName:
+        simple: Task
+      MirrorCommentTags:
+        simple: comment
+      MirrorDirection:
+        simple: Both
+      PollingInterval:
+        simple: "5"
+      PollingTimeout:
+        simple: "30"
+      ProjectKey:
+        simple: DEM
+      Summary:
+        simple: Test Incident from XSOAR
+      SyncTicket:
+        simple: Mirror
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Create Jira issue allows you to open new tickets as a task from
+        a parent playbook.\nWhen creating the ticket, you can decide to update based
+        on on the ticket's state, which will wait for the ticket to resolve or close
+        with StatePolling. \nAlternatively, you can select to mirror the Jira issue
+        and incident fields.  To apply either of these options, set the SyncTicket
+        value in the playbook inputs to one of the following options: \n1. StatePolling\n2.
+        Mirror\n3. Leave Blank to use none."
+      id: 3e59a4d6-a5f6-46c6-8ca7-9f5b8d9978ac
+      iscommand: false
+      name: Create Jira Issue
+      playbookId: 89c72572-e079-42ca-8105-4626d6324156
+      type: playbook
+      version: -1
+    taskid: 3e59a4d6-a5f6-46c6-8ca7-9f5b8d9978ac
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a663ae6-63f2-4e34-8b7a-a1e6278a3fbd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 7a663ae6-63f2-4e34-8b7a-a1e6278a3fbd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
