@@ -16,7 +16,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
+      - "19"
+      - "22"
     separatecontext: false
     view: |-
       {
@@ -48,40 +50,6 @@ tasks:
         "position": {
           "x": 480,
           "y": 930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 8a2b65af-635b-40a0-82fb-fd6e8699bb27
-    type: regular
-    task:
-      id: 8a2b65af-635b-40a0-82fb-fd6e8699bb27
-      version: -1
-      name: Delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-      - "19"
-      - "22"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
         }
       }
     note: false
@@ -222,7 +190,7 @@ tasks:
       {
         "position": {
           "x": 0,
-          "y": 540
+          "y": 550
         }
       }
     note: false
