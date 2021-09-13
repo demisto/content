@@ -1,4 +1,3 @@
-from _typeshed import NoneType
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -6,7 +5,7 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
