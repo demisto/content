@@ -10,7 +10,6 @@ from urllib.parse import parse_qs
 requests.packages.urllib3.disable_warnings()
 
 
-print('hello')
 class Client:
     """
     API Client to communicate with AzureRiskyUsers.
