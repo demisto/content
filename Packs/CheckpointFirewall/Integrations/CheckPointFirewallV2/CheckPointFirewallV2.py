@@ -142,7 +142,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
                                   json_data={"name": name})
 
-    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, members,
+    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, add: bool, remove: bool, members,
                      new_name: Optional[str], comments: Optional[str]):
         body = {'name': identifier,
                 'new-name': new_name,
@@ -150,6 +150,14 @@ class Client(BaseClient):
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors}
+        if add == "true" or remove == "true":
+            tmp_list = []
+            for member in members:
+                tmp_list.append(member)
+            if add == "true":
+                body['members'] = {'add': tmp_list}
+            if remove == "true":
+                body['members'] = {'remove': tmp_list}
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
         return response
@@ -287,6 +295,14 @@ class Client(BaseClient):
                 }
         return self._http_request(method='POST', url_suffix='set-application-site',
                                   headers=self.headers, json_data=body)
+
+    def add_objects_batch(self, object_type, add_list):
+        body = {'objects': [{'type': object_type, 'list': add_list}]}
+        return self._http_request(method='POST', url_suffix='add-objects-batch', headers=self.headers, json_data=body)
+
+    def delete_objects_batch(self, object_type, delete_list):
+        body = {'objects': [{'type': object_type, 'list': delete_list}]}
+        return self._http_request(method='POST', url_suffix='delete-objects-batch', headers=self.headers, json_data=body)
 
     def delete_application_site(self, identifier: str):
         return self._http_request(method='POST', url_suffix='delete-application-site',
@@ -630,7 +646,7 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
 
 
 def checkpoint_update_group_command(client: Client, identifier: str, ignore_warnings: bool,
-                                    ignore_errors: bool, members=None, new_name: str = None,
+                                    ignore_errors: bool, add: bool, remove: bool, members=None, new_name: str = None,
                                     comments: str = None) -> CommandResults:
     """
     Edit existing group using object name or uid.
@@ -649,8 +665,7 @@ def checkpoint_update_group_command(client: Client, identifier: str, ignore_warn
     if members:
         # noinspection PyTypeChecker
         members = argToList(members)
-    result = client.update_group(identifier, ignore_warnings, ignore_errors,
-                                 members, new_name, comments)
+    result = client.update_group(identifier, ignore_warnings, ignore_errors, add, remove, members, new_name, comments)
     headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
                'last-modifier', 'read-only']
     printable_result = build_printable_result(headers, result)
@@ -1287,7 +1302,7 @@ def checkpoint_update_application_site_command(client: Client, identifier: str,
 
     elif url_list_to_remove:
         url_list_to_remove = argToList(url_list_to_remove)
-        url_list_object = {'add': url_list_to_remove}
+        url_list_object = {'remove': url_list_to_remove}
 
     if groups:
         groups = argToList(groups)
@@ -1641,6 +1656,60 @@ def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults
     return command_results
 
 
+def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, name):
+    printable_result = {}
+    readable_output = ''
+
+    ipaddress = argToList(ipaddress, ',')
+    name = argToList(name, ',')
+    add_list = []
+    for ip, n in zip(ipaddress, name):
+        tmp_dict = {'name': n, 'ip-address': ip}
+        add_list.append(tmp_dict)
+
+    result = current_result = client.add_objects_batch(object_type, add_list)
+
+    if result:
+        printable_result = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for add-objects-batch command:',
+                                          printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.add_objects_batch',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_objects_batch_command(client: Client, object_type: str, name):
+    printable_result = {}
+    readable_output = ''
+
+    name = argToList(name)
+    del_list = []
+    for n in name:
+        tmp_dict = {'name': n}
+        del_list.append(tmp_dict)
+
+    result = current_result = client.delete_objects_batch(object_type, del_list)
+
+    if result:
+        printable_result = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for delete-objects-batch command:',
+                                          printable_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.delete_objects_batch',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
 def checkpoint_install_policy_command(client: Client, policy_package: str, targets,
                                       access: bool) -> CommandResults:
     """
@@ -1969,6 +2038,12 @@ def main():
 
         elif command == 'checkpoint-package-list':
             return_results(checkpoint_list_package_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-add-objects-batch':
+            return_results(checkpoint_add_objects_batch_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-delete-objects-batch':
+            return_results(checkpoint_delete_objects_batch_command(client, **demisto.args()))
 
         else:
             raise NotImplementedError(f"Unknown command {demisto.command()}.")
