@@ -46,7 +46,13 @@
       source "$BASH_ENV"
     fi
   - source .circleci/content_release_vars.sh
-  - export PATH="${PWD}/node_modules/.bin:${PATH}"
+  - echo $NVM_DIR
+  - echo $NODE_VERSIO
+  - echo $NODE_PATH
+  - export NVM_DIR="$HOME/.nvm"
+  - export NODE_VERSION="12.18.4"
+  - export NODE_PATH="$NVM_DIR/v$NODE_VERSION/lib/node_modules"
+  - export PATH="$NVM_DIR/v$NODE_VERSION/bin:$PATH"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
