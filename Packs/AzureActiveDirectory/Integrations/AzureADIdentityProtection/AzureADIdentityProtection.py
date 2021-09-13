@@ -255,13 +255,13 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
         Tuple[List[Dict[str, str]], datetime]:
 
     incidents: List[Dict[str, str]] = []
-    last_fetch = last_fetch_datetime
+    last_fetch = last_fetch_datetime.replace(tzinfo=None)
 
     for current_input in input:
         # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
         activity_date_time_str: str = current_input.get('activityDateTime', '')
 
-        activity_datetime = dateparser.parse(activity_date_time_str)
+        activity_datetime = dateparser.parse(activity_date_time_str).replace(tzinfo=None)
         # To prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
             if activity_datetime <= last_fetch:
