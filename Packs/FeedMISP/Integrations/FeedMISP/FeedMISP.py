@@ -420,15 +420,23 @@ Command Functions
 """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: Dict[str, str]) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
     Returns:
         ok if feed is accessible
     """
+    tags = argToList(params.get('attribute_tags', ''))
+    attribute_types = argToList(params.get('attribute_types', ''))
+    query = params.get('query', None)
 
-    client.search_query(build_params_dict([], []))
+    if query:
+        params_dict = clean_user_query(query)
+    else:
+        params_dict = build_params_dict(tags, attribute_types)
+
+    client.search_query(params_dict)
     return 'ok'
 
 
@@ -502,7 +510,7 @@ def main():
         client = Client(base_url=base_url, verify=insecure, proxy=proxy,)
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, params))
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
