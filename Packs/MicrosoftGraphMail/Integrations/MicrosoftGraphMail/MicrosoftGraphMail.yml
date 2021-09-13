@@ -1137,5 +1137,7 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftGraphMail-Test
+- MicrosoftGraphMail-Test_dev_no_oproxy
+- MicrosoftGraphMail-Test_dev
+- MicrosoftGraphMail-Test_prod
 fromversion: 5.0.0
