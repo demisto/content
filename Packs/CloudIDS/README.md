@@ -8,7 +8,7 @@ Google Cloud IDS is a next-generation advanced intrusion detection service that 
 
 ### Playbook
 * `Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract`: Gets the attacker's IP address from Cloud IDS through Google Pub/Sub. 
-  `Cloud_IDS-IP_Blacklist-GCP_Firewall_Append` will update the ip list to patch GCP firewall.
+  `Cloud_IDS-IP_Blacklist-GCP_Firewall_Append` will update the ip list so GCP automatically blocks the IP address.
   
 #### Flow Chart of Playbook 
 * [Cloud_IDS-IP_Blacklist-GCP_Firewall](Playbooks/Cloud_IDS-IP_Blacklist-GCP_Firewall_README.md)

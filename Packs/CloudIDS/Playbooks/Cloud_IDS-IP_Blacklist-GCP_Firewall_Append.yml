@@ -1,5 +1,5 @@
 id: 7282fabf-c3cf-4682-8caa-7f375f144519
-version: 25
+version: 26
 vcShouldKeepItemLegacyProdMachine: false
 name: Cloud IDS-IP Blacklist-GCP Firewall_Append
 description: Set a list of IP addresses in GCP firewall.
@@ -390,7 +390,7 @@ inputs:
 - key: srcip
   value: {}
   required: false
-  description: ""
+  description: Json Object with Attacker Source IP
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Cloud IDS-IP Blacklist-GCP Firewall

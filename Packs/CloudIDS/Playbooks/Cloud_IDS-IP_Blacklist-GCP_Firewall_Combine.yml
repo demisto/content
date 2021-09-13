@@ -1,5 +1,5 @@
 id: b82813a7-3127-46c2-88bf-a5ce2463416a
-version: 14
+version: 16
 vcShouldKeepItemLegacyProdMachine: false
 name: Cloud IDS-IP Blacklist-GCP Firewall_Combine
 description: Set a list of IP addresses in GCP firewall.
