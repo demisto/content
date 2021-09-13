@@ -10,7 +10,7 @@ This integration was integrated and tested with version xx of AzureKeyVault
     | **Parameter** | **Required** |
     | --- | --- |
     | Client ID | True |
-    | Client Secret (only when using self-deployed Azure application) | False |
+    | Client Secret (only wheb using self-deployed Azure application) | False |
     | Use a self-deployed Azure application | False |
     | Tenant ID | True |
     | Subscription ID | True |
@@ -83,7 +83,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 
 
 #### Command Example
-```!azure-key-vault-create-update object_id=YOUR_OBJECT_ID vault_name=xsoar-test-create-1 keys=create,decrypt```
+```!azure-key-vault-create-update object_id=YOUR_OBJ_ID vault_name=xsoar-test-create-1 keys=create,decrypt```
 
 #### Context Example
 ```json
@@ -96,7 +96,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
             "properties": {
                 "accessPolicies": [
                     {
-                        "objectId": "YOUR_OBJECT_ID",
+                        "objectId": "YOUR_OBJ_ID",
                         "permissions": {
                             "certificates": [
                                 "get",
@@ -237,146 +237,7 @@ Get the specified key vault.
             "properties": {
                 "accessPolicies": [
                     {
-                        "applicationId": "55f9764e-300a-474a-a2bb-549cece85439",
-                        "objectId": "29a0b3b6-e8ea-4586-ae25-bc39cace0e67",
-                        "permissions": {
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers"
-                            ],
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ]
-                        },
-                        "tenantId": "YOUR_TENANT_ID"
-                    },
-                    {
-                        "objectId": "29a0b3b6-e8ea-4586-ae25-bc39cace0e67",
-                        "permissions": {
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers"
-                            ],
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ]
-                        },
-                        "tenantId": "YOUR_TENANT_ID"
-                    },
-                    {
-                        "objectId": "YOUR_OBJECT_ID",
-                        "permissions": {
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers",
-                                "Purge"
-                            ],
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "Decrypt",
-                                "Encrypt",
-                                "UnwrapKey",
-                                "WrapKey",
-                                "Verify",
-                                "Sign",
-                                "Purge"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "Purge"
-                            ]
-                        },
-                        "tenantId": "YOUR_TENANT_ID"
-                    },
-                    {
-                        "objectId": "a20e3391-8dba-4189-b8f4-23035e92a183",
+                        "objectId": "YOUR_OBJ_ID",
                         "permissions": {
                             "certificates": [
                                 "Get",
@@ -495,13 +356,13 @@ The List operation gets information about the vaults associated with the subscri
 {
     "AzureKeyVault": {
         "KeyVault": {
-            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3",
+            "id": "/subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test",
             "location": "eastus",
-            "name": "james-delete3",
+            "name": "xsoar-test",
             "properties": {
                 "accessPolicies": [
                     {
-                        "objectId": "a20e3391-8dba-4189-b8f4-23035e92a183",
+                        "objectId": "YOUR_OBJ_ID",
                         "permissions": {
                             "certificates": [
                                 "Get",
@@ -556,7 +417,7 @@ The List operation gets information about the vaults associated with the subscri
                 },
                 "softDeleteRetentionInDays": 90,
                 "tenantId": "YOUR_TENANT_ID",
-                "vaultUri": "https://james-delete3.vault.azure.net/"
+                "vaultUri": "https://xsoar-test.vault.azure.net/"
             },
             "tags": {},
             "type": "Microsoft.KeyVault/vaults"
@@ -570,7 +431,7 @@ The List operation gets information about the vaults associated with the subscri
 >### Key Vaults List
 >|Id|Name|Type|Location|
 >|---|---|---|---|
->| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/james-delete3 | james-delete3 | Microsoft.KeyVault/vaults | eastus |
+>| /subscriptions/YOUR_SUB_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test | xsoar-test | Microsoft.KeyVault/vaults | eastus |
 
 
 ### azure-key-vault-access-policy-update
@@ -608,7 +469,7 @@ Update access policies in a key vault in the specified subscription. The update 
 
 
 #### Command Example
-```!azure-key-vault-access-policy-update object_id=YOUR_OBJECT_ID operation_kind=add vault_name=xsoar-test-create-1 keys=import,list```
+```!azure-key-vault-access-policy-update object_id=YOUR_OBJ_ID operation_kind=add vault_name=xsoar-test-create-1 keys=import,list```
 
 #### Context Example
 ```json
@@ -619,7 +480,7 @@ Update access policies in a key vault in the specified subscription. The update 
             "properties": {
                 "accessPolicies": [
                     {
-                        "objectId": "YOUR_OBJECT_ID",
+                        "objectId": "YOUR_OBJ_ID",
                         "permissions": {
                             "certificates": [
                                 "get",
