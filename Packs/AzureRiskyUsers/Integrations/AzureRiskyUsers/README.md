@@ -180,7 +180,7 @@ List all risky users and their properties.
                 "riskLevel": "none",
                 "riskState": "dismissed",
                 "userDisplayName": "Or Israeli",
-                "userPrincipalName": "ori@hello.com"
+                "userPrincipalName": "ori@test.com"
             },
             {
                 "id": "222",
@@ -191,7 +191,7 @@ List all risky users and their properties.
                 "riskLevel": "none",
                 "riskState": "remediated",
                 "userDisplayName": "Elad Israeli",
-                "userPrincipalName": "EladI@hello.com"
+                "userPrincipalName": "EladI@test.com"
             }
         ]
     }
@@ -205,8 +205,8 @@ List all risky users and their properties.
 >Showing page 1 out others that may exist
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
->| 111 | Or Israeli | ori@hello.com | none | dismissed | adminDismissedAllRiskForUser | 2021-08-09T11:47:58.5581222Z |
->| 222 | Elad Israeli | EladI@hello.com | none | remediated | userPerformedSecuredPasswordReset | 2020-11-05T18:35:39.2628939Z |
+>| 111 | Or Israeli | ori@test.com | none | dismissed | adminDismissedAllRiskForUser | 2021-08-09T11:47:58.5581222Z |
+>| 222 | Elad Israeli | EladI@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-11-05T18:35:39.2628939Z |
 
 
 ### azure-risky-user-get
@@ -256,7 +256,7 @@ Retrieve properties and relationships of a Risky User.
             "riskLevel": "none",
             "riskState": "remediated",
             "userDisplayName": "Yossi Israeli",
-            "userPrincipalName": "yossi@hello.com"
+            "userPrincipalName": "yossi@test.com"
         }
     }
 }
@@ -267,7 +267,7 @@ Retrieve properties and relationships of a Risky User.
 >### Found Risky User With ID: 333
 >|Id|User Display Name|User Principal Name|Risk Level|Risk State|Risk Detail|Risk Last Updated Date Time|
 >|---|---|---|---|---|---|---|
->| 333 | Yossi Israeli | yossi@hello.com | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
+>| 333 | Yossi Israeli | yossi@test.com | none | remediated | userPerformedSecuredPasswordReset | 2020-10-05T12:12:17.2115592Z |
 
 
 ### azure-risky-users-risk-detections-list
@@ -350,7 +350,7 @@ Get a list of the riskDetection objects and their properties.
                 "tokenIssuerType": "AzureAD",
                 "userDisplayName": "Shalev Israeli",
                 "userId": "777",
-                "userPrincipalName": "ShalevI@hello.com"
+                "userPrincipalName": "ShalevI@test.com"
             },
             {
                 "activity": "signin",
@@ -380,7 +380,7 @@ Get a list of the riskDetection objects and their properties.
                 "tokenIssuerType": "AzureAD",
                 "userDisplayName": "Svetlana Israeli",
                 "userId": "999",
-                "userPrincipalName": "SvetlanaI@hello.com"
+                "userPrincipalName": "SvetlanaI@test.com"
             }
         ]
     }
@@ -394,8 +394,8 @@ Get a list of the riskDetection objects and their properties.
 >Showing page 1 out others that may exist
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Detail|Last Updated Date Time|Ip Address|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 555 | 777 | Shalev Israeli | ShalevI@hello.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-20T03:53:58.853418Z | 1.1.1.1 |
->| 888 | 999 | Svetlana Israeli | SvetlanaI@hello.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-27T19:19:44.4975416Z | 1.1.1.1 |
+>| 555 | 777 | Shalev Israeli | ShalevI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-20T03:53:58.853418Z | 1.1.1.1 |
+>| 888 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | userPassedMFADrivenByRiskBasedPolicy | 2021-06-27T19:19:44.4975416Z | 1.1.1.1 |
 
 
 ### azure-risky-users-risk-detection-get
@@ -475,7 +475,7 @@ Read the properties and relationships of a riskDetection object.
             "tokenIssuerType": "AzureAD",
             "userDisplayName": "Svetlana Israeli",
             "userId": "999",
-            "userPrincipalName": "SvetlanaI@hello.com"
+            "userPrincipalName": "SvetlanaI@test.com"
         }
     }
 }
@@ -486,5 +486,5 @@ Read the properties and relationships of a riskDetection object.
 >### Found Risk Detection with ID: 6565
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 6565 | 999 | Svetlana Israeli | SvetlanaI@hello.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
+>| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
 

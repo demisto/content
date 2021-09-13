@@ -11,7 +11,7 @@
             "riskLevel": "none",
             "riskState": "dismissed",
             "userDisplayName": "Itay Israeli",
-            "userPrincipalName": "itayi@hello.com"
+            "userPrincipalName": "itayi@test.com"
         },
         {
             "id": "222",
@@ -22,7 +22,7 @@
             "riskLevel": "none",
             "riskState": "remediated",
             "userDisplayName": "Avraham Israeli",
-            "userPrincipalName": "avrahami@hello.com"
+            "userPrincipalName": "avrahami@test.com"
         },
         {
             "id": "333",
@@ -33,7 +33,7 @@
             "riskLevel": "none",
             "riskState": "dismissed",
             "userDisplayName": "Shaul Israeli",
-            "userPrincipalName": "shauli@hello.com"
+            "userPrincipalName": "shauli@test.com"
         }
     ]
 }
