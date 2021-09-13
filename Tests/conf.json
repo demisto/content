@@ -4515,7 +4515,13 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+          "integrations": "Azure Key Vault",
+          "playbookID": "playbook-AzureKeyVault-Test",
+          "fromversion": "6.0.1"
         }
+
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
