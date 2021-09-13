@@ -1,3 +1,4 @@
+from _typeshed import NoneType
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,6 +6,7 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
+from typing import Dict, List, Optional, Any, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -28,7 +30,7 @@ class Client:
                   'IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All '
                   'IdentityRiskyUser.ReadWrite.All offline_access')
 
-    def risky_users_list(self, risk_state: str, risk_level: str, limit: int,
+    def risky_users_list(self, risk_state: Optional[str], risk_level: Optional[str], limit: int,
                          skip_token: str = None) -> dict:
         """
         List risky users.
@@ -63,7 +65,7 @@ class Client:
         return self.ms_client.http_request(method='GET',
                                            url_suffix=f'identityProtection/riskyUsers/{id}')
 
-    def risk_detections_list(self, risk_state: str, risk_level: str, limit: int,
+    def risk_detections_list(self, risk_state: Optional[str], risk_level: Optional[str], limit: int,
                              skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
@@ -99,7 +101,7 @@ class Client:
                                            url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
-def build_query_filter(risk_state: str, risk_level: str) -> str:
+def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> Optional[str]:
     """
     Build query filter for API call, in order to get filtered results.
 
@@ -117,7 +119,7 @@ def build_query_filter(risk_state: str, risk_level: str) -> str:
     elif risk_level:
         return f"riskLevel eq '{risk_level}'"
     else:
-        return
+        return None
 
 
 def create_event_or_incident_output(item: Dict,
@@ -135,7 +137,7 @@ def create_event_or_incident_output(item: Dict,
     return remove_empty_elements({field: item.get(field) for field in table_headers})
 
 
-def risky_users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     List all risky users.
     Args:
@@ -144,7 +146,7 @@ def risky_users_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = args['limit']
+    limit = arg_to_number(args['limit'])
     page = arg_to_number(args['page'])
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
@@ -152,7 +154,7 @@ def risky_users_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     readable_message = f'Risky Users List\nCurrent page size: {limit}\nShowing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
+        offset = limit * (page - 1)
         raw_response = client.risky_users_list(risk_state,
                                                risk_level,
                                                offset)
@@ -176,7 +178,7 @@ def risky_users_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
 
-    outputs = raw_response.get('value')
+    outputs = raw_response.get('value', {})
 
     table_outputs = [create_event_or_incident_output(item, table_headers)
                      for item in outputs]
@@ -207,7 +209,7 @@ def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    raw_response = client.risky_user_get(args.get('id'))
+    raw_response = client.risky_user_get(args['id'])
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
@@ -271,7 +273,7 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
                      'ipAddress']
 
-    outputs = raw_response.get('value')
+    outputs = raw_response.get('value', {})
     table_outputs = [create_event_or_incident_output(item, table_headers)
                      for item in outputs]
 
@@ -300,7 +302,7 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    raw_response = client.risk_detection_get(args.get('id'))
+    raw_response = client.risk_detection_get(args['id'])
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'ipAddress',
                      'detectionTimingType', 'lastUpdatedDateTime', 'location']
