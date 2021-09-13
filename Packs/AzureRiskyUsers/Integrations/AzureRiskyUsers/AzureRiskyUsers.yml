@@ -393,7 +393,7 @@ script:
       description: 'Indicates the type of token issuer for the detected sign-in risk.
         Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false
