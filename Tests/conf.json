@@ -57,7 +57,8 @@
             ],
             "playbookID": "AzureADTest",
             "fromversion": "6.0.0",
-            "timeout": 3000
+            "timeout": 3000,
+            "is_mockable": false
         },
         {
             "integrations": "GoogleCalendar",
