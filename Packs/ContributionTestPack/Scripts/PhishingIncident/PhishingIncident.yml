@@ -1,0 +1,28 @@
+args:
+- auto: PREDEFINED
+  name: malicious_location
+  predefined:
+  - attachment
+  - inline
+  required: true
+commonfields:
+  id: PhishingIncident
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6
+    propagationLabels:
+    - all
+    toServerVersion: ""
+enabled: true
+name: PhishingIncident
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+type: python
