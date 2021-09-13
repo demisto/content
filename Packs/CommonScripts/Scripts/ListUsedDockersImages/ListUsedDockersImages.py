@@ -123,8 +123,8 @@ def format_result_for_markdown(result_dict: dict) -> list:
     result_output = []
     for docker_image, integration_script in result_dict.items():
         result_output.append({
-            'Docker Image': docker_image,
-            'Integrations/Automations': integration_script
+            'DockerImage': docker_image,
+            'ContentItem': integration_script
         })
     return result_output
 
@@ -141,14 +141,14 @@ def get_used_dockers_images(export_to_context: bool = True) -> CommandResults:
     result_dict: Dict[str, List[str]] = {}
 
     active_integration_instances = demisto.internalHttpRequest(POST_COMMAND, '/settings/integration/search',
-                                                               REQUEST_INTEGRATION_SEARCH_BODY)
+                                                               '{\"size\":500}')
     demisto.debug(f'response code = {0}', active_integration_instances['statusCode'])
     if active_integration_instances and active_integration_instances['statusCode'] == 200:
         active_docker_list_integration = extract_dockers_from_integration_search_result(
             active_integration_instances['body'])
 
     active_automation = demisto.internalHttpRequest(POST_COMMAND, '/automation/search',
-                                                    REQUEST_INTEGRATION_SEARCH_BODY)
+                                                    '{\"size\":500}')
     demisto.debug(f'response code = {0}', active_automation['statusCode'])
     if active_automation and active_automation['statusCode'] == 200:
         active_docker_list_automation = extract_dockers_from_automation_search_result(
@@ -161,13 +161,15 @@ def get_used_dockers_images(export_to_context: bool = True) -> CommandResults:
     result_output = []
     result_output = format_result_for_markdown(result_dict)
 
-    md = tableToMarkdown('Dockers Images In use:', result_output)
+    md = tableToMarkdown('Dockers Images In use:', result_output, headers=['DockerImage', 'ContentItem'],
+                         headerTransform=pascalToSpace)
 
     if export_to_context:
         return CommandResults(
-            outputs_prefix='Docker Image',
-            outputs_key_field='Docker Image',
+            outputs_prefix='UsedDockerImages',
+            outputs_key_field='DockerImage',
             outputs=result_output,
+            raw_response=result_dict,
             readable_output=md)
     else:
         return CommandResults(readable_output=md)

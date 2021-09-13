@@ -4514,6 +4514,10 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+            "playbookID": "ListUsedDockersImages - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {

@@ -17,8 +17,11 @@ commonfields:
 enabled: false
 name: ListUsedDockersImages
 outputs:
-- contextPath: GetUserDockersImages.Output
-  description: 'Table of dockers images that are in use by the XSOAR system'
+- contextPath: UsedDockerImages.DockerImage
+  description: 'The Docker Image name'
+  type: String
+- contextPath: UsedDockerImages.ContentItem
+  description: 'The Integration or Automation name that used the specific Docker Image'
   type: String
 script: '-'
 system: false
@@ -32,4 +35,4 @@ subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
 tests:
-- no test
+- ListUsedDockersImages - Test
