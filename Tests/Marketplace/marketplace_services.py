@@ -963,7 +963,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path=GCPConfig.STORAGE_BASE_PATH,
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.

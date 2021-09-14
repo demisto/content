@@ -1060,7 +1060,7 @@ class TestImagesUpload:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_file = mocker.MagicMock()
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
                                                                    temp_image_name)
         task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
@@ -1095,7 +1095,7 @@ class TestImagesUpload:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_file = mocker.MagicMock()
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
                                                                    temp_image_name)
         task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
 
