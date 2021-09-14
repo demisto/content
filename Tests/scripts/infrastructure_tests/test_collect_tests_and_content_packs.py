@@ -250,8 +250,8 @@ class TestChangedTestPlaybook:
         # fake_test_playbook is fromversion 4.1.0 in playbook file
         test_id = 'fake_test_playbook'
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
-        pack_metadata_file = create_temp_dir_with_metadata(tmp_path, 'fake_pack', {PACK_METADATA_SUPPORT: 'xsoar'})
-        mocker.patch.object(os.path, 'join', return_value=pack_metadata_file)
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_metadata', return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(os.path, 'isfile', return_value=True)
         get_modified_files_ret = create_get_modified_files_ret(modified_files_list=[test_path],
                                                                modified_tests_list=[test_path])
         filterd_tests, content_packs = get_mock_test_list(get_modified_files_ret, mocker)

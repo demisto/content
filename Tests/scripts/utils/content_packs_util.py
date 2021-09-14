@@ -50,7 +50,7 @@ def is_pack_deprecated(pack_path: str) -> bool:
     pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
     if not os.path.isfile(pack_metadata_path):
         return True
-    pack_metadata = get_pack_metadata(pack_metadata_path)
+    pack_metadata = tools.get_pack_metadata(pack_metadata_path)
     return pack_metadata.get('hidden', False)
 
 
