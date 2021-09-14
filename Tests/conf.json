@@ -4222,7 +4222,10 @@
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Mail Sender (New)"
+            ]
         },
         {
             "playbookID": "PCAP Search test",
