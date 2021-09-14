@@ -18,7 +18,7 @@ def test_api_response_parsing():
     """
         Tests REST API responses parsing content.
     """
-    from ListUsedDockersImages import extract_dockers_from_automation_search_result, \
+    from ListUsedDockerImages import extract_dockers_from_automation_search_result, \
         extract_dockers_from_integration_search_result, merge_result, MAX_PER_DOCKER, format_result_for_markdown
 
     integration_response = extract_dockers_from_integration_search_result(

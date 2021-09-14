@@ -26,7 +26,7 @@ Outputs
 
 ## Script Example
 
-```!ListUsedDockersImages```
+```!ListUsedDockerImages```
 
 ## Context Example
 

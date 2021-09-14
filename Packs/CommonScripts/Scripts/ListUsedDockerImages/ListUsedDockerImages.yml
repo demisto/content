@@ -12,10 +12,10 @@ args:
   defaultValue: "true"
 comment: 'List all Docker images that are in use by the installed integrations and automations.'
 commonfields:
-  id: ListUsedDockersImages
+  id: ListUsedDockerImages
   version: -1
 enabled: false
-name: ListUsedDockersImages
+name: ListUsedDockerImages
 outputs:
 - contextPath: UsedDockerImages.DockerImage
   description: The Docker image name.
@@ -35,4 +35,4 @@ subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.1.0
 tests:
-- ListUsedDockersImages - Test
+- ListUsedDockerImages - Test

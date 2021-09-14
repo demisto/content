@@ -1,6 +1,6 @@
-id: ListUsedDockersImages - Test
+id: ListUsedDockerImages - Test
 version: -1
-name: ListUsedDockersImages - Test
+name: ListUsedDockerImages - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -72,8 +72,8 @@ tasks:
     task:
       id: 7189a7ee-5771-4a3a-8f29-dddc657c1914
       version: -1
-      name: ListUsedDockersImages
-      script: ListUsedDockersImages
+      name: ListUsedDockerImages
+      script: ListUsedDockerImages
       type: regular
       iscommand: true
       brand: ""

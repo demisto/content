@@ -132,7 +132,7 @@ def format_result_for_markdown(result_dict: dict) -> list:
 ''' COMMAND FUNCTION '''
 
 
-def get_used_dockers_images(export_to_context: bool = True) -> CommandResults:
+def list_used_docker_images(export_to_context: bool = True) -> CommandResults:
     md = None
     active_docker_list_integration = {}
     active_docker_list_automation = {}
@@ -161,7 +161,7 @@ def get_used_dockers_images(export_to_context: bool = True) -> CommandResults:
     result_output = []
     result_output = format_result_for_markdown(result_dict)
 
-    md = tableToMarkdown('Dockers Images In use:', result_output, headers=['DockerImage', 'ContentItem'],
+    md = tableToMarkdown('Docker Images In use:', result_output, headers=['DockerImage', 'ContentItem'],
                          headerTransform=pascalToSpace)
 
     if export_to_context:
@@ -179,12 +179,12 @@ def get_used_dockers_images(export_to_context: bool = True) -> CommandResults:
 
 
 def main():
-    demisto.debug("running get_used_dockers_images()")
+    demisto.debug("running list_used_docker_images()")
     try:
         export_to_context = demisto.args().get('export_to_context') == 'true'
-        return_results(get_used_dockers_images(export_to_context))
+        return_results(list_used_docker_images(export_to_context))
     except Exception as e:
-        return_error(f'Failed to execute GetUserDockersImages Script. Error: {str(e)}')
+        return_error(f'Failed to execute ListUserDockerImages Script. Error: {str(e)}')
 
 
 ''' ENTRY POINT '''
