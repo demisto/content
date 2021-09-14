@@ -260,7 +260,7 @@ def init_commands_dict():
 
         'tanium-tr-event-evidence-list': list_evidence,
         'tanium-tr-event-evidence-get-properties': event_evidence_get_properties,
-        'tanium-tr-get-evidence-by-id': get_evidence,
+        'tanium-tr-get-evidence-by-id': get_evidence_by_id,
         'tanium-tr-create-evidence': create_evidence,
         'tanium-tr-delete-evidence': delete_evidence,
 
@@ -272,7 +272,7 @@ def init_commands_dict():
         'tanium-tr-get-file-info': get_file_info,
         'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
 
-        'tanium-tr-get-task-by-id': get_task,
+        'tanium-tr-get-task-by-id': get_task_by_id,
         'tanium-tr-get-system-status': get_system_status,
     }
 
@@ -1357,7 +1357,7 @@ def request_file_download(client, data_args) -> Tuple[str, dict, Union[list, dic
         del context['id']
         del context['metadata']
 
-    outputs = {'Tanium.FileDownloadTask(val.id === obj.id && val.connection === obj.connection)': context}
+    outputs = {'Tanium.FileDownloadTask(val.taskId === obj.taskId && val.connection === obj.connection)': context}
 
     return hr, outputs, raw_response
 
@@ -1416,7 +1416,7 @@ def list_files_in_dir(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
             file['modifiedDate'] = timestamp_to_datestring(created)
 
     context = createContext(files, removeNull=True)
-    outputs = {'Tanium.File(val.name === obj.name && val.connection_id === obj.connection_id)': context}
+    outputs = {'Tanium.File(val.name === obj.name && val.connectionId === obj.connectionId)': context}
     human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1442,7 +1442,7 @@ def get_file_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     context = copy.deepcopy(raw_response)
     info = context.get('info')
-    context['connection_id'] = cid
+    context['connectionId'] = cid
     try:
         if created := info.get('createdDate'):
             info['createdDate'] = timestamp_to_datestring(created)
@@ -1454,7 +1454,7 @@ def get_file_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     if info:
         del context['info']
 
-    outputs = {'Tanium.File(val.path === obj.path && val.connection_id === obj.connection_id)': context}
+    outputs = {'Tanium.File(val.path === obj.path && val.connectionId === obj.connectionId)': context}
     human_readable = tableToMarkdown(f'Information for file `{path_name}`', info,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1696,7 +1696,7 @@ def event_evidence_get_properties(client, data_args) -> Tuple[str, dict, Union[l
     return human_readable, outputs, evidence_properties
 
 
-def get_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+def get_evidence_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get evidence by id
 
         :type client: ``Client``
@@ -1787,7 +1787,7 @@ def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     return f'Evidence {",".join(evidence_ids)} has been deleted successfully.', {}, {}
 
 
-def get_task(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
+def get_task_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get task status by task id.
 
         :type client: ``Client``
@@ -1847,7 +1847,7 @@ def get_system_status(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.SystemStatus(val.clientId === obj.clientId)': context}
     headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
-    human_readable = tableToMarkdown('System Status', context, headers=headers,
+    human_readable = tableToMarkdown('Reporting clients', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 

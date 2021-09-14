@@ -637,7 +637,7 @@ def test_get_label(requests_mock):
 
     args = {'label-id': 1}
     human_readable, outputs, _ = TaniumThreatResponseV2.get_label(MOCK_CLIENT, args)
-    assert 'Label Information' in human_readable
+    assert 'Label information' in human_readable
     assert outputs.get('Tanium.Label(val.id && val.id === obj.id)', {}).get('id') == 1
 
 
@@ -654,9 +654,9 @@ def test_get_events_by_process(requests_mock):
 
     api_raw_response = util_load_json('test_files/get_events_by_process.json')
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL +
-                      '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processevents/1/process?limit=2&offset=0',
-                      json=api_raw_response)
+    requests_mock.get(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/processevents/1/process?limit=2&offset=0',
+        json=api_raw_response)
 
     args = {'connection_id': 'remote:host:123:',
             'limit': '2',
@@ -760,23 +760,324 @@ def test_get_process_tree(requests_mock):
     assert outputs.get('Tanium.ProcessTree(val.id && val.id === obj.id)', [{}])[0].get('id') == "1"
 
 
-# def test_command(requests_mock):
-#     """
-#     Given -
-#
-#     When -
-#         Running ?????? function.
-#
-#     Then -
-#         The ??? should be returned.
-#     """
-#
-#     api_raw_response = util_load_json('test_files/???????.json')
-#     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-#     requests_mock.???(BASE_URL + '????????',
-#                       json=api_raw_response)
-#
-#     args = {'?????'}
-#     human_readable, outputs, _ = TaniumThreatResponseV2.?????(MOCK_CLIENT, args)
-#     assert '???????' in human_readable
-#     assert outputs.get('Tanium.????()', {}).get('????') == 1
+def test_list_evidence(requests_mock):
+    """
+    Given - limit and offset for evidenced to get
+
+    When -
+        Running list_evidence function.
+
+    Then -
+        Two evidences should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/list_evidence.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/evidence',
+                      json=api_raw_response)
+
+    args = {'limit': '2',
+            'offset': '0'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.list_evidence(MOCK_CLIENT, args)
+    assert 'Evidence list' in human_readable
+    assert outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', [{}])[0].get('uuid') == '123abc'
+    assert len(outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)')) == 2
+
+
+def test_event_evidence_get_properties(requests_mock):
+    """
+    Given - event_evidence_get_properties command.
+
+    When -
+        Running event_evidence_get_properties function.
+
+    Then -
+        The properties list should be returned should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/event_evidence_get_properties.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence/properties',
+                      json=api_raw_response)
+
+    args = {}
+    human_readable, outputs, _ = TaniumThreatResponseV2.event_evidence_get_properties(MOCK_CLIENT, args)
+    assert 'Evidence Properties' in human_readable
+    assert outputs.get('Tanium.EvidenceProperties(val.type === obj.type)', [{}])[0].get('type') == 'ProcessId'
+
+
+def test_get_evidence_by_id(requests_mock):
+    """
+    Given - evidence id to get its info.
+
+    When -
+        Running get_evidence_by_id function.
+
+    Then -
+        The evidence with given id should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_evidence_by_id.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence/1',
+                      json=api_raw_response)
+
+    args = {'evidence_id': '1'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_evidence_by_id(MOCK_CLIENT, args)
+    assert 'Evidence information' in human_readable
+    assert outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', {}).get('uuid') == '1'
+
+
+def test_create_evidence(requests_mock):
+    """
+    Given - hostname, connection_id and ptid to create event evidence with this data.
+
+    When -
+        Running create_evidence function.
+
+    Then -
+        Human readable should be returned.
+    """
+    api_raw_response = util_load_json('test_files/create_evidence.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/views/process/events',
+                      json=api_raw_response)
+    requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence',
+                       json={})
+
+    args = {'connection_id': 'remote:host:123:',
+            'hostname': 'host',
+            'ptid': '1'}
+    human_readable, _, _ = TaniumThreatResponseV2.create_evidence(MOCK_CLIENT, args)
+    assert 'Evidence have been created.' in human_readable
+
+
+def test_delete_evidence(requests_mock):
+    """
+    Given - evidence-ids to delete
+
+    When -
+        Running delete_evidence? function.
+
+    Then -
+        The evidence ids should be deleted.
+    """
+
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence',
+                         json={})
+
+    args = {'evidence-ids': '1,2,3'}
+    human_readable, _, _ = TaniumThreatResponseV2.delete_evidence(MOCK_CLIENT, args)
+    assert 'Evidence 1,2,3 has been deleted successfully.' in human_readable
+
+
+def test_get_file_downloads(requests_mock):
+    """
+    Given - get_file_downloads command
+
+    When -
+        Running get_file_downloads function.
+
+    Then -
+        The file dowloads list should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_file_downloads.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload',
+                      json=api_raw_response)
+
+    args = {'limit': '2'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_file_downloads(MOCK_CLIENT, args)
+    assert 'File downloads' in human_readable
+    assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('uuid') == '1'
+    assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', [{}])[0].get('evidenceType') == 'file'
+
+
+def test_get_file_download_info(requests_mock):
+    """
+    Given - file id to get its info
+
+    When -
+        Running get_file_download_info function.
+
+    Then -
+        The file download info should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_file_download_info.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload/1',
+                      json=api_raw_response)
+
+    args = {'file_id': '1'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_file_download_info(MOCK_CLIENT, args)
+    assert 'File download' in human_readable
+    assert outputs.get('Tanium.FileDownload(val.uuid === obj.uuid)', {}).get('uuid') == '1'
+
+
+def test_request_file_download(requests_mock):
+    """
+    Given - path, connection id to request file download from there.
+
+    When -
+        Running request_file_download function.
+
+    Then -
+        The Task info should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/request_file_download.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file',
+                       json=api_raw_response)
+
+    args = {'connection_id': 'remote:host:123:', 'path': 'C:\\file.txt'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.request_file_download(MOCK_CLIENT, args)
+    assert 'Task id: 1' in human_readable
+    assert outputs.get('Tanium.FileDownloadTask(val.taskId === obj.taskId && val.connection === obj.connection)',
+                       {}).get('taskId') == 1
+    assert outputs.get('Tanium.FileDownloadTask(val.taskId === obj.taskId && val.connection === obj.connection)',
+                       {}).get('connection') == 'remote:host:123:'
+
+
+def test_delete_file_download(requests_mock):
+    """
+    Given - file id to delete
+
+    When -
+        Running delete_file_download function.
+
+    Then -
+        The file download should be deleted.
+    """
+
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/filedownload/1',
+                         json={})
+
+    args = {'file_id': '1'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.delete_file_download(MOCK_CLIENT, args)
+    assert 'Delete request of file with ID 1 has been sent successfully' in human_readable
+
+
+def test_list_files_in_dir(requests_mock):
+    """
+    Given - path in connection to get its files.
+
+    When -
+        Running list_files_in_dir function.
+
+    Then -
+        The list of files in path should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/list_files_in_dir.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/list/C%3A%5CDir%5C',
+        json=api_raw_response)
+
+    args = {'connection_id': 'remote:host:123:',
+            'path': 'C:\\Dir\\',
+            'limit': '2', 'offset': '0'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.list_files_in_dir(MOCK_CLIENT, args)
+    assert 'Files in directory' in human_readable
+    assert outputs.get('Tanium.File(val.name === obj.name && val.connectionId === obj.connectionId)', [{}])[0].get(
+        'name') == 'file1.exe'
+    assert outputs.get('Tanium.File(val.name === obj.name && val.connectionId === obj.connectionId)', [{}])[0].get(
+        'connectionId') == 'remote:host:123:'
+
+
+def test_get_file_info(requests_mock):
+    """
+    Given -
+
+    When -
+        Running get_file_info function.
+
+    Then -
+        The file info should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_file_info.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/info/C%3A%5Cfile1.txt',
+        json=api_raw_response)
+
+    args = {'path': "C:\\file1.txt",
+            'connection_id': "remote:host:123:"}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_file_info(MOCK_CLIENT, args)
+    assert 'Information for file' in human_readable
+    assert outputs.get('Tanium.File(val.path === obj.path && val.connectionId === obj.connectionId)', {}).get(
+        'connectionId') == 'remote:host:123:'
+    assert outputs.get('Tanium.File(val.path === obj.path && val.connectionId === obj.connectionId)', {}).get(
+        'path') == "C:\\file1.txt"
+
+
+def test_delete_file_from_endpoint(requests_mock):
+    """
+    Given - connection id and path of file to delete.
+
+    When -
+        Running delete_file_from_endpoint function.
+
+    Then -
+        The file should be deleted.
+    """
+
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(
+        BASE_URL + '/plugin/products/threat-response/api/v1/conns/remote:host:123:/file/delete/C%3A%5Cfile1.txt',
+        json={})
+
+    args = {'path': "C:\\file1.txt",
+            'connection_id': "remote:host:123:"}
+    human_readable, outputs, _ = TaniumThreatResponseV2.delete_file_from_endpoint(MOCK_CLIENT, args)
+    assert 'Delete request of file C:\\file1.txt' in human_readable
+
+
+def test_get_task_by_id(requests_mock):
+    """
+    Given - task id to get its status and info
+
+    When -
+        Running get_task_by_id function.
+
+    Then -
+        The task info should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_task_by_id.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/tasks/1',
+                      json=api_raw_response)
+
+    args = {'task_id': '1'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_task_by_id(MOCK_CLIENT, args)
+    assert 'Task information' in human_readable
+    assert outputs.get('Tanium.Task(val.id === obj.id)', {}).get('id') == 1
+
+
+def test_get_system_status(requests_mock):
+    """
+    Given - tanium system
+
+    When -
+        Running get_system_status function.
+
+    Then -
+        The connected computers should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/get_system_status.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/api/v2/system_status',
+                      json=api_raw_response)
+
+    args = {'limit': 2, 'offset': 0}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_system_status(MOCK_CLIENT, args)
+    assert 'Reporting clients' in human_readable
+    assert outputs.get('Tanium.SystemStatus(val.clientId === obj.clientId)', {})[0].get('clientId') == 1

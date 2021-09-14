@@ -1785,7 +1785,7 @@ script:
     - contextPath: Tanium.File.cid
       description: Cid.
       type: String
-    - contextPath: Tanium.File.connection_id
+    - contextPath: Tanium.File.connectionId
       description: Connection id.
       type: String
     - contextPath: Tanium.File.createdDate
@@ -2122,7 +2122,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get system status, to retrive all possible connections client id,
+    description: Get system status, to retrive all possible connection's client ids,
       hostnames, ips.
     execution: false
     hidden: false

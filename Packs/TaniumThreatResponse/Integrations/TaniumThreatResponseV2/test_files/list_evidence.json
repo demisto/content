@@ -1,0 +1,20 @@
+[
+    {
+        "uuid": "123abc",
+        "username": null,
+        "name": "snapshot1",
+        "hostname": "host",
+        "size": 993603584,
+        "createdAt": "1583675642000",
+        "evidenceType": "snapshot"
+    },
+    {
+        "uuid": "1234abcd",
+        "username": null,
+        "name": "event1",
+        "hostname": "host",
+        "size": 999419904,
+        "createdAt": "1583677562000",
+        "evidenceType": "event"
+    }
+]
