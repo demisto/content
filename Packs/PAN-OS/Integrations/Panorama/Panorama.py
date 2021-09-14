@@ -2372,26 +2372,36 @@ def prettify_get_url_filter(url_filter: dict):
     if 'override' in url_filter:
         override_category_list = url_filter['override']['member']
 
+    if not isinstance(alert_category_list, list):
+        alert_category_list = [alert_category_list]
     for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'alert'
         })
+    if not isinstance(block_category_list, list):
+        block_category_list = [block_category_list]
     for category in block_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    if not isinstance(allow_category_list, list):
+        allow_category_list = [allow_category_list]
     for category in allow_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    if not isinstance(continue_category_list, list):
+        continue_category_list = [continue_category_list]
     for category in continue_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    if not isinstance(override_category_list, list):
+        override_category_list = [override_category_list]
     for category in override_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
@@ -2549,9 +2559,9 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     }
 
     major_version = get_pan_os_major_version()
-    # it seems that in major 10.x pan-os changed the terminology from allow-list/block-list to allow/block
+    # it seems that in major 8.x pan-os changed the terminology from allow-list/block-list to allow/block
     # with regards to url filter xpaths
-    if major_version >= 10:
+    if major_version >= 8:
         allow_name = 'allow'
         block_name = 'block'
     else:
@@ -2565,10 +2575,12 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         url_filter_output['Description'] = element_value
 
     elif element_to_change == 'override_allow_list':
-        prev_override_allow_list = argToList(url_filter_prev.get(allow_name).get('member', []))
+        prev_override_allow_list = argToList(url_filter_prev.get(allow_name, {}).get('member', []))
         if add_remove_element == 'add':
             new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
         else:
+            if element_value not in prev_override_allow_list:
+                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
             new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
 
         params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{allow_name}"
@@ -2578,10 +2590,12 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
 
     # element_to_change == 'override_block_list'
     else:
-        prev_override_block_list = argToList(url_filter_prev.get(block_name).get('member', []))
+        prev_override_block_list = argToList(url_filter_prev.get(block_name, {}).get('member', []))
         if add_remove_element == 'add':
             new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
         else:
+            if element_value not in prev_override_block_list:
+                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
             new_override_block_list = [url for url in prev_override_block_list if url != element_value]
 
         params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{block_name}"
