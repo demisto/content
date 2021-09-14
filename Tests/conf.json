@@ -4520,6 +4520,11 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
