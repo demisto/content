@@ -79,6 +79,7 @@
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
+  - venv/bin/pip2 install -r dev-requirements-py2.txt
   - source ./venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
@@ -105,7 +106,6 @@
     - section_end "Creating new clean logs folder"
     - source $NVM_DIR/nvm.sh
     - nvm use default
-    - apt-get install jsdoc2md
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
