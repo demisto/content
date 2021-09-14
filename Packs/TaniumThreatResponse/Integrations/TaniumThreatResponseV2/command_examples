@@ -38,3 +38,4 @@
 !tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
 !tanium-tr-create-evidence ptid=72057594038462925 connection_id=remote:EC2AMAZ-KGMRO60:9065264: hostname=EC2AMAZ-KGMRO60 summary="Create Process"
 !tanium-tr-get-system-status
+!tanium-tr-intel-doc-create entry-id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file-extension=yara

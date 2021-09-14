@@ -1057,7 +1057,7 @@ script:
       description: Hash type.
       type: String
     - contextPath: Tanium.ProcessInfo.id
-      description: Process id at the tunium system.
+      description: Process id at the tanium system.
       type: String
     - contextPath: Tanium.ProcessInfo.imageEventsCount
       description: Number of Image events in the process.
@@ -1229,7 +1229,7 @@ script:
       description: Hash type.
       type: String
     - contextPath: Tanium.ProcessChildren.id
-      description: Process id at the tunium system.
+      description: Process id at the tanium system.
       type: String
     - contextPath: Tanium.ProcessChildren.imageEventsCount
       description: Number of Image events in the process.
@@ -1322,7 +1322,7 @@ script:
       description: Hash type.
       type: String
     - contextPath: Tanium.ProcessParent.id
-      description: Process id at the tunium system.
+      description: Process id at the tanium system.
       type: String
     - contextPath: Tanium.ProcessParent.imageEventsCount
       description: Number of Image events in the process.
