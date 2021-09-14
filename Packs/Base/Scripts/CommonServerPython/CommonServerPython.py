@@ -1774,7 +1774,8 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
+                    date_fields=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1867,6 +1868,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         for entry in t:
             vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
                                    True, True) for h in headers]
+
+            if date_fields:
+                for field in date_fields:
+                    vals = [5 if int(x)==entry.get(field) else x for x in vals]
+
             # this pipe is optional
             mdResult += '| '
             try:
