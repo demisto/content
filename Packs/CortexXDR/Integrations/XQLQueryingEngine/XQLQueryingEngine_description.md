@@ -17,3 +17,6 @@ XQL Query Engine enables you to run XQL queries on your data sources.
 ### URL
 1. In your Cortex XDR platform, go to **Settings**.
 2. Click the **Copy URL** button in the top right corner.
+
+### Note
+If you choose to use the credentials from XSOAR credential manager, create two credentials, one for the api-key and one for the api-key-id, then enter the key in the password field.
