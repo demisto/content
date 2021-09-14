@@ -1630,6 +1630,12 @@ script:
     name: xdr-whitelist-files
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: List of endpoint IDs.
       isArray: true
       name: endpoint_id_list
@@ -1654,12 +1660,6 @@ script:
     execution: false
     name: xdr-quarantine-files
   - arguments:
-    - default: false
-      description: Allows to link the response action to the incident that triggered it.
-      isArray: false
-      name: incident_id
-      required: false
-      secret: false
     - default: false
       description: String the represents the endpoint ID.
       isArray: false

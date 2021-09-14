@@ -781,9 +781,10 @@ class Client(BaseClient):
 
     def restore_file(self, file_hash, endpoint_id=None, incident_id=None):
         request_data: Dict[str, Any] = {'file_hash': file_hash}
-        request_data['endpoint_id'] = endpoint_id
         if incident_id:
             request_data['incident_id'] = incident_id
+        if endpoint_id:
+            request_data['endpoint_id'] = endpoint_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
