@@ -364,24 +364,26 @@ def main():
             verify=verify_certificate,
             proxy=proxy)
 
-        commands = {'azure-risky-users-auth-start': start_auth,
-                    'azure-risky-users-auth-complete': complete_auth,
-                    'azure-risky-users-auth-test': test_connection,
-                    'azure-risky-users-list': risky_users_list_command,
-                    'azure-risky-user-get': risky_user_get_command,
-                    'azure-risky-users-risk-detections-list': risk_detections_list_command,
-                    'azure-risky-users-risk-detection-get': risk_detection_get_command}
-
         if command == 'test-module':
             return_results('The test module is not functional, '
                            'run the azure-risky-users-auth-start command instead.')
-        elif command in commands.keys():
-            if args:
-                return_results(commands[command](client, args))
-            else:
-                return_results(commands[command](client))
         elif command == 'azure-risky-users-auth-reset':
             return_results(reset_auth())
+        elif command == 'azure-risky-users-auth-start':            
+            return_results(start_auth())
+        elif command == 'azure-risky-users-auth-complete':            
+            return_results(complete_auth())
+        elif command == 'azure-risky-users-auth-test':            
+            return_results(test_connection())
+        elif command == 'azure-risky-users-list':            
+            return_results(risky_users_list_command(client, args))
+        elif command == 'azure-risky-users-auth-start':            
+            return_results(risky_user_get_command(client, args))
+        elif command == 'azure-risky-users-risk-detections-list':            
+            return_results(risk_detections_list_command(client, args))
+        elif command == 'azure-risky-users-risk-detection-get':            
+            return_results(risk_detection_get_command(client, args))
+
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
