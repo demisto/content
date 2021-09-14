@@ -614,6 +614,7 @@ script:
     outputs:
     - contextPath: Organization
       description: List of organizations, each includes ID & Name
+      type: list
     description: List the organizations that the api-key has privileges on
   - name: meraki-get-organization-license-state
     arguments:
@@ -622,6 +623,13 @@ script:
       description: Organization id
     - name: headers
       description: Table's headers to be shown by order
+    outputs:
+    - contextPath: status
+      description: license status
+      type: String
+    - contextPath: expirationDate
+      description: license expiration date
+      type: String
     description: License state for an organization
   - name: meraki-fetch-organization-inventory
     arguments:
@@ -633,6 +641,7 @@ script:
     outputs:
     - contextPath: Devices
       description: List of devices, each includes Serial, NetworkId, Model, ClaimedAt, PublicIp & Mac
+      type: list
     description: List of Inventories for an organization
   - name: meraki-fetch-networks
     arguments:
@@ -644,6 +653,7 @@ script:
     outputs:
     - contextPath: Network
       description: List of networks, each includes ID, Name, Type, OrganizationId, Tags & TimeZone
+      type: list
     description: List the networks in an organization
   - name: meraki-fetch-devices
     arguments:
@@ -655,6 +665,7 @@ script:
     outputs:
     - contextPath: Device
       description: List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
+      type: list
     description: List the devices in a network
   - name: meraki-fetch-device-uplink
     arguments:
@@ -669,6 +680,7 @@ script:
     outputs:
     - contextPath: Uplink
       description: List of device uplink, each includes Status & Interface
+      type: list
     description: List of uplink information for a device.
   - name: meraki-fetch-ssids
     arguments:
@@ -680,6 +692,7 @@ script:
     outputs:
     - contextPath: SSID
       description: List of SSIDs, each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode & WalledGardenRanges
+      type: list
     description: List the SSIDs in a network
   - name: meraki-fetch-clients
     arguments:
@@ -694,6 +707,7 @@ script:
     outputs:
     - contextPath: Client
       description: List of clients, each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage & VLAN
+      type: list
     description: List the clients of a device, up to a maximum of a month ago
   - name: meraki-fetch-firewall-rules
     arguments:
@@ -708,6 +722,7 @@ script:
     outputs:
     - contextPath: Firewall
       description: List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr & Comment
+      type: list
     description: List of L3 firewall rules for an SSID
   - name: meraki-remove-device
     arguments:
@@ -752,7 +767,7 @@ script:
       description: New longitude of the device
     outputs:
     - contextPath: Device
-      description: Updated evice which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
+      description: Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC & Address
     description: Update the attributes of a device
   - name: meraki-claim-device
     arguments:
@@ -813,6 +828,7 @@ script:
     outputs:
     - contextPath: Firewall
       description: List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr & Comment
+      type: list
     description: update rule to L3 firewall rules of an SSID
 hidden: false
 tests:
