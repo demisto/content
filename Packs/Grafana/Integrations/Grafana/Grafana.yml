@@ -8,6 +8,10 @@ configuration:
   name: url
   required: true
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -16,10 +20,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - additionalinfo: maximum is limited to 200.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
@@ -905,5 +905,5 @@ script:
 tests:
 - Grafana-Test
 defaultmapperin: Grafana Alert Mapper
-defaultclassifier: Grafana Alert
+defaultclassifier: Grafana Alert Classifier
 fromversion: 6.0.0
