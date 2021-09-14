@@ -67,6 +67,9 @@ def convert_incident_to_hr(incident):
         if key == 'id':
             converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
 
+        if key == 'severity':
+            converted_incident[key] = scoreToReputation(converted_incident.get(key))
+
         converted_incident[key] = converted_incident.get(key.replace('_', ''))
 
     return converted_incident
