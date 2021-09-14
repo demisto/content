@@ -455,28 +455,30 @@ class Client(BaseClient):
         return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
+        request_data = {
+            'endpoint_id': endpoint_id
+        }
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         self._http_request(
             method='POST',
             url_suffix='/endpoints/isolate',
-            json_data={
-                'request_data': {
-                    'endpoint_id': endpoint_id,
-                    'incident_id': incident_id
-                }
-            },
+            json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
+        request_data = {
+            'endpoint_id': endpoint_id
+        }
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         self._http_request(
             method='POST',
             url_suffix='/endpoints/unisolate',
-            json_data={
-                'request_data': {
-                    'endpoint_id': endpoint_id,
-                    'incident_id': incident_id
-                }
-            },
+            json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
@@ -718,7 +720,8 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -734,7 +737,8 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -761,7 +765,8 @@ class Client(BaseClient):
 
         request_data['file_path'] = file_path
         request_data['file_hash'] = file_hash
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -777,7 +782,8 @@ class Client(BaseClient):
     def restore_file(self, file_hash, endpoint_id=None, incident_id=None):
         request_data: Dict[str, Any] = {'file_hash': file_hash}
         request_data['endpoint_id'] = endpoint_id
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -884,8 +890,9 @@ class Client(BaseClient):
             request_data['filters'] = filters
         else:
             request_data['filters'] = 'all'
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
-        request_data['incident_id'] = incident_id
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
@@ -1034,8 +1041,9 @@ class Client(BaseClient):
                 }
             ],
             'files': files,
-            'incident_id': incident_id
         }
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         reply = self._http_request(
             method='POST',
@@ -1155,7 +1163,9 @@ class Client(BaseClient):
             'value': endpoint_ids
         }]
         request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
-                                        'incident_id': incident_id, 'parameters_values': parameters}
+                                        'parameters_values': parameters}
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         return self._http_request(
             method='POST',
@@ -1167,19 +1177,23 @@ class Client(BaseClient):
     @logger
     def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list,
                                 incident_id: Optional[int] = None) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids
+            }],
+            'snippet_code': snippet_code,
+        }
+
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         return self._http_request(
             method='POST',
             url_suffix='/scripts/run_snippet_code_script',
             json_data={
-                'request_data': {
-                    'filters': [{
-                        'field': 'endpoint_id_list',
-                        'operator': 'in',
-                        'value': endpoint_ids
-                    }],
-                    'snippet_code': snippet_code,
-                    'incident_id': incident_id
-                }
+                'request_data': request_data
             },
             timeout=self.timeout,
         )
@@ -1601,7 +1615,7 @@ def get_incident_extra_data_command(client, args):
 
 
 def update_incident_command(client, args):
-    incident_id = arg_to_number(args.get('incident_id'))
+    incident_id = args.get('incident_id')
     assigned_user_mail = args.get('assigned_user_mail')
     assigned_user_pretty_name = args.get('assigned_user_pretty_name')
     status = args.get('status')
