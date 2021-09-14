@@ -72,8 +72,6 @@
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
   - apt-get install -y python2 python-pip
-  - python2 --version
-  - pip2 --version
   - |
     if [ -f "./venv/bin/activatemmm" ]; then
       echo "found venv"
@@ -114,10 +112,13 @@
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
     - $(echo $0) --version
     - python --version
+    - python2 --version
     - python3 --version
+    - pip2 --version
+    - pip3 --version
     - node --version
     - npm --version
-    - npm ci -g --loglevel verbose
+    - npm install -g --loglevel verbose
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
