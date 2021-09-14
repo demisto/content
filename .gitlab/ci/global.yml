@@ -71,7 +71,7 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - apt-get install python2 python-pip
+  - apt-get install -y python2 python-pip
   - python2 --version
   - pip2 --version
   - |
