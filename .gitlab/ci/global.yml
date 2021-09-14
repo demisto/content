@@ -50,10 +50,6 @@
   - echo $NODE_VERSION
   - echo $NODE_PATH
   - echo $PATH
-  - export NVM_DIR="$HOME/.nvm"
-  - export NODE_VERSION="12.18.4"
-  - export NODE_PATH="$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules"
-  - export PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
@@ -71,7 +67,6 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - apt-get install -y python2 python-pip
   - |
     if [ -f "./venv/bin/activate" ]; then
       echo "found venv"
@@ -105,8 +100,8 @@
     - section_end "Creating new clean logs folder"
     - source $NVM_DIR/nvm.sh
     - nvm use default
-    - npm ci --log-level verbose --prefer-offline
-    - npm install jsdoc-to-markdown@5.0.3 -g
+    - npm ci --cache .npm --prefer-offline
+    - npm install jsdoc-to-markdown@5.0.3 -g  # disable-secrets-detection
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
