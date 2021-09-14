@@ -834,7 +834,7 @@ def get_packs_summary(packs_list):
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
-                           public_pack_names) -> Tuple[bool, list, list]:
+                           public_pack_names, storage_base_path) -> Tuple[bool, list, list]:
     """
     1. Add private packs to public index.json.
     2. Checks if there are private packs that were added/deleted/updated.
@@ -855,7 +855,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
     if private_bucket_name:
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_index_path, _, _ = download_and_extract_index(
-            private_storage_bucket, os.path.join(extract_destination_path, "private")
+            private_storage_bucket, os.path.join(extract_destination_path, "private"), storage_base_path
         )
 
         public_index_json_file_path = os.path.join(public_index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
@@ -946,7 +946,7 @@ def main():
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
     if not option.override_all_packs:
