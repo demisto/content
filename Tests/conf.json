@@ -4224,10 +4224,7 @@
             "playbookID": "Phishing v2 - Test - Actual Incident",
             "fromversion": "6.0.0",
             "integrations": [
-                "Mail Sender (New)"
-            ],
-            "instance_names": [
-                "Mail_Sender_(New)_STARTTLS"
+                "EWS Mail Sender"
             ]
         },
         {
