@@ -17,16 +17,17 @@ urllib3.disable_warnings()
 MAX_INCIDENTS_TO_FETCH = 1000
 SUPPORTED_SUB_TYPES = [2, 3, 12, 16, 17, 18, 19, 23]
 SUPPORTED_SUB_TYPES_FOR_PURCHASE = [16, 18]
-# Mappers
+# Mappers And Formaters
 TYPE_MAPPER = {
     'leaked_credentials': 'Leaked Credentials',
     'reports': 'Intelligence Reports',
     'botnets': 'Compromised Accounts'
 }
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # URLs
 RADARK_URL = 'https://radark2.ke-la.com'
 BASE_URL = RADARK_URL + '/api'
-INCIDENT_URL = RADARK_URL + '/#/incident?monitorId={MONITOR_ID}&feedPropertyId={item_id}'
+INCIDENT_URL = RADARK_URL + '/#/incident?monitorId={MONITOR_ID}&feedPropertyId={incident_id}'
 FETCH_ITEMS_API = 'incidents/feedProperty/{incident_id}?apiToken={API_KEY}&monitor_id={MONITOR_ID}'
 FETCH_INCIDENTS_API = 'aggregations?monitor_id={MONITOR_ID}&apiToken={API_KEY}&limit={max_results}'
 EMAIL_ENRICHMENT_API = 'incidents/all?monitor_id={MONITOR_ID}&apiToken={API_KEY}'
@@ -46,8 +47,7 @@ MONITOR_ID = demisto.params().get('monitor_id')
 
 
 class Client(BaseClient):
-    def search_alerts(self, start_time: Optional[int], max_results: int, incident_types: List[str]):  # \
-        # -> List[Dict[str, Any]]:
+    def search_alerts(self, start_time: Optional[int], max_results: int, incident_types: List[str]):
         # Base filter
         params: Dict[str, Dict] = {
             "filters": {
@@ -171,7 +171,7 @@ def parse_email_enrichment_markdown_table(data: dict):
     items = data['incidents']
     table = []
     # Set headers. Important for order.
-    headers = ['Email', 'Domain', 'Password Type', 'Password', 'Service', 'Source', 'Date']
+    headers = ['email', 'domain', 'password_type', 'password', 'service', 'source', 'date']
     # Parse each item.
     for item in items:
         email = item.get('email', '')
@@ -182,48 +182,49 @@ def parse_email_enrichment_markdown_table(data: dict):
         source = item.get('source', '')
         date = item.get('posted_date', '')
         row = {
-            'Email': email if email else '-',
-            'Domain': domain if domain else '-',
-            'Password Type': password_type if password_type else '-',
-            'Password': password if password else '-',
-            'Service': service if service else '-',
-            'Source': source if source else '-',
-            'Date': formatEpochDate(date) if date else '-'
+            'email': email if email else '-',
+            'domain': domain if domain else '-',
+            'password_type': password_type if password_type else '-',
+            'password': password if password else '-',
+            'service': service if service else '-',
+            'source': source if source else '-',
+            'date': timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
         }
         table.append(row)
     # Return the items as Markdown
-    return table, tableToMarkdown(name="", t=table, headers=headers)
+    return table, tableToMarkdown(name='', t=table, headers=headers, headerTransform=lambda s: s.replace('_', ' ').title())
 
 
-def parse_incident_markdown_table(data: dict, item_id: str):
-    items = data['incidents']
-    aggr_type = data['aggregation']['type']
-    sub_type = data['aggregation']['sub_type']
+def parse_incident_markdown_table(data: dict, incident_id: str):
+    items = data.get('incidents', '')
+    aggr = data.get('aggregation', '')
+    if not aggr or not items or not isinstance(items, list) or len(items) < 1:
+        raise Exception('RaDark Error: Response is missing!')
+    aggr_type = aggr.get('type', '')
+    sub_type = aggr.get('sub_type', '')
+    if not aggr_type or not sub_type:
+        raise Exception('RaDark Error: Response is missing!')
     if aggr_type == 'reports':
-        url = INCIDENT_URL.format(MONITOR_ID=MONITOR_ID, item_id=item_id)
-        return [{'URL': url, 'Item ID': item_id}], '#### Report available here: <' + url + '>'
+        details = 'The Intelligence report is available on your RaDark monitor.'
+        table = []
     elif aggr_type == 'botnets':
-        headers, table = parse_botnets_markdown_table(items, sub_type)
+        count = len(items)
+        many_suffix = "s" if count > 1 else ""
+        details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
+        table = parse_botnets_markdown_table(items, sub_type)
     elif aggr_type == 'leaked_credentials':
-        headers, table = parse_leaked_credentials_markdown_table(items, sub_type)
+        count = len(items)
+        many_suffix = "s" if count > 1 else ""
+        details = f'Incident contains {count} item{many_suffix}. Full details can be found on "items" tab.'
+        table = parse_leaked_credentials_markdown_table(items, sub_type)
     else:
-        return None, f'No data found for item ID: {item_id}'
-    # Return the items as Markdown
-    return table, tableToMarkdown(name="", t=table, headers=headers)
+        details = f'No data found for item ID: {incident_id}'
+        table = []
+    return table, details
 
 
 def parse_leaked_credentials_markdown_table(items: List[Dict[str, Any]], sub_type: int):
     table = []
-    # Set headers. Important for order.
-    headers = ['Item ID', 'Email', 'Domain', 'Password', 'Password Type']
-    if sub_type == 2 or sub_type == 23:
-        headers.append('Source')
-        headers.append('Date')
-    elif sub_type == 3:
-        headers.append('Service')
-    elif sub_type == 19:
-        headers.append('Dump Post Date')
-        headers.append('Compromised Website')
     # Parse each item base on subtype
     for item in items:
         item_id = item.get('id', '')
@@ -232,84 +233,92 @@ def parse_leaked_credentials_markdown_table(items: List[Dict[str, Any]], sub_typ
         password = item.get('password', '')
         password_type = item.get('password_type', '')
         row = {
-            'Item ID': item_id if item_id else '-',
-            'Email': email if email else '-',
-            'Domain': domain if domain else '-',
-            'Password': password if password else '-',
-            'Password Type': password_type if password_type else '-'
+            'item_id': item_id if item_id else '-',
+            'email': email if email else '-',
+            'domain': domain if domain else '-',
+            'password': password if password else '-',
+            'password_type': password_type if password_type else '-'
         }
         if sub_type == 2 or sub_type == 23:
             source = item.get('source', '')
-            row['Source'] = source if source else '-'
             date = item.get('posted_date', '')
-            row['Date'] = formatEpochDate(date) if date else '-'
+            row['source'] = source if source else '-'
+            row['date'] = timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
         elif sub_type == 3:
-            service = item.get('service', '')
-            row['Service'] = service if service else '-'
+            pass
         elif sub_type == 19:
             date = item.get('dump_post_date', '')
-            row['Dump Post Date'] = formatEpochDate(date) if date else '-'
             compromised_website = item.get('compromised_website', '')
-            row['Compromised Website'] = compromised_website if compromised_website else '-'
+            row['dump_post_date'] = timestamp_to_datestring(date * 1000, DATE_FORMAT) if date else '-'
+            row['compromised_website'] = compromised_website if compromised_website else '-'
         table.append(row)
-    return headers, table
+    return table
 
 
 def parse_botnets_markdown_table(items: List[Dict[str, Any]], sub_type: int):
     table = []
-    # Set headers. Important for order.
-    headers = ['Item ID', 'Bot ID', 'Updated Date', 'Resource', 'Country', 'Source IP', 'Infection Type']
-    if sub_type == 17:
-        headers.insert(3, 'Username')
-        headers.insert(4, 'Password')
-    elif sub_type == 16 or sub_type == 18:
-        headers.insert(3, 'Username')
-        headers.insert(4, 'Password')
-        headers.insert(5, 'Available Data')
-        headers.append('Price')
     # Parse each item base on subtype
     for item in items:
         item_id = item.get('id', '')
         bot_id = item.get('bot_id', '')
         resource = item.get('resource', '')
         country = item.get('country', '')
-        isp = item.get('isp', '')
-        infection_type = item.get('infection_type', '')
         updated_date = item.get('updated_date', '')
         row = {
-            'Item ID': item_id if item_id else '-',
-            'Bot ID': bot_id if bot_id else '-',
-            'Resource': resource if resource else '-',
-            'Country': country if country else '-',
-            'Source IP': isp if isp else '-',
-            'Infection Type': infection_type if infection_type else '-',
-            'Updated Date': formatEpochDate(updated_date) if updated_date else '-'
+            'item_id': item_id if item_id else '-',
+            'bot_id': bot_id if bot_id else '-',
+            'resource': resource if resource else '-',
+            'country': country if country else '-',
+            'updated_date': timestamp_to_datestring(updated_date * 1000, DATE_FORMAT) if updated_date else '-'
         }
-        if sub_type == 17:
+        if sub_type == 16:
+            additional_data, username, password = extract_available_data_from_item(item)
+            source_ip = item.get('source_ip', '')
+            price = item.get('price', '')
+            row['username'] = username if username else '-'
+            row['password'] = password if password else '-'
+            row['additional_data'] = additional_data
+            row['source_ip'] = source_ip if source_ip else '-'
+            row['price'] = str(price) + '$' if price else price
+        elif sub_type == 17:
             username = item.get('username', '')
             password = item.get('password', '')
-            row['Username'] = username if username else '-'
-            row['Password'] = password if password else '-'
-        elif sub_type == 16 or sub_type == 18:
-            available_data_res = ''
-            available_data = item.get('available_data', {'-': ''})
-            for key in available_data:
-                available_data_res += key + '(' + available_data[key] + '),' if available_data[key] else key + ','
-            if available_data_res[-1] == ',':
-                available_data_res = available_data_res[0:-1]
-            username = available_data.get('username', '')
-            if not username:
-                username = available_data.get('login', '')
-                if not username:
-                    username = available_data.get('email', '')
-            password = available_data.get('password', '')
-            row['Username'] = username if username else '-'
-            row['Password'] = password if password else '-'
-            row['Available Data'] = available_data_res
+            source_ip = item.get('source_ip', '')
+            infection_type = item.get('infection_type', '')
+            row['username'] = username if username else '-'
+            row['password'] = password if password else '-'
+            row['source_ip'] = source_ip if source_ip else '-'
+            row['infection_type'] = infection_type if infection_type else '-'
+        elif sub_type == 18:
+            additional_data, username, password = extract_available_data_from_item(item)
+            isp = item.get('isp', '')
+            infection_type = item.get('infection_type', '')
             price = item.get('price', '')
-            row['Price'] = str(price) + '$' if price else price
+            row['username'] = username if username else '-'
+            row['password'] = password if password else '-'
+            row['additional_data'] = additional_data
+            row['isp'] = isp if isp else '-'
+            row['infection_type'] = infection_type if infection_type else '-'
+            row['price'] = str(price) + '$' if price else price
+
         table.append(row)
-    return headers, table
+    return table
+
+
+def extract_available_data_from_item(item: dict) -> Tuple[str, str, str]:
+    additional_data = ''
+    available_data = item.get('available_data', {'-': ''})
+    for key in available_data:
+        additional_data += key + '(' + available_data[key] + '),' if available_data[key] else key + ','
+    if additional_data[-1] == ',':
+        additional_data = additional_data[0:-1]
+    username = available_data.get('username', '')
+    if not username:
+        username = available_data.get('login', '')
+        if not username:
+            username = available_data.get('email', '')
+    password = available_data.get('password', '')
+    return additional_data, username, password
 
 
 def get_first_time_fetch(first_fetch: str) -> Union[int, None]:
@@ -365,7 +374,7 @@ def fetch_incidents(
         incident_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch', None)
-    if last_fetch is None:  # if missing, use what provided via first_fetch_time
+    if not last_fetch:  # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time
     else:  # otherwise use the stored last fetch
         last_fetch = int(last_fetch)
@@ -396,7 +405,7 @@ def fetch_incidents(
         sub_type = alert['sub_type']
         if sub_type in SUPPORTED_SUB_TYPES:
             alert['type_description'] = get_name(alert['type'])
-            alert['incident_url'] = INCIDENT_URL.format(MONITOR_ID=MONITOR_ID, item_id=alert['feed_property_id'])
+            alert['incident_url'] = INCIDENT_URL.format(MONITOR_ID=MONITOR_ID, incident_id=alert['feed_property_id'])
             alert.pop('title', None)
 
             # Add monitor ID to the incident.
@@ -421,19 +430,19 @@ def fetch_incidents(
 
 def incident_get_items_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
     try:
-        incident_id = str(args.get('incident_id'))
+        incident_id = str(args.get('incident_id', ''))
         incident_data = client.incident_get_items(incident_id=incident_id)
         if isinstance(incident_data, dict) and isinstance(incident_data.get('data'), dict) and \
                 isinstance(incident_data['data'].get('incidents'), list) and len(incident_data['data']['incidents']) > 0:
             parsed_data, readable_output = parse_incident_markdown_table(incident_data['data'], incident_id)
         else:
             readable_output = f'No data found for item ID: {incident_id}'
-            parsed_data = None
+            parsed_data = []
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix='Radark.itemDetails',
             outputs_key_field='items',
-            outputs={'items': parsed_data, "items_markdown": readable_output})
+            outputs={'items': parsed_data, "details": readable_output})
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute command.\nError:\n {str(e)} {incident_data}')
@@ -442,7 +451,7 @@ def incident_get_items_command(client: Client, args: Dict[str, Any]) -> Union[Co
 
 def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
     try:
-        email = str(args.get('email'))
+        email = str(args.get('email', ''))
         email_data = client.email_enrich_data(email=email)
         if isinstance(email_data, dict) and isinstance(email_data.get('data'), dict) and \
                 isinstance(email_data['data'].get('incidents'), list) and len(email_data['data']['incidents']) > 0:
@@ -454,7 +463,7 @@ def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandR
             readable_output=readable_output,
             outputs_prefix='Radark.emailDetails',
             outputs_key_field='emails',
-            outputs={'items': parsed_data, "items_markdown": readable_output})
+            outputs={'emails': parsed_data})
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute command.\nError:\n {str(e)} {email}')
@@ -463,14 +472,14 @@ def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandR
 
 def item_handle_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
     try:
-        item_id = str(args.get('item_id'))
+        item_id = str(args.get('item_id', ''))
         action_res = client.action_on_item(item_id=item_id, action="handled")
         if isinstance(action_res, dict) and isinstance(action_res.get('data'), dict) \
                 and action_res['data'].get('value'):
-            readable_output = 'Item marked as handled'
+            readable_output = f'Item ID ({item_id}) marked as handled'
             return CommandResults(readable_output=readable_output)
         else:
-            raise Exception("Action failed!")
+            raise Exception("RaDark Error: Mark item action failed!")
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute command on {item_id}.\nError:\n {str(e)}')
@@ -479,7 +488,7 @@ def item_handle_command(client: Client, args: Dict[str, Any]) -> Union[CommandRe
 
 def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
     try:
-        item_id = str(args.get('item_id'))
+        item_id = str(args.get('item_id', ''))
         bot_id = ''
         room_id = ''
 
@@ -496,15 +505,15 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
             if isinstance(item_res, dict) and isinstance(item_res.get('data', ''), dict):
                 # Prevent execution on unsupported sub types.
                 if item_res['data'].get('sub_type', -1) not in SUPPORTED_SUB_TYPES_FOR_PURCHASE:
-                    raise Exception("Sub type not supported for purchasing!")
+                    raise Exception("RaDark Error: Sub type not supported for purchasing!")
 
                 # Extract bot ID and incident ID.
                 incident_id = item_res['data'].get('feed_property_id', '')
                 if not incident_id:
-                    raise Exception("Item ID doesn't found!")
+                    raise Exception("RaDark Error: Item ID was not found!")
                 bot_id = item_res['data'].get('bot_id', '')
                 if not bot_id:
-                    raise Exception("Bot ID doesn't found!")
+                    raise Exception("RaDark Error: Bot ID was not found!")
 
                 # Check if chat room already exists.
                 incident_res = client.incident_get_items(incident_id=incident_id)
@@ -520,7 +529,7 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
 
                     # Send the chat request.
                     message = {
-                        "text": "Hi <b>@KELA</b> , I would like to acquire further details about bot: " + bot_id,
+                        "text": f"Hi <b>@KELA</b> , I would like to acquire further details about bot: {bot_id}",
                         "mentionsList": mentions_list
                     }
                     room = {"itemId": incident_id, "itemType": "FEED_PROPERTY"}
@@ -532,15 +541,15 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
                     if isinstance(message_res, dict) and isinstance(message_res.get('data', ''), dict) \
                             and message_res['data'].get('roomId', ''):
                         # readable_output = 'Item marked for purchasing'
-                        readable_output = 'Bot ID (' + bot_id + ') marked for purchasing'
+                        readable_output = f"Bot ID ('{bot_id}') marked for purchasing"
                     else:
-                        raise Exception("Action failed!")
+                        raise Exception("RaDark Error: Purchase message was not created!")
                 else:
-                    raise Exception("Action failed!")
+                    raise Exception("RaDark Error: Item was not marked for purchase!")
             else:
-                readable_output = f'No data found for item ID: {incident_id}'
+                readable_output = f'No data found for item ID: {item_id}'
         else:
-            raise Exception("Mentions list doesn't found!")
+            raise Exception("RaDark Error: Mentions list was not found!")
         return CommandResults(readable_output=readable_output)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
@@ -552,8 +561,9 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
 
 
 def main() -> None:
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_timestamp = get_first_time_fetch(demisto.params().get('first_fetch'))

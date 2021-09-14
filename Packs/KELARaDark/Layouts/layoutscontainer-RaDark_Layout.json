@@ -31,6 +31,7 @@
             }
         ]
     },
+    "description": "A specific layout for RaDark incidents.",
     "detailsV2": {
         "tabs": [
             {
@@ -149,59 +150,6 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-field-changed-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "sort": {
-                            "asc": true,
-                            "field": "name"
-                        },
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 1,
-                        "x": 0,
-                        "y": 12
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-field-changed-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Child Incidents",
-                        "static": false,
-                        "type": "childInv",
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-field-changed-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-field-changed-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxH": null,
@@ -213,26 +161,8 @@
                         "static": false,
                         "type": "team",
                         "w": 1,
-                        "x": 2,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-field-changed-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 2,
-                        "moved": false,
-                        "name": "Indicators",
-                        "query": "",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 10
+                        "x": 1,
+                        "y": 2
                     },
                     {
                         "displayType": "CARD",
@@ -293,8 +223,8 @@
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 8
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -339,35 +269,6 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "i": "caseinfoid-field-changed-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 106,
-                                "id": "incident-details-field",
-                                "index": 0,
-                                "listId": "caseinfoid-field-changed-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Investigation Data",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
                         "y": 2
                     },
                     {
@@ -378,7 +279,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "radarkmonitorid",
+                                "fieldId": "kelaradarkmonitorid",
                                 "height": 22,
                                 "id": "bb58b3d0-d991-11eb-a7c1-659f9fbef746",
                                 "index": 0,
@@ -386,12 +287,21 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 2,
+                                "fieldId": "kelaradarkdetails",
+                                "height": 22,
+                                "id": "8ca33300-13a5-11ec-a36a-d1b5b9122b88",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "radarkincidenturl",
+                                "fieldId": "kelaradarkincidenturl",
                                 "height": 22,
                                 "id": "94153590-f9ef-11eb-99de-1b4ec71334d7",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-field-changed-caseinfoid-404817e0-cf72-11eb-8fd4-5b7cc1342f41",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -401,7 +311,7 @@
                                 "fieldId": "categories",
                                 "height": 22,
                                 "id": "f9b7daf0-d1af-11eb-8fd4-5b7cc1342f41",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -410,7 +320,7 @@
                                 "fieldId": "subcategory",
                                 "height": 22,
                                 "id": "fc26b810-d1af-11eb-8fd4-5b7cc1342f41",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -419,7 +329,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "beca33e0-d991-11eb-a7c1-659f9fbef746",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -434,20 +344,83 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
-                    },
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "mmkrejkpmo",
+                "name": "Items",
+                "sections": [
                     {
-                        "displayType": "ROW",
+                        "description": "",
+                        "displayType": "CARD",
                         "h": 6,
-                        "hideItemTitleOnlyOne": true,
+                        "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "caseinfoid-field-changed-caseinfoid-d07007e0-d366-11eb-89ce-3102ebf86311",
+                        "i": "caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-caseinfoid-mmkrejkpmo-field-changed-mmkrejkpmo-caseinfoid-2cc0c980-0e4f-11ec-8ebc-17e77219c928",
                         "items": [
                             {
-                                "endCol": 4,
-                                "fieldId": "radarkitems",
-                                "height": 44,
-                                "id": "56ce9870-fa80-11eb-8af4-f53b452f4424",
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablebotnets",
+                                "height": 106,
+                                "id": "11503570-115e-11ec-a6de-01cfffc703d3",
                                 "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableagressor",
+                                "height": 106,
+                                "id": "13363380-115e-11ec-a6de-01cfffc703d3",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktablerussianmarket",
+                                "height": 106,
+                                "id": "1480b4e0-115e-11ec-a6de-01cfffc703d3",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableleakedcredentialsfromcitadel",
+                                "height": 106,
+                                "id": "1574d8e0-115e-11ec-a6de-01cfffc703d3",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableleakedcredentialsfromhackingdiscussions",
+                                "height": 106,
+                                "id": "166134b0-115e-11ec-a6de-01cfffc703d3",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableleakedcredentialsfrominstantmessaging",
+                                "height": 106,
+                                "id": "178ae7a0-115e-11ec-a6de-01cfffc703d3",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "kelaradarktableleakedcredentialsfromdump",
+                                "height": 106,
+                                "id": "19311d90-115e-11ec-a6de-01cfffc703d3",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -455,13 +428,13 @@
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 2,
+                        "minW": 3,
                         "moved": false,
                         "name": "Items",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
-                        "y": 4
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -846,7 +819,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_radarkmonitorid",
+                        "fieldId": "incident_kelaradarkmonitorid",
                         "isVisible": true
                     },
                     {
@@ -1362,7 +1335,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_radarkmonitorid",
+                        "fieldId": "incident_kelaradarkmonitorid",
                         "isVisible": true
                     },
                     {
@@ -1524,6 +1497,5 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "A specific layout for RaDark incidents."
+    "fromVersion": "6.0.0"
 }

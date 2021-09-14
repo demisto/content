@@ -1,4 +1,4 @@
-Map RaDark Items to an incident.
+Map details to an RaDark incident.
 
 ## Script Data
 ---
@@ -7,7 +7,6 @@ Map RaDark Items to an incident.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Enrichment |
-| Cortex XSOAR Version | 4.1.0 |
 
 ## Inputs
 ---
@@ -18,4 +17,7 @@ Map RaDark Items to an incident.
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| incident.kelaradarkdetails | The incident details. | string |

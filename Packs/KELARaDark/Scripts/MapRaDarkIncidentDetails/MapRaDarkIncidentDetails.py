@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import traceback
 
 
@@ -8,8 +10,8 @@ import traceback
 
 def main():
     try:
-        # Map the incident_markdown parsed before to radarkitems field.
-        demisto.executeCommand("setIncident", {"radarkitems": demisto.args().get('itemDetails')['items_markdown']})
+        # Map the incident_markdown parsed before to kelaradarkitems field.
+        demisto.executeCommand("setIncident", {"kelaradarkdetails": demisto.args().get('itemDetails')['details']})
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CreateIndicators. Error: {str(ex)}')

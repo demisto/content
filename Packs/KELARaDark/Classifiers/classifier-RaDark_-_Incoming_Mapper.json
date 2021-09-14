@@ -58,13 +58,17 @@
                     "complex": null,
                     "simple": "type_description"
                 },
-                "RaDark Incident URL": {
+                "KELA RaDark Incident URL": {
                     "complex": null,
                     "simple": "incident_url"
                 },
-                "RaDark Monitor ID": {
+                "KELA RaDark Monitor ID": {
                     "complex": null,
                     "simple": "monitor_id"
+                },
+                "KELA RaDark Sub Type": {
+                    "complex": null,
+                    "simple": "sub_type"
                 },
                 "Sub Category": {
                     "complex": null,
