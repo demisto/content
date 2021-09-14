@@ -1,4 +1,3 @@
-import json
 import os
 from pathlib import PosixPath
 from typing import Tuple, Union
@@ -10,20 +9,8 @@ SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 
 
-def get_pack_metadata(file_path: str) -> dict:
-    """
-    Args:
-        file_path: The Pack metadata file path
-
-    Returns:
-        dict: The pack metadata file content
-    """
-    with open(file_path) as pack_metadata:
-        return json.load(pack_metadata)
-
-
 def is_pack_xsoar_supported(file_path: Union[str, PosixPath]) -> bool:
-    """Checks whether the pack is XSOAR supported.
+    """Checks whether the file belongs to a pack that is XSOAR supported.
     Tests are not being collected for non XSOAR  packs.
 
     Args:
