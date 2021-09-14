@@ -2559,9 +2559,9 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     }
 
     major_version = get_pan_os_major_version()
-    # it seems that in major 8.x pan-os changed the terminology from allow-list/block-list to allow/block
+    # it seems that in major 9.x pan-os changed the terminology from allow-list/block-list to allow/block
     # with regards to url filter xpaths
-    if major_version >= 8:
+    if major_version >= 9:
         allow_name = 'allow'
         block_name = 'block'
     else:
