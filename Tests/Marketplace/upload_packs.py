@@ -1106,7 +1106,7 @@ def main():
 
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path), storage_base_path)
+                            os.path.dirname(packs_artifacts_path), storage_base_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
