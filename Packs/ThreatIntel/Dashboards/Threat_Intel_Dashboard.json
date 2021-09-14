@@ -233,70 +233,28 @@
 				"params": {
 					"tableColumns": [
 						{
+							"displayed": true,
 							"isDefault": true,
-							"key": "indicator_type",
-							"position": 1,
+							"key": "Status",
 							"width": 120
 						},
 						{
+							"displayed": true,
 							"isDefault": true,
-							"key": "value",
-							"position": 2,
+							"key": "Traffic Light Protocol",
 							"width": 300
 						},
 						{
+							"displayed": true,
 							"isDefault": true,
-							"key": "score",
-							"position": 4,
+							"key": "Name",
 							"width": 120
 						},
 						{
+							"displayed": true,
 							"isDefault": true,
-							"key": "firstSeen",
-							"position": 5,
+							"key": "Creation Date",
 							"width": 275
-						},
-						{
-							"isDefault": true,
-							"key": "lastSeen",
-							"position": 6,
-							"width": 275
-						},
-						{
-							"isDefault": true,
-							"key": "timestamp",
-							"position": 8,
-							"width": 190
-						},
-						{
-							"isDefault": true,
-							"key": "relatedIncCount",
-							"position": 9,
-							"width": 150
-						},
-						{
-							"isDefault": true,
-							"key": "sourceBrands",
-							"position": 12,
-							"width": 175
-						},
-						{
-							"isDefault": true,
-							"key": "sourceInstances",
-							"position": 13,
-							"width": 175
-						},
-						{
-							"isDefault": true,
-							"key": "expirationStatus",
-							"position": 14,
-							"width": 175
-						},
-						{
-							"isDefault": true,
-							"key": "Category",
-							"position": 15,
-							"width": 190
 						}
 					]
 				},
