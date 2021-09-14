@@ -470,7 +470,7 @@ script:
   type: python
 fromversion: 6.0.0
 beta: true
-defaultmapperin: "Azure Active Directory Identity and Access"
-defaultclassifier: "Azure Active Directory Identity and Access Incoming Mapper"
+defaultmapperin: Azure Active Directory Identity and Access
+defaultclassifier: Azure Active Directory Identity and Access Incoming Mapper
 tests:
 -  AzureADTest
