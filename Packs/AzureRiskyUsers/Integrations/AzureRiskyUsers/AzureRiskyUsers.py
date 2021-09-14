@@ -377,7 +377,7 @@ def main():
             return_results(test_connection(client))
         elif command == 'azure-risky-users-list':
             return_results(risky_users_list_command(client, args))
-        elif command == 'azure-risky-users-auth-start':
+        elif command == 'azure-risky-user-get':
             return_results(risky_user_get_command(client, args))
         elif command == 'azure-risky-users-risk-detections-list':
             return_results(risk_detections_list_command(client, args))
