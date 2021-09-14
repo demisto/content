@@ -1,10 +1,9 @@
 from CommonServerPython import *
-from typing import Dict, Tuple, List
+from typing import Dict, List
 import requests
 from datetime import datetime
 import copy
 
-'''CONSTANTS'''
 APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTHORIZATION_CODE = 'authorization_code'
@@ -310,8 +309,9 @@ class KeyVaultClient:
             'DELETE', full_url=url, resource=VAULT_RESOURCE)
         return response
 
-    def get_certificate_request(self, vault_name: str, certificate_name: str, certificate_version: str) -> Dict[
-        str, Any]:
+    def get_certificate_request(self, vault_name: str,
+                                certificate_name: str,
+                                certificate_version: str) -> Dict[str, Any]:
         """
         Get a specified secret from a given key vault.
 
@@ -411,8 +411,8 @@ class KeyVaultClient:
             permissions['storage'] = storage
         return permissions
 
-    def config_vault_network_acls(self, default_action: str, bypass: str, vnet_sub_id,
-                                  ignore_missing_vnet_service_endpoint,
+    def config_vault_network_acls(self, default_action: str, bypass: str, vnet_sub_id: str,
+                                  ignore_missing_vnet_service_endpoint: bool,
                                   ip_rules: List[str]) -> Dict[str, Any]:
         """
         Configures the network acl property of a Key Vault.
@@ -478,7 +478,7 @@ class KeyVaultClient:
         return properties
 
     def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int, offset: int,
-                                          resource=MANAGEMENT_RESOURCE) -> List[dict]:
+                                          resource: str = MANAGEMENT_RESOURCE) -> List[dict]:
         """
         List the entities independent of azure's page size.
 
@@ -514,7 +514,7 @@ class KeyVaultClient:
                 "password": secret_value,
                 "name": f'{key_vault_name}/{secret_name}'
             }
-        except Exception as error:
+        except Exception:
             return None
 
 
@@ -1126,24 +1126,26 @@ def test_module(client: KeyVaultClient) -> None:
                            ' or the resource group name does not exist.')
 
 
-def fetch_credentials(client: KeyVaultClient) -> None:
+def fetch_credentials(client: KeyVaultClient,
+                      key_vaults_to_fetch_from: List[str],
+                      secrets_to_fetch: List[str]) -> None:
     """
-     Fetch credentials from a specified key vault and secret.
+     Fetch credentials from secrets which reside in the specified Key Vaults list.
 
      Args:
          client (KeyVaultClient):  Azure Key Vault API client.
+         key_vaults_to_fetch_from (List[str]): List of Key Vaults to fetch secrets from.
+         secrets_to_fetch List[str]): List of secrets to fetch.
 
      Returns:
          None
      """
     credentials = []
-    key_vaults_to_fetch_from = argToList(demisto.params().get('key_vaults', []))
-    secrets_to_fetch = argToList(demisto.params().get('secrets', []))
 
     if len(key_vaults_to_fetch_from) == 0:
-        return_error('No key vaults to fetch secrets from were specified.')
+        return_results('No key vaults to fetch secrets from were specified.')
     if len(secrets_to_fetch) == 0:
-        return_error('No secrets were specified.')
+        return_results('No secrets were specified.')
 
     for key_vault in key_vaults_to_fetch_from:
         for secret in secrets_to_fetch:
@@ -1152,7 +1154,6 @@ def fetch_credentials(client: KeyVaultClient) -> None:
     demisto.credentials(credentials)
 
 
-####helper functions####
 def convert_attributes_to_readable(attributes: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert attributes fields to be readable for the user.
@@ -1243,6 +1244,8 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
+    key_vaults_to_fetch_from = argToList(params.get('key_vaults', []))
+    secrets_to_fetch = argToList(params.get('secrets', []))
     self_deployed = params.get('self_deployed', False)
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -1285,7 +1288,7 @@ def main() -> None:
         if command == 'test-module':
             test_module(client)
         elif demisto.command() == 'fetch-credentials':
-            fetch_credentials(client)
+            fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch)
         elif command in commands:
             return_results(commands[command](client, args))
         else:

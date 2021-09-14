@@ -19,7 +19,8 @@ KEY_NAME = "key_test"
 SECRET_NAME = "sec_test"
 CERTIFICATE_NAME = "selfSignedCert01"
 BASE_VAULT_URL = f'https://{VAULT_NAME}.vault.azure.net'
-BASE_MANAGEMENT_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.KeyVault/vaults'
+BASE_MANAGEMENT_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/' \
+                      f'resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.KeyVault/vaults'
 ACCESS_TOKEN_REQUEST_URL = f'https://login.microsoftonline.com/{TENANT_ID}/oauth2/token'
 API_MANAGEMENT_VERSION_PARAM = "?api-version=2019-09-01"
 API_VAULT_VERSION_PARAM = "?api-version=7.2"
@@ -44,7 +45,8 @@ def load_mock_response(file_name: str) -> str:
 def mock_client():
     return KeyVaultClient(tenant_id=TENANT_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
                           subscription_id=SUBSCRIPTION_ID,
-                          resource_group_name=RESOURCE_GROUP_NAME,self_deployed=True, verify=False, proxy=False)
+                          resource_group_name=RESOURCE_GROUP_NAME,
+                          self_deployed=True, verify=False, proxy=False)
 
 
 def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
@@ -67,7 +69,7 @@ def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
 
-    result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME,'storage':None})
+    result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME, 'storage': None})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -149,7 +151,7 @@ def test_azure_key_vault_key_vault_delete_command(requests_mock):
     requests_mock.delete(url, json=mock_response)
 
     result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME})
-    assert True==True
+    assert result.outputs == {}
 
 
 def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
@@ -295,7 +297,7 @@ def test_azure_key_vault_secret_list_command(requests_mock):
     assert result.outputs_prefix == SECRET_PREFIX
     assert result.outputs[0].get('id') == "https://myvault.vault.azure.net/secrets/listsecrettest0"
     assert result.outputs[0].get('contentType') == "plainText"
-    assert result.outputs[0].get('attributes').get('enabled') == True
+    assert result.outputs[0].get('attributes').get('enabled') is True
 
 
 def test_azure_key_vault_secret_get_command(requests_mock):
@@ -327,7 +329,7 @@ def test_azure_key_vault_secret_get_command(requests_mock):
     assert result.outputs.get('value') == "mysecretvalue"
     assert result.outputs.get('kid') == "mykid"
     assert result.outputs.get('key_vault_name') == VAULT_NAME
-    assert result.outputs.get('attributes').get('enabled') == True
+    assert result.outputs.get('attributes').get('enabled') is True
 
 
 def test_azure_key_vault_secret_delete_command(requests_mock):
@@ -386,7 +388,7 @@ def test_azure_key_vault_certificate_list_command(requests_mock):
     assert len(result.outputs) == 2
     assert result.outputs_prefix == CERTIFICATE_PREFIX
     assert result.outputs[0].get('x5t') == "fLi3U52HunIVNXubkEnf8tP6Wbo"
-    assert result.outputs[0].get('attributes').get('enabled') == True
+    assert result.outputs[0].get('attributes').get('enabled') is True
 
 
 def test_azure_key_vault_certificate_get_command(requests_mock):
@@ -417,7 +419,7 @@ def test_azure_key_vault_certificate_get_command(requests_mock):
     assert result.outputs_prefix == CERTIFICATE_PREFIX
     assert result.outputs.get('x5t') == "fLi3U52HunIVNXubkEnf8tP6Wbo"
     assert result.outputs.get('key_vault_name') == VAULT_NAME
-    assert result.outputs.get('attributes').get('enabled') == True
+    assert result.outputs.get('attributes').get('enabled') is True
 
 
 def test_azure_key_vault_certificate_policy_get_command(requests_mock):
@@ -447,4 +449,4 @@ def test_azure_key_vault_certificate_policy_get_command(requests_mock):
     assert len(result.outputs) == 8
     assert result.outputs_prefix == 'AzureKeyVault.CertificatePolicy'
     assert result.outputs.get('id') == "https://myvault.vault.azure.net/certificates/selfSignedCert01/policy"
-    assert result.outputs.get('attributes').get('enabled') == True
+    assert result.outputs.get('attributes').get('enabled') is True
