@@ -117,8 +117,7 @@
     - python3 --version
     - node --version
     - npm --version
-    - npm ci --loglevel verbose
-    - npm install jsdoc-to-markdown@5.0.3
+    - npm ci -g --loglevel verbose
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
