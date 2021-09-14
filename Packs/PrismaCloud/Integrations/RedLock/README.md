@@ -14,6 +14,7 @@
 | incidentType | Incident type | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | ruleName | Fetch only incidents matching this rule name | False |
+| policyName | Fetch only incidents matching this policy name | False |
 | policySeverity | Fetch only incidents with this severity | False |
 | proxy | Use system proxy settings | False |
 | unsecure | Trust any certificate \(not secure\) | False |
