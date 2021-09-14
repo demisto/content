@@ -4,7 +4,7 @@ import json
 from pytz import utc
 
 from Grafana import Client, change_key, keys_to_lowercase, decapitalize, url_encode, calculate_fetch_start_time, \
-    parse_alerts, alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit
+    parse_alerts, alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state
 from freezegun import freeze_time
 from CommonServerPython import urljoin
 
@@ -403,3 +403,23 @@ def test_reduce_incidents_to_limit(alerts, limit, last_fetch, last_id_fetched,
     assert output_last_fetch == expected_last_fetch
     assert output_last_id == expected_last_id
     assert output_incidents == expected_incidents
+
+
+STATES = ((None, []), ('', []), ('all', []), ('no_data,all', []), ('no_data,alerting', ['no_data', 'alerting']))
+
+
+@pytest.mark.parametrize('state_input, state_output', STATES)
+def test_set_state(state_input, state_output):
+    """
+
+    Given:
+        - alerts-list command is executed
+
+    When:
+        - 'state' argument is or isn't given
+
+    Then:
+        - Returns the right states to get
+
+    """
+    assert set_state(state_input) == state_output

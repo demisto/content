@@ -14,7 +14,7 @@ HEADERS = {
 }
 
 # In the documentation, the state 'all' is written as 'ALL'. As the latter doesn't work, we use 'all''.
-ALERT_STATES = {'all', 'no_data', 'paused', 'alerting', 'ok', 'pending'}
+ALERT_STATES = {'all', 'no_data', 'paused', 'alerting', 'ok', 'pending', 'unknown'}
 
 MAX_INCIDENTS_TO_FETCH = 200
 
@@ -228,6 +228,17 @@ def url_encode(query: str):
     return query.replace(' ', '%20')
 
 
+def set_state(states: str = ''):
+    states = argToList(states)
+    for state in states:
+        if state not in ALERT_STATES:
+            raise DemistoException("State must be of: all, no_data, paused, alerting, ok, pending, unknown.")
+    # if all is not the first state given, Grafana ignores it and returns only other states given
+    if 'all' in states:
+        states = []
+    return states
+
+
 def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_DEFAULT_TIME):
     first_fetch_datetime = dateparser.parse(first_fetch).replace(tzinfo=utc, microsecond=0)
     if last_fetch is None:
@@ -292,11 +303,7 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     panel_id = args.get('panel_id')
     query = args.get('query')
-
-    state = argToList(args.get('state', ''))
-    if state and state not in ALERT_STATES:
-        raise DemistoException("State must be of: all, no_data, paused, alerting, ok, pending.")
-
+    state = set_state(args.get('state'))
     limit = args.get('limit')
     folder_id = argToList(args.get('folder_id', ''))
     dashboard_query = args.get('dashboard_query')
