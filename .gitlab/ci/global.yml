@@ -23,7 +23,7 @@
 
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:
@@ -117,6 +117,8 @@
     - python3 --version
     - node --version
     - npm --version
+    - npm ci
+    - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
 
