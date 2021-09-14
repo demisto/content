@@ -105,7 +105,7 @@
     - section_end "Creating new clean logs folder"
     - source $NVM_DIR/nvm.sh
     - nvm use default
-    - npm install jsdoc-to-markdown
+    - apt-get install jsdoc2md
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
