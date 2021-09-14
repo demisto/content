@@ -795,6 +795,7 @@ def main() -> None:
     """
     args = demisto.args()
     params = demisto.params()
+    # using two different credentials object as they both fields need to be encrypted
     apikey = params.get('apikey', {}).get('password', '')
     apikey_id = params.get('apikey_id', {}).get('password', '')
     if not apikey:
