@@ -4225,6 +4225,9 @@
             "fromversion": "6.0.0",
             "integrations": [
                 "Mail Sender (New)"
+            ],
+            "instance_names": [
+                "Mail_Sender_(New)_STARTTLS"
             ]
         },
         {
