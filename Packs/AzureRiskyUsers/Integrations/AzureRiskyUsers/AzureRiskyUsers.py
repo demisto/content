@@ -370,11 +370,11 @@ def main():
         elif command == 'azure-risky-users-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-risky-users-auth-start':            
-            return_results(start_auth())
+            return_results(start_auth(client))
         elif command == 'azure-risky-users-auth-complete':            
-            return_results(complete_auth())
+            return_results(complete_auth(client))
         elif command == 'azure-risky-users-auth-test':            
-            return_results(test_connection())
+            return_results(test_connection(client))
         elif command == 'azure-risky-users-list':            
             return_results(risky_users_list_command(client, args))
         elif command == 'azure-risky-users-auth-start':            
