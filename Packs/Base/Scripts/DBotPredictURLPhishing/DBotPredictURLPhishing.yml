@@ -30,7 +30,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.23983
+dockerimage: devdemisto/mlurlphishing:1.0.0.24089
 runas: DBotWeakRole
 runonce: false
 pswd: ''

@@ -28,6 +28,10 @@ MSG_INVALID_URL = "Error: "
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
+MSG_UPDATE_MODEL = "Update demisto model from docker model version %s.%s"
+MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s"
+MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
+MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "phishing_model"
@@ -74,7 +78,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
     MODEL_KEY_SEO: {True: RED_COLOR % 'Malicious', False: GREEN_COLOR % 'Benign'},
     MODEL_KEY_LOGO_FOUND: {True: RED_COLOR % 'Suspicious', False: GREEN_COLOR % 'Not Suspicious'},
     MODEL_KEY_LOGO_LOGIN_FORM: {True: RED_COLOR % 'Yes', False: GREEN_COLOR % 'No'},
-    DOMAIN_AGE_KEY: {True: RED_COLOR % 'Less than 6 months ago', False: GREEN_COLOR % 'More than 6 months ago'}
+    DOMAIN_AGE_KEY: {True: RED_COLOR % 'Less than 6 months ago', False: GREEN_COLOR % 'More than 6 months ago', None: None}
 }
 
 
@@ -142,9 +146,12 @@ def load_oob_model(path: str):
                                                        OOB_MINOR_VERSION_INFO_KEY: MINOR_DEFAULT_VERSION
                                                    }
                                                    })
-    demisto.results("Update demisto model from docker model version %s.%s" % (MAJOR_VERSION, MINOR_DEFAULT_VERSION))
+    demisto.results(MSG_UPDATE_MODEL % (MAJOR_VERSION, MINOR_DEFAULT_VERSION))
     if is_error(res):
         return_error(get_error(res))
+    return MSG_UPDATE_MODEL % (MAJOR_VERSION, MINOR_DEFAULT_VERSION)
+
+
 
 
 def oob_model_exists_and_updated() -> bool:
@@ -289,20 +296,22 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     explain = {
         "Domain": domain,
         "URL": url,
-        "NewDomain": str(pred_json[DOMAIN_AGE_KEY]),
         "LogoFound": str(pred_json[MODEL_KEY_LOGO_FOUND]),
         "LoginForm": str(pred_json[MODEL_KEY_LOGO_LOGIN_FORM]),
         "URLScore": url_score,
         "ContentBasedVerdict": str(pred_json[MODEL_KEY_SEO])
     }
+    if pred_json[DOMAIN_AGE_KEY] is not None:
+        explain["NewDomain"] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
         "Domain": domain,
         "Domain reputation": str(pred_json_colored[MODEL_KEY_SEO]),
-        DOMAIN_AGE_KEY: str(pred_json_colored[DOMAIN_AGE_KEY]),
         "Is there a Login form ?": str(pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM]),
         "Suspiscious use of company logo": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
         "URL severity score (from 0 to 1)": url_score
     }
+    if pred_json[DOMAIN_AGE_KEY] is not None:
+        explain_hr[DOMAIN_AGE_KEY] = str(pred_json_colored[DOMAIN_AGE_KEY])
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
@@ -318,6 +327,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     res = fileResult(filename='Logo detection engine', data=image)
     res['Type'] = entryTypes['image']
     demisto.results(res)
+    return explain
 
 
 def return_entry_white_list(url):
@@ -364,13 +374,17 @@ def get_score(pred_json):
         use_age = True
     if pred_json[MODEL_KEY_LOGO_FOUND]:
         use_logo = True
+    if pred_json[DOMAIN_AGE_KEY] is None:
+        domain_age_key = 0
+    else:
+        domain_age_key = pred_json[DOMAIN_AGE_KEY]
     total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + \
                         WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_SEO] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
     score = (
-                    use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * pred_json[DOMAIN_AGE_KEY] +
+                    use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * domain_age_key +
                     WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM] * pred_json[MODEL_KEY_LOGO_LOGIN_FORM] +
                     WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO] +
                     WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] * pred_json[MODEL_KEY_URL_SCORE] +
@@ -411,18 +425,17 @@ def extract_created_date(entry_list: List) -> bool:
     :return: bool
     """
     if not entry_list:  # REMOVE
-        return True
+        return None
     for entry in entry_list:
         if is_error(entry):
             continue
         else:
-            date_str = entry['EntryContext'].get('Domain(val.Name && val.Name == obj.Name)').get('WHOIS').get(
-                'CreationDate')
+            date_str = entry['EntryContext'].get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get('CreationDate', None)
             if date_str:
                 date = datetime.datetime.strptime(date_str, '%d-%m-%Y')
                 threshold_date = datetime.datetime.now() - datetime.timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)
                 return date > threshold_date
-    return False
+    return None
 
 
 def get_prediction_single_url(model, url, force_model):
@@ -488,19 +501,22 @@ def return_general_summary(results, tag="Summary"):
     if tag is not None:
         return_entry["Tags"] = ['SimilarIncidents_{}'.format(tag)]
     demisto.results(return_entry)
+    return df_summary_json
 
 
 def return_detailed_summary(results, number_entries_to_return):
+    outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
     for i in range(min(number_entries_to_return, len(results))):
         index = indice_descending_severity[i]
         pred_json = results[index].get('pred_json')
         url = results[index].get('url')
-        verdict = results[index].get('verdict')
         is_white_listed = results[index].get('is_white_listed')
         output_rasterize = results[index].get('output_rasterize')
-        return_entry_summary(pred_json, url, is_white_listed, output_rasterize)
+        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize)
+        outputs.append(summary_json)
+    return outputs
 
 
 def save_model_in_demisto(model):
@@ -527,6 +543,7 @@ def load_demisto_model():
 
 
 def main():
+    msg_list = []
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
     if exist:
@@ -535,10 +552,10 @@ def main():
         demisto.results("There is no existing model version in demisto")
 
     if reset_model or not exist or (demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
-        load_oob_model(OUT_OF_THE_BOX_MODEL_PATH)
+        msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
 
     elif (demisto_major_version == MAJOR_VERSION):
-        pass
+        msg_list.append(MSG_NO_ACTION_ON_MODEL)
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
         model_docker = load_model_from_docker()
         model_docker_minor = model_docker.minor
@@ -547,21 +564,23 @@ def main():
         model_docker.clf.named_steps.preprocessor.named_transformers_['image'].named_steps.trans.logo_dict = model.logos_dict
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
-        demisto.results(
-            "Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s" % (
-            MAJOR_VERSION, model_docker_minor, model.major, model.minor))
+        msg_list.append(MSG_UPDATE_LOGO)
+        demisto.results(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
     else:
-        return_error('Wrong configuration of the model')
+        msg_list.append(MSG_WRONG_CONFIG_MODEL)
+        return_error(MSG_WRONG_CONFIG_MODEL)
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
     force_model = demisto.args().get('forceModel', 'False') == 'True'
     urls = [x.strip() for x in demisto.args().get('urls', '').split(',') if x]
     if not urls:
+        msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
     number_entries_to_return = int(demisto.args().get('numberEntryToReturn'))
     results = [get_prediction_single_url(model, x, force_model) for x in urls]
-    return_general_summary(results)
-    return_detailed_summary(results, number_entries_to_return)
+    general_summary = return_general_summary(results)
+    detailed_summary = return_detailed_summary(results, number_entries_to_return)
+    return general_summary, detailed_summary, msg_list
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
