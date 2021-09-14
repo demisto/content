@@ -1,4 +1,4 @@
-List all dockers images that are in use by the installed integrations and automations
+List all Docker images that are in use by the installed integrations and automations.
 
 Script Data
 ---
@@ -14,15 +14,15 @@ Inputs
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| export_to_context | Export result to context |
+| export_to_context | Whether to export the result to context. Possible values: "true" and "false". Default is "true". |
 
 Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| UsedDockerImages.DockerImage | The Docker Image name | String |
-| UsedDockerImages.ContentItem | The Integration or Automation name that used the specific Docker Image | String |
+| UsedDockerImages.DockerImage | The Docker image name. | String |
+| UsedDockerImages.ContentItem | The integration or automation name that used the specific Docker image. | String |
 
 ## Script Example
 
@@ -65,7 +65,7 @@ Outputs
 
 ## Human Readable Output
 
- ### Dockers Images In use:
+ ### Docker Images In use:
 |Docker Image|Content Item|
 |---|---|
 | demisto/ldap:1.0.0.23980 | Active Directory Query v2| 
