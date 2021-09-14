@@ -52,8 +52,8 @@
   - echo $PATH
   - export NVM_DIR="$HOME/.nvm"
   - export NODE_VERSION="12.18.4"
-  - export NODE_PATH="$NVM_DIR/v$NODE_VERSION/lib/node_modules"
-  - export PATH="$NVM_DIR/v$NODE_VERSION/lib:$NVM_DIR/v$NODE_VERSION/bin:$PATH"
+  - export NODE_PATH="$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules"
+  - export PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
@@ -118,9 +118,13 @@
     - pip3 --version
     - node --version
     - npm --version
-    - cp
-    - npm install jsdoc-to-markdown@5.0.3 -g
+    - cp package.json $NVM_DIR/versions/node/v$NODE_VERSION
+    - cp package-lock.json $NVM_DIR/versions/node/v$NODE_VERSION
+    - npm prefix
+    - npm prefix -g
     - npm install --only=prod -g --log-level verbose
+    - ls -la /root/.nvm/versions/node/v12.18.4/bin
+    - npm ci -g --log-level verbose
     - ls -la /root/.nvm/versions/node/v12.18.4/bin
     - jsdoc2md --version
     - demisto-sdk --version
