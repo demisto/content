@@ -32,7 +32,7 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | --- | --- |
     | Server URL | False |
     | Tenant ID | True |
-    | Credentials | True |
+    | Client ID | True |
     | Subscription ID | True |
     | Resource Group Name | True |
     | Workspace Name | True |
