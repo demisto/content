@@ -118,7 +118,7 @@
     - pip3 --version
     - node --version
     - npm --version
-    - npm install -g --loglevel verbose
+    - npm ci --prefix . -g --loglevel verbose
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
