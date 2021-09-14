@@ -79,7 +79,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path=GCPConfig.STORAGE_BASE_PATH) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:

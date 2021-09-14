@@ -488,7 +488,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     if not is_private_build:
@@ -500,8 +501,8 @@ def main():
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+    # if storage_base_path:
+    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path TODO: remove
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
@@ -524,7 +525,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
@@ -536,7 +537,7 @@ def main():
 
     if should_upload_core_packs(storage_bucket_name):
         create_corepacks_config(default_storage_bucket, build_number, index_folder_path,
-                                artifacts_dir=os.path.dirname(packs_artifacts_path))
+                                os.path.dirname(packs_artifacts_path), storage_base_path)
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
