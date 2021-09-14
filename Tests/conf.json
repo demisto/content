@@ -4227,10 +4227,7 @@
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "EWS Mail Sender"
-            ]
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "PCAP Search test",
@@ -4632,7 +4629,8 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
-        "Carbon Black Edr - Test": "Issue 40132"
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322"
     },
     "skipped_integrations": {
         
