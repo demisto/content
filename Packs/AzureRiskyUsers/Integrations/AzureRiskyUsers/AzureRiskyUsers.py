@@ -369,21 +369,20 @@ def main():
                            'run the azure-risky-users-auth-start command instead.')
         elif command == 'azure-risky-users-auth-reset':
             return_results(reset_auth())
-        elif command == 'azure-risky-users-auth-start':            
+        elif command == 'azure-risky-users-auth-start':
             return_results(start_auth(client))
-        elif command == 'azure-risky-users-auth-complete':            
+        elif command == 'azure-risky-users-auth-complete':
             return_results(complete_auth(client))
-        elif command == 'azure-risky-users-auth-test':            
+        elif command == 'azure-risky-users-auth-test':
             return_results(test_connection(client))
-        elif command == 'azure-risky-users-list':            
+        elif command == 'azure-risky-users-list':
             return_results(risky_users_list_command(client, args))
-        elif command == 'azure-risky-users-auth-start':            
+        elif command == 'azure-risky-users-auth-start':
             return_results(risky_user_get_command(client, args))
-        elif command == 'azure-risky-users-risk-detections-list':            
+        elif command == 'azure-risky-users-risk-detections-list':
             return_results(risk_detections_list_command(client, args))
-        elif command == 'azure-risky-users-risk-detection-get':            
+        elif command == 'azure-risky-users-risk-detection-get':
             return_results(risk_detection_get_command(client, args))
-
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
