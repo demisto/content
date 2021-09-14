@@ -904,4 +904,6 @@ script:
   type: python
 tests:
 - Grafana-Test
+defaultmapperin: Grafana Alert Mapper
+defaultclassifier: Grafana Alert
 fromversion: 6.0.0
