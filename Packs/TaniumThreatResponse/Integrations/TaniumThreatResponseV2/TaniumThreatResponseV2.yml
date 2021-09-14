@@ -383,7 +383,8 @@ script:
       description: Snapshot creation task status.
       type: String
     - contextPath: Tanium.SnapshotTask.taskId
-      description: Snapshot creation task id. You can get task status using `tanium-tr-get-task-by-id` command.
+      description: Snapshot creation task id. You can get task status using `tanium-tr-get-task-by-id`
+        command.
       type: Number
   - arguments:
     - default: false
@@ -503,20 +504,20 @@ script:
       description: The connection's message descriding the status.
       type: String
     - contextPath: Tanium.Connection.personaId
-      description: The connection's ???????
+      description: The connection's persona Id.
       type: String
     - contextPath: Tanium.Connection.clientId
-      description: The connection's ???????
+      description: The client id.
       type: String
     - contextPath: Tanium.Connection.userId
-      description: The connection's ???????
+      description: The connection's user id.
       type: String
     - contextPath: Tanium.Connection.eid
-      description: The connection's ???????
+      description: The connection's eid.
       type: String
     - contextPath: Tanium.Connection.hasTools
-      description: The connection's ???????
-      type: String
+      description: Has connection tools.
+      type: Boolean
   - arguments:
     - default: false
       description: Client id. Use `tanium-tr-get-system-status` to get all possible
@@ -845,6 +846,9 @@ script:
     execution: false
     name: tanium-tr-list-events-by-connection
     outputs:
+    - contextPath: TaniumEvent.id
+      description: The ID of the event.
+      type: String
     - contextPath: TaniumEvent.groupName
       description: The group name of the event.
       type: String
@@ -855,6 +859,9 @@ script:
       description: The event operation.
       type: String
     - contextPath: TaniumEvent.processId
+      description: The ID of the process.
+      type: Number
+    - contextPath: TaniumEvent.pid
       description: The ID of the process.
       type: Number
     - contextPath: TaniumEvent.processPath
@@ -893,6 +900,9 @@ script:
     - contextPath: TaniumEvent.processCommandLine
       description: The process command line.
       type: String
+    - contextPath: TaniumEvent.parentCommandLine
+      description: The parent command line.
+      type: String
     - contextPath: TaniumEvent.processHash
       description: The hash value of the process.
       type: String
@@ -929,7 +939,7 @@ script:
     - contextPath: TaniumEvent.imagePath
       description: The image path.
       type: String
-    - contextPath: TaniumEvent.creationTime
+    - contextPath: TaniumEvent.createTime
       description: The process creation time
       type: Date
     - contextPath: TaniumEvent.endTime
@@ -937,6 +947,9 @@ script:
       type: Date
     - contextPath: TaniumEvent.eventTaskName
       description: The name of the event task.
+      type: String
+    - contextPath: TaniumEvent.hashe
+      description: The process hash.
       type: String
   - arguments:
     - default: false
@@ -1536,7 +1549,7 @@ script:
     - contextPath: Tanium.Evidence.uuid
       description: The evidence UUID.
       type: String
-    - contextPath: Tanium.Evidence.CreatedAt
+    - contextPath: Tanium.Evidence.createdAt
       description: Time when the process was created.
       type: Date
     - contextPath: Tanium.Evidence.hostname
@@ -1674,22 +1687,22 @@ script:
     execution: false
     name: tanium-tr-request-file-download
     outputs:
-    - contextPath: Tanium.FileDownload.compress
+    - contextPath: Tanium.FileDownloadTask.compress
       description: Is file compressed.
       type: String
-    - contextPath: Tanium.FileDownload.connection
+    - contextPath: Tanium.FileDownloadTask.connection
       description: The file download host.
       type: String
-    - contextPath: Tanium.FileDownload.taskId
+    - contextPath: Tanium.FileDownloadTask.taskId
       description: ID of the file download task.
       type: Number
-    - contextPath: Tanium.FileDownload.paths
+    - contextPath: Tanium.FileDownloadTask.paths
       description: The file download paths.
       type: String
-    - contextPath: Tanium.FileDownload.startTime
+    - contextPath: Tanium.FileDownloadTask.startTime
       description: Download start time.
       type: Date
-    - contextPath: Tanium.FileDownload.status
+    - contextPath: Tanium.FileDownloadTask.status
       description: Status of the file download request.
       type: String
   - arguments:
@@ -1842,26 +1855,29 @@ script:
     hidden: false
     name: tanium-tr-intel-docs-labels-list
     outputs:
-    - contextPath: Tanium.IntelDocLabels.ID
+    - contextPath: Tanium.IntelDocLabel.IntelDocID
+      description: The requested intel doc id.
+      type: String
+    - contextPath: Tanium.IntelDocLabel.LabelsList.ID
       description: The unique identifier for this label.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.Name
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Name
       description: The display name of the label.
       type: String
-    - contextPath: Tanium.IntelDocLabels.Description
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Description
       description: An extended description of the label.
       type: String
-    - contextPath: Tanium.IntelDocLabels.IndicatorCount
+    - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
       description: The number of indicator-based intel documents associated with this
         label, not including Tanium Signals.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.SignalCount
+    - contextPath: Tanium.IntelDocLabel.LabelsList.SignalCount
       description: The number of Tanium Signal documents associated with this label.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.CreatedAt
+    - contextPath: Tanium.IntelDocLabel.LabelsList.CreatedAt
       description: The date this label was created.
       type: Date
-    - contextPath: Tanium.IntelDocLabels.UpdatedAt
+    - contextPath: Tanium.IntelDocLabel.LabelsList.UpdatedAt
       description: The date this label was last updated, not including the intel and
         signal counts.
       type: Date
@@ -1886,26 +1902,29 @@ script:
     hidden: false
     name: tanium-tr-intel-docs-add-label
     outputs:
-    - contextPath: Tanium.IntelDocLabels.ID
+    - contextPath: Tanium.IntelDocLabel.IntelDocID
+      description: The requested intel doc id.
+      type: String
+    - contextPath: Tanium.IntelDocLabel.LabelsList.ID
       description: The unique identifier for this label.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.Name
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Name
       description: The display name of the label.
       type: String
-    - contextPath: Tanium.IntelDocLabels.Description
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Description
       description: An extended description of the label.
       type: String
-    - contextPath: Tanium.IntelDocLabels.IndicatorCount
+    - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
       description: The number of indicator-based intel documents associated with this
         label, not including Tanium Signals.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.SignalCount
+    - contextPath: Tanium.IntelDocLabel.LabelsList.SignalCount
       description: The number of Tanium Signal documents associated with this label.
       type: Number
-    - contextPath: Tanium.IntelDocLabels.CreatedAt
+    - contextPath: Tanium.IntelDocLabel.LabelsList.CreatedAt
       description: The date this label was created.
       type: Date
-    - contextPath: Tanium.IntelDocLabels.UpdatedAt
+    - contextPath: Tanium.IntelDocLabel.LabelsList.UpdatedAt
       description: The date this label was last updated, not including the intel and
         signal counts.
       type: Date
@@ -1929,6 +1948,31 @@ script:
     execution: false
     hidden: false
     name: tanium-tr-intel-docs-remove-label
+    outputs:
+    - contextPath: Tanium.IntelDocLabel.IntelDocID
+      description: Requested doc ID.
+      type: String
+    - contextPath: Tanium.IntelDocLabel.LabelsList.CreatedAt
+      description: Date when label was created.
+      type: Date
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Description
+      description: Label description.
+      type: String
+    - contextPath: Tanium.IntelDocLabel.LabelsList.ID
+      description: Label id.
+      type: Number
+    - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
+      description: Number of related indicators.
+      type: Number
+    - contextPath: Tanium.IntelDocLabel.LabelsList.Name
+      description: Label name.
+      type: String
+    - contextPath: Tanium.IntelDocLabel.LabelsList.SignalCount
+      description: Number of related signal counts.
+      type: Number
+    - contextPath: Tanium.IntelDocLabel.LabelsList.UpdatedAt
+      description: Date when label was last updated.
+      type: Date
   - arguments:
     - default: false
       description: The file entry ID.
@@ -2076,10 +2120,10 @@ script:
     hidden: false
     name: tanium-tr-get-task-by-id
     outputs:
-    - contextPath: Tanium.Task.CreatedAt
+    - contextPath: Tanium.Task.createdAt
       description: The date at which this task was first added to the system.
       type: Date
-    - contextPath: Tanium.Task.ID
+    - contextPath: Tanium.Task.id
       description: The unique identifier for this task in this instance of the system.
       type: Number
     - contextPath: Tanium.Task.updatedAt

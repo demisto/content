@@ -1,94 +1,133 @@
 id: Tanium Threat Response V2 Test
-name: Tanium Threat Response V2 Test
 version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+vcShouldKeepItemLegacyProdMachine: false
+name: Tanium Threat Response V2 Test
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: 06c57b3e-f352-476a-807d-e91d54e59746
     type: start
     task:
-      id: '0'
+      id: 06c57b3e-f352-476a-807d-e91d54e59746
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 65
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 418d7197-9cc5-499b-8349-b8cd0870aa3f
     type: regular
     task:
-      id: '1'
+      id: 418d7197-9cc5-499b-8349-b8cd0870aa3f
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "6"
+      - "77"
+      - "23"
+      - "4"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 225
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c62443f1-4c3b-4824-87e5-ed81a7471cbf
     type: regular
     task:
-      id: '2'
+      id: c62443f1-4c3b-4824-87e5-ed81a7471cbf
       version: -1
       name: tanium-tr-get-intel-doc-by-id
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-intel-doc-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      intel-doc-id:
+        complex:
+          root: Tanium.IntelDoc
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Tanium.IntelDoc.LabelIds
+                iscontext: true
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c33e9634-6060-438e-83b8-426ce1e7bdfa
     type: condition
     task:
-      id: '3'
+      id: c33e9634-6060-438e-83b8-426ce1e7bdfa
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "63"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -103,17 +142,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDoc.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.IntelDoc.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.LabelIds
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -130,52 +159,67 @@ tasks:
             value:
               simple: Tanium.IntelDoc.UpdatedAt
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2325
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8d167b01-2be8-4c50-84b0-51d745dbb186
     type: regular
     task:
-      id: '4'
+      id: 8d167b01-2be8-4c50-84b0-51d745dbb186
       version: -1
       name: tanium-tr-list-intel-docs
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-intel-docs
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "5"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0c629265-bb8c-40d2-83c1-a6cd781d1556
     type: condition
     task:
-      id: '5'
+      id: 0c629265-bb8c-40d2-83c1-a6cd781d1556
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -190,17 +234,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDoc.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.IntelDoc.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.LabelIds
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -217,52 +251,67 @@ tasks:
             value:
               simple: Tanium.IntelDoc.UpdatedAt
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1975
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 367d58f6-9f90-4187-8e9d-376ddc32aeee
     type: regular
     task:
-      id: '6'
+      id: 367d58f6-9f90-4187-8e9d-376ddc32aeee
       version: -1
       name: tanium-tr-list-alerts
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-alerts
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: eb28e6f4-36a2-4d98-8e58-bf491d686bf0
     type: condition
     task:
-      id: '7'
+      id: eb28e6f4-36a2-4d98-8e58-bf491d686bf0
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -324,52 +373,70 @@ tasks:
             value:
               simple: Tanium.Alert.Severity
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 170713ec-7b64-41d3-820d-c5a11fda6bbd
     type: regular
     task:
-      id: '8'
+      id: 170713ec-7b64-41d3-820d-c5a11fda6bbd
       version: -1
       name: tanium-tr-get-alert-by-id
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-alert-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
+    scriptarguments:
+      alert-id:
+        simple: ${Tanium.Alert.ID}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1d83e344-6947-474f-80eb-7d71b66bd843
     type: condition
     task:
-      id: '9'
+      id: 1d83e344-6947-474f-80eb-7d71b66bd843
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -431,75 +498,116 @@ tasks:
             value:
               simple: Tanium.Alert.Severity
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2325
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: cd8cf9fb-9d91-4a8e-8f98-690b181c1398
     type: regular
     task:
-      id: '10'
+      id: cd8cf9fb-9d91-4a8e-8f98-690b181c1398
       version: -1
       name: tanium-tr-alert-update-state
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-alert-update-state
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "47"
+    scriptarguments:
+      alert-ids:
+        simple: ${Tanium.Alert.ID}
+      state:
+        simple: unresolved
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: 11
-    taskid: '11'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d67cd597-35dc-414e-810e-918377bb7d0c
     type: regular
     task:
-      id: '11'
+      id: d67cd597-35dc-414e-810e-918377bb7d0c
       version: -1
       name: tanium-tr-create-snapshot
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-create-snapshot
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '12'
-    scriptarguments: {}
+      - "12"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: id
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2200}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: '12'
-    taskid: '12'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 27b630b1-9956-42e6-8438-a9e377d5b86d
     type: condition
     task:
-      id: '12'
+      id: 27b630b1-9956-42e6-8438-a9e377d5b86d
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '13'
+      "yes":
+      - "75"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -521,75 +629,104 @@ tasks:
             value:
               simple: Tanium.SnapshotTask.taskId
             iscontext: true
-    view: '{"position": {"x": 50, "y": 2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: 13
-    taskid: '13'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2f499d51-5c39-482e-82aa-d4af5823d05d
     type: regular
     task:
-      id: '13'
+      id: 2f499d51-5c39-482e-82aa-d4af5823d05d
       version: -1
       name: tanium-tr-delete-snapshot
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-delete-snapshot
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '14'
-    scriptarguments: {}
+      - "79"
+    scriptarguments:
+      snapshot-ids:
+        complex:
+          root: Tanium.Snapshot
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2600}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: 14
-    taskid: '14'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 444fc6a2-754e-45d9-8270-f8fcc16e3b20
     type: regular
     task:
-      id: '14'
+      id: 444fc6a2-754e-45d9-8270-f8fcc16e3b20
       version: -1
       name: tanium-tr-list-snapshots
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-snapshots
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-    scriptarguments: {}
+      - "15"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
-    id: '15'
-    taskid: '15'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1cac6fbe-f079-4dd7-8b62-2935225d7c25
     type: condition
     task:
-      id: '15'
+      id: 1cac6fbe-f079-4dd7-8b62-2935225d7c25
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '16'
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -641,75 +778,67 @@ tasks:
             value:
               simple: Tanium.Snapshot.uuid
             iscontext: true
-    view: '{"position": {"x": 50, "y": 3000}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '16':
-    id: 16
-    taskid: '16'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0f91a031-66c9-4d75-8a85-4d1ddacc6131
     type: regular
     task:
-      id: '16'
-      version: -1
-      name: tanium-tr-delete-local-snapshot
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-delete-local-snapshot
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '17'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 3200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '17':
-    id: 17
-    taskid: '17'
-    type: regular
-    task:
-      id: '17'
+      id: 0f91a031-66c9-4d75-8a85-4d1ddacc6131
       version: -1
       name: tanium-tr-list-connections
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-connections
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '18'
-    scriptarguments: {}
+      - "18"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 3400}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '18':
-    id: '18'
-    taskid: '18'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0302834e-46a0-4649-868a-9540c7225402
     type: condition
     task:
-      id: '18'
+      id: 0302834e-46a0-4649-868a-9540c7225402
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '19'
+      "yes":
+      - "27"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -776,150 +905,161 @@ tasks:
             value:
               simple: Tanium.Connection.hasTools
             iscontext: true
-    view: '{"position": {"x": 50, "y": 3600}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2325
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
-    id: 19
-    taskid: '19'
-    type: regular
-    task:
-      id: '19'
-      version: -1
-      name: tanium-tr-create-connection
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-create-connection
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '20'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 3800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '20':
-    id: '20'
-    taskid: '20'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: deeccb6f-4da3-4160-896e-7eb4b519b569
     type: condition
     task:
-      id: '20'
+      id: deeccb6f-4da3-4160-896e-7eb4b519b569
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '21'
+      "yes":
+      - "81"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Tanium.Connection.id
             iscontext: true
-    view: '{"position": {"x": 50, "y": 4000}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 925
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: 21
-    taskid: '21'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c9abace3-f529-4c40-83c5-a4369d4e1c5c
     type: regular
     task:
-      id: '21'
+      id: c9abace3-f529-4c40-83c5-a4369d4e1c5c
       version: -1
       name: tanium-tr-delete-connection
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-delete-connection
       type: regular
       iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '22'
-    scriptarguments: {}
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4200}}'
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 225
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '22':
-    id: 22
-    taskid: '22'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 63d61651-c1f0-4ef5-82fc-32ee9f6691ef
     type: regular
     task:
-      id: '22'
+      id: 63d61651-c1f0-4ef5-82fc-32ee9f6691ef
       version: -1
       name: tanium-tr-close-connection
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-close-connection
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
-    scriptarguments: {}
+      - "21"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4400}}'
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '23':
-    id: 23
-    taskid: '23'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 494c87a4-6615-4e21-8cf6-9803b963dd3d
     type: regular
     task:
-      id: '23'
+      id: 494c87a4-6615-4e21-8cf6-9803b963dd3d
       version: -1
       name: tanium-tr-list-labels
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-labels
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '24'
-    scriptarguments: {}
+      - "24"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 4600}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1450
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '24':
-    id: '24'
-    taskid: '24'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 72f1dc82-1dbc-4adb-8d32-c1b8221085ee
     type: condition
     task:
-      id: '24'
+      id: 72f1dc82-1dbc-4adb-8d32-c1b8221085ee
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '25'
+      "yes":
+      - "25"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -956,52 +1096,70 @@ tasks:
             value:
               simple: Tanium.Label.updatedAt
             iscontext: true
-    view: '{"position": {"x": 50, "y": 4800}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1625
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '25':
-    id: 25
-    taskid: '25'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 0903f327-5d14-4f1d-82c1-de4a8711ae85
     type: regular
     task:
-      id: '25'
+      id: 0903f327-5d14-4f1d-82c1-de4a8711ae85
       version: -1
       name: tanium-tr-get-label-by-id
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-label-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '26'
-    scriptarguments: {}
+      - "26"
+    scriptarguments:
+      label-id:
+        simple: ${Tanium.Label.id}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5000}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '26':
-    id: '26'
-    taskid: '26'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ca17d25a-4cc0-4fd8-826c-9590656aff15
     type: condition
     task:
-      id: '26'
+      id: ca17d25a-4cc0-4fd8-826c-9590656aff15
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '27'
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1038,52 +1196,70 @@ tasks:
             value:
               simple: Tanium.Label.updatedAt
             iscontext: true
-    view: '{"position": {"x": 50, "y": 5200}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1975
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '27':
-    id: 27
-    taskid: '27'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 064a5015-6b42-4b61-8038-baab9a537b19
     type: regular
     task:
-      id: '27'
+      id: 064a5015-6b42-4b61-8038-baab9a537b19
       version: -1
       name: tanium-tr-list-file-downloads
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-file-downloads
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '28'
-    scriptarguments: {}
+      - "28"
+    scriptarguments:
+      limit:
+        simple: "80"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5400}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '28':
-    id: '28'
-    taskid: '28'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 7cf81135-563e-43d3-8104-e27afaa1eaec
     type: condition
     task:
-      id: '28'
+      id: 7cf81135-563e-43d3-8104-e27afaa1eaec
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '29'
+      "yes":
+      - "57"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1150,52 +1326,74 @@ tasks:
             value:
               simple: Tanium.FileDownload.evidenceType
             iscontext: true
-    view: '{"position": {"x": 50, "y": 5600}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '29':
-    id: 29
-    taskid: '29'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 9ecc0751-b052-450d-8aa4-4d26a7443ea3
     type: regular
     task:
-      id: '29'
+      id: 9ecc0751-b052-450d-8aa4-4d26a7443ea3
       version: -1
       name: tanium-tr-get-downloaded-file
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-downloaded-file
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '30'
-    scriptarguments: {}
+      - "30"
+    scriptarguments:
+      file_id:
+        complex:
+          root: Tanium.FileDownload
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 5800}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '30':
-    id: '30'
-    taskid: '30'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 2c89d109-b106-4781-8fcd-07a5e65554aa
     type: condition
     task:
-      id: '30'
+      id: 2c89d109-b106-4781-8fcd-07a5e65554aa
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '31'
+      "yes":
+      - "33"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1252,72 +1450,91 @@ tasks:
             value:
               simple: File.Type
             iscontext: true
-    view: '{"position": {"x": 50, "y": 6000}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '31':
-    id: 31
-    taskid: '31'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f94ee1a3-83d7-464d-8b00-8b7bc997dc45
     type: regular
     task:
-      id: '31'
+      id: f94ee1a3-83d7-464d-8b00-8b7bc997dc45
       version: -1
       name: tanium-tr-list-events-by-connection
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-events-by-connection
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '32'
-    scriptarguments: {}
+      - "32"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      type:
+        simple: Process
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 6200}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1275
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '32':
-    id: '32'
-    taskid: '32'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 922b2eb5-3b80-4de7-83b3-c514412a1d52
     type: condition
     task:
-      id: '32'
+      id: 922b2eb5-3b80-4de7-83b3-c514412a1d52
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '33'
+      "yes":
+      - "35"
+      - "82"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: TaniumEvent.groupName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.file
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.operation
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.processId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1332,42 +1549,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: TaniumEvent.timestamp
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: TaniumEvent.userName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.remoteAddress
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.remoteAddressPort
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.localAddress
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.localAddressPort
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.keyPath
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.valueName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1377,129 +1559,81 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: TaniumEvent.processCommandLine
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.processHash
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.hashes
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.imageLoaded
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.signature
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: TaniumEvent.signed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.eventId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.eventOpcode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.eventRecordId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.eventTaskId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.query
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.response
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.imagePath
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.creationTime
+              simple: TaniumEvent.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: TaniumEvent.endTime
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TaniumEvent.eventTaskName
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 6400}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1450
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '33':
-    id: 33
-    taskid: '33'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: f15c0ea5-580b-46ef-83ab-b7a13f0b702b
     type: regular
     task:
-      id: '33'
+      id: f15c0ea5-580b-46ef-83ab-b7a13f0b702b
       version: -1
       name: tanium-tr-get-file-download-info
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-file-download-info
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '34'
-    scriptarguments: {}
+      - "34"
+    scriptarguments:
+      file_id:
+        complex:
+          root: Tanium.FileDownload
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 6600}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '34':
-    id: '34'
-    taskid: '34'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d4c0b03d-48ae-4110-8356-91bd14213814
     type: condition
     task:
-      id: '34'
+      id: d4c0b03d-48ae-4110-8356-91bd14213814
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '35'
+      "yes":
+      - "79"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1566,52 +1700,67 @@ tasks:
             value:
               simple: Tanium.FileDownload.evidenceType
             iscontext: true
-    view: '{"position": {"x": 50, "y": 6800}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '35':
-    id: 35
-    taskid: '35'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 58623207-4698-45c1-8402-d936d187ee4b
     type: regular
     task:
-      id: '35'
+      id: 58623207-4698-45c1-8402-d936d187ee4b
       version: -1
       name: tanium-tr-get-process-info
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-process-info
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '36'
-    scriptarguments: {}
+      - "36"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7000}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1625
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '36':
-    id: '36'
-    taskid: '36'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c81a4159-d435-41bd-85db-d683eea56dac
     type: condition
     task:
-      id: '36'
+      id: c81a4159-d435-41bd-85db-d683eea56dac
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '37'
+      "yes":
+      - "37"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1738,52 +1887,67 @@ tasks:
             value:
               simple: Tanium.ProcessInfo.userName
             iscontext: true
-    view: '{"position": {"x": 50, "y": 7200}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '37':
-    id: 37
-    taskid: '37'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c9eb8286-c927-412a-8d17-8c2454a3e5d5
     type: regular
     task:
-      id: '37'
+      id: c9eb8286-c927-412a-8d17-8c2454a3e5d5
       version: -1
       name: tanium-tr-get-events-by-process
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-events-by-process
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '38'
-    scriptarguments: {}
+      - "38"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7400}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1975
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '38':
-    id: '38'
-    taskid: '38'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: bba8234a-18ac-4115-876e-19800e40a1f0
     type: condition
     task:
-      id: '38'
+      id: bba8234a-18ac-4115-876e-19800e40a1f0
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '39'
+      "yes":
+      - "39"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1810,52 +1974,67 @@ tasks:
             value:
               simple: Tanium.ProcessEvent.type
             iscontext: true
-    view: '{"position": {"x": 50, "y": 7600}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2150
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '39':
-    id: 39
-    taskid: '39'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0d5085a2-c98d-49c2-8226-d9dbee6b557a
     type: regular
     task:
-      id: '39'
+      id: 0d5085a2-c98d-49c2-8226-d9dbee6b557a
       version: -1
       name: tanium-tr-get-process-children
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-process-children
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '40'
-    scriptarguments: {}
+      - "40"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 7800}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2325
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '40':
-    id: '40'
-    taskid: '40'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3ce1bb2e-db27-44d5-8a07-0819fde9ea03
     type: condition
     task:
-      id: '40'
+      id: 3ce1bb2e-db27-44d5-8a07-0819fde9ea03
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '41'
+      "yes":
+      - "41"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1982,52 +2161,67 @@ tasks:
             value:
               simple: Tanium.ProcessChildren.userName
             iscontext: true
-    view: '{"position": {"x": 50, "y": 8000}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '41':
-    id: 41
-    taskid: '41'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: ab8611b0-3081-4e85-872e-a74e3b57aea2
     type: regular
     task:
-      id: '41'
+      id: ab8611b0-3081-4e85-872e-a74e3b57aea2
       version: -1
       name: tanium-tr-get-parent-process
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-parent-process
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '42'
-    scriptarguments: {}
+      - "42"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 8200}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '42':
-    id: '42'
-    taskid: '42'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2c1f0a09-bf69-4db2-8750-c248c45ba616
     type: condition
     task:
-      id: '42'
+      id: 2c1f0a09-bf69-4db2-8750-c248c45ba616
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '43'
+      "yes":
+      - "43"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2154,52 +2348,67 @@ tasks:
             value:
               simple: Tanium.ProcessParent.userName
             iscontext: true
-    view: '{"position": {"x": 50, "y": 8400}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '43':
-    id: 43
-    taskid: '43'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 2f5c1484-d4d9-4e87-87cc-6136003ff458
     type: regular
     task:
-      id: '43'
+      id: 2f5c1484-d4d9-4e87-87cc-6136003ff458
       version: -1
       name: tanium-tr-get-parent-process-tree
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-parent-process-tree
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '44'
-    scriptarguments: {}
+      - "44"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 8600}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '44':
-    id: '44'
-    taskid: '44'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 1dd1a96e-2db7-44bc-8ee2-d611f50adb7e
     type: condition
     task:
-      id: '44'
+      id: 1dd1a96e-2db7-44bc-8ee2-d611f50adb7e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '45'
+      "yes":
+      - "45"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2231,52 +2440,67 @@ tasks:
             value:
               simple: Tanium.ParentProcessTree.Children
             iscontext: true
-    view: '{"position": {"x": 50, "y": 8800}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '45':
-    id: 45
-    taskid: '45'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3e4309cc-eda8-408a-8e2a-4de0e48446a2
     type: regular
     task:
-      id: '45'
+      id: 3e4309cc-eda8-408a-8e2a-4de0e48446a2
       version: -1
       name: tanium-tr-get-process-tree
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-process-tree
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '46'
-    scriptarguments: {}
+      - "46"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 9000}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '46':
-    id: '46'
-    taskid: '46'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 65772571-5b04-4d4c-8816-e94a37920eb6
     type: condition
     task:
-      id: '46'
+      id: 65772571-5b04-4d4c-8816-e94a37920eb6
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '47'
+      "yes":
+      - "79"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2403,52 +2627,72 @@ tasks:
             value:
               simple: Tanium.ProcessTree.userName
             iscontext: true
-    view: '{"position": {"x": 50, "y": 9200}}'
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '47':
-    id: 47
-    taskid: '47'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 45020551-1665-4b35-81ef-a7937579f062
     type: regular
     task:
-      id: '47'
+      id: 45020551-1665-4b35-81ef-a7937579f062
       version: -1
       name: tanium-tr-event-evidence-list
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-event-evidence-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '48'
-    scriptarguments: {}
+      - "48"
+    scriptarguments:
+      limit:
+        simple: "50"
+      offset:
+        simple: "70"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 9400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '48':
-    id: '48'
-    taskid: '48'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 94dce962-a961-4a67-8203-baad24dc4ad3
     type: condition
     task:
-      id: '48'
+      id: 94dce962-a961-4a67-8203-baad24dc4ad3
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '49'
+      "yes":
+      - "49"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2463,7 +2707,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.Evidence.CreatedAt
+              simple: Tanium.Evidence.createdAt
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -2480,52 +2724,67 @@ tasks:
             value:
               simple: Tanium.Evidence.size
             iscontext: true
-    view: '{"position": {"x": 50, "y": 9600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '49':
-    id: 49
-    taskid: '49'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: e3f9519f-c21b-4d4b-8baa-4b9320946475
     type: regular
     task:
-      id: '49'
+      id: e3f9519f-c21b-4d4b-8baa-4b9320946475
       version: -1
       name: tanium-tr-event-evidence-get-properties
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-event-evidence-get-properties
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '50'
-    scriptarguments: {}
+      - "50"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 9800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '50':
-    id: '50'
-    taskid: '50'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 1cb99440-e3c2-4f5e-8258-a54cdd894b3f
     type: condition
     task:
-      id: '50'
+      id: 1cb99440-e3c2-4f5e-8258-a54cdd894b3f
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '51'
+      "yes":
+      - "51"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2537,52 +2796,83 @@ tasks:
             value:
               simple: Tanium.EvidenceProperties.value
             iscontext: true
-    view: '{"position": {"x": 50, "y": 10000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '51':
-    id: 51
-    taskid: '51'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6319b443-9e77-4dc4-8912-e37851236801
     type: regular
     task:
-      id: '51'
+      id: 6319b443-9e77-4dc4-8912-e37851236801
       version: -1
       name: tanium-tr-get-evidence-by-id
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-evidence-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '52'
-    scriptarguments: {}
+      - "52"
+    scriptarguments:
+      evidence_id:
+        complex:
+          root: Tanium.Evidence
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Evidence.evidenceType
+                iscontext: true
+              right:
+                value:
+                  simple: event
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 10200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '52':
-    id: '52'
-    taskid: '52'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 956b43ed-3e5d-4e84-893f-95c32b16afb6
     type: condition
     task:
-      id: '52'
+      id: 956b43ed-3e5d-4e84-893f-95c32b16afb6
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '53'
+      "yes":
+      - "79"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2622,11 +2912,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.Evidence.exitCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.Evidence.hostname
             iscontext: true
       - - operator: isNotEmpty
@@ -2659,198 +2944,352 @@ tasks:
             value:
               simple: Tanium.Evidence.uuid
             iscontext: true
-    view: '{"position": {"x": 50, "y": 10400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '53':
-    id: 53
-    taskid: '53'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: d71cf0d9-da2b-46e8-8843-a566d5d6acb6
     type: regular
     task:
-      id: '53'
+      id: d71cf0d9-da2b-46e8-8843-a566d5d6acb6
       version: -1
       name: tanium-tr-create-evidence
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-create-evidence
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '54'
-    scriptarguments: {}
+      - "54"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: id
+      hostname:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: hostname
+          transformers:
+          - operator: FirstArrayElement
+      ptid:
+        complex:
+          root: TaniumEvent
+          accessor: processTableId
+          transformers:
+          - operator: FirstArrayElement
+      summary:
+        simple: Test description.
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 10600}}'
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '54':
-    id: 54
-    taskid: '54'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: fe0d7841-ee63-4c88-8dc3-3259529ded2c
     type: regular
     task:
-      id: '54'
+      id: fe0d7841-ee63-4c88-8dc3-3259529ded2c
       version: -1
       name: tanium-tr-delete-evidence
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-delete-evidence
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '55'
-    scriptarguments: {}
+      - "79"
+    scriptarguments:
+      evidence-ids:
+        complex:
+          root: Tanium.Evidence
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Evidence.evidenceType
+                iscontext: true
+              right:
+                value:
+                  simple: event
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 10800}}'
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '55':
-    id: 55
-    taskid: '55'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 01ffcab0-35f8-406e-8c2d-9cc485f359da
     type: regular
     task:
-      id: '55'
+      id: 01ffcab0-35f8-406e-8c2d-9cc485f359da
       version: -1
       name: tanium-tr-request-file-download
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-request-file-download
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '56'
-    scriptarguments: {}
+      - "56"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      path:
+        simple: C:\Windows\System32\AtBroker.exe
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 11000}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '56':
-    id: '56'
-    taskid: '56'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: ca7e8018-3f0b-483d-8076-088fe4e86837
     type: condition
     task:
-      id: '56'
+      id: ca7e8018-3f0b-483d-8076-088fe4e86837
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '57'
+      "yes":
+      - "58"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.compress
+              simple: Tanium.FileDownloadTask.compress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.connection
+              simple: Tanium.FileDownloadTask.connection
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.taskId
+              simple: Tanium.FileDownloadTask.taskId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.paths
+              simple: Tanium.FileDownloadTask.paths
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.startTime
+              simple: Tanium.FileDownloadTask.startTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.FileDownload.status
+              simple: Tanium.FileDownloadTask.status
             iscontext: true
-    view: '{"position": {"x": 50, "y": 11200}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '57':
-    id: 57
-    taskid: '57'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: b6da54c3-88b1-4213-865d-677a25a15523
     type: regular
     task:
-      id: '57'
+      id: b6da54c3-88b1-4213-865d-677a25a15523
       version: -1
       name: tanium-tr-delete-file-download
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-delete-file-download
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '58'
-    scriptarguments: {}
+      - "29"
+    scriptarguments:
+      file_id:
+        complex:
+          root: Tanium.FileDownload
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.FileDownload.path
+                iscontext: true
+              right:
+                value:
+                  simple: C:\Windows\System32\AtBroker.exe
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 11400}}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '58':
-    id: 58
-    taskid: '58'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 31864bb3-d559-4589-8d8e-159258e18146
     type: regular
     task:
-      id: '58'
+      id: 31864bb3-d559-4589-8d8e-159258e18146
       version: -1
       name: tanium-tr-list-files-in-directory
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-list-files-in-directory
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '59'
-    scriptarguments: {}
+      - "59"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.Connection
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.Connection.status
+                iscontext: true
+              right:
+                value:
+                  simple: connected
+          accessor: id
+      path:
+        simple: C:\Users\Administrator\Desktop\
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 11600}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '59':
-    id: '59'
-    taskid: '59'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f8585b61-1ec0-4aa4-8ac8-2274ace69e26
     type: condition
     task:
-      id: '59'
+      id: f8585b61-1ec0-4aa4-8ac8-2274ace69e26
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '60'
+      "yes":
+      - "60"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2892,52 +3331,80 @@ tasks:
             value:
               simple: Tanium.File.type
             iscontext: true
-    view: '{"position": {"x": 50, "y": 11800}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '60':
-    id: 60
-    taskid: '60'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 0ba34132-a047-4fab-81a7-49739a7ddc57
     type: regular
     task:
-      id: '60'
+      id: 0ba34132-a047-4fab-81a7-49739a7ddc57
       version: -1
       name: tanium-tr-get-file-info
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-file-info
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '61'
-    scriptarguments: {}
+      - "61"
+    scriptarguments:
+      connection_id:
+        complex:
+          root: Tanium.File
+          accessor: connectionId
+          transformers:
+          - operator: FirstArrayElement
+      path:
+        complex:
+          root: Tanium.File
+          accessor: path
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 12000}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '61':
-    id: '61'
-    taskid: '61'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 977116b4-bc5c-4830-845a-e6a8898d335a
     type: condition
     task:
-      id: '61'
+      id: 977116b4-bc5c-4830-845a-e6a8898d335a
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '62'
+      "yes":
+      - "79"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -2994,536 +3461,336 @@ tasks:
             value:
               simple: Tanium.File.sessionId
             iscontext: true
-    view: '{"position": {"x": 50, "y": 12200}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '62':
-    id: 62
-    taskid: '62'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 1e4b9886-a8f9-4eb0-82ee-9e3681e6cdc6
     type: regular
     task:
-      id: '62'
-      version: -1
-      name: tanium-tr-delete-file-from-endpoint
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-delete-file-from-endpoint
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '63'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 12400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '63':
-    id: 63
-    taskid: '63'
-    type: regular
-    task:
-      id: '63'
+      id: 1e4b9886-a8f9-4eb0-82ee-9e3681e6cdc6
       version: -1
       name: tanium-tr-intel-docs-labels-list
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-labels-list
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '64'
-    scriptarguments: {}
+      - "64"
+    scriptarguments:
+      intel-doc-id:
+        complex:
+          root: Tanium.IntelDoc
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Tanium.IntelDoc.LabelIds
+                iscontext: true
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 12600}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2500
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '64':
-    id: '64'
-    taskid: '64'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 8ba74d8a-411b-4f11-89d7-49a34c2ae1f4
     type: condition
     task:
-      id: '64'
+      id: 8ba74d8a-411b-4f11-89d7-49a34c2ae1f4
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '65'
+      "yes":
+      - "65"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.ID
+              simple: Tanium.IntelDocLabel.LabelsList.ID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.Name
+              simple: Tanium.IntelDocLabel.LabelsList.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.Description
+              simple: Tanium.IntelDocLabel.LabelsList.CreatedAt
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.IndicatorCount
+              simple: Tanium.IntelDocLabel.IntelDocID
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDocLabels.SignalCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDocLabels.CreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDocLabels.UpdatedAt
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 12800}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '65':
-    id: 65
-    taskid: '65'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: cf964b70-dcb5-40fb-83c8-dee0d458ec6a
     type: regular
     task:
-      id: '65'
+      id: cf964b70-dcb5-40fb-83c8-dee0d458ec6a
       version: -1
       name: tanium-tr-intel-docs-add-label
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-add-label
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '66'
-    scriptarguments: {}
+      - "66"
+    scriptarguments:
+      intel-doc-id:
+        complex:
+          root: Tanium.IntelDoc
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      label-id:
+        simple: "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 13000}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2850
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '66':
-    id: '66'
-    taskid: '66'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 9e11ea4e-4ee1-498d-8735-427d28f0e6d6
     type: condition
     task:
-      id: '66'
+      id: 9e11ea4e-4ee1-498d-8735-427d28f0e6d6
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '67'
+      "yes":
+      - "67"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.ID
+              simple: Tanium.IntelDocLabel.LabelsList.ID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.Name
+              simple: Tanium.IntelDocLabel.LabelsList.Name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.Description
+              simple: Tanium.IntelDocLabel..LabelsList.Description
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.IndicatorCount
+              simple: Tanium.IntelDocLabel.LabelsList.IndicatorCount
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.SignalCount
+              simple: Tanium.IntelDocLabel.LabelsList.CreatedAt
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.IntelDocLabels.CreatedAt
+              simple: Tanium.IntelDocLabel.LabelsList.UpdatedAt
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDocLabels.UpdatedAt
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 13200}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3025
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '67':
-    id: 67
-    taskid: '67'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 7eefbe8c-8118-499d-895f-01a41a30da60
     type: regular
     task:
-      id: '67'
+      id: 7eefbe8c-8118-499d-895f-01a41a30da60
       version: -1
       name: tanium-tr-intel-docs-remove-label
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-intel-docs-remove-label
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '68'
-    scriptarguments: {}
+      - "83"
+    scriptarguments:
+      intel-doc-id:
+        simple: ${Tanium.IntelDocLabel.IntelDocID}
+      label-id:
+        simple: "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 13400}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3210
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '68':
-    id: 68
-    taskid: '68'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 2894897c-1587-466e-87ee-e42b35190f99
     type: regular
     task:
-      id: '68'
-      version: -1
-      name: tanium-tr-intel-doc-create
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-intel-doc-create
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '69'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 13600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '69':
-    id: '69'
-    taskid: '69'
-    type: condition
-    task:
-      id: '69'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '70'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.AlertCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.CreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.LabelIds
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.UnresolvedAlertCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.UpdatedAt
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 13800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '70':
-    id: 70
-    taskid: '70'
-    type: regular
-    task:
-      id: '70'
-      version: -1
-      name: tanium-tr-intel-doc-update
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-intel-doc-update
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '71'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 14000}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '71':
-    id: '71'
-    taskid: '71'
-    type: condition
-    task:
-      id: '71'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '72'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.AlertCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.CreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.Description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.LabelIds
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.UnresolvedAlertCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDoc.UpdatedAt
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 14200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '72':
-    id: 72
-    taskid: '72'
-    type: regular
-    task:
-      id: '72'
+      id: 2894897c-1587-466e-87ee-e42b35190f99
       version: -1
       name: tanium-tr-intel-deploy
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-intel-deploy
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '73'
-    scriptarguments: {}
+      - "79"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 14400}}'
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3550
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '73':
-    id: 73
-    taskid: '73'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 7bd97e33-fc07-4a4a-8ae0-c2f64e97a7e2
     type: regular
     task:
-      id: '73'
-      version: -1
-      name: tanium-tr-intel-deploy-status
-      description: ''
-      script: Tanium Threat Response v2|||tanium-tr-intel-deploy-status
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '74'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 14600}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '74':
-    id: '74'
-    taskid: '74'
-    type: condition
-    task:
-      id: '74'
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '75'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDeployStatus.CreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDeployStatus.ModifiedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDeployStatus.CurrentRevision
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.IntelDeployStatus.CurrentSize
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 14800}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '75':
-    id: 75
-    taskid: '75'
-    type: regular
-    task:
-      id: '75'
+      id: 7bd97e33-fc07-4a4a-8ae0-c2f64e97a7e2
       version: -1
       name: tanium-tr-get-task-by-id
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-task-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: Tanium Threat Response v2
     nexttasks:
       '#none#':
-      - '76'
-    scriptarguments: {}
+      - "76"
+    scriptarguments:
+      task_id:
+        simple: ${Tanium.SnapshotTask.taskId}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 15000}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '76':
-    id: '76'
-    taskid: '76'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 738176c2-132c-4c02-8308-975b3f237856
     type: condition
     task:
-      id: '76'
+      id: 738176c2-132c-4c02-8308-975b3f237856
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '77'
+      "yes":
+      - "13"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.Task.CreatedAt
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.Task.ID
+              simple: Tanium.Task.id
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -3534,16 +3801,6 @@ tasks:
           left:
             value:
               simple: Tanium.Task.startTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.Task.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.Task.error
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -3560,57 +3817,67 @@ tasks:
             value:
               simple: Tanium.Task.metadata
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.Task.results
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 15200}}'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3375
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '77':
-    id: 77
-    taskid: '77'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: fe7cff3a-7a86-41dc-84ee-ae5e953f57e4
     type: regular
     task:
-      id: '77'
+      id: fe7cff3a-7a86-41dc-84ee-ae5e953f57e4
       version: -1
       name: tanium-tr-get-system-status
-      description: ''
       script: Tanium Threat Response v2|||tanium-tr-get-system-status
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '78'
-    scriptarguments: {}
+      - "78"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 15400}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '78':
-    id: '78'
-    taskid: '78'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 29326efd-15a1-45fb-8dce-ddf52a8991c3
     type: condition
     task:
-      id: '78'
+      id: 29326efd-15a1-45fb-8dce-ddf52a8991c3
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '79'
+      "yes":
+      - "80"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -3632,60 +3899,261 @@ tasks:
             value:
               simple: Tanium.SystemStatus.ipaddressClient
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SystemStatus.ipaddressServer
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SystemStatus.lastRegistration
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SystemStatus.portNumber
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SystemStatus.protocolVersion
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Tanium.SystemStatus.publicKeyValid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SystemStatus.status
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 15600}}'
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 575
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '79':
-    id: '79'
-    taskid: '79'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 898c3194-3e07-4bd4-8b25-6e926d3b5384
     type: title
     task:
-      id: '79'
+      id: 898c3194-3e07-4bd4-8b25-6e926d3b5384
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 15800}}'
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3725
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 0c8e48ce-cbc2-4e9c-8a8f-ae302ba52fdb
+    type: regular
+    task:
+      id: 0c8e48ce-cbc2-4e9c-8a8f-ae302ba52fdb
+      version: -1
+      name: tanium-tr-create-connection
+      script: Tanium Threat Response v2|||tanium-tr-create-connection
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      client_id:
+        complex:
+          root: Tanium.SystemStatus
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: Tanium.SystemStatus.computerId
+                iscontext: true
+              right:
+                value:
+                  simple: "9065264"
+          accessor: clientId
+      hostname:
+        complex:
+          root: Tanium.SystemStatus
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: Tanium.SystemStatus.computerId
+                iscontext: true
+              right:
+                value:
+                  simple: "9065264"
+          accessor: hostName
+      ip:
+        complex:
+          root: Tanium.SystemStatus
+          filters:
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: Tanium.SystemStatus.computerId
+                iscontext: true
+              right:
+                value:
+                  simple: "9065264"
+          accessor: ipaddressClient
+      platform:
+        simple: Windows
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 9a497a09-0f56-4c39-88e1-1b8dff15c9c6
+    type: regular
+    task:
+      id: 9a497a09-0f56-4c39-88e1-1b8dff15c9c6
+      version: -1
+      name: tanium-tr-list-connections
+      script: Tanium Threat Response v2|||tanium-tr-list-connections
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "31"
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 117e4aad-0ba7-425a-89c1-a254b9d451ae
+    type: regular
+    task:
+      id: 117e4aad-0ba7-425a-89c1-a254b9d451ae
+      version: -1
+      name: tanium-tr-event-evidence-list
+      script: Tanium Threat Response v2|||tanium-tr-event-evidence-list
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response v2
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      limit:
+        simple: "100"
+      offset:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: da87d6aa-5b26-4485-8b61-8372bfc8f30a
+    type: condition
+    task:
+      id: da87d6aa-5b26-4485-8b61-8372bfc8f30a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel.LabelsList.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel.LabelsList.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel..LabelsList.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel.LabelsList.IndicatorCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel.LabelsList.CreatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.IntelDocLabel.LabelsList.UpdatedAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "48_49_yes": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3740,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
+fromversion: 6.0.0
