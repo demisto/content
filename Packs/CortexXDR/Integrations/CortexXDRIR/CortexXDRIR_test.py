@@ -2088,7 +2088,8 @@ def test_run_script_command(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2103,7 +2104,7 @@ def test_run_script_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': json.loads(parameters)
         }
     }
@@ -2136,7 +2137,8 @@ def test_run_script_command_empty_params(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2151,7 +2153,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {}
         }
     }
@@ -2182,7 +2184,8 @@ def test_run_snippet_code_script_command(requests_mock):
     args = {
         'snippet_code': snippet_code,
         'endpoint_ids': endpoint_ids,
-        'timeout': timeout
+        'timeout': timeout,
+        'incident_id': '4',
     }
 
     response = run_snippet_code_script_command(client, args)
@@ -2196,7 +2199,7 @@ def test_run_snippet_code_script_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None
+            'incident_id': 4
         }
     }
 
@@ -2354,7 +2357,8 @@ def test_run_script_execute_commands_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'commands': commands
+        'commands': commands,
+        'incident_id': '4',
     }
 
     response = run_script_execute_commands_command(client, args)
@@ -2369,7 +2373,7 @@ def test_run_script_execute_commands_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'commands_list': commands.split(',')}
         }
     }
@@ -2400,7 +2404,8 @@ def test_run_script_delete_file_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_delete_file_command(client, args)
@@ -2415,7 +2420,7 @@ def test_run_script_delete_file_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'file_path': args.get('file_path')}
         }
     }
@@ -2446,7 +2451,8 @@ def test_run_script_delete_multiple_files_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_delete_file_command(client, args)
@@ -2461,7 +2467,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'file_path': 'my_file.txt'}
         }
     }
@@ -2474,7 +2480,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'file_path': 'test.txt'}
         }
     }
@@ -2505,7 +2511,8 @@ def test_run_script_file_exists_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_file_exists_command(client, args)
@@ -2520,7 +2527,7 @@ def test_run_script_file_exists_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'path': args.get('file_path')}
         }
     }
@@ -2551,7 +2558,8 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_file_exists_command(client, args)
@@ -2566,7 +2574,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'path': 'my_file.txt'}
         }
     }
@@ -2579,7 +2587,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'path': 'test.txt'}
         }
     }
@@ -2610,7 +2618,8 @@ def test_run_script_kill_process_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'process_name': process_name
+        'process_name': process_name,
+        'incident_id': '4',
     }
 
     response = run_script_kill_process_command(client, args)
@@ -2625,7 +2634,7 @@ def test_run_script_kill_process_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'process_name': process_name}
         }
     }
@@ -2656,7 +2665,8 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'process_name': processes_names
+        'process_name': processes_names,
+        'incident_id': '4',
     }
 
     response = run_script_kill_process_command(client, args)
@@ -2671,7 +2681,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'process_name': 'process1.exe'}
         }
     }
@@ -2684,7 +2694,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'incident_id': None,
+            'incident_id': 4,
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }
