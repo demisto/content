@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Export result to context
+  description: 'Whether to export the result to context. Possible values: "true" and "false".'
   isArray: false
   name: export_to_context
   required: false
@@ -10,7 +10,7 @@ args:
      - "true"
      - "false"
   defaultValue: "true"
-comment: 'List all dockers images that are in use by the installed integrations and automations'
+comment: 'List all Docker images that are in use by the installed integrations and automations.'
 commonfields:
   id: ListUsedDockersImages
   version: -1
@@ -18,10 +18,10 @@ enabled: false
 name: ListUsedDockersImages
 outputs:
 - contextPath: UsedDockerImages.DockerImage
-  description: 'The Docker Image name'
+  description: The Docker image name.
   type: String
 - contextPath: UsedDockerImages.ContentItem
-  description: 'The Integration or Automation name that used the specific Docker Image'
+  description: The integration or automation name that used the specific Docker image.
   type: String
 script: '-'
 system: false
