@@ -53,7 +53,7 @@
   - export NVM_DIR="$HOME/.nvm"
   - export NODE_VERSION="12.18.4"
   - export NODE_PATH="$NVM_DIR/v$NODE_VERSION/lib/node_modules"
-  - export PATH="$NVM_DIR/v$NODE_VERSION/bin:$PATH"
+  - export PATH="$NVM_DIR/v$NODE_VERSION/lib:$NVM_DIR/v$NODE_VERSION/bin:$PATH"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
