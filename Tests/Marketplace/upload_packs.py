@@ -929,7 +929,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path, storage_base_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
