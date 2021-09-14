@@ -466,8 +466,7 @@ class TestChangedScript:
                                                             with_scripts=[script_name], with_pack='pack_a')
 
         # Assuming pack is XSOAR supported
-        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
-                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_metadata', return_value={PACK_METADATA_SUPPORT: 'xsoar'})
         create_temp_dir_with_metadata(tmp_path, 'pack_a', {PACK_METADATA_SUPPORT: 'xsoar'})
         mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path / PACKS_DIR)
 
@@ -887,8 +886,7 @@ class TestExtractMatchingObjectFromIdSet:
         fake_script['id_set'] = {'wrong_id': id_set_obj}
 
         # Assuming pack is XSOAR supported
-        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
-                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_metadata', return_value={PACK_METADATA_SUPPORT: 'xsoar'})
         create_temp_dir_with_metadata(tmp_path, 'pack_a', {PACK_METADATA_SUPPORT: 'xsoar'})
         mocker.patch.object(Tests.scripts.utils.content_packs_util, 'PACKS_DIR', tmp_path / PACKS_DIR)
 
@@ -1002,7 +1000,6 @@ def test_modified_integration_content_pack_is_collected(mocker):
         collect_tests_and_content_packs._FAILED = False
 
 
-@pytest.mark.skip(reason='Issue 41189. Will be fixed.')
 def test_pack_ignore_test_is_skipped(mocker):
     """
     Given
@@ -1032,8 +1029,7 @@ def test_pack_ignore_test_is_skipped(mocker):
 
     try:
         mocker.patch.object(os.path, 'join', return_value=fake_test_playbook['path'])
-        mocker.patch.object(Tests.scripts.utils.content_packs_util, 'get_pack_metadata',
-                            return_value={PACK_METADATA_SUPPORT: 'xsoar'})
+        mocker.patch.object(demisto_sdk_tools, 'get_pack_metadata', return_value={PACK_METADATA_SUPPORT: 'xsoar'})
         mocker.patch.object(demisto_sdk_tools, 'get_pack_ignore_file_path',
                             return_value=pack_ignore_mgr.pack_ignore_path)
         TestUtils.mock_get_modified_files(mocker, modified_files_list=[fake_integration['path']])
