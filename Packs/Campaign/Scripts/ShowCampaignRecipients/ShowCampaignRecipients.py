@@ -53,7 +53,7 @@ def get_campaign_recipients() -> str:
     recipients_table_content = [{"Email": item[0], "Number Of Appearances": item[1]} for item in recipients_counter]
     headers = ['Email', 'Number Of Appearances']
 
-    return tableToMarkdown('Recipients:', recipients_table_content, headers=headers)
+    return tableToMarkdown('', recipients_table_content, headers=headers)
 
 
 def main():
