@@ -15,34 +15,35 @@ urllib3.disable_warnings()
 
 BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
 
-MAP_TAG_CLASS = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
-                 'actor': 'Threat Actor',
-                 'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-                 'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-                 }
+TAG_CLASS_TO_DEMISTO_TYPE = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
+                             'actor': 'Threat Actor',
+                             'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+                             'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+                             }
 
-MAP_RELATIONSHIPS = {ThreatIntel.ObjectsNames.MALWARE:
-                         {ThreatIntel.ObjectsNames.MALWARE: 'related-to',
-                          'Threat Actor': 'used-by',
-                          ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
-                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
-                     'Threat Actor':
-                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-                          'Threat Actor': 'related-to',
-                          ThreatIntel.ObjectsNames.CAMPAIGN: 'attributed-by',
-                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'uses'},
-                     ThreatIntel.ObjectsNames.CAMPAIGN:
-                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-                          'Threat Actor': 'attributed-to',
-                          ThreatIntel.ObjectsNames.CAMPAIGN: 'related-to',
-                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
-                     ThreatIntel.ObjectsNames.ATTACK_PATTERN:
-                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-                          'Threat Actor': 'used-by',
-                          ThreatIntel.ObjectsNames.CAMPAIGN: 'uses',
-                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'related-to'},
+MAP_RELATIONSHIPS = {
+    ThreatIntel.ObjectsNames.MALWARE:
+        {ThreatIntel.ObjectsNames.MALWARE: 'related-to',
+         'Threat Actor': 'used-by',
+         ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
+         ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
+    'Threat Actor':
+        {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+         'Threat Actor': 'related-to',
+         ThreatIntel.ObjectsNames.CAMPAIGN: 'attributed-by',
+         ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'uses'},
+    ThreatIntel.ObjectsNames.CAMPAIGN:
+        {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+         'Threat Actor': 'attributed-to',
+         ThreatIntel.ObjectsNames.CAMPAIGN: 'related-to',
+         ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN:
+        {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+         'Threat Actor': 'used-by',
+         ThreatIntel.ObjectsNames.CAMPAIGN: 'uses',
+         ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'related-to'},
 
-                     }
+}
 
 ''' CLIENT CLASS '''
 
@@ -113,7 +114,7 @@ def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[s
     if not tag_class:
         return None
     if (tag_class != 'malicious_behavior') or (tag_class == 'malicious_behavior' and source == 'Unit 42'):
-        return MAP_TAG_CLASS.get(tag_class)
+        return TAG_CLASS_TO_DEMISTO_TYPE.get(tag_class)
     return None
 
 
@@ -127,18 +128,21 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
 
     """
     fields: Dict[str, Any] = {}
-    refs = tag_details.get('refs')
-    url = refs.get('url')
-    source = refs.get('source')
-    time_stamp = refs.get('created')
-    title = refs.get('title')
-    fields['publications'] = [{'link': url, 'title': title, 'source': source, 'timestamp': time_stamp}]
+    tag = tag_details.get('tag')
+    refs = json.loads(tag.get('refs'))
+    if refs:
+        refs = refs[0]
+        url = refs.get('url')
+        source = refs.get('source')
+        time_stamp = refs.get('created')
+        title = refs.get('title')
+        fields['publications'] = [{'link': url, 'title': title, 'source': source, 'timestamp': time_stamp}]
     fields['aliases'] = tag_details.get('aliases')
-    fields['description'] = tag_details.get('description')
-    fields['lastseenbysource'] = tag_details.get('lasthit')
-    fields['updateddate'] = tag_details.get('updated_at')
+    fields['description'] = tag.get('description')
+    fields['lastseenbysource'] = tag.get('lasthit')
+    fields['updateddate'] = tag.get('updated_at')
     fields['threattypes'] = [{'threatcategory': tag_details.get('tag_groups')}]
-    fields['reportedby'] = tag_details.get('source')
+    fields['reportedby'] = tag.get('source')
     return fields
 
 
@@ -153,10 +157,11 @@ def create_dict_of_all_tags(tags_list: list) -> Dict[str, Any]:
     """
 
     all_tags: Dict[str, Any] = {}
-    for tag in tags_list:
+    for tag_details in tags_list:
+        tag = tag_details.get('tag')
         public_tag_name = tag.get('public_tag_name')
         if public_tag_name:
-            all_tags[public_tag_name] = tag
+            all_tags[public_tag_name] = tag_details
     return all_tags
 
 
@@ -164,12 +169,14 @@ def create_relationships_for_tag(name: str, tag_type: str, related_tags: List[st
     relationships: list = []
     for related_tag in related_tags:
         related_tag_details = all_tags.get(related_tag)
-        related_tag_name = related_tag_details.get('public_tag_name')
-        tag_class = related_tag_details.get('tag_class')
-        source = related_tag_details.get('source')
-        related_tag_type = get_tag_class(tag_class, source)
-        if related_tag_type:
-            relationships.append(create_relationship(name, tag_type, related_tag_name, related_tag_type))
+        if related_tag_details:
+            tag = related_tag_details.get('tag')
+            related_tag_name = tag.get('public_tag_name')
+            tag_class = tag.get('tag_class')
+            source = tag.get('source')
+            related_tag_type = get_tag_class(tag_class, source)
+            if related_tag_type:
+                relationships.append(create_relationship(name, tag_type, related_tag_name, related_tag_type))
     return relationships
 
 
@@ -218,9 +225,10 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     all_tags = create_dict_of_all_tags(iterator)
     # extract values from iterator
     for tag_details in iterator:
-        value_ = tag_details.get('public_tag_name')
-        tag_class = tag_details.get('tag_class')
-        source = tag_details.get('source')
+        tag = tag_details.get('tag')
+        value_ = tag.get('public_tag_name')
+        tag_class = tag.get('tag_class')
+        source = tag.get('source')
         type_ = get_tag_class(tag_class, source)
         if not type_:
             continue
