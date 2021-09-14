@@ -1,0 +1,24 @@
+commonfields:
+  id: WildFire
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: WildFire
+script: |2-
+  def main():
+      args = demisto.args()
+      demisto.executeCommand("wildfire-get-report", args)
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+type: python
+tags: []
+enabled: true
+args:
+- name: sha256
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+engineinfo: {}
