@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 612.5,
           "y": 50
         }
       }
@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 397.5,
           "y": 370
         }
       }
@@ -93,7 +93,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 612.5,
           "y": 195
         }
       }
@@ -122,7 +122,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1370,
           "y": 705
         }
       }
@@ -152,7 +152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 612.5,
           "y": 545
         }
       }
@@ -181,7 +181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 500,
           "y": 3270
         }
       }
@@ -218,7 +218,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1370,
           "y": 1040
         }
       }
@@ -262,7 +262,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2015,
+          "x": 1922.5,
           "y": 1915
         }
       }
@@ -292,7 +292,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1370,
           "y": 865
         }
       }
@@ -325,7 +325,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2127.5,
+          "x": 2035,
           "y": 2090
         }
       }
@@ -359,7 +359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 612.5,
           "y": 690
         }
       }
@@ -398,7 +398,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 940,
           "y": 1040
         }
       }
@@ -439,7 +439,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 510,
           "y": 1040
         }
       }
@@ -472,7 +472,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 387.5,
           "y": 1915
         }
       }
@@ -505,7 +505,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 387.5,
           "y": 2090
         }
       }
@@ -559,7 +559,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 827.5,
           "y": 1390
         }
       }
@@ -598,7 +598,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1042.5,
           "y": 1565
         }
       }
@@ -640,7 +640,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1042.5,
           "y": 1915
         }
       }
@@ -673,7 +673,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1042.5,
           "y": 2090
         }
       }
@@ -706,7 +706,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 500,
           "y": 3430
         }
       }
@@ -739,7 +739,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 397.5,
           "y": 3605
         }
       }
@@ -773,7 +773,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1042.5,
           "y": 1740
         }
       }
@@ -806,7 +806,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1482.5,
           "y": 4770
         }
       }
@@ -858,7 +858,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1482.5,
           "y": 4945
         }
       }
@@ -884,7 +884,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
+          "x": 1380,
           "y": 6750
         }
       }
@@ -913,8 +913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2745
+          "x": 162.5,
+          "y": 2410
         }
       }
     note: false
@@ -942,7 +942,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 3925
         }
       }
@@ -971,7 +971,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 940,
           "y": 880
         }
       }
@@ -1000,7 +1000,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 510,
           "y": 880
         }
       }
@@ -1042,7 +1042,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4070
         }
       }
@@ -1082,7 +1082,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4595
         }
       }
@@ -1118,7 +1118,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 5120
         }
       }
@@ -1144,8 +1144,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
-      - "119"
+      - "121"
     scriptarguments:
       name:
         simple: fw_test_pb_dont_delete
@@ -1153,8 +1152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2905
+          "x": 162.5,
+          "y": 2555
         }
       }
     note: false
@@ -1182,7 +1181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 622.5,
           "y": 4260
         }
       }
@@ -1218,7 +1217,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1052.5,
           "y": 4945
         }
       }
@@ -1252,7 +1251,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1052.5,
           "y": 4770
         }
       }
@@ -1281,7 +1280,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 1145,
           "y": 2410
         }
       }
@@ -1312,7 +1311,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 1145,
           "y": 2555
         }
       }
@@ -1346,7 +1345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 1145,
           "y": 2730
         }
       }
@@ -1390,7 +1389,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 1145,
           "y": 2905
         }
       }
@@ -1424,7 +1423,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1257.5,
           "y": 3080
         }
       }
@@ -1462,7 +1461,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 827.5,
           "y": 370
         }
       }
@@ -1498,7 +1497,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 6255
         }
       }
@@ -1529,7 +1528,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4420
         }
       }
@@ -1564,7 +1563,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 827.5,
           "y": 1215
         }
       }
@@ -1595,7 +1594,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
+          "x": 725,
           "y": 2265
         }
       }
@@ -1626,7 +1625,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 3780
         }
       }
@@ -1664,7 +1663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4245
         }
       }
@@ -1693,7 +1692,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 5295
         }
       }
@@ -1734,7 +1733,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 5440
         }
       }
@@ -1763,7 +1762,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1482.5,
           "y": 4610
         }
       }
@@ -1798,7 +1797,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1482.5,
           "y": 5120
         }
       }
@@ -1827,7 +1826,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 5615
         }
       }
@@ -1861,7 +1860,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 5760
         }
       }
@@ -1910,7 +1909,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 5935
         }
       }
@@ -1939,7 +1938,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 837.5,
           "y": 6110
         }
       }
@@ -1977,7 +1976,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4770
         }
       }
@@ -2019,7 +2018,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 172.5,
           "y": 4945
         }
       }
@@ -2053,7 +2052,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1902.5,
+          "x": 1810,
           "y": 6255
         }
       }
@@ -2084,7 +2083,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 612.5,
           "y": 1565
         }
       }
@@ -2118,7 +2117,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
+          "x": 1257.5,
           "y": 370
         }
       }
@@ -2149,7 +2148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 622.5,
           "y": 4420
         }
       }
@@ -2193,7 +2192,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 622.5,
           "y": 4595
         }
       }
@@ -2236,7 +2235,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1052.5,
           "y": 5120
         }
       }
@@ -2280,7 +2279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1257.5,
           "y": 3430
         }
       }
@@ -2320,7 +2319,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 1267.5,
           "y": 3605
         }
       }
@@ -2351,7 +2350,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1257.5,
           "y": 3255
         }
       }
@@ -2381,7 +2380,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
+          "x": 1380,
           "y": 6430
         }
       }
@@ -2412,7 +2411,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
+          "x": 950,
           "y": 6575
         }
       }
@@ -2443,7 +2442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
+          "x": 1380,
           "y": 6575
         }
       }
@@ -2476,7 +2475,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3255
         }
       }
@@ -2516,7 +2515,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3080
         }
       }
@@ -2556,8 +2555,83 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 62e4e914-0e28-445a-82f1-020fbe6ba299
+    type: regular
+    task:
+      id: 62e4e914-0e28-445a-82f1-020fbe6ba299
+      version: -1
+      name: panorama-show-device-version
+      description: Show firewall device software version.
+      script: '|||panorama-show-device-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 26490f76-25ea-460a-8138-2c11acba9384
+    type: condition
+    task:
+      id: 26490f76-25ea-460a-8138-2c11acba9384
+      version: -1
+      name: Is 8.1 pan-os Firewall?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "119"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Panorama.Device.Info
+                accessor: Version
+            iscontext: true
+          right:
+            value:
+              simple: "8.1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2905
         }
       }
     note: false
@@ -2576,7 +2650,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6765,
-        "width": 2457.5,
+        "width": 2365,
         "x": 50,
         "y": 50
       }
