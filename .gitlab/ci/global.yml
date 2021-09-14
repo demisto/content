@@ -104,7 +104,7 @@
     - section_end "Creating new clean logs folder"
     - source $NVM_DIR/nvm.sh
     - nvm use default
-    - npm ci
+    - npm install npm@6.14.6 -g
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
