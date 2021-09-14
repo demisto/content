@@ -11,6 +11,8 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
+  [-sbp, --storage-base-path] a path to copy from and upload to in this current upload.
+
   "
   exit 1
 fi
@@ -19,6 +21,7 @@ _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
+_storage_base_path=""
 
 # Parsing the user inputs.
 
@@ -58,6 +61,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -sbp|--storage-base-path) _storage_base_path="$2"
+    shift
+    shift;;
+
   *)    # unknown option.
     shift;;
   esac
@@ -91,6 +98,7 @@ if [ -n "$_gitlab" ]; then
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
+    --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
     "$BUILD_TRIGGER_URL"
 
 else
