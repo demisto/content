@@ -63,7 +63,6 @@ DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
-NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
@@ -1304,7 +1303,7 @@ def slack_send():
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
         if message_type != MIRROR_TYPE:
-            demisto.info("message type is not in permitted options")
+            demisto.info(f"Message type is not in permitted options. Received: {message_type}")
             return
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
@@ -1339,7 +1338,7 @@ def slack_send():
 
     if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
-                 or not NOTIFY_INCIDENTS)):
+                 or not (len(PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
 
     if not (to or group or channel):
@@ -2045,7 +2044,7 @@ def init_globals(command_name: str = ''):
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global PERMITTED_NOTIFICATION_TYPES
 
@@ -2073,7 +2072,6 @@ def init_globals(command_name: str = ''):
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
-    NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
     BOT_NAME = demisto.params().get('bot_name')  # Bot default name defined by the slack plugin (3-rd party)
     BOT_ICON_URL = demisto.params().get('bot_icon')  # Bot default icon url defined by the slack plugin (3-rd party)

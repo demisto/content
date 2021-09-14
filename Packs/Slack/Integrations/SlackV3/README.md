@@ -14,7 +14,6 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `bot_token` | Slack API bot token. | False |
     | `app_token` | Slack API app token. | False |
     | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
-    | `notify_incidents` | Send notifications about incidents to the dedicated channel. | False |
     | `min_severity` | Minimum incident severity to send messages to Slack by. | False |
     | `incidentType` | Type of incidents created in Slack. | False |
     | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
@@ -27,6 +26,7 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `paginated_count` | Number of objects to return in each paginated call. | False |
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
+    | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

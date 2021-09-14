@@ -2072,7 +2072,7 @@ def test_send_request_with_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'min_severity': 'High',
                                                          'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
