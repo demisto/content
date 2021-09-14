@@ -59,7 +59,7 @@ class Client(BaseClient):
         """
         A wrapper to send requests and handle responses.
         """
-        expires = int(time.time() + 5)
+        expires = int(time.time() + 30)
         kwargs["AccessID"] = self.access_id
         kwargs["Expires"] = expires
         kwargs["Signature"] = self.signature(expires)
