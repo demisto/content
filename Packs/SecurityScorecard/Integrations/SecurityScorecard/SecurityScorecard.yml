@@ -23,8 +23,8 @@ configuration:
   required: false
   type: 8
 - name: incidentFetchInterval
-  display: Incidents Fetch Interval. SecurityScorecard is updated on a daily basis
-    therefore there's no need to modify this value.
+  display: Incidents Fetch Interval
+  additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
   defaultvalue: "1440"
   required: false
   type: 19
