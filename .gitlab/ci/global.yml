@@ -54,7 +54,6 @@
   - export NODE_VERSION="12.18.4"
   - export NODE_PATH="$NVM_DIR/v$NODE_VERSION/lib/node_modules"
   - export PATH="$NVM_DIR/v$NODE_VERSION/bin:$PATH"
-  - export PYTHONHOME=/usr/local
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
@@ -73,13 +72,12 @@
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
   - |
-    if [ -f "./venv/bin/activate" ]; then
+    if [ -f "./venv/bin/activatemmm" ]; then
       echo "found venv"
     else
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
-  - venv/bin/pip2 install -r dev-requirements-py2.txt
   - source ./venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
