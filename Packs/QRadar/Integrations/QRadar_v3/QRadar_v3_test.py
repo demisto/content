@@ -334,12 +334,12 @@ def test_create_single_asset_for_offense_enrichment():
                            command_test_data['search_status_get']['response'],
                            command_test_data['search_results_get']['response'],
                            '19e90792-1a17-403b-ae5b-d0e60740b95e',
-                           sanitize_outputs(command_test_data['search_results_get']['response']['events'])),
+                           (sanitize_outputs(command_test_data['search_results_get']['response']['events']), '')),
                           (DemistoException('error occurred'),
                            None,
                            None,
                            None,
-                           [])
+                           ([], "DemistoException('error occurred', None) \nSee logs for further details."))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -420,25 +420,25 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
         (command_test_data['offenses_list']['response'][0],
          'correlations_events_only',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3
          ),
         (command_test_data['offenses_list']['response'][0],
          'correlations_events_only',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          1
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          1
          ),
 
@@ -452,7 +452,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
         (command_test_data['offenses_list']['response'][0],
          'correlations_events_only',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3
          ),
         (command_test_data['offenses_list']['response'][0],
@@ -464,7 +464,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
-         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3
          ),
     ])
@@ -502,9 +502,11 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
         - Ensure empty list of events are returned.
         - Ensure poll events is queried with the expected search ID, if search ID succeeded.
     """
-    if poll_events_response and len(poll_events_response) >= min(events_limit, offense.get('event_count')):
-        events = poll_events_response[:min(events_limit, len(poll_events_response))] if poll_events_response else []
-        expected_offense = dict(offense, events=events)
+    poll_events = poll_events_response[0] if poll_events_response else None
+    if poll_events and len(poll_events) >= min(events_limit, offense.get('event_count')):
+        events = poll_events[:min(events_limit, len(poll_events))] if poll_events else []
+        expected_offense = dict(offense, events=events,
+                                mirroring_events_message='')
     else:
         expected_offense = offense
 
