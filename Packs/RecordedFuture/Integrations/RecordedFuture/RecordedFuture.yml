@@ -75,13 +75,17 @@ configuration:
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
-  name: triggered
+  name: fetch_time
   required: false
   type: 0
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+- display: Max number of incident to pull in one call
+  name: max_fetch
+  required: false
+  type: 0
 script:
   script: '-'
   type: python
@@ -2132,7 +2136,7 @@ script:
       description: Recorded Future alert get date
       type: date
     description: Set a note for the alert in Recorded Future
-  isfetch: false
+  isfetch: true
   runonce: false
 tests:
 - No tests

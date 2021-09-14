@@ -1371,15 +1371,11 @@ class Actions():
                     outputs_key_field=""
                 )
 
-    def fetch_incidents(self, rule_names_arg: Optional[str], fetch_time: str) -> None:
+    def fetch_incidents(self, rule_names_arg: Optional[str], fetch_time: str, max_fetch: Optional[int]) -> None:
         if rule_names_arg:
             rule_names = rule_names_arg.split(';')
         else:
             rule_names = []
-
-        if not fetch_time:
-            fetch_time = '24 hours'
-
 
         last_run = demisto.getLastRun()
         if not last_run:
@@ -1401,15 +1397,22 @@ class Actions():
                 rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
 
         all_alerts = []  # type: list
+        rules_get_params: Dict[str, Any] = {
+            "triggered": triggered_time,
+            "orderby": "triggered",
+            "direction": "asc",
+            "status": "no-action",
+        }
+        if max_fetch:
+            rules_get_params["limit"] = max_fetch
         if rule_ids:
             for rule_id in rule_ids:
-                params = {"alertRule": rule_id, "triggered": triggered_time, "status": "no-action"}
-                alerts = self.client.get_alerts(params)
+                rules_get_params["alertRule"] = rule_id
+                alerts = self.client.get_alerts(rules_get_params)
                 if alerts and 'data' in alerts:
                     all_alerts += alerts['data'].get('results', [])
         else:
-            params = {"triggered": triggered_time, "status": "no-action"}
-            alerts = self.client.get_alerts(params)
+            alerts = self.client.get_alerts(rules_get_params)
             if alerts and 'data' in alerts:
                 all_alerts += alerts['data'].get('results', [])
 
@@ -1434,6 +1437,8 @@ class Actions():
                     max_time = alert_time
         if update_data:
             self.client.update_alerts(update_data)
+        # Reverse the list so that they are created in the right order
+        incidents.reverse()
         demisto.incidents(incidents)
         demisto.setLastRun({
             'start_time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -1529,8 +1534,9 @@ def main() -> None:
             return_results(actions.lookup_command(entities, command))
         elif command == 'fetch-incidents':
             rule_names = demisto_params.get('rule_names', '').strip()
-            fetch_time = demisto_params.get('triggered', '').strip()
-            actions.fetch_incidents(rule_names, fetch_time)
+            fetch_time = demisto_params.get('fetch_time', '24 hours').strip()
+            max_fetch = demisto_params.get('max_fetch')
+            actions.fetch_incidents(rule_names, fetch_time, max_fetch)
         elif command == "recordedfuture-threat-assessment":
             context = demisto_args.get("context")
             entities = {
