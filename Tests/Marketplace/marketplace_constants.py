@@ -39,10 +39,11 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
+    CONTENT_PACKS_PATH = "content/packs"
     STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_PATH_PREFIX = "content/builds"
-    BUILD_BASE_PATH = ""
     PRIVATE_BASE_PATH = "content/packs"
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images

@@ -79,7 +79,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -94,7 +94,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
-        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+        index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -192,7 +192,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         return task_status
 
 
-def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any) -> bool:
+def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any, storage_base_path) -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -230,7 +230,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
                 shutil.rmtree(invalid_pack_path)
                 logging.warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
-                invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
+                invalid_pack_gcs_path = os.path.join(storage_base_path, invalid_pack_name, "")  # by design
 
                 for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
                     logging.warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
@@ -329,7 +329,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: Optional[str]):
+                            artifacts_dir: Optional[str], storage_base_path):
     """Create corepacks.json file to artifacts dir. Corepacks file includes core packs for server installation.
 
      Args:
@@ -353,7 +353,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                 metadata = json.load(metadata_file)
 
             pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
+            core_pack_relative_path = os.path.join(storage_base_path, pack.name,
                                                    pack_current_version, f"{pack.name}.zip")
             core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
 
@@ -920,8 +920,8 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+    # if storage_base_path:
+    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # Relevant when triggering test upload flow
     if storage_bucket_name:
