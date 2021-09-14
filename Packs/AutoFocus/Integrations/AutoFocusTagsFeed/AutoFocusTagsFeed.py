@@ -11,18 +11,38 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 
 BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
 
 MAP_TAG_CLASS = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
                  'actor': 'Threat Actor',
                  'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-                 'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN
+                 'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
                  }
 
+MAP_RELATIONSHIPS = {ThreatIntel.ObjectsNames.MALWARE:
+                         {ThreatIntel.ObjectsNames.MALWARE: 'related-to',
+                          'Threat Actor': 'used-by',
+                          ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
+                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
+                     'Threat Actor':
+                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+                          'Threat Actor': 'related-to',
+                          ThreatIntel.ObjectsNames.CAMPAIGN: 'attributed-by',
+                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'uses'},
+                     ThreatIntel.ObjectsNames.CAMPAIGN:
+                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+                          'Threat Actor': 'attributed-to',
+                          ThreatIntel.ObjectsNames.CAMPAIGN: 'related-to',
+                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
+                     ThreatIntel.ObjectsNames.ATTACK_PATTERN:
+                         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
+                          'Threat Actor': 'used-by',
+                          ThreatIntel.ObjectsNames.CAMPAIGN: 'uses',
+                          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'related-to'},
+
+                     }
 
 ''' CLIENT CLASS '''
 
@@ -42,7 +62,7 @@ class Client(BaseClient):
                                   headers={
                                       'apiKey': self.api_key,
                                       'Content-Type': 'application/json'
-                                  }
+                                  },
                                   )
 
     def get_tag_details(self, public_tag_name: str):
@@ -51,10 +71,10 @@ class Client(BaseClient):
                                   headers={
                                       'apiKey': self.api_key,
                                       'Content-Type': 'application/json'
-                                  }
+                                  },
                                   )
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -108,18 +128,61 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     """
     fields: Dict[str, Any] = {}
     refs = tag_details.get('refs')
-    fields['Publications.Link'] = refs.get('url')
-    fields['Publications.Source'] = refs.get('source')
-    fields['Publications.Timestamp'] = refs.get('created')
-    fields['Aliases'] = tag_details.get('aliases')
-    fields['Description'] = tag_details.get('description')
-    # TODO new field
-    fields['Last Seen'] = tag_details.get('lasthit')
-    fields['Updated Date'] = tag_details.get('updated_at')
-    fields['Threat Types.Threat Category'] = tag_details.get('tag_groups')
-    # TODO new field
-    fields['Source'] = tag_details.get('source')
+    url = refs.get('url')
+    source = refs.get('source')
+    time_stamp = refs.get('created')
+    title = refs.get('title')
+    fields['publications'] = [{'link': url, 'title': title, 'source': source, 'timestamp': time_stamp}]
+    fields['aliases'] = tag_details.get('aliases')
+    fields['description'] = tag_details.get('description')
+    fields['lastseenbysource'] = tag_details.get('lasthit')
+    fields['updateddate'] = tag_details.get('updated_at')
+    fields['threattypes'] = [{'threatcategory': tag_details.get('tag_groups')}]
+    fields['reportedby'] = tag_details.get('source')
     return fields
+
+
+def create_dict_of_all_tags(tags_list: list) -> Dict[str, Any]:
+    """
+    Creates a dict of all the tag_details, with tag name as key and tag details as value.
+    Args:
+        tags_list: list of all the tag details.
+
+    Returns:
+        Dictionary with tag name as key and tag details as value.
+    """
+
+    all_tags: Dict[str, Any] = {}
+    for tag in tags_list:
+        public_tag_name = tag.get('public_tag_name')
+        if public_tag_name:
+            all_tags[public_tag_name] = tag
+    return all_tags
+
+
+def create_relationships_for_tag(name: str, tag_type: str, related_tags: List[str], all_tags: Dict[str, Any]):
+    relationships: list = []
+    for related_tag in related_tags:
+        related_tag_details = all_tags.get(related_tag)
+        related_tag_name = related_tag_details.get('public_tag_name')
+        tag_class = related_tag_details.get('tag_class')
+        source = related_tag_details.get('source')
+        related_tag_type = get_tag_class(tag_class, source)
+        if related_tag_type:
+            relationships.append(create_relationship(name, tag_type, related_tag_name, related_tag_type))
+    return relationships
+
+
+def create_relationship(a_name: str, a_class: str, b_name: str, b_class: str):
+    return EntityRelationship(
+        name=MAP_RELATIONSHIPS.get(a_class).get(b_class),
+        entity_a=a_name,
+        entity_a_type=a_class,
+        entity_b=b_name,
+        entity_b_type=b_class,
+        reverse_name=MAP_RELATIONSHIPS.get(b_class).get(a_class),
+        source_reliability='A - Completely reliable'
+    )
 
 
 ''' COMMAND FUNCTIONS '''
@@ -152,7 +215,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     indicators = []
     if limit > 0:
         iterator = iterator[:limit]
-
+    all_tags = create_dict_of_all_tags(iterator)
     # extract values from iterator
     for tag_details in iterator:
         value_ = tag_details.get('public_tag_name')
@@ -175,9 +238,14 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'type': type_,
             'service': 'AutoFocus',
             'fields': get_fields(tag_details),
-            'rawJSON': raw_data
+            'rawJSON': raw_data,
         }
-
+        related_tags = tag_details.get('related_tags', [])
+        if related_tags:
+            indicator_obj['fields']['relationships'] = create_relationships_for_tag(value_,
+                                                                                    type_,
+                                                                                    related_tags,
+                                                                                    all_tags)
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
 
@@ -257,12 +325,9 @@ def main():
         )
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == 'autofocus-tags-feed-get-indicators':
-            # This is the command that fetches a limited number of indicators from the feed source
-            # and displays them in the war room.
             return_results(get_indicators_command(client, params, args))
 
         elif command == 'fetch-indicators':
@@ -272,7 +337,6 @@ def main():
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
-
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
