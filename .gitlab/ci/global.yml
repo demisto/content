@@ -71,6 +71,7 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
+  - apt-get install python2.7
   - |
     if [ -f "./venv/bin/activatemmm" ]; then
       echo "found venv"
