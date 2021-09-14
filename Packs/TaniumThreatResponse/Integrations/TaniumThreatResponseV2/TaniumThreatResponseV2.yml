@@ -2168,5 +2168,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Tanium Threat Response v2 Test
+- Tanium Threat Response V2 Test
 fromversion: 6.0.0
