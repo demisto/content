@@ -238,8 +238,8 @@ script:
     execution: false
     name: arcanna-send-bulk-events
     outputs:
-    - contextPath: Arcanna.BulkStatus
-      description: Arcanna response for bulk events indexing
+    - contextPath: Arcanna.Bulk.status
+      description: Arcanna response status for bulk events indexing
       type: String
   - deprecated: false
     description: Returns the Feedback field set on integration.

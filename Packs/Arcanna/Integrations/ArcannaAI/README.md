@@ -319,7 +319,7 @@ Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.BulkStatus.status | String | An Arcanna bulk status response. | 
+| Arcanna.Bulk.status | String | An Arcanna bulk status response. | 
 
 #### Command Example
 ```!arcanna-send-bulk-events job_id=1202 events="[   {\"job_id\":1202,\"severity\":3,\"name\":\"test_alert\",\"destination\":{   \"address\":\"10.128.0.6\",   \"port\":53720,   \"bytes\":836035,   \"ip\":\"10.128.0.6\",   \"packets\":6459},\"rule\":{   \"name\":\"SURICATA HTTP unable to match response to request\",   \"id\":\"2221010\",   \"category\":\"Generic Protocol Command Decode\"},\"source\":{   \"address\":\"8.8.8.8\",   \"port\":9200,   \"bytes\":4833843,   \"ip\":\"8.8.8.8\",   \"packets\":9677},\"event\":{   \"severity\":3,   \"ingested\":\"2021-06-15T07:56:50.654225827Z\",   \"created\":\"2021-06-15T07:56:49.649Z\",   \"kind\":\"alert\",   \"module\":\"suricata\",   \"start\":\"2021-06-14T14:02:06.280Z\",   \"category\":[      \"network\",      \"intrusion_detection\"   ],   \"type\":[      \"allowed\"   ],   \"dataset\":\"suricata.eve\"},\"fileset\":{   \"name\":\"eve\"},\"message\":\"Generic Protocol Command Decode\",\"url\":{   \"path\":\"/libhtp::request_uri_not_seen\",   \"original\":\"/libhtp::request_uri_not_seen\"},\"@timestamp\":\"2021-06-15T07:56:49.647Z\",\"suricata\":{   \"eve\":{      \"in_iface\":\"ens4\",      \"metadata\":{         \"flowints\":{            \"http.anomaly.count\":2419         }      },      \"event_type\":\"alert\",      \"alert\":{         \"signature_id\":2221010,         \"rev\":1,         \"gid\":1,         \"signature\":\"SURICATA HTTP unable to match response to request\",         \"category\":\"Generic Protocol Command Decode\"      },      \"flow_id\":576330410117303,      \"tx_id\":3224,      \"flow\":{               }   }},\"closingReason\":\"Resolved\",\"closing_notes\":\"some analyst note\"   }]"```
@@ -328,7 +328,7 @@ Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR
 ```json
 {
     "Arcanna": {
-        "BulkStatus": {
+        "Bulk": {
             "status": "ok"
         }
     }

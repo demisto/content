@@ -267,7 +267,7 @@ def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str,
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='Arcanna.BulkStatus',
+        outputs_prefix='Arcanna.Bulk',
         outputs_key_field='status',
         outputs=response
     )
