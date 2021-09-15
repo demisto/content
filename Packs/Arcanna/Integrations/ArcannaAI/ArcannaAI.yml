@@ -43,7 +43,6 @@ configuration:
   name: closing_reason_field
   required: false
   type: 0
-defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
 display: Arcanna.AI
 name: Arcanna.AI
@@ -238,6 +237,10 @@ script:
       with XSOAR fields.
     execution: false
     name: arcanna-send-bulk-events
+    outputs:
+    - contextPath: Arcanna.BulkStatus
+      description: Arcanna response for bulk events indexing
+      type: String
   - deprecated: false
     description: Returns the Feedback field set on integration.
     execution: false
@@ -257,4 +260,5 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+defaultclassifier: 'null'
 fromversion: 5.5.0

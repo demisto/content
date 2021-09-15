@@ -244,7 +244,7 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
     )
 
 
-def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> dict:
+def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id")
     events = argToList(args.get("events"))
     mappings = parse_mappings(feature_mapping_field)
@@ -262,7 +262,15 @@ def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str,
 
         mapped_events.append(body)
 
-    return client.send_bulk(job_id, mapped_events)
+    response = client.send_bulk(job_id, mapped_events)
+    readable_output = f' ## Arcanna send bulk results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.BulkStatus',
+        outputs_key_field='status',
+        outputs=response
+    )
 
 
 def parse_mappings(mapping: str) -> dict:
