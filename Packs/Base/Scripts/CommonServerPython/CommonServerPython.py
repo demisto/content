@@ -449,6 +449,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 'Course of Action'
         INTRUSION_SET = 'Intrusion Set'
         TOOL = 'Tool'
+        THREAT_ACTOR = 'Threat Actor'
+        INFRASTRUCTURE = 'Infrastructure'
 
     class ObjectsScore(object):
         """
@@ -463,6 +465,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 0
         INTRUSION_SET = 3
         TOOL = 2
+        THREAT_ACTOR = 3
+        INFRASTRUCTURE = 2
 
     class KillChainPhases(object):
         """
@@ -6948,6 +6952,9 @@ if 'requests' in sys.modules:
         def __del__(self):
             try:
                 self._session.close()
+            except AttributeError:
+                # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
+                pass
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 

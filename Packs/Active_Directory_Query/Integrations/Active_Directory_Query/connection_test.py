@@ -1,5 +1,5 @@
 import demistomock as demisto
-from Active_Directory_Query import main
+from Active_Directory_Query import main, group_dn
 import socket
 import ssl
 from threading import Thread
@@ -167,6 +167,87 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
+def mock_demisto_map_object(object, mapper_name, incident_type):
+    email = object.get('email')
+    email_prefix = email.split('@')[0]
+    return {
+        'cn': email_prefix,
+        'mail': email,
+        'sAMAccountName': email_prefix,
+        'userPrincipalName': email_prefix,
+        "ou": "OU=Americas,OU=Demisto"
+    }
+
+
+def test_get_iam_user_profile(mocker):
+    from Active_Directory_Query import get_iam_user_profile
+    mocker.patch.object(demisto, 'mapObject', side_effect=mock_demisto_map_object)
+
+    user_profile = {"email": "test2@paloaltonetworks.com", "username": "test",
+                    "locationregion": "Americas",
+                    "olduserdata": {"email": "test@paloaltonetworks.com", "username": "test",
+                                    "locationregion": "Americas"}}
+    _, ad_user, sam_account_name = get_iam_user_profile(user_profile, 'mock_mapper_out')
+    assert sam_account_name == 'test'
+    assert ad_user
+
+
+def test_update_user_iam__username_change(mocker):
+    """
+    Given:
+         A valid user profile with valid mapping
+    When:
+        Running the `create_user_iam` command
+    Then:
+        The user was created successfully in AD.
+
+    """
+    import Active_Directory_Query
+    add_args, add_kwargs = [], {}
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            return
+
+        def add(self, *args, **kwargs):
+            nonlocal add_args, add_kwargs
+            add_args, add_kwargs = args, kwargs
+            return True
+
+        def modify(self, *args, **kwargs):
+            return True
+
+        def modify_dn(self, *args, **kwargs):
+            return True
+
+    Active_Directory_Query.conn = ConnectionMocker()
+    args = {"user-profile": json.dumps({"email": "test2@paloaltonetworks.com", "username": "test",
+                                        "locationregion": "Americas",
+                                        "olduserdata": {"email": "test@paloaltonetworks.com", "username": "test",
+                                                        "locationregion": "Americas"}})}
+
+    mocker.patch.object(demisto, 'mapObject', side_effect=mock_demisto_map_object)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=True)
+    mocker.patch('Active_Directory_Query.get_user_activity_by_samaccountname', return_value=True)
+    mocker.patch('Active_Directory_Query.user_dn', return_value='mock_dn')
+
+    user_profile = Active_Directory_Query.update_user_iam(
+        default_base_dn='mock_base_dn',
+        args=args,
+        create_if_not_exists=False,
+        mapper_out='mock_mapper_out',
+        disabled_users_group_cn='mock_disabled_users_group_cn'
+    )
+    outputs = get_outputs_from_user_profile(user_profile)
+    assert outputs.get('action') == IAMActions.UPDATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('email') == 'test2@paloaltonetworks.com'
+    assert outputs.get('username') == 'test2'
+
+
 def test_create_user_iam(mocker):
     """
     Given:
@@ -198,7 +279,7 @@ def test_create_user_iam(mocker):
 
     mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
-                                                                    'samaccountname': 'test',
+                                                                    'sAMAccountName': 'test',
                                                                     'userPrincipalName': 'test',
                                                                     "ou": "OU=Americas,OU=Demisto"})
 
@@ -242,7 +323,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
 
     mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
-                                                                    'samaccountname': 'test',
+                                                                    'sAMAccountName': 'test',
                                                                     'userPrincipalName': 'test'})
 
     user_profile = Active_Directory_Query.create_user_iam('', args, 'mapper_out', '')
@@ -365,3 +446,31 @@ def test_search_group_members(mocker):
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_group_members('dc', 1)
         mock.assert_called_with(expected_results)
+
+
+def test_group_dn_escape_characters():
+    """
+    Given:
+         Group name with parentheses
+    When:
+        Running the function group_dn
+    Then:
+        The function search gets the group name after escape special characters.
+
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('Active_Directory_Query.search', return_value=[EntryMocker()]) as mock:
+        group_dn('group(group)', '')
+
+        mock.assert_called_with('(&(objectClass=group)(cn=group\\28group\\29))', '')

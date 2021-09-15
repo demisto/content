@@ -58,7 +58,7 @@ def test_url_command(mocker):
     """url"""
     import Zscaler
     run_command_test(command_func=Zscaler.url_lookup,
-                     args={'url': 'www.demisto22.com'},
+                     args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'},
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker)
