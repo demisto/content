@@ -1,0 +1,58 @@
+{
+  "results": [
+    {
+      "id": 33012,
+      "key": "TRIAL",
+      "name": "Trial",
+      "type": "global",
+      "status": "current",
+      "history": {
+        "createdBy": {
+          "type": "known",
+          "accountId": "5ff2e30b4d2179006ea18449",
+          "accountType": "atlassian",
+          "email": "",
+          "publicName": "John Doe",
+          "profilePicture": {
+            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+            "width": 48,
+            "height": 48,
+            "isDefault": false
+          },
+          "isExternalCollaborator": false,
+          "_expandable": {
+            "operations": "",
+            "personalSpace": ""
+          },
+          "_links": {
+            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+          }
+        },
+        "createdDate": "2021-08-02T09:53:55.510Z"
+      },
+      "_expandable": {
+        "settings": "/rest/api/space/TRIAL/settings",
+        "metadata": "",
+        "operations": "",
+        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
+        "identifiers": "",
+        "permissions": "",
+        "icon": "",
+        "description": "",
+        "theme": "/rest/api/space/TRIAL/theme"
+      },
+      "_links": {
+        "webui": "/spaces/TRIAL",
+        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL"
+      }
+    }
+  ],
+  "start": 0,
+  "limit": 25,
+  "size": 2,
+  "_links": {
+    "base": "https://xsoar-bd.atlassian.net/wiki",
+    "context": "/wiki",
+    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space?spaceKey=XSOAR&spaceKey=Trial&expand=history"
+  }
+}
