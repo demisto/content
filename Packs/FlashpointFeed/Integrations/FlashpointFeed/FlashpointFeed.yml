@@ -183,5 +183,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultmapperin: Flashpoint Feed - Incoming Mapper
 fromversion: 6.0.0

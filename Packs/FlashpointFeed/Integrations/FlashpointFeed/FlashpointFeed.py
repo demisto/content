@@ -38,6 +38,24 @@ HTTP_ERRORS = {
 INTEGRATION_VERSION = "v1.0.0"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 
+FILE_TYPES = ['sha1', 'sha256', 'sha512', 'md5']
+
+flashpoint_field_mapping = {
+    "firstseenbysource": {"path": "first_observed_at.date-time", "type": "date"},
+    "tags": {"path": "Event.Tag.name", "type": "tags"},
+    "flashpointfeedattributeid": {"path": "fpid", "type": "str"},
+    "flashpointfeedattributeuuid": {"path": "uuid", "type": "str"},
+    "flashpointfeedcategory": {"path": "category", "type": "str"},
+    "flashpointfeedeventcreatoremail": {"path": "Event.event_creator_email", "type": "str"},
+    "flashpointfeedeventhref": {"path": "Event.uuid", "type": "url"},
+    "flashpointfeedeventinformation": {"path": "Event.info", "type": "str"},
+    "flashpointfeedeventuuid": {"path": "Event.uuid", "type": "str"},
+    "flashpointfeedindicatortype": {"path": "type", "type": "str"},
+    "flashpointfeedmalwaredescription": {"path": "malware_description", "type": "str"},
+    "flashpointfeedreport": {"path": "Event.report", "type": "url"},
+    "flashpointfeedtimestamp": {"path": "timestamp", "type": "str"}
+}
+
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
@@ -122,6 +140,39 @@ class Client(BaseClient):
 
         return relationships
 
+    def map_indicator_fields(self, resp: dict, indicator_obj: dict) -> None:
+        """
+        Function to map indicators fields from the response
+
+        :param resp: raw response of indicator
+        :param indicator_obj: created indicator object
+
+        :return: None
+        """
+        for key, value in flashpoint_field_mapping.items():
+            if key == "tags":
+                new_tags = indicator_obj['fields']['tags']
+                event_tags = resp.get('Event', {}).get('Tag')
+                true_value = new_tags + [tag.get('name') for tag in event_tags]
+
+            elif key == "flashpointfeedeventhref":
+                uuid = resp.get('Event', {}).get('uuid')
+                true_value = "https://fp.tools/home/technical_data/iocs/items/" + uuid
+
+            else:
+                path = value['path']
+                paths = path.split('.')
+                true_value = resp
+
+                try:
+                    for p in paths:
+                        true_value = true_value.get(p)
+                except AttributeError:
+                    true_value = None
+                    pass
+
+            indicator_obj['fields'][key] = true_value
+
     def create_indicators_from_response(self, response: Any, last_fetch: str, params: dict, is_get: bool) -> List:
         """
         Function to create indicators from the response
@@ -159,6 +210,8 @@ class Client(BaseClient):
                 event_tags = resp.get('Event').get('Tag')
                 indicator_obj['relationships'] = self.create_relationship(indicator_value, indicator_type,
                                                                           event_tags)  # type: ignore
+
+            self.map_indicator_fields(resp, indicator_obj)
 
             indicators.append(indicator_obj)
 
@@ -219,6 +272,10 @@ def prepare_hr_for_indicators(indicators: list) -> str:
         raw_json = indicator.get('rawJSON')
         indicator_type = raw_json.get('type')
 
+        updated_indicator_type = indicator_type
+        if updated_indicator_type in FILE_TYPES:
+            updated_indicator_type = "File"
+
         event_tags = []
         tags = raw_json.get('Event', {}).get('Tag')
         if tags:
@@ -240,7 +297,7 @@ def prepare_hr_for_indicators(indicators: list) -> str:
 
         data = {
             'FPID': fp_id,
-            'Indicator Type': indicator_type,
+            'Indicator Type': updated_indicator_type,
             'Indicator Value': raw_json.get('value', {}).get(indicator_type),
             'Category': raw_json.get('category'),
             'Event Name': raw_json.get('Event', {}).get('info'),

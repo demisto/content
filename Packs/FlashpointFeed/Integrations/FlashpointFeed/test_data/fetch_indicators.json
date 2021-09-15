@@ -275,8 +275,34 @@
       }
     },
     "fields": {
+      "firstseenbysource": "2021-07-05T07:06:25+00:00",
+      "flashpointfeedattributeid": "_fQKGM3qXd2uxRRPVc8rMw",
+      "flashpointfeedattributeuuid": "1bbe1b1f-4160-4a95-8282-08ac2e6f28a7",
+      "flashpointfeedcategory": "Payload delivery",
+      "flashpointfeedeventcreatoremail": "info@flashpoint-intel.com",
+      "flashpointfeedeventhref": "https://fp.tools/home/technical_data/iocs/items/ac489282-756e-4e9a-957e-6c35ab59a277",
+      "flashpointfeedeventinformation": "Analysis: quasar \"jLikteQnlDEVdTa\" [2021-07-05 06:10:32]",
+      "flashpointfeedeventuuid": "ac489282-756e-4e9a-957e-6c35ab59a277",
+      "flashpointfeedindicatortype": "sha1",
+      "flashpointfeedmalwaredescription": "<p>\"Quasar\" is a publicly available, open-source remote access trojan (RAT) for Microsoft Windows operating systems written in the C# programming language. Quasar is authored by GitHub user \"MaxXor\" and publicly hosted as a GitHub repository. The functionality of the Quasar malware includes remote file management on the infected machine, registry alterations, recording the actions of the victim, and establishing remote desktop connections.</p>",
+      "flashpointfeedreport": null,
+      "flashpointfeedtimestamp": "1625468765",
       "tags": [
-        "Flashpoint Indicator"
+        "Flashpoint Indicator",
+        "analysis_id:34978",
+        "event:analysis",
+        "file_type:exe",
+        "malware:quasar",
+        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - T1116\"",
+        "misp-galaxy:mitre-enterprise-attack-intrusion-set=\"Execution through API - T1106\"",
+        "misp-galaxy:mitre-enterprise-attack-tool=\"Execution through Module Load - T1129\"",
+        "misp-galaxy:mitre-enterprise-attack-malware=\"Process Discovery - T1057\"",
+        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\"",
+        "misp-galaxy:mitre-mobile-attack-attack-pattern=\"Lockscreen Bypass - MOB-T1064\"",
+        "misp-galaxy:mitre-enterprise-attack-course-of-action=\"Process Injection Mitigation - T1055\"",
+        "os:windows",
+        "source:virustotal",
+        "type:trojan"
       ],
       "trafficlightprotocol": "AMBER"
     },
