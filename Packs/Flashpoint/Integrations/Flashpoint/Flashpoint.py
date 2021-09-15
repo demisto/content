@@ -279,7 +279,7 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> Dict:
     if last_run and 'start_time' in last_run:
         start_time = last_run.get('start_time')  # type: ignore
 
-    is_fresh = params.get('is_fresh_compromised_credentials')
+    is_fresh = argToBoolean(params.get('is_fresh_compromised_credentials', 'true'))
 
     max_fetch = arg_to_number(params.get('max_fetch', MAX_FETCH))
     if max_fetch is None:

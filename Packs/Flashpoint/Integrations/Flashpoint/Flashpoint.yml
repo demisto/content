@@ -714,8 +714,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves the next batch of alerts (scroll_id retrieved in previous
-        alerts response).
+      description: |-
+        Retrieves the next batch of alerts.
+
+        Note: User can get the "scroll_id" from the HR of the same command "flashpoint-alert-list".
       isArray: false
       name: scroll_id
       required: false
