@@ -111,7 +111,8 @@ Check whether a given IP address is "Internet background noise", or has been obs
 | --- | --- | --- |
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. | 
 | GreyNoise.IP.noise | boolean | Whether the IP is internet background noise or attacking. | 
-| GreyNoise.IP.code | string | Code which correlates to why GreyNoise labeled the IP as noise. | 
+| GreyNoise.IP.riot | string | Whether the IP is a common business service. | 
+| GreyNoise.IP.code | string | Code which correlates to why GreyNoise labeled the IP as noise. |
 | GreyNoise.IP.code_value | string | Message which correlates to why GreyNoise labeled the IP as noise. | 
 
 
