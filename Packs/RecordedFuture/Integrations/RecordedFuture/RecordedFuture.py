@@ -1371,7 +1371,7 @@ class Actions():
                     outputs_key_field=""
                 )
 
-    def fetch_incidents(self, rule_names_arg: Optional[str], fetch_time: str, max_fetch: Optional[int]) -> None:
+    def fetch_incidents(self, rule_names_arg: Optional[str], first_fetch: str, max_fetch: Optional[int] = None) -> None:
         if rule_names_arg:
             rule_names = rule_names_arg.split(';')
         else:
@@ -1381,7 +1381,7 @@ class Actions():
         if not last_run:
             last_run = {}
         if 'time' not in last_run:
-            time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+            time, _ = parse_date_range(first_fetch, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
         else:
             time = last_run['time']
 
@@ -1534,9 +1534,9 @@ def main() -> None:
             return_results(actions.lookup_command(entities, command))
         elif command == 'fetch-incidents':
             rule_names = demisto_params.get('rule_names', '').strip()
-            fetch_time = demisto_params.get('fetch_time', '24 hours').strip()
-            max_fetch = demisto_params.get('max_fetch')
-            actions.fetch_incidents(rule_names, fetch_time, max_fetch)
+            first_fetch = demisto_params.get('first_fetch', '24 hours').strip()
+            max_fetch = demisto_params.get('max_fetch', 50)
+            actions.fetch_incidents(rule_names, first_fetch, max_fetch)
         elif command == "recordedfuture-threat-assessment":
             context = demisto_args.get("context")
             entities = {

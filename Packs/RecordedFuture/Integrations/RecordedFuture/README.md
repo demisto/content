@@ -1691,7 +1691,7 @@ You can fetch Recorded Future Alerts and work with them as XSOAR Incidents. Ther
 | **Argument Name** | **Format** | **Description** | **Required** | **Default value** |
 | --- | --- | --- | --- | --- |
 | First fetch time | [number] [time unit], e.g. 12 hours, 7 days, 3 months, 1 year | First period to fetch alerts from | Not Required | 24 hours |
-| Max number of incident to pull in one call | Number e.g 1 , 3 , 4 | Specify how much alerts to pull in one run  | Not Required | None(All) |
+| Max number of incident to pull in one call | Number e.g 1 , 3 , 4 | Specify how much alerts to pull in one run  | Not Required | 50 |
 | Incidents Fetch Interval | [number] [time unit][number] [time unit]  e.g. 1 hour 30 minutes  | Specify time interval between every pull  | Required | 1 minute |
 
 

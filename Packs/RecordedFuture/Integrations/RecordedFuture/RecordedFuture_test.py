@@ -269,7 +269,7 @@ def test_entity_enrich_no_related_entities(mocker):
 
 def test_fetch_incidents(mocker):
     """Fetch alerts from Recorded Future"""
-    fetch_time = "72 hours"
+    first_fetch = "72 hours"
     rule_names = "Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers"
     max_fetch = 3
     client = create_client()
@@ -296,7 +296,7 @@ def test_fetch_incidents(mocker):
 
     client.get_single_alert.side_effect = lambda alert_id: get_single_alert_response(alert_id)
 
-    actions.fetch_incidents(rule_names, fetch_time, max_fetch)
+    actions.fetch_incidents(rule_names, first_fetch, max_fetch)
     get_last_run_mock.assert_called_once_with()
     client.get_alert_rules.assert_has_calls([
         call("Global Trends, Trending Vulnerabilities"),
