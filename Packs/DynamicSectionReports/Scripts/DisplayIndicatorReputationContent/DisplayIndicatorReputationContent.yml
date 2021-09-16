@@ -1,0 +1,16 @@
+commonfields:
+  id: 6acdd9d4-b42d-4303-8d72-bd3912696257
+  version: -1
+dockerimage: demisto/python3:3.8.6.12176
+enabled: true
+engineinfo: {}
+name: DisplayIndicatorReputationContent
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-indicator-section
+type: python

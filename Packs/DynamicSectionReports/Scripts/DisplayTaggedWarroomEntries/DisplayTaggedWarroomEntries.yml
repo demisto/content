@@ -1,0 +1,20 @@
+args:
+- defaultValue: '{"tags": ["report"]}'
+  description: 'The JSON filter for warroom entries described here: https://xsoar.pan.dev/docs/integrations/get-entries-filter'
+  name: filter
+commonfields:
+  id: e006e0b8-acfb-4725-8ff5-03d29152f6fb
+  version: -1
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+engineinfo: {}
+name: DisplayTaggedWarroomEntries
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
