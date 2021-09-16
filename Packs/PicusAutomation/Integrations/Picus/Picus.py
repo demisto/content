@@ -214,6 +214,7 @@ def runAttacks():
 
     threat_ids = list(threat_ids.split(","))
 
+    t_count = 0
     for threat_id in threat_ids:
         try:
             threat_id = int(threat_id)
@@ -225,7 +226,11 @@ def runAttacks():
             picus_attack_results["results"].append(picus_attack_result)
             if attack_result_response == "success":
                 picus_attack_raw_results += str(threat_id)+","
-            time.sleep(1)
+            if t_count == 3:
+                time.sleep(1)
+                t_count = 0
+            else:
+                t_count+=1
         except Exception as e:
             picus_attack_result = {"threat_id":threat_id,"result":"unknown error"}
             picus_attack_results["results"].append(picus_attack_result)
