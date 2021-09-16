@@ -180,6 +180,11 @@ script:
     description: Get Node Stats
     execution: false
     name: f5-ltm-get-node-stats
+    outputs:
+    - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
+      description: current connections
+      type: Unknown
+    - type: Unknown
   - arguments:
     - default: false
       description: IP address of the node
