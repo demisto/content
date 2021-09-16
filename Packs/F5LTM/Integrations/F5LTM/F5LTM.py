@@ -18,7 +18,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, token: str, partition: str, use_ssl: bool, use_proxy: bool, **kwargs):
+    def __init__(self, base_url: str, token: object, partition: str, use_ssl: bool, use_proxy: bool, **kwargs):
         super().__init__(base_url, verify=use_ssl, proxy=use_proxy, **kwargs)
         self.headers = {'Content-Type': 'application/json',
                         'X-F5-Auth-Token': token}
