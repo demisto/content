@@ -790,6 +790,12 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
         }
         headers = ["IP", "RIOT"]
     elif response.get("riot") is True or response.get("riot") == "true":
+        if response.get("logo_url", "") != "":
+            del response["logo_url"]
+        if response.get("trust_level") == "1":
+            response["trust_level"] = "1 - Reasonably Ignore"
+        elif response.get("trust_level") == "2":
+            response["trust_level"] = "2 - Commonly Seen"
         name = "GreyNoise: IP Belongs to Common Business Service"
         hr = {
             "IP": f"[{response.get('ip')}](https://www.greynoise.io/viz/riot/{response.get('ip')})",
@@ -800,12 +806,7 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
             "Last Updated": response.get("last_updated"),
         }
         headers = RIOT_HEADERS
-    if response.get("logo_url", "") != "":
-        del response["logo_url"]
-    if response.get("trust_level") == "1":
-        response["trust_level"] = "1 - Reasonably Ignore"
-    elif response.get("trust_level") == "2":
-        response["trust_level"] = "2 - Commonly Seen"
+
 
     human_readable = tableToMarkdown(name=name, t=hr, headers=headers, removeNull=True)
     return CommandResults(
