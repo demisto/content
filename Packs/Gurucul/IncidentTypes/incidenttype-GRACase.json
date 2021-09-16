@@ -19,5 +19,6 @@
     "weeks": 0,
     "weeksR": 0,
     "vcShouldIgnore": false,
-    "prevName": "GRACase"
+    "prevName": "GRACase",
+    "layout": "GRACaseLayout"
 }
