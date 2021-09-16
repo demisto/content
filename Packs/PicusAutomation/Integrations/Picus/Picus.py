@@ -11,7 +11,6 @@ import time
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-# For commit purposes
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -214,8 +213,6 @@ def runAttacks():
     variant = demisto.args().get('variant')
 
     threat_ids = list(threat_ids.split(","))
-    #threat_ids = threat_ids[:3]
-    threat_ids = ["562172","419881","523833"]
 
     for threat_id in threat_ids:
         try:

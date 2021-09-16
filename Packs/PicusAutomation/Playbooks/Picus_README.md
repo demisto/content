@@ -7,22 +7,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Picus
 * PicusIntegration
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* Picus_setParamPB
-* filter-insecure-attacks
-* Picus_getVectorCompare
-* Picus_getPeerList
 * Picus_getVectorList
 * Picus_getAttackResults
+* filter-insecure-attacks
 * Picus_runAttacks
-* Picus_getMitigationList
+* Picus_setParamPB
 * Picus_getThreatResults
+* Picus_getPeerList
+* Picus_getMitigationList
 
 ## Playbook Inputs
 ---
