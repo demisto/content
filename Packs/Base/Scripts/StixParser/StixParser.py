@@ -115,7 +115,7 @@ def create_indicator_entry(
     entry = dict()
     entry["indicator_type"] = indicator_type
     entry["value"] = value
-    entry["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
+    entry["CustomFields"] = {"indicatorid": ind_id, "stixpackageid": pkg_id}
     entry["source"] = source if source else ind_id.split("-")[0]
     entry["score"] = score
     # Times
