@@ -1,6 +1,5 @@
 {
     "description": "GRA Case Layout",
-    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -19,30 +18,12 @@
                         "isVisible": true,
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "type",
-                                "height": 22,
-                                "id": "incident-type-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "incident-severity-field",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "sourcebrand",
                                 "height": 22,
                                 "id": "incident-sourceBrand-field",
-                                "index": 2,
+                                "index": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -53,7 +34,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 22,
                                 "id": "incident-sourceInstance-field",
-                                "index": 3,
+                                "index": 1,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -64,62 +45,62 @@
                                 "fieldId": "playbookid",
                                 "height": 22,
                                 "id": "incident-playbookId-field",
-                                "index": 4,
+                                "index": 2,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "gracaseid",
+                                "fieldId": "gracase",
                                 "height": 22,
-                                "id": "e131a560-072e-11ec-831a-8d71086cd496",
+                                "id": "1c360160-1549-11ec-9c39-ef67e5c2dc25",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gracaseentity",
+                                "height": 22,
+                                "id": "26872630-1549-11ec-9c39-ef67e5c2dc25",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gracaseentityid",
+                                "height": 22,
+                                "id": "29d19640-1549-11ec-9c39-ef67e5c2dc25",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "graentity",
+                                "fieldId": "gracaseopendate",
                                 "height": 22,
-                                "id": "016da3f0-0730-11ec-831a-8d71086cd496",
+                                "id": "338c9590-1549-11ec-9c39-ef67e5c2dc25",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "graentityid",
+                                "fieldId": "gracaseownerid",
                                 "height": 22,
-                                "id": "ebc6ff20-072e-11ec-831a-8d71086cd496",
+                                "id": "38489700-1549-11ec-9c39-ef67e5c2dc25",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "graopendate",
+                                "fieldId": "gracaseweblink",
                                 "height": 22,
-                                "id": "f2831650-072e-11ec-831a-8d71086cd496",
+                                "id": "a1ec0c00-1549-11ec-9c39-ef67e5c2dc25",
                                 "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graownerid",
-                                "height": 22,
-                                "id": "f96fb360-072e-11ec-831a-8d71086cd496",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graweblink",
-                                "height": 22,
-                                "id": "02309b40-072f-11ec-831a-8d71086cd496",
-                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -221,51 +202,16 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-07dab470-0fba-11ec-82a4-8da638163409",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "graanomalyname",
-                                "height": 22,
-                                "id": "1d2fd350-0fba-11ec-82a4-8da638163409",
+                                "fieldId": "gracaseanomalydetails",
+                                "height": 106,
+                                "id": "3692fe70-117d-11ec-be5c-691ac2248630",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graanomalyresourcename",
-                                "height": 22,
-                                "id": "216a6fc0-0fba-11ec-82a4-8da638163409",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graanomalyriskscore",
-                                "height": 22,
-                                "id": "23f2ef60-0fba-11ec-82a4-8da638163409",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graanomalystatus",
-                                "height": 22,
-                                "id": "27aebee0-0fba-11ec-82a4-8da638163409",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "graanomalies",
-                                "height": 22,
-                                "id": "e6468f20-1098-11ec-9148-0161d1906641",
-                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -810,8 +756,9 @@
         ]
     },
     "group": "incident",
-    "id": "GRACaseLayout1",
-    "name": "GRACaseLayout1",
+    "id": "GRACaseLayout2",
+    "name": "GRACaseLayout2",
     "system": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
