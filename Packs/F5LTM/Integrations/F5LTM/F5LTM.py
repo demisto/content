@@ -1,17 +1,17 @@
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import requests
 import traceback
 
 
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 ''' CLIENT CLASS '''
 
@@ -352,7 +352,7 @@ def main() -> None:
             return_results(ltm_get_pools_by_node_command(client, args))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

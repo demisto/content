@@ -1,8 +1,3 @@
-## BaseIntegration Help
+## F5 LTM Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+F5 LTM Integration uses F5 iControl REST API, the integration supports Token Based Authentication that requires admin username and password.

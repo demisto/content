@@ -107,29 +107,6 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: Node Name
       type: Unknown
-  - deprecated: false
-    description: Get a list of all virtual servers
-    execution: false
-    name: f5-ltm-get-virtuals
-    outputs:
-    - contextPath: F5.LTM.Virtuals.name
-      description: Virtual Name
-      type: Unknown
-  - arguments:
-    - default: false
-      description: Virtual Name
-      isArray: false
-      name: virtual
-      required: true
-      secret: false
-    deprecated: false
-    description: Get virtual details
-    execution: false
-    name: f5-ltm-get-virtual
-    outputs:
-    - contextPath: F5.LTM.Virtual.name
-      description: Virtual Name
-      type: Unknown
   - arguments:
     - default: false
       description: Node to disable
@@ -184,7 +161,6 @@ script:
     - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
       description: current connections
       type: Unknown
-    - type: Unknown
   - arguments:
     - default: false
       description: IP address of the node
@@ -215,7 +191,7 @@ script:
     - contextPath: F5.LTM.Nodes.pools
       description: Pool names
       type: Unknown
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false
@@ -226,4 +202,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: '6.0'
+fromversion: '6.0.0'
