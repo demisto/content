@@ -1,5 +1,6 @@
 {
     "description": "GRA Case Layout",
+    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -756,9 +757,8 @@
         ]
     },
     "group": "incident",
-    "id": "GRACaseLayout2",
-    "name": "GRACaseLayout2",
+    "id": "GRACaseLayout",
+    "name": "GRACaseLayout",
     "system": false,
-    "version": -1,
-    "fromVersion": "6.0.0"
+    "version": -1
 }
