@@ -1,5 +1,5 @@
-The Complete Security Control Validation Platform
-This integration was integrated and tested with version 3949 of Picus
+Run commands on Picus and automate security validation with playbooks.
+This integration was integrated and tested with version 3976 of Picus
 
 ## Configure Picus on Cortex XSOAR
 
@@ -248,7 +248,7 @@ Returns the list of the mitigations of threats have optional parameters for filt
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_ids | Threat ID list ("111,222,333,...") or single threat ID can be given. | Required | 
-| product | Products info of the mitigation. | Required | 
+| product | Products info of the mitigation. This parameter can be Check Point NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint, F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity. | Required | 
 
 
 #### Context Output

@@ -20,7 +20,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Complete Security Control Validation Platform
+description: Run commands on Picus and automate security validation with playbooks.
 display: Picus Security
 name: Picus
 script:
@@ -204,7 +204,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Products info of the mitigation.
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
       isArray: false
       name: product
       required: true
