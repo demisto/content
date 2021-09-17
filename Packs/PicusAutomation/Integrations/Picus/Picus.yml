@@ -169,7 +169,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Products info of the mitigation.
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
       isArray: false
       name: mitigation_product
       required: true
@@ -182,7 +184,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Set parameter on playbook.
+    description: Set parameter on playbook. (This command is only used on playbook)
     execution: false
     name: Picus_setParamPB
   - arguments:
@@ -193,7 +195,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Filter insecure attacks on playbook.
+    description: Filter insecure attacks on playbook. (This command is only used on
+      playbook)
     execution: false
     name: filter-insecure-attacks
   - arguments:
