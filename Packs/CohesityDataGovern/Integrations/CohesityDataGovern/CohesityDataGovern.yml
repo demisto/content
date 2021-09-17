@@ -26,8 +26,7 @@ display: CohesityDataGovern
 name: CohesityDataGovern
 script:
   commands:
-  - arguments:
-    deprecated: false
+  - deprecated: false
     description: Get WAS Alerts command - get WAS alerts.
     execution: false
     name: cohesity-get-was-alerts
