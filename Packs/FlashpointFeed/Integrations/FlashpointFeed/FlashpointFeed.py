@@ -169,7 +169,6 @@ class Client(BaseClient):
                         true_value = true_value.get(p)
                 except AttributeError:
                     true_value = None
-                    pass
 
             indicator_obj['fields'][key] = true_value
 
