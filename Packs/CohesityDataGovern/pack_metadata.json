@@ -1,0 +1,21 @@
+{
+    "name": "Cohesity Data Govern",
+    "description": "CohesityTBD",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cohesity Inc.",
+    "url": "https://www.cohesity.com",
+    "email": "support@cohesity.com",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Security",
+        "Governance",
+        "Vulnerability",
+        "Cohesity"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
