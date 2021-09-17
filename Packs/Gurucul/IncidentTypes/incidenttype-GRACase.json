@@ -20,5 +20,6 @@
     "weeksR": 0,
     "vcShouldIgnore": false,
     "prevName": "GRACase",
-    "layout": "GRACaseLayout"
+    "layout": "GRACaseLayout",
+    "closureScript": "GRAUpdateCaseStatus"
 }

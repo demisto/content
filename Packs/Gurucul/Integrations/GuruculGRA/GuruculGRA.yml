@@ -957,8 +957,10 @@ script:
       required: true
       description: Model Name
     - name: fromDate
+      required: true
       description: From Date ( yyyy-MM-dd )
     - name: toDate
+      required: true
       description: To Date ( yyyy-MM-dd )
     outputs:
     - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatures
