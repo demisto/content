@@ -43,20 +43,18 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def get_was_alerts(self) -> Dict[str, Any]:
+        """Gets the Wide Access Shield Alerts.
+
+        :return: dict containing the Wide Access Shields alerts
+        returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/shields',
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -64,6 +62,48 @@ class Client(BaseClient):
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
+
+
+def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """get_was_alerts command: Returns Wide Access Sheild Alerts.
+
+    :type client: ``Client``
+    :param Client: CohesityDataGovern client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains Wide Access Shield Alerts.
+
+    :rtype: ``CommandResults``
+    """
+
+    # INTEGRATION DEVELOPER TIP
+    # Reputation commands usually support multiple inputs (i.e. arrays), so
+    # they can be invoked once in XSOAR. In this case the API supports a single
+    # IP at a time, so we will cycle this for all the members of the array.
+    # We use argToList(), implemented in CommonServerPython.py to automatically
+    # Initialize an empty list of CommandResults to return
+    # each CommandResult will contain context standard for IP
+    resp = client.get_was_alerts()
+
+    # CohesityTBD: Write a better readable_output.
+    alert_data = {}
+    idx = 0
+    for shield in resp['shields']:
+        idx = idx + 1
+        alert_data[str(idx)] = str(shield)
+
+    readable_output = tableToMarkdown('Alerts', alert_data)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='CohesityWASAlerts',
+        outputs_key_field='Alerts',
+        outputs=resp,
+    )
 
 
 def test_module(client: Client) -> str:
@@ -85,6 +125,7 @@ def test_module(client: Client) -> str:
         # TODO: ADD HERE some code to test connectivity and authentication to your service.
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
+        client.get_was_alerts()
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -93,22 +134,6 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
@@ -123,10 +148,10 @@ def main() -> None:
     """
 
     # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('apikey')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(demisto.params()['url'], '/mcm/argus/api/v1/public')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -142,8 +167,9 @@ def main() -> None:
 
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
+        headers: Dict = {
+            'apikey': api_key
+        }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -155,10 +181,9 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'cohesity-get-was-alerts':
+            return_results(get_was_alerts_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
