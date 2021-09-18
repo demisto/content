@@ -1,6 +1,6 @@
-id: Phishing - Core
+id: Phishing - Core v2
 version: -1
-name: Phishing - Core
+name: Phishing - Core v2
 description: |-
   Provides a basic response to phishing incidents. Playbook features:
   - Calculates reputation for all indicators
@@ -1282,6 +1282,6 @@ inputs:
   description: Whether the user wants the Rasterize integration to produce images of URLs that are involved in the incident. If "True", screenshots will be taken.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - Phishing - Core - Test - Incident Starter

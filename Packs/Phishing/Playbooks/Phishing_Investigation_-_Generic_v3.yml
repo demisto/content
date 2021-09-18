@@ -1,8 +1,8 @@
-id: Phishing Investigation - Generic v2
+id: Phishing Investigation - Generic v3
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Phishing Investigation - Generic v2
+name: Phishing Investigation - Generic v3
 description: |-
   Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
