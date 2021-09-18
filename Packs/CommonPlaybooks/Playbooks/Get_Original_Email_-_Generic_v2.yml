@@ -26,7 +26,6 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
-      - "10"
     separatecontext: false
     view: |-
       {
@@ -125,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 250,
+          "y": 190
         }
       }
     note: false
@@ -174,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": -510,
+          "y": 190
         }
       }
     note: false
@@ -205,80 +204,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 45
+          "x": -130,
+          "y": 35
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 7ba5011e-5344-42a4-8bed-34be953eacd0
-    type: title
-    task:
-      id: 7ba5011e-5344-42a4-8bed-34be953eacd0
-      version: -1
-      name: Email Gateways
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -510,
-          "y": 45
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 6601abe7-1790-4c13-8bc0-e9d567a47b00
-    type: playbook
-    task:
-      id: 6601abe7-1790-4c13-8bc0-e9d567a47b00
-      version: -1
-      name: Get Alerted Email - Generic
-      playbookName: Get Alerted Email - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -510,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -288,7 +221,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 565,
-        "width": 1370,
+        "width": 1140,
         "x": -510,
         "y": -110
       }
