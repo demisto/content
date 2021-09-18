@@ -440,8 +440,8 @@ tasks:
     task:
       id: 151f9ed5-3b43-4380-8ced-9892eb91104d
       version: -1
-      name: Process Email - Generic
-      playbookName: Process Email - Generic
+      name: Process Email - Generic v2
+      playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
       brand: ""
