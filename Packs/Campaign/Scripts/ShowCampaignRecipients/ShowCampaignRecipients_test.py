@@ -15,7 +15,7 @@ DEMISTO_RESULT = [
         'Type': 3
     }
 ]
-EXPECTED_MD_TABLE = '### Recipients:\n|Email|Number Of Appearances|\n|---|---|\n| example1@support.com | 5 |\n| ' \
+EXPECTED_MD_TABLE = '|Email|Number Of Appearances|\n|---|---|\n| example1@support.com | 5 |\n| ' \
                     'example2@support.com | 3 |\n| example3@support.com | 2 |\n'
 
 
