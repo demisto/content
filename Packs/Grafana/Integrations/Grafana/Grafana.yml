@@ -908,5 +908,5 @@ script:
 tests:
 - Grafana-Test
 defaultmapperin: Grafana Alert Mapper
-defaultclassifier: Grafana Alert Classifier
+defaultclassifier: Grafana Alert
 fromversion: 6.0.0
