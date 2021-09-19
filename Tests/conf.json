@@ -4534,7 +4534,7 @@
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
-            "timeout": 2400
+            "timeout": 3000
         }
     ],
     "skipped_tests": {

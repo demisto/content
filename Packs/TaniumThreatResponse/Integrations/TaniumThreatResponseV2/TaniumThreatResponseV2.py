@@ -989,7 +989,7 @@ def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{connection_id}/snapshot')
     hr = f'Initiated snapshot creation request for {connection_id}.'
 
-    context = {}
+    context = {'connection': connection_id}
     if task_id := raw_response.get('taskInfo', {}).get('id'):
         hr += f' Task id: {task_id}.'
 

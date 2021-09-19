@@ -594,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 27b630b1-9956-42e6-8438-a9e377d5b86d
+    taskid: 5765d673-f083-4a4b-8366-577338f334be
     type: condition
     task:
-      id: 27b630b1-9956-42e6-8438-a9e377d5b86d
+      id: 5765d673-f083-4a4b-8366-577338f334be
       version: -1
       name: Verify Outputs
       type: condition
@@ -614,21 +614,6 @@ tasks:
           left:
             value:
               simple: Tanium.SnapshotTask.connection
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SnapshotTask.startTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SnapshotTask.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.SnapshotTask.taskId
             iscontext: true
     view: |-
       {
@@ -4205,4 +4190,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: test playbook
+description: Test playbook
