@@ -1,7 +1,7 @@
 from mock import Mock, patch
 import pytest
 import demistomock as demisto
-
+import CommonServerPython
 
 INTSIGHTS_PARAMS = {
     'server': 'https://api.test.com',
@@ -65,6 +65,7 @@ def test_get_alert_takedown_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={'alert-id': '5e7b0b5620d02a00085ab21e'})
+    mocker.patch('CommonServerPython.tableToMarkdown')
 
     import IntSight
 
@@ -104,18 +105,20 @@ def test_close_alert(mocker_results, mocker):
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
-@patch.object(demisto, "results")
+@patch.object(CommonServerPython, "fileResult")
 def test_get_alert_image(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
+
     image_id = '123456789'
     mocker.patch.object(demisto, 'args', return_value={'image-id': image_id})
 
     import IntSight
 
     mocker.patch('IntSight.http_request')
+    mocker.patch('demistomock.results')
     IntSight.get_alert_image()
-    assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0]['File'])
+    assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
