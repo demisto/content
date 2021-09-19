@@ -519,3 +519,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The message was successfully pinned.
+
+### Known Limitations
+SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
+health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
