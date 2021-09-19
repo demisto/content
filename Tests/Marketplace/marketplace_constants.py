@@ -109,7 +109,7 @@ class Metadata(object):
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
     PREMIUM = 'premium'
-    VERNDOR_ID = 'vendorId'
+    VENDOR_ID = 'vendorId'
     PARTNER_ID = 'partnerId'
     PARTNER_NAME = 'partnerName'
     CONTENT_COMMIT_HASH = 'contentCommitHash'
@@ -143,6 +143,8 @@ class PackFolders(enum.Enum):
     GENERIC_FIELDS = "GenericFields"
     GENERIC_MODULES = "GenericModules"
     GENERIC_TYPES = "GenericTypes"
+    LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -152,7 +154,7 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
         }
 
     @classmethod
@@ -167,7 +169,8 @@ class PackFolders(enum.Enum):
             PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value
         }
 
 

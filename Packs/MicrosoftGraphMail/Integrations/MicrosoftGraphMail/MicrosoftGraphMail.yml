@@ -39,6 +39,12 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
+  defaultvalue: '10'
+  display: HTTP Timeout
+  name: timeout
+  required: false
+  type: 0
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch
   name: fetch_limit
@@ -175,6 +181,19 @@ script:
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
       type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
+      type: String
     - contextPath: MSGraphMail.NextPage
       description: A token to pass to the next list command to retrieve additional
         results.
@@ -283,6 +302,19 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
       type: String
   - arguments:
     - default: false
@@ -1121,7 +1153,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
@@ -1131,5 +1163,7 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftGraphMail-Test
+- MicrosoftGraphMail-Test_dev_no_oproxy
+- MicrosoftGraphMail-Test_dev
+- MicrosoftGraphMail-Test_prod
 fromversion: 5.0.0
