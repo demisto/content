@@ -57,6 +57,54 @@ class TestGetTimeRange:
         assert end == end2
 
 
+class TestNwQueryResponse:
+    @staticmethod
+    def test_parsing_sanity(mocker):
+        query_response = RsaNetWitnessPacketsAndLogsV2.NwQueryResponse()
+        raw_response = (
+            '[id1=60  id2=120\n'
+            'id1=0    id2=50   count=50  format=1  value=Session Packet Count  type=tcp.flags  flags=2147483665  group=100\n'
+            'id1=50   id2=100  count=51  format=2  value=Session Streams   type=tcp.flags  flags=2147483665  group=101\n'
+            'id1=100  id2=150  count=52  format=3  value=Session type  type=tcp.flags  flags=2147483665  group=102\n'
+            ']'
+        )
+
+        query_response.parseFromHttpResponse(raw_response)
+        assert query_response.id1 == 60
+        assert query_response.id2 == 120
+        assert len(query_response.result) == 3
+        for i, field in enumerate(query_response.result):
+            assert field.id1 == i * 50
+            assert field.id2 == (i + 1) * 50
+            assert field.count == i + 50
+            assert field.format == i + 1
+            assert field.value in ['Session Packet Count', 'Session Streams', 'Session type']
+            assert field.type == 'tcp.flags'
+            assert field.flags == 2147483665
+            assert field.group == i + 100
+
+    @staticmethod
+    def test_missing_fields():
+        query_response = RsaNetWitnessPacketsAndLogsV2.NwQueryResponse()
+        raw_response = (
+            '[id1=1  id2=3\n'
+            'id1=1   id2=1   count=1  format=1                          type=packets  flags=2147483665  group=100\n'
+            'id1=2   id2=2  count=2  format=2  value=Session Streams   type=packets  flags=2147483665  group=101\n'
+            'id1=3   id2=3            format=3  value=type              type=packets  flags=2147483665  group=102\n'
+            ']'
+        )
+
+        query_response.parseFromHttpResponse(raw_response)
+        assert query_response.result[0].id1 == 1
+        assert query_response.result[0].value is None
+
+        assert query_response.result[1].id1 == 2
+        assert query_response.result[1].group == 101
+
+        assert query_response.result[2].id1 == 3
+        assert query_response.result[2].count == 0
+
+
 class TestEventInfoCommand:
     @staticmethod
     def test_sanity(mocker):
@@ -108,7 +156,7 @@ class TestEventValuesCommand:
         results = RsaNetWitnessPacketsAndLogsV2.nw_events_values_command(
             RsaNetWitnessPacketsAndLogsV2.NwCoreClient('host', 443, 'user', 'password', False, True, True), {})
 
-        # assert results.raw_response
+        assert results.raw_response
 
 
 class TestMain:

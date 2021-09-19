@@ -131,10 +131,6 @@ class NwQueryOperator:
         Supported Netwitness Query Operators
     """
 
-    # Check for Equality of values
-    def __init__(self):
-        pass
-
     EQUALS = ' = '
 
     # Checks for In-Equality of values
@@ -307,7 +303,7 @@ class NwQueryField:
             _temp = _temp.replace(full_match, '')
 
             # SessionId if any
-            full_match, value = self._extract_field(r'\s*group=(\d+)', _temp)
+            full_match, value = self._extract_field(r'\s*group=(\d+)', _temp, default_value=0)
             self.group = int(value)
             _temp = _temp.replace(full_match, '')
 
@@ -318,16 +314,16 @@ class NwQueryField:
 
             # Meta Type / Name
             full_match, value = self._extract_field(r'\s*type=([a-zA-Z0-9.]+)', _temp)
-            self.type = int(value)
+            self.type = value
             _temp = _temp.replace(full_match, '')
 
             # Value
             full_match, value = self._extract_field(r'\s*value=(.*)', _temp)
-            self.value = int(value)
+            self.value = value
             _temp = _temp.replace(full_match, '')
 
-        except Exception:
-            raise Exception("Error while parsing query response [ " + line + " ]")
+        except Exception as exc:
+            raise DemistoException(f'Error while parsing query response [{line}]: {exc}', exception=exc)
 
     @staticmethod
     def _extract_field(regex: str, search_string: str, default_value: Any = None):
@@ -362,7 +358,7 @@ class NwQueryResponse:
 
             :param response: The HTTP Response from the Netwitness Core Service
         """
-        debug(f'lines:\n{response}')
+
         # Split lines on Line Breaks!
         lines = response.splitlines()
 
@@ -382,8 +378,8 @@ class NwQueryResponse:
                 # Else parse it as the Query Response Field
                 try:
                     self.result.append(NwQueryField(line))
-                except Exception:
-                    pass
+                except Exception as exc:
+                    demisto.error(f'Ignored an error while parsing a response. Error: {exc}')
 
     # End of Function parseFromHttpResponse
 
@@ -394,14 +390,13 @@ class NwQueryResponse:
 
             :return: a dictionary containing a map from Session Ids to NwEvent parsed from Response
         """
-        data: Dict[int, Dict] = {}
         # data is a mapping of session IDs to mapping of NwEvent objects:
         # {
         #     <Session ID>: {
         #         <Query Type>: [<list of values>],
         #     }
         # }
-        debug(f'result: {self.result}')
+        data: Dict[int, Dict] = {}
         for f in self.result:
             data.setdefault(f.group, {}).setdefault(f.type, []).append(f.value)
 
@@ -430,7 +425,7 @@ class NwQueryResponse:
         """
         _result = []
         for n in self.result:
-            nwm = NwMeta(n.type, NwMetaFormat(n.format), flags=n.flags)
+            nwm = NwMeta(n.type, n.format, flags=n.flags)
             _result.append(nwm)
         return _result
     # End of asSDKLanguageResponse
@@ -748,7 +743,7 @@ class NwClient:
     """
         Base class to be defined for Netwitness Clients!
     """
-    def __init__(self, host: str, port: str, username: str, password: str, proxy: dict = None,
+    def __init__(self, host: str, port: str, username: str, password: str, proxy: Optional[Dict] = None,
                  ssl: bool = True, secure: bool = True):
         """
         :param host: The host name or IP Address of the Server where Service is running
@@ -784,75 +779,25 @@ class NwClient:
         self.session = requests.Session()
 
         # Meta Information
-        self.metaInformation: dict[str, NwMeta] = {}
-
-        # set
-        self.typeToMeta = set()
-
-    def enableProxy(self):
-        """
-        Enables the Proxy for the Client
-        :return:
-        """
-
-        http = os.environ['http_proxy'] or os.environ['HTTP_PROXY']
-        https = os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
-        self.proxy = {
-            'http': http,
-            'https': https
-        }
-
-    # End of function enableProxy
+        self.metaInformation: Dict[str, NwMeta] = {}
 
     def getBaseURL(self, path: str):
         return self.url + path
 
-    # End of function getBaseURL
-
-    def doLogin(self):
+    @abstractmethod
+    def doLogin(self):  # pragma: no cover
         """
             Authenticate to the Server based on the object settings.
             :return:
         """
         pass
 
-    # End of function doLogin
-
-    def start(self):
+    @abstractmethod
+    def start(self):  # pragma: no cover
         """
             A method to be overridden by Client Implementations to initiate the post authentication steps
         :return:
         """
-        return None
-
-    # End of function start
-
-
-class NwAlert:
-    def __init__(self):
-        pass
-
-    alertId = None
-    time = None
-    events = None
-
-
-class NwIncident:
-    def __init__(self, incident):
-        self.incident = incident
-        self.incidentId = incident['id']
-        self.alerts = list()
-
-    def extractIPAddresses(self):
-        return None
-
-    def extractHosts(self):
-        return None
-
-    def extractDomains(self):
-        return None
-
-    def extractUsers(self):
         return None
 
 
@@ -862,13 +807,9 @@ class NwIncident:
 
 class NwCoreClient(NwClient):
     # Constructor
-    def __init__(self, host, port, uname, pwd, proxy, ssl, secure):
+    def __init__(self, host: str, port: str, uname: str, pwd: str, proxy: Dict, ssl: bool, secure: bool):
         super().__init__(host, port, uname, pwd, proxy=proxy, ssl=ssl, secure=secure)
-        # Summary Information
         self.device_summary = dict()
-
-    def __repr__(self):
-        return f'NwCoreClient({vars(self)})'
 
     # End of constructor
 
@@ -884,9 +825,7 @@ class NwCoreClient(NwClient):
             "Authorization": "Basic bndfdWk6"
         }
 
-        loginURL = self.getBaseURL('')
-
-        response = requests.get(loginURL,
+        response = requests.get(self.url,
                                 headers=httpHeaders,
                                 verify=self.secure,
                                 proxies=self.proxy,
@@ -923,7 +862,7 @@ class NwCoreClient(NwClient):
         z = {'msg': msg, 'force-content-type': 'text/plain'}
         z.update(options)
         z.update(params)
-        debug(f'query: {z}')
+
         return self.session.get(_url, verify=self.secure, proxies=self.proxy, params=z)
 
     # End of __makeNodeCall
@@ -1351,7 +1290,6 @@ class NwCoreClient(NwClient):
 
         # Get Session Ids
         sessionIds = response.asSDKQueryResponse()
-        debug(f'found sessions: {sessionIds}')
         if not sessionIds:
             return response
 
@@ -1612,7 +1550,6 @@ class NwCoreClient(NwClient):
                             caseInsensitive=True, maxSession=100000, meta=[], values=[], op=NwQueryOperator.EQUALS,
                             size=1000, must=False, searchAll=False, endTimeEpoch=-1, startTimeEpoch=-1, params={},
                             **kwargs):
-        _ = kwargs  # ignoring extra arguments
         # Generate the Query!
         where = self.__generateWhereClauseForMultipleMeta(meta, values, op, searchAll, must)
         return self.mSearchEventsByNwQueryAndTime(searchString, where, searchMeta, searchIndex, regEx, searchRawData,
@@ -1967,7 +1904,6 @@ def process_args(client: NwCoreClient, args):
                 'endTimeEpoch': end_time,
             })
 
-    debug(f'args: {p}')
     return p
 
 
@@ -1994,80 +1930,71 @@ def nw_events_search_command(client: NwCoreClient, args):
             'meta': NwQueryMetaMappingConfig['IP'],
             'values': re.split(r'(?<!\\),', getParam(args, NwParams.IpSearch)),
         })
-        c1_results = client.searchByMeta(**args)
+        results = client.searchByMeta(**args)
 
     elif hasParam(args, NwParams.UserSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['USER'],
             'values': re.split(r'(?<!\\),', getParam(args, NwParams.UserSearch)),
         })
-        c1_results = client.searchByMeta(**args)
+        results = client.searchByMeta(**args)
 
     elif hasParam(args, NwParams.HostSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['HOST'],
             'values': re.split(r'(?<!\\),', getParam(args, NwParams.HostSearch)),
         })
-        c1_results = client.searchByMeta(**args)
+        results = client.searchByMeta(**args)
 
     elif hasParam(args, NwParams.DomainSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['DOMAIN'],
             'values': re.split(r'(?<!\\),', getParam(args, NwParams.DomainSearch)),
         })
-        c1_results = client.searchByMeta(**args)
+        results = client.searchByMeta(**args)
 
     elif hasParam(args, NwParams.Where):
-        c1_results = client.searchByNwQueryAndTime(**args)
-        debug(f'results 1: {c1_results}')
+        results = client.searchByNwQueryAndTime(**args)
 
     elif hasParam(args, NwParams.MSearch):
-        c1_results = client.mSearchEventsByNwQueryAndTime(**args)
-        debug(f'results 2: {c1_results}')
+        results = client.mSearchEventsByNwQueryAndTime(**args)
 
     elif hasParam(args, NwParams.Meta) and hasParam(args, NwParams.Values):
         if hasParam(args, NwParams.MSearch):
-            c1_results = client.mSearchEventsByMeta(**args)
-            debug(f'results 3: {c1_results}')
+            results = client.mSearchEventsByMeta(**args)
         else:
-            c1_results = client.searchByMeta(**args)
-            debug(f'results 4: {c1_results}')
+            results = client.searchByMeta(**args)
 
     else:
-        LOG.messages = []
-        c1_results = client.searchByNwQueryAndTime(**args)
-        debug(f'results 5: {c1_results.result}')
-
-        LOG.print_log()
+        results = client.searchByNwQueryAndTime(**args)
 
     # Show results
-    if c1_results is not None:
-        response = c1_results.asSDKQueryResponse()
-        debug(f'search response: {response}')
-        results = []
+    if results is not None:
+        response = results.asSDKQueryResponse()
+        processed_results = []
         for record in response.values():
             processed_record = {}
             for key, value in record.items():
                 new_key = key.replace('.', '_')
                 processed_record[new_key] = value
 
-            results.append(processed_record)
+            processed_results.append(processed_record)
 
         return CommandResults(
             readable_output=tableToMarkdown(
                 'Sessions',
-                results,
-                metadata=f'Total Number Of Sessions Fetched : {len(results)}',
+                processed_results,
+                metadata=f'Total Number Of Sessions Fetched : {len(processed_results)}',
                 headers=['sessionid', 'time', 'event_source', 'event_desc'],
                 headerTransform=string_to_table_header,
             ),
-            outputs=results,
+            outputs=processed_results,
             outputs_prefix='NetwitnessSessions',
             outputs_key_field='sessionid',
             raw_response=response,
         )
     else:
-        return "No Data Returned from the Query"
+        return 'No Data Returned from the Query.'
 
 
 # #
@@ -2081,7 +2008,7 @@ def nw_events_info_command(client: NwCoreClient, args):
     c2_time = client.getTimeRange()
     c2_meta = client.getMetaInformation()
 
-    c2_summary = [
+    range_summary = [
         # Add Session Ids
         {
             'Range': 'Range of Session Ids',
@@ -2096,7 +2023,7 @@ def nw_events_info_command(client: NwCoreClient, args):
         },
         # Add Time Range in Epoch
         {
-            'Range': 'Range of Time (Epoch)',
+            'Range': 'Range of Time (seconds since Epoch)',
             'Start Range': c2_time[0],
             'End Range': c2_time[1],
         },
@@ -2124,42 +2051,38 @@ def nw_events_info_command(client: NwCoreClient, args):
     indexed_key_meta.sort()
     unindexed_meta.sort()
 
-    # JSON
-    json_ = {
-        'INDEX_VALUE': indexed_meta,
-        'INDEX_KEY': indexed_key_meta,
-        'INDEX_NONE': unindexed_meta,
-    }
-
     # Add Meta Information
     performance_summary = [
         {
-            'Range type': 'Meta Indexed By Values',
-            'Description': 'These Meta are Fastest to Search',
-            'Count': len(indexed_meta),
-        },
-        {
-            'Range type': 'Meta Indexed By Keys',
-            'Description': 'These Meta are Faster to Search',
-            'Count': len(indexed_key_meta),
-        },
-        {
-            'Range type': 'Meta Not Indexed',
+            'Range Type': 'Meta Not Indexed',
             'Description': 'These Meta are Slow to Search',
             'Count': len(unindexed_meta),
+            'Meta': unindexed_meta,
+        },
+        {
+            'Range Type': 'Meta Indexed By Keys',
+            'Description': 'These Meta are Faster to Search',
+            'Count': len(indexed_key_meta),
+            'Meta': indexed_key_meta,
+        },
+        {
+            'Range Type': 'Meta Indexed By Values',
+            'Description': 'These Meta are Fastest to Search',
+            'Count': len(indexed_meta),
+            'Meta': indexed_meta,
         },
     ]
 
     # Show results
     return [
-        CommandResults(raw_response=c2_summary),
-        CommandResults(raw_response=performance_summary),
-        CommandResults(raw_response=json_),
-
-
-        # {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': c2_summary},
-        # {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': performance_summary},
-        # {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json_},
+        CommandResults(
+            readable_output=tableToMarkdown('', range_summary, headers=['Range', 'Start Range', 'End Range']),
+            raw_response=range_summary,
+        ),
+        CommandResults(
+            readable_output=tableToMarkdown('', performance_summary, headers=['Range Type', 'Description', 'Count', 'Meta']),
+            raw_response=performance_summary,
+        ),
     ]
 
 
@@ -2354,9 +2277,6 @@ def main():
         # Attempt Login
         client.doLogin()
         processed_args = process_args(client, args)
-
-        # Enable System Proxy
-        # client.enableProxy()
 
         demisto.info(f'\n\ndates:\n{client.getTimeRange()}\n\n')
 
