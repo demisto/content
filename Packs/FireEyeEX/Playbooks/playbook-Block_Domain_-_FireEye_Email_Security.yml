@@ -1,0 +1,218 @@
+id: Block Domain - FireEye Email Security
+version: -1
+name: Block Domain - FireEye Email Security
+description: |-
+  This playbook blocks domains using FireEye Email Security.
+  The playbook checks whether the FireEye Email Security integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 94163ae0-f7a8-4641-803d-11ce2e35a27a
+    type: start
+    task:
+      id: 94163ae0-f7a8-4641-803d-11ce2e35a27a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e1a529d9-ad4c-4392-8249-128a5b760eba
+    type: condition
+    task:
+      id: e1a529d9-ad4c-4392-8249-128a5b760eba
+      version: -1
+      name: Is FireEye Email Security  enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FireEye Email Security
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a3c34dcc-8863-4c06-88d6-10416932bdd1
+    type: regular
+    task:
+      id: a3c34dcc-8863-4c06-88d6-10416932bdd1
+      version: -1
+      name: Block Domain
+      description: Creates the blocked sender domain.
+      script: '|||fireeye-ex-create-blockedlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entry_value:
+        complex:
+          root: inputs.Domain
+      type:
+        simple: sender_domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3b6ec932-ffb3-43c5-8666-13b769935c00
+    type: title
+    task:
+      id: 3b6ec932-ffb3-43c5-8666-13b769935c00
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8a98155b-9114-4772-8676-5dea5fa7809c
+    type: condition
+    task:
+      id: 8a98155b-9114-4772-8676-5dea5fa7809c
+      version: -1
+      name: Check if Domain input was provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 450,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

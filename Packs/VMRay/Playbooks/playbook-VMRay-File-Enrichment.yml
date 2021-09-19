@@ -1,0 +1,483 @@
+id: File Enrichment - VMRay
+version: -1
+name: File Enrichment - VMRay
+description: Get file information using the VMRay integration.
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 63ad8782-e5ae-415a-80d6-43c1c2b26127
+    type: start
+    task:
+      id: 63ad8782-e5ae-415a-80d6-43c1c2b26127
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": -23
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0d05f9c8-84ff-4081-8e09-ea3cd7f49461
+    type: title
+    task:
+      id: 0d05f9c8-84ff-4081-8e09-ea3cd7f49461
+      version: -1
+      name: Enrich hash using VMRay
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "15"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ebfb7519-fff6-40ab-83b8-46d8ae3799a8
+    type: title
+    task:
+      id: ebfb7519-fff6-40ab-83b8-46d8ae3799a8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 913
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5a067997-8a9f-4c4a-845f-eb48152b9fc7
+    type: condition
+    task:
+      id: 5a067997-8a9f-4c4a-845f-eb48152b9fc7
+      version: -1
+      name: Is there an MD5 hash?
+      description: Check if there is an MD5 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "20"
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3f7d58d6-57e5-4c0d-8f44-036406d90bbe
+    type: condition
+    task:
+      id: 3f7d58d6-57e5-4c0d-8f44-036406d90bbe
+      version: -1
+      name: Is there a SHA256 hash?
+      description: Check if there is a SHA-256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1655,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 31b51ec3-c7ce-4455-8b3c-766497378935
+    type: condition
+    task:
+      id: 31b51ec3-c7ce-4455-8b3c-766497378935
+      version: -1
+      name: Is there a SHA1 hash?
+      description: Check if there is a SHA-1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "22"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: f73def74-6b82-4447-8e94-9a1128fe3fc3
+    type: regular
+    task:
+      id: f73def74-6b82-4447-8e94-9a1128fe3fc3
+      version: -1
+      name: Query sample based on the MD5 hash
+      description: Retrieves sample information by hash.
+      script: vmray|||vmray-get-sample-by-hash
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 827666c6-7052-47ab-8735-b4ebfc904fe7
+    type: regular
+    task:
+      id: 827666c6-7052-47ab-8735-b4ebfc904fe7
+      version: -1
+      name: Query sample based on the SHA256 hash
+      description: Retrieves sample information by hash.
+      script: vmray|||vmray-get-sample-by-hash
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1655,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 1383ed5d-5ef0-45a4-8e7d-a28ae8dec1ae
+    type: regular
+    task:
+      id: 1383ed5d-5ef0-45a4-8e7d-a28ae8dec1ae
+      version: -1
+      name: Query sample based on the SHA1 hash
+      description: Retrieves sample information by hash.
+      script: vmray|||vmray-get-sample-by-hash
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 46498933-0736-4bd4-826e-44ace83c7794
+    type: condition
+    task:
+      id: 46498933-0736-4bd4-826e-44ace83c7794
+      version: -1
+      name: Is there an active VMRay instance?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: vmray
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 151
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.37,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1001,
+        "width": 1380,
+        "x": 655,
+        "y": -23
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: File MD5 to enrich
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: File SHA256 to enrich
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: File SHA1 to enrich
+  playbookInputQuery:
+outputs:
+# Indicator outputs
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file.
+  type: String
+# DBotScore outputs
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Reliability
+  description: Reliability of the source providing the intelligence data.
+  type: String
+# VMRay outputs
+- contextPath: VMRay.Sample.SampleID
+  description: ID of the sample.
+  type: Number
+- contextPath: VMRay.Sample.SampleURL
+  description: URL to sample page.
+  type: String
+- contextPath: VMRay.Sample.FileName
+  description: File name of the sample.
+  type: String
+- contextPath: VMRay.Sample.MD5
+  description: MD5 hash of the sample.
+  type: String
+- contextPath: VMRay.Sample.SHA1
+  description: SHA1 hash of the sample.
+  type: String
+- contextPath: VMRay.Sample.SHA256
+  description: SHA256 hash of the sample.
+  type: String
+- contextPath: VMRay.Sample.SSDeep
+  description: ssdeep hash of the sample.
+  type: String
+- contextPath: VMRay.Sample.Verdict
+  description: Verdict for the sample (Malicious, Suspicious, Clean,
+      Not Available).
+  type: String
+- contextPath: VMRay.Sample.VerdictReason
+  description: Description of the Verdict Reason.
+  type: String
+- contextPath: VMRay.Sample.Severity
+  description: Severity of the sample in the submission (Malicious, Suspicious,
+    Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  type: String
+- contextPath: VMRay.Sample.Type
+  description: File type.
+  type: String
+- contextPath: VMRay.Sample.Created
+  description: Timestamp of sample creation.
+  type: Date
+- contextPath: VMRay.Sample.Classifications
+  description: Classifications of the sample.
+  type: String
+- contextPath: VMRay.Sample.ChildSampleIDs
+  description: List of child sample IDs.
+  type: Number
+- contextPath: VMRay.Sample.ParentSampleIDs
+  description: List of parent sample IDs.
+  type: Number
+tests:
+- File Enrichment - VMRay - Test
