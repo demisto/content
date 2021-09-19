@@ -1,8 +1,8 @@
-id: Extract Indicators From File - Generic v2
+id: Extract Indicators From File - Generic v2_1
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Extract Indicators From File - Generic v2
+name: Extract Indicators From File - Generic v2_1
 description: |-
   Extracts indicators from a file.
   Supported file types:
@@ -37,8 +37,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
-          "y": -20
+          "x": 265,
+          "y": -10
         }
       }
     note: false
@@ -80,8 +80,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
-          "y": 170
+          "x": 265,
+          "y": 150
         }
       }
     note: false
@@ -148,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1850
+          "y": 1925
         }
       }
     note: false
@@ -312,6 +312,14 @@ tasks:
                       value:
                         simple: text/rtf
                     ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: message/rfc822
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -444,6 +452,14 @@ tasks:
                 value:
                   simple: text/rtf
               ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: message/rfc822
           accessor: EntryID
           transformers:
           - operator: uniq
@@ -774,7 +790,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
+          "x": -320,
           "y": 950
         }
       }
@@ -996,8 +1012,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 1510
+          "x": 1370,
+          "y": 1540
         }
       }
     note: false
@@ -1047,8 +1063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1340
+          "x": 1200,
+          "y": 1350
         }
       }
     note: false
@@ -1124,8 +1140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 1680
+          "x": 1540,
+          "y": 1740
         }
       }
     note: false
@@ -1287,10 +1303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 294091c7-4876-47b0-8617-f463554c1efe
+    taskid: 430b4252-4478-4150-8641-2444119a6005
     type: regular
     task:
-      id: 294091c7-4876-47b0-8617-f463554c1efe
+      id: 430b4252-4478-4150-8641-2444119a6005
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1425,10 +1441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 15020afc-d254-46b2-876b-b8abcb4bb8ff
+    taskid: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
     type: regular
     task:
-      id: 15020afc-d254-46b2-876b-b8abcb4bb8ff
+      id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
       version: -1
       name: Preview PDF files
       description: Get a preview (image) of the PDF files.
@@ -1446,7 +1462,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: containsString
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Type
@@ -1473,8 +1489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 1170
+          "x": 1070,
+          "y": 1180
         }
       }
     note: false
@@ -1488,26 +1504,25 @@ view: |-
   {
     "linkLabelsPosition": {
       "12_14_yes": 0.55,
-      "12_3_#default#": 0.34,
+      "12_3_#default#": 0.14,
       "13_12_yes": 0.55,
       "13_3_#default#": 0.19,
       "15_10_#default#": 0.1,
-      "15_16_yes": 0.39,
-      "1_10_#default#": 0.2,
-      "1_2_yes": 0.3,
-      "5_10_#default#": 0.2,
+      "15_16_yes": 0.38,
+      "1_10_#default#": 0.15,
+      "5_10_#default#": 0.19,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
       "7_8_yes": 0.38,
-      "9_10_#default#": 0.12,
+      "9_10_#default#": 0.11,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1935,
-        "width": 2340,
-        "x": -350,
-        "y": -20
+        "height": 2000,
+        "width": 2240,
+        "x": -320,
+        "y": -10
       }
     }
   }
