@@ -148,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 1925
+          "y": 2080
         }
       }
     note: false
@@ -557,7 +557,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "18"
     scriptarguments:
       entryID:
         complex:
@@ -1012,8 +1012,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 1540
+          "x": 1240,
+          "y": 1740
         }
       }
     note: false
@@ -1063,8 +1063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 1350
+          "x": 930,
+          "y": 1560
         }
       }
     note: false
@@ -1140,8 +1140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 1740
+          "x": 1480,
+          "y": 1910
         }
       }
     note: false
@@ -1290,7 +1290,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1480,
           "y": 700
         }
       }
@@ -1428,7 +1428,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
+          "x": 1480,
           "y": 1000
         }
       }
@@ -1489,8 +1489,70 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 1180
+          "x": 1240,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d3466327-cfe5-4364-8b19-187f67320432
+    type: condition
+    task:
+      id: d3466327-cfe5-4364-8b19-187f67320432
+      version: -1
+      name: Is Rasterize enabled?
+      description: Check if Rasterize integration is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1200
         }
       }
     note: false
@@ -1509,6 +1571,8 @@ view: |-
       "13_3_#default#": 0.19,
       "15_10_#default#": 0.1,
       "15_16_yes": 0.38,
+      "18_13_#default#": 0.41,
+      "18_17_yes": 0.31,
       "1_10_#default#": 0.15,
       "5_10_#default#": 0.19,
       "5_6_yes": 0.36,
@@ -1519,8 +1583,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2000,
-        "width": 2240,
+        "height": 2155,
+        "width": 2180,
         "x": -320,
         "y": -10
       }
