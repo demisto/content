@@ -332,8 +332,6 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The headers of the email.
-tests:
-- No tests (auto formatted)
 fromversion: 6.0.0
 tests:
 - Phishing v2 - Test - Incident Starter
