@@ -2660,10 +2660,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 94dce962-a961-4a67-8203-baad24dc4ad3
+    taskid: 52c12af5-21ae-411e-8eeb-fd18ed0e9bfe
     type: condition
     task:
-      id: 94dce962-a961-4a67-8203-baad24dc4ad3
+      id: 52c12af5-21ae-411e-8eeb-fd18ed0e9bfe
       version: -1
       name: Verify Outputs
       type: condition
@@ -2700,11 +2700,6 @@ tasks:
           left:
             value:
               simple: Tanium.Evidence.evidenceType
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.Evidence.size
             iscontext: true
     view: |-
       {
