@@ -1,8 +1,8 @@
-id: Extract Indicators From File - Generic v2_1
+id: Extract Indicators From File - Generic v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Extract Indicators From File - Generic v2_1
+name: Extract Indicators From File - Generic v2
 description: |-
   Extracts indicators from a file.
   Supported file types:
