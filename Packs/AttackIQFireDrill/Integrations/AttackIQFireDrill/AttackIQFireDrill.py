@@ -123,7 +123,7 @@ TEST_RESULT_TRANS = {
 
 
 def http_request(method, url_suffix, params=None, data=None):
-    url = f'{SERVER}/{url_suffix}'
+    url = urljoin(SERVER, url_suffix)
     LOG(f'AttackIQ is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)} \n '
         f'data:\n"{json.dumps(data)}')
     try:
