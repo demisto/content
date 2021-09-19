@@ -70,7 +70,6 @@ class Client(BaseClient):
                 indicator['fields'] = {
                     'firstseenbysource': indicator.get('firstseenbysource'),
                     'lastseenbysource': indicator.get('lastseenbysource'),
-                    'name': indicator.get('name'),
                     'tags': feedTags,
                 }
 
