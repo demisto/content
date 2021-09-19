@@ -1,4 +1,3 @@
-
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -2690,6 +2689,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "vmray",
+            "playbookID": "File Enrichment - VMRay - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test",
             "fromversion": "5.0.0",
@@ -4518,8 +4522,13 @@
             ]
         },
         {
-            "integrations": "CustomIndicatorDemo",
-            "playbookID": "playbook-CustomIndicatorDemo-test"
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -4624,7 +4633,8 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
-        "Carbon Black Edr - Test": "Issue 40132"
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322"
     },
     "skipped_integrations": {
         
