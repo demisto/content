@@ -1,4 +1,4 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
+"""Cohesity Data governance Integration for Cortex XSOAR (aka Demisto)
 
 This is an empty Integration with some basic structure according
 to the code conventions.
@@ -14,6 +14,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 
 """
 
+from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -43,8 +44,8 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-    def get_was_alerts(self) -> Dict[str, Any]:
+    # Helper functions to interact with helios services.
+    def get_was_alerts(self, startTimeMillis, endTimeMillis) -> Dict[str, Any]:
         """Gets the Wide Access Shield Alerts.
 
         :return: dict containing the Wide Access Shields alerts
@@ -53,13 +54,46 @@ class Client(BaseClient):
         """
         return self._http_request(
             method='GET',
-            url_suffix='/shields',
+            url_suffix='/mcm/argus/api/v1/public/shields/WIDE_ACCESS/incidences',
+            params={
+                "startTimeMsecs": startTimeMillis,
+                "endTimeMsecs": endTimeMillis
+            }
+        )
+
+    def get_ransomware_alerts(self, nHours: int) -> Dict[str, Any]:
+        """Gets the Cohesity ransomware alerts.
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/mcm/alerts',
+            params={
+                "maxAlerts": 1000,
+                "alertCategoryList": "kSecurity",
+                "alertStateList": "kOpen",
+                "_includeTenantInfo": True,
+                "startDateUsecs": get_nHour_prev_date_time(nHours)
+            }
         )
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def get_date_time_from_millis(time_in_millis):
+    dt = datetime.fromtimestamp(time_in_millis / 1000.0)
+    return dt.strftime("%m/%d/%Y, %H:%M:%S")
+
+
+def get_current_date_time():
+    dt = datetime.now()
+    return int(dt.timestamp() * 1000)
+
+
+def get_nHour_prev_date_time(nHours: int):
+    dt = datetime.now() - timedelta(hours=nHours)
+    return int(dt.timestamp() * 1000)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -80,28 +114,48 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     :rtype: ``CommandResults``
     """
+    nHours = int(args.get('num_hours', "168"))
 
-    # INTEGRATION DEVELOPER TIP
-    # Reputation commands usually support multiple inputs (i.e. arrays), so
-    # they can be invoked once in XSOAR. In this case the API supports a single
-    # IP at a time, so we will cycle this for all the members of the array.
-    # We use argToList(), implemented in CommonServerPython.py to automatically
-    # Initialize an empty list of CommandResults to return
-    # each CommandResult will contain context standard for IP
-    resp = client.get_was_alerts()
+    # Fetch was alerts since last nHours.
+    startTimeMillis = get_nHour_prev_date_time(nHours)
+    endTimeMillis = get_current_date_time()
+    resp = client.get_was_alerts(startTimeMillis, endTimeMillis)
 
-    # CohesityTBD: Write a better readable_output.
-    alert_data = {}
-    idx = 0
-    for shield in resp['shields']:
-        idx = idx + 1
-        alert_data[str(idx)] = str(shield)
+    # Parse alerts for readable_output.
+    raw_incidences = resp.get('incidences', {})
+    incidences_list = []
 
-    readable_output = tableToMarkdown('Alerts', alert_data)
+    for raw_incidence in raw_incidences:
+        incidence = {
+            "id": raw_incidence.get("id"),
+            "incidenceTime": get_date_time_from_millis(
+                raw_incidence.get("incidenceTimeMsecs")),
+            "ruleID": raw_incidence.get("ruleId")
+        }
+        incidences_list.append(incidence)
+
+    md = tableToMarkdown('Alerts', incidences_list, ["id", "incidence time", "ruleID"])
+
+    # return results.
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='CohesityWASAlerts',
-        outputs_key_field='Alerts',
+        readable_output=md,
+        outputs_prefix='CohesityDataGovern.WASAlert',
+        outputs_key_field='id',
+        outputs=incidences_list,
+    )
+
+
+def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Get_ransomware_alerts_command: Returns ransomware alerts detected
+        in last n hours.
+    """
+    nHours = int(args.get('num_hours', "168"))
+    resp = client.get_ransomware_alerts(nHours)
+
+    # CohesityTBD: Parse alert response.
+    return CommandResults(
+        outputs_prefix='CohesityDataGovern.RansomwareAlert',
+        outputs_key_field='alert_id',
         outputs=resp,
     )
 
@@ -122,10 +176,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        client.get_was_alerts()
+        client.get_was_alerts(1631471400000, 1632076199999)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -147,11 +198,11 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
+    # Get API key for authentication.
     api_key = demisto.params().get('apikey')
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/mcm/argus/api/v1/public')
+    # Get helios service API url.
+    base_url = demisto.params()['url']
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -164,9 +215,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
+        # Prepare client and set authentication headers.
         headers: Dict = {
             'apikey': api_key
         }
@@ -181,9 +230,11 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        # TODO: ADD command cases for the commands you will implement
         elif demisto.command() == 'cohesity-get-was-alerts':
             return_results(get_was_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'cohesity-get-ransomware-alerts':
+            return_results(get_ransomware_alerts_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

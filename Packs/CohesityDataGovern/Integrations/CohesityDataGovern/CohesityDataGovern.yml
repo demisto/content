@@ -26,13 +26,41 @@ display: CohesityDataGovern
 name: CohesityDataGovern
 script:
   commands:
-  - deprecated: false
-    description: Get WAS Alerts command - get WAS alerts.
+  - arguments:
+    - default: true
+      description: Num of hours to fetch alerts since.
+      isArray: false
+      name: num_hours
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Cohesity wide-access Alerts command.
     execution: false
     name: cohesity-get-was-alerts
     outputs:
-    - contextPath: CohesityWASAlerts.Alerts
-      description: Count of WAS alerts
+    - contextPath: CohesityDataGovern.WASAlert.id
+      description: Identifier for WAS alert
+      type: String
+    - contextPath: CohesityDataGovern.WASAlert.incidenceTime
+      description: WAS alert incidence time.
+      type: String
+    - contextPath: CohesityDataGovern.WASAlert.ruleID
+      description: Triggering rule identifier for WAS alert
+      type: String
+  - arguments:
+    - default: false
+      description: Num of hours to fetch alerts since.
+      isArray: false
+      name: num_hours
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Cohesity ransomware Alerts command.
+    execution: false
+    name: cohesity-get-ransomware-alerts
+    outputs:
+    - contextPath: CohesityDataGovern.RansomwareAlert
+      description: Count of Ransomware alerts
       type: Number
   isfetch: false
   runonce: false
