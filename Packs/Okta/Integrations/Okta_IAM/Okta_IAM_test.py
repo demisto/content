@@ -325,7 +325,6 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     assert outputs.get('action') == IAMActions.DISABLE_USER
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
-    assert outputs.get('reason') == 'Action failed because the user is disabled.'
 
 
 def test_get_mapping_fields_command(mocker):

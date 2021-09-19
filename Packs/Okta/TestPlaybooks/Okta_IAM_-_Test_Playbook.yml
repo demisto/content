@@ -1,4 +1,4 @@
-description: Tests the Create, Get, Update and Disable user Identity Lifecycle Management commands.
+description: Test user profile data
 id: Okta IAM - Test Playbook
 inputs:
 - description: Test user profile data.
@@ -6,10 +6,11 @@ inputs:
   playbookInputQuery:
   required: true
   value:
-    simple: '{"email": "testdemisto2@paloaltonetworks.com", "username": "testdemisto2@paloaltonetworks.com",
+    simple: '{"email": "testdemisto2222@paloaltonetworks.com", "username": "testdemisto2222@paloaltonetworks.com",
       "givenname": "test", "surname": "demisto", "locationregion": "Americas"}'
 name: Okta IAM - Test Playbook
 outputs: []
+sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
 starttaskid: "0"
 tasks:
   "0":
@@ -37,7 +38,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 510,
           "y": 50
         }
       }
@@ -76,7 +77,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 510,
           "y": 370
         }
       }
@@ -113,7 +114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 397.5,
           "y": 720
         }
       }
@@ -153,7 +154,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 1070
         }
       }
@@ -190,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 172.5,
           "y": 1420
         }
       }
@@ -230,7 +231,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1770
         }
       }
@@ -258,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2135
         }
       }
   "13":
@@ -291,7 +292,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 510,
           "y": 195
         }
       }
@@ -320,6 +321,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "19"
       "yes":
       - "4"
     note: false
@@ -339,7 +342,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 510,
           "y": 545
         }
       }
@@ -400,6 +403,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "19"
       "yes":
       - "5"
     note: false
@@ -419,7 +424,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 397.5,
           "y": 895
         }
       }
@@ -480,6 +485,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "19"
       "yes":
       - "6"
     note: false
@@ -499,7 +506,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 1245
         }
       }
@@ -560,6 +567,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "19"
       "yes":
       - "7"
     note: false
@@ -579,7 +588,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 172.5,
           "y": 1595
         }
       }
@@ -640,6 +649,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "19"
       "yes":
       - "10"
     note: false
@@ -659,8 +670,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1945
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: |-
+          The following instances failed:
+          ${IAM.Vendor(val.success == false)}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 9ab9c744-1dea-41a7-8220-8cf0d2d128c1
+      iscommand: false
+      name: Print Error Entry
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 9ab9c744-1dea-41a7-8220-8cf0d2d128c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2120
         }
       }
 version: -1
@@ -669,8 +713,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 380,
+        "height": 2165,
+        "width": 1035,
         "x": 50,
         "y": 50
       }
