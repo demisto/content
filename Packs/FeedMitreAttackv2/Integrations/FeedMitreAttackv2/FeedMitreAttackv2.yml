@@ -205,3 +205,4 @@ script:
 tests:
 - FeedMitreAttackv2_test
 fromversion: 5.5.0
+autoUpdateDockerImage: false
