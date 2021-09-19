@@ -29,7 +29,7 @@ def test_add_comment(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request', Mock())
     IntSight.add_comment()
-    assert(comment == mocker_results.call_args[0][0]['Contents']['Comment'])
+    assert (comment == mocker_results.call_args[0][0]['Contents']['Comment'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -46,17 +46,17 @@ def test_add_tag(mocker_results, mocker):
 
     tag_id = '1234'
     mocker.patch('IntSight.http_request', return_value={
-            'Details': {
-                'Tags': [
-                    {
-                        'Name': 'Test Tag',
-                        '_id': tag_id
-                    }
-                ]
-            }
-        })
+        'Details': {
+            'Tags': [
+                {
+                    'Name': 'Test Tag',
+                    '_id': tag_id
+                }
+            ]
+        }
+    })
     IntSight.add_tag()
-    assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
+    assert (tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -65,13 +65,11 @@ def test_get_alert_takedown_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={'alert-id': '5e7b0b5620d02a00085ab21e'})
-    mocker.patch('CommonServerPython.tableToMarkdown')
-
     import IntSight
 
-    mocker.patch('IntSight.http_request')
+    mocker.patch('IntSight.http_request', return_value=MockResponse(text='text'))
     IntSight.get_alert_takedown_status()
-    assert('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
+    assert ('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -86,7 +84,7 @@ def test_ask_analyst(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.ask_analyst()
-    assert(question == mocker_results.call_args[0][0]['Contents']['Question'])
+    assert (question == mocker_results.call_args[0][0]['Contents']['Question'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -101,7 +99,7 @@ def test_close_alert(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.close_alert()
-    assert(reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
+    assert (reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -118,7 +116,7 @@ def test_get_alert_image(mocker_results, mocker):
     mocker.patch('IntSight.http_request')
     mocker.patch('demistomock.results')
     IntSight.get_alert_image()
-    assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0])
+    assert (image_id + '-image.jpeg' == mocker_results.call_args[0][0])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -133,7 +131,7 @@ def test_takedown_request(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.takedown_request()
-    assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
+    assert (alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -152,7 +150,7 @@ def test_get_ioc_blocklist_status(mocker_results, mocker):
     }
     mocker.patch('IntSight.http_request', return_value=[mock_response])
     IntSight.get_ioc_blocklist_status()
-    assert(mock_response in mocker_results.call_args[0][0]['Contents'])
+    assert (mock_response in mocker_results.call_args[0][0]['Contents'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -188,9 +186,9 @@ def test_search_for_ioc(mocker_results, mocker):
             "Phishing"
         ]
     }
-    mocker.patch('IntSight.http_request', return_value = mock_response)
+    mocker.patch('IntSight.http_request', return_value=mock_response)
     IntSight.search_for_ioc()
-    assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
+    assert (value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -205,7 +203,7 @@ def test_remove_tag(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.remove_tag()
-    assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
+    assert (tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -315,7 +313,7 @@ def test_request_for_ioc_enrichment(mocker_results, mocker):
     }
     mocker.patch('IntSight.http_request', return_value=mock_response)
     IntSight.request_for_ioc_enrichment()
-    assert(mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
+    assert (mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -335,7 +333,7 @@ def test_send_mail(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.send_mail()
-    assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
+    assert (alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -353,7 +351,7 @@ def test_unassign_alert(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.unassign_alert()
-    assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
+    assert (alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
 @patch.object(demisto, "results")
@@ -371,7 +369,7 @@ def test_change_severity(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.change_severity()
-    assert(severity == mocker_results.call_args[0][0]['Contents']['Severity'])
+    assert (severity == mocker_results.call_args[0][0]['Contents']['Severity'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -392,7 +390,7 @@ def test_update_ioc_blocklist_status(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request')
     IntSight.update_ioc_blocklist_status()
-    assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
+    assert (alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -439,7 +437,7 @@ def test_get_mssp_sub_accounts(mocker_results, mocker):
         action=IntSight.get_mssp_sub_accounts,
         side_effect=get_mssp_sub_accounts_http_response
     )
-    assert(10 == mocker_results.call_args[0][0]['Contents'][0]['AssetsLimit'])
+    assert (10 == mocker_results.call_args[0][0]['Contents'][0]['AssetsLimit'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -478,7 +476,7 @@ def test_get_iocs(mocker_results, mocker):
 
     mocker.patch('IntSight.http_request', return_value=mock_response)
     IntSight.search_for_ioc()
-    assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
+    assert (value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -547,7 +545,7 @@ def test_get_alerts(mocker_results, mocker):
         action=IntSight.get_alerts,
         side_effect=get_alerts_http_response
     )
-    assert(alert_id == mocker_results.call_args[0][0]['Contents'][0]['ID'])
+    assert (alert_id == mocker_results.call_args[0][0]['Contents'][0]['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -603,7 +601,7 @@ def test_get_alert_by_id(mocker_results, mocker):
     }
     mocker.patch('IntSight.http_request', return_value=complete_alert)
     IntSight.get_alert_by_id()
-    assert(complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
+    assert (complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -637,15 +635,15 @@ def test_get_alert_activity(mocker_results, mocker):
     }
 
     mocker.patch('IntSight.http_request', return_value=[
-            {
-                'ID': '5e7b0b5620d02a00085ab21e',
-                'Activities': [
-                    activity
-                ]
-            }
-        ])
+        {
+            'ID': '5e7b0b5620d02a00085ab21e',
+            'Activities': [
+                activity
+            ]
+        }
+    ])
     IntSight.get_alert_activity()
-    assert('Activities' in mocker_results.call_args[0][0]['Contents'][0])
+    assert ('Activities' in mocker_results.call_args[0][0]['Contents'][0])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -663,13 +661,13 @@ def test_assign_alert(mocker_results, mocker):
 
     assignee_id = '12345'
     mocker.patch('IntSight.http_request', return_value=[
-            {
-                "Email": "email@domain.com",
-                "_id": assignee_id
-            }
-        ])
+        {
+            "Email": "email@domain.com",
+            "_id": assignee_id
+        }
+    ])
     IntSight.assign_alert()
-    assert(assignee_id == mocker_results.call_args[0][0]['Contents']['Assignees.AssigneeID'])
+    assert (assignee_id == mocker_results.call_args[0][0]['Contents']['Assignees.AssigneeID'])
 
 
 def test_unicode_to_str_recur(mocker):
@@ -683,3 +681,8 @@ def test_unicode_to_str_recur(mocker):
     from IntSight import unicode_to_str_recur
     non_ascii_str = u'\u05d5\u05d5\u05d0\u05d5'
     assert unicode_to_str_recur(non_ascii_str) == '\xd7\x95\xd7\x95\xd7\x90\xd7\x95'
+
+
+class MockResponse:
+    def __init__(self, text):
+        self.text = text
