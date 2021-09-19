@@ -154,7 +154,7 @@ script:
     - contextPath: Arcanna.Default_Job_Id
       description: Arcanna default job id
       type: Unknown
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false
