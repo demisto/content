@@ -594,16 +594,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5765d673-f083-4a4b-8366-577338f334be
+    taskid: 041a27f8-25f7-4efe-83bb-33f621ee1e2f
     type: condition
     task:
-      id: 5765d673-f083-4a4b-8366-577338f334be
+      id: 041a27f8-25f7-4efe-83bb-33f621ee1e2f
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "22"
       "yes":
       - "75"
     separatecontext: false
@@ -614,6 +616,11 @@ tasks:
           left:
             value:
               simple: Tanium.SnapshotTask.connection
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tanium.SnapshotTask.taskId
             iscontext: true
     view: |-
       {
