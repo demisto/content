@@ -2400,7 +2400,7 @@ script:
       is used as part of a Mirroring feature, which is available from version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
