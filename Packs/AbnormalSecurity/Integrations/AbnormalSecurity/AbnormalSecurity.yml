@@ -45,6 +45,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Check the status of an action requested on a case.
     name: abnormal-security-check-case-action-status
     outputs:
@@ -69,6 +73,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Check the status of an action requested on a threat.
     name: abnormal-security-check-threat-action-status
     outputs:
@@ -78,6 +86,67 @@ script:
     - contextPath: AbnormalSecurity.ActionStatus.description
       description: The description of the status
       type: String
+  - arguments:
+    - description: Filter the results based on a filter key. Value must be of the
+        format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`.
+        Supported keys - [`receivedTime`]
+      isArray: false
+      name: filter
+      required: false
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    - description: Filters threats based on the source of detection.
+      isArray: false
+      name: source
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
+    description: Download data from Threat Log in .csv format
+    name: abnormal-security-download-threat-log-csv
+  - arguments:
+      - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+          lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
+          only the key `lastReportedTime` is supported for `/abusecampaigns`. At
+          least one of `gte`/`lte` must be specified, with a datetime string following
+          the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in
+          UTC.
+        isArray: false
+        name: filter
+        required: false
+      - description: Number of abuse campaigns shown on each page. Each page of data
+          will have at most page_size abuse campaign IDs.
+        isArray: false
+        name: page_size
+        required: false
+      - description: 1-indexed page number to get a particular page of threats. Has
+          no effect if filter is not specified.
+        isArray: false
+        name: page_number
+        required: false
+      - description: Returns test data if set to `True`
+        isArray: false
+        name: mock-data
+        required: false
+      - description: Subtenant of the user (if applicable)
+        isArray: false
+        name: subtenant
+        required: false
+    description: Get a list of campaigns submitted to Abuse Mailbox
+    name: abnormal-security-list-abuse-mailbox-campaigns
+    outputs:
+      - contextPath: AbnormalSecurity.AbuseCampaign.campaigns.campaignId
+        description: An id which maps to an abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.pageNumber
+        description: The current page number.
+        type: Number
+      - contextPath: AbnormalSecurity.AbuseCampaign.nextPageNumber
+        description: The next page number.
+        type: Number
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
         lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
@@ -100,6 +169,10 @@ script:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Get a list of Abnormal cases identified by Abnormal Security
     name: abnormal-security-list-abnormal-cases
@@ -146,6 +219,10 @@ script:
       isArray: false
       name: source
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Get a list of threats
     name: abnormal-security-list-threats
     outputs:
@@ -171,6 +248,10 @@ script:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Get details of a threat
     name: abnormal-security-get-threat
@@ -261,6 +342,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Get details of an Abnormal case
     name: abnormal-security-get-abnormal-case
     outputs:
@@ -276,6 +361,126 @@ script:
     - contextPath: AbnormalSecurity.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
       type: String
+  - arguments:
+    - description: A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns
+      isArray: false
+      name: campaign_id
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
+    description: Get details of an Abuse Mailbox campaign
+    name: abnormal-security-get-abuse-mailbox-campaign
+    outputs:
+      - contextPath: AbnormalSecurity.AbuseCampaign.campaignId
+        description: An id which maps to an abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.firstReported
+        description: Date abuse campaign was first reported.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.lastReported
+        description: Date abuse campaign was last reported.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.messageId
+        description: A unique identifier for the first message in the abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.subject
+        description: Subject of the first email in the abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.fromName
+        description: The display name of the sender.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.fromAddress
+        description: The email address of the sender.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.recipientName
+        description: The email address of the recipient.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.recipientAddress
+        description: The email address of the recipient.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.judgementStatus
+        description: Judgement status of message.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.overallStatus
+        description: Overall status of message.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaign.attackType
+        description: The type of threat the message represents.
+        type: String
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: email_address
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee identity analysis (Genome) data
+    name: abnormal-security-get-employee-identity-analysis
+    outputs:
+      - contextPath: AbnormalSecurity.Employee.email
+        description: Employee email
+        type: String
+      - contextPath: AbnormalSecurity.Employee.histograms.key
+        description: Genome key name
+        type: String
+      - contextPath: AbnormalSecurity.Employee.histograms.name
+        description: Genome title
+        type: String
+      - contextPath: AbnormalSecurity.Employee.histograms.description
+        description: Description of genome object
+        type: String
+      - contextPath: AbnormalSecurity.Employee.histograms.values.value
+        description: Category value
+        type: String
+      - contextPath: AbnormalSecurity.Employee.histograms.values.percentage
+        description: Ratio of this category relative to others
+        type: Number
+      - contextPath: AbnormalSecurity.Employee.histograms.values.total_count
+        description: Number of occurences for this category
+        type: Number
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: email_address
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee information
+    name: abnormal-security-get-employee-information
+    outputs:
+    - contextPath: AbnormalSecurity.Employee.name
+      description: Name of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.Employee.email
+      description: Email of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.Employee.title
+      description: Job title of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.Employee.manager
+      description: Email address of the employee's manager
+      type: String
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: email_address
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee login information for last 30 days in csv format
+    name: abnormal-security-get-employee-last-30-days-login-csv
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
@@ -329,6 +534,43 @@ script:
         description: URL of the status of the action
         type: String
   - arguments:
+    - description: A string representing the email case. Can be retrieved by first running command to list cases
+      isArray: false
+      name: case_id
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
+    description: Provides the analysis and timeline details of a case
+    name: abnormal-security-get-case-analysis-and-timeline
+    outputs:
+    - contextPath: AbnormalSecurity.CaseAnalysis.insights.signal
+      description: Insight signal or highlight of a case
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.insights.description
+      description: Description of insight signal or highlight
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp
+      description: Time when event occurred
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.category
+      description: Type of event
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.title
+      description: Title of the event
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address
+      description: IP Address where user accessed mail from
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels
+      description: Analysis labels associated with the fields in the timeline event
+      type: Unknown
+  - arguments:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
@@ -348,7 +590,7 @@ script:
       - contextPath: AbnormalSecurity.SubmitInquiry.detail
         description: Confirmation of inquiry sent
         type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   script: ''
   subtype: python3

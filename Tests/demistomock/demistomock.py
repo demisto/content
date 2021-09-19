@@ -996,7 +996,7 @@ def createIndicators(indicators_batch, noUpdate=False):
 
     Args:
       indicators_batch (list): List of indicators objects to create
-      noUpdate (bool): No update on fetched feed (no new indicators to fetch)
+      noUpdate (bool): No update on fetched feed (no new indicators to fetch), Available from Server version 6.5.0.
 
     Returns:
       None: No data returned

@@ -62,6 +62,38 @@ def test_module(sg):
     return 'ok'
 
 
+"""Retrieve an Email list based on the query"""
+
+
+def get_email_activity_list(args: dict, sg):
+    params = {}
+    limit = args.get('limit')
+    query = args.get('query')
+    headers = args.get('headers')
+    if limit:
+        params['limit'] = int(limit)
+    if query:
+        params['query'] = query
+    response = sg.client.messages.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.EmailList': body['messages']}
+        if headers:
+            if isinstance(headers, str):
+                headers = headers.split(",")
+        md = tableToMarkdown('Email List: ', body['messages'], headers)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Email list fetch is failed: ' + str(response.body)
+
+
 """Create a Batch ID"""
 
 
@@ -206,6 +238,7 @@ def get_global_email_stats(args: dict, sg):
     end_date = args.get('end_date')
     if end_date:
         params['end_date'] = end_date
+    headers = args.get('headers')
 
     response = sg.client.stats.get(query_params=params)
     if response.status_code == 200:
@@ -234,13 +267,10 @@ def get_global_email_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             mail_stats.append(res)
 
-        md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks',
-                                                                     'bounce_drops', 'bounces', 'clicks', 'deferred',
-                                                                     'delivered', 'invalid_emails',
-                                                                     'opens', 'processed', 'requests',
-                                                                     'spam_report_drops', 'spam_reports',
-                                                                     'unique_clicks', 'unique_opens',
-                                                                     'unsubscribe_drops', 'unsubscribes'])
+        if headers:
+            if isinstance(headers, str):
+                headers = headers.split(",")
+        md = tableToMarkdown("Global Email Statistics", mail_stats, headers)
         ec = {'Sendgrid.GlobalEmailStats': mail_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -277,6 +307,7 @@ def get_category_stats(args: dict, sg):
     category = args.get('category')
     if category:
         params['categories'] = category
+    headers = args.get('headers')
 
     response = sg.client.categories.stats.get(query_params=params)
     if response.status_code == 200:
@@ -306,19 +337,10 @@ def get_category_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             cat_stats.append(res)
 
-        md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date',
-                                                                                            'blocks', 'bounce_drops',
-                                                                                            'bounces', 'clicks',
-                                                                                            'deferred', 'delivered',
-                                                                                            'invalid_emails',
-                                                                                            'opens', 'processed',
-                                                                                            'requests',
-                                                                                            'spam_report_drops',
-                                                                                            'spam_reports',
-                                                                                            'unique_clicks',
-                                                                                            'unique_opens',
-                                                                                            'unsubscribe_drops',
-                                                                                            'unsubscribes'])
+        if headers:
+            if isinstance(headers, str):
+                headers = headers.split(",")
+        md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, headers)
         ec = {'Sendgrid.CategoryStats': cat_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -358,6 +380,7 @@ def get_all_categories_stats(args: dict, sg):
     sort_by_metric = args.get('sort_by_metric')
     if sort_by_metric:
         params['sort_by_metric'] = sort_by_metric
+    headers = args.get('headers')
 
     response = sg.client.categories.stats.sums.get(query_params=params)
     if response.status_code == 200:
@@ -390,23 +413,10 @@ def get_all_categories_stats(args: dict, sg):
                 res['unsubscribes'] = metrics['unsubscribes']
                 cat_stats.append(res)
 
-            md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category',
-                                                                                                      'blocks',
-                                                                                                      'bounce_drops',
-                                                                                                      'bounces',
-                                                                                                      'clicks',
-                                                                                                      'deferred',
-                                                                                                      'delivered',
-                                                                                                      'invalid_emails',
-                                                                                                      'opens',
-                                                                                                      'processed',
-                                                                                                      'requests',
-                                                                                                      'spam_report_drops',
-                                                                                                      'spam_reports',
-                                                                                                      'unique_clicks',
-                                                                                                      'unique_opens',
-                                                                                                      'unsubscribe_drops',
-                                                                                                      'unsubscribes'])
+            if headers:
+                if isinstance(headers, str):
+                    headers = headers.split(",")
+            md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, headers)
             ec = {'Sendgrid.AllCategoriesStats': body}
             return {
                 'ContentsFormat': formats['json'],
@@ -679,6 +689,9 @@ def main():
 
         elif demisto.command() == 'sg-delete-scheduled-send':
             result = delete_scheduled_send(args, sg)
+
+        elif demisto.command() == 'sg-get-email-activity-list':
+            result = get_email_activity_list(args, sg)
 
         demisto.results(result)
 

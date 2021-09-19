@@ -9,6 +9,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
@@ -265,6 +266,17 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
         raise DemistoException(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
 
     return current_query
+
+
+def _add_to_current_query(current_query: str = '', params: dict = None) -> str:
+    new_query = ''
+    if not params:
+        return current_query
+    if current_query:
+        new_query += f'({current_query}) AND '
+    current_query_params = [f"{query_field}:{params[query_field]}" for query_field in params]
+    new_query += ' AND '.join(current_query_params)
+    return new_query
 
 
 def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolation: bool) -> dict:
@@ -728,7 +740,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
-                    feedname: str = None, query: str = None):
+                    feedname: str = None, query: str = ''):
     if (status or feedname) and query:
         raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
 
@@ -736,41 +748,52 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = dateparser.parse(first_fetch_time)
-    first_fetch_timestamp_ms = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+
     # Handle first fetch time
     if last_fetch is None:
-        last_fetch = first_fetch_timestamp_ms
+        last_fetch = first_fetch_time
     else:
-        last_fetch = int(last_fetch)
+        last_fetch = datetime.fromtimestamp(last_fetch)
 
-    latest_created_time = last_fetch
-    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+    latest_created_time = last_fetch.timestamp()
+
+    date_range = f'[{last_fetch.strftime("%Y-%m-%dT%H:%M:%S")} TO *]'
+
     incidents: List[Dict[str, Any]] = []
+
+    alerts = []
 
     # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
     # Otherwise will run without status.
-    alerts = []
+    query_params = {'created_time': date_range}
+    if feedname:
+        query_params['feedname'] = feedname
+
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
-            res = client.get_alerts(status=current_status, feedname=feedname)
+            query_params['status'] = current_status
+            # we create a new query containing params since we do not allow both query and params.
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
+        query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(feedname=feedname, query=query)
+        res = client.get_alerts(query=query, limit=max_results)
         alerts += res.get('results', [])
 
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
-    for alert in alerts[:max_results]:
+    for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
-        incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
+        incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
-            if incident_created_time_ms <= last_fetch:
-                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} created at {incident_created_time_ms}.'
+            if incident_created_time_ms <= last_fetch.timestamp():
+                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
                               f' Skipping.')
                 continue
 
