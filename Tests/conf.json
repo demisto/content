@@ -4527,6 +4527,10 @@
             "fromversion": "6.2.0"
         },
         {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
