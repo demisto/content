@@ -1,251 +1,124 @@
-import knowbe4Phisher as ph
+import knowbe4Phisher as phisher
 import pytest
-import pytz
-
-utc = pytz.UTC
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-client = ph.Client(base_url='https://eu.test.com/graphql', verify=False,
-                   headers={'Authorization': 'Bearer  + key', 'Content-Type': 'application/json'},
-                   proxy=False, first_fetch_time="100 days")
-
-create_request_test = [
-    ("""mutation {{
-  phisherCommentCreate(comment: \\"{}\\", id: \\"{}\\") {{
-    errors {{
-      field
-      placeholders
-      reason
-    }}
-    node {{
-      body
-      createdAt
-    }}
-  }}
-}}""",
-     'mutation {{\\n  phisherCommentCreate(comment: \\"{}\\", id: \\"{}\\") {{\\n    errors {{\\n      field\\n\
-      placeholders\\n      reason\\n    }}\\n    node {{\\n      body\\n      createdAt\\n    }}\\n  }}\\n}}'),
-    ("""query {{
-  phisherMessages(all: false, page: 1, per: {}, query: ) {{
-    nodes {{
-      actionStatus
-      attachments(status: UNKNOWN) {{
-        actualContentType
-        filename
-        md5
-        reportedContentType
-        s3Key
-        sha1
-        sha256
-        size
-        ssdeep
-        virustotal {{
-          permalink
-          positives
-          scanned
-          sha256
-        }}
-      }}
-      category
-      comments {{
-        body
-        createdAt
-      }}
-      events {{
-        causer
-        createdAt
-        eventType
-        id
-        triggerer
-      }}
-      from
-      id
-      links(status: UNKNOWN) {{
-        dispositions
-        firstSeen
-        id
-        lastSeen
-        scheme
-        target
-        url
-        virustotal {{
-          permalink
-          positives
-          scanned
-          sha256
-        }}
-      }}
-      phishmlReport {{
-        confidenceClean
-        confidenceSpam
-        confidenceThreat
-      }}
-      pipelineStatus
-      rawUrl
-      reportedBy
-      rules {{
-        createdAt
-        description
-        id
-        matchedCount
-        name
-        tags
-      }}
-      severity
-      subject
-      tags {{
-        name
-        type
-      }}
-    }}
-    pagination {{
-      page
-      pages
-      per
-      totalCount
-    }}
-  }}
-}}""",
-     'query {{\\n  phisherMessages(all: false, page: 1, per: {}, query: ) {{\\n    nodes {{\\n      actionStatus\\n\
-      attachments(status: UNKNOWN) {{\\n        actualContentType\\n        filename\\n        md5\\n  \
-      reportedContentType\\n        s3Key\\n        sha1\\n        sha256\\n        size\\n        ssdeep\\n  \
-      virustotal {{\\n          permalink\\n          positives\\n          scanned\\n          sha256\\n        }}\\n\
-      }}\\n      category\\n      comments {{\\n        body\\n        createdAt\\n      }}\\n      events {{\\n  \
-      causer\\n        createdAt\\n        eventType\\n        id\\n        triggerer\\n      }}\\n      from\\n      id\\n\
-      links(status: UNKNOWN) {{\\n        dispositions\\n        firstSeen\\n        id\\n        lastSeen\\n        scheme\\n  \
-      target\\n        url\\n        virustotal {{\\n          permalink\\n          positives\\n          scanned\\n    \
-      sha256\\n        }}\\n      }}\\n      phishmlReport {{\\n        confidenceClean\\n        confidenceSpam\\n  \
-      confidenceThreat\\n      }}\\n      pipelineStatus\\n      rawUrl\\n      reportedBy\\n      rules {{\\n  \
-      createdAt\\n        description\\n        id\\n        matchedCount\\n        name\\n        tags\\n      }}\\n\
-      severity\\n      subject\\n      tags {{\\n        name\\n        type\\n      }}\\n    }}\\n    pagination {{\\n\
-      page\\n      pages\\n      per\\n      totalCount\\n    }}\\n  }}\\n}}')]
+from test_data.mock_tests import *
+import io
+import json
 
 
-# function to check the creation of request, checking 2 types of requests.
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+client = phisher.Client(base_url='https://eu.test.com/graphql', verify=False,
+                        headers={'Authorization': 'Bearer  + key', 'Content-Type': 'application/json'},
+                        proxy=False, first_fetch_time="100 days")
+
+
 @pytest.mark.parametrize("test_input, expected", create_request_test)
 def test_create_request(test_input, expected):
-    res = ph.create_request(test_input)
+    """
+        Given:
+        - A human readable query for GQL
+
+        When:
+        - Creating GQL request
+
+        Then:
+        - Ensure that query created as expected
+        """
+    res = phisher.create_gql_request(test_input)
     assert res == expected
 
 
-sf = \
-    [
-        {
-            "data": {
-                "phisherMessages": {
-                    "pagination": {
-                        "page": 1,
-                        "pages": 1,
-                        "per": 28,
-                        "totalCount": 13
-                    }
-                }
-            }
-        },
-        {
-            "data": {
-                "phisherMessages": {
-                    "pagination": {
-                        "page": 1,
-                        "pages": 1,
-                        "per": 28,
-                        "totalCount": 31
-                    }
-                }
-            }
-        }
-    ]
-
 calculate_events = [
-    ('\\" reported_at:[2021-07-01T16:51:45Z TO *]\\"', '13', sf[0]),
-    ('\\" reported_at:[2021-07-01T16:51:45Z TO *]\\"', '31', sf[1])]
+    ('\\" reported_at:[2021-07-01T16:51:45Z TO *]\\"', '13', pagination_response[0]),
+    ('\\" reported_at:[2021-07-01T16:51:45Z TO *]\\"', '31', pagination_response[1])]
 
 
 @pytest.mark.parametrize("query, expected, return_value", calculate_events)
 def test_caclulate_event(mocker, query, expected, return_value):
+    """
+        Given:
+        - A result of api response from PhishER that contains number of messages
+
+        When:
+         - When calculating number of events before fetch
+
+        Then:
+         - Ensure that the number of messages is returned as expected
+        """
     mocker.patch.object(client, "phisher_gql_request", return_value=return_value)
-    c = ph.calculate_number_of_events(client, query)
-    assert c == expected
+    result = phisher.calculate_number_of_events(client, query)
+    assert result == expected
 
 
-resp = [({}),
-        ({"data":
-            {"phisherMessages":
-                {
-                    "nodes":
-                        [
-                            {"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "events":
-                                [
-                                    {"causer": 'null', "createdAt": "2021-08-08T14:06:11Z", "eventType": "CREATED",
-                                     "id": "da4b66b2-adef-438d-83d0-e8d0067cd822", "triggerer": 'null'},
-                                    {"causer": "KB4:URGENCY", "createdAt": "2021-08-08T14:06:31Z", "eventType": "OTHER", "id":
-                                     "40e32f01-44ce-498a-9731-0ef8aeb07fbc", "triggerer": 'null'},
-                                    {"causer": "Edi Katsenelson", "createdAt": "2021-08-08T14:06:54Z", "eventType": "OTHER",
-                                     "id": "82b81815-eebb-4ac5-b86d-0e70a72d518e", "triggerer": 'null'}],
-                             "from": "ekatsenelson@paloaltonetworks.com", "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b",
-                             "phishmlReport": 'null', "pipelineStatus": "PROCESSED", "severity": "UNKNOWN_SEVERITY", "subject":
-                             "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"},
-                                                                               {"name": "KB4:URGENCY", "type": "STANDARD"}]}
-                        ],
-                    "pagination": {"page": 1, "pages": 1, "per": 100, "totalCount": 31}}}})]
-exp = [([]),
-       ([{'name': 'Fwd: We have received your IT request', 'occurred': '2021-08-08T14:06:11+00:00', 'rawJSON':
-           '{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "from": "ekatsenelson@paloaltonetworks.com", \
-"id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b", "phishmlReport": "null", "pipelineStatus": "PROCESSED", "severity": \
-"UNKNOWN_SEVERITY", "subject": "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": \
-"STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}], "created at": "2021-08-08T14:06:11+00:00"}'}])]
-test_fetch = [({"last_fetch": None}, "30 days", '50', exp[0], resp[0]),
-              ({"last_fetch": None}, "30 days", '50', exp[1], resp[1])]
+test_fetch = [({"last_fetch": None}, "30 days", '50', expected_fetch[0], response_fetch[0]),
+              ({"last_fetch": None}, "30 days", '50', expected_fetch[1], response_fetch[1])]
 
 
 @pytest.mark.parametrize("last_run, first_fetch, max_fetch, expected, respon", test_fetch)
 def test_fetch_incidents(mocker, last_run, first_fetch, max_fetch, expected, respon):
+    """
+        Given:
+        - Phisher Integration Parameters
+
+        When:
+        - Fetching incidents.
+
+        Then:
+        - Ensure that the incidents returned are as expected.
+        """
     mocker.patch.object(client, "phisher_gql_request", return_value=respon)
-    _, r = ph.fetch_incidents(client, last_run, first_fetch, max_fetch)
-    assert r == expected
-
-
-events_example = [
-    {
-        "causer": 'null',
-        "createdAt": "2021-08-08T14:06:11Z",
-        "eventType": "CREATED",
-        "events": 'null',
-        "id": "da4b66b2-adef-438d-83d0-e8d0067cd822",
-        "triggerer": 'null'
-    },
-    {
-        "causer": "KB4:URGENCY",
-        "createdAt": "2021-08-08T14:06:31Z",
-        "eventType": "OTHER",
-        "events": {
-            "added": [
-                "KB4:SECURITY"
-            ],
-            "removed": []
-        },
-        "id": "40e32f01-44ce-498a-9731-0ef8aeb07fbc",
-        "triggerer": 'null'
-    },
-    {
-        "causer": "Edi Katsenelson",
-        "createdAt": "2021-08-08T14:06:54Z",
-        "eventType": "OTHER",
-        "events": {
-            "changes": [
-                {
-                    "from": "false",
-                    "name": "viewed",
-                    "to": "true"
-                }
-            ]
-        },
-        "id": "82b81815-eebb-4ac5-b86d-0e70a72d518e",
-        "triggerer": 'null'
-    }
-]
-expected_time = ("2021-08-08T14:06:11Z")
+    _, result = phisher.fetch_incidents(client, last_run, first_fetch, max_fetch)
+    assert result == expected
 
 
 def test_time_creation():
-    r = ph.get_created_time(events_example)
-    assert r == expected_time
+    """
+        Given:
+        - Events example from Phisher Response
+
+        When:
+        - when fetching messages from Phisher - fetch or list of all messages
+
+        Then:
+        - Ensure that the event time is extracted as expected
+        """
+    result = phisher.get_created_time(events_example)
+    assert result == expected_time
+
+
+mock_responses = util_load_json('test_data/test_responses.json')
+command_results = util_load_json('test_data/mock_responses.json')
+
+
+@pytest.mark.parametrize(
+    'function_to_test, function_to_mock, args, key', [
+        (phisher.phisher_message_list_command, 'phisher_gql_request', {}, 'message_list_all'),
+    ])
+def test_commands_with_results(mocker, function_to_test, function_to_mock, args, key):
+    expected_res = mock_responses[key]
+    mocker.patch.object(client, function_to_mock, return_value=command_results[key])
+    result: CommandResults = function_to_test(client, args)
+    assert result.outputs == expected_res
+
+
+@pytest.mark.parametrize(
+    'function_to_test, function_to_mock, args, key',
+    [
+        (phisher.phisher_create_comment_command, 'phisher_gql_request', {"id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
+                                                                         "comment": "Infinity Test"}, "create_comment"),
+        (phisher.phisher_update_message_command, 'phisher_gql_request', {"id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
+                                                                         "category": "SPAM", "status": "RESOLVED", "severity":
+                                                                         "HIGH"}, "update_message"),
+        (phisher.phisher_create_tags_command, 'phisher_gql_request', {"id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
+                                                                      "tags": "Test Tag"}, "create_tags"),
+        (phisher.phisher_delete_tags_command, 'phisher_gql_request', {"id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
+                                                                      "tags": "Test Tag"}, "delete_tags")
+    ])
+def test_commands_no_results(mocker, function_to_test, function_to_mock, args, key):
+    expected_res = mock_responses[key]
+    mocker.patch.object(client, function_to_mock, return_value=command_results[key])
+    result = function_to_test(client, args)
+    assert result == expected_res

@@ -3,9 +3,9 @@
     "description": "A pack for KnowBE4 Phisher integration",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "KnowBE4",
+    "author": "KnowBe4",
     "url": "https://www.knowbe4.com/products/phisher",
-    "email": "brandons@knowbe4.com",
+    "email": "support@knowbe4.com",
     "categories": [
         "Email Gateway"
     ],

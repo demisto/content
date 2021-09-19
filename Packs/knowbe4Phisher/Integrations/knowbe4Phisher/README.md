@@ -1,5 +1,5 @@
-KnowBE4 PhishER integration allows to pull events from PhishER system and do mutations
-This integration was integrated and tested with version 6.0.0 of Phisher
+KnowBe4 PhishER integration allows to pull events from PhishER system and do mutations
+This integration was integrated and tested with version 6.0.0 of XSOAR
 
 ## Configure Phisher on Cortex XSOAR
 

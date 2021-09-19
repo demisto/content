@@ -602,7 +602,6 @@
 		]
 	},
 	"fromVersion": "6.0.0",
-	"toVersion": "6.9.9",
 	"group": "incident",
 	"id": "PhishER",
 	"name": "PhishER",

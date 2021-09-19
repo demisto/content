@@ -7,6 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
+  defaultvalue: 'https://eu.knowbe4.com'
+  additionalinfo: URL of the API endpoint, only FQDN is required e.g. https://eu.knowbe4.com
 - name: apikey
   required: true
   displaypassword: API Key
@@ -23,14 +25,14 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+- additionalinfo: Maximum number of alerts per fetch. Default and recommended is 50
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
 - display: Incident type
-  defaultvalue: Phisher
+  defaultvalue: PhishER
   name: incidentType
   required: false
   type: 13
@@ -46,6 +48,7 @@ description: KnowBE4 PhishER integration allows to pull events from PhishER syst
   and do mutations
 display: PhishER
 name: Phisher
+defaultmapperin: PhishER-mapper
 script:
   commands:
   - arguments:
@@ -231,7 +234,7 @@ script:
     description: Removes tags from a given message.
     execution: false
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
