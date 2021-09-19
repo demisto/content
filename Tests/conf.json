@@ -4529,6 +4529,10 @@
         {
             "playbookID": "ListUsedDockerImages - Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {
