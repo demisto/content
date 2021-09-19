@@ -13,6 +13,6 @@ subtype: python2
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.20958
+dockerimage: demisto/python:2.7.18.24066
 tests:
 - No tests (auto formatted)
