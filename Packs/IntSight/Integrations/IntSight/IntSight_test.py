@@ -1,7 +1,7 @@
-from mock import Mock, patch
 import pytest
+from mock import Mock, patch
+
 import demistomock as demisto
-import CommonServerPython
 
 INTSIGHTS_PARAMS = {
     'server': 'https://api.test.com',
@@ -686,4 +686,4 @@ def test_unicode_to_str_recur(mocker):
 class MockResponse:
     def __init__(self, text='', content=''):
         self.text = text
-        self.content=content
+        self.content = content
