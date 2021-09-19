@@ -54,6 +54,8 @@ SCORE_BENIGN = 0
 GREEN_COLOR = "{{color:#1DB846}}(%s)"
 RED_COLOR = "{{color:#D13C3C}}(%s)"
 
+
+
 VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)"
 VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)"
 VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)"
@@ -69,15 +71,25 @@ MODEL_KEY_URL_SCORE = 'url_score'
 MODEL_KEY_LOGO_FOUND = 'logo_found'
 MODEL_KEY_SEO = 'seo'
 MODEL_KEY_LOGO_IMAGE_BYTES = 'image_bytes'
-MODEL_KEY_LOGO_LOGIN_FORM = 'login_form'
+MODEL_KEY_LOGIN_FORM = 'login_form'
 
-WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGO_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
+KEY_CONTENT_DOMAIN = "Domain"
+KEY_CONTENT_URL = "URL"
+KEY_CONTENT_LOGO = "SuspiciousLogo"
+KEY_CONTENT_LOGIN = "LoginForm"
+KEY_CONTENT_URL_SCORE = "URLScore"
+KEY_CONTENT_SEO = "ContentBasedVerdict"
+KEY_CONTENT_AGE = "DomainAge"
+
+KEY_FINAL_VERDICT = "Final Verdict"
+
+WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
                     MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
 
 MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
     MODEL_KEY_SEO: {True: RED_COLOR % 'Malicious', False: GREEN_COLOR % 'Benign'},
     MODEL_KEY_LOGO_FOUND: {True: RED_COLOR % 'Suspicious', False: GREEN_COLOR % 'Not Suspicious'},
-    MODEL_KEY_LOGO_LOGIN_FORM: {True: RED_COLOR % 'Yes', False: GREEN_COLOR % 'No'},
+    MODEL_KEY_LOGIN_FORM: {True: RED_COLOR % 'Yes', False: GREEN_COLOR % 'No'},
     DOMAIN_AGE_KEY: {True: RED_COLOR % 'Less than 6 months ago', False: GREEN_COLOR % 'More than 6 months ago', None: None}
 }
 
@@ -206,8 +218,8 @@ def get_colored_pred_json(pred_json: Dict) -> Dict:
     pred_json_colored[MODEL_KEY_SEO] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_SEO][pred_json[MODEL_KEY_SEO]]
     pred_json_colored[MODEL_KEY_LOGO_FOUND] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_FOUND][
         pred_json[MODEL_KEY_LOGO_FOUND]]
-    pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_LOGIN_FORM][
-        pred_json[MODEL_KEY_LOGO_LOGIN_FORM]]
+    pred_json_colored[MODEL_KEY_LOGIN_FORM] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGIN_FORM][
+        pred_json[MODEL_KEY_LOGIN_FORM]]
     pred_json_colored[DOMAIN_AGE_KEY] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[DOMAIN_AGE_KEY][pred_json[DOMAIN_AGE_KEY]]
     return pred_json_colored
 
@@ -294,19 +306,19 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     pred_json_colored = get_colored_pred_json(pred_json)
     domain = extract_domainv2(url)
     explain = {
-        "Domain": domain,
-        "URL": url,
-        "LogoFound": str(pred_json[MODEL_KEY_LOGO_FOUND]),
-        "LoginForm": str(pred_json[MODEL_KEY_LOGO_LOGIN_FORM]),
-        "URLScore": url_score,
-        "ContentBasedVerdict": str(pred_json[MODEL_KEY_SEO])
+        KEY_CONTENT_DOMAIN: domain,
+        KEY_CONTENT_URL: url,
+        KEY_CONTENT_LOGO: str(pred_json[MODEL_KEY_LOGO_FOUND]),
+        KEY_CONTENT_LOGIN: str(pred_json[MODEL_KEY_LOGIN_FORM]),
+        KEY_CONTENT_URL_SCORE: url_score,
+        KEY_CONTENT_SEO: str(pred_json[MODEL_KEY_SEO])
     }
     if pred_json[DOMAIN_AGE_KEY] is not None:
-        explain["NewDomain"] = str(pred_json[DOMAIN_AGE_KEY])
+        explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
         "Domain": domain,
         "Domain reputation": str(pred_json_colored[MODEL_KEY_SEO]),
-        "Is there a Login form ?": str(pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM]),
+        "Is there a Login form ?": str(pred_json_colored[MODEL_KEY_LOGIN_FORM]),
         "Suspiscious use of company logo": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
         "URL severity score (from 0 to 1)": url_score
     }
@@ -337,13 +349,13 @@ def return_entry_white_list(url):
     :return:
     """
     explain = {
-        "Domain": extract_domainv2(url),
-        "URL": url,
-        "NewDomain": MSG_WHITE_LIST,
-        "LogoFound": MSG_WHITE_LIST,
-        "LoginPage": MSG_WHITE_LIST,
-        "URLScore": MSG_WHITE_LIST,
-        "ContentBasedVerdict": MSG_WHITE_LIST
+        KEY_CONTENT_DOMAIN: extract_domainv2(url),
+        KEY_CONTENT_URL: url,
+        KEY_CONTENT_AGE: MSG_WHITE_LIST,
+        KEY_CONTENT_LOGO: MSG_WHITE_LIST,
+        KEY_CONTENT_LOGIN: MSG_WHITE_LIST,
+        KEY_CONTENT_URL_SCORE: MSG_WHITE_LIST,
+        KEY_CONTENT_SEO: MSG_WHITE_LIST
     }
     explain_hr = {
         "Domain": extract_domainv2(url),
@@ -379,13 +391,13 @@ def get_score(pred_json):
     else:
         domain_age_key = pred_json[DOMAIN_AGE_KEY]
     total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + \
-                        WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM] + \
+                        WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_SEO] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] + \
                         WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
     score = (
                     use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * domain_age_key +
-                    WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM] * pred_json[MODEL_KEY_LOGO_LOGIN_FORM] +
+                    WEIGHT_HEURISTIC[MODEL_KEY_LOGIN_FORM] * pred_json[MODEL_KEY_LOGIN_FORM] +
                     WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO] +
                     WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] * pred_json[MODEL_KEY_URL_SCORE] +
                     use_logo * WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * pred_json[MODEL_KEY_LOGO_FOUND]
@@ -486,7 +498,7 @@ def get_prediction_single_url(model, url, force_model):
 def return_general_summary(results, tag="Summary"):
     df_summary = pd.DataFrame()
     df_summary['Url'] = [x.get('url') for x in results]
-    df_summary['Final Verdict'] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict') if x.get('verdict')
+    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict') if x.get('verdict')
                                                                                                  in MAPPING_VERDICT_COLOR.keys()
                                    else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
     df_summary_json = df_summary.to_dict(orient='records')
@@ -494,7 +506,7 @@ def return_general_summary(results, tag="Summary"):
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
-                                         headers=['Url', 'Final Verdict']),
+                                         headers=['Url', KEY_FINAL_VERDICT]),
         "Contents": df_summary_json,
         "EntryContext": {'DBotPredictURLPhishing': df_summary_json}
     }
@@ -516,6 +528,7 @@ def return_detailed_summary(results, number_entries_to_return):
         output_rasterize = results[index].get('output_rasterize')
         summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize)
         outputs.append(summary_json)
+        outputs = [x for x in outputs if x]
     return outputs
 
 
