@@ -81,7 +81,7 @@
                 "triggerer": "None"
               }
             ],
-            "from": "edi.blr@gmail.com",
+            "from": "xxxx",
             "id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
             "links": [
               {
@@ -92,14 +92,14 @@
                 "id": "799955e4-9a31-40df-874d-62c6978c20b4",
                 "lastSeen": "2021-07-08T18:28:27Z",
                 "scheme": "http",
-                "target": "http://shenkar.ac.il",
+                "target": "xxxx",
                 "url": "shenkar.ac.il",
                 "virustotal": "None"
               }
             ],
             "phishmlReport": "None",
             "pipelineStatus": "PROCESSED",
-            "reportedBy": "edi.blr@gmail.com",
+            "reportedBy": "xxxx",
             "rules": [],
             "severity": "HIGH",
             "subject": "Fwd: ציונים חדשים שניתקבלו - לכצנלסון אדי",
