@@ -1,4 +1,4 @@
-Cloud controlled WiFi, routing, and security
+Cloud controlled WiFi, routing, and security.
 This integration was integrated and tested with version 1.0.0 of Cisco Meraki
 
 ## Configure Cisco Meraki on Cortex XSOAR
@@ -19,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### meraki-fetch-organizations
 ***
-List the organizations that the api-key has privileges on
+List the organizations that the api-key has privileges on.
 
 
 #### Base Command
@@ -35,7 +35,7 @@ List the organizations that the api-key has privileges on
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Organization | List | List of organizations, each includes ID &amp; Name | 
+| Organization | List | List of organizations. Each includes the ID and name. | 
 
 
 #### Command Example
@@ -73,7 +73,7 @@ License state for an organization
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organizationId | Organization id. | Required | 
+| organizationId | Organization ID. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -81,8 +81,8 @@ License state for an organization
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| status | String | license status |
-| expirationDate | String | license expiration date |
+| status | String | License status. |
+| expirationDate | String | License expiration date. |
 
 #### Command Example
 ```!meraki-get-organization-license-state organizationId=828552```
@@ -97,7 +97,7 @@ License state for an organization
 
 ### meraki-fetch-organization-inventory
 ***
-List of Inventories for an organization
+List of inventories for an organization.
 
 
 #### Base Command
@@ -107,7 +107,7 @@ List of Inventories for an organization
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organizationId | Organization id. | Required | 
+| organizationId | Organization ID. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -115,7 +115,7 @@ List of Inventories for an organization
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devices | List | List of devices, each includes Serial, NetworkId, Model, ClaimedAt, PublicIp &amp; Mac | 
+| Devices | List | List of devices. Each includes Serial, NetworkId, Model, ClaimedAt, PublicIp, and MAC. | 
 
 
 #### Command Example
@@ -127,7 +127,7 @@ List of Inventories for an organization
 
 ### meraki-fetch-networks
 ***
-List the networks in an organization
+List the networks in an organization..
 
 
 #### Base Command
@@ -137,7 +137,7 @@ List the networks in an organization
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organizationId | Organization id. | Required | 
+| organizationId | Organization ID. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -145,7 +145,7 @@ List the networks in an organization
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Network | List | List of networks, each includes ID, Name, Type, OrganizationId, Tags &amp; TimeZone | 
+| Network | List | List of networks. Each includes ID, Name, Type, OrganizationId, Tags, and TimeZone. | 
 
 
 #### Command Example
@@ -177,7 +177,7 @@ List the networks in an organization
 
 ### meraki-fetch-devices
 ***
-List the devices in a network
+List the devices in a network.
 
 
 #### Base Command
@@ -187,7 +187,7 @@ List the devices in a network
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
+| networkId | Network ID. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -195,7 +195,7 @@ List the devices in a network
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Device | List | List of devices, each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC &amp; Address | 
+| Device | List | List of devices. Each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address. | 
 
 
 #### Command Example
@@ -217,8 +217,8 @@ List of uplink information for a device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
-| serial | Device serial#. | Required | 
+| networkId | Network ID. | Required | 
+| serial | Device serial number. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -226,7 +226,7 @@ List of uplink information for a device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uplink | List | List of device uplink, each includes Status &amp; Interface | 
+| Uplink | List | List of device uplink. Eeach includes Status, and Interface. | 
 
 
 #### Command Example
@@ -248,7 +248,7 @@ List the SSIDs in a network
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
+| networkId | Network ID. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -256,7 +256,7 @@ List the SSIDs in a network
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SSID | List | List of SSIDs, each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode &amp; WalledGardenRanges | 
+| SSID | List | List of SSIDs. Each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode, and WalledGardenRanges. | 
 
 
 #### Command Example
@@ -278,8 +278,8 @@ List the clients of a device, up to a maximum of a month ago
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial | Device serial#. | Required | 
-| timespan |  The timespan(in seconds) for which clients will be fetched. Must be at most one month and in seconds (e.g. 1 day is 86400 seconds). | Required | 
+| serial | Device serial number. | Required | 
+| timespan | The timespan (in seconds) during which clients will be fetched. Must be at most one month and in seconds (e.g., 1 day is 86400 seconds). | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -287,7 +287,7 @@ List the clients of a device, up to a maximum of a month ago
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Client | List | List of clients, each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage &amp; VLAN | 
+| Client | List | List of clients. Each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage, and VLAN. | 
 
 
 #### Command Example
@@ -299,7 +299,7 @@ List the clients of a device, up to a maximum of a month ago
 
 ### meraki-fetch-firewall-rules
 ***
-List of L3 firewall rules for an SSID
+List of L3 firewall rules for an SSID.
 
 
 #### Base Command
@@ -309,7 +309,7 @@ List of L3 firewall rules for an SSID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
+| networkId | Network ID. | Required | 
 | number | SSID number. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
@@ -318,7 +318,7 @@ List of L3 firewall rules for an SSID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Firewall | List | List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr &amp; Comment | 
+| Firewall | List | List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment | 
 
 
 #### Command Example
@@ -340,8 +340,8 @@ Remove a single device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
-| serial | Device serial to remove. | Required | 
+| networkId | Network ID. | Required | 
+| serial | Serial number of the device to remove. | Required | 
 
 
 #### Context Output
@@ -367,8 +367,8 @@ Get a single device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
-| serial | Device serial. | Required | 
+| networkId | Network ID. | Required | 
+| serial | Device serial number. | Required | 
 | headers | Table's headers to be shown by order. | Optional | 
 
 
@@ -376,7 +376,7 @@ Get a single device
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Device | unknown | Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC &amp; Address | 
+| Device | unknown | Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address. | 
 
 
 #### Command Example
@@ -399,7 +399,7 @@ Update the attributes of a device
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | networkId | Network id. | Required | 
-| serial | Device serial to update. | Required | 
+| serial | Serial number of the device to update. | Required | 
 | name | New name of the device. | Optional | 
 | tags | New tags of the device. | Optional | 
 | address | New address of the device. | Optional | 
@@ -411,7 +411,7 @@ Update the attributes of a device
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Device | unknown | Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC &amp; Address | 
+| Device | unknown | Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address. | 
 
 
 #### Command Example
@@ -423,7 +423,7 @@ Update the attributes of a device
 
 ### meraki-claim-device
 ***
-Claim a device into a network
+Claim a device into a network.
 
 
 #### Base Command
@@ -433,8 +433,8 @@ Claim a device into a network
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
-| serial | Device serial to claim. | Required | 
+| networkId | Network ID. | Required | 
+| serial | Serial number of the device to claim. | Required | 
 
 
 #### Context Output
@@ -450,7 +450,7 @@ There is no context output for this command.
 
 ### meraki-update-firewall-rules
 ***
-update rule to L3 firewall rules of an SSID
+Update rule to L3 firewall rules of an SSID.
 
 
 #### Base Command
@@ -460,22 +460,22 @@ update rule to L3 firewall rules of an SSID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
-| number | SSID number. Default is  . | Required | 
-| allowLanAccess | allow or deny wireless client access to local LAN, true allows access and false denies access. Possible values are: true, false. | Required | 
-| policy |  Whether or not you want to allow or deny a protocol (value must be 'allow' or 'deny'). Possible values are: allow, deny. | Required | 
-| protocol | The type of protocol (must be 'tcp','udp', 'icmp' or 'any'). Possible values are: tcp, udp, icmp, any. | Required | 
-| destPort |  The destination port (can be 'any' or an integer within the range of 1-65535). | Required | 
-| destCidr | The destination IP address or subnet in CIDR form, can also be 'any'. | Required | 
+| networkId | Network ID. | Required | 
+| number | SSID number. | Required | 
+| allowLanAccess | Whether to allow or deny wireless client access to the local LAN. True allows access and false denies access. Possible values: true, false. | Required | 
+| policy | Whether to allow or deny a protocol.  Possible values: allow, deny. | Required | 
+| protocol | The type of protocol. Possible values: tcp, udp, icmp, any. | Required | 
+| destPort | The destination port. Can be 'any' or an integer within the range of 1-6553). | Required | 
+| destCidr | The destination IP address or subnet in CIDR form. Can also be 'any'. | Required | 
 | comment | A note about the rule. | Optional | 
-| removeOthers | true to remove all others rule, false to only add rule. Possible values are: true, false. | Required | 
+| removeOthers | Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values are: true, false. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Firewall | List | List of firewalls, each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr &amp; Comment | 
+| Firewall | List | List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment | 
 
 
 #### Command Example
