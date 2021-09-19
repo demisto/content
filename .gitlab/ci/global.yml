@@ -48,7 +48,6 @@
   - source .circleci/content_release_vars.sh
   - echo $NVM_DIR
   - echo $NODE_VERSION
-  - echo $NODE_PATH
   - echo $PATH
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
