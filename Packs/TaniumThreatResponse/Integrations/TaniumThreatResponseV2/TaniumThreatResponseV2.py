@@ -449,6 +449,7 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_id = int(last_run.get('id', '0'))
     fetch_time = demisto.params().get('first_fetch')
     max_fetch = int(demisto.params().get('max_fetch', '50'))
+    alerts_states = argToList(alerts_states_to_retrieve)
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -459,7 +460,7 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_fetch = parse(last_fetch)
     current_fetch = last_fetch
 
-    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states_to_retrieve)
+    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states)
 
     raw_response = client.do_request('GET', url_suffix)
 
