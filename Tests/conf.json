@@ -3515,6 +3515,10 @@
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
+        },
+        {
+            "integrations": "Anomali ThreatStream v3",
+            "playbookID": "ThreatStream-Test"
         }
     ],
     "skipped_tests": {

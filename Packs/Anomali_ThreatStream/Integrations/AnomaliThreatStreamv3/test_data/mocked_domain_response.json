@@ -1,0 +1,60 @@
+{
+  "objects": [
+    {
+      "source_created": null,
+      "status": "active",
+      "itype": "mal_domain",
+      "expiration_ts": "9999-12-31T00:00:00.000Z",
+      "ip": "78.78.78.67",
+      "is_editable": false,
+      "feed_id": 0,
+      "update_id": 452320630,
+      "value": "y.gp",
+      "is_public": true,
+      "threat_type": "malware",
+      "workgroups": [],
+      "rdns": null,
+      "confidence": 50,
+      "uuid": "0873cb8c-47fe-4a1d-86ed-0c3403776e0d",
+      "retina_confidence": -1,
+      "trusted_circle_ids": null,
+      "id": 231017344,
+      "source": "Analyst",
+      "owner_organization_id": 67,
+      "import_session_id": 1133,
+      "source_modified": null,
+      "type": "domain",
+      "sort": [
+        1617185876207,
+        "231017344"
+      ],
+      "description": null,
+      "tags": null,
+      "threatscore": 40,
+      "latitude": 51.2993,
+      "modified_ts": "2021-03-31T10:17:56.207Z",
+      "org": "Hetzner Online GmbH",
+      "asn": "24940",
+      "created_ts": "2021-03-31T10:17:13.553Z",
+      "tlp": "amber",
+      "is_anonymous": false,
+      "country": "DE",
+      "source_reported_confidence": 50,
+      "can_add_public_tags": true,
+      "longitude": 9.491,
+      "subtype": null,
+      "meta": {
+        "detail2": "imported by user 136",
+        "severity": "very-high"
+      },
+      "resource_uri": "/api/v2/intelligence/231017344/"
+    }
+  ],
+  "meta": {
+    "total_count": 1,
+    "offset": 0,
+    "limit": 1000,
+    "took": 8,
+    "next": null
+  }
+}
