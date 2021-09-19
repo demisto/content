@@ -103,8 +103,7 @@ def test_close_alert(mocker_results, mocker):
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
-@patch.object(CommonServerPython, "fileResult")
-def test_get_alert_image(mocker_results, mocker):
+def test_get_alert_image(mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
     mocker.patch.object(demisto, 'params', return_value=INTSIGHTS_PARAMS)
 
@@ -112,8 +111,9 @@ def test_get_alert_image(mocker_results, mocker):
     mocker.patch.object(demisto, 'args', return_value={'image-id': image_id})
 
     import IntSight
+    mocker.patch('IntSight.http_request', return_value=MockResponse(content='abc'))
+    mocker_results = mocker.patch.object(IntSight, 'fileResult')
 
-    mocker.patch('IntSight.http_request')
     mocker.patch('demistomock.results')
     IntSight.get_alert_image()
     assert (image_id + '-image.jpeg' == mocker_results.call_args[0][0])
@@ -684,5 +684,6 @@ def test_unicode_to_str_recur(mocker):
 
 
 class MockResponse:
-    def __init__(self, text):
+    def __init__(self, text='', content=''):
         self.text = text
+        self.content=content
