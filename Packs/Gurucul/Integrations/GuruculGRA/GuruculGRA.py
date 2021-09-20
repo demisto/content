@@ -112,20 +112,9 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], command_type: str
+                    first_fetch_time: Optional[int]
                     ) -> Tuple[Dict[str, int], List[dict]]:
-    if command_type == 'GRACase':
-        return_data = fetch_incidents_open_cases(client, max_results, last_run, first_fetch_time)
-    else:
-        return_data = fetch_incidents_high_risk_users(client, max_results, last_run, first_fetch_time)
-    return return_data
-
-
-def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[str, int],
-                               first_fetch_time: Optional[int]
-                               ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
-    case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
     case_status = 'OPEN'
     url_access_time = datetime.now().timestamp()
     endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
@@ -154,86 +143,13 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
             incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
             record['incidentType'] = 'GRACase'
-            anomalies = record.get('anomalies')
             if record.get('caseId') is not None:
-                if case_anomaly == 'Case Per Anomaly':
-                    for anomaly in anomalies:
-                        record2 = {
-                            'entityId': record.get('entityId'),
-                            'entity': record.get('entity'),
-                            'entityTypeId': record.get('entityTypeId'),
-                            'caseId': record.get('caseId'),
-                            'openDate': record.get('openDate'),
-                            'ownerId': record.get('ownerId'),
-                            'ownerType': record.get('ownerType'),
-                            'ownerName': record.get('ownerName'),
-                            'riskDate': record.get('riskDate'),
-                            'status': record.get('status'),
-                            'riskScore': record.get('riskScore'),
-                            'graweblink': record.get('graweblink'),
-                            'anomalyName': anomaly.get('anomalyName'),
-                            'anomalyResourceName': anomaly.get('resourceName'),
-                            'assignee': anomaly.get('assignee'),
-                            'assigneeType': anomaly.get('assigneeType'),
-                            'riskAcceptedDate': anomaly.get('riskAcceptedDate'),
-                            'anomalyRiskScore': anomaly.get('riskScore'),
-                            'anomalyStatus': anomaly.get('status')
-                        }
-                        inc = {
-                            'name': record.get('entity'),
-                            'occurred': timestamp_to_datestring(incident_created_time_ms),
-                            'rawJSON': json.dumps(record2)
-                        }
-                        incidents.append(inc)
-
-                else:
-                    inc = {
-                        'name': record.get('entity'),
-                        'occurred': timestamp_to_datestring(incident_created_time_ms),
-                        'rawJSON': json.dumps(record)
-                    }
-                    incidents.append(inc)
-
-        next_run = {'last_fetch': int(url_access_time)}
-    return next_run, incidents
-
-
-def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: Dict[str, int],
-                                    first_fetch_time: Optional[int]
-                                    ) -> Tuple[Dict[str, int], List[dict]]:
-    last_fetch = last_run.get('last_fetch', None)
-    url_access_time = datetime.now().timestamp()
-    endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
-    high_risk_user_url = '/users/highrisk/modifieddate'
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-        startDate = (
-            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT))
-    else:
-        last_fetch = int(last_fetch)
-        startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
-
-    incidents: List[Dict[str, Any]] = []
-    page = 1
-    isContinue = True
-    while isContinue:
-        params = {'page': page, 'max': max_results, 'timezone': 'UTC', 'startDate': startDate, 'endDate': endDate}
-        users_data = client.fetch_command_result(high_risk_user_url, params, None)
-        if len(users_data) < max_results:
-            isContinue = False
-        else:
-            page += 1
-        for record1 in users_data:
-            incident_created_time = datetime.now().timestamp()
-            incident_created_time_ms = incident_created_time * 1000
-            record1['incidentType'] = 'GRAHighRiskUser'
-            inc1 = {
-                'name': record1.get('employeeId'),
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(record1)
-            }
-            if record1.get('employeeId') is not None:
-                incidents.append(inc1)
+                inc = {
+                    'name': record.get('entity'),
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'rawJSON': json.dumps(record)
+                }
+                incidents.append(inc)
 
         next_run = {'last_fetch': int(url_access_time)}
     return next_run, incidents
@@ -284,8 +200,6 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            fetch_incident_command = demisto.params().get('fetch_incident_command')
 
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
@@ -299,8 +213,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                command_type=fetch_incident_command
+                first_fetch_time=first_fetch_time
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

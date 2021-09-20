@@ -7,69 +7,6 @@
         "GRACase": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "GRA Anomaly Assignee": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "assignee",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Assignee Type": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "assigneeType",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Name": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "anomalyName",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Resource Name": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "anomalyResourceName",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Risk Accepted Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "riskAcceptedDate",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Risk Score": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "anomalyRiskScore",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "GRA Anomaly Status": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "anomalyStatus",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
                 "GRA Case": {
                     "complex": {
                         "accessor": "",

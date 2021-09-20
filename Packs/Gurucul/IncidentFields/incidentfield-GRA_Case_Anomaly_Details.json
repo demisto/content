@@ -20,8 +20,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "GRACase",
-        "GRAHighRiskUser"
+        "GRACase"
     ],
     "associatedToAll": false,
     "unmapped": false,

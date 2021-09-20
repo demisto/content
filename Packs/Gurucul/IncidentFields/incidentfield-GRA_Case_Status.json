@@ -2,8 +2,7 @@
     "fromVersion": "5.5.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "GRACase",
-        "GRAHighRiskUser"
+        "GRACase"
     ],
     "caseInsensitive": true,
     "cliName": "gracasestatus",

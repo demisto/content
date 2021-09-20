@@ -241,7 +241,7 @@
                         "minW": 3,
                         "moved": false,
                         "name": "Analytical Features",
-                        "query": "3dcac454-23f0-487c-8fca-223ac5a1d486",
+                        "query": "GRAAnalyticalFeatureDisplay",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
