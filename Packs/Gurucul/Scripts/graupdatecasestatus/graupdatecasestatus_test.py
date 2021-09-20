@@ -33,7 +33,7 @@ def test_gra_update_case_status(monkeypatch, mocker):
         'action': 'closeCase',
         'subOption': 'True Incident',
         'caseId': 'CS-9999',
-        'caseComment': 'Case closed from XSoar'
+        'caseComment': 'Case marked as closed without close_reason from XSOAR'
     }
     closeCase()
     execute_mocker.assert_called_with(expected_command, expected_args)

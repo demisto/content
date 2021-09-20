@@ -3,9 +3,12 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 import json
 from datetime import datetime
 
+def _get_incident():
+    return demisto.incidents()[0]
+
 
 def displayAnalyticalFeature():
-    incident = demisto.incidents()[0]
+    incident = _get_incident
     entityValue = ''
     anomalyName = ''
     riskDate = ''
@@ -29,9 +32,6 @@ def displayAnalyticalFeature():
             for key in anomalyDetailString:
                 if key is not None and key == 'anomalyName':
                     anomalyName = anomalyDetailString[key]
-
-            if anomalyName == '':
-                anomalyName = graanomalyname
 
             fromDate = riskDate
             toDate = riskDate
@@ -67,6 +67,7 @@ def displayAnalyticalFeature():
                                                  headers=["Anomaly Name", "Analytical Feature", "Count", "Values"])
             }
             return_results(data)
+
 
 def main():
     try:
