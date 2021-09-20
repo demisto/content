@@ -56,8 +56,9 @@ script:
       name: ipaddress
     description: Get endpoint details
     name: nt_endpoint_details
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
