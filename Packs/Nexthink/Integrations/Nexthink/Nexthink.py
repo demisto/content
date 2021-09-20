@@ -77,7 +77,7 @@ def nexthink_request(method, nxql):
         raise
 
 
-def nexthink_endpoint_details(device: None, ipaddr: None):
+def nexthink_endpoint_details(device: None, ip: None):
     if not device:
         data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
     else:
