@@ -191,7 +191,7 @@ script:
         var res = doPost('/'+params.resourcename, newRequest);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
-            throw 'Failed to create incident. Error Response: ' + res.Messages;
+            throw 'Failed to create request. Error Response: ' + res.Messages;
         }
 
         req = parsedRes['Messages'][2];
