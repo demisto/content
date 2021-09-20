@@ -79,7 +79,8 @@ class Client(BaseClient):
         # filter ransomware alerts.
         ransomware_alerts = []
         for alert in resp:
-            ransomware_alerts.append(alert)
+            if alert['alertCode'] == 'CE01516011':
+                ransomware_alerts.append(alert)
 
         return ransomware_alerts
 
