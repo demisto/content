@@ -3,7 +3,7 @@ commonfields:
   id: BotDefender
   version: -1
 configuration:
-- defaultvalue: https://k986g.mocklab.io
+- defaultvalue: ""
   display: Server URL (e.g. https://example.net)
   name: url
   required: true
@@ -100,71 +100,6 @@ script:
     deprecated: false
     description: Gets the PerimeterX related details for a particular IP
     execution: false
-    name: perimeterx-get-investigate-details
-    outputs:
-    - contextPath: PerimeterX.TopUserAgents.UserAgentName
-      description: The user agent string
-      type: String
-    - contextPath: PerimeterX.TopUserAgents.Count
-      description: The number of requests seen using this user agent string
-      type: Number
-    - contextPath: PerimeterX.TopURLPaths.UrlPath
-      description: Path portion of the full URL
-      type: String
-    - contextPath: PerimeterX.TopURLPaths.Count
-      description: The number of requests made to this path
-      type: Number
-    - contextPath: PerimeterX.TopBlockedURLPaths.BlockedURLPath
-      description: Path portion of the full blocked URL
-      type: String
-    - contextPath: PerimeterX.TopBlockedURLPaths.Count
-      description: The number of requests blocked on this path
-      type: Number
-    - contextPath: PerimeterX.TopIncidentTypes.IncidentType
-      description: Incident type for queried item
-      type: String
-    - contextPath: PerimeterX.TopIncidentTypes.Count
-      description: The number of requests categorized for the incident type
-      type: Number
-    - contextPath: PerimeterX.CatpchaSolves
-      description: Total number of captchas solved by queried item
-      type: Number
-    - contextPath: PerimeterX.PageTypeDistributions.pageType
-      description: Page type name
-      type: String
-    - contextPath: PerimeterX.PageTypeDistributions.Count
-      description: Count of requests classified under the page type
-      type: Number
-    - contextPath: PerimeterX.MaxRiskScore
-      description: Maximum risk score observed by PerimeterX
-      type: Number
-    - contextPath: PerimeterX.IpClassifications.Class
-      description: Class associated with the IP classification type
-      type: String
-    - contextPath: PerimeterX.IpClassifications.Name
-      description: Name associated with the IP classification
-      type: String
-    - contextPath: IP.Address
-      description: Bad IP address
-      type: String
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason that the vendor made the decision
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: Number
   isfetch: true
   runonce: false
   script: '-'

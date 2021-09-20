@@ -314,8 +314,8 @@ def main():
     # get the service API url
     # '/investigate?search=ip:1.1.1.1&tops=path' + api_key
     base_url = urljoin(demisto.params()['url'], '/v1/bot-defender/')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     # get the DBot Thresholds
     thresholds = {
@@ -342,8 +342,8 @@ def main():
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'perimeterx-get-investigate-details':
-            return_results(perimeterx_get_investigate_details(client=client, args=demisto.args(), thresholds=thresholds))
+        #elif demisto.command() == 'perimeterx-get-investigate-details':
+        #    return_results(perimeterx_get_investigate_details(client=client, args=demisto.args(), thresholds=thresholds))
 
         elif demisto.command() == 'ip':
             return_results(ip(client=client, args=demisto.args(), thresholds=thresholds))
