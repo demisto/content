@@ -25,14 +25,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 691a45cd-d61e-4116-821a-b4c7c9015a6e
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Nexthink helps IT teams deliver on the promise of the modern digital
   workplace. Nexthink is the only solution to provide enterprises with a way to visualize,
   act and engage across the entire IT ecosystem to lower IT cost and improve digital
