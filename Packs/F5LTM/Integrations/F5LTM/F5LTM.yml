@@ -52,13 +52,13 @@ script:
     name: f5-ltm-get-pools
     outputs:
     - contextPath: F5.LTM.Pools.name
-      description: Pool Name
-      type: Unknown
+      description: The pool name
+      type: String
   - arguments:
     - default: false
       description: Pool Name
       isArray: false
-      name: pool
+      name: pool_name
       required: true
       secret: false
     deprecated: false
@@ -67,13 +67,13 @@ script:
     name: f5-ltm-get-pool
     outputs:
     - contextPath: F5.LTM.Pools.name
-      description: Pool Name
-      type: Unknown
+      description: The pool name
+      type: String
   - arguments:
     - default: false
       description: Pool Name
       isArray: false
-      name: pool
+      name: pool_name
       required: true
       secret: false
     deprecated: false
@@ -83,20 +83,20 @@ script:
     outputs:
     - contextPath: F5.LTM.Pools.members.name
       description: Members Names
-      type: Unknown
+      type: String
   - deprecated: false
     description: Get a list of all nodes
     execution: false
     name: f5-ltm-get-nodes
     outputs:
     - contextPath: F5.LTM.Nodes.name
-      description: Node Name
-      type: Unknown
+      description: The node name
+      type: String
   - arguments:
     - default: false
       description: Node Name
       isArray: false
-      name: node
+      name: node_name
       required: true
       secret: false
     deprecated: false
@@ -105,13 +105,13 @@ script:
     name: f5-ltm-get-node
     outputs:
     - contextPath: F5.LTM.Nodes.name
-      description: Node Name
-      type: Unknown
+      description: The node name
+      type: String
   - arguments:
     - default: false
       description: Node to disable
       isArray: false
-      name: node
+      name: node_name
       required: true
       secret: false
     deprecated: false
@@ -122,7 +122,7 @@ script:
     - default: false
       description: Node to enable
       isArray: false
-      name: node
+      name: node_name
       required: true
       secret: false
     deprecated: false
@@ -133,13 +133,13 @@ script:
     - default: false
       description: Pool to get its stats
       isArray: false
-      name: pool
+      name: pool_name
       required: true
       secret: false
     - default: false
       description: Member to get its stats
       isArray: false
-      name: member
+      name: member_name
       required: true
       secret: false
     deprecated: false
@@ -150,7 +150,7 @@ script:
     - default: false
       description: Node To Query
       isArray: false
-      name: node
+      name: node_name
       required: true
       secret: false
     deprecated: false
@@ -159,13 +159,13 @@ script:
     name: f5-ltm-get-node-stats
     outputs:
     - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
-      description: current connections
-      type: Unknown
+      description: The current connections
+      type: String
   - arguments:
     - default: false
       description: IP address of the node
       isArray: false
-      name: address
+      name: ip_address
       required: true
       secret: false
     deprecated: false
@@ -174,13 +174,13 @@ script:
     name: f5-ltm-get-node-by-address
     outputs:
     - contextPath: F5.LTM.Nodes.name
-      description: Node name
-      type: Unknown
+      description: The node name
+      type: String
   - arguments:
     - default: false
       description: Node name
       isArray: false
-      name: node
+      name: node_name
       required: true
       secret: false
     deprecated: false
@@ -189,8 +189,8 @@ script:
     name: f5-ltm-get-pool-by-node
     outputs:
     - contextPath: F5.LTM.Nodes.pools
-      description: Pool names
-      type: Unknown
+      description: The pool names
+      type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
@@ -202,4 +202,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: '6.0.0'
+fromversion: 6.0.0

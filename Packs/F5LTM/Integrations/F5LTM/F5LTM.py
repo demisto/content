@@ -39,13 +39,13 @@ class Client(BaseClient):
                                       headers=self.headers, params={})
         if str(expand_collection).lower() == 'true':
             pools = []
-            for x in response.get('items'):
-                if 'items' in x['membersReference']:
+            for item in response.get('items'):
+                if 'items' in item.get('membersReference'):
                     pools.append({
-                        'name': x['name'],
-                        'partition': x['partition'],
-                        'monitor': x['monitor'],
-                        'members': x['membersReference']['items']
+                        'name': item.get('name'),
+                        'partition': item.get('partition'),
+                        'monitor': item.get('monitor'),
+                        'members': item.get('membersReference')['items']
                     })
         else:
             pools = response.get('items')
@@ -165,7 +165,7 @@ def ltm_get_pools_command(client, args) -> CommandResults:
 
 
 def ltm_get_pool_command(client, args) -> CommandResults:
-    pool = args.get('pool')
+    pool = args.get('pool_name')
     results = client.get_pool(pool)
 
     return CommandResults(
@@ -186,7 +186,7 @@ def ltm_get_nodes_command(client) -> CommandResults:
 
 
 def ltm_get_node_command(client, args) -> CommandResults:
-    node = args.get('node')
+    node = args.get('node_name')
     results = client.get_node(node)
 
     return CommandResults(
@@ -197,18 +197,23 @@ def ltm_get_node_command(client, args) -> CommandResults:
 
 
 def ltm_get_pool_members_command(client, args) -> CommandResults:
-    pool = args.get('pool')
+    pool = args.get('pool_name')
     results = client.get_pool_members(pool)
+    readable_output = tableToMarkdown('Pool Members:', {
+        'name': results.get('name'),
+        'members': [member['name'] for member in results.get('members')]
+    })
 
     return CommandResults(
         outputs_prefix='F5.LTM.Pools',
         outputs_key_field='name',
         outputs=results,
+        readable_output=readable_output
     )
 
 
 def ltm_disable_node_command(client, args) -> CommandResults:
-    node = args.get('node')
+    node = args.get('node_name')
     results = client.disable_node(node)
 
     return CommandResults(
@@ -219,7 +224,7 @@ def ltm_disable_node_command(client, args) -> CommandResults:
 
 
 def ltm_enable_node_command(client, args) -> CommandResults:
-    node = args.get('node')
+    node = args.get('node_name')
     results = client.enable_node(node)
 
     return CommandResults(
@@ -230,33 +235,45 @@ def ltm_enable_node_command(client, args) -> CommandResults:
 
 
 def ltm_get_pool_member_stats_command(client, args) -> CommandResults:
-    pool = args.get('pool')
-    member = args.get('member')
+    pool = args.get('pool_name')
+    member = args.get('member_name')
     results = client.get_pool_member_stats(pool=pool, member=member)
+    readable_output = tableToMarkdown('Pool Member Stats:', {
+        'pool': results.get('pool'),
+        'member': [member.get('name') for member in results.get('members')],
+        'curConns': [member.get('stats')['serverside.curConns']['value'] for member in results.get('members')]
+    })
+
     return CommandResults(
         outputs_prefix='F5.LTM.Stats',
         outputs_key_field='name',
         outputs=results,
+        readable_output=readable_output
     )
 
 
 def ltm_get_node_stats_command(client, args) -> CommandResults:
-    node = args.get('node')
+    node = args.get('node_name')
     results = client.get_node_stats(node=node)
+    readable_output = tableToMarkdown('Node Stats:', {
+        'node': results.get('name'),
+        'curConns': results.get('stats')['serverside.curConns']['value']
+    })
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
         outputs_key_field='name',
         outputs=results,
+        readable_output=readable_output
     )
 
 
 def ltm_get_node_by_address_command(client, args) -> CommandResults:
-    ip_address = args.get('address')
+    ip_address = args.get('ip_address')
     node = None
     results = client.get_nodes()
-    for x in results:
-        if x['address'] == ip_address:
-            node = x
+    for item in results:
+        if item.get('address') == ip_address:
+            node = item
             break
     return CommandResults(
         outputs_prefix='F5.LTM.Nodes',
@@ -266,13 +283,13 @@ def ltm_get_node_by_address_command(client, args) -> CommandResults:
 
 
 def ltm_get_pools_by_node_command(client, args) -> CommandResults:
-    node = args.get('node')
+    node = args.get('node_name')
     pools = []
     results = client.get_pools(expand_collection='true')
-    for x in results:
-        for y in x['members']:
-            if y['name'].split(':')[0] == node:
-                pools.append(x['name'])
+    for item in results:
+        for subitem in item.get('members'):
+            if subitem.get('name').split(':')[0] == node:
+                pools.append(item.get('name'))
                 break
     node_mapping = {
         "name": node,
@@ -290,13 +307,14 @@ def ltm_get_pools_by_node_command(client, args) -> CommandResults:
 
 def main() -> None:
     args = demisto.args()
-    server = demisto.params()['server']
-    port = demisto.params().get('port', '443')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = not demisto.params().get('insecure', False)
-    partition = demisto.params().get('partition')
-    username = demisto.params().get('credentials', {}).get('identifier')
-    password = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
+    server = params.get('server')
+    port = params.get('port', '443')
+    verify_certificate = not params.get('insecure', False)
+    proxy = not params.get('insecure', False)
+    partition = params.get('partition')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
 
     base_url = f'https://{server}:{port}/mgmt/tm/'
 

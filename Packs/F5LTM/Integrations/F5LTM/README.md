@@ -1,5 +1,5 @@
 Manages F5 LTM
-This integration was integrated and tested with version 14.1.4.4 of F5LTM
+This integration was integrated and tested with version xx of F5LTM
 
 ## Configure F5 LTM on Cortex XSOAR
 
@@ -97,18 +97,18 @@ Get pool details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pool | Pool Name. | Required | 
+| pool_name | Pool Name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Pools.name | Unknown | Pool Name | 
+| F5.LTM.Pools.name | String | Pool Name | 
 
 
 #### Command Example
-```!f5-ltm-get-pool pool="XSOAR"```
+```!f5-ltm-get-pool pool_name="XSOAR"```
 
 #### Context Example
 ```json
@@ -171,18 +171,18 @@ Get Pool Members
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pool | Pool Name. | Required | 
+| pool_name | Pool Name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Pools.members.name | Unknown | Members Names | 
+| F5.LTM.Pools.members.name | String | Members Names | 
 
 
 #### Command Example
-```!f5-ltm-get-pool-members pool="XSOAR"```
+```!f5-ltm-get-pool-members pool_name="XSOAR"```
 
 #### Context Example
 ```json
@@ -247,10 +247,10 @@ Get Pool Members
 
 #### Human Readable Output
 
->### Results
+>### Pool Members:
 >|members|name|
 >|---|---|
->| {'kind': 'tm:ltm:pool:members:membersstate', 'name': 'XSOAR1:443', 'partition': 'Common', 'fullPath': '/Common/XSOAR1:443', 'generation': 1, 'selfLink': 'https://localhost/mgmt/tm/ltm/pool/~Common~XSOAR/members/~Common~XSOAR1:443?ver=16.1.0', 'address': '10.10.10.102', 'connectionLimit': 0, 'dynamicRatio': 1, 'ephemeral': 'false', 'fqdn': {'autopopulate': 'disabled'}, 'inheritProfile': 'enabled', 'logging': 'disabled', 'monitor': 'default', 'priorityGroup': 0, 'rateLimit': 'disabled', 'ratio': 1, 'session': 'monitor-enabled', 'state': 'up'},<br/>{'kind': 'tm:ltm:pool:members:membersstate', 'name': 'XSOAR2:443', 'partition': 'Common', 'fullPath': '/Common/XSOAR2:443', 'generation': 1, 'selfLink': 'https://localhost/mgmt/tm/ltm/pool/~Common~XSOAR/members/~Common~XSOAR2:443?ver=16.1.0', 'address': '1.1.1.1', 'connectionLimit': 0, 'dynamicRatio': 1, 'ephemeral': 'false', 'fqdn': {'autopopulate': 'disabled'}, 'inheritProfile': 'enabled', 'logging': 'disabled', 'monitor': 'default', 'priorityGroup': 0, 'rateLimit': 'disabled', 'ratio': 1, 'session': 'monitor-enabled', 'state': 'up'} | XSOAR |
+>| XSOAR1:443,<br/>XSOAR2:443 | XSOAR |
 
 
 ### f5-ltm-get-nodes
@@ -269,7 +269,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | Unknown | Node Name | 
+| F5.LTM.Nodes.name | String | Node Name | 
 
 
 #### Command Example
@@ -330,18 +330,18 @@ Get node details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node | Node Name. | Required | 
+| node_name | Node Name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | Unknown | Node Name | 
+| F5.LTM.Nodes.name | String | Node Name | 
 
 
 #### Command Example
-```!f5-ltm-get-node node="Test"```
+```!f5-ltm-get-node node_name="Test"```
 
 #### Context Example
 ```json
@@ -397,7 +397,7 @@ Disable a node
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node | Node to disable. | Required | 
+| node_name | Node to disable. | Required | 
 
 
 #### Context Output
@@ -405,7 +405,7 @@ Disable a node
 There is no context output for this command.
 
 #### Command Example
-```!f5-ltm-disable-node node="XSOAR1"```
+```!f5-ltm-disable-node node_name="XSOAR1"```
 
 #### Context Example
 ```json
@@ -424,7 +424,7 @@ There is no context output for this command.
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 292,
+                "generation": 73,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -446,7 +446,7 @@ There is no context output for this command.
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 292 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 73 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
 
 
 ### f5-ltm-enable-node
@@ -461,7 +461,7 @@ Enable a node
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node | Node to enable. | Required | 
+| node_name | Node to enable. | Required | 
 
 
 #### Context Output
@@ -469,7 +469,7 @@ Enable a node
 There is no context output for this command.
 
 #### Command Example
-```!f5-ltm-enable-node node="XSOAR1"```
+```!f5-ltm-enable-node node_name="XSOAR1"```
 
 #### Context Example
 ```json
@@ -488,7 +488,7 @@ There is no context output for this command.
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 291,
+                "generation": 72,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -510,7 +510,7 @@ There is no context output for this command.
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 291 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 72 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
 
 
 ### f5-ltm-get-pool-member-stats
@@ -525,8 +525,8 @@ Get Pool Member Stats
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pool | Pool to get its stats. | Required | 
-| member | Member to get its stats. | Required | 
+| pool_name | Pool to get its stats. | Required | 
+| member_name | Member to get its stats. | Required | 
 
 
 #### Context Output
@@ -534,7 +534,7 @@ Get Pool Member Stats
 There is no context output for this command.
 
 #### Command Example
-```!f5-ltm-get-pool-member-stats pool="XSOAR" member="XSOAR1:443"```
+```!f5-ltm-get-pool-member-stats pool_name="XSOAR" member_name="XSOAR1:443"```
 
 #### Context Example
 ```json
@@ -716,10 +716,10 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Results
->|members|pool|stats|
+>### Pool Member Stats:
+>|curConns|member|pool|
 >|---|---|---|
->| {'name': 'XSOAR1:443', 'stats': {'addr': {'description': '10.10.10.102'}, 'connq.ageEdm': {'value': 0}, 'connq.ageEma': {'value': 0}, 'connq.ageHead': {'value': 0}, 'connq.ageMax': {'value': 0}, 'connq.depth': {'value': 0}, 'connq.serviced': {'value': 0}, 'curSessions': {'value': 0}, 'monitorRule': {'description': '/Common/https_443 (pool monitor)'}, 'monitorStatus': {'description': 'up'}, 'mr.msgIn': {'value': 0}, 'mr.msgOut': {'value': 0}, 'mr.reqIn': {'value': 0}, 'mr.reqOut': {'value': 0}, 'mr.respIn': {'value': 0}, 'mr.respOut': {'value': 0}, 'nodeName': {'description': '/Common/XSOAR1'}, 'poolName': {'description': '/Common/XSOAR'}, 'port': {'value': 443}, 'serverside.bitsIn': {'value': 0}, 'serverside.bitsOut': {'value': 0}, 'serverside.curConns': {'value': 0}, 'serverside.maxConns': {'value': 0}, 'serverside.pktsIn': {'value': 0}, 'serverside.pktsOut': {'value': 0}, 'serverside.totConns': {'value': 0}, 'sessionStatus': {'description': 'addr-disabled'}, 'status.availabilityState': {'description': 'available'}, 'status.enabledState': {'description': 'disabled-by-parent'}, 'status.statusReason': {'description': 'Pool member is available'}, 'totRequests': {'value': 0}}} | XSOAR | connqAll.depth: {"value": 0}<br/>connqAll.ageEma: {"value": 0}<br/>connq.depth: {"value": 0}<br/>lowestPriogrp: {"value": 0}<br/>highestPriogrp: {"value": 0}<br/>connqAll.ageHead: {"value": 0}<br/>activeMemberCnt: {"value": 1}<br/>connq.ageHead: {"value": 0}<br/>curPriogrp: {"value": 0}<br/>connq.serviced: {"value": 0}<br/>connq.ageEma: {"value": 0}<br/>connq.ageEdm: {"value": 0}<br/>memberCnt: {"value": 2}<br/>connq.ageMax: {"value": 0}<br/>connqAll.ageEdm: {"value": 0}<br/>availableMemberCnt: {"value": 2}<br/>connqAll.serviced: {"value": 0}<br/>status.statusReason: {"description": "The pool is available"}<br/>connqAll.ageMax: {"value": 0}<br/>curSessions: {"value": 0}<br/>monitorRule: {"description": "/Common/https_443"} |
+>| 0 | XSOAR1:443 | XSOAR |
 
 
 ### f5-ltm-get-node-stats
@@ -734,18 +734,18 @@ Get Node Stats
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node | Node To Query. | Required | 
+| node_name | Node To Query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.stats.serverside\.curConns.value | Unknown | current connections | 
+| F5.LTM.Nodes.stats.serverside\.curConns.value | String | current connections | 
 
 
 #### Command Example
-```!f5-ltm-get-node-stats node="XSOAR1"```
+```!f5-ltm-get-node-stats node_name="XSOAR1"```
 
 #### Context Example
 ```json
@@ -815,10 +815,10 @@ Get Node Stats
 
 #### Human Readable Output
 
->### Results
->|name|stats|
+>### Node Stats:
+>|curConns|node|
 >|---|---|
->| XSOAR1 | addr: {"description": "10.10.10.102"}<br/>curSessions: {"value": 0}<br/>monitorRule: {"description": "none"}<br/>monitorStatus: {"description": "unchecked"}<br/>tmName: {"description": "/Common/XSOAR1"}<br/>serverside.bitsIn: {"value": 0}<br/>serverside.bitsOut: {"value": 0}<br/>serverside.curConns: {"value": 0}<br/>serverside.maxConns: {"value": 0}<br/>serverside.pktsIn: {"value": 0}<br/>serverside.pktsOut: {"value": 0}<br/>serverside.totConns: {"value": 0}<br/>sessionStatus: {"description": "user-disabled"}<br/>status.availabilityState: {"description": "unknown"}<br/>status.enabledState: {"description": "disabled"}<br/>status.statusReason: {"description": "Node address does not have service checking enabled"}<br/>totRequests: {"value": 0} |
+>| 0 | XSOAR1 |
 
 
 ### f5-ltm-get-node-by-address
@@ -833,18 +833,18 @@ Get node information by address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| address | IP address of the node. | Required | 
+| ip_address | IP address of the node. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | Unknown | Node name | 
+| F5.LTM.Nodes.name | String | Node name | 
 
 
 #### Command Example
-```!f5-ltm-get-node-by-address address="10.10.10.102"```
+```!f5-ltm-get-node-by-address ip_address="10.10.10.102"```
 
 #### Context Example
 ```json
@@ -883,18 +883,18 @@ Get pool information by node
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| node | Node name. | Required | 
+| node_name | Node name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.pools | Unknown | Pool names | 
+| F5.LTM.Nodes.pools | String | Pool names | 
 
 
 #### Command Example
-```!f5-ltm-get-pool-by-node node="XSOAR1"```
+```!f5-ltm-get-pool-by-node node_name="XSOAR1"```
 
 #### Context Example
 ```json
