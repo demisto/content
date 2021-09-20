@@ -64,6 +64,7 @@ class Client(BaseClient):
                                       'apiKey': self.api_key,
                                       'Content-Type': 'application/json'
                                   },
+                                  json_data={"pageSize": 200},
                                   )
 
     def get_tag_details(self, public_tag_name: str):
@@ -129,14 +130,15 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     """
     fields: Dict[str, Any] = {}
     tag = tag_details.get('tag')
-    refs = json.loads(tag.get('refs'))
-    if refs:
-        refs = refs[0]
-        url = refs.get('url')
-        source = refs.get('source')
-        time_stamp = refs.get('created')
-        title = refs.get('title')
-        fields['publications'] = [{'link': url, 'title': title, 'source': source, 'timestamp': time_stamp}]
+    refs = json.loads(tag.get('refs', '[]'))
+    if len(refs) > 0:
+        fields['publications'] = []
+        for ref in refs:
+            url = ref.get('url')
+            source = ref.get('source')
+            time_stamp = ref.get('created')
+            title = ref.get('title')
+            fields['publications'].append({'link': url, 'title': title, 'source': source, 'timestamp': time_stamp})
     fields['aliases'] = tag_details.get('aliases')
     fields['description'] = tag.get('description')
     fields['lastseenbysource'] = tag.get('lasthit')
@@ -171,7 +173,7 @@ def create_relationships_for_tag(name: str, tag_type: str, related_tags: List[st
         related_tag_details = all_tags.get(related_tag)
         if related_tag_details:
             tag = related_tag_details.get('tag')
-            related_tag_name = tag.get('public_tag_name')
+            related_tag_name = tag.get('tag_name')
             tag_class = tag.get('tag_class')
             source = tag.get('source')
             related_tag_type = get_tag_class(tag_class, source)
@@ -226,7 +228,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     # extract values from iterator
     for tag_details in iterator:
         tag = tag_details.get('tag')
-        value_ = tag.get('public_tag_name')
+        value_ = tag.get('tag_name')
         tag_class = tag.get('tag_class')
         source = tag.get('source')
         type_ = get_tag_class(tag_class, source)
