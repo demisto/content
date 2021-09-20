@@ -807,7 +807,6 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
         }
         headers = RIOT_HEADERS
 
-
     human_readable = tableToMarkdown(name=name, t=hr, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix="GreyNoise.RIOT",
