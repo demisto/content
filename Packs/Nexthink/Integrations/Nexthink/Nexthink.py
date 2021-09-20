@@ -1,7 +1,5 @@
-import csv
 import json
 import urllib.parse
-from string import Template
 
 import demistomock as demisto  # noqa: F401
 import requests
