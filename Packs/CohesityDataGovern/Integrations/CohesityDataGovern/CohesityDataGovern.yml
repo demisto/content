@@ -21,6 +21,25 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '200'
+  display: Maximum number of incidents to fetch every time
+  hidden: false
+  name: max_fetch
+  required: true
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp
+  name: first_fetch
+  required: false
+  type: 0
 description: '[Cohesity DataGovern sends vulnerability alerts. CohesityTBD.]'
 display: CohesityDataGovern
 name: CohesityDataGovern
@@ -28,9 +47,9 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Num of hours to fetch alerts since.
+      description: Num of hours to fetch WAS alerts since.
       isArray: false
-      name: num_hours
+      name: num_minutes
       required: false
       secret: false
     deprecated: false
@@ -41,17 +60,17 @@ script:
     - contextPath: CohesityDataGovern.WASAlert.id
       description: Identifier for WAS alert
       type: String
-    - contextPath: CohesityDataGovern.WASAlert.incidenceTime
+    - contextPath: CohesityDataGovern.WASAlert.occurance_time
       description: WAS alert incidence time.
       type: String
-    - contextPath: CohesityDataGovern.WASAlert.ruleID
+    - contextPath: CohesityDataGovern.WASAlert.rule_id
       description: Triggering rule identifier for WAS alert
       type: String
   - arguments:
     - default: false
-      description: Num of hours to fetch alerts since.
+      description: Num of minutes to fetch ransomware alerts since.
       isArray: false
-      name: num_hours
+      name: num_minutes
       required: false
       secret: false
     deprecated: false
@@ -62,7 +81,7 @@ script:
     - contextPath: CohesityDataGovern.RansomwareAlert
       description: Count of Ransomware alerts
       type: Number
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python

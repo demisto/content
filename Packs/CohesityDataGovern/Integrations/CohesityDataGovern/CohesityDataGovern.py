@@ -13,15 +13,15 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-
-from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+from datetime import datetime, timedelta
+from typing import Dict, Any
+import json
 import requests
 import traceback
-from typing import Dict, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -45,7 +45,7 @@ class Client(BaseClient):
     """
 
     # Helper functions to interact with helios services.
-    def get_was_alerts(self, startTimeMillis, endTimeMillis) -> Dict[str, Any]:
+    def get_was_alerts(self, start_time_millis, end_time_millis) -> Dict[str, Any]:
         """Gets the Wide Access Shield Alerts.
 
         :return: dict containing the Wide Access Shields alerts
@@ -56,15 +56,15 @@ class Client(BaseClient):
             method='GET',
             url_suffix='/mcm/argus/api/v1/public/shields/WIDE_ACCESS/incidences',
             params={
-                "startTimeMsecs": startTimeMillis,
-                "endTimeMsecs": endTimeMillis
+                "startTimeMsecs": start_time_millis,
+                "endTimeMsecs": end_time_millis
             }
         )
 
-    def get_ransomware_alerts(self, nHours: int) -> Dict[str, Any]:
+    def get_ransomware_alerts(self, start_time_millis: int):
         """Gets the Cohesity ransomware alerts.
         """
-        return self._http_request(
+        resp = self._http_request(
             method='GET',
             url_suffix='/mcm/alerts',
             params={
@@ -72,17 +72,29 @@ class Client(BaseClient):
                 "alertCategoryList": "kSecurity",
                 "alertStateList": "kOpen",
                 "_includeTenantInfo": True,
-                "startDateUsecs": get_nHour_prev_date_time(nHours)
+                "startDateUsecs": start_time_millis
             }
         )
+
+        # filter ransomware alerts.
+        ransomware_alerts = []
+        for alert in resp:
+            ransomware_alerts.append(alert)
+
+        return ransomware_alerts
 
 
 ''' HELPER FUNCTIONS '''
 
 
 def get_date_time_from_millis(time_in_millis):
-    dt = datetime.fromtimestamp(time_in_millis / 1000.0)
-    return dt.strftime("%m/%d/%Y, %H:%M:%S")
+    return datetime.fromtimestamp(time_in_millis / 1000.0)
+
+
+def get_millis_from_date_time(dt):
+    return int(dt.timestamp() * 1000)
+
+# Get current data time millis
 
 
 def get_current_date_time():
@@ -90,9 +102,96 @@ def get_current_date_time():
     return int(dt.timestamp() * 1000)
 
 
-def get_nHour_prev_date_time(nHours: int):
-    dt = datetime.now() - timedelta(hours=nHours)
+def get_nMin_prev_date_time(nMins: int):
+    dt = datetime.now() - timedelta(minutes=nMins)
     return int(dt.timestamp() * 1000)
+
+
+# Helper function to get alert properties dict.
+def _get_property_dict(property_list):
+    '''
+    get property dictionary from list of property dicts
+    with keys, values
+    :param property_list:
+    :return:
+    '''
+    property_dict = {}
+    for property in property_list:
+        property_dict[property['key']] = property['value']
+    return property_dict
+
+
+# Helper method to create wide-access incident from alert.
+def create_wide_access_incident(alert) -> Dict[str, Any]:
+    occurance_time = get_date_time_from_millis(
+        alert.get("incidenceTimeMsecs")).isoformat()[:-3] + 'Z'
+
+    return {
+        "name": "wide-access-incident",
+        "event_id": alert.get("id"),
+        "occurred": occurance_time,
+        "rawJSON": json.dumps(alert)
+    }
+
+# Helper method to create wide-access incident from alert.
+
+
+def create_ransomware_incident(alert) -> Dict[str, Any]:
+    property_dict = _get_property_dict(alert['propertyList'])
+    occurance_time = get_date_time_from_millis(
+        alert.get("incidenceTimeMsecs")).isoformat()[:-3] + 'Z'
+
+    return {
+        "name": alert['alertDocument']['alertName'],
+        "event_id": alert.get("id"),
+        "occurred": occurance_time,
+        "rawJSON": json.dumps(alert)
+    }
+
+# Helper method to create ransomware incident from alert.
+
+
+def parse_ransomware_alert(alert) -> Dict[str, Any]:
+    demisto.results(alert)
+
+    # Get alert properties.
+    property_dict = _get_property_dict(alert['propertyList'])
+    external_id = property_dict.get('object', '') + '___' +\
+        property_dict.get('entityId', '') + '___' +\
+        property_dict.get('source', '') + '___' +\
+        property_dict.get('cluster', '') + '___' +\
+        property_dict.get('cid', '')
+
+    return {
+        "alert_id": alert['alertDocument']['alertId'],
+        "description": "Anomalous object from Cohesity"
+        " Helios. The object is under source \'"
+        + property_dict.get("source", "")
+        + "\' on cluster \'" + property_dict.get("cluster", "") + "\'" + "\n"
+        + "# Alert Info \n\n"
+        + "*Alert Name* : " + alert['alertDocument']['alertName'] + "\n\n"
+        + "*Alert Description* : " + alert['alertDocument']['alertDescription'] + "\n\n"
+        + "*Alert Cause* : " + alert['alertDocument']['alertCause'] + "\n\n"
+        + "*Alert Help Text* : " + alert['alertDocument']['alertHelpText'],
+        "confidence": "High",
+        "incident_time": {
+            "opened": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat(),
+            "discovered": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat(),
+            "reported": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat()
+        },
+        "schema_version": "1.1.3",
+        "status": "New",
+        "type": "incident",
+        "source": "Cohesity Helios",
+        "external_ids": [external_id],
+        "title": "Cohesity Helios: " + property_dict.get("object", ""),
+        "external_references": [
+            {
+                "source_name": property_dict.get('source', ''),
+                "description": "The source in which the anomalous object is present"
+            }
+        ]
+    }
 
 
 ''' COMMAND FUNCTIONS '''
@@ -114,34 +213,37 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     :rtype: ``CommandResults``
     """
-    nHours = int(args.get('num_hours', "168"))
+    nMins = int(args.get('num_minutes', "30"))
 
     # Fetch was alerts since last nHours.
-    startTimeMillis = get_nHour_prev_date_time(nHours)
-    endTimeMillis = get_current_date_time()
-    resp = client.get_was_alerts(startTimeMillis, endTimeMillis)
+    start_time_millis = get_nMin_prev_date_time(nMins)
+    end_time_millis = get_current_date_time()
+    resp = client.get_was_alerts(start_time_millis, end_time_millis)
 
     # Parse alerts for readable_output.
     raw_incidences = resp.get('incidences', {})
-    incidences_list = []
+    incidences = []
 
     for raw_incidence in raw_incidences:
+        occurance_time = get_date_time_from_millis(
+            raw_incidence.get("incidenceTimeMsecs")).strftime("%m/%d/%Y, %H:%M:%S")
+
         incidence = {
             "id": raw_incidence.get("id"),
-            "incidenceTime": get_date_time_from_millis(
-                raw_incidence.get("incidenceTimeMsecs")),
-            "ruleID": raw_incidence.get("ruleId")
+            "occurance_time": occurance_time,
+            "rule_id": raw_incidence.get("ruleId")
         }
-        incidences_list.append(incidence)
+        incidences.append(incidence)
 
-    md = tableToMarkdown('Alerts', incidences_list, ["id", "incidence time", "ruleID"])
+    md = tableToMarkdown('Alerts', incidences,
+                         ["id", "occurance_time", "ruleID"])
 
     # return results.
     return CommandResults(
         readable_output=md,
         outputs_prefix='CohesityDataGovern.WASAlert',
         outputs_key_field='id',
-        outputs=incidences_list,
+        outputs=incidences,
     )
 
 
@@ -149,15 +251,68 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """Get_ransomware_alerts_command: Returns ransomware alerts detected
         in last n hours.
     """
-    nHours = int(args.get('num_hours', "168"))
-    resp = client.get_ransomware_alerts(nHours)
+    nMins = int(args.get('num_minutes', "30"))
+    start_time_millis = get_nMin_prev_date_time(nMins)
+
+    # Fetch ransomware alerts from client.
+    resp = client.get_ransomware_alerts(start_time_millis)
+
+    # Create ransomware incidents from alerts.
+    incidences = []
+
+    for alert in resp:
+        incident = parse_ransomware_alert(alert)
+        incidences.append(incident)
 
     # CohesityTBD: Parse alert response.
     return CommandResults(
         outputs_prefix='CohesityDataGovern.RansomwareAlert',
         outputs_key_field='alert_id',
-        outputs=resp,
+        outputs=incidences,
     )
+
+
+def fetch_incidents_command(client: Client, args: Dict[str, Any]):
+    # Get last run details.
+    last_run = demisto.getLastRun()
+
+    current_time = datetime.now()
+    week_ago = current_time - timedelta(days=7)
+
+    start_time = week_ago
+    if last_run and 'start_time' in last_run:
+        start_time = get_date_time_from_millis(last_run.get('start_time'))
+
+    start_time_millis = get_millis_from_date_time(start_time)
+    end_time_millis = get_current_date_time()
+
+    # Fetch all new incidents.
+    incidents = []
+
+    # Fetch new WAS alerts
+    resp = client.get_was_alerts(start_time_millis, end_time_millis)
+
+    # Parse alerts for readable_output.
+    was_incidences = resp.get('incidences', {})
+    for alert in was_incidences:
+        incident = create_wide_access_incident(alert)
+        incidents.append(incident)
+
+    # Fetch new ransomware alerts.
+    ransomware_resp = client.get_ransomware_alerts(start_time_millis)
+
+    # Parse alerts for readable_output.
+    for alert in ransomware_resp:
+        incident = create_ransomware_incident(alert)
+        incidents.append(incident)
+
+    # Update last run.
+    demisto.setLastRun({
+        'start_time': end_time_millis
+    })
+
+    # Send incidents to Cortex-XSOAR.
+    demisto.incidents(incidents)
 
 
 def test_module(client: Client) -> str:
@@ -235,6 +390,9 @@ def main() -> None:
 
         elif demisto.command() == 'cohesity-get-ransomware-alerts':
             return_results(get_ransomware_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'fetch-incidents':
+            return_results(fetch_incidents_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
