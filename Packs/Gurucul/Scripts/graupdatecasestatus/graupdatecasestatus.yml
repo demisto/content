@@ -8,6 +8,11 @@ tags:
 - post-processing
 comment: GRA Update Case Status
 enabled: true
+args:
+- name: closeNotes
+  description: Close Note
+- name: closeReason
+  description: Close reason
 scripttarget: 0
 subtype: python3
 timeout: 60ns

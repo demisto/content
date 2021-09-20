@@ -208,25 +208,46 @@
                         "i": "caseinfoid-07dab470-0fba-11ec-82a4-8da638163409",
                         "items": [
                             {
-                                "endCol": 2,
+                                "dropEffect": "move",
+                                "endCol": 6,
                                 "fieldId": "gracaseanomalydetails",
                                 "height": 106,
                                 "id": "3692fe70-117d-11ec-be5c-691ac2248630",
                                 "index": 0,
+                                "listId": "caseinfoid-07dab470-0fba-11ec-82a4-8da638163409",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
                         "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "GRA Case Anomaly Data",
+                        "minW": 3,
+                        "moved": true,
+                        "name": "GRA Case Anomaly Details",
                         "static": false,
-                        "w": 1,
-                        "x": 0,
+                        "w": 3,
+                        "x": 1,
                         "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-e4058520-17b1-11ec-b6fe-610e8a614f20",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Analytical Features",
+                        "query": "3dcac454-23f0-487c-8fca-223ac5a1d486",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 1,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
