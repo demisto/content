@@ -150,7 +150,6 @@ def nexthink_compliance_check(device: None, ip: None):
         deviceEntry['Last Logged On User'] = data[0]['last_logged_on_user']
         deviceEntry['IP Address'] = data[0]['ip_addresses'][0]
         deviceEntry['MAC Address'] = data[0]['mac_addresses'][0]
-        #deviceEntry['Sofware Details'] = entryList
         deviceList.append(deviceEntry)
 
         hr = tableToMarkdown('Endpoint Details :', deviceList) + tableToMarkdown('Compliance Details: ', entryList)
