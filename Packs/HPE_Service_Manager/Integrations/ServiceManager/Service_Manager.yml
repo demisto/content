@@ -1304,7 +1304,7 @@ script:
       description: The last user who updated the device.
     description: Find and return a device by ID.
   - name: hpsm-create-request
-    - arguments:
+    arguments:
     - description: The title of the request.
       name: title
       required: true
