@@ -1,7 +1,6 @@
 commonfields:
   id: Service Manager
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Service Manager
 display: Service Manager
 category: Case Management
@@ -1327,5 +1326,4 @@ script:
       description: Incident title
     description: Creates a new service request
   runonce: false
-sourcemoduleid: Service Manager
 fromversion: 5.0.0
