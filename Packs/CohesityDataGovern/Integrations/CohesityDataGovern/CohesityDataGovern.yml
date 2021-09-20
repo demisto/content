@@ -81,6 +81,26 @@ script:
     - contextPath: CohesityDataGovern.RansomwareAlert
       description: Count of Ransomware alerts
       type: Number
+  - arguments:
+    - default: false
+      description: Anomalous object name to be ignored.
+      isArray: false
+      name: object_name
+      required: false
+    deprecated: false
+    description: Ignore detected anomalous object.
+    execution: false
+    name: cohesity-ignore-anomalous-object
+  - arguments:
+    - default: false
+      description: Anomalous object name to be restored.
+      isArray: false
+      name: object_name
+      required: false
+    deprecated: false
+    description: Restore latest clean snapshot for given object.
+    execution: false
+    name: cohesity-restore-latest-clean-snapshot
   isfetch: true
   runonce: false
   script: '-'

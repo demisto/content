@@ -64,16 +64,20 @@ class Client(BaseClient):
     def get_ransomware_alerts(self, start_time_millis: int):
         """Gets the Cohesity ransomware alerts.
         """
+        # Prepare request params to fetch alerts.
+        request_params = {
+            "maxAlerts": 1000,
+            "alertCategoryList": "kSecurity",
+            "alertStateList": "kOpen",
+            "_includeTenantInfo": True
+        }
+        if start_time_millis > 0:
+            request_params["startDateUsecs"] = start_time_millis
+
         resp = self._http_request(
             method='GET',
             url_suffix='/mcm/alerts',
-            params={
-                "maxAlerts": 1000,
-                "alertCategoryList": "kSecurity",
-                "alertStateList": "kOpen",
-                "_includeTenantInfo": True,
-                "startDateUsecs": start_time_millis
-            }
+            params=request_params
         )
 
         # filter ransomware alerts.
@@ -83,6 +87,28 @@ class Client(BaseClient):
                 ransomware_alerts.append(alert)
 
         return ransomware_alerts
+
+    def suppress_ransomware_alert_by_id(self, alert_id: str):
+        """Gets the Cohesity ransomware alerts.
+        """
+        return self._http_request(
+            method='PATCH',
+            url_suffix='/mcm/alerts/' + alert_id,
+            json_data={"status": "kSuppressed"}
+        )
+
+    def restore_vm_object(self, cluster_id, payload):
+        """Posts recover vm object details to Helios.
+        """
+        client_headers = self._headers.copy()
+        client_headers['clusterid'] = cluster_id
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/irisservices/api/v1/public/restore/recover',
+            json_data=payload,
+            headers=client_headers
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -125,7 +151,7 @@ def _get_property_dict(property_list):
 # Helper method to create wide-access incident from alert.
 def create_wide_access_incident(alert) -> Dict[str, Any]:
     occurance_time = get_date_time_from_millis(
-        alert.get("incidenceTimeMsecs")).isoformat()[:-3] + 'Z'
+        alert.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
 
     return {
         "name": "wide-access-incident",
@@ -140,7 +166,7 @@ def create_wide_access_incident(alert) -> Dict[str, Any]:
 def create_ransomware_incident(alert) -> Dict[str, Any]:
     property_dict = _get_property_dict(alert['propertyList'])
     occurance_time = get_date_time_from_millis(
-        alert.get("incidenceTimeMsecs")).isoformat()[:-3] + 'Z'
+        alert.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
 
     return {
         "name": alert['alertDocument']['alertName'],
@@ -149,7 +175,7 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
         "rawJSON": json.dumps(alert)
     }
 
-# Helper method to create ransomware incident from alert.
+# Helper method to refactor ransomware incident.
 
 
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
@@ -164,7 +190,7 @@ def parse_ransomware_alert(alert) -> Dict[str, Any]:
         property_dict.get('cid', '')
 
     return {
-        "alert_id": alert['alertDocument']['alertId'],
+        "alert_id": alert['id'],
         "description": "Anomalous object from Cohesity"
         " Helios. The object is under source \'"
         + property_dict.get("source", "")
@@ -227,7 +253,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     for raw_incidence in raw_incidences:
         occurance_time = get_date_time_from_millis(
-            raw_incidence.get("incidenceTimeMsecs")).strftime("%m/%d/%Y, %H:%M:%S")
+            raw_incidence.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
 
         incidence = {
             "id": raw_incidence.get("id"),
@@ -271,6 +297,71 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='alert_id',
         outputs=incidences,
     )
+
+
+def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> str:
+    """ignore_ransomware_anomaly_command: Ignore detected anomalous object on Helios.
+    """
+    # Filter ransomware alert for given object name.
+    alert_id = ''
+    object_name = args.get('object_name')
+
+    resp = client.get_ransomware_alerts(-1)
+    for alert in resp:
+        property_dict = _get_property_dict(alert['propertyList'])
+        if property_dict.get('object', "") == object_name:
+            alert_id = alert['id']
+
+    if alert_id == '':
+        raise ValueError('No anomalous object found by given name')
+
+    return str(client.suppress_ransomware_alert_by_id(alert_id))
+
+
+def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """restore_latest_clean_snapshot: Restore latest clean snapshot of given object.
+    """
+    # Filter ransomware alert for given object name.
+    alert_id = ''
+    restore_properties = {}
+    object_name = args.get('object_name')
+
+    resp = client.get_ransomware_alerts(-1)
+    for alert in resp:
+        if alert['severity'] == 'kCritical' and alert['alertState'] == 'kOpen':
+            restore_properties = _get_property_dict(alert['propertyList'])
+            if restore_properties.get('object', "") == object_name:
+                alert_id = alert['id']
+                break
+
+    if alert_id == '':
+        raise ValueError('No anomalous object found by given name')
+
+    # Prepare restore vm properties.
+    request_payload = {
+        "name": "Cisco_SecureX_triggered_restore_task_" + restore_properties["object"],
+        "type": "kRecoverVMs",
+        "vmwareParameters": {
+            "poweredOn": True,
+            "prefix": "Recover-",
+            "suffix": "-VM-" + str(get_current_date_time())
+        },
+        "objects": [
+            {
+                "jobId": int(restore_properties["jobId"]),
+                "jobRunId": int(restore_properties["jobInstanceId"]),
+                "startedTimeUsecs": int(restore_properties["jobStartTimeUsecs"]),
+                "sourceName": restore_properties["object"],
+                "protectionSourceId": int(restore_properties["entityId"])
+            }
+        ]
+    }
+    cluster_id = restore_properties['cid']
+
+    # Post restore request to helios
+    resp = client.restore_vm_object(cluster_id, request_payload)
+
+    return str(resp)
 
 
 def fetch_incidents_command(client: Client, args: Dict[str, Any]):
@@ -373,7 +464,8 @@ def main() -> None:
     try:
         # Prepare client and set authentication headers.
         headers: Dict = {
-            'apikey': api_key
+            'apikey': api_key,
+            'Content-Type': 'application/json',
         }
         client = Client(
             base_url=base_url,
@@ -391,6 +483,12 @@ def main() -> None:
 
         elif demisto.command() == 'cohesity-get-ransomware-alerts':
             return_results(get_ransomware_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'cohesity-ignore-anomalous-object':
+            return_results(ignore_ransomware_anomaly_command(client, demisto.args()))
+
+        elif demisto.command() == 'cohesity-restore-latest-clean-snapshot':
+            return_results(restore_latest_clean_snapshot(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
             return_results(fetch_incidents_command(client, demisto.args()))
