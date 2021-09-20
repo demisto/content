@@ -16,12 +16,10 @@ Please make sure you look at the integration source code and comments.
 | Classifier| Classifier for incident|False|
 | IncidentType | Incident type | False |
 | Mapper | Mapping incoming data|False|
-| fetch_incident_command | Fetch Incident Command | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | first_fetch | First fetch time | False |
 | max_fetch | Maximum number of incidents per fetch | False |
-| fetch_incident_cases | Fetch Incident Cases | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
