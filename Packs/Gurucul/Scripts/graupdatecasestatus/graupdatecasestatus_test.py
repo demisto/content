@@ -12,6 +12,7 @@ _INCIDENT = {
     ]
 }
 
+
 def test_gra_update_case_status(monkeypatch, mocker):
     """
     Scenario: This script executes the 'gra-case-action' command to resolve case status as closed.

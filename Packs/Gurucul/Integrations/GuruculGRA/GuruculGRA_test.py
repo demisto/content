@@ -625,4 +625,3 @@ def test_gra_analytical_features_entity_value(requests_mock):
     assert response.outputs == mock_response_array
     assert response.outputs_prefix == 'Gra.Analytical.Features.Entity.Value'
     assert response.outputs_key_field == 'entityID'
-
