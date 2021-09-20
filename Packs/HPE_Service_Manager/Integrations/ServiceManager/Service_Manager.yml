@@ -1316,8 +1316,6 @@ script:
     - description: Who created/opened the service request
       name: contactname
       required: true
-    description: Creates a new service request
-    name: hpsm-create-request
     outputs:
     - contextPath: HPSM.ServiceRequest.ContactName
       description: Incident contact details
@@ -1327,6 +1325,7 @@ script:
       description: Who created/opened the service request
     - contextPath: HPSM.ServiceRequest.Title
       description: Incident title
+    description: Creates a new service request
   runonce: false
 sourcemoduleid: Service Manager
 fromversion: 5.0.0
