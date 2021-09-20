@@ -31,8 +31,12 @@ else:
 
 SEARCH_DEVICE_USING_IP = "(select (*) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(ip)
 SEARCH_DEVICE_USING_DEVICE = "(select (*) (from device (where device ( eq name (string {0})))))".format(device)
-SEARCH_COMPLIANCE_PACKAGE_DEVICE = "(select ((device (*)) (package (*))) (from (device package) (with package (where package (eq name (pattern '*{0}*'))) (where device (eq name (pattern '{1}'))))) (limit 100))".format(package, device)
+SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from (device package)
+(with package (where package (eq name (pattern '*{0}*')))
+(where device (eq name (pattern '{1}')))))
+(limit 100))""".format(package, device)
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
+
 
 def nexthink_request(method, nxql):
     params = demisto.params()
