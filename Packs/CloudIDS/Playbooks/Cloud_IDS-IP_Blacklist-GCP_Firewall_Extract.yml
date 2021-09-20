@@ -1,6 +1,5 @@
-id: 7e46b2e2-79d5-43e9-8e18-8991d5f42222
-version: 12
-vcShouldKeepItemLegacyProdMachine: false
+id: Cloud IDS-IP Blacklist-GCP Firewall_Extract
+version: -1
 name: Cloud IDS-IP Blacklist-GCP Firewall_Extract
 description: Get Source IP
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -31,8 +31,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 7a1e8bf0-88a2-4633-8273-d3722a190768
@@ -44,6 +42,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -57,8 +56,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 2cd3490c-4a7f-488b-8f8f-04acf3bab28c
@@ -91,8 +88,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -113,7 +108,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -121,13 +116,15 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
-sourceplaybookid: Cloud IDS-IP Blacklist-GCP Firewall
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
