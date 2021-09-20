@@ -97,6 +97,16 @@ class Client(BaseClient):
             json_data={"status": "kSuppressed"}
         )
 
+    # Method to resolve a ransomware alert by its id.
+    def resolve_ransomware_alert_by_id(self, alert_id: str):
+        """Gets the Cohesity ransomware alerts.
+        """
+        return self._http_request(
+            method='PATCH',
+            url_suffix='/mcm/alerts/' + alert_id,
+            json_data={"status": "kResolved"}
+        )
+
     def restore_vm_object(self, cluster_id, payload):
         """Posts recover vm object details to Helios.
         """
@@ -107,7 +117,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/irisservices/api/v1/public/restore/recover',
             json_data=payload,
-            headers=client_headers
+            headers=client_headers,
+            ok_codes=(200)
         )
 
 
@@ -360,6 +371,9 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
 
     # Post restore request to helios
     resp = client.restore_vm_object(cluster_id, request_payload)
+
+    # Resolve ransomware alert.
+    client.resolve_ransomware_alert_by_id(alert_id)
 
     return str(resp)
 
