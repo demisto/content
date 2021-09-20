@@ -52,7 +52,7 @@ tags:
 - ip
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.4.2245
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
