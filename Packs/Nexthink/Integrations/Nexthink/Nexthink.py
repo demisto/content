@@ -29,14 +29,10 @@ if 'package' in args:
 else:
     package = None
 
-SEARCH_DEVICE_USING_IP = "(select (name antispyware_name antispyware_rtp antispyware_up_to_date antivirus_name antivirus_rtp antivirus_up_to_date ip_addresses last_logged_on_user last_ip_address last_local_ip_address mac_addresses) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(
-    ip)
-SEARCH_DEVICE_USING_DEVICE = "(select (name antispyware_name antispyware_rtp antispyware_up_to_date antivirus_name antivirus_rtp antivirus_up_to_date ip_addresses last_logged_on_user last_ip_address last_local_ip_address mac_addresses) (from device (where device ( eq name (string {0})))))".format(
-    device)
-SEARCH_COMPLIANCE_PACKAGE_DEVICE = "(select ((device (name ip_addresses mac_addresses last_logged_on_user)) (package (name version publisher))) (from (device package) (with package (where package (eq name (pattern '*{0}*'))) (where device (eq name (pattern '{1}'))))) (limit 100))".format(
-    package, device)
+SEARCH_DEVICE_USING_IP = "(select (*) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(ip)
+SEARCH_DEVICE_USING_DEVICE = "(select (*) (from device (where device ( eq name (string {0})))))".format(device)
+SEARCH_COMPLIANCE_PACKAGE_DEVICE = "(select ((device (*)) (package (*))) (from (device package) (with package (where package (eq name (pattern '*{0}*'))) (where device (eq name (pattern '{1}'))))) (limit 100))".format(package, device)
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
-
 
 def nexthink_request(method, nxql):
     params = demisto.params()
@@ -114,7 +110,6 @@ def nexthink_installed_packages(device: None, package: None):
         deviceEntry['Last Logged On User'] = data[0]['device/last_logged_on_user']
         deviceEntry['IP Address'] = data[0]['device/ip_addresses'][0]
         deviceEntry['MAC Address'] = data[0]['device/mac_addresses'][0]
-        #deviceEntry['Sofware Details'] = entryList
         deviceList.append(deviceEntry)
         hr = tableToMarkdown('Installed Packages: ', deviceList) + tableToMarkdown('Packages Details: ', entryList)
 
