@@ -4,6 +4,7 @@ When it comes to cybersecurity, prevention is always going to be more effective 
 
 With the development of technology in the Security World, there have been new additions to the toolbox of security teams. Among these tools, SOAR and BAS products' relations are now considered indispensable. Integration between Picus and Cortex XSOAR provides automation into Preventive Security Monitoring and Management workflows. Collaboration With PICUS and XSOAR enhance visibility and traceability in many areas.
 
+![Picus Diagram v1](https://github.com/erdemkm/content/raw/Picus_App/Packs/PicusAutomation/doc_files/Picus_Diagram_v1.png)
 
 ## Run Threats with SLA in Mind
 
