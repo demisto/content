@@ -1,0 +1,3 @@
+!shiftleft-list-apps
+!shiftleft-list-app-findings app_name=shiftleft-java-example
+!shiftleft-list-app-secrets app_name=shiftleft-java-example
