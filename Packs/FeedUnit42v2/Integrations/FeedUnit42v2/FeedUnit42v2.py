@@ -62,7 +62,8 @@ class Client(BaseClient):
             api_key: unit42 API Key.
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
-        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify)
+        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
+                         proxy=argToBoolean(demisto.params().get('proxy') or 'false'))
         self._api_key = api_key
         self._proxies = handle_proxy()
         self.objects_data = {}
@@ -311,6 +312,10 @@ def get_attack_id_and_value_from_name(attack_indicator):
     idx = ind_name.index(':')
     ind_id = ind_name[:idx]
     value = ind_name[idx + 2:]
+
+    if attack_indicator.get('x_mitre_is_subtechnique'):
+        value = attack_indicator.get('x_panw_parent_technique_subtechnique')
+
     return ind_id, value
 
 

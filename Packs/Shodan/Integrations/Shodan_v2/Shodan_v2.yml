@@ -27,20 +27,27 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
+      description: The query for searching the database of banners. The search query
+        supports filtering using the "filter:value" format to narrow your search.
+        For example, the query "apache country:DE" returns Apache web servers located
+        in Germany.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries.
+      description: A CSV list of properties on which to get summary information. The
+        search query supports filtering using the "property:count" format to define
+        the number of facets to return for a property. For example, the query "country:100"
+        returns the top 100 countries.
       isArray: false
       name: facets
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number of the fetched results. Each page contains a maximum of 100 results.
+      description: The page number of the fetched results. Each page contains a maximum
+        of 100 results.
       isArray: false
       name: page
       required: false
@@ -51,13 +58,16 @@ script:
     name: search
     outputs:
     - contextPath: Shodan.Banner.Org
-      description: The name of the organization to which the space of the IP address space for the searched device is assigned.
+      description: The name of the organization to which the space of the IP address
+        space for the searched device is assigned.
       type: String
     - contextPath: Shodan.Banner.Isp
-      description: The Internet Service Provider that provides the organization with the IP address space for the searched device.
+      description: The Internet Service Provider that provides the organization with
+        the IP address space for the searched device.
       type: String
     - contextPath: Shodan.Banner.Transport
-      description: The IP address transport protocol used to fetch the summary information. Can be "UDP" or "TCP".
+      description: The IP address transport protocol used to fetch the summary information.
+        Can be "UDP" or "TCP".
       type: String
     - contextPath: Shodan.Banner.Asn
       description: The Autonomous System Number. For example, "AS4837".
@@ -69,10 +79,13 @@ script:
       description: The port number on which the service is operating.
       type: Number
     - contextPath: Shodan.Banner.Ssl.versions
-      description: The list of SSL versions that are supported by the server. Unsupported versions are prefixed with a "-". For example, ["TLSv1", "-SSLv2"] means that the server supports TLSv1, but does not support SSLv2.
+      description: The list of SSL versions that are supported by the server. Unsupported
+        versions are prefixed with a "-". For example, ["TLSv1", "-SSLv2"] means that
+        the server supports TLSv1, but does not support SSLv2.
       type: String
     - contextPath: Shodan.Banner.Hostnames
-      description: An array of strings containing all of the host names that have been assigned to the IP address for the searched device.
+      description: An array of strings containing all of the host names that have
+        been assigned to the IP address for the searched device.
       type: String
     - contextPath: Shodan.Banner.Location.City
       description: The city in which the searched device is located.
@@ -87,10 +100,14 @@ script:
       description: The country in which the searched device is located.
       type: String
     - contextPath: Shodan.Banner.Timestamp
-      description: The timestamp in UTC format indicating when the banner was fetched from the searched device.
+      description: The timestamp in UTC format indicating when the banner was fetched
+        from the searched device.
       type: Date
     - contextPath: Shodan.Banner.Domains
-      description: An array of strings containing the top-level domains for the host names of the searched device. It is a utility property for filtering by a top-level domain instead of a subdomain. It supports handling global top-level domains that have several dots in the domain. For example, "co.uk".
+      description: An array of strings containing the top-level domains for the host
+        names of the searched device. It is a utility property for filtering by a
+        top-level domain instead of a subdomain. It supports handling global top-level
+        domains that have several dots in the domain. For example, "co.uk".
       type: String
     - contextPath: Shodan.Banner.OS
       description: The operating system that powers the searched device.
@@ -103,7 +120,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns all services that have been found on the IP address of the searched host.
+    description: Returns all services that have been found on the IP address of the
+      searched host.
     execution: false
     name: ip
     outputs:
@@ -132,19 +150,22 @@ script:
       description: The latitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.IP.Org
-      description: The name of the organization to which the IP space for the searched device is assigned.
+      description: The name of the organization to which the IP space for the searched
+        device is assigned.
       type: String
     - contextPath: Shodan.IP.ASN
       description: The Autonomous System Number. For example, "AS4837".
       type: String
     - contextPath: Shodan.IP.ISP
-      description: The Internet Service Provider that provides the organization with the IP space for the searched device.
+      description: The Internet Service Provider that provides the organization with
+        the IP space for the searched device.
       type: String
     - contextPath: Shodan.IP.Longitude
       description: The longitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.IP.LastUpdate
-      description: The timestamp in UTC format indicating when the banner was fetched from the searched device.
+      description: The timestamp in UTC format indicating when the banner was fetched
+        from the searched device.
       type: Date
     - contextPath: Shodan.IP.CountryName
       description: The country in which the searched device is located.
@@ -158,15 +179,32 @@ script:
     - contextPath: Shodan.IP.Address
       description: The IP address of the host as a string.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score according to the vendor.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor name.
+      type: String
   - arguments:
     - default: false
-      description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
+      description: The query for searching the database of banners. The search query
+        supports filtering using the "filter:value" format to narrow your search.
+        For example, the query "apache country:DE" returns Apache web servers located
+        in Germany.
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Returns the total number of results that match only the specified query or facet settings. This command does not return host results. This command does not consume query credits.
+    description: Returns the total number of results that match only the specified
+      query or facet settings. This command does not return host results. This command
+      does not consume query credits.
     execution: false
     name: shodan-search-count
     outputs:
@@ -175,7 +213,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A CSV list of IP addresses or netblocks for Shodan to crawl defined in CIDR notation.
+      description: A CSV list of IP addresses or netblocks for Shodan to crawl defined
+        in CIDR notation.
       isArray: false
       name: ips
       required: true
@@ -220,7 +259,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks the progress of a previously submitted scan request on the specified port and protocol.
+    description: Checks the progress of a previously submitted scan request on the
+      specified port and protocol.
     execution: false
     name: shodan-scan-status
     outputs:
@@ -250,7 +290,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a network alert for a defined IP address or netblock used for subscribing to changes or events that are discovered within the netblock's range.
+    description: Creates a network alert for a defined IP address or netblock used
+      for subscribing to changes or events that are discovered within the netblock's
+      range.
     execution: false
     name: shodan-create-network-alert
     outputs:
@@ -258,7 +300,8 @@ script:
       description: The ID of the subscription of the specified network alert.
       type: String
     - contextPath: Shodan.Alert.Expires
-      description: The number of seconds that the specified network alert remains active.
+      description: The number of seconds that the specified network alert remains
+        active.
       type: String
   - arguments:
     - default: false
@@ -314,7 +357,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enables receiving notifications for network alerts that are set off by the specified triggers.
+    description: Enables receiving notifications for network alerts that are set off
+      by the specified triggers.
     execution: false
     name: shodan-network-alert-set-trigger
   - arguments:
@@ -331,7 +375,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables receiving notifications for network alerts that are set off by the specified triggers.
+    description: Disables receiving notifications for network alerts that are set
+      off by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-trigger
   - arguments:
@@ -354,7 +399,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Ignores the specified services for network alerts that are set off by the specified triggers.
+    description: Ignores the specified services for network alerts that are set off
+      by the specified triggers.
     execution: false
     name: shodan-network-alert-whitelist-service
   - arguments:
@@ -377,15 +423,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
+    description: Resumes receiving notifications for network alerts that are set off
+      by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.8.3.9324
-  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 tests:
-- "Test-Shodan_v2"
+- Test-Shodan_v2
 fromversion: 5.0.0

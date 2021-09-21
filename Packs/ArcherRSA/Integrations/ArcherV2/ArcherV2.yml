@@ -3,9 +3,16 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/rsaarcher/)
+- display: Server URL (e.g., https://192.168.0.1/)
   name: url
   required: true
+  type: 0
+- display: "Advanced: API Endpoint"
+  hidden: false
+  name: api_endpoint
+  required: false
+  additionalinfo: Change only if you have other API Endpoint.
+  defaultvalue: "rsaarcher/api"
   type: 0
 - display: Instance name
   hidden: false
@@ -215,7 +222,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to create the record. If empty, the command will take the first level as default.
+      description: The Level ID to use to create the record. If empty, the command
+        will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -260,7 +268,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use to update the record. If empty, the command will take the first level as default.
+      description: The Level ID to use to update the record. If empty, the command
+        will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -525,7 +534,8 @@ script:
       - "false"
       description: Whether to order by descending order.
     - default: false
-      description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command will take the first level as default.
+      description: The Level ID to use for searching. This argument is relevant when
+        fullData is True. If empty, the command will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -566,7 +576,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

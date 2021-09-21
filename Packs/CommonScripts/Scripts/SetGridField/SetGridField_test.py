@@ -89,9 +89,13 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     ).to_dict()
 
 
+very_long_column_name = 11 * "column_name_OF_LEN_264__"
+
+
 @pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
                          argvalues=[
-                             (["name", "value"], ["col1", "col2"], False, 'context_entry_list_missing_key.json',
+                             (["name", "value"], ["col!@#$%^&*()ע_1", very_long_column_name], False,
+                              'context_entry_list_missing_key.json',
                               'expected_list_grid_none_value.json')
                          ])
 def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str], unpack_nested_elements: bool,

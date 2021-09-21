@@ -72,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1690
+          "x": 1420,
+          "y": 760
         }
       }
   "10":
@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
-          "y": 850
+          "x": -170,
+          "y": 410
         }
       }
   "12":
@@ -162,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1810
+          "x": 1420,
+          "y": 920
         }
       }
   "13":
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 2070
+          "x": 1210,
+          "y": 1090
         }
       }
   "14":
@@ -222,8 +222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2320
+          "x": 1830,
+          "y": 1270
         }
       }
   "15":
@@ -278,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": -865
+          "x": 1420,
+          "y": -910
         }
       }
   "16":
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -500
+          "x": 1120,
+          "y": -740
         }
       }
   "20":
@@ -394,8 +394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -130
+          "x": 1120,
+          "y": -410
         }
       }
   "23":
@@ -442,8 +442,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 70
+          "x": 1120,
+          "y": -240
         }
       }
   "24":
@@ -481,8 +481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 490
+          "x": 800,
+          "y": 80
         }
       }
   "25":
@@ -511,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 330
+          "x": 1120,
+          "y": -60
         }
       }
   "26":
@@ -550,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
-          "y": 510
+          "x": 70,
+          "y": 80
         }
       }
   "27":
@@ -578,8 +578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
-          "y": 690
+          "x": -170,
+          "y": 250
         }
       }
   "28":
@@ -606,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 680
+          "x": 630,
+          "y": 250
         }
       }
   "29":
@@ -634,8 +634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 690
+          "x": 1420,
+          "y": 80
         }
       }
   "30":
@@ -679,8 +679,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -310
+          "x": 1120,
+          "y": -590
         }
       }
   "31":
@@ -713,8 +713,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''gcp'' and cloud.service = ''Google
-                    Cloud DNS'' and json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND
+                    cloud.service = ''Google Cloud DNS'' AND api.name = ''gcloud-dns-managed-zone''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -729,31 +730,36 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 2db56794-0219-4474-8ceb-5a3f7b8482f5
+      id: 32767fe7-d8ea-422b-8bed-c3327a805dc7
       iscommand: true
       name: Search Zone Name in Google Cloud DNS
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 2db56794-0219-4474-8ceb-5a3f7b8482f5
+    taskid: 32767fe7-d8ea-422b-8bed-c3327a805dc7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": 1080
+          "x": -170,
+          "y": 590
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_14_#default#": 0.29,
+      "15_14_#default#": 0.16,
+      "24_7_#default#": 0.43,
+      "26_7_#default#": 0.22
+    },
     "paper": {
       "dimensions": {
-        "height": 3595,
-        "width": 2990,
-        "x": -780,
+        "height": 2545,
+        "width": 2380,
+        "x": -170,
         "y": -1210
       }
     }

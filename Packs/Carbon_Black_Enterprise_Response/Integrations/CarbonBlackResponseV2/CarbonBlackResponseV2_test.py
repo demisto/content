@@ -49,6 +49,33 @@ def test_create_query_string(params, empty, expected_results):
     assert query_string == expected_results
 
 
+QUERY_STRING_ADD_CASES = [
+    (
+        'chrome.exe',  # one param in query
+        {'test': 'example'},  # adding param
+        '(chrome.exe) AND test:example'  # expected
+    ),
+    (
+        '',  # no query
+        {'test': 'example'},  # adding param
+        'test:example'  # expected
+    ),
+    (
+        'chrome.exe',  # one param in query
+        {},  # adding empty param
+        'chrome.exe'  # expected
+    ),
+
+]
+
+
+@pytest.mark.parametrize('query, params, expected_results', QUERY_STRING_ADD_CASES)
+def test_add_to_current_query(query, params, expected_results):
+    from CarbonBlackResponseV2 import _add_to_current_query
+    query_string = _add_to_current_query(query, params)
+    assert query_string == expected_results
+
+
 QUERY_STRING_CASES_FAILS = [
     (
         {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'}, False,  # case both query and params
@@ -305,7 +332,8 @@ def test_fetch_incidents(mocker):
     client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
     mocker.patch.object(Client, 'get_alerts', return_value=alerts)
     first_fetch_time = '7 days'
-    last_fetch, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time=first_fetch_time, max_results='3')
+    last_fetch, incidents = fetch_incidents(client, last_run=last_run, first_fetch_time=first_fetch_time,
+                                            max_results='3')
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Carbon Black EDR: 2 svchost.exe'
-    assert last_fetch == {'last_fetch': 1615648046}
+    assert last_fetch == {'last_fetch': 1615648046.79}
