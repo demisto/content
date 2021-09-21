@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Dict, Optional, Any, Union
+from typing import Dict, Optional, Any
 
 
 class Client:
@@ -128,8 +128,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = int(arg_to_number(args.get('limit', 50)))
-    page = int(arg_to_number(args.get('page', 1)))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
@@ -222,8 +222,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = int(arg_to_number(args.get('limit', 50)))
-    page = int(arg_to_number(args.get('page', 1)))
+    limit = int(args.get('limit', 50))
+    page = int(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
@@ -292,7 +292,6 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
                      'detectionTimingType', 'lastUpdatedDateTime', 'location']
 
     outputs = {key: raw_response.get('key') for key in raw_response if key in table_headers}
-
 
     readable_output = tableToMarkdown(name=f'Found Risk Detection with ID: '
                                            f'{raw_response.get("id")}',
