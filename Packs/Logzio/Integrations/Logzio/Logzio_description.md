@@ -27,3 +27,6 @@ If incident fetching is enabled, the integration runs a command to import new Lo
 8. **Max. number of incidents fetched per run** - The maximum number of incidents returned per query is configurable, but capped at 50.  
 
   
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/logzio)

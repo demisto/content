@@ -72,9 +72,10 @@ class TestLogzio:
         search = "Test"
         severities = ["HIGH", "MEDIUM"]
         first_fetch_time = '1 hours'
+        filter_tags = None
 
         # First fetch checks
-        inc, next_run = Logzio.fetch_incidents(client, {}, search, severities, first_fetch_time)
+        inc, next_run = Logzio.fetch_incidents(client, {}, search, severities, first_fetch_time, filter_tags)
         request_body = requests_mock.request_history[0].json()
 
         assert "searchTerm" in request_body["filter"]
@@ -93,7 +94,7 @@ class TestLogzio:
         # Second fetch checks
         requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
                            json=TRIGGERED_RULES_EMPTY_RESPONSE_BODY)
-        inc, next_run2 = Logzio.fetch_incidents(client, next_run, search, severities, first_fetch_time)
+        inc, next_run2 = Logzio.fetch_incidents(client, next_run, search, severities, first_fetch_time, filter_tags)
 
         assert len(inc) == 0
         assert next_run == next_run2

@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-import urllib3
 import json
-import dateparser
 import time
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -199,7 +199,7 @@ def get_rule_logs_by_id_command(client, args):
     return_outputs(readable, context, resp)
 
 
-def fetch_incidents(client, last_run, search, severities, first_fetch_time):
+def fetch_incidents(client, last_run, search, severities, first_fetch_time, filter_tags):
     if client.security_api_token is None:
         raise Exception("Security API Token wasn't provided, cannot fetch incidents")
     incidents = []
@@ -211,7 +211,21 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
     raw_events = client.fetch_triggered_rules(search=search, severities=severities,
                                               start_time=start_query_time)
-    for event in raw_events.get("results", []):
+
+    # Filter events if any of the filter tags are in an event
+    tag_filtered_events = []
+    if filter_tags:
+        for event in raw_events.get("results", []):
+            if event.get("tags") is None:
+                continue
+            for i in filter_tags:
+                if i.lower() in [x.lower() for x in event.get("tags")]:
+                    tag_filtered_events.append(event)
+                    break
+    else:
+        tag_filtered_events = raw_events.get("results", [])
+
+    for event in tag_filtered_events:
         if "groupBy" in event:
             for field in event["groupBy"]:
                 event[field] = event["groupBy"][field]
@@ -247,6 +261,9 @@ def main():
                              ' Logz.io Security API token, or both.')
         region = demisto.params().get('region')
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
+        filter_tags = demisto.params().get('tags', None)
+        if filter_tags:
+            filter_tags = filter_tags.split(",")
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
         max_fetch = demisto.params().get('fetch_count', DEFAULT_LIMIT)
@@ -270,6 +287,7 @@ def main():
                 first_fetch_time=first_fetch_time,
                 search=search,
                 severities=severities,
+                filter_tags=filter_tags,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
