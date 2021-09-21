@@ -389,13 +389,13 @@ def translate_severity(alert):
     return 0
 
 
-def get_rql_response():
+def get_rql_response(args):
     """"
     Retrieve any RQL
     """
-    rql = demisto.getArg('rql').encode("utf-8")
+    rql = args.get('rql').encode("utf-8")
 
-    limit = demisto.args().get('limit', '1')
+    limit = str(args.get('limit', '1'))
     rql += " limit search records to {}".format(limit)
 
     payload = {"query": rql, "filter": {}}
@@ -510,13 +510,13 @@ def redlock_search_config():
         demisto.results('No results found')
     else:
         items = response['data']['items']
-        MD = tableToMarkdown("Configuration Details", items)
+        md = tableToMarkdown("Configuration Details", items)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': items,
             'EntryContext': {'Redlock.Asset(val.id == obj.id)': items},
-            'HumanReadable': MD
+            'HumanReadable': md
         })
 
 
@@ -542,7 +542,9 @@ def fetch_incidents():
     if demisto.getParam('policySeverity'):
         payload['filters'].append({'name': 'policy.severity', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policySeverity')})
-
+    if demisto.getParam('policyName'):
+        payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
@@ -583,7 +585,7 @@ def main():
         elif command == 'redlock-get-remediation-details':
             get_remediation_details()
         elif command == 'redlock-get-rql-response':
-            get_rql_response()
+            get_rql_response(demisto.args())
         elif command == 'redlock-search-config':
             redlock_search_config()
         elif command == 'fetch-incidents':
@@ -593,6 +595,7 @@ def main():
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 

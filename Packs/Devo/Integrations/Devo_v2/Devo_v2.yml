@@ -11,6 +11,11 @@ configuration:
   defaultvalue: https://apiv2-us.devo.com/search/query
   type: 0
   required: true
+- display: Port (e.g. 443)
+  name: port
+  defaultvalue: 443
+  type: 0
+  required: false
 - display: OAuth Token (Preferred method)
   name: reader_oauth_token
   defaultvalue: ""

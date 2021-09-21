@@ -478,7 +478,51 @@ script:
         keys. It is recommended to run the command once to check the relevant outputs
         in context.
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.21272
+  - name: darktrace-get-breach-details
+    arguments:
+    - name: pbid
+      required: true
+      description: Darktrace modelbreach ID
+    - name: endtime
+      description: End time of data to return in millisecond format, relative to midnight January 1st 1970 UTC
+    - name: count
+      defaultValue: "100"
+      description: Specifies the maximum number of items to return. Default 100
+    - name: offset
+      defaultValue: "0"
+      description: Offset of starting point for fetching details of the modelbreach
+    description: Retrieve additional details on a modelbreach
+    outputs:
+    - contextPath: Darktrace.ModelBreach
+      description: List of events from the modelbreach and their details. Each event might have different
+        keys. It is recommended to run the command once to check the relevant outputs
+        in context
+      type: Unknown  
+  - name: darktrace-get-model
+    arguments:
+    - name: uuid
+      required: true
+      description:  All models have a uuid and a pid. The uuid (universally unique identifier) is a 128-bit hexadecimal number
+    description: Get the details of a model given the UUID
+    outputs:
+    - contextPath: Darktrace.Model
+      description: A dictionary of the details of the model. Each model might have different
+        keys. It is recommended to run the command once to check the relevant outputs
+        in context
+      type: Unknown
+  - name: darktrace-get-component
+    arguments:
+    - name: cid
+      required: true
+      description: ID of the component. The cid is referenced in the data attribute for model breaches.
+    description: Get details of a component given the CID
+    outputs:
+    - contextPath: Darktrace.Component
+      description:  A dictionary of the details of the model. Each model might have different
+        keys. It is recommended to run the command once to check the relevant outputs
+        in context
+      type: Unknown
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

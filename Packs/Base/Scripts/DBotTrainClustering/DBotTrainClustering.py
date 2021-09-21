@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
 import hdbscan
 from datetime import datetime
-from typing import Type, Tuple
+from typing import Type, Tuple, Dict, List, Union
 import math
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
@@ -554,6 +554,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     clustering = model_processed.clustering
     data = {}  # type: ignore
     data['data'] = []
+    fields_for_clustering_remove_display = [x for x in fields_for_clustering if x not in display_fields]
     for cluster_number, coordinates in clustering.centers_2d.items():
         if cluster_number not in model_processed.selected_clusters.keys():
             continue
@@ -566,7 +567,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
              'incidents': incidents_df[clustering.model.labels_ == cluster_number]  # type: ignore
-             [display_fields + fields_for_clustering].to_json(  # type: ignore
+             [display_fields + fields_for_clustering_remove_display].to_json(  # type: ignore
                  orient='records'),  # type: ignore
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}

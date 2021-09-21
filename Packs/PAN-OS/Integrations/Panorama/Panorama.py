@@ -1,12 +1,14 @@
 import shutil
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple, Union
-import uuid
 import json
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import requests
 
 # disable insecure warnings
@@ -286,44 +288,52 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
-                                 profile_setting: str = None) -> Dict:
+                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
 
     # flake8: noqa
-    rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
+    rulename = rulename if rulename else f'demisto-{str(uuid.uuid4())[:8]}'
     params = {
         'type': 'config',
         'action': api_action,
         'key': API_KEY,
+        'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
+    if dst:
+        if where not in ('before', 'after'):
+            raise DemistoException('Please provide a dst rule only when the where argument is before or after.')
+        else:
+            params['dst'] = dst
+
     if DEVICE_GROUP:
         if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when configuring'
-                            ' a security rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when configuring '
+                            'a security rule in Panorama instance.')
         else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
+
     return params
 
 
@@ -1246,8 +1256,8 @@ def panorama_edit_address_group_command(args: dict):
     """
     Edit an address group
     """
-    address_group_name = args['name']
-    type_ = args['type']
+    address_group_name = args.get('name', '')
+    type_ = args.get('type', '').lower()
     match = args.get('match')
     element_to_add = argToList(args['element_to_add']) if 'element_to_add' in args else None
     element_to_remove = argToList(
@@ -1257,7 +1267,7 @@ def panorama_edit_address_group_command(args: dict):
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
-        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
+        match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -1273,7 +1283,7 @@ def panorama_edit_address_group_command(args: dict):
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
         addresses_param = add_argument_list(addresses, 'member', False)
-        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static"
+        addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -1313,7 +1323,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if description:
         description_param = add_argument_open(description, 'description', False)
-        description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description"
+        description_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/description"
         params['xpath'] = description_path
         params['element'] = description_param
         result = http_request(
@@ -1325,7 +1335,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if tags:
         tag_param = add_argument_list(tags, 'tag', True)
-        tag_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/tag"
+        tag_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/tag"
         params['xpath'] = tag_path
         params['element'] = tag_param
         result = http_request(
@@ -1965,15 +1975,15 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     element = add_argument(description, 'description', False)
     if major_version <= 8:
         if type_ or categories:
-            raise Exception('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+            raise DemistoException('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
         element += add_argument_list(sites, 'list', True)
     else:  # major is 9.x
         if not type_:
-            raise Exception('The type argument is mandatory for PAN-OS 9.x versions.')
+            raise DemistoException('The type argument is mandatory for PAN-OS 9.x versions.')
         if (not sites and not categories) or (sites and categories):
-            raise Exception('Exactly one of the sites and categories arguments should be defined.')
+            raise DemistoException('Exactly one of the sites and categories arguments should be defined.')
         if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
-            raise Exception('URL List type is only for sites, Category Match is only for categories.')
+            raise DemistoException('URL List type is only for sites, Category Match is only for categories.')
 
         if type_ == 'URL List':
             element += add_argument_list(sites, 'list', True)
@@ -1984,7 +1994,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/custom-url-category/entry[@name=\'{custom_url_category_name}\']',
         'element': element,
         'key': API_KEY
     }
@@ -2438,25 +2448,38 @@ def panorama_get_url_filter_command(name: str):
 
 
 @logger
-def panorama_create_url_filter(
+def create_url_filter_params(
         url_filter_name: str, action: str,
         url_category_list: str,
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-
     element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
-
-    params = {
+        add_argument_list(override_allow_list, 'allow-list', True) + \
+        add_argument_list(override_block_list, 'block-list', True) + \
+        add_argument(description, 'description', False)
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
+        element += "<action>block</action>"
+    url_filter_params = {
         'action': 'set',
         'type': 'config',
         'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
         'element': element,
         'key': API_KEY
     }
+    return url_filter_params
+
+
+@logger
+def panorama_create_url_filter(
+        url_filter_name: str, action: str,
+        url_category_list: str,
+        override_allow_list: Optional[str] = None,
+        override_block_list: Optional[str] = None,
+        description: Optional[str] = None):
+    params = create_url_filter_params(url_filter_name, action, url_category_list, override_allow_list,
+                                      override_block_list, description)
 
     result = http_request(
         URL,
@@ -2778,7 +2801,7 @@ def panorama_create_rule_command(args: dict):
     negate_source = args.get('negate_source')
     negate_destination = args.get('negate_destination')
     action = args.get('action')
-    service = args.get('service')
+    service = argToList(args.get('service'))
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
@@ -2789,6 +2812,8 @@ def panorama_create_rule_command(args: dict):
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
     profile_setting = args.get('profile_setting')
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -2803,7 +2828,8 @@ def panorama_create_rule_command(args: dict):
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting,
+                                          where=where, dst=dst)
     result = http_request(
         URL,
         'POST',
@@ -2877,7 +2903,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/' + element_to_change
+    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
@@ -3021,6 +3047,8 @@ def panorama_custom_block_rule_command(args: dict):
     target = argToList(args.get('target')) if 'target' in args else None
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -3046,12 +3074,12 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['IP'] = object_value
 
@@ -3059,26 +3087,26 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
 
@@ -3662,18 +3690,21 @@ def panorama_refresh_edl_command(args: dict):
 
 
 @logger
-def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int):
     entry: str = ''
     for ip in ips:
-        entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
+        if timeout:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}' \
+                     f'</member></tag></entry>'
+        else:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry
-               + '</register></payload></uid-message>',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
+               f'</register></payload></uid-message>',
         'key': API_KEY
     }
-
     result = http_request(
         URL,
         'POST',
@@ -3687,13 +3718,21 @@ def panorama_register_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag = args['tag']
-    ips = argToList(args['IPs'])
-
-    persistent = args['persistent'] if 'persistent' in args else 'true'
+    tag: str = args.get('tag', '')
+    ips: list = argToList(args.get('IPs'))
+    persistent = args.get('persistent', 'true')
     persistent = '1' if persistent == 'true' else '0'
+    # if not given, timeout will be 0 and persistent will be used
+    timeout = int(args.get('timeout', '0'))
 
-    result = panorama_register_ip_tag(tag, ips, str(persistent))
+    major_version = get_pan_os_major_version()
+
+    if timeout and persistent == '1':
+        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
+    if major_version <= 8 and timeout:
+        raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
+
+    result = panorama_register_ip_tag(tag, ips, persistent, timeout)
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent

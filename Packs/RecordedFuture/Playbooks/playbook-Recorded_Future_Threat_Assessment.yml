@@ -384,7 +384,7 @@ tasks:
       stixtoolversion: {}
       subdomains: {}
       tags: {}
-      threatassessment:
+      recordedfuturethreatassessment:
         simple: ${RecordedFuture.Entities.context}
       threattypes: {}
       trafficlightprotocol: {}
