@@ -1,11 +1,15 @@
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 import json
 from datetime import datetime
-from datetime import timedelta
-from typing import cast
+import demistomock as demisto
 
 
-def main():
-    incident = demisto.incidents()[0]
+def _get_incident():
+    return demisto.incidents()[0]
+
+
+def displayAnalyticalFeatures():
+    incident = _get_incident()
     entityValue = ''
     anomalyName = ''
     riskDate = ''
@@ -51,17 +55,27 @@ def main():
                                         analyticalFeatures = analyticalObj[key1]
                                         if analyticalFeatures is not None:
                                             for feature in analyticalFeatures:
-                                                displayData.append({'Anomaly Name': anomalyName, 'Analytical Feature': feature, 'Count': len(
-                                                    analyticalFeatures[feature]), 'Values': analyticalFeatures[feature]})
+                                                displayData.append({'Anomaly Name': anomalyName,
+                                                                    'Analytical Feature': feature,
+                                                                    'Count': len(analyticalFeatures[feature]),
+                                                                    'Values': analyticalFeatures[feature]})
 
         if len(displayData) > 0:
             data = {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['markdown'],
                 'Contents': displayData,
-                'HumanReadable': tableToMarkdown(None, displayData, headers=["Anomaly Name", "Analytical Feature", "Count", "Values"])
+                'HumanReadable': tableToMarkdown(None, displayData, headers=["Anomaly Name",
+                                                                             "Analytical Feature", "Count", "Values"])
             }
             return_results(data)
+
+
+def main():
+    try:
+        displayAnalyticalFeatures()
+    except Exception as ex:
+        return_error(f'Failed to execute gra-analytical-feature-display. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

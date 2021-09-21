@@ -9,12 +9,17 @@ def _get_incident():
 def closeCase():
     incident = _get_incident()
     close_reason = demisto.args().get('closeReason')
-    close_notes = demisto.args().get('closeNotes', 'No close notes provided')
+    close_notes = demisto.args().get('closeNotes')
     message = ""
-    if close_reason is not None:
-        message = "Case marked as \"" + close_reason + "\" with comment \"" + close_notes + "\" from XSOAR"
+
+    if close_reason is not None and close_notes is not None and close_reason != "" and close_notes != "":
+        message = "Case marked as \"" + close_reason + "\" with comment \"" + close_notes + "\" from XSOAR."
+    elif close_notes is not None and close_notes != "":
+        message = "Case closed from XSOAR without any reason and comment: \"" + close_notes + "\"."
+    elif close_reason is not None and close_reason != "":
+        message = "Case marked as \"" + close_reason + "\" from XSOAR without any comment."
     else:
-        message = "Case marked as closed without close_reason from XSOAR"
+        message = "Case closed from XSOAR without any reason / comment."
     _caseId = ""
     for label in incident['labels']:
         if label['type'] == 'caseId':
