@@ -36,14 +36,14 @@ script:
     execution: false
     name: azure-risky-users-auth-complete
   - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
+    description: Run this command whenever you need to rerun the authentication
       process.
     execution: false
     name: azure-risky-users-auth-reset
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Risk State to retrieve. If not specified, all states will be retrieved.
+      description: Specify to only get results with the specified Risk State.
       isArray: false
       name: risk_state
       predefined:
@@ -55,21 +55,21 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to retrieve.
+      description: Limit of results to retrieve. Default value is 50
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number.
+      description: Page number. Default value is 1
       isArray: false
       name: page
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify to get only results with the same Risk Level.
+      description: Specify to only get results with the specified Risk Level.
       isArray: false
       name: risk_level
       predefined:
@@ -110,8 +110,7 @@ script:
       description: Indicates whether the user is deleted.
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.isProcessing
-      description: Indicates whether a user's risky state is being processed by the
-        backend.
+      description: Indicates whether a user's risky state is being processed by the backend.
       type: Boolean
     - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
@@ -170,7 +169,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit of results to retrieve.
+      description: Limit of results to retrieve. Default value is 50
       isArray: false
       name: limit
       predefined:
@@ -179,14 +178,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number.
+      description: Page number. Default value is 1
       isArray: false
       name: page
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Risk State to retrieve. If not specified, all states will be retrieved.
+      description: Specify to only get results with the specified Risk State.
       isArray: false
       name: risk_state
       predefined:
@@ -199,7 +198,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify to get only results with the same Risk Level.
+      description: Specify to only get results with the specified Risk Level.
       isArray: false
       name: risk_level
       predefined:
@@ -209,7 +208,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of the riskDetection objects and their properties.
+    description: Get a list of the Risk Detection objects and their properties.
     execution: false
     name: azure-risky-users-risk-detections-list
     outputs:

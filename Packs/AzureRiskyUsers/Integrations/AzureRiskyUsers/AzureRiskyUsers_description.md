@@ -12,9 +12,9 @@
 
 ---
 
-To connect to the Azure Risky Users using either the Cortex XSOAR Azure application or the Self-Deployed Azure application:
+To connect to the Azure Risky Users platform using either the Cortex XSOAR Azure application or the Self-Deployed Azure application:
 1. Fill in the required parameters.
-2. Make sure to provide the following permissions:
+2. Make sure to provide the following permissions for the app to work with Azure Risky Users:
    - IdentityRiskyUser.Read.All
    - IdentityRiskEvent.ReadWrite.All
    - IdentityRiskyUser.Read.All

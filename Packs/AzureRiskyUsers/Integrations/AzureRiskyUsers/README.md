@@ -1,5 +1,5 @@
 Azure Risky Users provides access to all at-risk users and risk detections in Azure AD environment.
-This integration was integrated and tested with version 1.0 of Microsoft Graph AzureRiskyUsers.
+This integration was integrated and tested with version 1.0 of Microsoft Graph Azure Risky Users.
 ## Authorization
 In order to connect to the Azure Risky Users use either the Cortex XSOAR Azure App or the Self-Deployed Azure App.
 In both options, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
@@ -17,7 +17,6 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 The application must have *IdentityRiskEvent.Read.All* ,
 *IdentityRiskEvent.ReadWrite.All*, *IdentityRiskyUser.Read.All*, *IdentityRiskyUser.ReadWrite.All* and *User.Read* permissions and must allow public client flows (can be found under the **Authentication** section of the app).
-In addition under the **Manifest** section of the app you need to change the key *"allowPublicClient"* from null to true.
 
 
 ## Configure AzureRiskyUsers on Cortex XSOAR
