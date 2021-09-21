@@ -1,0 +1,257 @@
+category: Network Security
+commonfields:
+  id: Picus
+  version: -1
+configuration:
+- display: Picus Manager URL
+  name: picus_server
+  required: true
+  type: 0
+- additionalinfo: The refresh token will be used to generate access token.
+  display: Picus Refresh Token
+  name: picus_apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Run commands on Picus and automate security validation with playbooks.
+display: Picus Security
+name: Picus
+script:
+  commands:
+  - deprecated: false
+    description: Generates an access token for api usage. Looks for X-Refresh-Token
+      on header or refresh-token cookie.
+    execution: false
+    name: Picus_getAccessToken
+  - arguments:
+    - default: false
+      description: Add vectors' assigned user details to the response.
+      isArray: false
+      name: add_user_details
+      required: false
+      secret: false
+    - default: false
+      description: Requested page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Requested data size.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of the vectors all disabled and enabled ones have
+      optional parameters for pagination.
+    execution: false
+    name: Picus_getVectorList
+  - deprecated: false
+    description: Returns the peer list with current statuses.
+    execution: false
+    name: Picus_getPeerList
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: This setting can only be insecure,secure and all.
+      isArray: false
+      name: result
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of the attack results have optional parameters for
+      filtration.
+    execution: false
+    name: Picus_getAttackResults
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    deprecated: false
+    description: Schedules a single attack on requested vector.
+    execution: false
+    name: Picus_runAttacks
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the attack results of a single threat have optional
+      parameters for filtration.
+    execution: false
+    name: Picus_getThreatResults
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: mitigation_product
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Set parameter on playbook. (This command is only used on playbook)
+    execution: false
+    name: Picus_setParamPB
+  - arguments:
+    - default: false
+      description: Threat id and result combine. Used for playbook.
+      isArray: false
+      name: threatinfo
+      required: true
+      secret: false
+    deprecated: false
+    description: Filter insecure attacks on playbook. (This command is only used on
+      playbook)
+    execution: false
+    name: filter-insecure-attacks
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: product
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the mitigations of threats have optional parameters
+      for filtration, this route may not be used associated with your license.
+    execution: false
+    name: Picus_getMitigationList
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Makes a comparison of the given vector's results.
+    execution: false
+    name: Picus_getVectorCompare
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
