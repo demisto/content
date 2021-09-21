@@ -301,6 +301,14 @@ tasks:
                       value:
                         simple: text/rtf
                     ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: message/rfc822
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -431,6 +439,14 @@ tasks:
                 value:
                   simple: text/rtf
               ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: message/rfc822
           accessor: EntryID
           transformers:
           - operator: uniq

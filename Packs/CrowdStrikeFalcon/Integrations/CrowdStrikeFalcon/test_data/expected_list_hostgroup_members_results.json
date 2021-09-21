@@ -1,0 +1,57 @@
+[
+  {
+    "ID": "75b2dba7ba8d450da481ed6830cc9d9d",
+    "ExternalIP": "35.224.136.145",
+    "MacAddress": "42-01-0a-80-00-15",
+    "Hostname": "FALCON-CROWDSTR",
+    "FirstSeen": "2021-08-12T16:13:26Z",
+    "LastSeen": "2021-08-23T04:59:48Z",
+    "LocalIP": "10.128.0.21",
+    "OS": "Windows Server 2019",
+    "Status": "normal"
+  },
+  {
+    "ID": "15dbb9d8f06b45fe9f61eb46e829d986",
+    "ExternalIP": "35.224.136.145",
+    "MacAddress": "42-01-0a-80-00-07",
+    "Hostname": "FALCON-CROWDSTR",
+    "FirstSeen": "2020-02-10T12:40:18Z",
+    "LastSeen": "2021-08-23T11:32:27Z",
+    "LocalIP": "10.128.0.7",
+    "OS": "Windows Server 2019",
+    "Status": "contained"
+  },
+  {
+    "ID": "046761c46ec84f40b27b6f79ce7cd32c",
+    "ExternalIP": "35.224.136.145",
+    "MacAddress": "42-01-0a-80-00-14",
+    "Hostname": "INSTANCE-1",
+    "FirstSeen": "2021-08-23T05:04:41Z",
+    "LastSeen": "2021-08-23T11:16:44Z",
+    "LocalIP": "10.128.0.20",
+    "OS": "Windows Server 2019",
+    "Status": "normal"
+  },
+  {
+    "ID": "07007dd3f95c4d628fb097072bf7f7f3",
+    "ExternalIP": "35.224.136.145",
+    "MacAddress": "42-01-0a-80-00-14",
+    "Hostname": "INSTANCE-1",
+    "FirstSeen": "2021-08-11T13:57:29Z",
+    "LastSeen": "2021-08-23T04:45:37Z",
+    "LocalIP": "10.128.0.20",
+    "OS": "Windows Server 2019",
+    "Status": "normal"
+  },
+  {
+    "ID": "0bde2c4645294245aca522971ccc44c4",
+    "ExternalIP": "35.224.136.145",
+    "MacAddress": "42-01-0a-80-00-13",
+    "Hostname": "falcon-crowdstrike-sensor-centos7",
+    "FirstSeen": "2021-08-08T11:33:21Z",
+    "LastSeen": "2021-08-23T11:14:36Z",
+    "LocalIP": "10.128.0.19",
+    "OS": "CentOS 7.9",
+    "Status": "normal"
+  }
+]

@@ -416,6 +416,32 @@ def test_panorama_security_policy_match_command_no_target():
         panorama_security_policy_match_command(demisto.args())
 
 
+def test_panorama_register_ip_tag_command_wrongful_args(mocker):
+    """
+    Given:
+     - a non valid arguments for the panorama_register_ip_tag_command function
+
+    When:
+     - running the panorama_register_ip_tag_command function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import panorama_register_ip_tag_command
+    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'true', 'timeout': '5'}
+
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    with pytest.raises(DemistoException,
+                       match='When the persistent argument is true, you can not use the timeout argument.'):
+        panorama_register_ip_tag_command(args)
+
+    args['persistent'] = 'false'
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    with pytest.raises(DemistoException,
+                       match='The timeout argument is only applicable on 9.x PAN-OS versions or higher.'):
+        panorama_register_ip_tag_command(args)
+
+
 def test_prettify_matching_rule():
     from Panorama import prettify_matching_rule
     matching_rule = {'action': 'my_action1', '@name': 'very_important_rule', 'source': '6.7.8.9', 'destination': 'any'}
