@@ -11,15 +11,19 @@ def closeCase():
     close_reason = demisto.args().get('closeReason')
     close_notes = demisto.args().get('closeNotes')
     message = ""
+    action = 'closeCase'
+    subOption = 'True Incident'
 
-    if close_reason is not None and close_notes is not None and close_reason != "" and close_notes != "":
-        message = "Case marked as \"" + close_reason + "\" with comment \"" + close_notes + "\" from XSOAR."
-    elif close_notes is not None and close_notes != "":
-        message = "Case closed from XSOAR without any reason and comment: \"" + close_notes + "\"."
-    elif close_reason is not None and close_reason != "":
-        message = "Case marked as \"" + close_reason + "\" from XSOAR without any comment."
-    else:
-        message = "Case closed from XSOAR without any reason / comment."
+    if close_notes is not None and close_notes != "":
+        message = close_notes
+
+    if close_reason is not None and close_reason == "False Positive":
+        action = "modelReviewCase"
+        subOption = "Tuning Required"
+    elif close_reason is not None and close_reason == "Other":
+        action = "modelReviewCase"
+        subOption = "Others"
+
     _caseId = ""
     for label in incident['labels']:
         if label['type'] == 'caseId':
@@ -30,8 +34,8 @@ def closeCase():
         raise Exception('caseId was not found in the incident labels')
 
     demisto.executeCommand('gra-case-action', {
-        'action': 'closeCase',
-        'subOption': 'True Incident',
+        'action': action,
+        'subOption': subOption,
         'caseId': _caseId,
         'caseComment': message
     })
