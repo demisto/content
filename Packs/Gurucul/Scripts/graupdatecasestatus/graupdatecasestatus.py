@@ -9,13 +9,9 @@ def _get_incident():
 def closeCase():
     incident = _get_incident()
     close_reason = demisto.args().get('closeReason')
-    close_notes = demisto.args().get('closeNotes')
-    message = ""
+    close_notes = demisto.args().get('closeNotes','')
     action = 'closeCase'
     subOption = 'True Incident'
-
-    if close_notes is not None and close_notes != "":
-        message = close_notes
 
     if close_reason is not None and close_reason == "False Positive":
         action = "modelReviewCase"
@@ -37,7 +33,7 @@ def closeCase():
         'action': action,
         'subOption': subOption,
         'caseId': _caseId,
-        'caseComment': message
+        'caseComment': close_notes
     })
 
 
