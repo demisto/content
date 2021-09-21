@@ -9,6 +9,9 @@
     "categories": [
         "Vulnerability Management"
     ],
+    "itemPrefix": [
+        "Cohesity"
+    ],
     "tags": [
         "Security"
     ],

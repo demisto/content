@@ -182,8 +182,16 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
 
     return {
         "name": alert['alertDocument']['alertName'],
+        "type": "Cohesity-Ransomware-Incident",
         "event_id": alert.get("id"),
         "occurred": occurance_time,
+        "CustomFields": {
+            "alert_description": alert['alertDocument']['alertDescription'],
+            "alert_cause": alert['alertDocument']['alertCause'],
+            "anomalous_object": property_dict.get('object'),
+            "environment": property_dict.get('environment'),
+            "anomaly_strength": property_dict.get('anomalyStrength')
+        },
         "rawJSON": json.dumps(alert)
     }
 

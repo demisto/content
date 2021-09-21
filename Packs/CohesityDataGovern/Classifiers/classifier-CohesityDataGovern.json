@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Cohesity Ransomware Incident",
+    "description": "",
+    "feed": false,
+    "id": "b28ced57-1175-4ea3-807c-e2ce6c96f6a2",
+    "keyTypeMap": {
+        "CE01516011": "Cohesity Ransomware Incident"
+    },
+    "name": "CohesityDataGovern Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "alertCode"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
