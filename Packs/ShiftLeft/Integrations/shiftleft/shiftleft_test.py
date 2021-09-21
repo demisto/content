@@ -23,7 +23,7 @@ def test_list_app_findings_command(requests_mock):
     )
 
     client = ShiftLeftClient(
-        base_url="https://www.shiftleft.io",
+        base_url="https://www.shiftleft.io",  # disable-secrets-detection
         verify=False,
     )
     args = {

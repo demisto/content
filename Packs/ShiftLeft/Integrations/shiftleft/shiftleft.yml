@@ -75,7 +75,7 @@ script:
     - contextPath: ShiftLeft
       description: API response
     description: List App secrets
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   subtype: python3

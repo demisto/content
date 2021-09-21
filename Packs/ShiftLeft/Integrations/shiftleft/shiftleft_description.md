@@ -15,5 +15,3 @@ With ShiftLeft CORE and Cortex XSOAR, Application Security engineers can run pla
 - Gather application threat intelligence to help prioritize bug fixes
 - Identify and create incidents to rotate secrets discovered in code
 - Proactively monitor applications for critical attacker-reachable vulnerabilities that enter production
-
-To learn more, visit our [website](https://shiftleft.io)

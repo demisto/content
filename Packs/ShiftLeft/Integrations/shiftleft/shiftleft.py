@@ -293,7 +293,7 @@ def main() -> None:
     if not org_id or not access_token:
         return_error("Both organization id and access token must be set")
     # get the service API url
-    base_url = "https://www.shiftleft.io/api/v4"
+    base_url = "https://www.shiftleft.io/api/v4"  # disable-secrets-detection
 
     verify_certificate = True
 
