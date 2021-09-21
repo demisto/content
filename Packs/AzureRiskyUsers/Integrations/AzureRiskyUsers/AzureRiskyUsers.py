@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Dict, List, Optional, Any, Type
+from typing import Dict, Optional, Any, Union
 
 
 class Client:
@@ -148,15 +148,15 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 1))
+    limit = int(arg_to_number(args.get('limit', 50)))
+    page = int(arg_to_number(args.get('page', 1)))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
 
     if page > 1:
         offset = limit * (page - 1)
-        
+
         raw_response = client.risky_users_list_request(risk_state,
                                                        risk_level,
                                                        offset)
@@ -241,15 +241,15 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 1))
+    limit = int(arg_to_number(args.get('limit', 50)))
+    page = int(arg_to_number(args.get('page', 1)))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
     skip_token = None
     readable_message = f'Risk Detections List\nCurrent page size: {limit}\nShowing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
+        offset = limit * (page - 1)
         raw_response = client.risk_detections_list_request(risk_state,
                                                            risk_level,
                                                            offset)
@@ -328,17 +328,17 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
 # Authentication Functions
 
 
-def start_auth(client) -> CommandResults:
+def start_auth(client: Client) -> CommandResults:
     result = client.ms_client.start_auth('!azure-risky-users-auth-complete')
     return CommandResults(readable_output=result)
 
 
-def complete_auth(client) -> str:
+def complete_auth(client: Client) -> str:
     client.ms_client.get_access_token()
     return 'Authorization completed successfully.'
 
 
-def test_connection(client) -> str:
+def test_connection(client: Client) -> str:
     client.ms_client.get_access_token()
     return 'Success!'
 
