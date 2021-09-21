@@ -11,6 +11,8 @@ import time
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
+# flake8: noqa
+
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -116,10 +118,10 @@ def getPeerList():
 def getAttackResults():
     picus_endpoint = "/user-api/v1/attack-results/list"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    picus_attack_results = []
-    tmp_secure_list = []
-    tmp_insecure_list = []
-    tmp_results = []
+    picus_attack_results : List[Any] = []
+    tmp_secure_list: List[Any] = []
+    tmp_insecure_list: List[Any] = []
+    tmp_results: List[Any] = []
     threat_ids = ""
 
     attacker_peer = demisto.args().get('attacker_peer')
@@ -204,7 +206,7 @@ def getAttackResults():
 def runAttacks():
     picus_endpoint = "/user-api/v1/schedule/attack/single"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    picus_attack_results = {"results": []}
+    picus_attack_results : Dict[str,Any] = {"results": []}
     picus_attack_raw_results = ""
 
     threat_ids = demisto.args().get('threat_ids')
@@ -251,7 +253,7 @@ def runAttacks():
 def getThreatResults():
     picus_endpoint = "/user-api/v1/attack-results/threat-specific-latest"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    picus_threat_results = {"results":[]}
+    picus_threat_results : Dict[str,Any] = {"results":[]}
     picus_threat_raw_results = ""
 
     threat_ids = demisto.args().get('threat_ids')
@@ -318,7 +320,7 @@ def filterInsecureAttacks():
 def getMitigationList():
     picus_endpoint = "/user-api/v1/threats/mitigations/list"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    picus_mitigation_results = {"results": []}
+    picus_mitigation_results : Dict[str,Any] = {"results": []}
     threat_ids = demisto.args().get('threat_ids')
     product = [demisto.args().get('product')]
     threat_ids = list(threat_ids.split(","))
@@ -348,7 +350,7 @@ def getMitigationList():
 def getVectorCompare():
     picus_endpoint = "/user-api/v1/attack-results/compare-a-vector"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    all_vector_results = {"results": []}
+    all_vector_results : Dict[str,Any] = {"results": []}
 
     attacker_peer = demisto.args().get('attacker_peer')
     victim_peer = demisto.args().get('victim_peer')
