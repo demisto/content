@@ -1,4 +1,7 @@
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+#from CommonServerPython import *  # noqa: F401
 
 # IMPORTS
 # Disable insecure warnings
@@ -244,10 +247,10 @@ class Client(BaseClient):
 
         for group in raw_groups:
 
-            if group.get('type') == 'DIRECT':
+            if group.get('_embedded', {}).get('group', {}).get('type') == 'DIRECT':
                 grp = {
-                    'ID': group.get('id'),
-                    'Name': group.get('name')
+                    'ID': group.get('_embedded', {}).get('group', {}).get('id'),
+                    'Name': group.get('_embedded', {}).get('group', {}).get('name')
                 }
                 groups.append(grp)
 
@@ -300,8 +303,6 @@ class Client(BaseClient):
             },
             "username": f'{username}'
         }
-
-        demisto.results(body)
 
         res = self._http_request(
             method='POST',
@@ -407,7 +408,7 @@ def add_user_to_group_command(client, args):
         group_id = client.get_group_id(args.get('groupName'))
 
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"User: {user_id} added to group: {raw_response.get('name')} successfully"
+    readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
     return (
         readable_output,
         {},
