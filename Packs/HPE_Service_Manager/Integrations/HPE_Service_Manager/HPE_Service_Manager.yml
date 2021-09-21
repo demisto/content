@@ -1311,16 +1311,16 @@ script:
       required: true
     - description: Who created/opened the service request
       name: callbackcontactname
-    - description: Who created/opened the service request
+    - description: Incident contact details
       name: contactname
       required: true
     outputs:
     - contextPath: HPSM.ServiceRequest.ContactName
-      description: Incident contact details
+      description: Who created/opened the service request
     - contextPath: HPSM.ServiceRequest.ID
       description: The id of the service request
     - contextPath: HPSM.ServiceRequest.CallbackContactName
-      description: Who created/opened the service request
+      description: Incident contact details
     - contextPath: HPSM.ServiceRequest.Title
       description: Incident title
     description: Creates a new service request
