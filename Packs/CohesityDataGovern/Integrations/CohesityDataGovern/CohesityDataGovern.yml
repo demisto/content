@@ -3,7 +3,7 @@ commonfields:
   id: CohesityDataGovern
   version: -1
 configuration:
-- defaultvalue: https://helios-dev2.cohesitycloud.co
+- defaultvalue: https://helios.cohesity.com
   display: Your server URL
   name: url
   required: true
@@ -47,9 +47,9 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Num of hours to fetch WAS alerts since.
+      description: Num of minutes to fetch WAS alerts since. (Default) 7 days.
       isArray: false
-      name: num_minutes
+      name: num_minutes_ago
       required: false
       secret: false
     deprecated: false
@@ -68,9 +68,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Num of minutes to fetch ransomware alerts since.
+      description: Num of minutes to fetch ransomware alerts since. (Default) 7 days.
       isArray: false
-      name: num_minutes
+      name: num_minutes_ago
       required: false
       secret: false
     deprecated: false

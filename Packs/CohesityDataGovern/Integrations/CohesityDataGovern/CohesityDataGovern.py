@@ -72,7 +72,7 @@ class Client(BaseClient):
             "_includeTenantInfo": True
         }
         if start_time_millis > 0:
-            request_params["startDateUsecs"] = start_time_millis
+            request_params["startDateUsecs"] = start_time_millis * 1000
 
         resp = self._http_request(
             method='GET',
@@ -171,13 +171,14 @@ def create_wide_access_incident(alert) -> Dict[str, Any]:
         "rawJSON": json.dumps(alert)
     }
 
-# Helper method to create wide-access incident from alert.
+# Helper method to create ransomware incident from alert.
 
 
 def create_ransomware_incident(alert) -> Dict[str, Any]:
     property_dict = _get_property_dict(alert['propertyList'])
+    incidence_millis = alert.get("latestTimestampUsecs", 0) / 1000
     occurance_time = get_date_time_from_millis(
-        alert.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
+        incidence_millis).strftime(DATE_FORMAT)
 
     return {
         "name": alert['alertDocument']['alertName'],
@@ -251,7 +252,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     :rtype: ``CommandResults``
     """
-    nMins = int(args.get('num_minutes', "30"))
+    nMins = int(args.get('num_minutes_ago', "10080"))
 
     # Fetch was alerts since last nHours.
     start_time_millis = get_nMin_prev_date_time(nMins)
@@ -289,7 +290,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """Get_ransomware_alerts_command: Returns ransomware alerts detected
         in last n hours.
     """
-    nMins = int(args.get('num_minutes', "30"))
+    nMins = int(args.get('num_minutes_ago', "10080"))
     start_time_millis = get_nMin_prev_date_time(nMins)
 
     # Fetch ransomware alerts from client.
@@ -382,32 +383,30 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     # Get last run details.
     last_run = demisto.getLastRun()
 
-    current_time = datetime.now()
-    week_ago = current_time - timedelta(days=7)
-
-    start_time = week_ago
+    # Compute start and end time to fetch for incidents.
+    start_time_millis = get_millis_from_date_time(
+        datetime.now() - timedelta(days=7))
     if last_run and 'start_time' in last_run:
-        start_time = get_date_time_from_millis(last_run.get('start_time'))
+        start_time_millis = int(last_run.get('start_time'))
 
-    start_time_millis = get_millis_from_date_time(start_time)
     end_time_millis = get_current_date_time()
 
     # Fetch all new incidents.
     incidents = []
 
     # Fetch new WAS alerts
-    resp = client.get_was_alerts(start_time_millis, end_time_millis)
+    # resp = client.get_was_alerts(start_time_millis, end_time_millis)
 
     # Parse alerts for readable_output.
-    was_incidences = resp.get('incidences', {})
-    for alert in was_incidences:
-        incident = create_wide_access_incident(alert)
-        incidents.append(incident)
+    # was_incidences = resp.get('incidences', {})
+    # for alert in was_incidences:
+    #     incident = create_wide_access_incident(alert)
+    #     incidents.append(incident)
 
     # Fetch new ransomware alerts.
     ransomware_resp = client.get_ransomware_alerts(start_time_millis)
 
-    # Parse alerts for readable_output.
+    # # Parse alerts for readable_output.
     for alert in ransomware_resp:
         incident = create_ransomware_incident(alert)
         incidents.append(incident)
@@ -437,7 +436,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_was_alerts(1631471400000, 1632076199999)
+        client.get_ransomware_alerts(1631471400000)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -505,7 +504,7 @@ def main() -> None:
             return_results(restore_latest_clean_snapshot(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
-            return_results(fetch_incidents_command(client, demisto.args()))
+            fetch_incidents_command(client, demisto.args())
 
     # Log exceptions and return errors
     except Exception as e:
