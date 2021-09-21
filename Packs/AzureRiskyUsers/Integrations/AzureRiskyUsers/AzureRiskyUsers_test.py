@@ -115,3 +115,18 @@ def test_risk_detection_get_command(requests_mock) -> None:
     assert result.outputs_prefix == 'AzureRiskyUsers.RiskDetection'
     assert result.outputs_key_field == 'id'
     assert result.raw_response.get('value')[0].get('id') == '1'
+
+
+def test_build_query_filter() -> None:
+    """
+    Scenario: Build query filter for API call.
+    Given:
+     - Provided valid arguments.
+    When:
+     - build_query_filter function is called.
+    Then:
+     - Ensure results are valid.
+    """
+    from AzureRiskyUsers import build_query_filter
+    result = build_query_filter(risk_state='dismissed', risk_level='medium')
+    assert result == "riskState eq 'dismissed' and riskLevel eq 'medium'"

@@ -119,26 +119,6 @@ def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> 
         return None
 
 
-def format_table_header_outputs(output: Union[list, dict],
-                                table_headers: list) -> Union[list[dict], dict]:
-    """
-    Format outputs to contain specified table headers.
-
-    Args:
-        output (Union[list, dict]): Data from API response.
-        table_headers (list): The table headers to be used when creating initial data.
-
-    Returns:
-        object_data (dict(str)): The output dictionary.
-    """
-    if type(output) == list:
-        return [{key: item.get(key) for key in item if key in table_headers} for item in output]
-    elif type(output) == dict:
-        return {key: output.get(key) for key in output if key in table_headers}
-    else:
-        return output
-
-
 def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     List all risky users.
@@ -182,7 +162,8 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
     outputs = raw_response.get('value', {})
 
-    table_outputs = format_table_header_outputs(outputs, table_headers)
+    table_outputs = [{key: item.get(key) for key in item if key in table_headers}
+                     for item in outputs]
 
     readable_output = tableToMarkdown(name=f'Risky Users List\n'
                                            f'Current page size: {args["limit"]}\n'
@@ -215,7 +196,7 @@ def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
 
-    outputs = format_table_header_outputs(raw_response, table_headers)
+    outputs = {key: raw_response.get('key') for key in raw_response if key in table_headers}
 
     readable_output = tableToMarkdown(name=f'Found Risky User With ID: {raw_response.get("id")}',
                                       t=outputs,
@@ -276,7 +257,8 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
 
     outputs = raw_response.get('value', {})
 
-    table_outputs = format_table_header_outputs(outputs, table_headers)
+    table_outputs = [{key: item.get(key) for key in item if key in table_headers}
+                     for item in outputs]
 
     readable_output = tableToMarkdown(name=f'Risk Detections List\n'
                                            f'Current page size: {args["limit"]}\n'
@@ -309,7 +291,8 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
                      'riskEventType', 'riskLevel', 'riskState', 'ipAddress',
                      'detectionTimingType', 'lastUpdatedDateTime', 'location']
 
-    outputs = format_table_header_outputs(raw_response, table_headers)
+    outputs = {key: raw_response.get('key') for key in raw_response if key in table_headers}
+
 
     readable_output = tableToMarkdown(name=f'Found Risk Detection with ID: '
                                            f'{raw_response.get("id")}',
