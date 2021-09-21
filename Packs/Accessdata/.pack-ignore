@@ -1,5 +1,2 @@
-[file:playbook-Accessdata__Dump_memory_for_malicious_process.yml]
-ignore=BA101
-
 [file:README.md]
 ignore=RM104

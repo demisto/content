@@ -1,12 +1,12 @@
 {
-    "name": "Accessdata",
-    "description": "Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
+    "name": "AccessData",
+    "description": "Use the AccessData integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
     "support": "partner",
-    "currentVersion": "1.0.3",
-    "author": "Accessdata",
+    "currentVersion": "1.0.0",
+    "author": "AccessData",
     "url": "https://support.accessdata.com/hc/en-us",
     "email": "support@accessdata.com",
-    "created": "2020-04-14T00:00:00Z",
+    "created": "2021-08-06T00:00:00Z",
     "categories": [
         "Forensics & Malware Analysis"
     ],
@@ -14,7 +14,7 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "Ngobo"
+        "ThomasVieth"
     ],
     "certification": "certified"
 }
