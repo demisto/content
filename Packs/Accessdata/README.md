@@ -1,2 +1,0 @@
-Demisto Test Server API Key: 235DDAFF407169B72045C1B11FE461AF
-AccessData API Key: 28acfd94-b613-4fbc-bb03-95ff12aa1e2a
