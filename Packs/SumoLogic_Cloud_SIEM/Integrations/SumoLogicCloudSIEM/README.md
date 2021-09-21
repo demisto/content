@@ -2,7 +2,7 @@ Freeing the analyst with autonomous decisions.
 This integration was integrated and tested with version 6.1.0 of SumoLogicSEC.
 
 ## Prerequisites
-Only use this integration if your Cloud SIEM portal url ends with `.sumologic.net` - this can be verified via the url in your browser when logged into Cloud SIEM.
+Only use this integration if your Cloud SIEM portal url ends with `.sumologic.com` - this can be verified via the url in your browser when logged into Cloud SIEM.
 
 You'll need an access key in order to complete the instance setup. Instructions on how to generate access keys can be found [here](https://help.sumologic.com/Manage/Security/Access-Keys).
 

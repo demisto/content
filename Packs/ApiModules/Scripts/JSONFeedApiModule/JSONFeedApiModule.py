@@ -3,7 +3,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-from typing import List, Dict, Union, Optional, Callable
+from typing import List, Dict, Union, Optional, Callable, Tuple
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -106,7 +106,7 @@ class Client:
         else:
             return headers
 
-    def build_iterator(self, feed: dict, **kwargs) -> List:
+    def build_iterator(self, feed: dict, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
         if not self.post_data:
             r = requests.get(
@@ -136,7 +136,43 @@ class Client:
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return result
+        return result, get_no_update_value(r)
+
+
+def get_no_update_value(response: requests.Response) -> bool:
+    """
+    detect if the feed response has been modified according to the headers etag and last_modified.
+    For more information, see this:
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+    Args:
+        response: (requests.Response) The feed response.
+    Returns:
+        boolean with the value for noUpdate argument.
+        The value should be False if the response was modified.
+    """
+
+    context = get_integration_context()
+    old_etag = context.get('etag')
+    old_last_modified = context.get('last_modified')
+
+    etag = response.headers.get('ETag')
+    last_modified = response.headers.get('Last-Modified')
+
+    set_integration_context({'last_modified': last_modified, 'etag': etag})
+
+    if old_etag and old_etag != etag:
+        demisto.debug('New indicators fetched - the ETag value has been updated,'
+                      ' createIndicators will be executed with noUpdate=False.')
+        return False
+
+    if old_last_modified and old_last_modified != last_modified:
+        demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
+                      ' createIndicators will be executed with noUpdate=False.')
+        return False
+
+    demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
+    return True
 
 
 def test_module(client: Client, limit) -> str:
@@ -150,7 +186,7 @@ def test_module(client: Client, limit) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
-                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
+                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Tuple[List[dict], bool]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -162,6 +198,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     """
     indicators: List[dict] = []
     feeds_results = {}
+    no_update = False
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
         if custom_build_iterator:
@@ -170,7 +207,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 raise Exception("Custom function to handle with pagination must return a list type")
             feeds_results[feed_name] = indicators_from_feed
         else:
-            feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
+            feeds_results[feed_name], no_update = client.build_iterator(feed, **kwargs)
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
@@ -193,7 +230,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-    return indicators
+    return indicators, no_update
 
 
 def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
@@ -336,17 +373,29 @@ def feed_main(params, feed_name, prefix):
 
         elif command == 'fetch-indicators':
             create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships)
-            if not len(indicators):
-                demisto.createIndicators(indicators)
+            indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
+                                                             create_relationships)
+
+            # check if the version is higher than 6.5.0 so we can use noUpdate parameter
+            if is_demisto_version_ge('6.5.0'):
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)
+                else:
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)
+
             else:
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
+                # call createIndicators without noUpdate arg
+                if not indicators:
+                    demisto.createIndicators(indicators)
+                else:
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
+            indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 

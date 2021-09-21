@@ -1026,7 +1026,43 @@ script:
     - contextPath: Edgescan.VulnerabilitiesRiskAccept
       description: The vulnerability retest result
       type: Unknown
-  dockerimage: demisto/python3:3.9.6.22912
+  - arguments:
+    - default: false
+      description: The ID of the vulnerability to add the annotation to
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The text of the annotation to add
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: This command adds a text annotation to a vulnerability
+    execution: false
+    name: edgescan-vulnerabilities-add-annotation
+    outputs:
+    - contextPath: Edgescan.AnnotationAdd.id
+      description: The ID of the added annotation
+      type: Number
+    - contextPath: Edgescan.AnnotationAdd.category
+      description: The category of the added annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.text
+      description: The text of the added annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.user
+      description: The user that has added the annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.user_id
+      description: The user ID of the added annotation
+      type: Number
+    - contextPath: Edgescan.AnnotationAdd.created_at
+      description: The date when the annoation was added
+      type: Date
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

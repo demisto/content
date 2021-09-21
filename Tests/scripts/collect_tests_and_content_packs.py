@@ -992,24 +992,26 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set, id_set: dict) -> set:
+def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     """Filters out test playbooks, which are in .pack-ignore, from the given tests set
-
     Args:
         tests (set): Tests set to remove the tests to ignore from
         id_set (dict): The id set object
-
+        modified_packs (set): List of the modified packs
     Return:
          set: The filtered tests set
     """
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
+    for pack in modified_packs:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set))
     for pack in content_packs:
-        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+        test = tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set)
+        ignored_tests_set.update(test)
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
-        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        logging.info(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests
@@ -1060,7 +1062,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
+def filter_tests(tests: set, id_set: json, modified_packs: set, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
@@ -1071,11 +1073,12 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
         remove_private_packs (bool): Whether to remove private packs
+        modified_packs: The modified packs.
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
-    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set, modified_packs)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     if is_nightly:
@@ -1210,7 +1213,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = filter_installed_packs(packs_to_install)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set)
+    tests = filter_tests(tests, id_set, modified_packs)
 
     if not tests or changed_common:
         if not tests:
@@ -1370,7 +1373,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True)
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
+                             modified_packs=set())
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
@@ -1386,20 +1390,17 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
-                packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
-                files_string += f"\n{packs_diff}"
+                packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+                files_string = '\n'.join([files_string, packs_diff])
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+            logging.debug(f'commit string: {commit_string}')
+
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+
         logging.debug(f'Files string: {files_string}')
-#         files_string = """M	Tests/Marketplace/Tests/marketplace_services_test.py
-# M	Tests/Marketplace/Tests/test_data/user_pack_metadata.json
-# M	Tests/Marketplace/marketplace_services.py
-# M	Tests/scripts/collect_tests_and_content_packs.py
-# M	Tests/secrets_white_list.json
-# """
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 

@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -36,8 +37,9 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Microsoft Graph Calendar enables you to create and manage different calendars and events according to your requirements.
-display: Microsoft Graph Calendar
+description: O365 Outlook Calendar enables you to create and manage different calendars
+  and events according to your requirements.
+display: O365 Outlook Calendar
 name: Microsoft Graph Calendar
 script:
   commands:
@@ -60,7 +62,8 @@ script:
       secret: false
     - name: next_link
       default: false
-      description: The link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0 for more details.
+      description: The link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0
+        for more details.
       isArray: false
       required: false
       secret: false
@@ -75,13 +78,18 @@ script:
       description: The calendar name.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanShare
-      description: "Whether the user has the permission to share the calendar. Only the user who created the calendar can share."
+      description: "Whether the user has the permission to share the calendar. Only\
+        \ the user who created the calendar can share."
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.CanEdit
-      description: "Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access)."
+      description: "Whether the user can write to the calendar (true for the user\
+        \ who created the calendar and for a user who has been shared a calendar and\
+        \ granted write access)."
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.ChangeKey
-      description: "Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the exchange to apply changes to the correct version of the object. Read-only."
+      description: "Identifies the version of the calendar object. Every time the\
+        \ calendar is changed, the changeKey changes as well, which allows the exchange\
+        \ to apply changes to the correct version of the object. Read-only."
       type: String
     - contextPath: MSGraphCalendar.Calendar.Owner
       description: "The user who created or added the calendar."
@@ -90,7 +98,8 @@ script:
       description: The unique ID of the calendar. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanViewPrivateItems
-      description: Whether the user can read calendar items that have been marked private.
+      description: Whether the user can read calendar items that have been marked
+        private.
       type: Boolean
   - name: msgraph-calendar-get-calendar
     description: Retrieves one of user's Calendars.
@@ -105,7 +114,8 @@ script:
       secret: false
     - name: calendar_id
       default: false
-      description: The calendar ID or name. If not specified, it retrieves the user's default calendar.
+      description: The calendar ID or name. If not specified, it retrieves the user's
+        default calendar.
       isArray: false
       required: false
       secret: false
@@ -114,13 +124,18 @@ script:
       description: The name of the calendar.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanShare
-      description: "Whether the user has the permission to share the calendar. Only the user who created the calendar can share it."
+      description: "Whether the user has the permission to share the calendar. Only\
+        \ the user who created the calendar can share it."
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.CanEdit
-      description: "Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access)."
+      description: "Whether the user can write to the calendar (true for the user\
+        \ who created the calendar and for a user who has been shared a calendar and\
+        \ granted write access)."
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.ChangeKey
-      description: "Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the Exchange to apply changes to the correct version of the object. Read-only."
+      description: "Identifies the version of the calendar object. Every time the\
+        \ calendar is changed, the changeKey changes as well, which allows the Exchange\
+        \ to apply changes to the correct version of the object. Read-only."
       type: String
     - contextPath: MSGraphCalendar.Calendar.Owner
       description: "The user who created or added the calendar."
@@ -129,7 +144,8 @@ script:
       description: The unique ID of the calendar. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanViewPrivateItems
-      description: Whether the user can read calendar items that have been marked private.
+      description: Whether the user can read calendar items that have been marked
+        private.
   - name: msgraph-calendar-list-events
     description: Retrieves a list of Calendar's events.
     execution: false
@@ -143,7 +159,8 @@ script:
       secret: false
     - name: calendar_id
       default: false
-      description: The calendar ID or name. If not provided, the default calendar is used.
+      description: The calendar ID or name. If not provided, the default calendar
+        is used.
       isArray: false
       required: false
       secret: false
@@ -155,7 +172,8 @@ script:
       secret: false
     - name: next_link
       default: false
-      description: Link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0 for more details.
+      description: Link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0
+        for more details.
       isArray: false
       required: false
       secret: false
@@ -230,7 +248,8 @@ script:
       description: Whether the event has attachments.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ResponseRequested
-      description: Whether the sender requests a response when the event is accepted or declined.
+      description: Whether the sender requests a response when the event is accepted
+        or declined.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.WebLink
       description: The URL to open the event in Outlook on the web.
@@ -239,10 +258,12 @@ script:
       description: The recurrence pattern for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Start
-      description: The date, time, and time zone that the event starts. By default, the start time is in UTC.
+      description: The date, time, and time zone that the event starts. By default,
+        the start time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.End
-      description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+      description: The date, time, and time zone that the event ends. By default,
+        the end time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Location
       description: The location of the event.
@@ -251,7 +272,8 @@ script:
       description: The collection of attendees for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Type
-      description: The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.
+      description: The event type. For example, singleInstance, occurrence, exception,
+        seriesMaster. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Event.ResponseStatus.response
       description: Indicates the type of response sent in response to an event message.
@@ -260,7 +282,8 @@ script:
       description: The importance of the event. For example, low, normal, high.
       type: String
     - contextPath: MSGraphCalendar.Event.ICalUId
-      description: A unique identifier that is shared by all instances of an event across different calendars.
+      description: A unique identifier that is shared by all instances of an event
+        across different calendars.
       type: String
     - contextPath: MSGraphCalendar.Event.IsCancelled
       description: Whether the event has been canceled.
@@ -269,19 +292,24 @@ script:
       description: Whether the event lasts all day.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ReminderMinutesBeforeStart
-      description: The number of minutes before the event start time of the reminder alert.
+      description: The number of minutes before the event start time of the reminder
+        alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The last time the event was modified, using ISO 8601 format in\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'"
+      description: "The date the event was created using ISO 8601 format in UTC time.\
+        \ For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: "Identifies the version of the event object. Every time the event\
+        \ is changed, the ChangeKey changes as well, which allows the Exchange to\
+        \ apply changes to the correct version of the object."
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the event.
@@ -290,7 +318,8 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: "The sensitivity of the event. Possible values are: normal, personal,\
+        \ private, confidential."
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -302,7 +331,8 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, which is used when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: "A URL for an online meeting, which is used when an organizer specifies\
+        \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
   - name: msgraph-calendar-create-event
     description: Creates a new event.
@@ -317,7 +347,8 @@ script:
       secret: false
     - name: calendar_id
       default: false
-      description: The unique ID of the Calendar or name. If not provided, the default calendar is used.
+      description: The unique ID of the Calendar or name. If not provided, the default
+        calendar is used.
       isArray: false
       required: false
       secret: false
@@ -329,7 +360,8 @@ script:
       secret: false
     - name: body
       default: false
-      description: The body of the message associated with the event in HTML or text format.
+      description: The body of the message associated with the event in HTML or text
+        format.
       isArray: false
       required: false
       secret: false
@@ -341,13 +373,15 @@ script:
       secret: false
     - name: location
       default: false
-      description: The location of the event for an online meeting, such as a Skype meeting. Read-only.
+      description: The location of the event for an online meeting, such as a Skype
+        meeting. Read-only.
       isArray: false
       required: false
       secret: false
     - name: end
       default: false
-      description: "The date and time the event ends. For example, '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: "The date and time the event ends. For example, '2017-05-28T12:00:00'.\
+        \ By default, the start time is in UTC."
       isArray: false
       required: false
       secret: false
@@ -359,19 +393,22 @@ script:
       secret: false
     - name: original_start
       default: false
-      description: "The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The original start time of the calendar item using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       isArray: false
       required: false
       secret: false
     - name: start
       default: false
-      description: "The date and time the event starts at, for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: "The date and time the event starts at, for example '2017-05-28T12:00:00'.\
+        \ By default, the start time is in UTC."
       isArray: false
       required: false
       secret: false
     - name: time_zone
       default: false
-      description: "Represents a time zone. For example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
+      description: "Represents a time zone. For example, 'Pacific Standard Time'.\
+        \ For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
       isArray: false
       required: false
       secret: false
@@ -389,7 +426,8 @@ script:
       description: Whether the event has attachments.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ResponseRequested
-      description: Whether the sender would like a response when the event is accepted or declined.
+      description: Whether the sender would like a response when the event is accepted
+        or declined.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.WebLink
       description: The URL to open the event in Outlook on the web.
@@ -398,10 +436,12 @@ script:
       description: The recurrence pattern for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Start
-      description: The date, time, and time zone that the event starts. By default, the start time is in UTC.
+      description: The date, time, and time zone that the event starts. By default,
+        the start time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.End
-      description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+      description: The date, time, and time zone that the event ends. By default,
+        the end time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Location
       description: The location of the event.
@@ -410,7 +450,8 @@ script:
       description: The collection of attendees for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Type
-      description: The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.
+      description: The event type. For example, singleInstance, occurrence, exception,
+        seriesMaster. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Event.ResponseStatus.response
       description: Indicates the type of response sent in response to an event message.
@@ -419,7 +460,8 @@ script:
       description: The importance of the event. For example, low, normal, high.
       type: String
     - contextPath: MSGraphCalendar.Event.ICalUId
-      description: A unique identifier that is shared by all instances of an event across different calendars.
+      description: A unique identifier that is shared by all instances of an event
+        across different calendars.
       type: String
     - contextPath: MSGraphCalendar.Event.IsCancelled
       description: Whether the event has been canceled.
@@ -428,19 +470,24 @@ script:
       description: Whether the event lasts all day.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ReminderMinutesBeforeStart
-      description: The number of minutes before the event start time of the reminder alert.
+      description: The number of minutes before the event start time of the reminder
+        alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "Last modified time and date of the event using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The time and date the event was created using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: "Identifies the version of the event object. Every time the event\
+        \ is changed, the ChangeKey changes as well, which allows the Exchange to\
+        \ apply changes to the correct version of the object."
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: Event's ID.
@@ -449,7 +496,8 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: "The sensitivity of the event. Possible values are: normal, personal,\
+        \ private, confidential."
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -461,7 +509,8 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, which is used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: "A URL for an online meeting, which is used only when an organizer\
+        \ specifies an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
   - name: msgraph-calendar-update-event
     description: Updates an existing event.
@@ -488,7 +537,8 @@ script:
       secret: false
     - name: body
       default: false
-      description: The body of the message associated with the event. It can be in HTML or text format.
+      description: The body of the message associated with the event. It can be in
+        HTML or text format.
       isArray: false
       required: false
       secret: false
@@ -500,13 +550,15 @@ script:
       secret: false
     - name: location
       default: false
-      description: The location of the event for an online meeting, such as a Skype meeting. Read-only.
+      description: The location of the event for an online meeting, such as a Skype
+        meeting. Read-only.
       isArray: false
       required: false
       secret: false
     - name: end
       default: false
-      description: "The date and time the event ends. For example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: "The date and time the event ends. For example '2017-05-28T12:00:00'.\
+        \ By default, the start time is in UTC."
       isArray: false
       required: false
       secret: false
@@ -518,19 +570,22 @@ script:
       secret: false
     - name: start
       default: false
-      description: "The date and time the event starts. For example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: "The date and time the event starts. For example '2017-05-28T12:00:00'.\
+        \ By default, the start time is in UTC."
       isArray: false
       required: false
       secret: false
     - name: time_zone
       default: false
-      description: "Represents a time zone, for example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
+      description: "Represents a time zone, for example, 'Pacific Standard Time'.\
+        \ For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
       isArray: false
       required: false
       secret: false
     - name: original_start
       default: false
-      description: "The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The original start time of the calendar item, using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       isArray: false
       required: false
       secret: false
@@ -548,7 +603,8 @@ script:
       description: Whether the event has attachments.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ResponseRequested
-      description: Whether the sender requests a response when the event is accepted or declined.
+      description: Whether the sender requests a response when the event is accepted
+        or declined.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.WebLink
       description: The URL to open the event in Outlook on the web.
@@ -557,10 +613,12 @@ script:
       description: The recurrence pattern for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Start
-      description: The date, time, and time zone that the event starts. By default, the start time is in UTC.
+      description: The date, time, and time zone that the event starts. By default,
+        the start time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.End
-      description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+      description: The date, time, and time zone that the event ends. By default,
+        the end time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Location
       description: The location of the event.
@@ -569,7 +627,8 @@ script:
       description: The collection of attendees for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Type
-      description: The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.
+      description: The event type. For example, singleInstance, occurrence, exception,
+        seriesMaster. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Event.ResponseStatus.response
       description: Indicates the type of response sent in response to an event message.
@@ -578,7 +637,8 @@ script:
       description: The importance of the event. For example, low, normal, high.
       type: String
     - contextPath: MSGraphCalendar.Event.ICalUId
-      description: A unique identifier that is shared by all instances of an event across different calendars.
+      description: A unique identifier that is shared by all instances of an event
+        across different calendars.
       type: String
     - contextPath: MSGraphCalendar.Event.IsCancelled
       description: Whether the event has been canceled.
@@ -587,19 +647,24 @@ script:
       description: Whether the event lasts all day.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ReminderMinutesBeforeStart
-      description: The number of minutes before the event start time of the reminder alert.
+      description: The number of minutes before the event start time of the reminder
+        alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The last time and date the event was modified using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The date and time the event was created using ISO 8601 format\
+        \ in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows Exchange to apply changes to the correct version of the object."
+      description: "Identifies the version of the event object. Every time the event\
+        \ is changed, the ChangeKey changes as well, which allows Exchange to apply\
+        \ changes to the correct version of the object."
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the event.
@@ -608,7 +673,8 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitvity of the event. Possible values are: normal, personal, private, confidential."
+      description: "The sensitvity of the event. Possible values are: normal, personal,\
+        \ private, confidential."
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -620,7 +686,8 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: "A URL for an online meeting, used only when an organizer specifies\
+        \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
   - name: msgraph-calendar-delete-event
     description: Updates an existing event.
@@ -647,7 +714,8 @@ script:
       description: Whether the event has attachments.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ResponseRequested
-      description: Whether the sender receives a response when the event is accepted or declined.
+      description: Whether the sender receives a response when the event is accepted
+        or declined.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.WebLink
       description: The URL to open the event in Outlook on the web.
@@ -656,10 +724,12 @@ script:
       description: The recurrence pattern for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Start
-      description: The date, time, and time zone that the event starts. By default, the start time is in UTC.
+      description: The date, time, and time zone that the event starts. By default,
+        the start time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.End
-      description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+      description: The date, time, and time zone that the event ends. By default,
+        the end time is in UTC.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Location
       description: The location of the event.
@@ -668,7 +738,8 @@ script:
       description: The collection of attendees for the event.
       type: Unknown
     - contextPath: MSGraphCalendar.Event.Type
-      description: The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.
+      description: The event type. For example, singleInstance, occurrence, exception,
+        seriesMaster. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Event.ResponseStatus.response
       description: Indicates the type of response sent in response to an event message.
@@ -677,7 +748,8 @@ script:
       description: The importance of the event. For example, low, normal, high.
       type: String
     - contextPath: MSGraphCalendar.Event.ICalUId
-      description: A unique identifier that is shared by all instances of an event across different calendars.
+      description: A unique identifier that is shared by all instances of an event
+        across different calendars.
       type: String
     - contextPath: MSGraphCalendar.Event.IsCancelled
       description: Whether the event has been canceled.
@@ -686,19 +758,24 @@ script:
       description: Whether the event lasts all day.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.ReminderMinutesBeforeStart
-      description: The number of minutes before the event start time of the reminder alert.
+      description: The number of minutes before the event start time of the reminder
+        alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
+      description: "The time and date the event was last modified using the ISO 8601\
+        \ format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'"
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The time and date the event was created using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: "The time and date the event was created using ISO 8601 format\
+        \ and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: "Identifies the version of the event object. Every time the event\
+        \ is changed, the ChangeKey changes as well, which allows the Exchange to\
+        \ apply changes to the correct version of the object."
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the Event.
@@ -707,7 +784,8 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: "The sensitivity of the event. Possible values are: normal, personal,\
+        \ private, confidential."
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -719,9 +797,10 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: "A URL for an online meeting, used only when an organizer specifies\
+        \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false

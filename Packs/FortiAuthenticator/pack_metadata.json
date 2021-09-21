@@ -1,0 +1,19 @@
+{
+    "name": "FortiAuthenticator",
+    "description": "Manage user configuration on FortiAuthenticator.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Jason Lo",
+    "url": "",
+    "email": "",
+    "created": "2021-08-19T18:20:50Z",
+    "categories": [
+        "Authentication"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "jasonlo82"
+    ]
+}

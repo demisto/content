@@ -47,6 +47,7 @@ of the time that other traditional time series databases can't.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Query Server Endpoint (e.g. `https://apiv2-us.devo.com/search/query`)__
+    * __Port (e.g. 443)__
     * __Oauth Token (Preferred method)__
     * __Writer relay to connect to (e.g. us.elb.relay.logtrust.net)__ *Optional*
     * __Writer JSON credentials__ *Optional*
@@ -56,6 +57,10 @@ of the time that other traditional time series databases can't.
         "crt": string,
         "chain": string
     }
+    ```
+    The JSON should be given in one line, and new lines should be replaced with `\n`, for example:
+    ```
+    {"key": "-----BEGIN RSA PRIVATE KEY-----\n\n...\n-----END RSA PRIVATE KEY-----", "crt": "-----BEGIN CERTIFICATE-----\n\n...\n-----END CERTIFICATE-----", "chain": "-----BEGIN CERTIFICATE-----\n\n...\n-----END CERTIFICATE-----"}
     ```
     * __Devo base domain__ *Optional*
     * __Use system proxy settings__ *Optional*

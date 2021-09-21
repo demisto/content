@@ -9,7 +9,7 @@ from io import StringIO
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-INTEGRATION_NAME = "Group-IB TDS Polygon"
+INTEGRATION_NAME = "Group-IB THF Polygon"
 LANGUAGE_TO_CODE = {
     "english": "en",
     "russian": "ru"
@@ -106,7 +106,7 @@ class Client(BaseClient):
     def _get_fids(self, resp):
         fids = resp.get("data", {}).get("ids", [])
         if not fids:
-            err_msg = "There is no analysis ID in TDS response." \
+            err_msg = "There is no analysis ID in THF response." \
                       "Try to upload file/url one more time."
             raise DemistoException(err_msg)
         return fids[0]
@@ -561,7 +561,7 @@ def file_command(client, args):
             if res.get("found"):
                 if res.get("verdict"):
                     score = Common.DBotScore.BAD
-                    malicious = "TDS Polygon score: {}".format(res.get('score'))
+                    malicious = "THF Polygon score: {}".format(res.get('score'))
                     if res.get('malware_families'):
                         malicious += ", {}".format(", ".join(res.get("malware_families", [])))
                 else:

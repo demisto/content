@@ -1,9 +1,10 @@
-There are several steps required to configure this integration. 
+Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings. 
 
-For more information, see the [Microsoft Teams](https://support.demisto.com/hc/en-us/articles/360034095994-Microsoft-Teams) integration documentation.
+To create an instance of the Microsoft Teams integration in Cortex XSOAR, complete the following:
 
-To use the ***microsoft-teams-ring-user*** command make sure your Bot has the following premissions:
- - Calls.Initiate.All
- - Calls.InitiateGroupCall.All
+1. Create the Demisto Bot in Microsoft Teams
+2. Grant the Demisto Bot Permissions in Microsoft Graph
+3. Configure Microsoft Teams on Demisto
+4. Add the Demisto Bot to a Team
  
-For more information about registering a calling bot see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions) on this subject.
+For more information about registering a calling bot see the [Microsoft Teams Documentation](https://docs.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/registering-calling-bot#add-microsoft-graph-permissions).

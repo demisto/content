@@ -1,9 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-from tld import get_tld
+from tld import get_fld
 from validate_email import validate_email
-from urlparse import urlparse, parse_qs
-from urllib import unquote
+from urllib.parse import urlparse, parse_qs, unquote
 import re
 
 # ============================================================================================================== #
@@ -72,19 +71,17 @@ def extract_domain(the_input):
         # Not ATP Link or Proofpoint URL so just unescape
         else:
             the_input = unescape_url(the_input)
-        is_url = domain = get_tld(the_input, fail_silently=True)
+        is_url = domain = get_fld(the_input, fail_silently=True)
 
     # Extract domain itself from a potential subdomain
     if domain_from_mail or not is_url:
         full_domain = 'https://'
         full_domain += domain_from_mail if domain_from_mail else the_input
         # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        domain = get_tld(full_domain, fail_silently=True)
+        domain = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
     domain = '' if not domain else domain
-    if type(domain) == unicode:
-        domain = domain.encode('utf-8', errors='ignore')
     return domain
 
 

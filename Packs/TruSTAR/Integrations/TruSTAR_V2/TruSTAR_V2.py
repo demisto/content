@@ -866,7 +866,7 @@ class TrustarClient:
                 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
-        response = self.client.get_phishing_indicators_page(**args)
+        response = self.client.get_phishing_indicators_page(**args)  # pylint: disable=E1123
         if not response:
             return 'No phishing indicators were found.'
 
@@ -895,7 +895,7 @@ class TrustarClient:
                 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
-        response = self.client.get_phishing_submissions_page(**args)
+        response = self.client.get_phishing_submissions_page(**args)  # pylint: disable=E1123
         if not response.items:
             return 'No phishing submissions were found.'
 
