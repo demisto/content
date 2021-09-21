@@ -8,7 +8,7 @@ configuration:
   defaultvalue: 'true'
   required: false
   type: 8
-- defaultvalue: Worldwide
+- defaultvalue: Worldwide,China,Germany,USGovDoD,USGovGCCHigh
   display: Regions
   name: regions
   options:
