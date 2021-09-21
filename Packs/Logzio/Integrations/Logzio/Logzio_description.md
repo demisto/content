@@ -1,8 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: Logz.io
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **Email**: [support@logz.io](mailto:support@logz.io)
-***
 If incident fetching is enabled, the integration runs a command to import new Logz.io security events as incidents every minute. A Logz.io  security event is logged whenever a security rule is triggered in Logz.io Cloud SIEM.
 
 **A few notes:**
