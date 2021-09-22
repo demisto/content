@@ -2452,7 +2452,7 @@
                 "Rasterize"
             ],
             "timeout": 350,
-            "memory_threshold": 120,
+            "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -4232,7 +4232,10 @@
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "integrations": [
+                "EWS Mail Sender"
+            ]
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
