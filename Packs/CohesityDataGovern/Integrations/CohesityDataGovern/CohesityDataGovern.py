@@ -76,7 +76,8 @@ class Client(BaseClient):
         return self._http_request(
             method='PATCH',
             url_suffix='/mcm/alerts/' + alert_id,
-            json_data={"status": "kSuppressed"}
+            json_data={"status": "kSuppressed"},
+            return_empty_response=True
         )
 
     # Method to resolve a ransomware alert by its id.
@@ -86,7 +87,8 @@ class Client(BaseClient):
         return self._http_request(
             method='PATCH',
             url_suffix='/mcm/alerts/' + alert_id,
-            json_data={"status": "kResolved"}
+            json_data={"status": "kResolved"},
+            return_empty_response=True
         )
 
     def restore_vm_object(self, cluster_id, payload):
@@ -199,23 +201,17 @@ def parse_ransomware_alert(alert) -> Dict[str, Any]:
         + "*Alert Cause* : " + alert['alertDocument']['alertCause'] + "\n\n"
         + "*Alert Help Text* : " + alert['alertDocument']['alertHelpText'],
         "confidence": "High",
-        "incident_time": {
-            "opened": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat(),
-            "discovered": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat(),
-            "reported": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).isoformat()
-        },
+        "incident_time": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).strftime(DATE_FORMAT),
         "schema_version": "1.1.3",
         "status": "New",
         "type": "incident",
         "source": "Cohesity Helios",
-        "external_ids": [external_id],
+        "external_id": external_id,
         "title": "Cohesity Helios: " + property_dict.get("object", ""),
-        "external_references": [
-            {
-                "source_name": property_dict.get('source', ''),
-                "description": "The source in which the anomalous object is present"
-            }
-        ]
+        "external_references": {
+            "source_name": property_dict.get('source', ''),
+            "description": "The source in which the anomalous object is present"
+        }
     }
 
 
@@ -312,8 +308,11 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
 
     if alert_id == '':
         raise ValueError('No anomalous object found by given name')
+    
+    # Suppress ransomware alert.
+    client.suppress_ransomware_alert_by_id(alert_id)
 
-    return str(client.suppress_ransomware_alert_by_id(alert_id))
+    return "Ignored object {name}".format(name=object_name)
 
 
 def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> CommandResults:

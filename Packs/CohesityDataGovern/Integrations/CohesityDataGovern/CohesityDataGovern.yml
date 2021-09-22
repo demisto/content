@@ -45,27 +45,27 @@ display: CohesityDataGovern
 name: CohesityDataGovern
 script:
   commands:
-  - arguments:
-    - default: true
-      description: Num of minutes to fetch WAS alerts since. (Default) 7 days.
-      isArray: false
-      name: num_minutes_ago
-      required: false
-      secret: false
-    deprecated: false
-    description: Get Cohesity wide-access Alerts command.
-    execution: false
-    name: cohesity-get-was-alerts
-    outputs:
-    - contextPath: CohesityDataGovern.WASAlert.id
-      description: Identifier for WAS alert
-      type: String
-    - contextPath: CohesityDataGovern.WASAlert.occurance_time
-      description: WAS alert incidence time.
-      type: String
-    - contextPath: CohesityDataGovern.WASAlert.rule_id
-      description: Triggering rule identifier for WAS alert
-      type: String
+  # - arguments:
+  #   - default: true
+  #     description: Num of minutes to fetch WAS alerts since. (Default) 7 days.
+  #     isArray: false
+  #     name: num_minutes_ago
+  #     required: false
+  #     secret: false
+  #   deprecated: false
+  #   description: Get Cohesity wide-access Alerts command.
+  #   execution: false
+  #   name: cohesity-get-was-alerts
+  #   outputs:
+  #   - contextPath: CohesityDataGovern.WASAlert.id
+  #     description: Identifier for WAS alert
+  #     type: String
+  #   - contextPath: CohesityDataGovern.WASAlert.occurance_time
+  #     description: WAS alert incidence time.
+  #     type: String
+  #   - contextPath: CohesityDataGovern.WASAlert.rule_id
+  #     description: Triggering rule identifier for WAS alert
+  #     type: String
   - arguments:
     - default: false
       description: Num of minutes to fetch ransomware alerts since. (Default) 7 days.
@@ -78,10 +78,24 @@ script:
     execution: false
     name: cohesity-get-ransomware-alerts
     outputs:
-    # CohesityTBD.
-    - contextPath: CohesityDataGovern.RansomwareAlert
-      description: Count of Ransomware alerts
-      type: Number
+      - contextPath: CohesityDataGovern.RansomwareAlert.alert_id
+        description: Identifier for the ransomware alert.
+        type: String
+      - contextPath: CohesityDataGovern.RansomwareAlert.description
+        description: Description for the ransomware alert.
+        type: String
+      - contextPath: CohesityDataGovern.RansomwareAlert.source
+        description: source of the detected ransomware alert.
+        type: String
+      - contextPath: CohesityDataGovern.RansomwareAlert.title
+        description: title of the detected ransomware alert.
+        type: String
+      - contextPath: CohesityDataGovern.RansomwareAlert.confidence
+        description: Confidence of the detected ransomware alert.
+        type: String
+      - contextPath: CohesityDataGovern.RansomwareAlert.type
+        description: Type of the detected ransomware alert.
+        type: String
   - arguments:
     - default: false
       description: Anomalous object name to be ignored.
