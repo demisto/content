@@ -155,7 +155,7 @@ class TestHelperFunctions:
             'value': '8.8.8.8',
             'CustomFields': {
                 'indicatorid': 'ind_id',
-                'stixPackageid': 'pkg_id'
+                'stixpackageid': 'pkg_id'
             },
             'source': 'stix2',
             'score': 0,

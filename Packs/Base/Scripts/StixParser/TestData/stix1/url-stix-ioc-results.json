@@ -2,7 +2,7 @@
   {
     "CustomFields": {
       "indicatorid": "example:Indicator-d81f86b9-975b-bc0b-775e-810c5ad45a4f",
-      "stixPackageid": "example:Package-8fab937e-b694-11e3-b71c-0800271e87d2"
+      "stixpackageid": "example:Package-8fab937e-b694-11e3-b71c-0800271e87d2"
     },
     "source": "example",
     "indicator_type": "URL",
