@@ -516,7 +516,7 @@ def update_user_command(client, args):
 
 def delete_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
-        raise Exception("You must supply either 'Username' or 'userId")
+        raise Exception("PingOne error: You must supply either 'Username' or 'userId")
 
     if args.get('username'):
         user = client.get_user_by_username(args.get('username'))
