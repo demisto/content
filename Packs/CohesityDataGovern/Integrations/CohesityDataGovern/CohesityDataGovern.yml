@@ -40,7 +40,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: '[Integrate with Cohesity Helios DataGovern services to fetch alerts and take remedial action.]'
+description: '[Integrate with Cohesity Helios DataGovern services to fetch alerts
+  and take remedial action.]'
 display: CohesityDataGovern
 name: CohesityDataGovern
 script:
@@ -78,24 +79,27 @@ script:
     execution: false
     name: cohesity-get-ransomware-alerts
     outputs:
-      - contextPath: CohesityDataGovern.RansomwareAlert.alert_id
-        description: Identifier for the ransomware alert.
-        type: String
-      - contextPath: CohesityDataGovern.RansomwareAlert.alert_description
-        description: Description for the ransomware alert.
-        type: String
-      - contextPath: CohesityDataGovern.RansomwareAlert.alert_cause
-        description: Cause for the ransomware alert.
-        type: String
-      - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_name
-        description: Name of the detected anomalous object.
-        type: String
-      - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_env
-        description: Env of the detected anomalous object.
-        type: String
-      - contextPath: CohesityDataGovern.RansomwareAlert.anomaly_strength
-        description: Strength of the detected ransomware alert.
-        type: Number
+    - contextPath: CohesityDataGovern.RansomwareAlert.alert_id
+      description: Identifier for the ransomware alert.
+      type: String
+    - contextPath: CohesityDataGovern.RansomwareAlert.occurrence_time
+      description: Name of the detected anomalous object.
+      type: Date
+    - contextPath: CohesityDataGovern.RansomwareAlert.alert_description
+      description: Description for the ransomware alert.
+      type: String
+    - contextPath: CohesityDataGovern.RansomwareAlert.alert_cause
+      description: Cause for the ransomware alert.
+      type: String
+    - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_name
+      description: Name of the detected anomalous object.
+      type: String
+    - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_env
+      description: Env of the detected anomalous object.
+      type: String
+    - contextPath: CohesityDataGovern.RansomwareAlert.anomaly_strength
+      description: Strength of the detected ransomware alert.
+      type: Number
   - arguments:
     - default: false
       description: Anomalous object name to be ignored.

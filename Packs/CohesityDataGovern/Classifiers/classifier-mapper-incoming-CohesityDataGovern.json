@@ -61,7 +61,20 @@
                         "accessor": "",
                         "filters": [],
                         "root": "severity",
-                        "transformers": []
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "k"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            }
+                        ]
                     },
                     "simple": ""
                 }

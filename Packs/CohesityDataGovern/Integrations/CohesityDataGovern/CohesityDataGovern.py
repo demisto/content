@@ -108,18 +108,21 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+# Get date time from millis.
+
 
 def get_date_time_from_millis(time_in_millis):
     return datetime.fromtimestamp(time_in_millis / 1000.0)
 
 
+# Get millis from date time.
 def get_millis_from_date_time(dt):
     return int(dt.timestamp() * 1000)
 
 # Get current data time millis
 
 
-def get_current_date_time():
+def get_current_millis():
     dt = datetime.now()
     return int(dt.timestamp() * 1000)
 
@@ -156,11 +159,14 @@ def create_wide_access_incident(alert) -> Dict[str, Any]:
     }
 
 # Helper method to create ransomware incident from alert.
+
+
 def create_ransomware_incident(alert) -> Dict[str, Any]:
     property_dict = _get_property_dict(alert['propertyList'])
     incidence_millis = alert.get("latestTimestampUsecs", 0) / 1000
     occurance_time = get_date_time_from_millis(
         incidence_millis).strftime(DATE_FORMAT)
+    # CohesityTBD: Perform field sanitization for Cortex mapping.
 
     return {
         "name": alert['alertDocument']['alertName'],
@@ -178,12 +184,17 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
     }
 
 # Helper method to parse ransomware incident.
+
+
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
     # Get alert properties.
     property_dict = _get_property_dict(alert['propertyList'])
+    occurance_time = get_date_time_from_millis(
+        alert.get("latestTimestampUsecs", 0) / 1000).strftime(DATE_FORMAT)
 
     return {
         "alert_id": alert['id'],
+        "occurrence_time": occurance_time,
         "alert_description": alert['alertDocument']['alertDescription'],
         "alert_cause": alert['alertDocument']['alertCause'],
         "anomalous_object_name": property_dict.get('object'),
@@ -215,7 +226,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     # Fetch was alerts since last nHours.
     start_time_millis = get_nMin_prev_date_time(nMins)
-    end_time_millis = get_current_date_time()
+    end_time_millis = get_current_millis()
     resp = client.get_was_alerts(start_time_millis, end_time_millis)
 
     # Parse alerts for readable_output.
@@ -285,7 +296,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
 
     if alert_id == '':
         raise ValueError('No anomalous object found by given name')
-    
+
     # Suppress ransomware alert.
     client.suppress_ransomware_alert_by_id(alert_id)
 
@@ -318,7 +329,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
         "vmwareParameters": {
             "poweredOn": True,
             "prefix": "Recover-",
-            "suffix": "-VM-" + str(get_current_date_time())
+            "suffix": "-VM-" + str(get_current_millis())
         },
         "objects": [
             {
@@ -351,7 +362,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     if last_run and 'start_time' in last_run:
         start_time_millis = int(last_run.get('start_time'))
 
-    end_time_millis = get_current_date_time()
+    end_time_millis = get_current_millis()
 
     # Fetch all new incidents.
     incidents = []
