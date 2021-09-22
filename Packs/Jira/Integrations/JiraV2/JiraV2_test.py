@@ -1,3 +1,4 @@
+from optparse import OptionParser
 from unittest.mock import Mock
 
 import demistomock as demisto
@@ -1139,6 +1140,40 @@ def test_get_issue_fields_issuejson_param():
 
 def test_get_issue_fields():
     from JiraV2 import get_issue_fields
-    issue_fields = get_issue_fields(False, False, **{"components": "Test, Test 1", "security": "Anyone", "environment": "Test"})
+    issue_fields = get_issue_fields(False, False,
+                                    **{"components": "Test, Test 1", "security": "Anyone", "environment": "Test"})
     assert issue_fields == {'fields': {'components': [{'name': 'Test'}, {'name': 'Test 1'}], 'environment': 'Test',
                                        'security': {'name': 'Anyone'}}}
+
+
+@pytest.mark.parametrize('get_attachments_arg, should_get_attachments', [
+    ('true', True), ('false', False)
+])
+def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attachments):
+    """
+    Given:
+        - An issue number
+    When
+        - calling the get issue command
+    Then
+        - json as dict
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import get_issue
+
+    def jira_req_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
+                      headers: dict = None, files: dict = None):
+
+        if resp_type == 'json':
+            return GET_ISSUE_RESPONSE
+        else:
+            return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
+
+
+    mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    get_issue('id', get_attachments=get_attachments_arg)
+    if should_get_attachments:
+        demisto_results_mocker.assert_called_once()
+    else:
+        demisto_results_mocker.assert_not_called()
