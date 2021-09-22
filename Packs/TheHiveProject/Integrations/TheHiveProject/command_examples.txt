@@ -1,0 +1,22 @@
+!thehive-list-cases
+!thehive-get-case id="~41324616"
+!thehive-update-case id="~41324616" title="updated title"
+!thehive-create-case title="new created case" description="description for new case" owner="demisto"
+!thehive-create-task id="~41324616" title="newly added task" description="new description"
+!thehive-get-task id="~41357336"
+!thehive-get-case-tasks id="~41324616"
+!thehive-list-observables id="~41324616"
+!thehive-list-users
+!thehive-get-version
+!thehive-create-observable data="google" dataType="domain" id="~41324616" message="new observable 2"
+
+
+
+
+
+
+
+
+
+
+

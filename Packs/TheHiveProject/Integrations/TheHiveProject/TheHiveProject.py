@@ -204,7 +204,7 @@ class Client(BaseClient):
             return None
         if res.json():
             task = res.json()
-            task['logs'] = self.get_task_logs(task_id)
+            task[0]['logs'] = self.get_task_logs(task_id)
         else:
             task = None
         return task
@@ -493,7 +493,7 @@ def update_case_command(client: Client, args: dict):
         original_case[k] = v
     case = client.update_case(case_id, args)
     if type(case) == tuple:
-        return_error(f'Error updating case ({case[0]}) - {case[1]}')
+        raise DemistoException(f'Error updating case ({case[0]}) - {case[1]}')
     case_date_dt = dateparser.parse(str(case['createdAt']))
     if case_date_dt:
         case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
@@ -510,7 +510,7 @@ def update_case_command(client: Client, args: dict):
 def create_case_command(client: Client, args: dict):
     case = client.create_case(args)
     if type(case) == tuple:
-        return_error(f'Error creating case ({case[0]}) - {case[1]}')
+        raise DemistoException(f'Error creating case ({case[0]}) - {case[1]}')
 
     case_date_dt = dateparser.parse(str(case['createdAt']))
     if case_date_dt:
@@ -531,11 +531,11 @@ def remove_case_command(client: Client, args: dict):
 
     case = client.get_case(case_id)
     if not case:
-        return_error(f'No case found with ID {case_id}')
+        raise DemistoException(f'No case found with ID {case_id}')
 
     res = client.remove_case(case_id, permanent)
     if type(res) == tuple:
-        return_error(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
+        raise DemistoException(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
 
     return f'Case ID {case_id} permanently removed successfully' if permanent == 'true' \
         else f'Case ID {case_id} removed successfully'
@@ -564,7 +564,7 @@ def get_linked_cases_command(client: Client, args: dict):
     case_id = args.get('case_id')
     res = client.get_linked_cases(case_id)
     if type(res) == tuple:
-        return_error(f'Error getting linked cases ({res[0]}) - {res[1]}')
+        raise DemistoException(f'Error getting linked cases ({res[0]}) - {res[1]}')
     if res:
         for case in res:
             case_date_dt = dateparser.parse(str(case['createdAt']))
@@ -587,7 +587,7 @@ def merge_cases_command(client: Client, args: dict):
     second_case = args.get('secondCaseID')
     case = client.merge_cases(first_case, second_case)
     if isinstance(case, tuple):
-        return_error(f'Error getting linked cases ({case[0]}) - {case[1]}')
+        raise DemistoException(f'Error getting linked cases ({case[0]}) - {case[1]}')
 
     case_date_dt = dateparser.parse(str(case['createdAt']))
     if case_date_dt:
@@ -631,6 +631,7 @@ def get_task_command(client: Client, args: dict):
     task_id = args.get('id')
     task = client.get_task(task_id)
     if task:
+        task = task[0]
         task_date_dt = dateparser.parse(str(task['_createdAt']))
         if task_date_dt:
             task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
