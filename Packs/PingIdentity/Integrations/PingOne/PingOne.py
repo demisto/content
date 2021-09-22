@@ -471,7 +471,7 @@ def get_user_command(client, args):
     user_context = client.get_user_context(raw_response)
     user_readable = client.get_readable_user(raw_response)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': createContext([user_context])
+        'PingOne.Account(val.ID && val.ID === obj.ID)': createContext([user_context])
     }
     readable_output = f"{tableToMarkdown(f'User:{user_term}', [user_readable])} "
     return (
