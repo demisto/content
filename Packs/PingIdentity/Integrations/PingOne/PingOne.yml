@@ -101,8 +101,8 @@ script:
     - contextPath: PingOne.Account.Group
       description: PingOne groups of the user.
       type: string
-    - contextPath: Account.ID
-      description: PingOne account ID
+    - contextPath: PingOne.Account.ID
+      description: PingOne account ID.
       type: string
     - contextPath: Account.Type
       description: PingOne account type
