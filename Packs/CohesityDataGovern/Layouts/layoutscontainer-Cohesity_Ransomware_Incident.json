@@ -271,8 +271,8 @@
         ]
     },
     "group": "incident",
-    "id": "Coheisty Ransomware Incident Layout",
-    "name": "Coheisty Ransomware Incident Layout",
+    "id": "Cohesity Ransomware Incident Layout",
+    "name": "Cohesity Ransomware Incident Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
