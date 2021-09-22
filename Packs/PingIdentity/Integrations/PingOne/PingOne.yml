@@ -59,8 +59,8 @@ script:
     - name: username
       required: true
       default: true
-      description: 'Username to activate '
-    description: Activate an user's account
+      description: A username to activate.
+    description: Activate a user's account.
   - name: pingone-set-password
     arguments:
     - name: username
