@@ -38,7 +38,7 @@ script:
       name: ipaddress
     - description: Endpoint Hostname
       name: hostname
-    description: Verify antivirus/antispyware status
+    description: Verify antivirus/antispyware status.
     name: nt_compliance_check
   - arguments:
     - description: Endpoint Hostname
