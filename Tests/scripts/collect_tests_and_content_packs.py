@@ -7,22 +7,20 @@ import argparse
 import glob
 import json
 import logging
-import os
-import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple, Union
+
+import sys
 
 import demisto_sdk.commands.common.tools as tools
-from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
-from demisto_sdk.commands.common.constants import *  # noqa: E402
-
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
-    should_install_content_pack
+from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
+    is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
-
+from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
@@ -240,10 +238,8 @@ def collect_tests_and_content_packs(
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
-            caught_missing_test = True
-            logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
-                          " which means no test with it will run. please update the conf.json file accordingly."
-                          )
+            caught_missing_test = check_if_test_should_not_be_missed(test_playbook_data.get('file_path', ''),
+                                                                     test_playbook_name)
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -267,6 +263,29 @@ def collect_tests_and_content_packs(
                                 f' - not adding to packs to install')
 
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
+
+
+def check_if_test_should_not_be_missed(test_playbook_path: str, test_playbook_name: str) -> bool:
+    """
+    Checks if a missing test from conf JSON should be missed or not.
+    Test should be missed if the support level is not XSOAR.
+    Args:
+        test_playbook_path (str): Path to test playbook.
+        test_playbook_name (str): Name of the test playbook. For logging purposes.
+
+    Returns:
+        (bool): Whether test should be missed.
+    """
+    pack_name: Optional[str] = tools.get_pack_name(test_playbook_path)
+    if is_pack_xsoar_supported(test_playbook_path):
+        logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
+                      " which means no test with it will run. please update the conf.json file accordingly."
+                      )
+        return True
+    else:
+        logging.info(f'The playbook "{test_playbook_name}" does not appear in conf.json file, but pack '
+                     f'{pack_name} is not XSOAR supported. Not failing test collection.')
+        return False
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -382,21 +401,22 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_ids or re.match(collect_helpers.NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
-                    _id = tools.get_script_or_integration_id(file_path)
+            if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
+                _id = tools.get_script_or_integration_id(file_path)
 
-                else:
-                    _id = get_name(file_path)
+            else:
+                _id = get_name(file_path)
+            if test in test_ids or re.match(collect_helpers.NO_TESTS_FORMAT, test, re.IGNORECASE):
 
                 missing_ids = missing_ids - {_id}
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-                logging.error(message)
-                global _FAILED
-                _FAILED = True
+                if check_if_test_should_not_be_missed(file_path, test):
+                    global _FAILED
+                    _FAILED = True
+                else:
+                    missing_ids = missing_ids - {_id}
 
     return missing_ids
 
@@ -1263,7 +1283,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     logging.info(modified_packs)
     for pack_name in modified_packs:
         pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
-        pack_metadata = get_pack_metadata(pack_metadata_path)
+        pack_metadata = tools.get_pack_metadata(pack_metadata_path)
         from_version = pack_metadata.get('serverMinVersion')
         to_version = pack_metadata.get('serverMaxVersion')
         if from_version:
@@ -1373,7 +1393,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True)
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
+                             modified_packs=set())
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
