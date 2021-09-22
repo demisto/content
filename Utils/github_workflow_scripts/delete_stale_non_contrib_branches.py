@@ -17,7 +17,7 @@ print = timestamped_print
 
 def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
-    and that have not been updated for 2 months (stale)
+    and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
     Args:
         repo (Repository): The repository whose branches will be searched and listed
