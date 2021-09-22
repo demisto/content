@@ -176,7 +176,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: idefense-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23290
+  dockerimage: demisto/jmespath:1.0.0.23980
   feed: true
   isfetch: false
   longRunning: false
