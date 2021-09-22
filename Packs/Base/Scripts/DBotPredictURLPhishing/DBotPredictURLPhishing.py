@@ -84,7 +84,7 @@ KEY_CONTENT_AGE = "DomainAge"
 KEY_FINAL_VERDICT = "Final Verdict"
 
 WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
-                    MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
+                    MODEL_KEY_URL_SCORE: 1, MODEL_KEY_LOGO_FOUND: 1}
 
 MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
     MODEL_KEY_SEO: {True: RED_COLOR % 'Malicious', False: GREEN_COLOR % 'Benign'},
@@ -559,6 +559,9 @@ def main():
     msg_list = []
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
+    demisto.results(demisto_major_version)
+    demisto.results(demisto_minor_version)
+    demisto.results(MAJOR_VERSION)
     if exist:
         demisto.results("Model version in demisto: %s.%s" % (demisto_major_version, demisto_minor_version))
     else:
@@ -584,12 +587,13 @@ def main():
         return_error(MSG_WRONG_CONFIG_MODEL)
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
+    demisto.results(list(model.logos_dict.keys()))
     force_model = demisto.args().get('forceModel', 'False') == 'True'
     urls = [x.strip() for x in demisto.args().get('urls', '').split(',') if x]
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
-    number_entries_to_return = int(demisto.args().get('numberEntryToReturn'))
+    number_entries_to_return = int(demisto.args().get('numberDetailedReports'))
     results = [get_prediction_single_url(model, x, force_model) for x in urls]
     general_summary = return_general_summary(results)
     detailed_summary = return_detailed_summary(results, number_entries_to_return)

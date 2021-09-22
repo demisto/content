@@ -17,7 +17,17 @@ args:
 - default: false
   defaultValue: '1'
   isArray: false
-  name: numberEntryToReturn
+  name: numberDetailedReports
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  isArray: false
+  name: resetModel
+  predefined:
+  - 'False'
+  - 'True'
   required: false
   secret: false
 commonfields:
