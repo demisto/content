@@ -2547,10 +2547,10 @@ def verify_edit_url_filter_args(major_version: int, element_to_change: str) -> N
         if element_to_change not in ('allow_categories', 'block_categories', 'description'):
             raise DemistoException('Only the allow_categories, block_categories, description properties can be changed'
                                    ' in PAN-OS 9.x or later versions.')
-    # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
-    if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
-        raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
-                               ' changed in PAN-OS 8.x or earlier versions.')
+    else: # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
+        if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
+            raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
+                                   ' changed in PAN-OS 8.x or earlier versions.')
 
 
 @logger
