@@ -501,10 +501,6 @@
           "complex": null,
           "simple": "magnitude"
         },
-        "Mirroring Events Status - Offense": {
-          "complex": null,
-          "simple": "mirroring_events_status"
-        },
         "Number Of Events In Offense": {
           "complex": null,
           "simple": "event_count"

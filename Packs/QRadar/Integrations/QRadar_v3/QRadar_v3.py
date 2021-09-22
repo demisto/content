@@ -1357,7 +1357,9 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             # failures are relevant only when consecutive
             num_of_failures = 0
             if query_status in TERMINATING_SEARCH_STATUSES:
+                print_debug_msg(f'Getting events for offense {offense_id}')
                 search_results_response = client.search_results_get(search_id)
+                print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
                 events = search_results_response.get('events', [])
                 sanitized_events = sanitize_outputs(events)
                 print_debug_msg(f'Fetched {len(sanitized_events)} events for offense {offense_id}.')
@@ -1416,18 +1418,21 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
-        min_events_size = min(offense.get('event_count', 0), events_limit)
         if len(events) >= min_events_size:
-            offense = dict(offense, events=events)
+            print_debug_msg(f"Fetched {len(events)}/{min_events_size} for offense ID {offense_id}")
             break
         print_debug_msg(f'Did not fetch enough events. Expected at least {min_events_size}. Retrying to fetch events '
                         f'for offense ID: {offense_id}. Retry number {i}/{max_retries}')
         if i < max_retries - 1:
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
-    offense['mirroring_events_message'] = failure_message
-    if not failure_message and len(events) < min_events_size:
-        offense['mirroring_events_message'] = 'Events were not indexed in QRadar at the time of the mirror.'
+    print_debug_msg(f"Reached max retries for offense {offense.get('id')} with failure message {failure_message}")
+    if failure_message == '' and len(events) < min_events_size:
+        failure_message = 'Events were probably not indexed in QRadar at the time of the mirror.'
+
+    offense = dict(offense, mirroring_events_message=failure_message)
+    if events:
+        offense = dict(offense, events=events)
 
     return offense
 
@@ -2884,7 +2889,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 
 
 def update_events_mirror_message(mirror_options: Optional[Any], events_limit: int,
-                                failure_message: str, events_count: int, events_mirrored: int) -> str:
+                                 failure_message: str, events_count: int, events_mirrored: int) -> str:
     mirroring_events_message = 'Unknown'
     print_debug_msg(f"mirror_options {mirror_options}\n events_limit {events_limit} \n"
                     f"failure_message {failure_message}\n events_count {events_count}\n "
@@ -2933,7 +2938,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     last_update = get_time_parameter(args.get('lastUpdate'))
     if last_update and last_update > offense_last_update and str(offense.get("id")) not in processed_offenses:
         demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
+        return GetRemoteDataResponse({'id': offense_id, 'mirroring_events_message': 'Nothing new in the ticket.'}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -2996,6 +3001,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
             offenses_with_updated_events.remove(evented_offense[0])
 
+        elif is_waiting_to_be_updated:
+            failure_message = 'In queue.'
+
         resubmitted_offenses_ids = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, []).copy()
 
         if offense.get("id") in resubmitted_offenses_ids:
@@ -3047,7 +3055,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
-                                    fields='id,start_time,last_persisted_time')
+                                    fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
     new_context_data = ctx.copy()

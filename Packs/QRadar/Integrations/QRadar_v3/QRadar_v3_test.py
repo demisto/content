@@ -508,7 +508,9 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
         expected_offense = dict(offense, events=events,
                                 mirroring_events_message='')
     else:
-        expected_offense = offense
+        expected_offense = dict(offense,
+                                mirroring_events_message='Events were probably not indexed in QRadar at the time '
+                                                         'of the mirror.')
 
     mocker.patch.object(QRadar_v3, "create_search_with_retry", return_value=mock_search_response)
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
@@ -902,7 +904,8 @@ def test_get_modified_remote_data_command(mocker):
                              (dict(), {'lastUpdate': 1613399051537,
                                        'id': command_test_data['get_remote_data']['response']['id']},
                               GetRemoteDataResponse(
-                                  {'id': command_test_data['get_remote_data']['response']['id'], 'in_mirror_error': ''},
+                                  {'id': command_test_data['get_remote_data']['response']['id'],
+                                   'mirroring_events_message': 'Nothing new in the ticket.'},
                                   [])),
                              (dict(), {'lastUpdate': 1613399051535,
                                        'id': command_test_data['get_remote_data']['response']['id']},
@@ -927,6 +930,8 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
     result = get_remote_data_command(client, params, args)
+    if expected.mirrored_object.get('last_mirror_in_time'):
+        expected.mirrored_object['last_mirror_in_time'] = result.mirrored_object['last_mirror_in_time']
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
 
@@ -1024,6 +1029,7 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     if note_response is not None:
         mocker.patch.object(client, 'offense_notes_list', return_value=note_response)
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
+    expected.mirrored_object['last_mirror_in_time'] = result.mirrored_object['last_mirror_in_time']
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
 
