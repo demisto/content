@@ -93,7 +93,7 @@ class Client(BaseClient):
 
         if '_embedded' in res and len(res.get('_embedded', {}).get('users')) == 1:
             return res.get('_embedded', {}).get('users')[0].get('id')
-        raise Exception(f'Failed to find userID for: {username} username.')
+        raise Exception(f'PingOne error: Failed to find userID for: {username} username.')
 
     # Return user from username
     def get_user_by_username(self, username):
