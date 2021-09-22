@@ -19,8 +19,8 @@ requests.packages.urllib3.disable_warnings()
 
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if ('url' in demisto.params() and demisto.params()['url'].endswith('/')) else demisto.params().get('url')
+SERVER = demisto.params().get('url')[:-1] \
+    if ('url' in demisto.params() and demisto.params()['url'].endswith('/')) else demisto.params().get('url','')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # Headers to be sent in requests
