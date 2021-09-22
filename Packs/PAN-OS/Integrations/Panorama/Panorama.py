@@ -2503,9 +2503,9 @@ def panorama_create_url_filter_command(args: dict):
     """
     Create a URL Filter
     """
-    url_filter_name = args['name']
-    action = args['action']
-    url_category_list = argToList(args['url_category'])
+    url_filter_name = str(args.get('name'))
+    action = str(args.get('action'))
+    url_category_list = argToList(args.get('url_category'))
     override_allow_list = argToList(args.get('override_allow_list'))
     override_block_list = argToList(args.get('override_block_list'))
     description = args.get('description')
@@ -2547,14 +2547,14 @@ def verify_edit_url_filter_args(major_version: int, element_to_change: str) -> N
         if element_to_change not in ('allow_categories', 'block_categories', 'description'):
             raise DemistoException('Only the allow_categories, block_categories, description properties can be changed'
                                    ' in PAN-OS 9.x or later versions.')
-    else: # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
+    else:  # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
         if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
             raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
                                    ' changed in PAN-OS 8.x or earlier versions.')
 
 
 @logger
-def set_edit_url_filter_xpaths(major_version: str) -> Tuple[str, str]:
+def set_edit_url_filter_xpaths(major_version: int) -> Tuple[str, str]:
     if major_version >= 9:
         return 'allow', 'block'
     return 'allow-list', 'block-list'
