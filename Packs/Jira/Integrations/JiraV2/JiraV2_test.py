@@ -1169,7 +1169,6 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
         else:
             return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
 
-
     mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
     get_issue('id', get_attachments=get_attachments_arg)
