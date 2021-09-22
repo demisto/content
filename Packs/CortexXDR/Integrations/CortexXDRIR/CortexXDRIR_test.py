@@ -2065,7 +2065,7 @@ def test_run_script_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and script parameters
+        - Endpoint IDs, script UID, script parameters and incident ID
     When
         - Running run-script command
     Then
@@ -2114,7 +2114,7 @@ def test_run_script_command_empty_params(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and empty params
+        - Endpoint IDs, script UID, empty params and incident ID
     When
         - Running run-script command
     Then
@@ -2159,11 +2159,54 @@ def test_run_script_command_empty_params(requests_mock):
     }
 
 
-def test_run_snippet_code_script_command(requests_mock):
+def test_run_snippet_code_script_command_no_incident_id(requests_mock):
     """
     Given:
         - XDR client
         - Endpoint IDs and snippet code
+    When
+        - Running run-snippet-code-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_snippet_code_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_snippet_code_script', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    snippet_code = 'print("hello world")'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    args = {
+        'snippet_code': snippet_code,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+    }
+
+    response = run_snippet_code_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'snippet_code': snippet_code,
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+        }
+    }
+
+
+def test_run_snippet_code_script_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs snippet code and incident ID
     When
         - Running run-snippet-code-script command
     Then
@@ -2336,7 +2379,7 @@ def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and shell commands
+        - Endpoint IDs, shell commands and incident ID
     When
         - Running run-script-execute-commands command
     Then
@@ -2383,7 +2426,7 @@ def test_run_script_delete_file_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-delete-file command
     Then
@@ -2430,7 +2473,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and files paths
+        - Endpoint IDs, files paths and incident ID
     When
         - Running run-script-delete-file command
     Then
@@ -2490,7 +2533,7 @@ def test_run_script_file_exists_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-file-exists command
     Then
@@ -2537,7 +2580,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and files paths
+        - Endpoint IDs, files paths and incident ID
     When
         - Running run-script-file-exists command
     Then
@@ -2597,7 +2640,7 @@ def test_run_script_kill_process_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and process name
+        - Endpoint IDs, process name and incident ID
     When
         - Running run-script-kill-process command
     Then
@@ -2644,7 +2687,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and multiple processes names
+        - Endpoint IDs, multiple processes names and incident ID
     When
         - Running run-script-kill-process command
     Then

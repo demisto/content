@@ -159,7 +159,7 @@ class Client(BaseClient):
 
         request_data = {
             'search_from': search_from,
-            'search_to': search_to
+            'search_to': search_to,
         }
 
         if sort_by_creation_time and sort_by_modification_time:
@@ -249,7 +249,7 @@ class Client(BaseClient):
         """
         request_data = {
             'incident_id': incident_id,
-            'alerts_limit': alerts_limit
+            'alerts_limit': alerts_limit,
         }
 
         reply = self._http_request(
@@ -289,7 +289,7 @@ class Client(BaseClient):
 
         request_data = {
             'incident_id': incident_id,
-            'update_data': update_data
+            'update_data': update_data,
         }
 
         self._http_request(
@@ -324,7 +324,7 @@ class Client(BaseClient):
 
         request_data = {
             'search_from': search_from,
-            'search_to': search_to
+            'search_to': search_to,
         }
 
         if no_filter:
@@ -470,7 +470,7 @@ class Client(BaseClient):
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
-            'endpoint_id': endpoint_id
+            'endpoint_id': endpoint_id,
         }
         if incident_id:
             request_data['incident_id'] = incident_id
@@ -552,13 +552,13 @@ class Client(BaseClient):
                 'platform': platform,
                 'package_type': package_type,
                 'agent_version': agent_version,
-                'description': description
+                'description': description,
             }
         elif package_type == 'upgrade':
             request_data = {
                 'name': name,
                 'package_type': package_type,
-                'description': description
+                'description': description,
             }
 
             if platform == 'windows':
