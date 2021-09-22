@@ -110,6 +110,10 @@
                     "complex": null,
                     "simple": "Body"
                 },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": null
+                },
                 "Email Message ID": {
                     "complex": {
                         "accessor": "value",

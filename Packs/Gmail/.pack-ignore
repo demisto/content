@@ -5,7 +5,4 @@ ignore=IN126
 ignore=RM106
 
 [file:classifier-mapper-incoming-Gsuite-gmail.json]
-ignore=BA101
-
-[file:classifier-mapper-incoming-Gsuite-gmail.json]
-ignore=MP107
+ignore=BA101,MP107
