@@ -337,3 +337,19 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Carbon Black EDR: 2 svchost.exe'
     assert last_fetch == {'last_fetch': 1615648046.79}
+
+
+def test_quarantine_device_command_not_have_id(mocker):
+    """
+        Given:
+            A sensor id
+        When:
+           _get_sensor_isolation_change_body in a quarantine_device_command and unquarantine_device_command
+        Then:
+            Assert the 'id' field is not in the request body.
+    """
+    from CarbonBlackResponseV2 import _get_sensor_isolation_change_body, Client
+    client = Client(base_url="url", apitoken="api_key", use_ssl=True, use_proxy=False)
+    mocker.patch.object(Client, 'get_sensors', return_value=(1, [{"id": "some_id", "some_other_stuff": "some"}]))
+    sensor_data = _get_sensor_isolation_change_body(client, 5, False)
+    assert "id" not in sensor_data
