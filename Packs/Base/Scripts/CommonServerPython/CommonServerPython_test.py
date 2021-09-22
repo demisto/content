@@ -669,27 +669,35 @@ class TestTableToMarkdown:
         assert headers == ['header_1', 'header_2']
 
     @staticmethod
-    @pytest.mark.parametrize('data, expected_table', [
-        ([
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
             {
                 "docker_image": "demisto/python3",
-                "create_time": 1631521313466
+                "create_time": '1631521313466'
             },
             {
                 "docker_image": "demisto/python2",
                 "create_time": 1631521521466
             }
-        ], '''### tableToMarkdown test
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=list(data[0].keys()), date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
 |docker_image|create_time|
 |---|---|
-| demisto/python3 | 1631521313466 |
-| demisto/python2 | 1631521521466 |
+| demisto/python3 | 2021-09-13 11:21:53 |
+| demisto/python2 | 2021-09-13 11:25:21 |
 '''
-        )
-    ])
-    def test_date_fields_param(data, expected_table):
-        table = tableToMarkdown('tableToMarkdown test', data, headers=list(data[0].keys()), date_fields=['create_time'])
-        assert table == expected_table
+        assert table == expected_md_table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)

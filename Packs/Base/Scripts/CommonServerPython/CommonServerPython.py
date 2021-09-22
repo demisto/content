@@ -1866,12 +1866,19 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         sep = '---'
         mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
         for entry in t:
-            vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
-                                   True, True) for h in headers]
+
+            entry_copy = entry.copy()
 
             if date_fields:
                 for field in date_fields:
-                    vals = [5 if int(x)==entry.get(field) else x for x in vals]
+                    try:
+                        entry_copy[field] = epochToTimestamp(int(entry_copy[field]), False)
+
+                    except:
+                        continue
+
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
+                                   True, True) for h in headers]
 
             # this pipe is optional
             mdResult += '| '
@@ -2141,8 +2148,9 @@ def isCommandAvailable(cmd):
     return False
 
 
-def epochToTimestamp(epoch):
-    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+def epochToTimestamp(epoch, utc=True):
+    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S") if utc \
+        else datetime.fromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def formatTimeColumns(data, timeColumnNames):
