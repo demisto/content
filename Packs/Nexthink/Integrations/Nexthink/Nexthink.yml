@@ -54,7 +54,7 @@ script:
       name: hostname
     - description: Endpoint IP Address
       name: ipaddress
-    description: Get endpoint details
+    description: Get endpoint details.
     name: nt_endpoint_details
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
