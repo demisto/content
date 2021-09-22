@@ -40,7 +40,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: '[Cohesity DataGovern sends vulnerability alerts. CohesityTBD.]'
+description: '[Integrate with Cohesity Helios DataGovern services to fetch alerts and take remedial action.]'
 display: CohesityDataGovern
 name: CohesityDataGovern
 script:
@@ -78,6 +78,7 @@ script:
     execution: false
     name: cohesity-get-ransomware-alerts
     outputs:
+    # CohesityTBD.
     - contextPath: CohesityDataGovern.RansomwareAlert
       description: Count of Ransomware alerts
       type: Number

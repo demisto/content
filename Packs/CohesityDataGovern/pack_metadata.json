@@ -1,6 +1,6 @@
 {
     "name": "Cohesity Data Govern",
-    "description": "CohesityTBD",
+    "description": "This integration interacts with Cohesity Helios Data Governance and performs actions based on alerts raised",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cohesity Inc.",

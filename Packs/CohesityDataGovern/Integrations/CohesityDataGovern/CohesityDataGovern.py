@@ -1,18 +1,6 @@
-"""Cohesity Data governance Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
+"""Cohesity Data Governance Integration for Cortex XSOAR (aka Demisto).
 """
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -35,13 +23,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    """Cohesity Data Govern Client class to interact with Cohesity.
     """
 
     # Helper functions to interact with helios services.
@@ -80,7 +62,7 @@ class Client(BaseClient):
             params=request_params
         )
 
-        # filter ransomware alerts.
+        # Filter ransomware alerts.
         ransomware_alerts = []
         for alert in resp:
             if alert['alertCode'] == 'CE01516011':
@@ -89,7 +71,7 @@ class Client(BaseClient):
         return ransomware_alerts
 
     def suppress_ransomware_alert_by_id(self, alert_id: str):
-        """Gets the Cohesity ransomware alerts.
+        """Supress a ransomware alert.
         """
         return self._http_request(
             method='PATCH',
@@ -99,7 +81,7 @@ class Client(BaseClient):
 
     # Method to resolve a ransomware alert by its id.
     def resolve_ransomware_alert_by_id(self, alert_id: str):
-        """Gets the Cohesity ransomware alerts.
+        """Mark a ransonware alert as resolved.
         """
         return self._http_request(
             method='PATCH',
@@ -172,8 +154,6 @@ def create_wide_access_incident(alert) -> Dict[str, Any]:
     }
 
 # Helper method to create ransomware incident from alert.
-
-
 def create_ransomware_incident(alert) -> Dict[str, Any]:
     property_dict = _get_property_dict(alert['propertyList'])
     incidence_millis = alert.get("latestTimestampUsecs", 0) / 1000
@@ -196,8 +176,6 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
     }
 
 # Helper method to refactor ransomware incident.
-
-
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
     demisto.results(alert)
 
@@ -296,7 +274,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get_ransomware_alerts_command: Returns ransomware alerts detected
-        in last n hours.
+        in last num_minutes_ago.
     """
     nMins = int(args.get('num_minutes_ago', "10080"))
     start_time_millis = get_nMin_prev_date_time(nMins)
@@ -359,7 +337,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
 
     # Prepare restore vm properties.
     request_payload = {
-        "name": "Cisco_SecureX_triggered_restore_task_" + restore_properties["object"],
+        "name": "Cortex_XSOAR_triggered_restore_task_" + restore_properties["object"],
         "type": "kRecoverVMs",
         "vmwareParameters": {
             "poweredOn": True,
