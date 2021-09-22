@@ -35,9 +35,11 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
         - Case B: Verify pack is certified, since it is set to be
         - Case C: Verify pack is not certified, since it is partner supported and not set to be certified
     """
-    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    os.mkdir(tmp_path / 'Packs')
+    os.mkdir(tmp_path / 'Packs' / 'DummyPack')
+    pack_metadata_file = tmp_path / 'Packs' / 'DummyPack' / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_xsoar_supported(str(tmp_path)) == expected
+    assert is_pack_xsoar_supported(str(pack_metadata_file)) == expected
 
 
 @pytest.mark.parametrize("pack_metadata_content, expected", [
@@ -57,9 +59,11 @@ def test_is_pack_deprecated(tmp_path, pack_metadata_content, expected):
         - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
         - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
     """
-    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    os.mkdir(tmp_path / 'Packs')
+    os.mkdir(tmp_path / 'Packs' / 'BitcoinAbuse')
+    pack_metadata_file = tmp_path / 'Packs' / 'BitcoinAbuse' / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_deprecated(str(tmp_path)) == expected
+    assert is_pack_deprecated(str(tmp_path / 'Packs' / 'BitcoinAbuse')) == expected
 
 
 def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
