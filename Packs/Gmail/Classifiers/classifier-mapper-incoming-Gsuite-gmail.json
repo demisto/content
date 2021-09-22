@@ -123,6 +123,10 @@
                     "complex": null,
                     "simple": "Html"
                 },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": null
+                },
                 "Email Message ID": {
                     "complex": {
                         "accessor": "",

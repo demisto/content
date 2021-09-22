@@ -180,6 +180,10 @@
                     "complex": null,
                     "simple": "body"
                 },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": null
+                },
                 "Email Message ID": {
                     "complex": null,
                     "simple": "message_id"
