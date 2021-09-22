@@ -1,6 +1,6 @@
 {
     "name": "Cyren Inbox Security",
-    "description": "Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This pack provides tools to import Cyren incidents into XSOAR and help you manage their response.",
+    "description": "Cyren Inbox Security protects Office 365 mailboxes from evasive phishing, business email compromise, and fraud.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cyren",
@@ -36,5 +36,8 @@
     ],
     "githubUser": [
         "ditroia"
+    ],
+    "itemPrefix": [
+        "Cyren"
     ]
 }

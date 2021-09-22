@@ -32,7 +32,7 @@ Use Sample mode to generate a test or sample incident. This mode is useful to pr
 
 Under sample mode, only one incident will be generated when the system invokes the fetch-incident command, regardless of other parameter settings.
 
-To generate another incident, invoke the command: !cyren-reset-sample-fetch
+To generate another incident, click *Reset the "last run" timestamp* configuration option for this integration.
 
 Please refer to [https://www.cyren.com/cyren-inbox-security](https://www.cyren.com/cyren-inbox-security) for more information regarding Cyren Inbox Security.
 

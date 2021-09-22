@@ -44,7 +44,7 @@ description: Cyren Inbox Security is an innovative solution that safeguards Offi
   365 mailboxes in your organization against evasive phishing, business email compromise
   (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into
   XSOAR, and includes a playbook for incident resolution.
-display: Cyren Inbox Security (Partner Contribution)
+display: Cyren Inbox Security
 name: Cyren Inbox Security
 script:
   commands:
@@ -89,9 +89,6 @@ script:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  - arguments: []
-    description: resets integration to fetch a sample incident
-    name: cyren-reset-sample-fetch
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false

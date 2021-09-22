@@ -140,13 +140,15 @@ def test_module(client, client_id, client_secret):
 
 def simulate_fetch():
     """
-    Ingesting a sample incient to demisto
+    Ingesting a sample incident to XSOAR
     """
 
-    if get_integration_context().get("sample_fetched", False):
+    # Ensure only one sample is created
+    last_run = demisto.getLastRun()
+    if last_run.get("sample_fetched", False):
         return []
-
-    set_integration_context({"sample_fetched": True})
+    else:
+        demisto.setLastRun({'sample_fetched': True})
 
     now_time = datetime.now()
     now_time_timestamp_seconds = int(date_to_timestamp(now_time) / 1000)
@@ -394,22 +396,6 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     return incidents
 
 
-def reset_sample_fetch_command(client):
-    """
-    Reset sample mode to allow next call to fetch-incidents to create a sample incident
-    """
-
-    set_integration_context({"sample_fetched": False})
-
-    readable_output = (
-        'A sample incident will be created on the next execution of system *fetch-incidents* command'
-    )
-
-    return CommandResults(
-        readable_output=readable_output
-    )
-
-
 def resolve_and_remediate_command(client, args, client_id, client_secret):
     """
     Resolve a case and remediate it
@@ -482,9 +468,6 @@ def main() -> None:
             else:
                 result = test_module(client, client_id, client_secret)
                 return_results(result)
-
-        if demisto.command() == 'cyren-reset-sample-fetch':
-            return_results(reset_sample_fetch_command(client))
 
         if demisto.command() == 'fetch-incidents':
             if url == client_id == client_secret == "sample":
