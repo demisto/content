@@ -1152,11 +1152,13 @@ def test_get_issue_fields():
 def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attachments):
     """
     Given:
-        - An issue number
+        - Case A: That the user has set the get_attachments to 'true' as he wants to download attachments
+        - Case B: That the user has set the get_attachments to 'false' as he does not want to download attachments
     When
-        - calling the get issue command
+        - Calling the get issue command
     Then
-        - json as dict
+        - Ensure the demisto.results with file data is called
+        - Ensure the demisto.results with file data is not called
     """
     from test_data.raw_response import GET_ISSUE_RESPONSE
     from JiraV2 import get_issue
