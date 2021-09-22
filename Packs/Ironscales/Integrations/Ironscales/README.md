@@ -1,4 +1,4 @@
-IRONSCLAES, a self-learning email security platform integration
+IRONSCALES, a self-learning email security platform integration
 
 
 ## Configure Ironscales on Cortex XSOAR
@@ -85,7 +85,7 @@ Classify incident by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ironscales.classifyincidnet | boolean | Classification succeeded | 
+| Ironscales.classifyincident | boolean | Classification succeeded | 
 
 
 ### ironscales-get-open-incidents

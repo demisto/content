@@ -45,7 +45,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: IRONSCLAES, a self-learning email security platform integration
+description: IRONSCALES, a self-learning email security platform integration
 display: Ironscales
 name: Ironscales
 defaultmapperin: Ironscales - Incoming Mapper
@@ -145,7 +145,7 @@ script:
     description: Classify incident by ID.
     name: ironscales-classify-incident
     outputs:
-    - contextPath: Ironscales.classifyincidnet
+    - contextPath: Ironscales.classifyincident
       description: Classification succeeded
       type: boolean
   - arguments: []
