@@ -148,7 +148,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: Username
+      description: The username to create.
     - name: populationId
       description: PingOne population ID where the new user will be created
     outputs:
