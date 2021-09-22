@@ -98,8 +98,9 @@ script:
     - name: username
       description: Username
     outputs:
-    - contextPath: Account.Group
-      description: PingOne groups of the user
+    - contextPath: PingOne.Account.Group
+      description: PingOne groups of the user.
+      type: string
     - contextPath: Account.ID
       description: PingOne account ID
       type: string
