@@ -81,7 +81,7 @@ script:
       description: Group ID
     - name: userId
       description: User ID
-    description: Add user to group
+    description: Add user to the group.
   - name: pingone-remove-from-group
     arguments:
     - name: username
