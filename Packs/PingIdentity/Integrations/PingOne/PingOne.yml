@@ -173,7 +173,7 @@ script:
     - contextPath: Account.UpdatedAt
       description: PingOne account updated date
       type: date
-    description: 'Create a PingOne user '
+    description: Create a PingOne user.
   - name: pingone-update-user
     arguments:
     - name: username
