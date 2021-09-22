@@ -660,7 +660,6 @@ def get_fetched_ids(fetched_ids_dict: Dict, start_timestamp: int) -> Tuple[Dict,
         List of unique fetched ids.
 
     """
-    # remove older entries from fetched_ids_dict.
     new_fetched_ids_dict = {timestamp: ids_list for timestamp, ids_list in fetched_ids_dict.items()
                             if (int(timestamp) // 1000) >= (start_timestamp // 1000)}
     fetched_ids = itertools.chain(*new_fetched_ids_dict.values())  # chain all relevant ids to a single set.
@@ -689,7 +688,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, 
     fetched_ids_dict = last_run.get('fetched_ids_dict', dict())
 
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch, fetch_delta_time)
-    fetched_ids_dict, fetched_ids = get_fetched_ids(fetched_ids_dict, fetch_start_time)
+    fetched_ids = list(itertools.chain(*fetched_ids_dict.values()))  # chain all relevant ids to a single set.
 
     filters["date"] = {"gte": fetch_start_time}
     filters['id'] = {'neq': fetched_ids}  # Get only new alerts
@@ -712,6 +711,12 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: Dict, 
                 fetched_ids_dict[newest_timestamp] += ids_list
             else:
                 fetched_ids_dict[newest_timestamp] = ids_list
+
+            # remove older entries from fetched_ids_dict.
+            next_fetch_timestamp = calculate_fetch_start_time(newest_timestamp, first_fetch, fetch_delta_time)
+            fetched_ids_dict = {timestamp: ids_list for timestamp, ids_list in fetched_ids_dict.items()
+                                if (int(timestamp) // 1000) >= (next_fetch_timestamp // 1000)}
+
             next_run = {'last_fetch': newest_timestamp, 'fetched_ids_dict': fetched_ids_dict}
             demisto.debug(f'setting last run to: {next_run}')
             return next_run, incidents
