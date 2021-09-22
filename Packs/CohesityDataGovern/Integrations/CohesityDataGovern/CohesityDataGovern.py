@@ -77,7 +77,8 @@ class Client(BaseClient):
             method='PATCH',
             url_suffix='/mcm/alerts/' + alert_id,
             json_data={"status": "kSuppressed"},
-            return_empty_response=True
+            return_empty_response=True,
+            empty_valid_codes=[200]
         )
 
     # Method to resolve a ransomware alert by its id.
@@ -88,7 +89,8 @@ class Client(BaseClient):
             method='PATCH',
             url_suffix='/mcm/alerts/' + alert_id,
             json_data={"status": "kResolved"},
-            return_empty_response=True
+            return_empty_response=True,
+            empty_valid_codes=[200]
         )
 
     def restore_vm_object(self, cluster_id, payload):
@@ -101,8 +103,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/irisservices/api/v1/public/restore/recover',
             json_data=payload,
-            headers=client_headers,
-            ok_codes=(200)
+            headers=client_headers
         )
 
 
