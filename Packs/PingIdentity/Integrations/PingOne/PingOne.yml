@@ -66,7 +66,7 @@ script:
     - name: username
       required: true
       default: true
-      description: Username
+      description: The username to change the password for.
     - name: password
       required: true
       description: Password
