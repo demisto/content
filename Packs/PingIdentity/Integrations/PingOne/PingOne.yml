@@ -45,7 +45,7 @@ script:
     - name: username
       required: true
       default: true
-      description: Username to unlock
+      description: Username to unlock.
     description: Unlock a user's account.
   - name: pingone-deactivate-user
     arguments:
