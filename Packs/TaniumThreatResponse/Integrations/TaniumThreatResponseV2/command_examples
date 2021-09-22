@@ -1,5 +1,5 @@
 !tanium-tr-list-alerts limit=2
-!tanium-tr-get-alert-by-id id=1
+!tanium-tr-get-alert-by-id alert-id=1
 !tanium-tr-alert-update-state alert-ids=1 state=resolved
 !tanium-tr-create-snapshot connection_id=remote:EC2AMAZ-KGMRO60:9065264:
 !tanium-tr-delete-snapshot snapshot-ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f

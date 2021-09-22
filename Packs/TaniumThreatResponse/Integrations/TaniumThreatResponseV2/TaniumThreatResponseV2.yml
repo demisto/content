@@ -2089,8 +2089,7 @@ script:
     hidden: false
     name: tanium-tr-intel-deploy
   - deprecated: false
-    description: Displays status of last intel deployment. (Not working when user
-      uses API-Token, waiting for Jason's response)
+    description: Displays status of last intel deployment.
     execution: false
     hidden: false
     name: tanium-tr-intel-deploy-status
