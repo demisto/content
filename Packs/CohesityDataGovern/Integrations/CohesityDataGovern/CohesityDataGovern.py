@@ -177,41 +177,18 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
         "rawJSON": json.dumps(alert)
     }
 
-# Helper method to refactor ransomware incident.
+# Helper method to parse ransomware incident.
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
-    demisto.results(alert)
-
     # Get alert properties.
     property_dict = _get_property_dict(alert['propertyList'])
-    external_id = property_dict.get('object', '') + '___' +\
-        property_dict.get('entityId', '') + '___' +\
-        property_dict.get('source', '') + '___' +\
-        property_dict.get('cluster', '') + '___' +\
-        property_dict.get('cid', '')
 
     return {
         "alert_id": alert['id'],
-        "description": "Anomalous object from Cohesity"
-        " Helios. The object is under source \'"
-        + property_dict.get("source", "")
-        + "\' on cluster \'" + property_dict.get("cluster", "") + "\'" + "\n"
-        + "# Alert Info \n\n"
-        + "*Alert Name* : " + alert['alertDocument']['alertName'] + "\n\n"
-        + "*Alert Description* : " + alert['alertDocument']['alertDescription'] + "\n\n"
-        + "*Alert Cause* : " + alert['alertDocument']['alertCause'] + "\n\n"
-        + "*Alert Help Text* : " + alert['alertDocument']['alertHelpText'],
-        "confidence": "High",
-        "incident_time": datetime.utcfromtimestamp(float(alert['firstTimestampUsecs']) / 1000000).strftime(DATE_FORMAT),
-        "schema_version": "1.1.3",
-        "status": "New",
-        "type": "incident",
-        "source": "Cohesity Helios",
-        "external_id": external_id,
-        "title": "Cohesity Helios: " + property_dict.get("object", ""),
-        "external_references": {
-            "source_name": property_dict.get('source', ''),
-            "description": "The source in which the anomalous object is present"
-        }
+        "alert_description": alert['alertDocument']['alertDescription'],
+        "alert_cause": alert['alertDocument']['alertCause'],
+        "anomalous_object_name": property_dict.get('object'),
+        "anomalous_object_env": property_dict.get('environment'),
+        "anomaly_strength": property_dict.get('anomalyStrength')
     }
 
 
