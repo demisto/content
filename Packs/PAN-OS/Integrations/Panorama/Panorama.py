@@ -2422,7 +2422,7 @@ def panorama_get_url_filter(name: str):
     params = {
         'action': 'get',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\"{name}\"]',
         'key': API_KEY
     }
     result = http_request(
@@ -2542,6 +2542,24 @@ def panorama_create_url_filter_command(args: dict):
 
 
 @logger
+def verify_edit_url_filter_args(major_version: int, element_to_change: str) -> None:
+    if major_version >= 9:  # only url categories are allowed, e.g gambling, abortion
+        if element_to_change not in ('allow_categories', 'block_categories', 'description'):
+            raise DemistoException('Only the allow_categories, block_categories, description properties can be changed'
+                                   ' in PAN-OS 9.x or later versions.')
+    # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
+    if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
+        raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
+                               ' changed in PAN-OS 8.x or earlier versions.')
+
+
+@logger
+def set_edit_url_filter_xpaths(major_version: str) -> Tuple[str, str]:
+    if major_version >= 9:
+        return 'allow', 'block'
+    return 'allow-list', 'block-list'
+
+@logger
 def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, element_value: str,
                              add_remove_element: Optional[str] = None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
@@ -2561,12 +2579,8 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     major_version = get_pan_os_major_version()
     # it seems that in major 9.x pan-os changed the terminology from allow-list/block-list to allow/block
     # with regards to url filter xpaths
-    if major_version >= 9:
-        allow_name = 'allow'
-        block_name = 'block'
-    else:
-        allow_name = 'allow-list'
-        block_name = 'block-list'
+    verify_edit_url_filter_args(major_version, element_to_change)
+    allow_name, block_name = set_edit_url_filter_xpaths(major_version)
 
     if element_to_change == 'description':
         params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
@@ -2574,34 +2588,34 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
 
-    elif element_to_change == 'override_allow_list':
-        prev_override_allow_list = argToList(url_filter_prev.get(allow_name, {}).get('member', []))
+    elif element_to_change in ('override_allow_list', 'allow_categories'):
+        previous_allow = argToList(url_filter_prev.get(allow_name, {}).get('member', []))
         if add_remove_element == 'add':
-            new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
+            new_allow = list((set(previous_allow)).union(set([element_value])))
         else:
-            if element_value not in prev_override_allow_list:
+            if element_value not in previous_allow:
                 raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
-            new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
+            new_allow = [url for url in previous_allow if url != element_value]
 
         params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{allow_name}"
-        params['element'] = add_argument_list(new_override_allow_list, allow_name, True)
+        params['element'] = add_argument_list(new_allow, allow_name, True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_override_allow_list
+        url_filter_output[element_to_change] = new_allow
 
-    # element_to_change == 'override_block_list'
+    # element_to_change in ('override_block_list', 'block_categories')
     else:
-        prev_override_block_list = argToList(url_filter_prev.get(block_name, {}).get('member', []))
+        previous_block = argToList(url_filter_prev.get(block_name, {}).get('member', []))
         if add_remove_element == 'add':
-            new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
+            new_block = list((set(previous_block)).union(set([element_value])))
         else:
-            if element_value not in prev_override_block_list:
+            if element_value not in previous_block:
                 raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
-            new_override_block_list = [url for url in prev_override_block_list if url != element_value]
+            new_block = [url for url in previous_block if url != element_value]
 
         params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{block_name}"
-        params['element'] = add_argument_list(new_override_block_list, block_name, True)
+        params['element'] = add_argument_list(new_block, block_name, True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_override_block_list
+        url_filter_output[element_to_change] = new_block
 
     return result, url_filter_output
 
@@ -2610,10 +2624,10 @@ def panorama_edit_url_filter_command(args: dict):
     """
     Edit a URL Filter
     """
-    url_filter_name = args['name']
-    element_to_change = args['element_to_change']
-    add_remove_element = args['add_remove_element']
-    element_value = args['element_value']
+    url_filter_name = str(args.get('name'))
+    element_to_change = str(args.get('element_to_change'))
+    add_remove_element = str(args.get('add_remove_element'))
+    element_value = str(args.get('element_value'))
 
     result, url_filter_output = panorama_edit_url_filter(url_filter_name, element_to_change, element_value,
                                                          add_remove_element)

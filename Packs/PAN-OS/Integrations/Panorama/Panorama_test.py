@@ -307,6 +307,112 @@ def test_create_url_filter_params_9_x(mocker):
     assert url_filter_params['element'].find('<action>block</action>') == -1  # if  -1, then it is not found
 
 
+def test_edit_url_filter_non_valid_args_8_x(mocker):
+    """
+    Given:
+     - a non valid argument for edit url filter
+
+    When:
+     - running the edit_url_filter function
+     - mocking the pan-os version to be 8.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_edit_url_filter
+    url_filter_object = {
+        "@name": "fw_test_pb_dont_delete",
+        "action": "block",
+        "allow": {
+            "member": [
+                "Demisto- block sites",
+                "test3"
+            ]
+        },
+        "allow-list": {
+            "member": "www.thepill2.com"
+        },
+        "block": {
+            "member": [
+                "abortion",
+                "abused-drugs"
+            ]
+        },
+        "block-list": {
+            "member": "www.thepill.com"
+        },
+        "credential-enforcement": {
+            "allow": {
+                "member": [
+                    "Demisto- block sites",
+                    "test3"
+                ]
+            },
+            "block": {
+                "member": [
+                    "abortion",
+                    "abused-drugs"
+                ]
+            },
+            "log-severity": "medium",
+        },
+        "description": "gogo"
+    }
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    mocker.patch('Panorama.panorama_get_url_filter', return_value=url_filter_object)
+    url_filter_name = 'fw_test_pb_dont_delete'
+    element_to_change = 'allow_categories'
+    element_value = 'gambling'
+    add_remove_element = 'remove'
+
+    err_msg = 'Only the override_allow_list, override_block_list, description properties can be'\
+              ' changed in PAN-OS 8.x or earlier versions.'
+    with pytest.raises(DemistoException, match=err_msg):
+        panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
+
+
+def test_edit_url_filter_non_valid_args_9_x(mocker):
+    """
+    Given:
+     - a non valid argument for edit url filter
+
+    When:
+     - running the edit_url_filter function
+     - mocking the pan-os version to be 9.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_edit_url_filter
+    url_filter_object = {
+        "@name": "fw_test_pb_dont_delete",
+        "allow": {
+            "member": "Test_pb_custom_url_DONT_DELETE"
+        },
+        "credential-enforcement": {
+            "block": {
+                "member": [
+                    "gambling",
+                    "abortion"
+                ]
+            },
+            "log-severity": "medium",
+        },
+        "description": "wowo"
+    }
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch('Panorama.panorama_get_url_filter', return_value=url_filter_object)
+    url_filter_name = 'fw_test_pb_dont_delete'
+    element_to_change = 'override_block_list'
+    element_value = 'gambling'
+    add_remove_element = 'remove'
+
+    err_msg = 'Only the allow_categories, block_categories, description properties can be changed in PAN-OS 9.x or' \
+              ' later versions.'
+    with pytest.raises(DemistoException, match=err_msg):
+        panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
+
+
 def test_prettify_edl():
     from Panorama import prettify_edl
     edl = {'@name': 'edl_name', 'type': {'my_type': {'url': 'abc.com', 'description': 'my_desc'}}}
