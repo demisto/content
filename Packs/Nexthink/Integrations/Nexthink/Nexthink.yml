@@ -33,29 +33,86 @@ display: Nexthink
 name: Nexthink
 script:
   commands:
-  - arguments:
-    - description: Endpoint IP Address
-      name: ipaddress
-    - description: Endpoint Hostname
-      name: hostname
+  - name: nt_compliance_check
+    arguments:
+    - name: ipaddress
+      required: true
+      description: Endpoint IP Address
+      defaultValue: None
+    - name: hostname
+      required: true
+      default: true
+      description: Endpoint Hostname
+      defaultValue: None
+    outputs:
+    - contextPath: Nexthink.Compliance.Device Name
+      description: Endpoint Device Host Name
+    - contextPath: Nexthink.Compliance.Last Logged On User
+      description: Last Logged On User
+    - contextPath: Nexthink.Compliance.IP Address
+      description: Endpoint IP Address
+    - contextPath: Nexthink.Compliance.MAC Address
+      description: Endpoint MAC Address
+    - contextPath: Nexthink.Compliance.Device Antivirus
+      description: Endpoint Antivirus Name
+    - contextPath: Nexthink.Compliance.Device Antivirus RTP
+      description: Endpoint Antivirus Real Time Protection Status
+    - contextPath: Nexthink.Compliance.Device Antivirus Updated
+      description: Endpoint Antivirus Update Status
+    - contextPath: Nexthink.Compliance.Device Antispyware
+      description: Endpoint Antispyware Name
+    - contextPath: Nexthink.Compliance.Device Antispyware RTP
+      description: Endpoint Antispyware Real Time Protection Status
+    - contextPath: Nexthink.Compliance.Device Antispyware Updated
+      description: Endpoint Antispyware Update Status
     description: Verify antivirus/antispyware status.
-    name: nt_compliance_check
-  - arguments:
-    - description: Endpoint Hostname
-      name: hostname
-    - default: true
-      defaultValue: agent
+  - name: nt_installed_packages
+    arguments:
+    - name: hostname
+      required: true
+      description: Endpoint Hostname
+    - name: package
+      required: true
+      default: true
       description: Installed Software Name
-      name: package
-    description: Verify software installed in endpoint
-    name: nt_installed_packages
-  - arguments:
-    - description: Endpoint Hostname
-      name: hostname
-    - description: Endpoint IP Address
-      name: ipaddress
+      defaultValue: agent
+    outputs:
+    - contextPath: Nexthink.Package.Package Name
+      description: Package Name
+    - contextPath: Nexthink.Package.Package Publisher
+      description: Packaged Publisher
+    - contextPath: Nexthink.Package.Package Version
+      description: Package Version
+    - contextPath: Nexthink.Package.Device Name
+      description: Endpoint Device Host Name
+    - contextPath: Nexthink.Package.Last Logged On User
+      description: Last Logged On User
+    - contextPath: Nexthink.Package.IP Address
+      description: Endpoint IP Address
+    - contextPath: Nexthink.Package.MAC Address
+      description: Endpoint MAC Address
+    description: Verify software installed in endpoint.
+  - name: nt_endpoint_details
+    arguments:
+    - name: hostname
+      required: true
+      description: Endpoint Hostname
+      defaultValue: None
+    - name: ipaddress
+      required: true
+      default: true
+      description: Endpoint IP Address
+      defaultValue: None
+    outputs:
+    - contextPath: Nexthink.Endpoint.Endpoint Name
+      description: Endpoint Device Host Name
+    - contextPath: Nexthink.Endpoint.Last Logged On User
+      description: Last Logged On User
+    - contextPath: Nexthink.Endpoint.IP Address
+      description: Endpoint IP Address
+    - contextPath: Nexthink.Endpoint.MAC Address
+      description: Endpoint MAC Address
     description: Get endpoint details.
-    name: nt_endpoint_details
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
