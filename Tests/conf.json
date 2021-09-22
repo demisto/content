@@ -2202,7 +2202,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115,
+            "memory_threshold": 150,
             "pid_threshold": 80
         },
         {
@@ -4233,6 +4233,7 @@
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
             "fromversion": "6.0.0",
+            "timeout": 3500,
             "integrations": [
                 "EWS Mail Sender"
             ]
