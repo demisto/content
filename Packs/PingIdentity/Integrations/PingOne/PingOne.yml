@@ -69,7 +69,7 @@ script:
       description: The username to change the password for.
     - name: password
       required: true
-      description: Password
+      description: The new password.
     description: Sets an user's password
   - name: pingone-add-to-group
     arguments:
