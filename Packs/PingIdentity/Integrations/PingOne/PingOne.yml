@@ -22,7 +22,7 @@ configuration:
   - US
   - EU
   - Asia
-  additionalinfo: PingOne has 3 regions, US, EU and Asia
+  additionalinfo: PingOne has 3 regions, US, EU and Asia.
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
