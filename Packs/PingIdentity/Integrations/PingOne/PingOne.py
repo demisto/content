@@ -466,7 +466,7 @@ def get_user_command(client, args):
         user_term = args.get('username')
         raw_response = client.get_user_by_username(args.get('username'))
     else:
-        raise Exception("You must supply either 'Username' or 'userId")
+        raise Exception("PingOne error: You must supply either 'Username' or 'userId")
 
     user_context = client.get_user_context(raw_response)
     user_readable = client.get_readable_user(raw_response)
