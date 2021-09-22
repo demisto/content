@@ -33,6 +33,9 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
     for branch in all_branches:
         # Make sure the branch is not prefixed with contrib
         if not branch.name.startswith('contrib/'):
+            if branch.protected:
+                print(f"Skipping branch {branch.name} because it is a protected branch")
+                continue
             # Make sure HEAD commit is stale
             if (last_modified := branch.commit.commit.last_modified) and (
                     last_commit_datetime := parse(last_modified)):
