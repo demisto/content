@@ -2503,12 +2503,12 @@ def panorama_create_url_filter_command(args: dict):
     """
     Create a URL Filter
     """
-    url_filter_name = str(args.get('name'))
-    action = str(args.get('action'))
+    url_filter_name = str(args.get('name', ''))
+    action = str(args.get('action', ''))
     url_category_list = argToList(args.get('url_category'))
     override_allow_list = argToList(args.get('override_allow_list'))
     override_block_list = argToList(args.get('override_block_list'))
-    description = args.get('description')
+    description = args.get('description', '')
 
     result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list,
                                         override_block_list, description)
