@@ -563,7 +563,7 @@ def main():
         'auth_url': auth_url,
     }
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
 
     commands = {
         'test-module': test_module,
