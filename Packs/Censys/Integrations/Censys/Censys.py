@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import requests
@@ -51,14 +51,22 @@ def censys_search_command():
     args = demisto.args()
     query = args.get('query')
     index = args.get('index')
-
+    results = []
     url_suffix = 'search/{0}'.format(index)
     data = {
         "query": query,
         "page": 1
     }
     raw = send_request('POST', url_suffix, json.dumps(data))
-    readable = tableToMarkdown("Search results for {0} in {1}".format(query, index), raw["results"])
+    results += raw["results"]
+    if 'metadata' in raw:
+        if 'pages' in raw['metadata']:
+            for x in range(int(raw['metadata']['pages'])):
+                data["page"] += 1
+                raw = send_request('POST', url_suffix, json.dumps(data))
+                results += raw["results"]
+    raw["results"] = results
+    readable = tableToMarkdown("Search results for {0} in {1}".format(query, index), results)
     return_outputs(readable, raw)
 
 
