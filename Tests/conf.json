@@ -4233,7 +4233,7 @@
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
             "fromversion": "6.0.0",
-            "timeout": 2600,
+            "timeout": 4600,
             "integrations": [
                 "EWS Mail Sender"
             ]
