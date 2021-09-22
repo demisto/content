@@ -456,7 +456,7 @@ class Client(BaseClient):
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
-            'endpoint_id': endpoint_id
+            'endpoint_id': endpoint_id,
         }
         if incident_id:
             request_data['incident_id'] = incident_id
