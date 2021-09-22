@@ -46,7 +46,7 @@ def main():
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
             "value": indicator.get("value"),
             "reputation": score_to_reputation(indicator.get("score")),
-            "source": indicator.get("CustomFields", {}).get("stixPackageId", "STIX Bundle"),
+            "source": indicator.get("CustomFields", {}).get("stixpackageid", "STIX Bundle"),
             "rawJSON": indicator,
         }
         for indicator in data

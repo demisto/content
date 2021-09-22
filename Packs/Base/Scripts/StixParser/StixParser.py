@@ -115,7 +115,7 @@ def create_indicator_entry(
     entry = dict()
     entry["indicator_type"] = indicator_type
     entry["value"] = value
-    entry["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
+    entry["CustomFields"] = {"indicatorid": ind_id, "stixpackageid": pkg_id}
     entry["source"] = source if source else ind_id.split("-")[0]
     entry["score"] = score
     # Times
@@ -336,7 +336,7 @@ def stix2_to_demisto(stx_obj):
 
 def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
     data.append({})
-    data[i]["CustomFields"] = {"indicatorId": ind_id, "stixPackageId": pkg_id}
+    data[i]["CustomFields"] = {"indicatorid": ind_id, "stixpackageid": pkg_id}
     data[i]["source"] = ind_id.split(":")[0]
     if timestamp:
         data[i]["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
