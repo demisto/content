@@ -180,10 +180,6 @@
                     "complex": null,
                     "simple": "body"
                 },
-                "Phishing Email Thread Headers": {
-                    "complex": null,
-                    "simple": "headers"
-                },
                 "Email Message ID": {
                     "complex": null,
                     "simple": "message_id"
@@ -351,6 +347,10 @@
                         ]
                     },
                     "simple": ""
+                },
+                "Phishing Email Thread Headers": {
+                    "complex": null,
+                    "simple": "headers"
                 }
             }
         }

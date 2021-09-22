@@ -123,10 +123,6 @@
                     "complex": null,
                     "simple": "Html"
                 },
-                "Phishing Email Thread Headers": {
-                    "complex": null,
-                    "simple": "Headers"
-                },
                 "Email Message ID": {
                     "complex": {
                         "accessor": "",
@@ -153,6 +149,10 @@
                         "transformers": []
                     },
                     "simple": ""
+                },
+                "Phishing Email Thread Headers": {
+                    "complex": null,
+                    "simple": "headers"
                 }
             }
         }
