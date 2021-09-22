@@ -123,7 +123,7 @@
                     "complex": null,
                     "simple": "Html"
                 },
-                "Email Headers": {
+                "Phishing Email Thread Headers": {
                     "complex": null,
                     "simple": "Headers"
                 },

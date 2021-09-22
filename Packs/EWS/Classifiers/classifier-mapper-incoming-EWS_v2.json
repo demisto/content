@@ -180,7 +180,7 @@
                     "complex": null,
                     "simple": "body"
                 },
-                "Email Headers": {
+                "Phishing Email Thread Headers": {
                     "complex": null,
                     "simple": "headers"
                 },
