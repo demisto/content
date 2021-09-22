@@ -223,14 +223,14 @@ class SecurityScorecardClient(BaseClient):
         """Wrapper for the http_request function
 
         Args:
-            self (SecurityScorecardClient).
-            method (str): The HTTP method.
-            url_suffix (Optional[str]): The URL suffix, appended to the base URL. Defaults to None.
-            params (Optional[dict]): The query parameters sent in the HTTP request. Defaults to None.
-            json_data (Optional[dict]): The payload to be sent in the HTTP request in JSON format. Defaults to None.
+            ``self`` (``SecurityScorecardClient``).
+            ``method`` (``str``): The HTTP method.
+            ``url_suffix`` (``Optional[str]``): The URL suffix, appended to the base URL. Defaults to None.
+            ``params`` (``Optional[dict]``): The query parameters sent in the HTTP request. Defaults to None.
+            ``json_data`` (``Optional[dict]``): The payload to be sent in the HTTP request in JSON format. Defaults to None.
 
         Return:
-            None
+            ``dict`` or ``str`` or ``requests.Response``
         """
 
         return super()._http_request(
@@ -430,10 +430,6 @@ def portfolios_list_command(client: SecurityScorecardClient, limit: Optional[str
         arg_name="limit",
         required=False
     )
-
-    # Enforce default if limit is not specified
-    if not limit:
-        limit = 50  # type: ignore
 
     portfolios = client.get_portfolios()
 
@@ -1132,7 +1128,7 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client=client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
-            return_results(portfolios_list_command(client=client, limit=args.get("limit")))
+            return_results(portfolios_list_command(client=client, limit=args.get("limit", "50")))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
             return_results(portfolio_list_companies_command(
                 client=client,
