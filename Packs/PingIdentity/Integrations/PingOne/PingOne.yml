@@ -111,7 +111,7 @@ script:
       type: string
     - contextPath: Account.Group.Name
       description: Name of the group
-    description: Returns user's group memberships
+    description: Returns user's group memberships.
   - name: pingone-get-user
     arguments:
     - name: username
