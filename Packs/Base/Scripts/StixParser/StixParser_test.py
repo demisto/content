@@ -154,8 +154,8 @@ class TestHelperFunctions:
             'indicator_type': 'ip',
             'value': '8.8.8.8',
             'CustomFields': {
-                'indicatorId': 'ind_id',
-                'stixPackageId': 'pkg_id'
+                'indicatorid': 'ind_id',
+                'stixPackageid': 'pkg_id'
             },
             'source': 'stix2',
             'score': 0,

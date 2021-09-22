@@ -1,8 +1,8 @@
 [
   {
     "CustomFields": {
-      "indicatorId": "example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d",
-      "stixPackageId": "example:STIXPackage-33fe3b22-0201-47cf-85d0-97c02164528d"
+      "indicatorid": "example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d",
+      "stixPackageid": "example:STIXPackage-33fe3b22-0201-47cf-85d0-97c02164528d"
     },
     "source": "example",
     "timestamp": "2014-05-08T09:00:00.000000Z",
