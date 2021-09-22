@@ -109,8 +109,9 @@ script:
     - contextPath: PingOne.Account.Group.ID
       description: Group unique ID.
       type: string
-    - contextPath: Account.Group.Name
-      description: Name of the group
+    - contextPath: PingOne.Account.Group.Name
+      description: Group name.
+      type: string
     description: Returns user's group memberships.
   - name: pingone-get-user
     arguments:
