@@ -152,7 +152,7 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
     remote_ip_list = wrap_list_items_in_double_quotes(remote_ip_list)
     local_ip_filter = ''
     if args.get('local_ip'):
-        local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip'))
+        local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', ''))
         local_ip_filter = f'and action_local_ip in({local_ip_list})'
     port_list = args.get('port')
     port_list_filter = f'and action_remote_port in({port_list})' if port_list else ''
