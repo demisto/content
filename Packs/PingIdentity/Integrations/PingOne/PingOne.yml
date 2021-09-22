@@ -52,8 +52,8 @@ script:
     - name: username
       required: true
       default: true
-      description: 'Username to deactivate '
-    description: Deactivate an user's account
+      description: A username to deactivate.
+    description: Deactivate a user's account.
   - name: pingone-activate-user
     arguments:
     - name: username
