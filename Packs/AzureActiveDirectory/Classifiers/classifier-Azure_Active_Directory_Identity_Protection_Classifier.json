@@ -2,7 +2,7 @@
     "defaultIncidentType": "Azure Active Directory Identity and Access",
     "description": "Classifies Azure Active Directory Identity and Access's alerts",
     "feed": false,
-    "id": "Azure Active Directory Identity and Access Classifier",
+    "id": "Azure Active Directory Identity and Access",
     "keyTypeMap": {
         "unlikelyTravel": "Azure Active Directory Identity and Access",
         "anonymizedIPAddress": "Azure Active Directory Identity and Access",
