@@ -2452,6 +2452,7 @@
                 "Rasterize"
             ],
             "timeout": 350,
+            "memory_threshold": 120,
             "fromversion": "4.5.0"
         },
         {
