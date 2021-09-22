@@ -119,7 +119,7 @@ script:
     - name: userId
       description: User ID
     - name: detailed
-      description: PingOne User Details
+      description: Return PingOne User details.
     outputs:
     - contextPath: Account.ID
       description: PingOne account ID
