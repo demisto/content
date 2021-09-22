@@ -536,9 +536,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # get the service API url
-    environment_id = demisto.params().get('environment_id')
-    region = demisto.params().get('region')
+    # get the service API URL
+    params = demisto.params()
+    environment_id = params.get('environment_id')
+    region = params.get('region')
     tld = '.com'
 
     if region == 'EU':
