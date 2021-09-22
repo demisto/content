@@ -2513,7 +2513,7 @@ def panorama_create_url_filter_command(args: dict):
     result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list,
                                         override_block_list, description)
 
-    url_filter_output = {'Name': url_filter_name}
+    url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
         url_filter_output['DeviceGroup'] = DEVICE_GROUP
     url_filter_output['Category'] = []
