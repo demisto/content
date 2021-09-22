@@ -9,7 +9,7 @@ def _get_incident():
 def closeCase():
     incident = _get_incident()
     close_reason = demisto.args().get('closeReason')
-    close_notes = demisto.args().get('closeNotes','')
+    close_notes = demisto.args().get('closeNotes', '')
     action = 'closeCase'
     subOption = 'True Incident'
 

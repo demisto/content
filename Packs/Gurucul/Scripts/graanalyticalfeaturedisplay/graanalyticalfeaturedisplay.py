@@ -79,4 +79,4 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
-    return_results(main())
+    main()
