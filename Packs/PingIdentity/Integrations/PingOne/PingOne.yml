@@ -12,7 +12,7 @@ configuration:
   type: 0
   required: true
   additionalinfo: Environment ID is available under the PingOne Dashboard->Environment
-    Properties
+    Properties.
 - display: PingOne Region
   name: region
   defaultvalue: US
