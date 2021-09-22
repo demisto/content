@@ -178,7 +178,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: Username
+      description: The username to be updated.
     - name: formatted
       description: Formatted PingOne name
     - name: given
