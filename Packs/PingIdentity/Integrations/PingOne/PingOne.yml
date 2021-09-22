@@ -92,7 +92,7 @@ script:
       description: User ID
     - name: groupId
       description: Group ID
-    description: Remove user from group
+    description: Remove user from the group.
   - name: pingone-get-groups
     arguments:
     - name: username
