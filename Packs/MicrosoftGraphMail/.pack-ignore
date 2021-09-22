@@ -6,3 +6,6 @@ ignore=auto-test
 
 [file:README.md]
 ignore=RM106
+
+[file:classifier-Microsoft_Graph_Mail_Mapper.json]
+ignore=MP107
