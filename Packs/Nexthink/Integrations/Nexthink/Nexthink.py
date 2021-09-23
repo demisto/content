@@ -172,13 +172,13 @@ def main():
             return_results("ok")
         else:
             return_results(data)
-    elif demisto.command() == 'nt_endpoint_details':
+    elif demisto.command() == 'nt-endpoint-details':
         data = nexthink_endpoint_details(device, ip)
         return_results(data)
-    elif demisto.command() == 'nt_compliance_check':
+    elif demisto.command() == 'nt-compliance-check':
         data = nexthink_compliance_check(device, ip)
         return_results(data)
-    elif demisto.command() == 'nt_installed_packages':
+    elif demisto.command() == 'nt-installed-packages':
         data = nexthink_installed_packages(device, package)
         return_results(data)
 
