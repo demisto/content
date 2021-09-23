@@ -11,7 +11,7 @@
 	"id": "Lacework Event",
 	"fromVersion": "5.0.0",
 	"locked": false,
-	"name": "Lacework Event ",
+	"name": "Lacework Event",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 1,
