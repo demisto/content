@@ -74,8 +74,8 @@ date_days_ago_timestamp = (freeze_date - datetime.timedelta(days=DAYS_AGO)).time
 # test_get_last_run_test
 get_last_run_test_inputs = [
     (date_days_ago_timestamp, f"{DAYS_AGO} days"),
-    (date_days_ago_timestamp, None)
-    ,(None, f"{DAYS_AGO} days")
+    (date_days_ago_timestamp, None),
+    (None, f"{DAYS_AGO} days")
 ]
 
 # test_incidents_to_import
@@ -178,8 +178,13 @@ services_test_input = (
 
 FROZEN_DATE = "2021-09-23T00:00:00"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+
+
 @pytest.mark.freeze_time(FROZEN_DATE)
-@pytest.mark.parametrize('last_run, first_fetch', [(FROZEN_DATE, None), (None, "3 days"), (None, "7 days"), (FROZEN_DATE, "7 days")])
+@pytest.mark.parametrize(
+    'last_run, first_fetch',
+    [(FROZEN_DATE, None), (None, "3 days"), (None, "7 days"), (FROZEN_DATE, "7 days")]
+)
 def test_get_last_run(last_run, first_fetch):
 
     assert datetime.date.today() == datetime.date(2021, 9, 23)
@@ -189,7 +194,8 @@ def test_get_last_run(last_run, first_fetch):
 
         assert last_run_timestamp == get_last_run(last_run=last_run_timestamp, first_fetch=None)
     else:
-        assert int(arg_to_datetime(arg=first_fetch, arg_name="first_fetch", required=False).timestamp()) == get_last_run(last_run=None, first_fetch=first_fetch)
+        assert int(arg_to_datetime(arg=first_fetch, arg_name="first_fetch", required=False).timestamp()) == \
+            get_last_run(last_run=None, first_fetch=first_fetch)
 
 
 @pytest.mark.freeze_time(FREEZE_DATE)
@@ -569,7 +575,7 @@ def test_create_score_change_alert(mocker, username, change_direction, score_typ
 
     if not isinstance(threshold, int):
         with pytest.raises(ValueError) as exc:
-            res_cmd = alert_score_threshold_create_command(
+            alert_score_threshold_create_command(
                 client=client,
                 username=username,
                 change_direction=change_direction,

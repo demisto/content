@@ -284,7 +284,7 @@ def get_last_run(last_run: str, first_fetch: str):
     if last_run:
         return int(last_run)
     else:
-        
+
         demisto.debug(f"First fetch is defined as '{first_fetch}'")
         days_ago = first_fetch
 
