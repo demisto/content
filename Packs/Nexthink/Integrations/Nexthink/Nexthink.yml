@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: "1671"
-  display: Nexthink Connector Port
+  display: Nexthink Connector Port (e.g. 1671)
   name: port
   required: false
   type: 0
@@ -45,26 +45,36 @@ script:
       description: Endpoint Hostname
       defaultValue: None
     outputs:
-    - contextPath: Nexthink.Compliance.Device Name
+    - contextPath: Nexthink.Compliance.DeviceName
       description: Endpoint Device Host Name
-    - contextPath: Nexthink.Compliance.Last Logged On User
+      type: string
+    - contextPath: Nexthink.Compliance.LastLoggedOnUser
       description: Last Logged On User
-    - contextPath: Nexthink.Compliance.IP Address
+      type: string
+    - contextPath: Nexthink.Compliance.IPAddress
       description: Endpoint IP Address
-    - contextPath: Nexthink.Compliance.MAC Address
+      type: string
+    - contextPath: Nexthink.Compliance.MACAddress
       description: Endpoint MAC Address
-    - contextPath: Nexthink.Compliance.Device Antivirus
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirus
       description: Endpoint Antivirus Name
-    - contextPath: Nexthink.Compliance.Device Antivirus RTP
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirusRTP
       description: Endpoint Antivirus Real Time Protection Status
-    - contextPath: Nexthink.Compliance.Device Antivirus Updated
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntivirusUpdated
       description: Endpoint Antivirus Update Status
-    - contextPath: Nexthink.Compliance.Device Antispyware
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispyware
       description: Endpoint Antispyware Name
-    - contextPath: Nexthink.Compliance.Device Antispyware RTP
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispywareRTP
       description: Endpoint Antispyware Real Time Protection Status
-    - contextPath: Nexthink.Compliance.Device Antispyware Updated
+      type: string
+    - contextPath: Nexthink.Compliance.DeviceAntispywareUpdated
       description: Endpoint Antispyware Update Status
+      type: string
     description: Verify antivirus/antispyware status.
   - name: nt-installed-packages
     arguments:
@@ -77,21 +87,28 @@ script:
       description: Installed Software Name
       defaultValue: agent
     outputs:
-    - contextPath: Nexthink.Package.Package Name
+    - contextPath: Nexthink.Package.PackageName
       description: Package Name
-    - contextPath: Nexthink.Package.Package Publisher
+      type: string
+    - contextPath: Nexthink.Package.PackagePublisher
       description: Packaged Publisher
-    - contextPath: Nexthink.Package.Package Version
+      type: string
+    - contextPath: Nexthink.Package.PackageVersion
       description: Package Version
-    - contextPath: Nexthink.Package.Device Name
+      type: string
+    - contextPath: Nexthink.Package.DeviceName
       description: Endpoint Device Host Name
-    - contextPath: Nexthink.Package.Last Logged On User
+      type: string
+    - contextPath: Nexthink.Package.LastLoggedOnUser
       description: Last Logged On User
-    - contextPath: Nexthink.Package.IP Address
+      type: string
+    - contextPath: Nexthink.Package.IPAddress
       description: Endpoint IP Address
-    - contextPath: Nexthink.Package.MAC Address
+      type: string
+    - contextPath: Nexthink.Package.MACAddress
       description: Endpoint MAC Address
-    description: Verify software installed in endpoint.
+      type: string
+    description: Query installed software in endpoint.
   - name: nt-endpoint-details
     arguments:
     - name: hostname
@@ -104,14 +121,18 @@ script:
       description: Endpoint IP Address
       defaultValue: None
     outputs:
-    - contextPath: Nexthink.Endpoint.Endpoint Name
+    - contextPath: Nexthink.Endpoint.EndpointName
       description: Endpoint Device Host Name
-    - contextPath: Nexthink.Endpoint.Last Logged On User
+      type: string
+    - contextPath: Nexthink.Endpoint.LastLoggedOnUser
       description: Last Logged On User
-    - contextPath: Nexthink.Endpoint.IP Address
+      type: string
+    - contextPath: Nexthink.Endpoint.IPAddress
       description: Endpoint IP Address
-    - contextPath: Nexthink.Endpoint.MAC Address
+      type: string
+    - contextPath: Nexthink.Endpoint.MACAddress
       description: Endpoint MAC Address
+      type: string
     description: Get endpoint details.
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
