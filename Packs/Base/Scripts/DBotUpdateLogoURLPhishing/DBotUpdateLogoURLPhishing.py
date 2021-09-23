@@ -59,7 +59,7 @@ def save_upgraded_version_model(model):
     :param model: URL Phishing model
     :return: msg
     """
-    model_bytes = dill.dumps(model)
+    model_bytes = dill.dumps(model)  # guardrails-disable-line
     model_64 = base64.b64encode(model_bytes)
     msg = load_oob_model_from_model64(model_64, model.major, model.minor)
     return msg
@@ -112,7 +112,7 @@ def decode_model_data(model_data: str):
     :param model_data: string of the encoded based 64 model
     :return: URL Phishing model
     """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))
+    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
 
 
 def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
@@ -121,7 +121,7 @@ def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
     :param path: path of the model in the docker
     :return: URL Phishing model
     """
-    model = dill.load(open(path, 'rb'))
+    model = dill.load(open(path, 'rb'))  # guardrails-disable-line
     return model
 
 

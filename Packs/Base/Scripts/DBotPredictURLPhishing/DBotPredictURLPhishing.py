@@ -114,7 +114,7 @@ def decode_model_data(model_data: str):
     :param model_data: string of the encoded based 64 model
     :return: Model
     """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))
+    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
 
 
 def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
@@ -130,7 +130,7 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
 
 
 def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
-    model = dill.load(open(path, 'rb'))
+    model = dill.load(open(path, 'rb'))  # guardrails-disable-line
     return model
 
 
@@ -253,23 +253,23 @@ def is_valid_url(url: str) -> Tuple[bool, str]:
     :return: bool
     """
     try:
-        response = requests.get(url, verify=False)  # nosec
+        response = requests.get(url, verify=False)  # nosec  guardrails-disable-line
     except requests.exceptions.RequestException:
         prepend_url = prepend_protocol(url, 'http', True)
         try:
-            response = requests.get(prepend_url, verify=False)  # nosec
+            response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
         except requests.exceptions.RequestException:
             prepend_url = prepend_protocol(url, 'https', True)
             try:
-                response = requests.get(prepend_url, verify=False)  # nosec
+                response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
             except requests.exceptions.RequestException:
                 prepend_url = prepend_protocol(url, 'http', False)
                 try:
-                    response = requests.get(prepend_url, verify=False)  # nosec
+                    response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
                 except requests.exceptions.RequestException:
                     prepend_url = prepend_protocol(url, 'https', False)
                     try:
-                        response = requests.get(prepend_url, verify=False)  # nosec
+                        response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
                     except requests.exceptions.RequestException:
                         return False, MSG_IMPOSSIBLE_CONNECTION
     if response.status_code == 200:
@@ -518,7 +518,7 @@ def return_detailed_summary(results, number_entries_to_return):
 
 
 def save_model_in_demisto(model):
-    encoded_model = base64.b64encode(dill.dumps(model))
+    encoded_model = base64.b64encode(dill.dumps(model))  # guardrails-disable-line
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
                                                    'modelName': URL_PHISHING_MODEL_NAME,
                                                    'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT],
