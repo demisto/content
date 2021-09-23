@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '50'
-  display: Maximum number of incidents to fetch every time
+  display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
