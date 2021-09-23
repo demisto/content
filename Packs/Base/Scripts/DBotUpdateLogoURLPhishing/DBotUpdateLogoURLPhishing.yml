@@ -12,6 +12,7 @@ args:
   name: logoName
   required: false
   secret: false
+comment: Add new logo to the phishing URL model
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
@@ -25,6 +26,6 @@ type: python
 dockerimage: devdemisto/mlurlphishing:1.0.0.24014
 runas: DBotWeakRole
 runonce: false
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0

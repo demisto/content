@@ -37,6 +37,7 @@ args:
   - 'True'
   required: false
   secret: false
+comment: Predict phishing URLs using pre-trained model
 commonfields:
   id: DBotPredictURLPhishing
   version: -1
@@ -45,11 +46,13 @@ name: DBotPredictURLPhishing
 script: '-'
 subtype: python3
 system: false
+tags:
+- ''
 timeout: '0'
 type: python
 dockerimage: devdemisto/mlurlphishing:1.0.0.24089
 runas: DBotWeakRole
 runonce: false
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0
