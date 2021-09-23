@@ -773,7 +773,7 @@ def get_domain_command():
         whois = {
             'Name': whois.get('domainName'),
             'Registrar Name': whois.get('registrarName'),
-            'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),
+            'Last Retrieved': whois.get('timeOfLatestRealtimeCheck'),
             'Created': whois.get('created'),
             'Updated': whois.get('updated'),
             'Expires': whois.get('expires'),
@@ -847,7 +847,8 @@ def get_domain_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable':
                 tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers)
+                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                  date_fields=["Last Retrieved"])
                 + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
                 + tableToMarkdown('Emails:', emails, ['Emails'])
                 + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
