@@ -2,7 +2,7 @@
     "name": "Threat Crowd",
     "description": "Query threat crowd for reports.",
     "support": "xsoar",
-    "currentVersion": "2.0.4",
+    "currentVersion": "2.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
