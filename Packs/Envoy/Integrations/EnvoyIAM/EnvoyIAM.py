@@ -11,6 +11,9 @@ ERROR_CODES_TO_SKIP = [
     404
 ]
 
+''' CONSTANTS '''
+SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
+
 '''CLIENT CLASS'''
 
 
@@ -87,11 +90,22 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
+        res = self._http_request(
+            'GET',
+            url_suffix=f'scim/v2/{user_id}',
+        )
+        try:
+            existing_user_data = res.json()
+        except Exception:
+            existing_user_data = res
+
+        map_changes_to_existing_user(existing_user_data, user_data)
+
         uri = f'scim/v2/Users/{user_id}'
         res = self._http_request(
             method='PUT',
             url_suffix=uri,
-            data=user_data
+            data=existing_user_data
         )
         user_app_data = res.json()
         is_active = user_app_data.get('active', False)
@@ -206,6 +220,106 @@ class Client(BaseClient):
 
 
 '''HELPER FUNCTIONS'''
+
+
+def map_changes_to_existing_user(existing_user: dict, new_user_updated_data: dict) -> None:
+    """
+    The new scim cannot be send as is to the Envoy system
+    because this request will delete all the fields
+    in the Envoy system and then insert/add the new scim.
+
+    map_changes_to_existing_user does the required changes
+    in the existing json as per the new scim coming from the request
+    """
+
+    for key, value in new_user_updated_data.items():
+        if isinstance(value, list):
+            # handle in specific way
+            # as of now only emails, phone numbers needs to be handled
+            if key in ('emails', 'phoneNumbers'):
+                existing_complex_list = existing_user.get(key, [])
+                # map emails and phoneNumbers data to the list(existing_complex_list) using new_json
+                map_changes_emails_phone_numbers(value, existing_complex_list)
+                # add
+                new_complex_list = []
+                for new_json_item in value:
+                    exist = False
+                    for existing_json_item in existing_complex_list:
+                        if new_json_item.get('type') == existing_json_item.get('type', ''):
+                            exist = True
+                            break
+                    if not exist:
+                        new_dict = {'type': new_json_item.get('type'),
+                                    'value': new_json_item.get('value')}
+                        if new_json_item.get('primary', None) is not None:
+                            new_dict.update({'primary': new_json_item.get('primary')})
+                        new_complex_list.append(new_dict)
+                existing_complex_list.extend(new_complex_list)
+
+            if key in 'addresses':
+                existing_complex_list = existing_user.get(key, [])
+                # map address data to the list(existing_complex_list) using new_json
+                map_changes_address(value, existing_complex_list)
+                # add
+                new_complex_list = []
+                for new_json_item in value:
+                    exist = False
+                    for existing_json_item in existing_complex_list:
+                        if new_json_item.get('type') == existing_json_item.get('type', ''):
+                            exist = True
+                            break
+                    if not exist:
+                        new_dict = {'type': new_json_item.get('type'),
+                                    'formatted': new_json_item.get('formatted', ''),
+                                    'streetAddress': new_json_item.get('streetAddress', ''),
+                                    'locality': new_json_item.get('locality', ''),
+                                    'region': new_json_item.get('region', ''),
+                                    'postalCode': new_json_item.get('postalCode', ''),
+                                    'country': new_json_item.get('country', ''),
+                                    'primary': new_json_item.get('primary', '')
+                                    }
+                        new_complex_list.append(new_dict)
+                existing_complex_list.extend(new_complex_list)
+
+        elif isinstance(value, dict):
+            if key != SCIM_EXTENSION_SCHEMA:
+                map_changes_to_existing_user(existing_user.get(key, {}), value)
+        else:
+            existing_user[key] = [value] if key in ('emails', 'phoneNumbers') else value
+
+
+def map_changes_emails_phone_numbers(new_list, existing_complex_list):
+    # update
+    for new_json_item in new_list:
+        for existing_json_item in existing_complex_list:
+            if existing_json_item.get('type') == new_json_item.get('type'):
+                if existing_json_item.get('value') != new_json_item.get('value'):
+                    existing_json_item['value'] = new_json_item.get('value')
+                if new_json_item.get('primary', None) is not None:
+                    existing_json_item['primary'] = new_json_item.get('primary')
+                break
+
+
+def map_changes_address(value, existing_complex_list):
+    # update
+    for new_json_item in value:
+        for existing_json_item in existing_complex_list:
+            if existing_json_item.get('type') == new_json_item.get('type'):
+                if new_json_item.get('primary', None) is not None:
+                    existing_json_item['primary'] = new_json_item.get('primary')
+                if existing_json_item.get('formatted') != new_json_item.get('formatted'):
+                    existing_json_item['formatted'] = new_json_item.get('formatted')
+                if existing_json_item.get('streetAddress') != new_json_item.get('streetAddress'):
+                    existing_json_item['streetAddress'] = new_json_item.get('streetAddress')
+                if existing_json_item.get('locality') != new_json_item.get('locality'):
+                    existing_json_item['locality'] = new_json_item.get('locality')
+                if existing_json_item.get('region') != new_json_item.get('region'):
+                    existing_json_item['region'] = new_json_item.get('region')
+                if existing_json_item.get('postalCode') != new_json_item.get('postalCode'):
+                    existing_json_item['postalCode'] = new_json_item.get('postalCode')
+                if existing_json_item.get('country') != new_json_item.get('country'):
+                    existing_json_item['country'] = new_json_item.get('country')
+                break
 
 
 def get_error_details(res: Dict[str, Any]) -> str:
