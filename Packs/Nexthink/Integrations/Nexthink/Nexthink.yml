@@ -33,7 +33,7 @@ display: Nexthink
 name: Nexthink
 script:
   commands:
-  - name: nt_compliance_check
+  - name: nt-compliance-check
     arguments:
     - name: ipaddress
       required: true
