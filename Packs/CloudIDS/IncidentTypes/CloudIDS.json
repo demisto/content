@@ -1,16 +1,7 @@
 {
     "id": "google cloud IDS",
-    "version": 15,
-    "modified": "2021-07-08T14:34:09.598121557Z",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "google cloud IDS",
     "prevName": "google cloud IDS",
@@ -36,6 +27,7 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.0.0"
 }
 
