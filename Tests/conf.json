@@ -4538,6 +4538,12 @@
         {
             "integrations": "CustomIndicatorDemo",
             "playbookID": "playbook-CustomIndicatorDemo-test"
+        },
+        {
+            "playbookID": "Tanium Threat Response V2 Test",
+            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "fromversion": "6.0.0",
+            "timeout": 3000
         }
     ],
     "skipped_tests": {

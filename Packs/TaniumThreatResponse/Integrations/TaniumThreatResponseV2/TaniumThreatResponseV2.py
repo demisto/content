@@ -1353,7 +1353,8 @@ def list_files_in_dir(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     context = createContext(files, removeNull=True)
     outputs = {'Tanium.File(val.name === obj.name && val.connectionId === obj.connectionId)': context}
-    human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files,
+    headers = ['name', 'path', 'connectionId', 'createdDate', 'modifiedDate', 'permissions', 'size']
+    human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1391,7 +1392,8 @@ def get_file_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         del context['info']
 
     outputs = {'Tanium.File(val.path === obj.path && val.connectionId === obj.connectionId)': context}
-    human_readable = tableToMarkdown(f'Information for file `{path_name}`', info,
+    headers = ['path', 'name', 'connectionId', 'type', 'createdDate', 'modifiedDate']
+    human_readable = tableToMarkdown(f'Information for file `{path_name}`', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
