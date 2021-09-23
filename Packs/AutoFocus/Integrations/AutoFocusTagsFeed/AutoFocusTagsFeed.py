@@ -1,6 +1,8 @@
 """HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
 """
-
+import concurrent.futures
+import threading
+import time
 from typing import Dict, List, Optional
 
 import urllib3
@@ -45,6 +47,10 @@ MAP_RELATIONSHIPS = {
 
 }
 
+EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=59)
+EXECUTOR1 = concurrent.futures.ThreadPoolExecutor(max_workers=59)
+PAGE_SIZE = 59
+
 ''' CLIENT CLASS '''
 
 
@@ -56,25 +62,48 @@ class Client(BaseClient):
     def __init__(self, api_key, verify, proxy):
         super().__init__(BASE_URL, verify, proxy)
         self.api_key = api_key
+        self.calls_count = 0
+        self.test = 0
+        self.page_num = -1
+        self.thread_lock_for_calls_count = threading.Lock()
+        self.thread_lock_for_page_num = threading.Lock()
 
     def get_all_tags(self):
-        return self._http_request('POST',
-                                  url_suffix='tags',
-                                  headers={
-                                      'apiKey': self.api_key,
-                                      'Content-Type': 'application/json'
-                                  },
-                                  json_data={"pageSize": 200},
-                                  )
+        with self.thread_lock_for_calls_count:
+            self.calls_count = (self.calls_count + 1)
+            demisto.debug(f"in the first print , call count all tags {self.calls_count}")
+            if self.calls_count >= 100:
+                threading.Event.wait()
+                self.calls_count = 0
+        with self.thread_lock_for_page_num:
+            self.page_num += 1
+        res = self._http_request('POST',
+                                 url_suffix='tags',
+                                 headers={
+                                     'apiKey': self.api_key,
+                                     'Content-Type': 'application/json'
+                                 },
+                                 json_data={"pageSize": PAGE_SIZE, "pageNum": self.page_num},
+                                 )
+        with self.thread_lock_for_calls_count:
+            demisto.debug(f"before exiting get all tags, call count all tags {self.calls_count}")
+        return res
 
     def get_tag_details(self, public_tag_name: str):
-        return self._http_request('POST',
-                                  url_suffix=f'tag/{public_tag_name}',
-                                  headers={
-                                      'apiKey': self.api_key,
-                                      'Content-Type': 'application/json'
-                                  },
-                                  )
+        with self.thread_lock_for_calls_count:
+            self.calls_count = (self.calls_count + 1)
+            demisto.debug(f"get tag details,  {self.calls_count}")
+            if self.calls_count >= 100:
+                threading.Event.wait()
+                self.calls_count = 0
+        res = self._http_request('POST',
+                                 url_suffix=f'tag/{public_tag_name}',
+                                 headers={
+                                     'apiKey': self.api_key,
+                                     'Content-Type': 'application/json'
+                                 },
+                                 )
+        return res
 
     def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
@@ -82,20 +111,42 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
 
-        result = []
+        tag_details = []
+        futures = []
+        future_all_tags = []
+        all_tags = []
+        real_all_tags = []
+        total_count_of_tags = 3625
+        num_of_calls = total_count_of_tags // PAGE_SIZE + 1
+        for i in range(num_of_calls):
+            future_all_tags.append(
+                EXECUTOR.submit(
+                    self.get_all_tags
+                )
+            )
 
-        res = self.get_all_tags()
-        if not res:
-            raise Exception('no result')
-        all_tags = res.get('tags', [])
-        if not all_tags:
-            raise Exception('no result')
-        for tag in all_tags:
+        for future in concurrent.futures.as_completed(future_all_tags):
+            all_tags.append(future.result())
+
+
+        demisto.debug("out from all tags")
+
+        for tags_list in all_tags:
+            tags = tags_list.get('tags', [])
+            real_all_tags.extend(tags)
+        demisto.debug("before the details")
+        for tag in real_all_tags:
             public_tag_name = tag.get('public_tag_name', '')
             if public_tag_name:
-                tag_details = self.get_tag_details(public_tag_name)
-                result.append(tag_details)
-        return result
+                futures.append(
+                    EXECUTOR1.submit(
+                        self.get_tag_details,
+                        public_tag_name=public_tag_name,
+                    )
+                )
+        for future in concurrent.futures.as_completed(futures):
+            tag_details.append(future.result())
+        return tag_details
 
 
 ''' HELPER FUNCTIONS '''
@@ -129,7 +180,7 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
 
     """
     fields: Dict[str, Any] = {}
-    tag = tag_details.get('tag')
+    tag = tag_details.get('tag', {})
     refs = json.loads(tag.get('refs', '[]'))
     if len(refs) > 0:
         fields['publications'] = []
@@ -178,19 +229,19 @@ def create_relationships_for_tag(name: str, tag_type: str, related_tags: List[st
             source = tag.get('source')
             related_tag_type = get_tag_class(tag_class, source)
             if related_tag_type:
-                relationships.append(create_relationship(name, tag_type, related_tag_name, related_tag_type))
+                relationships.append(
+                    create_relationship(name, tag_type, related_tag_name, related_tag_type).to_indicator())
     return relationships
 
 
 def create_relationship(a_name: str, a_class: str, b_name: str, b_class: str):
     return EntityRelationship(
-        name=MAP_RELATIONSHIPS.get(a_class).get(b_class),
+        name=MAP_RELATIONSHIPS.get(a_class, {}).get(b_class),
         entity_a=a_name,
         entity_a_type=a_class,
         entity_b=b_name,
         entity_b_type=b_class,
-        reverse_name=MAP_RELATIONSHIPS.get(b_class).get(a_class),
-        source_reliability='A - Completely reliable'
+        reverse_name=MAP_RELATIONSHIPS.get(b_class, {}).get(a_class),
     )
 
 
@@ -222,13 +273,13 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     """
     iterator = client.build_iterator()
     indicators = []
-    if limit > 0:
-        iterator = iterator[:limit]
+    relationships = []
     all_tags = create_dict_of_all_tags(iterator)
     # extract values from iterator
     for tag_details in iterator:
         tag = tag_details.get('tag')
         value_ = tag.get('tag_name')
+        print(value_)
         tag_class = tag.get('tag_class')
         source = tag.get('source')
         type_ = get_tag_class(tag_class, source)
@@ -252,18 +303,18 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         }
         related_tags = tag_details.get('related_tags', [])
         if related_tags:
-            indicator_obj['fields']['relationships'] = create_relationships_for_tag(value_,
-                                                                                    type_,
-                                                                                    related_tags,
-                                                                                    all_tags)
+            relationships.append(create_relationships_for_tag(value_,type_,related_tags,all_tags))
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
-
         indicators.append(indicator_obj)
-
+    dummy_indicator = {
+        "value": "$$DummyIndicator$$",
+        "relationships": relationships
+    }
+    indicators.append(dummy_indicator)
     return indicators
 
 

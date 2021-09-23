@@ -56,7 +56,7 @@ def test_get_indicators_command(mocker):
         - Return results as war-room entry
 
     """
-    client = Client(base_url=URL)
+    client = Client(api_key='1234', verify=False, proxy=False)
     indicators_list = util_load_json('test_data/build_iterator_results.json')[:10]
     mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
     results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '10'})
