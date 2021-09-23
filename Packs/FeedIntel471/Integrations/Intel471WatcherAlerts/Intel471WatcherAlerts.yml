@@ -1,0 +1,93 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Intel471 Watcher Alerts Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to incidents
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: The severity to apply to incidents
+  defaultvalue: 'Medium'
+  display: Severity
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- additionalinfo: How far back in time to go when performing the first fetch.
+  defaultvalue: '7 days'
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- additionalinfo: The name of the watcher group for which alerts should be fetched.
+  display: Watcher group
+  name: watcher_group
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: |-
+  'Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'
+display: Intel471 Watcher Alerts Feed
+name: Intel471 Watcher Alerts Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - name: fetch-incidents
+    arguments: []
+    description: Fetches Intel 471 Watcher Alerts.
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  isfetch: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/jmespath:1.0.0.23980
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
