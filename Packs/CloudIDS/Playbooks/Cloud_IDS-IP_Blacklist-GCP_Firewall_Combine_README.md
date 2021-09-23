@@ -1,4 +1,4 @@
-# Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine
+# Cloud IDS-IP Blacklist-GCP Firewall_Combine
 Use this playbook to extract an attacker's IP address from Cloud IDS through Google Pub/Sub, then update the ip list to patch GCP firewall.
 
 This playbook calls both Extract and Append.

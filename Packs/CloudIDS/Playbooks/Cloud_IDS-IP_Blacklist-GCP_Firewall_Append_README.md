@@ -1,4 +1,4 @@
-# Cloud_IDS-IP_Blacklist-GCP_Firewall_Append
+# Cloud IDS-IP Blacklist-GCP Firewall_Append
 Use this playbook to update the ip list to patch the GCP firewall
 
 ## Playbook Inputs
