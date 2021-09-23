@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cyren Inbox Security Default](../doc_files/Cyren_Inbox_Security_playbook_1.png)
+![Cyren Inbox Security Default](../doc_files/Cyren_Inbox_Security_Default.png)

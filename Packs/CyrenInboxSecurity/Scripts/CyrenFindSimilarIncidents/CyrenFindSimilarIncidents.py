@@ -82,9 +82,11 @@ def main():
 
         if len(similar_incidents or []) > 0:
             similar_incidents_rows =\
-                map(
-                    lambda x: incident_to_record(x, TIME_FIELD),
-                    similar_incidents
+                list(
+                    map(
+                        lambda x: incident_to_record(x, TIME_FIELD),
+                        similar_incidents
+                    )
                 )
             similar_incidents_rows =\
                 list(
