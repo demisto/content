@@ -316,7 +316,17 @@ def test_prettify_edl():
 
 
 def test_build_traffic_logs_query():
-    # (addr.src in 192.168.1.222) and (app eq netbios-dg) and (action eq allow) and (port.dst eq 138)
+    """
+    Given:
+     - a valid arguments for traffic logs query generation
+
+    When:
+     - running the build_traffic_logs_query utility function
+
+    Then:
+     - a proper query is generated
+        (addr.src in 192.168.1.222) and (app eq netbios-dg) and (action eq allow) and (port.dst eq 138)
+    """
     from Panorama import build_traffic_logs_query
     source = '192.168.1.222'
     application = 'netbios-dg'
@@ -334,6 +344,26 @@ def test_prettify_traffic_logs():
     response = prettify_traffic_logs(traffic_logs)
     expected = [{'Action': 'my_action1', 'Category': 'my_category1', 'Rule': 'my_rule1'},
                 {'Action': 'my_action2', 'Category': 'my_category2', 'Rule': 'my_rule2'}]
+    assert response == expected
+
+
+def test_build_logs_query():
+    """
+    Given:
+     - a valid arguments for logs query generation
+
+    When:
+     - running the build_logs_query utility function
+
+    Then:
+     - a proper query is generated
+        ((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))
+    """
+    from Panorama import build_logs_query
+
+    urls_as_string = "demisto.com, paloaltonetworks.com"
+    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None)
+    expected = "((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))"
     assert response == expected
 
 
