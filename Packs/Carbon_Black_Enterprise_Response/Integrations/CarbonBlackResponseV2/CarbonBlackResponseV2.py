@@ -1,7 +1,7 @@
 import dateparser
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *  # noqa
+# from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
@@ -776,13 +776,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             query_params['status'] = current_status
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort='created_time')
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
         query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(query=query, limit=max_results)
+        res = client.get_alerts(query=query, limit=max_results, sort='created_time')
         alerts += res.get('results', [])
 
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
@@ -810,7 +810,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         }
 
         incidents.append(incident)
-
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time_ms > latest_created_time:
             latest_created_time = incident_created_time_ms
@@ -888,7 +887,7 @@ def main() -> None:
                 client=client,
                 max_results=params.get('max_fetch'),
                 last_run=demisto.getLastRun(),
-                first_fetch_time=params.get('first_fetch', '3 days'),
+                first_fetch_time=params.get('first_fetch', '1113 days'),
                 status=params.get('alert_status', None),
                 feedname=params.get('alert_feed_name', None),
                 query=params.get('alert_query', None))
