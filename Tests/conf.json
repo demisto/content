@@ -3518,6 +3518,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GuardiCore v2",
+            "playbookID": "GuardiCoreV2-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -4165,7 +4170,7 @@
             ]
         },
         {
-            "playbookID": "Cymulate Immediate Threats",
+            "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
                 "cymulate_v2",
@@ -4525,6 +4530,14 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {
@@ -4629,7 +4642,8 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
-        "Carbon Black Edr - Test": "Issue 40132"
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322"
     },
     "skipped_integrations": {
         

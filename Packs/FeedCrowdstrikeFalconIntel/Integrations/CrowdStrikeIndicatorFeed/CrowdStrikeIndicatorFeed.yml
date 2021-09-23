@@ -231,7 +231,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.9.6.24067
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false
