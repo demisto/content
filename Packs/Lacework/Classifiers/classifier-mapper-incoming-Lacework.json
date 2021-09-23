@@ -1,0 +1,61 @@
+{
+	"id": "Lacework - Incoming Mapper",
+	"name": "Lacework - Incoming Mapper",
+	"type": "mapping-incoming",
+	"description": "Lacework Mapper for incidents",
+	"version": -1,
+	"defaultIncidentType": "",
+	"fromVersion": "6.0.0",
+	"mapping": {
+		"Lacework Event": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Lacework Event Actor": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_ACTOR",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_ID",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event Model": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_MODEL",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event Type": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_TYPE",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "SEVERITY",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	}
+}

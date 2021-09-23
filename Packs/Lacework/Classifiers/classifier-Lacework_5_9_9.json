@@ -1,0 +1,42 @@
+{
+    "brandName": "Lacework",
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "custom": true,
+    "defaultIncidentType": "Lacework Event",
+    "id": "612fd5a2-31bf-4a83-8026-d4275ac5da55",
+    "keyTypeMap": {},
+    "mapping": {
+        "Lacework Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Lacework Event ID": {
+                    "complex": null,
+                    "simple": "EVENT_ID"
+                },
+                "Lacework Event Type": {
+                    "complex": null,
+                    "simple": "EVENT_TYPE"
+                },
+                "Lacework Event Actor": {
+                    "complex": null,
+                    "simple": "EVENT_ACTOR"
+                },
+                "Lacework Event Model": {
+                    "complex": null,
+                    "simple": "EVENT_MODEL"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "SEVERITY"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1
+}
