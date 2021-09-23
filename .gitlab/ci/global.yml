@@ -63,9 +63,8 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - rm -r /builds/xsoar/content/venv
   - |
-    if [ -f "./venv/bin/activatemmm" ]; then
+    if [ -f "./venv/bin/activate" ]; then
       echo "found venv"
     else
       echo "installing venv"
