@@ -1,5 +1,4 @@
-
-
+Automatically changes email field when choosing a classification.
 ## Script Data
 ---
 
