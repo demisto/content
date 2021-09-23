@@ -1,6 +1,7 @@
 commonfields:
   id: IronscalesEmailFieldTrigger
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: IronscalesEmailFieldTrigger
 script: ""
 type: python
@@ -9,6 +10,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
+pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.6.22912
 runas: DBotWeakRole
