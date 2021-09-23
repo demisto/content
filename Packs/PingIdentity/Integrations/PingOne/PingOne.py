@@ -400,7 +400,7 @@ def add_user_to_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        raise Exception("PingOne errror: You must supply either 'Username' or 'userId")
+        raise Exception("PingOne error: You must supply either 'Username' or 'userId and 'groupName' or 'groupId'.")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
