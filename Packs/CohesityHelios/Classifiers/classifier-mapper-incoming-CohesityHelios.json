@@ -1,9 +1,9 @@
 {
     "description": "",
     "feed": false,
-    "id": "Cohesity Incoming mapper",
+    "id": "Cohesity Helios Incoming mapper",
     "mapping": {
-        "Cohesity Ransomware Incident": {
+        "Cohesity Helios Ransomware Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert Category": {
@@ -14,27 +14,27 @@
                     "complex": null,
                     "simple": "alertDocument.alertName"
                 },
-                "Cohesity Alert Cause": {
+                "Cohesity Helios Alert Cause": {
                     "complex": null,
                     "simple": "alertDocument.alertCause"
                 },
-                "Cohesity Anomalous Object Name": {
+                "Cohesity Helios Anomalous Object Name": {
                     "complex": null,
                     "simple": "propertyList.[1].value"
                 },
-                "Cohesity Anomaly Strength": {
+                "Cohesity Helios Anomaly Strength": {
                     "complex": null,
                     "simple": "propertyList.[12].value"
                 },
-                "Cohesity Cluster Id": {
+                "Cohesity Helios Cluster Id": {
                     "complex": null,
                     "simple": "clusterId"
                 },
-                "Cohesity Cluster Name": {
+                "Cohesity Helios Cluster Name": {
                     "complex": null,
                     "simple": "clusterName"
                 },
-                "Cohesity Object Environment": {
+                "Cohesity Helios Object Environment": {
                     "complex": null,
                     "simple": "propertyList.[9].value"
                 },
@@ -81,7 +81,7 @@
             }
         }
     },
-    "name": "Cohesity Incoming mapper",
+    "name": "Cohesity Helios Incoming mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

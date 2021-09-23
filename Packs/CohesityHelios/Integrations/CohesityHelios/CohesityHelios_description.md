@@ -1,4 +1,4 @@
-## Cohesity DataGovern Help
+## Cohesity Helios Help
 
 ### Minimum Permission for Helios API user to generate APIKey :cop:
 

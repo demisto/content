@@ -1,10 +1,10 @@
 {
-    "id": "incident_cohesityobjectenvironment",
+    "id": "incident_cohesityheliosobjectenvironment",
     "version": -1,
     "modified": "2021-09-21T21:17:08.151490178+05:30",
-    "name": "Cohesity Object Environment",
+    "name": "Cohesity Helios Object Environment",
     "ownerOnly": false,
-    "cliName": "cohesityobjectenvironment",
+    "cliName": "cohesityheliosobjectenvironment",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

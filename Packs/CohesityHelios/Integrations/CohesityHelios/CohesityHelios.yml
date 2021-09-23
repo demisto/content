@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: CohesityDataGovern
+  id: CohesityHelios
   version: -1
 configuration:
 - defaultvalue: https://helios.cohesity.com
@@ -40,10 +40,10 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: '[Integrate with Cohesity Helios DataGovern services to fetch alerts
+description: '[Integrate with Cohesity Helios services to fetch alerts
   and take remedial action.]'
-display: CohesityDataGovern
-name: CohesityDataGovern
+display: CohesityHelios
+name: CohesityHelios
 script:
   commands:
   # - arguments:
@@ -54,17 +54,17 @@ script:
   #     required: false
   #     secret: false
   #   deprecated: false
-  #   description: Get Cohesity wide-access Alerts command.
+  #   description: Get Cohesity Helios wide-access Alerts command.
   #   execution: false
-  #   name: cohesity-get-was-alerts
+  #   name: cohesity-helios-get-was-alerts
   #   outputs:
-  #   - contextPath: CohesityDataGovern.WASAlert.id
+  #   - contextPath: CohesityHelios.WASAlert.id
   #     description: Identifier for WAS alert
   #     type: String
-  #   - contextPath: CohesityDataGovern.WASAlert.occurance_time
+  #   - contextPath: CohesityHelios.WASAlert.occurance_time
   #     description: WAS alert incidence time.
   #     type: String
-  #   - contextPath: CohesityDataGovern.WASAlert.rule_id
+  #   - contextPath: CohesityHelios.WASAlert.rule_id
   #     description: Triggering rule identifier for WAS alert
   #     type: String
   - arguments:
@@ -75,29 +75,29 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Cohesity ransomware Alerts command.
+    description: Get Cohesity Helios ransomware Alerts command.
     execution: false
-    name: cohesity-get-ransomware-alerts
+    name: cohesity-helios-get-ransomware-alerts
     outputs:
-    - contextPath: CohesityDataGovern.RansomwareAlert.alert_id
+    - contextPath: CohesityHelios.RansomwareAlert.alert_id
       description: Identifier for the ransomware alert.
       type: String
-    - contextPath: CohesityDataGovern.RansomwareAlert.occurrence_time
+    - contextPath: CohesityHelios.RansomwareAlert.occurrence_time
       description: Name of the detected anomalous object.
       type: Date
-    - contextPath: CohesityDataGovern.RansomwareAlert.alert_description
+    - contextPath: CohesityHelios.RansomwareAlert.alert_description
       description: Description for the ransomware alert.
       type: String
-    - contextPath: CohesityDataGovern.RansomwareAlert.alert_cause
+    - contextPath: CohesityHelios.RansomwareAlert.alert_cause
       description: Cause for the ransomware alert.
       type: String
-    - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_name
+    - contextPath: CohesityHelios.RansomwareAlert.anomalous_object_name
       description: Name of the detected anomalous object.
       type: String
-    - contextPath: CohesityDataGovern.RansomwareAlert.anomalous_object_env
+    - contextPath: CohesityHelios.RansomwareAlert.anomalous_object_env
       description: Env of the detected anomalous object.
       type: String
-    - contextPath: CohesityDataGovern.RansomwareAlert.anomaly_strength
+    - contextPath: CohesityHelios.RansomwareAlert.anomaly_strength
       description: Strength of the detected ransomware alert.
       type: Number
   - arguments:
@@ -109,7 +109,7 @@ script:
     deprecated: false
     description: Ignore detected anomalous object.
     execution: false
-    name: cohesity-ignore-anomalous-object
+    name: cohesity-helios-ignore-anomalous-object
   - arguments:
     - default: false
       description: Anomalous object name to be restored.
@@ -119,7 +119,7 @@ script:
     deprecated: false
     description: Restore latest clean snapshot for given object.
     execution: false
-    name: cohesity-restore-latest-clean-snapshot
+    name: cohesity-helios-restore-latest-clean-snapshot
   isfetch: true
   runonce: false
   script: '-'

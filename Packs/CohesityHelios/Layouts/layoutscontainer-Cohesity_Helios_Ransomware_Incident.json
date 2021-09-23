@@ -161,7 +161,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityanomalousobjectname",
+                                "fieldId": "cohesityheliosanomalousobjectname",
                                 "height": 22,
                                 "id": "46926460-1b77-11ec-b233-87ab18a97b71",
                                 "index": 0,
@@ -172,7 +172,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityclusterid",
+                                "fieldId": "cohesityheliosclusterid",
                                 "height": 22,
                                 "id": "495f4000-1b77-11ec-b233-87ab18a97b71",
                                 "index": 1,
@@ -183,7 +183,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityclustername",
+                                "fieldId": "cohesityheliosclustername",
                                 "height": 22,
                                 "id": "4af60ca0-1b77-11ec-b233-87ab18a97b71",
                                 "index": 2,
@@ -194,7 +194,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityobjectenvironment",
+                                "fieldId": "cohesityheliosobjectenvironment",
                                 "height": 22,
                                 "id": "4c506c80-1b77-11ec-b233-87ab18a97b71",
                                 "index": 3,
@@ -205,7 +205,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cohesityanomalystrength",
+                                "fieldId": "cohesityheliosanomalystrength",
                                 "height": 22,
                                 "id": "480fdca0-1b77-11ec-b233-87ab18a97b71",
                                 "index": 4,
@@ -224,7 +224,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cohesityalertcause",
+                                "fieldId": "cohesityheliosalertcause",
                                 "height": 22,
                                 "id": "452e4080-1b77-11ec-b233-87ab18a97b71",
                                 "index": 6,
@@ -271,8 +271,8 @@
         ]
     },
     "group": "incident",
-    "id": "Cohesity Ransomware Incident Layout",
-    "name": "Cohesity Ransomware Incident Layout",
+    "id": "Cohesity Helios Ransomware Incident Layout",
+    "name": "Cohesity Helios Ransomware Incident Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

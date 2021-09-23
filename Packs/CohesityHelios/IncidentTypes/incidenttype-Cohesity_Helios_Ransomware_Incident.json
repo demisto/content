@@ -1,10 +1,10 @@
 {
-    "id": "Cohesity Ransomware Incident",
+    "id": "Cohesity Helios Ransomware Incident",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Cohesity Ransomware Incident",
-    "prevName": "Cohesity Ransomware Incident",
+    "name": "Cohesity Helios Ransomware Incident",
+    "prevName": "Cohesity Helios Ransomware Incident",
     "color": "#229D80",
     "hours": 0,
     "days": 0,
@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 2,
     "onChangeRepAlg": 0,
-    "layout": "Cohesity Ransomware Incident Layout",
+    "layout": "Cohesity Helios Ransomware Incident Layout",
     "detached": false,
     "extractSettings": {
         "mode": "All",

@@ -1,6 +1,6 @@
 {
-    "name": "Cohesity Data Govern",
-    "description": "This integration interacts with Cohesity Helios Data Governance and performs actions based on alerts raised",
+    "name": "Cohesity Helios",
+    "description": "This integration interacts with Cohesity Helios and performs actions based on alerts raised",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cohesity Inc.",
@@ -10,7 +10,7 @@
         "Vulnerability Management"
     ],
     "itemPrefix": [
-        "Cohesity"
+        "Cohesity Helios"
     ],
     "tags": [
         "Security"

@@ -1,10 +1,10 @@
 {
-    "id": "incident_cohesityclustername",
+    "id": "incident_cohesityheliosclustername",
     "version": -1,
     "modified": "2021-09-21T21:18:14.815327698+05:30",
-    "name": "Cohesity Cluster Name",
+    "name": "Cohesity Helios Cluster Name",
     "ownerOnly": false,
-    "cliName": "cohesityclustername",
+    "cliName": "cohesityheliosclustername",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

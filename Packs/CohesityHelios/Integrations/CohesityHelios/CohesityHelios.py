@@ -1,4 +1,4 @@
-"""Cohesity Data Governance Integration for Cortex XSOAR (aka Demisto).
+"""Cohesity Helios Integration for Cortex XSOAR (aka Demisto).
 """
 
 import demistomock as demisto
@@ -23,7 +23,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Cohesity Data Govern Client class to interact with Cohesity.
+    """Cohesity Helios Client class to interact with Cohesity Helios.
     """
 
     # Helper functions to interact with helios services.
@@ -44,7 +44,7 @@ class Client(BaseClient):
         )
 
     def get_ransomware_alerts(self, start_time_millis: int):
-        """Gets the Cohesity ransomware alerts.
+        """Gets the Cohesity Helios ransomware alerts.
         """
         # Prepare request params to fetch alerts.
         request_params = {
@@ -171,7 +171,7 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
 
     return {
         "name": alert['alertDocument']['alertName'],
-        "type": "Cohesity-Ransomware-Incident",
+        "type": "Cohesity-Helios-Ransomware-Incident",
         "event_id": alert.get("id"),
         "occurred": occurance_time,
         "CustomFields": {
@@ -211,7 +211,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
     """get_was_alerts command: Returns Wide Access Sheild Alerts.
 
     :type client: ``Client``
-    :param Client: CohesityDataGovern client to use
+    :param Client: CohesityHelios client to use
 
     :type args: ``Dict[str, Any]``
     :param args:
@@ -251,7 +251,7 @@ def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResul
     # return results.
     return CommandResults(
         readable_output=md,
-        outputs_prefix='CohesityDataGovern.WASAlert',
+        outputs_prefix='CohesityHelios.WASAlert',
         outputs_key_field='id',
         outputs=incidences,
     )
@@ -276,7 +276,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
 
     # CohesityTBD: Parse alert response.
     return CommandResults(
-        outputs_prefix='CohesityDataGovern.RansomwareAlert',
+        outputs_prefix='CohesityHelios.RansomwareAlert',
         outputs_key_field='alert_id',
         outputs=incidences,
     )
@@ -465,16 +465,16 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'cohesity-get-was-alerts':
+        elif demisto.command() == 'cohesity-helios-get-was-alerts':
             return_results(get_was_alerts_command(client, demisto.args()))
 
-        elif demisto.command() == 'cohesity-get-ransomware-alerts':
+        elif demisto.command() == 'cohesity-helios-get-ransomware-alerts':
             return_results(get_ransomware_alerts_command(client, demisto.args()))
 
-        elif demisto.command() == 'cohesity-ignore-anomalous-object':
+        elif demisto.command() == 'cohesity-helios-ignore-anomalous-object':
             return_results(ignore_ransomware_anomaly_command(client, demisto.args()))
 
-        elif demisto.command() == 'cohesity-restore-latest-clean-snapshot':
+        elif demisto.command() == 'cohesity-helios-restore-latest-clean-snapshot':
             return_results(restore_latest_clean_snapshot(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':

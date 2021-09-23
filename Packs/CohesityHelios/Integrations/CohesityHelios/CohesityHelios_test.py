@@ -20,15 +20,15 @@ def util_load_json(path):
 
 
 # TODO: ADD HERE unit tests for every command
-def test_cohesity_get_was_alerts():
-    """Tests cohesity-get-was-alerts command function.
+def test_cohesity_helios_get_was_alerts():
+    """Tests cohesity-helios-get-was-alerts command function.
 
     Checks the output of the command function with the expected output.
 
     CohesityTBD: Add code for unit testsing.
 
     """
-    # from BaseIntegration import Client, CohesityDataGovern_command
+    # from BaseIntegration import Client, CohesityHelios_command
 
     # client = Client(base_url='some_mock_url', verify=False)
     # args = {
