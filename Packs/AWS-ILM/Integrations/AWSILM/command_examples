@@ -1,0 +1,8 @@
+!iam-create-user user-profile=`{"email": "john.doe@example.com", "username": "test", "givenname": "test", "surname": "test", "displayname": "test"}`
+!iam-update-user user-profile=`{"username": "test"}`
+!iam-disable-user user-profile=`{"username": "test"}`
+!iam-get-user user-profile=`{"username": "test"}`
+!iam-create-group scim=`{"displayName": "The group"}`
+!iam-get-group scim=`{"id": "111111"}`
+!iam-update-group scim=`{"id": "111111"}` memberIdsToAdd=`["222222"]`
+!iam-delete-group scim=`{"id": "111111"}`

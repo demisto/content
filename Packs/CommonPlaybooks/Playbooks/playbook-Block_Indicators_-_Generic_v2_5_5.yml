@@ -1,0 +1,669 @@
+id: Block Indicators - Generic v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block Indicators - Generic v2
+description: |+
+  This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+  - Block URL - Generic
+  - Block Account - Generic
+  - Block IP - Generic v2
+  - Block File - Generic v2
+  - Block Email - Generic
+  - Block Domain - Generic
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d3ee8477-b8eb-4b83-88e8-1a3f5e4f26ca
+    type: start
+    task:
+      id: d3ee8477-b8eb-4b83-88e8-1a3f5e4f26ca
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3ce0d3d2-cd32-467f-801d-8b6b43f5ce2a
+    type: title
+    task:
+      id: 3ce0d3d2-cd32-467f-801d-8b6b43f5ce2a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4cfbb153-ee02-4ec5-85e0-a56993f6b1fa
+    type: playbook
+    task:
+      id: 4cfbb153-ee02-4ec5-85e0-a56993f6b1fa
+      version: -1
+      name: Block URL - Generic
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      playbookName: Block URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+      URLBlacklistMiner:
+        complex:
+          root: inputs.URLBlacklistMiner
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: bd1529d5-9110-4c59-8757-77ec2be78cb7
+    type: playbook
+    task:
+      id: bd1529d5-9110-4c59-8757-77ec2be78cb7
+      version: -1
+      name: Block Account - Generic
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+      playbookName: Block Account - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 76aa6efb-02f5-48ef-8136-ce462c1488e4
+    type: title
+    task:
+      id: 76aa6efb-02f5-48ef-8136-ce462c1488e4
+      version: -1
+      name: Block indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 4c576d9c-c844-4005-8cbc-a48d4d7317b0
+    type: playbook
+    task:
+      id: 4c576d9c-c844-4005-8cbc-a48d4d7317b0
+      version: -1
+      name: Block IP - Generic v2
+      description: |-
+        This playbook blocks malicious IPs using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      playbookName: Block IP - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        complex:
+          root: inputs.CustomBlockRule
+      DAG:
+        complex:
+          root: inputs.DAG
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      IP:
+        complex:
+          root: inputs.IP
+      IPBlacklistMiner:
+        complex:
+          root: inputs.IPBlacklistMiner
+      IPListName:
+        complex:
+          root: inputs.IPListName
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      StaticAddressGroup:
+        complex:
+          root: inputs.StaticAddressGroup
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 97c787e9-d72a-4c27-861e-f09f6c63723e
+    type: playbook
+    task:
+      id: 97c787e9-d72a-4c27-861e-f09f6c63723e
+      version: -1
+      name: Block File - Generic v2
+      description: "This playbook is used to block files from running on endpoints.\
+        \ \nThis playbook supports the following integrations:\n- Palo Alto Networks\
+        \ Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect\
+        \ v2\n"
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 162fc17e-709c-4896-8c47-32d03b660de2
+    type: playbook
+    task:
+      id: 162fc17e-709c-4896-8c47-32d03b660de2
+      version: -1
+      name: Block Email - Generic
+      playbookName: Block Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      EmailToBlock:
+        simple: ${inputs.EmailToBlock}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f94181cb-559a-455c-8ced-b2a41e486b5d
+    type: playbook
+    task:
+      id: f94181cb-559a-455c-8ced-b2a41e486b5d
+      version: -1
+      name: Block Domain - Generic
+      description: |-
+        This playbook blocks malicious Domains using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+      playbookName: Block Domain - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.DomainToBlock
+      DomainBlackListID:
+        complex:
+          root: inputs.DomainBlackListID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 520,
+        "width": 2580,
+        "x": -190,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: IPBlacklistMiner
+  value: {}
+  required: false
+  description: The name of the IP blacklist Miner in  Minemeld.
+  playbookInputQuery:
+- key: URLBlacklistMiner
+  value: {}
+  required: false
+  description: The name of the URL blacklist Miner in  Minemeld.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+      transformers:
+      - operator: uniq
+  required: false
+  description: Array of malicious IPs to block.
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+      transformers:
+      - operator: uniq
+  required: false
+  description: Array of malicious URLs to block.
+  playbookInputQuery:
+- key: Username
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: username
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+  required: false
+  description: Array of malicious usernames to block.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The MD5 hash of the file you want to block.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The SHA256 hash of the file you want to block.
+  playbookInputQuery:
+- key: CustomBlockRule
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
+    Specify True to use Custom Block Rules.
+  playbookInputQuery:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name.
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+  playbookInputQuery:
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    Specify the EDL name for IP handling.
+  playbookInputQuery:
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    * The IP address of the web server on which the files are stored.
+    * The web server IP address is configured in the integration instance.
+  playbookInputQuery:
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
+  playbookInputQuery:
+- key: StaticAddressGroup
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+  playbookInputQuery:
+- key: URLListName
+  value:
+    simple: Demisto Remediation - URL EDL
+  required: false
+  description: URL list from the instance context with which to override the remote
+    file.
+  playbookInputQuery:
+- key: CustomURLCategory
+  value:
+    simple: Demisto Remediation - Malicious URLs
+  required: false
+  description: Custom URL Category name.
+  playbookInputQuery:
+- key: type
+  value: {}
+  required: false
+  description: Custom URL category type. Insert "URL List"/ "Category Match".
+  playbookInputQuery:
+- key: device-group
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+  playbookInputQuery:
+- key: categories
+  value: {}
+  required: false
+  description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
+- key: EmailToBlock
+  value: {}
+  required: false
+  description: The email address that you wish to block.
+  playbookInputQuery:
+- key: DomainToBlock
+  value: {}
+  required: false
+  description: The domain that you wish to block.
+  playbookInputQuery:
+- key: DomainBlackListID
+  value: {}
+  required: false
+  description: |-
+    The Domain List ID to add the Domain to.
+    product: Proofpoint Threat Response
+  playbookInputQuery:
+outputs:
+- contextPath: CheckpointFWRule.Domain
+  description: Rule domain.
+- contextPath: CheckpointFWRule.Enabled
+  description: Rule status.
+- contextPath: CheckpointFWRule.Name
+  description: Rule name.
+- contextPath: CheckpointFWRule.UID
+  description: Rule UID.
+- contextPath: CheckpointFWRule.Type
+  description: Rule Type.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: Rule destination negate status (True/False).
+- contextPath: CheckpointFWRule.Action
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
+- contextPath: CheckpointFWRule.Destination
+  description: Rule Destination.
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Rule action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Rule custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: Rule data.
+- contextPath: CheckpointFWRule.DataDirection
+  description: Rule data direction.
+- contextPath: CheckpointFWRule.DataNegate
+  description: Rule data negate status (True/False).
+- contextPath: CheckpointFWRule.Hits
+  description: Rule hits count.
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.Data.Name
+  description: Rule data object name.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the data object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Rule domain name.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Rule domain UID.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Rule domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: The date of the first hit for the rule.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: The date of the last hit for the rule.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of rule hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of rule hits
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of rule hits.
+tests:
+- No Test
+fromversion: 5.5.0

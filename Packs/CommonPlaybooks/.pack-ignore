@@ -54,3 +54,6 @@ ignore=RM106
 
 [file:playbook-Block_Indicators_-_Generic_v2_README.md]
 ignore=RM106
+
+[file:playbook-Block_Indicators_-_Generic_v2_5_5_README.md]
+ignore=RM106

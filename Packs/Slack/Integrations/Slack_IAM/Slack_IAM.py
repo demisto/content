@@ -45,6 +45,10 @@ class Client(BaseClient):
     def create_user(self, user_data):
         uri = '/Users'
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
+        if not isinstance(user_data["emails"], list):
+            user_data["emails"] = [user_data["emails"]]
+        if not isinstance(user_data["phoneNumbers"], list):
+            user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
         res = self._http_request(
             method='POST',
             url_suffix=uri,

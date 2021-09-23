@@ -2814,7 +2814,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
