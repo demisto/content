@@ -3518,6 +3518,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GuardiCore v2",
+            "playbookID": "GuardiCoreV2-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -4165,7 +4170,7 @@
             ]
         },
         {
-            "playbookID": "Cymulate Immediate Threats",
+            "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
                 "cymulate_v2",
