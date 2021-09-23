@@ -35,14 +35,9 @@ def executeCommand(command, args=None):
 
     elif command == 'getMLModel':
         return [{'Contents':
-                     {'modelData': "ModelDataML",
-                      'model':
-                          {'type':
-                               {'type': ''},
-                           'extra': {OOB_MAJOR_VERSION_INFO_KEY: 0, OOB_MINOR_VERSION_INFO_KEY: 0}
-                           }
-                      },
-                 'Type': 'note'}]
+                 {'modelData': "ModelDataML", 'model':
+                     {'type': {'type': ''}, 'extra':
+                         {OOB_MAJOR_VERSION_INFO_KEY: 0, OOB_MINOR_VERSION_INFO_KEY: 0}}}, 'Type': 'note'}]
 
     elif command == 'createMLModel':
         return None
@@ -57,7 +52,7 @@ def test_regular_malicious_new_domain(mocker):
                         }
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberEntryToReturn': '1'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
@@ -86,7 +81,7 @@ def test_regular_benign(mocker):
                         }
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberEntryToReturn': '1'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
@@ -115,7 +110,7 @@ def test_missing_url(mocker):
                         }
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberEntryToReturn': '1'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
@@ -137,7 +132,7 @@ def test_white_list_not_force(mocker):
                         }
     model_mock = PhishingURLModelMock(top_domains={url: 0})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberEntryToReturn': '1'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     # mocker.patch.object(model_mock, 'top_domains', return_value={'google.com':0}, create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
@@ -160,7 +155,7 @@ def test_white_list_force(mocker):
                         }
     model_mock = PhishingURLModelMock(top_domains={url: 0})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberEntryToReturn': '1', 'forceModel': 'True'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1', 'forceModel': 'True'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
@@ -188,7 +183,7 @@ def test_new_major_version(mocker):
                         }
     model_mock = PhishingURLModelMock(top_domains={url: 0})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberEntryToReturn': '1', 'forceModel': 'True'})
+    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1', 'forceModel': 'True'})
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch('DBotPredictURLPhishing.oob_model_exists_and_updated', return_value=(True, 0, 0), create=True)
     mocker.patch('DBotPredictURLPhishing.load_oob', return_value='test'.encode('utf-8'), create=True)
@@ -237,7 +232,7 @@ def test_get_score():
         DOMAIN_AGE_KEY: True,
         MODEL_KEY_URL_SCORE: 0.4
     }
-    assert get_score(pred_json_1) == 0.725
+    assert round(get_score(pred_json_1), 2) == 0.77
     pred_json_2 = {
         MODEL_KEY_SEO: True,
         MODEL_KEY_LOGO_FOUND: False,
@@ -245,4 +240,4 @@ def test_get_score():
         DOMAIN_AGE_KEY: False,
         MODEL_KEY_URL_SCORE: 0.6
     }
-    assert get_score(pred_json_2) == 0.55
+    assert round(get_score(pred_json_2), 2) == 0.53

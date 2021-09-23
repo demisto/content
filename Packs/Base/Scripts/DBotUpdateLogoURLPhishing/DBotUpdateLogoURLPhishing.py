@@ -21,6 +21,8 @@ SUSPICIOUS_VERDICT = "suspicious"
 MSG_WRONG_CONFIGURATION = "Wrong configuration of the model"
 MSG_SAVE_MODEL_IN_DEMISTO = "Saved model version %s.%s"
 MSG_TRANSFER_LOGO = "Transfer logo from demisto model into new docker model"
+MSG_ERROR_READING_MODEL = "Error reading model %s from Demisto"
+UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 
 def get_minor_version_upgrade(model):
@@ -45,8 +47,7 @@ def load_oob_model_from_model64(encoded_model, major, minor):
                                                    'modelExtraInfo': {
                                                        OOB_MAJOR_VERSION_INFO_KEY: major,
                                                        OOB_MINOR_VERSION_INFO_KEY: minor
-                                                   }
-                                                   })
+    }})
     if is_error(res):
         return_error(get_error(res))
     return MSG_SAVE_MODEL_IN_DEMISTO % (str(major), str(minor))
@@ -64,7 +65,7 @@ def save_upgraded_version_model(model):
     return msg
 
 
-def get_model_data(model_name: str) -> Union[str, str]:
+def get_model_data(model_name: str):
     """
     Return model data saved in demisto (string of encoded base 64)
     :param model_name: name of the model to load from demisto
@@ -72,7 +73,7 @@ def get_model_data(model_name: str) -> Union[str, str]:
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model):
-        handle_error("error reading model %s from Demisto" % model_name)
+        return_error(MSG_ERROR_READING_MODEL % model_name)
     else:
         model_data = res_model['Contents']['modelData']
         try:
@@ -82,16 +83,16 @@ def get_model_data(model_name: str) -> Union[str, str]:
             return model_data, UNKNOWN_MODEL_TYPE
 
 
-def oob_model_exists_and_updated() -> Union[bool, int, int]:
+def oob_model_exists_and_updated():
     """
     Check is the model exist and is updated in demisto
     :return: bool, int, int
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
     if is_error(res_model):
-        return False, None, None
-    existing_model_version_major = 0  # res_model['Contents']['model']['extra'].get(OOB_MAJOR_VERSION_INFO_KEY, -1)
-    existing_model_version_minor = 0  # res_model['Contents']['model']['extra'].get(OOB_MINOR_VERSION_INFO_KEY, -1)
+        return False, -1, -1
+    existing_model_version_major = res_model['Contents']['model']['extra'].get(OOB_MAJOR_VERSION_INFO_KEY, -1)
+    existing_model_version_minor = res_model['Contents']['model']['extra'].get(OOB_MINOR_VERSION_INFO_KEY, -1)
     return True, existing_model_version_major, existing_model_version_minor
 
 
@@ -145,7 +146,6 @@ def main():
         else:
             return_error(msg)
 
-
     elif (demisto_major_version == MAJOR_VERSION):
         model = load_demisto_model()
         success, msg = model.add_new_logo(logo_name, logo_url)
@@ -156,7 +156,6 @@ def main():
             msg_list.append(msg)
         else:
             return_error(msg)
-
 
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
         model_docker = load_model_from_docker()

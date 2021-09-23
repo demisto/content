@@ -1,10 +1,13 @@
 args:
 - default: false
+  description: Url of the logo image. Usually the url ends by the extension of the
+    image.
   isArray: false
   name: logoImageURL
   required: false
   secret: false
 - default: false
+  description: Name of the logo. The name won't impact the model.
   isArray: false
   name: logoName
   required: false
