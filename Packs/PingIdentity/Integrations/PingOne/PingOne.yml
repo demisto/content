@@ -151,7 +151,8 @@ script:
       required: true
       description: The username to create.
     - name: populationId
-      description: PingOne population ID where the new user will be created
+      description: PingOne population ID where the new user will be created.
+      required: true
     outputs:
     - contextPath: PingOne.Account.ID
       description: PingOne account ID.
