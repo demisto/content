@@ -203,7 +203,7 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         sys.exit(1)
 
 
-def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path):
+def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path, build_bucket_base_path):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
@@ -211,7 +211,7 @@ def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_pa
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied from.
     """
 
-    build_id_set_path = os.path.join(os.path.dirname(storage_base_path), 'id_set.json')
+    build_id_set_path = os.path.join(os.path.dirname(build_bucket_base_path), 'id_set.json')
     build_id_set_blob = build_bucket.blob(build_id_set_path)
 
     if not build_id_set_blob.exists():
@@ -406,7 +406,7 @@ def main():
                build_bucket, production_base_path, build_bucket_base_path)
 
     # upload id_set.json to bucket
-    copy_id_set(production_bucket, build_bucket, production_base_path)
+    copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
