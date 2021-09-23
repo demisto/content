@@ -31,7 +31,7 @@ MAX_INCIDENTS_TO_FETCH = 100
 INTEL471_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 INCIDENT_TYPE = 'Intel 471 Watcher Alert'
 DEMISTO_VERSION = demisto.demistoVersion()
-CONTENT_PACK = 'Intel471 Feed/2.0.1'
+CONTENT_PACK = 'Intel471 Feed/2.0.4'
 INTEGRATION = 'Intel471 Watcher Alerts Feed'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 
@@ -64,15 +64,12 @@ class Client(BaseClient):
         return {"dummy": dummy}
 
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-    def search_alerts(self, alert_type: Optional[str], watcher_group: Optional[str],
+    def search_alerts(self, watcher_group: Optional[str],
                       max_results: Optional[int],
                       start_time: Optional[int]) -> List[Dict[str, Any]]:
         """Searches for Intel 471 Watcher Alerts using the '/get_alerts' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
-
-        :type alert_type: ``Optional[str]``
-        :param alert_type: type of alerts to search for. There is no list of predefined types
 
         :type watcher_group: ``Optional[str]``
         :param watcher_group: the name of the watcher group for which alerts should be fetched
@@ -92,21 +89,18 @@ class Client(BaseClient):
         if watcher_group:
             request_params['watcherGroup'] = watcher_group
 
-        if alert_type:
-            request_params['alert_type'] = alert_type
-
         if max_results:
-            request_params['max_results'] = max_results
+            request_params['count'] = max_results
 
         if start_time:
-            request_params['start_time'] = start_time
+            request_params['from'] = start_time * 1000
 
         alerts = [
             {
                 'created': '1631885116',
                 'name': 'Test alert 1',
                 'severity': 'Medium',
-                'type': alert_type
+                'type': INCIDENT_TYPE
             }
         ]
 
@@ -196,7 +190,7 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int],
-                    watcher_group: Optional[str], severity: str, alert_type: Optional[str]
+                    watcher_group: Optional[str], severity: str
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
@@ -221,7 +215,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     severity = ','.join(INTEL471_SEVERITIES[INTEL471_SEVERITIES.index(severity):])
 
     alerts = client.search_alerts(
-        alert_type=alert_type,
         watcher_group=watcher_group,
         max_results=max_results,
         start_time=last_fetch
@@ -306,7 +299,7 @@ def main() -> None:
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('fetch_time', '3 days'),
+        arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
@@ -346,10 +339,16 @@ def main() -> None:
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             watcher_group = demisto.params().get('watcher_group', None)
-            alert_type = INCIDENT_TYPE
             severity = demisto.params().get('severity', 'Medium')
 
-            max_results = MAX_INCIDENTS_TO_FETCH
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -357,8 +356,7 @@ def main() -> None:
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
                 watcher_group=watcher_group,
-                severity=severity,
-                alert_type=alert_type
+                severity=severity
             )
 
             # saves next_run for the time fetch-incidents is invoked

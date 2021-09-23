@@ -8,6 +8,11 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- defaultvalue: '100'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
 - display: Username
   name: credentials
   required: false
@@ -38,7 +43,7 @@ configuration:
   defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - additionalinfo: The name of the watcher group for which alerts should be fetched.
