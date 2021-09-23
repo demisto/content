@@ -1,6 +1,5 @@
-id: 628d4d05-cde5-4fca-8e18-764e0b0ea01b
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+id: qualys-scheduled-report-report-template-vm-list-test
+version: -1
 name: qualys-scheduled-report-report-template-vm-list-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "90"
@@ -590,6 +590,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -616,6 +617,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -678,6 +680,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "138"
@@ -707,6 +710,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "101"
@@ -769,6 +773,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "103"
@@ -868,3 +873,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: QualysVulnerabilityManagement-Test
+fromversion: 5.5.0
+description: 'Testing scheduled reports, report templates and VM list commands'
