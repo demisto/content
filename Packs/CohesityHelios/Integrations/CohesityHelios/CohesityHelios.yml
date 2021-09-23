@@ -40,8 +40,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: '[Integrate with Cohesity Helios services to fetch alerts
-  and take remedial action.]'
+description: '[Integrate with Cohesity Helios services to fetch alerts and take remedial
+  action.]'
 display: CohesityHelios
 name: CohesityHelios
 script:
@@ -69,11 +69,41 @@ script:
   #     type: String
   - arguments:
     - default: false
-      description: Num of minutes to fetch ransomware alerts since. (Default) 7 days.
+      defaultValue: '10080'
+      description: Num of minutes to fetch ransomware alerts since.
       isArray: false
       name: num_minutes_ago
       required: false
       secret: false
+    - default: false
+      description: Start time to fetch ransomware alerts in Epoch millis.
+      isArray: false
+      name: start_time_millis
+      required: false
+      secret: false
+    - default: false
+      description: End time to fetch ransomware alerts in Epoch millis.
+      isArray: false
+      name: end_time_millis
+      required: false
+      secret: false
+    - default: false
+      description: List(Comma-separated) of alert ids to fetch.
+      isArray: true
+      name: alert_id_list
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'kCritical'
+      description: List(Comma-separated) of alert severities to fetch. 
+      isArray: false
+      name: alert_severity_list
+      required: false
+      predefined:
+      - kCritical
+      - kWarning
+      - kInfo
     deprecated: false
     description: Get Cohesity Helios ransomware Alerts command.
     execution: false
@@ -85,6 +115,9 @@ script:
     - contextPath: CohesityHelios.RansomwareAlert.occurrence_time
       description: Name of the detected anomalous object.
       type: Date
+    - contextPath: CohesityHelios.RansomwareAlert.severity
+      description: Severity of the ransomware alert.
+      type: String
     - contextPath: CohesityHelios.RansomwareAlert.alert_description
       description: Description for the ransomware alert.
       type: String

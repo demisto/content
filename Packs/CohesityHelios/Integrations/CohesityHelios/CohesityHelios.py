@@ -19,6 +19,12 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+COHESITY_HELIOS_SEVERITY_MAPPING = {
+    'kInfo': 0.5,   # Informational alert
+    'kWarning': 1,  # low severity
+    'kCritical': 4  # critical severity
+}
+
 ''' CLIENT CLASS '''
 
 
@@ -43,18 +49,33 @@ class Client(BaseClient):
             }
         )
 
-    def get_ransomware_alerts(self, start_time_millis: int):
+    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None,
+                              alert_ids=None, alert_state_list=None, alert_severity_list=None, alert_type_list=None,
+                              regionIds=None, cluster_identifiers=None):
         """Gets the Cohesity Helios ransomware alerts.
         """
-        # Prepare request params to fetch alerts.
+        # Prepare default request params.
         request_params = {
             "maxAlerts": 1000,
             "alertCategoryList": "kSecurity",
             "alertStateList": "kOpen",
             "_includeTenantInfo": True
         }
-        if start_time_millis > 0:
-            request_params["startDateUsecs"] = start_time_millis * 1000
+
+        # Populate request params with provided data.
+        if start_time_millis is not None:
+            request_params["startDateUsecs"] = int(start_time_millis) * 1000
+        if end_time_millis is not None:
+            request_params["endDateUsecs"] = int(end_time_millis) * 1000
+        if alert_ids is not None:
+            request_params["alertIdList"] = alert_ids.split(',')
+        if alert_state_list is not None:
+            request_params["alertStateList"] = alert_state_list.split(',')
+        if alert_severity_list is not None:
+            request_params["alertSeverityList"] = alert_severity_list.split(',')
+        if regionIds is not None:
+            request_params["regionIds"] = regionIds.split(',')
+        # CohesityTBD: support more filters.
 
         resp = self._http_request(
             method='GET',
@@ -147,8 +168,9 @@ def _get_property_dict(property_list):
     return property_dict
 
 
-# Helper method to create wide-access incident from alert.
 def create_wide_access_incident(alert) -> Dict[str, Any]:
+    """Helper method to create wide-access incident from alert.
+    """
     occurance_time = get_date_time_from_millis(
         alert.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
 
@@ -159,15 +181,14 @@ def create_wide_access_incident(alert) -> Dict[str, Any]:
         "rawJSON": json.dumps(alert)
     }
 
-# Helper method to create ransomware incident from alert.
-
 
 def create_ransomware_incident(alert) -> Dict[str, Any]:
+    """Helper method to create ransomware incident from alert.
+    """
     property_dict = _get_property_dict(alert['propertyList'])
     incidence_millis = alert.get("latestTimestampUsecs", 0) / 1000
     occurance_time = get_date_time_from_millis(
         incidence_millis).strftime(DATE_FORMAT)
-    # CohesityTBD: Perform field sanitization for Cortex mapping.
 
     return {
         "name": alert['alertDocument']['alertName'],
@@ -181,13 +202,26 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
             "environment": property_dict.get('environment'),
             "anomaly_strength": property_dict.get('anomalyStrength')
         },
-        "rawJSON": json.dumps(alert)
+        "rawJSON": json.dumps(alert),
+        "severity": convert_to_demisto_severity_int(alert.get('severity'))
     }
 
-# Helper method to parse ransomware incident.
+
+def convert_to_demisto_severity_int(severity: str):
+    """Maps Cohesity helios severity to Cortex XSOAR severity
+
+    :type severity: ``str``
+    :param severity: severity as returned from the Cognni API (str)
+
+    :return: Cortex XSOAR Severity (1 to 4)
+    :rtype: ``int``
+    """
+    return COHESITY_HELIOS_SEVERITY_MAPPING.get(severity, 0)
 
 
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
+    """Helper method to parse ransomware incident.
+    """
     # Get alert properties.
     property_dict = _get_property_dict(alert['propertyList'])
     occurance_time = get_date_time_from_millis(
@@ -196,6 +230,7 @@ def parse_ransomware_alert(alert) -> Dict[str, Any]:
     return {
         "alert_id": alert['id'],
         "occurrence_time": occurance_time,
+        "severity": alert.get('severity'),
         "alert_description": alert['alertDocument']['alertDescription'],
         "alert_cause": alert['alertDocument']['alertCause'],
         "anomalous_object_name": property_dict.get('object'),
@@ -264,8 +299,16 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     nMins = int(args.get('num_minutes_ago', "10080"))
     start_time_millis = get_nMin_prev_date_time(nMins)
 
+    start_time_millis = int(args.get('start_time_millis', start_time_millis))
+    end_time_millis = args.get('end_time_millis', None)
+    severity_list = args.get('alert_severity_list', None)
+    ids_list = args.get('alert_id_list', None)
+
     # Fetch ransomware alerts from client.
-    resp = client.get_ransomware_alerts(start_time_millis)
+    resp = client.get_ransomware_alerts(
+        start_time_millis=start_time_millis,
+        end_time_millis=end_time_millis, alert_ids=ids_list,
+        alert_severity_list=severity_list)
 
     # Create ransomware incidents from alerts.
     incidences = []
@@ -289,7 +332,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
     alert_id = ''
     object_name = args.get('object_name')
 
-    resp = client.get_ransomware_alerts(-1)
+    resp = client.get_ransomware_alerts()
     for alert in resp:
         property_dict = _get_property_dict(alert['propertyList'])
         if property_dict.get('object', "") == object_name:
@@ -312,7 +355,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
     restore_properties = {}
     object_name = args.get('object_name')
 
-    resp = client.get_ransomware_alerts(-1)
+    resp = client.get_ransomware_alerts()
     for alert in resp:
         if alert['severity'] == 'kCritical' and alert['alertState'] == 'kOpen':
             restore_properties = _get_property_dict(alert['propertyList'])
@@ -378,7 +421,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     #     incidents.append(incident)
 
     # Fetch new ransomware alerts.
-    ransomware_resp = client.get_ransomware_alerts(start_time_millis)
+    ransomware_resp = client.get_ransomware_alerts(start_time_millis=start_time_millis)
 
     # # Parse alerts for readable_output.
     for alert in ransomware_resp:
@@ -410,7 +453,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_ransomware_alerts(1631471400000)
+        client.get_ransomware_alerts(start_time_millis=1631471400000)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
