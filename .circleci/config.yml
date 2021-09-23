@@ -1243,30 +1243,26 @@ jobs:
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
                     echo "DELETE AFTER TESTING: case 1: upload to prod bucket"
-                   if [[ -z $STORAGE_BASE_PATH ]] || [[ $STORAGE_BASE_PATH == "content/packs"; then
                      STORAGE_BASE_PATH="content/packs"
-                   else
-                     echo -e "Can not triger an upload to the production bucket to a path specified by the storage_base_path parameter.\n Uploads to the production bucket can only be to the default path which is /"content/packs/"."
-                   fi
+                  fi
 
-                   if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-                     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
-                     echo "DELETE AFTER TESTING: case 2: create a new target bucket"
-                   fi
+                  if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+                    echo "DELETE AFTER TESTING: case 2: create a new target bucket"
+                  fi
                   echo "DELETE AFTER TESTING: if non of the other cases was printed, we are in case 3: the default, the inserted value to storage_base_path is the one being transfered to the copy_and_upload script"
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
-                   if [[ -z $STORAGE_BASE_PATH ]]; then
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
                      STORAGE_BASE_PATH="content/packs"
-                   fi
-                   if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-                     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
-                   fi
+                  fi
+                  if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  fi
 
                   PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
                   ZIP_FOLDER=$(mktemp -d)
