@@ -3460,10 +3460,6 @@
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
             "integrations": "AzureWAF"
-        },
-        {
-            "integrations": "PingOne",
-            "playbookID": "PingOnePlaybook_Test"
         }
     ],
     "skipped_tests": {

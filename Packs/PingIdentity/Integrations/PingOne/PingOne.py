@@ -403,11 +403,18 @@ def add_user_to_group_command(client, args):
         raise Exception("PingOne error: You must supply either 'Username' or 'userId and 'groupName' or 'groupId'.")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
+        user_id_or_name = args.get('username')
+    else:
+        user_id_or_name = user_id
+
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
+        group_id_or_name = args.get('groupName')
+    else:
+        group_id_or_name = group_id
 
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
+    readable_output = f"User: {user_id_or_name} added to group: {group_id_or_name} successfully"
     return (
         readable_output,
         {},
@@ -423,12 +430,20 @@ def remove_from_group_command(client, args):
         raise Exception("PingOne error: You must supply either 'Username' or 'userId and 'groupName' or 'groupId'.")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
+        user_id_or_name = args.get('username')
+    else:
+        user_id_or_name = user_id
+
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
+        group_id_or_name = args.get('groupName')
+    else:
+        group_id_or_name = group_id
 
     client.remove_user_from_group(user_id, group_id)
 
-    readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
+    readable_output = f"User: {user_id_or_name} was removed from group: {group_id_or_name} successfully"
+
     return (
         readable_output,
         {},
@@ -460,10 +475,10 @@ def get_groups_for_user_command(client, args):
 def get_user_command(client, args):
 
     if args.get('userId'):
-        user_term = args.get('userId')
+        user_id_or_name = args.get('userId')
         raw_response = client.get_user_by_id(args.get('userId'))
     elif args.get('username'):
-        user_term = args.get('username')
+        user_id_or_name = args.get('username')
         raw_response = client.get_user_by_username(args.get('username'))
     else:
         raise Exception("PingOne error: You must supply either 'Username' or 'userId")
@@ -473,7 +488,7 @@ def get_user_command(client, args):
     outputs = {
         'PingOne.Account(val.ID && val.ID === obj.ID)': createContext([user_context])
     }
-    readable_output = f"{tableToMarkdown(f'User:{user_term}', [user_readable])} "
+    readable_output = f"{tableToMarkdown(f'User:{user_id_or_name}', [user_readable])} "
     return (
         readable_output,
         outputs,
@@ -520,11 +535,15 @@ def delete_user_command(client, args):
     if args.get('username'):
         user = client.get_user_by_username(args.get('username'))
         user_id = user.get('id')
+
+        # Output username when possible
+        user_id_or_name = args.get('username')
     else:
         user_id = args.get('userId')
+        user_id_or_name = user_id
 
     client.delete_user(user_id)
-    readable_output = f"User: {user_id} was Deleted successfully"
+    readable_output = f"User: {user_id_or_name} was Deleted successfully"
     return (
         readable_output,
         {},
