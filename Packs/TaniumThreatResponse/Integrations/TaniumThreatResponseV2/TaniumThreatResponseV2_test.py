@@ -78,7 +78,7 @@ def test_get_intel_doc(requests_mock):
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_expected_response)
 
-    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_doc(MOCK_CLIENT, {'intel-doc-id': '423'})
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_doc(MOCK_CLIENT, {'intel_doc_id': '423'})
     assert '| 423 | get_doc_test |' in human_readable
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('Name') == 'get_doc_test'
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('ID') == 423
@@ -147,7 +147,7 @@ def test_get_intel_docs_labels_list(requests_mock):
                       json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_docs_labels_list(MOCK_CLIENT, {
-        'intel-doc-id': intel_doc_id})
+        'intel_doc_id': intel_doc_id})
     assert '| 8 | test3 |' in human_readable
     assert '| 9 | test4 |' in human_readable
     intel_docs = outputs.get('Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)', {})
@@ -179,8 +179,8 @@ def test_add_intel_docs_label(requests_mock):
                             json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.add_intel_docs_label(MOCK_CLIENT,
-                                                                                        {'intel-doc-id': intel_doc_id,
-                                                                                         'label-id': label_id})
+                                                                                        {'intel_doc_id': intel_doc_id,
+                                                                                         'label_id': label_id})
     assert 'Successfully created a new label (3) association for the identified intel document (423).' in human_readable
     assert '| 3 | test6 |' in human_readable
     assert json.loads(req.last_request.text) == {'id': label_id}
@@ -213,8 +213,8 @@ def test_remove_intel_docs_label(requests_mock):
                          json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.remove_intel_docs_label(MOCK_CLIENT, {
-        'intel-doc-id': intel_doc_id,
-        'label-id': label_id})
+        'intel_doc_id': intel_doc_id,
+        'label_id': label_id})
     assert 'Successfully removed the label (3)' in human_readable
     intel_docs = outputs.get('Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)', {})
     labels = intel_docs.get('LabelsList')
@@ -244,9 +244,9 @@ def test_create_intel_doc(mocker, requests_mock):
     requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/intels', json=api_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.create_intel_doc(MOCK_CLIENT, {
-        'entry-id': entry_id,
-        'file-extension': file_extension})
-    assert 'Generic indicator for the virus test.' in human_readable
+        'entry_id': entry_id,
+        'file_extension': file_extension})
+    assert 'Intel Doc information' in human_readable
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('Name') == 'VIRUS TEST'
 
 
@@ -367,7 +367,7 @@ def test_get_alert(requests_mock):
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts/1',
                       json=api_raw_response)
 
-    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_alert(MOCK_CLIENT, {'alert-id': 1})
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.get_alert(MOCK_CLIENT, {'alert_id': 1})
     assert 'Alert information' in human_readable
     assert outputs.get('Tanium.Alert(val.ID && val.ID === obj.ID)', {}).get('ID') == 1
 
@@ -386,7 +386,7 @@ def test_alert_update_state(requests_mock):
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.put(BASE_URL + '/plugin/products/detect3/api/v1/alerts/', json={})
 
-    args = {'alert-ids': '1,2',
+    args = {'alert_ids': '1,2',
             'state': 'unresolved'}
     human_readable, outputs, _ = TaniumThreatResponseV2.alert_update_state(MOCK_CLIENT, args)
     assert 'Alert state updated to unresolved' in human_readable
@@ -435,7 +435,7 @@ def test_delete_snapshot(requests_mock):
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/snapshot',
                          json={})
 
-    args = {'snapshot-ids': '1,2,3'}
+    args = {'snapshot_ids': '1,2,3'}
     human_readable, outputs, _ = TaniumThreatResponseV2.delete_snapshot(MOCK_CLIENT, args)
     assert 'deleted successfully.' in human_readable
     assert outputs == {}
@@ -635,7 +635,7 @@ def test_get_label(requests_mock):
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/labels/1',
                       json=api_raw_response)
 
-    args = {'label-id': 1}
+    args = {'label_id': 1}
     human_readable, outputs, _ = TaniumThreatResponseV2.get_label(MOCK_CLIENT, args)
     assert 'Label information' in human_readable
     assert outputs.get('Tanium.Label(val.id && val.id === obj.id)', {}).get('id') == 1
@@ -854,7 +854,7 @@ def test_create_evidence(requests_mock):
 
 def test_delete_evidence(requests_mock):
     """
-    Given - evidence-ids to delete
+    Given - evidence_ids to delete
 
     When -
         Running delete_evidence? function.
@@ -867,7 +867,7 @@ def test_delete_evidence(requests_mock):
     requests_mock.delete(BASE_URL + '/plugin/products/threat-response/api/v1/event-evidence',
                          json={})
 
-    args = {'evidence-ids': '1,2,3'}
+    args = {'evidence_ids': '1,2,3'}
     human_readable, _, _ = TaniumThreatResponseV2.delete_evidence(MOCK_CLIENT, args)
     assert 'Evidence 1,2,3 has been deleted successfully.' in human_readable
 
