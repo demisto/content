@@ -543,7 +543,7 @@ def main():
 
     if region == 'EU':
         tld = '.eu'
-    elif region == 'ASIA':
+    elif region == 'Asia':
         tld = '.asia'
 
     base_url = urljoin(f'https://api.pingone{tld}', f'/v1/environments/{environment_id}/')
