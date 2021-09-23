@@ -71,9 +71,11 @@ DAYS_BEFORE_FREEZE_TIMESTAMP = int(datetime.datetime(2021, 7, 24).timestamp())  
 freeze_date = datetime.datetime(2021, 7, 27)  # type: ignore
 date_days_ago_timestamp = (freeze_date - datetime.timedelta(days=DAYS_AGO)).timestamp()  # type: ignore
 
+# test_get_last_run_test
 get_last_run_test_inputs = [
     (date_days_ago_timestamp, f"{DAYS_AGO} days"),
     (date_days_ago_timestamp, None)
+    ,(None, f"{DAYS_AGO} days")
 ]
 
 # test_incidents_to_import
@@ -99,7 +101,9 @@ portfolios_list_test_inputs = [
 # test_portfolio_list_companies
 companies_mock = test_data.get("companies")
 companies_list_test_inputs = [
-    (PORTFOLIO_ID)
+    (PORTFOLIO_ID),
+    ("1"),
+    ("x")
 ]
 
 # test_portfolio_list_companies_not_exist
@@ -172,26 +176,20 @@ services_test_input = (
 
 """ Helper Functions Unit Tests"""
 
+FROZEN_DATE = "2021-09-23T00:00:00"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+@pytest.mark.freeze_time(FROZEN_DATE)
+@pytest.mark.parametrize('last_run, first_fetch', [(FROZEN_DATE, None), (None, "3 days"), (None, "7 days"), (FROZEN_DATE, "7 days")])
+def test_get_last_run(last_run, first_fetch):
 
-@pytest.mark.freeze_time(FREEZE_DATE)
-@pytest.mark.parametrize('last_run, first_fetch', get_last_run_test_inputs)
-def test_get_last_run(last_run: str, first_fetch: str):
+    assert datetime.date.today() == datetime.date(2021, 9, 23)
 
-    """
-    Given:
-        - Last fetch run timestamp
-        - First fetch parameter
+    if last_run:
+        last_run_timestamp = datetime.datetime.strptime(last_run, DATE_FORMAT).timestamp()
 
-    When:
-        - Case A: last fetch timestamp is 24/07/2021, first fetch is 3 days ago
-        - Case B: last fetch timestamp is 24/07/2021, first fetch is not suppplied
-
-    Then:
-        - Case A and B: Last runtime timestamp is 2021-07-24 00:00:00
-    """
-
-    time_result = get_last_run(last_run=last_run, first_fetch=first_fetch)
-    assert time_result == DAYS_BEFORE_FREEZE_TIMESTAMP
+        assert last_run_timestamp == get_last_run(last_run=last_run_timestamp, first_fetch=None)
+    else:
+        assert int(arg_to_datetime(arg=first_fetch, arg_name="first_fetch", required=False).timestamp()) == get_last_run(last_run=None, first_fetch=first_fetch)
 
 
 @pytest.mark.freeze_time(FREEZE_DATE)
@@ -251,7 +249,7 @@ client = SecurityScorecardClient(
 )
 
 
-@pytest.mark.parametrize("limit", portfolios_list_test_inputs)
+@pytest.mark.parametrize("limit", [(1), (2)])
 def test_portfolios_list(mocker, limit):
 
     """
@@ -274,10 +272,7 @@ def test_portfolios_list(mocker, limit):
     portfolios_cmd_res: CommandResults = portfolios_list_command(client=client, limit=limit)
     portfolios = portfolios_cmd_res.outputs
 
-    if not limit:
-        assert len(portfolios) == portfolios_mock.get("total")
-    else:
-        assert len(portfolios) == limit
+    assert len(portfolios) == limit
 
 
 @pytest.mark.parametrize("portfolio_id", companies_list_test_inputs)
@@ -583,7 +578,6 @@ def test_create_score_change_alert(mocker, username, change_direction, score_typ
                 target=target,
                 portfolios=portfolios
             )
-            print(res_cmd.outputs)
 
         assert f"invalid literal for int() with base 10: '{threshold}" in str(exc.value)
     elif target and portfolios:

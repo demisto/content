@@ -284,12 +284,9 @@ def get_last_run(last_run: str, first_fetch: str):
     if last_run:
         return int(last_run)
     else:
-        if not first_fetch:
-            days_ago = "2 days"
-            demisto.debug(f"First fetch is undefined, setting '{days_ago}' as default")
-        else:
-            demisto.debug(f"First fetch is defined as '{first_fetch}'")
-            days_ago = first_fetch
+        
+        demisto.debug(f"First fetch is defined as '{first_fetch}'")
+        days_ago = first_fetch
 
         fetch_days_ago = arg_to_datetime(arg=days_ago, arg_name="first_fetch", required=False)
 
@@ -302,7 +299,7 @@ def get_last_run(last_run: str, first_fetch: str):
 def incidents_to_import(
     alerts: List[Dict[str, Any]],
     last_run: Optional[str] = demisto.getLastRun().get("last_run"),
-    first_fetch: Optional[str] = demisto.params().get("first_fetch")
+    first_fetch: Optional[str] = demisto.params().get("first_fetch", "2 days")
 ) -> List[Dict[str, Any]]:
     """
     Helper function to filter events that need to be imported.
