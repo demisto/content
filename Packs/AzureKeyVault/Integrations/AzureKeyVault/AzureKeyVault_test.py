@@ -69,7 +69,8 @@ def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
 
-    result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME, 'storage': None})
+    result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME, 'storage': None,
+                                                                'object_id': "00000000-0000-0000-0000-000000000000"})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -151,7 +152,7 @@ def test_azure_key_vault_key_vault_delete_command(requests_mock):
     requests_mock.delete(url, json=mock_response)
 
     result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME})
-    assert result.outputs == {}
+    assert result.outputs is None
 
 
 def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
@@ -170,7 +171,8 @@ def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
     """
 
     operation_kind = 'add'
-    command_arguments = {'vault_name': VAULT_NAME, 'operation_kind': operation_kind}
+    command_arguments = {'vault_name': VAULT_NAME, 'operation_kind': operation_kind,
+                         'object_id': "00000000-0000-0000-0000-000000000000"}
 
     mock_response = json.loads(load_mock_response('update_access_policy.json'))
 

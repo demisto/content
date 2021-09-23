@@ -1,5 +1,5 @@
 Use Key Vault to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
-This integration was integrated and tested with version xx of AzureKeyVault
+This integration was integrated and tested with version 2019-09-01 of AzureKeyVault
 
 ## Configure AzureKeyVault on Cortex XSOAR
 

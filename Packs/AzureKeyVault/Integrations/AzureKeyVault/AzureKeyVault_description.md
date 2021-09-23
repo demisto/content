@@ -30,7 +30,3 @@ Follow these steps for a self-deployed configuration.
 
 
 10. Enter your resource group name in the Resource Group Name parameter.
-
-
-
-

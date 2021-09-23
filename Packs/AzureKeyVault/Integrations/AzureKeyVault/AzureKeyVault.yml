@@ -7,7 +7,7 @@ configuration:
   name: client_id
   required: true
   type: 0
-- display: Client Secret (only when using self-deployed Azure application)
+- display: Client Secret (only when using a self-deployed Azure application)
   name: client_secret
   required: false
   type: 4
@@ -28,16 +28,6 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  hidden: false
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  hidden: false
-  name: proxy
-  required: false
-  type: 8
 - display: Fetches credentials
   hidden: false
   name: isFetchCredentials
@@ -53,8 +43,23 @@ configuration:
   name: secrets
   required: false
   type: 0
-description: Use Key Vault to safeguard and manage cryptographic keys and secrets
-  used by cloud applications and services.
+- display: Credentials
+  hidden: false
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: Use the Azure Key Vault integration to safeguard and manage cryptographic
+  keys and secrets used by cloud applications and services.
 display: Azure Key Vault
 name: AzureKeyVault
 script:
@@ -163,7 +168,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Permissions to keys. If the Key Vault exists, you must supply
-        the previous keys permissions inorder to keep them the same. Access policy
+        the previous keys'' permissions in order to keep them unchanged. Access policy
         property. Default value is [get,list,create,update,import,delete,backup,restore,recover]. '
       isArray: true
       name: keys
@@ -189,8 +194,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Permissions to secrets. If the Key Vault exists, you must supply
-        the previous secrets permissions inorder to keep them the same. Access policy
-        property. Default value is [get,list,set,delete,backup,restore,recover].
+        the previous secrets' permissions in order to keep them unchanged. Access
+        policy property. Default value is [get,list,set,delete,backup,restore,recover].
       isArray: true
       name: secrets
       predefined:
@@ -207,8 +212,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Permissions to certificates. If the Key Vault exists, you must
-        supply the previous secret permissions inorder to keep them the same. Access
-        policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers].
+        supply the previous certificate's permissions in order to keep them unchanged.
+        Access policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers].
       isArray: true
       name: certificates
       predefined:
@@ -234,7 +239,7 @@ script:
       default: false
       description: Specifies whether Azure Virtual Machines are permitted to retrieve
         certificates stored as secrets from the key vault. If the Key Vault exists,
-        you must supply the previous value inorder to keep it the same. Default value
+        you must supply the previous value in order to keep it the same. Default value
         is True.
       isArray: false
       name: enabled_for_deployment
@@ -247,7 +252,7 @@ script:
       default: false
       description: Specifies whether Azure Disk Encryption is permitted to retrieve
         secrets from the vault and unwrap keys.If the Key Vault exists, you must supply
-        the previous value inorder to keep it the same. Default value is True.
+        the previous value in order to keep it the same. Default value is True.
       isArray: false
       name: enabled_for_disk_encryption
       predefined:
@@ -259,7 +264,7 @@ script:
       default: false
       description: Specifies whether Azure Resource Manager is permitted to retrieve
         secrets from the key vault. If the Key Vault exists, you must supply the previous
-        value inorder to keep it the same. Default value is True.
+        value in order to keep it the same. Default value is True.
       isArray: false
       name: enabled_for_template_deployment
       predefined:
@@ -270,10 +275,10 @@ script:
     - auto: PREDEFINED
       default: false
       description: The default action when no rule from ip_rules and from vnet_subnet_id
-        match . For example,  If no ip_rules and vnet_subnet_id arguments are defined,
-        the access to the key vault from any ip address or virtual network will be
+        match. For example, If no ip_rules and vnet_subnet_id arguments are supplied,
+        the access to the key vault from any IP address or virtual network will be
         accrodingly to the default_action value. If you wish to allow access only
-        from specific virtual network or ip address, use the ip_rules or the  vnet_subnet_id
+        from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id
         arguments. This is only used after the bypass property has been evaluated.
         Network acl property.
       isArray: false
@@ -293,6 +298,7 @@ script:
       name: bypass
       predefined:
       - AzureServices
+      - None
       required: false
       secret: false
     - default: false
@@ -327,8 +333,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Permissions to storage accounts. If the Key Vault exists, you must
-        supply the previous storage permissions inorder to keep them the same. Access
-        policy property. Default value is [get,list,set,delete,backup,restore,recover].
+        supply the previous storage's permissions in order to keep them unchanged.
+        Access policy property. Default value is [get,list,set,delete,backup,restore,recover].
       isArray: true
       name: storage
       predefined:
@@ -589,10 +595,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The name of the operation to do on the vault's access policy.\
-        \ \nSupports three operations: add,remove,replace. For example, to add \"\
-        get\", \"list\" permissions to the current secret permissions, use operation_kind=\"\
-        add\" and secrets=\"get,list\"."
+      description: 'The name of the operation to do on the vault''s access policy.
+        Supports three operations: add,remove,replace. For example, to add get, list
+        permissions to the current secret permissions, use operation_kind=add and
+        secrets=get,list.'
       isArray: false
       name: operation_kind
       predefined:
