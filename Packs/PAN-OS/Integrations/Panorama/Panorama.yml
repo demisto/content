@@ -1079,6 +1079,8 @@ script:
       predefined:
       - override_allow_list
       - override_block_list
+      - allow_categories
+      - block_categories
       - description
       required: true
     - description: Element value. Limited to one value.
