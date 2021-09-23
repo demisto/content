@@ -471,6 +471,6 @@ script:
 fromversion: 6.0.0
 beta: true
 defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
-defaultclassifier: Azure Active Directory Identity and Access Classifier
+defaultclassifier: Azure Active Directory Identity and Access
 tests:
 -  AzureADTest
