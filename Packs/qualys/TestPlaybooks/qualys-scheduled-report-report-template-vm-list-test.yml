@@ -1,5 +1,6 @@
-id: qualys-scheduled-report-report-template-vm-list-test
-version: -1
+id: 628d4d05-cde5-4fca-8e18-764e0b0ea01b
+version: 4
+vcShouldKeepItemLegacyProdMachine: false
 name: qualys-scheduled-report-report-template-vm-list-test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "90"
@@ -30,6 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 749a3ecd-3902-4a78-821f-3593149c751a
@@ -59,6 +61,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 2450e340-dd5d-42e8-8379-c4357ad768ce
@@ -144,6 +148,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: c7b19ebf-b093-448b-8603-4fb41f62e5d2
@@ -173,6 +179,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 6f0f44b9-0620-47d4-835d-a956be5f09ea
@@ -248,12 +256,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: eb40af7f-edfe-4587-8497-3b5d4e6812ea
+    taskid: 24789ea2-90b2-4b6d-84da-0eeadfc9ab12
     type: regular
     task:
-      id: eb40af7f-edfe-4587-8497-3b5d4e6812ea
+      id: 24789ea2-90b2-4b6d-84da-0eeadfc9ab12
       version: -1
       name: qualys-vulnerability-list
       description: download a list of vulnerabilities from Qualys’ KnowledgeBase
@@ -265,10 +275,14 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
+      discovery_method:
+        simple: RemoteAndAuthenticated
       execution-timeout:
         simple: "70"
       published_after:
         simple: "2021-04-01"
+      published_before:
+        simple: "2021-04-02"
     separatecontext: false
     view: |-
       {
@@ -282,6 +296,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 95bf3794-de9e-40ee-8ee7-0184eed5bc88
@@ -417,6 +433,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 7742e609-0374-4724-8069-ccc16f13368e
@@ -446,6 +464,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 3b80c03e-c6dd-458d-81d8-cf2ca0884f24
@@ -486,6 +506,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
     taskid: 26cf85a7-e299-455d-866e-08826ffc3e46
@@ -518,6 +540,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "56":
     id: "56"
     taskid: f4416001-b09c-4e32-800b-1b369bdfbda6
@@ -553,6 +577,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "75":
     id: "75"
     taskid: 57a97652-6cde-4b0b-8982-c10f60ecfcb2
@@ -564,7 +590,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -578,6 +603,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "90":
     id: "90"
     taskid: cf03bf0a-e46a-4c96-8a4e-695d389819d1
@@ -589,7 +616,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -606,6 +632,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "98":
     id: "98"
     taskid: 162812fc-171c-4003-850c-a4d7fac7163b
@@ -637,6 +665,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "99":
     id: "99"
     taskid: 372f916b-7ca1-45ce-8a6b-b1a51bbf7be8
@@ -648,7 +678,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "138"
@@ -665,6 +694,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "100":
     id: "100"
     taskid: 9857947b-86b0-487f-8a89-69b7c0b5b7ef
@@ -676,7 +707,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "101"
@@ -693,6 +723,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "101":
     id: "101"
     taskid: 23a3224d-db99-4fd2-8e4f-23ad377772e1
@@ -724,6 +756,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "102":
     id: "102"
     taskid: 5866bdac-03a3-4e04-811c-4c9aef238c6c
@@ -735,7 +769,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "103"
@@ -752,6 +785,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "103":
     id: "103"
     taskid: 6f914868-9c45-41f3-84f5-da48bde3bf48
@@ -783,6 +818,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "138":
     id: "138"
     taskid: b847378b-521f-40a9-87e2-03cd472ddd42
@@ -814,6 +851,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -829,5 +868,3 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: QualysVulnerabilityManagement-Test
-fromversion: 5.5.0
-description: 'Testing scheduled reports, reports templates and vm list commands'
