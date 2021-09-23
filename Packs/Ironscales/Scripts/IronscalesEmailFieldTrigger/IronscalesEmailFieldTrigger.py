@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def main():
     try:
         args = demisto.args()
@@ -16,4 +17,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

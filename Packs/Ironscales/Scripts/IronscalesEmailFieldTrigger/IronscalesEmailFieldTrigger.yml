@@ -7,6 +7,7 @@ type: python
 tags:
 - field-change-triggered
 comment: Automatically changes email field when choosing classification
+fromversion: 6.0.0
 enabled: true
 scripttarget: 0
 subtype: python3
