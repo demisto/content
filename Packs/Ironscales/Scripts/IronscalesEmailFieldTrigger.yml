@@ -1,6 +1,6 @@
 commonfields:
   id: IronscalesEmailFieldTrigger
-  version: 26
+  version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: IronscalesEmailFieldTrigger
 script: ""
