@@ -37,8 +37,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: unresolved
-  display: "A comma-separated list of alert states to filter by in fetch incidents\
-    \ command. Possible options are: unresolved, in progress, resolved or suppressed.\
+  display: "Alert states to filter by in fetch incidents command.\
     \ Empty list won't filter the incidents by state."
   name: filter_alerts_by_state
   options:
