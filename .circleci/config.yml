@@ -596,19 +596,10 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Run Unit Testing And Lint:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
-    - Run Validations:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Create Instances:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
+          - Setup Environment
     - Install Packs in Server 6_2:
         context: bucket_upload_env
         requires:
