@@ -38,7 +38,7 @@ args:
   required: false
   secret: false
 commonfields:
-  id: e6cca0d5-317e-4a4a-8f5f-0ffc6ee20b3f
+  id: DBotPredictURLPhishing
   version: -1
 enabled: true
 name: DBotPredictURLPhishing
@@ -50,5 +50,6 @@ type: python
 dockerimage: devdemisto/mlurlphishing:1.0.0.24089
 runas: DBotWeakRole
 runonce: false
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

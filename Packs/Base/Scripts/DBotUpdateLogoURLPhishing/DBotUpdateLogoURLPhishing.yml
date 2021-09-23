@@ -13,7 +13,7 @@ args:
   required: false
   secret: false
 commonfields:
-  id: 7454ee20-5d0b-4abe-82fb-129be81c068f
+  id: DBotUpdateLogoURLPhishing
   version: -1
 enabled: true
 name: DBotUpdateLogoURLPhishing
@@ -25,5 +25,6 @@ type: python
 dockerimage: devdemisto/mlurlphishing:1.0.0.24014
 runas: DBotWeakRole
 runonce: false
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
