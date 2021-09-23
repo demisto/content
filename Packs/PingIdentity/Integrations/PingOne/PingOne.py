@@ -442,7 +442,7 @@ def get_groups_for_user_command(client, args):
 
     context = createContext(groups, removeNull=True)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': {
+        'PingOne.Account(val.ID && val.ID === obj.ID)': {
             'Group': context,
             'ID': args.get('username'),
             'Type': 'PingOne'
