@@ -37,101 +37,97 @@ script:
     arguments:
     - name: ipaddress
       required: true
-      description: Endpoint IP Address
-      defaultValue: None
+      description: Endpoint IP Address.
     - name: hostname
       required: true
       default: true
-      description: Endpoint Hostname
-      defaultValue: None
+      description: Endpoint Hostname.
     outputs:
     - contextPath: Nexthink.Compliance.DeviceName
-      description: Endpoint Device Host Name
+      description: Endpoint device host name.
       type: string
     - contextPath: Nexthink.Compliance.LastLoggedOnUser
-      description: Last Logged On User
+      description: Last logged on user.
       type: string
     - contextPath: Nexthink.Compliance.IPAddress
-      description: Endpoint IP Address
+      description: Endpoint IP address.
       type: string
     - contextPath: Nexthink.Compliance.MACAddress
-      description: Endpoint MAC Address
+      description: Endpoint MAC address.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntivirus
-      description: Endpoint Antivirus Name
+      description: Endpoint antivirus name.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntivirusRTP
-      description: Endpoint Antivirus Real Time Protection Status
+      description: Endpoint antivirus real time protection status.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntivirusUpdated
-      description: Endpoint Antivirus Update Status
+      description: Endpoint antivirus update status.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntispyware
-      description: Endpoint Antispyware Name
+      description: Endpoint Antispyware name.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntispywareRTP
-      description: Endpoint Antispyware Real Time Protection Status
+      description: Endpoint Antispyware real time protection status.
       type: string
     - contextPath: Nexthink.Compliance.DeviceAntispywareUpdated
-      description: Endpoint Antispyware Update Status
+      description: Endpoint Antispyware update status.
       type: string
     description: Verify antivirus/antispyware status.
   - name: nt-installed-packages
     arguments:
     - name: hostname
       required: true
-      description: Endpoint Hostname
+      description: Endpoint Hostname.
     - name: package
       required: true
       default: true
-      description: Installed Software Name
+      description: Installed Software Name.
       defaultValue: agent
     outputs:
     - contextPath: Nexthink.Package.PackageName
-      description: Package Name
+      description: Package name.
       type: string
     - contextPath: Nexthink.Package.PackagePublisher
-      description: Packaged Publisher
+      description: Packaged publisher.
       type: string
     - contextPath: Nexthink.Package.PackageVersion
-      description: Package Version
+      description: Package version.
       type: string
     - contextPath: Nexthink.Package.DeviceName
-      description: Endpoint Device Host Name
+      description: Endpoint device host name.
       type: string
     - contextPath: Nexthink.Package.LastLoggedOnUser
-      description: Last Logged On User
+      description: Last logged on user.
       type: string
     - contextPath: Nexthink.Package.IPAddress
-      description: Endpoint IP Address
+      description: Endpoint IP address.
       type: string
     - contextPath: Nexthink.Package.MACAddress
-      description: Endpoint MAC Address
+      description: Endpoint MAC address.
       type: string
     description: Query installed software in endpoint.
   - name: nt-endpoint-details
     arguments:
     - name: hostname
       required: true
-      description: Endpoint Hostname
-      defaultValue: None
+      description: Endpoint hostname.
     - name: ipaddress
       required: true
       default: true
-      description: Endpoint IP Address
-      defaultValue: None
+      description: Endpoint IP Address.
     outputs:
     - contextPath: Nexthink.Endpoint.EndpointName
-      description: Endpoint Device Host Name
+      description: Endpoint device host name.
       type: string
     - contextPath: Nexthink.Endpoint.LastLoggedOnUser
-      description: Last Logged On User
+      description: Last logged on user.
       type: string
     - contextPath: Nexthink.Endpoint.IPAddress
-      description: Endpoint IP Address
+      description: Endpoint IP address.
       type: string
     - contextPath: Nexthink.Endpoint.MACAddress
-      description: Endpoint MAC Address
+      description: Endpoint MAC address.
       type: string
     description: Get endpoint details.
   dockerimage: demisto/python3:3.9.7.24076

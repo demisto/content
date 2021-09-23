@@ -1,5 +1,5 @@
 Nexthink helps IT teams deliver on the promise of the modern digital workplace. Nexthink is the only solution to provide enterprises with a way to visualize, act and engage across the entire IT ecosystem to lower IT cost and improve digital employee experience.
-This integration was integrated and tested with version 1.0 of Nexthink
+This integration was integrated and tested with version 1.0 of Nexthink.
 
 ## Configure Nexthink on Cortex XSOAR
 
@@ -7,14 +7,14 @@ This integration was integrated and tested with version 1.0 of Nexthink
 2. Search for Nexthink.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Engine Host (e.g. connector.nexthink.com) |  | True |
-    | Nexthink Connector Port |  | False |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Engine Host (e.g. connector.nexthink.com) | True |
+    | Nexthink Connector Port| False |
+    | Username | True |
+    | Password | True |
+    | Trust any certificate (not secure) | False |
+     Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
