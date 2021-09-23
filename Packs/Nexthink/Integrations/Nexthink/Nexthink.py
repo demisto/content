@@ -89,6 +89,7 @@ def nexthink_endpoint_details(device: None, ip: None):
 
         dArgs = CommandResults(
             outputs_prefix="Nexthink.Endpoint",
+            outputs_key_field="IPAddress",
             outputs=deviceList,
             readable_output=tableToMarkdown('Nexthink Endpoint Details: ', deviceList),
             raw_response=deviceList
@@ -119,6 +120,7 @@ def nexthink_installed_packages(device: None, package: None):
 
         dArgs = CommandResults(
             outputs_prefix="Nexthink.Package",
+            outputs_key_field="IPAddress",
             outputs=deviceList,
             readable_output=hr,
             raw_response=deviceList
