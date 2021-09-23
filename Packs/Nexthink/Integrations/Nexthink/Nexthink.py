@@ -81,10 +81,10 @@ def nexthink_endpoint_details(device: None, ip: None):
     else:
         data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
     if len(data) > 0:
-        deviceEntry['Endpoint Name'] = data[0]['name']
-        deviceEntry['Last Logged On User'] = data[0]['last_logged_on_user']
-        deviceEntry['IP Address'] = data[0]['ip_addresses'][0]
-        deviceEntry['MAC Address'] = data[0]['mac_addresses'][0]
+        deviceEntry['EndpointName'] = data[0]['name']
+        deviceEntry['LastLoggedOnUser'] = data[0]['last_logged_on_user']
+        deviceEntry['IPAddress'] = data[0]['ip_addresses'][0]
+        deviceEntry['MACAddress'] = data[0]['mac_addresses'][0]
         deviceList.append(deviceEntry)
 
         dArgs = CommandResults(
@@ -105,15 +105,15 @@ def nexthink_installed_packages(device: None, package: None):
     if len(data) > 0:
         for t in data:
             entries = {}
-            entries['Package Name'] = t['package/name']
-            entries['Package Publisher'] = t['package/publisher']
-            entries['Package Version'] = t['package/version']
+            entries['PackageName'] = t['package/name']
+            entries['PackagePublisher'] = t['package/publisher']
+            entries['PackageVersion'] = t['package/version']
             entryList.append(entries)
 
-        deviceEntry['Device Name'] = data[0]['device/name']
-        deviceEntry['Last Logged On User'] = data[0]['device/last_logged_on_user']
-        deviceEntry['IP Address'] = data[0]['device/ip_addresses'][0]
-        deviceEntry['MAC Address'] = data[0]['device/mac_addresses'][0]
+        deviceEntry['DeviceName'] = data[0]['device/name']
+        deviceEntry['LastLogged On User'] = data[0]['device/last_logged_on_user']
+        deviceEntry['IPAddress'] = data[0]['device/ip_addresses'][0]
+        deviceEntry['MACAddress'] = data[0]['device/mac_addresses'][0]
         deviceList.append(deviceEntry)
         hr = tableToMarkdown('Installed Packages: ', deviceList) + tableToMarkdown('Packages Details: ', entryList)
 
@@ -138,18 +138,18 @@ def nexthink_compliance_check(device: None, ip: None):
     if len(data) > 0:
         for t in data:
             entries = {}
-            entries['Device Antivirus'] = t['antivirus_name']
-            entries['Device Antivirus RTP'] = t['antivirus_rtp']
-            entries['Device Antivirus Updated'] = t['antivirus_up_to_date']
-            entries['Device Antispyware'] = t['antispyware_name']
-            entries['Device Antispyware RTP'] = t['antispyware_rtp']
-            entries['Device Antispyware Updated'] = t['antispyware_up_to_date']
+            entries['DeviceAntivirus'] = t['antivirus_name']
+            entries['DeviceAntivirus RTP'] = t['antivirus_rtp']
+            entries['DeviceAntivirus Updated'] = t['antivirus_up_to_date']
+            entries['DeviceAntispyware'] = t['antispyware_name']
+            entries['DeviceAntispyware RTP'] = t['antispyware_rtp']
+            entries['DeviceAntispyware Updated'] = t['antispyware_up_to_date']
             entryList.append(entries)
 
-        deviceEntry['Device Name'] = data[0]['name']
-        deviceEntry['Last Logged On User'] = data[0]['last_logged_on_user']
-        deviceEntry['IP Address'] = data[0]['ip_addresses'][0]
-        deviceEntry['MAC Address'] = data[0]['mac_addresses'][0]
+        deviceEntry['DeviceName'] = data[0]['name']
+        deviceEntry['LastLoggedOnUser'] = data[0]['last_logged_on_user']
+        deviceEntry['IPAddress'] = data[0]['ip_addresses'][0]
+        deviceEntry['MACAddress'] = data[0]['mac_addresses'][0]
         deviceList.append(deviceEntry)
 
         hr = tableToMarkdown('Endpoint Details :', deviceList) + tableToMarkdown('Compliance Details: ', entryList)
