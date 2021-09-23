@@ -4235,8 +4235,11 @@
             "fromversion": "6.0.0",
             "timeout": 4600,
             "integrations": [
-                "EWS Mail Sender"
-            ]
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
