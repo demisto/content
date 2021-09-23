@@ -68,7 +68,7 @@
       echo "found venv"
     else
       echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
   - source ./venv/bin/activate
   - |
@@ -88,7 +88,7 @@
   - section_end "Installing SSH keys"
 
 .install_node_modules: &install_node_modules
-  - section_start "Installing node modules"
+  - section_start "Installing node modules" --collapsed
   - source $NVM_DIR/nvm.sh
   - nvm use default
   - echo "Installing Node Modules" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
