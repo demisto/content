@@ -155,7 +155,7 @@ def nexthink_compliance_check(device: None, ip: None):
         hr = tableToMarkdown('Endpoint Details :', deviceList) + tableToMarkdown('Compliance Details: ', entryList)
         dArgs = CommandResults(
             outputs_prefix="Nexthink.Compliance",
-            outputs_key_field=IPAddress,
+            outputs_key_field="IPAddress",
             outputs=deviceList,
             readable_output=hr,
             raw_response=deviceList
