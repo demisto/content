@@ -1,8 +1,8 @@
 !tanium-tr-list-alerts limit=2
-!tanium-tr-get-alert-by-id alert-id=1
-!tanium-tr-alert-update-state alert-ids=1 state=resolved
+!tanium-tr-get-alert-by-id alert_id=1
+!tanium-tr-alert-update-state alert_ids=1 state=resolved
 !tanium-tr-create-snapshot connection_id=remote:EC2AMAZ-KGMRO60:9065264:
-!tanium-tr-delete-snapshot snapshot-ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f
+!tanium-tr-delete-snapshot snapshot_ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f
 !tanium-tr-list-snapshots limit=2
 !tanium-tr-delete-local-snapshot connection_id=remote:EC2AMAZ-KGMRO60:9065264:
 !tanium-tr-list-connections
@@ -10,7 +10,7 @@
 !tanium-tr-close-connection connection_id=remote:host1:123:
 !tanium-tr-delete-connection connection_id=remote:host1:123:
 !tanium-tr-list-labels limit=2
-!tanium-tr-get-label-by-id label-id=1
+!tanium-tr-get-label-by-id label_id=1
 !tanium-tr-list-events-by-connection connection_id=remote:EC2AMAZ-KGMRO60:9065264:2 type=File limit=3
 !tanium-tr-event-evidence-list limit=3
 !tanium-tr-event-evidence-get-properties
@@ -29,13 +29,13 @@
 !tanium-tr-get-process-info ptid=72057594038504457 connection_id=remote:EC2AMAZ-KGMRO60:9065264:
 !tanium-tr-get-evidence-by-id evidence_id=5c2f3839-d3f2-4d7a-8b74-de53a32ac4aa
 !tanium-tr-get-task-by-id task_id=833
-!tanium-tr-intel-docs-add-label intel-doc-id=509 label-id=1
-!tanium-tr-intel-docs-labels-list intel-doc-id=509
-!tanium-tr-intel-docs-remove-label intel-doc-id=509 label-id=1
+!tanium-tr-intel-docs-add-label intel_doc_id=509 label_id=1
+!tanium-tr-intel-docs-labels-list intel_doc_id=509
+!tanium-tr-intel-docs-remove-label intel_doc_id=509 label_id=1
 !tanium-tr-list-intel-docs
-!tanium-tr-get-intel-doc-by-id intel-doc-id=509
+!tanium-tr-get-intel-doc-by-id intel_doc_id=509
 !tanium-tr-intel-deploy
-!tanium-tr-delete-evidence evidence-ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
+!tanium-tr-delete-evidence evidence_ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
 !tanium-tr-create-evidence ptid=72057594038462925 connection_id=remote:EC2AMAZ-KGMRO60:9065264: hostname=EC2AMAZ-KGMRO60 summary="Create Process"
 !tanium-tr-get-system-status
-!tanium-tr-intel-doc-create entry-id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file-extension=yara
+!tanium-tr-intel-doc-create entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=yara

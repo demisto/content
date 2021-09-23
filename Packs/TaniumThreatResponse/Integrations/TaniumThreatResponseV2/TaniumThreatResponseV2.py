@@ -5,6 +5,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+import traceback
 import os
 import ast
 import json
@@ -47,7 +48,6 @@ class Client(BaseClient):
         self.password = password
         self.session = ''
         self.api_token = api_token
-        self.check_authentication()
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
@@ -119,19 +119,6 @@ class Client(BaseClient):
 
     def login(self):
         return self.update_session()
-
-    def check_authentication(self):
-        """
-        Check that the authentication process is valid, i.e. user provided either API token to use OAuth 2.0
-        authentication or user provided Username & Password for basic authentication, but not both credentials and
-        API token.
-        """
-        if self.username and self.password and self.api_token:
-            return_error('Please clear either the Credentials or the API Token fields.\n'
-                         'If you wish to use basic authentication please provide username and password, '
-                         'and leave the API Token field empty.\n'
-                         'If you wish to use OAuth 2 authentication, please provide an API Token and leave the '
-                         'Credentials and Password fields empty.')
 
 
 ''' GENERAL HELPER FUNCTIONS '''
@@ -211,70 +198,6 @@ def get_file_name_and_content(entry_id: str) -> Tuple[str, str]:
     with open(file_path, 'r') as f:
         file_content = f.read()
     return file_name, file_content
-
-
-def init_commands_dict():
-    """ Initializes the commands dictionary
-
-        :return: the commands dictionary, command name as a key and command function as a value.
-        :rtype: ``dict``
-
-    """
-    return {
-        'test-module': test_module,
-        'tanium-tr-get-intel-doc-by-id': get_intel_doc,
-        'tanium-tr-list-intel-docs': get_intel_docs,
-        'tanium-tr-intel-docs-labels-list': get_intel_docs_labels_list,
-        'tanium-tr-intel-docs-add-label': add_intel_docs_label,
-        'tanium-tr-intel-docs-remove-label': remove_intel_docs_label,
-        'tanium-tr-intel-doc-create': create_intel_doc,
-        'tanium-tr-intel-doc-update': update_intel_doc,
-        'tanium-tr-intel-deploy': deploy_intel,
-        'tanium-tr-intel-deploy-status': get_deploy_status,
-
-        'tanium-tr-list-alerts': get_alerts,
-        'tanium-tr-get-alert-by-id': get_alert,
-        'tanium-tr-alert-update-state': alert_update_state,
-
-        'tanium-tr-create-snapshot': create_snapshot,
-        'tanium-tr-delete-snapshot': delete_snapshot,
-        'tanium-tr-list-snapshots': list_snapshots,
-        'tanium-tr-delete-local-snapshot': delete_local_snapshot,
-
-        'tanium-tr-list-connections': get_connections,
-        'tanium-tr-create-connection': create_connection,
-        'tanium-tr-delete-connection': delete_connection,
-        'tanium-tr-close-connection': close_connection,
-
-        'tanium-tr-list-labels': get_labels,
-        'tanium-tr-get-label-by-id': get_label,
-
-        'tanium-tr-list-events-by-connection': get_events_by_connection,
-        'tanium-tr-get-events-by-process': get_events_by_process,
-
-        'tanium-tr-get-process-info': get_process_info,
-        'tanium-tr-get-process-children': get_process_children,
-        'tanium-tr-get-parent-process': get_parent_process,
-        'tanium-tr-get-parent-process-tree': get_parent_process_tree,
-        'tanium-tr-get-process-tree': get_process_tree,
-
-        'tanium-tr-event-evidence-list': list_evidence,
-        'tanium-tr-event-evidence-get-properties': event_evidence_get_properties,
-        'tanium-tr-get-evidence-by-id': get_evidence_by_id,
-        'tanium-tr-create-evidence': create_evidence,
-        'tanium-tr-delete-evidence': delete_evidence,
-
-        'tanium-tr-list-file-downloads': get_file_downloads,
-        'tanium-tr-get-file-download-info': get_file_download_info,
-        'tanium-tr-request-file-download': request_file_download,
-        'tanium-tr-delete-file-download': delete_file_download,
-        'tanium-tr-list-files-in-directory': list_files_in_dir,
-        'tanium-tr-get-file-info': get_file_info,
-        'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
-
-        'tanium-tr-get-task-by-id': get_task_by_id,
-        'tanium-tr-get-system-status': get_system_status,
-    }
 
 
 ''' EVIDENCE HELPER FUNCTIONS '''
@@ -505,7 +428,7 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
         :rtype: ``tuple``
 
     """
-    id_ = data_args.get('intel-doc-id')
+    id_ = data_args.get('intel_doc_id')
     try:
         raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -521,7 +444,9 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
+    headers = ['ID', 'Name', 'Type', 'Description', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
+               'LabelIds']
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -558,7 +483,9 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=list(intel_doc.keys()),
+    headers = ['ID', 'Name', 'Type', 'Description', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
+               'LabelIds']
+    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -575,7 +502,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
         :rtype: ``tuple``
 
     """
-    id_ = data_args.get('intel-doc-id')
+    id_ = data_args.get('intel_doc_id')
     try:
         raw_response = client.do_request('GET',
                                          f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
@@ -592,8 +519,9 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
     context_data = format_context_data(raw_response)
     context = createContext({'IntelDocID': id_, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
+    headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
     human_readable = tableToMarkdown(f'Intel doc ({id_}) labels', intel_docs_labels, headerTransform=pascalToSpace,
-                                     headers=list(intel_doc_label.keys()), removeNull=True)
+                                     headers=headers, removeNull=True)
     return human_readable, outputs, raw_response
 
 
@@ -609,8 +537,8 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
         :rtype: ``tuple``
 
     """
-    intel_doc_id = data_args.get('intel-doc-id')
-    label_id = data_args.get('label-id')
+    intel_doc_id = data_args.get('intel_doc_id')
+    label_id = data_args.get('label_id')
     params = assign_params(id=label_id)
     raw_response = []
     try:
@@ -636,9 +564,10 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     context_data = format_context_data(raw_response)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
+    headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
     human_readable = tableToMarkdown(
         f'Successfully created a new label ({label_id}) association for the identified intel document ({intel_doc_id}).',
-        intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
+        intel_docs_labels, headers=headers, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
@@ -655,8 +584,8 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     """
 
-    intel_doc_id = data_args.get('intel-doc-id')
-    label_id_to_delete = data_args.get('label-id')
+    intel_doc_id = data_args.get('intel_doc_id')
+    label_id_to_delete = data_args.get('label_id')
     raw_response = []
     try:
         raw_response = client.do_request('DELETE',
@@ -684,9 +613,10 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
     context_data = format_context_data(raw_response)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
+    headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
     human_readable = tableToMarkdown(
         f'Successfully removed the label ({label_id_to_delete}) association for the identified intel document ({intel_doc_id}).',
-        intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
+        intel_docs_labels, headers=headers, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
@@ -702,8 +632,8 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         :rtype: ``tuple``
 
     """
-    entry_id = data_args.get('entry-id')
-    file_extension = data_args.get('file-extension')
+    entry_id = data_args.get('entry_id')
+    file_extension = data_args.get('file_extension')
     raw_response = {}
     try:
         file_name, file_content = get_file_name_and_content(str(entry_id))
@@ -727,7 +657,8 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
+    headers = ['ID', 'Name', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt']
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -746,9 +677,9 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
 
     """
 
-    id_ = data_args.get('intel-doc-id')
-    entry_id = data_args.get('entry-id')
-    file_extension = data_args.get('file-extension')
+    id_ = data_args.get('intel_doc_id')
+    entry_id = data_args.get('entry_id')
+    file_extension = data_args.get('file_extension')
     raw_response = {}
     try:
         file_name, file_content = get_file_name_and_content(str(entry_id))
@@ -772,7 +703,9 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
+    headers = ['ID', 'Name', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt']
+
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -828,7 +761,8 @@ def get_deploy_status(client: Client, data_args: dict) -> Tuple[str, dict, Union
 
     outputs = {'Tanium.IntelDeployStatus': context}
 
-    human_readable = tableToMarkdown('Intel deploy status', status, headers=list(status.keys()),
+    headers = ['CreatedAt', 'ModifiedAt', 'CurrentRevision', 'CurrentSize']
+    human_readable = tableToMarkdown('Intel deploy status', status, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -850,10 +784,10 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
-    ip_address = data_args.get('computer-ip-address')
-    computer_name = data_args.get('computer-name')
+    ip_address = data_args.get('computer_ip_address')
+    computer_name = data_args.get('computer_name')
     scan_config_id = data_args.get('scan-config-id')
-    intel_doc_id = data_args.get('intel-doc-id')
+    intel_doc_id = data_args.get('intel_doc_id')
     severity = data_args.get('severity')
     priority = data_args.get('priority')
     type_ = data_args.get('type')
@@ -897,7 +831,7 @@ def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    alert_id = data_args.get('alert-id')
+    alert_id = data_args.get('alert_id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/alerts/{alert_id}')
     alert = get_alert_item(raw_response)
 
@@ -922,7 +856,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    alert_ids = argToList(data_args.get('alert-ids'))
+    alert_ids = argToList(data_args.get('alert_ids'))
     state = data_args.get('state')
 
     body = {
@@ -1001,7 +935,8 @@ def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         del context['metadata']
 
     outputs = \
-        {'Tanium.SnapshotTask(val.taskId === obj.taskId && val.connection === obj.connection)': context} if context else {}
+        {
+            'Tanium.SnapshotTask(val.taskId === obj.taskId && val.connection === obj.connection)': context} if context else {}
     return hr, outputs, raw_response
 
 
@@ -1017,7 +952,7 @@ def delete_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    snapshot_ids = argToList(data_args.get('snapshot-ids'))
+    snapshot_ids = argToList(data_args.get('snapshot_ids'))
     body = {'ids': snapshot_ids}
     client.do_request('DELETE', '/plugin/products/threat-response/api/v1/snapshot', data=body)
     return f'Snapshot {",".join(snapshot_ids)} deleted successfully.', {}, {}
@@ -1230,7 +1165,7 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    label_id = data_args.get('label-id')
+    label_id = data_args.get('label_id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/labels/{label_id}')
 
     context = createContext(raw_response, removeNull=True)
@@ -1270,7 +1205,7 @@ def get_file_downloads(client, data_args) -> Tuple[str, dict, Union[list, dict]]
 
     context = createContext(files, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.FileDownload(val.uuid === obj.uuid)': context}
-    headers = ['path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
+    headers = ['uuid', 'path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
     human_readable = tableToMarkdown('File downloads', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1320,7 +1255,7 @@ def get_file_download_info(client, data_args) -> Tuple[str, dict, Union[list, di
 
     context = createContext(file, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.FileDownload(val.uuid === obj.uuid)': context}
-    headers = ['path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
+    headers = ['uuid', 'path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
     human_readable = tableToMarkdown('File download', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1671,7 +1606,7 @@ def list_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     context = createContext(evidences, removeNull=True)
     outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
-    headers = ['name', 'evidenceType', 'hostname', 'createdAt', 'username']
+    headers = ['uuid', 'name', 'evidenceType', 'hostname', 'createdAt', 'username']
     human_readable = tableToMarkdown('Evidence list', evidences, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -1782,7 +1717,7 @@ def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
         :rtype: ``tuple``
 
     """
-    evidence_ids = argToList(data_args.get('evidence-ids'))
+    evidence_ids = argToList(data_args.get('evidence_ids'))
     body = {'ids': evidence_ids}
     client.do_request('DELETE', '/plugin/products/threat-response/api/v1/event-evidence', data=body)
     return f'Evidence {",".join(evidence_ids)} has been deleted successfully.', {}, {}
@@ -1861,33 +1796,95 @@ def main():
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
 
+    api_token = password if '_token' in username else None
+
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
-    api_token = params.get('api_token')
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(server, username, password, api_token=api_token, verify=use_ssl)
+
+    client = Client(
+        server,
+        username,
+        password,
+        api_token=api_token,
+        verify=use_ssl
+    )
+
     demisto.info(f'Command being called is {command}')
 
-    commands = init_commands_dict()
+    commands = {
+        'test-module': test_module,
+        'tanium-tr-get-intel-doc-by-id': get_intel_doc,
+        'tanium-tr-list-intel-docs': get_intel_docs,
+        'tanium-tr-intel-docs-labels-list': get_intel_docs_labels_list,
+        'tanium-tr-intel-docs-add-label': add_intel_docs_label,
+        'tanium-tr-intel-docs-remove-label': remove_intel_docs_label,
+        'tanium-tr-intel-doc-create': create_intel_doc,
+        'tanium-tr-intel-doc-update': update_intel_doc,
+        'tanium-tr-intel-deploy': deploy_intel,
+        'tanium-tr-intel-deploy-status': get_deploy_status,
+
+        'tanium-tr-list-alerts': get_alerts,
+        'tanium-tr-get-alert-by-id': get_alert,
+        'tanium-tr-alert-update-state': alert_update_state,
+
+        'tanium-tr-create-snapshot': create_snapshot,
+        'tanium-tr-delete-snapshot': delete_snapshot,
+        'tanium-tr-list-snapshots': list_snapshots,
+        'tanium-tr-delete-local-snapshot': delete_local_snapshot,
+
+        'tanium-tr-list-connections': get_connections,
+        'tanium-tr-create-connection': create_connection,
+        'tanium-tr-delete-connection': delete_connection,
+        'tanium-tr-close-connection': close_connection,
+
+        'tanium-tr-list-labels': get_labels,
+        'tanium-tr-get-label-by-id': get_label,
+
+        'tanium-tr-list-events-by-connection': get_events_by_connection,
+        'tanium-tr-get-events-by-process': get_events_by_process,
+
+        'tanium-tr-get-process-info': get_process_info,
+        'tanium-tr-get-process-children': get_process_children,
+        'tanium-tr-get-parent-process': get_parent_process,
+        'tanium-tr-get-parent-process-tree': get_parent_process_tree,
+        'tanium-tr-get-process-tree': get_process_tree,
+
+        'tanium-tr-event-evidence-list': list_evidence,
+        'tanium-tr-event-evidence-get-properties': event_evidence_get_properties,
+        'tanium-tr-get-evidence-by-id': get_evidence_by_id,
+        'tanium-tr-create-evidence': create_evidence,
+        'tanium-tr-delete-evidence': delete_evidence,
+
+        'tanium-tr-list-file-downloads': get_file_downloads,
+        'tanium-tr-get-file-download-info': get_file_download_info,
+        'tanium-tr-request-file-download': request_file_download,
+        'tanium-tr-delete-file-download': delete_file_download,
+        'tanium-tr-list-files-in-directory': list_files_in_dir,
+        'tanium-tr-get-file-info': get_file_info,
+        'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
+
+        'tanium-tr-get-task-by-id': get_task_by_id,
+        'tanium-tr-get-system-status': get_system_status,
+    }
 
     try:
         if command == 'fetch-incidents':
             alerts_states_to_retrieve = demisto.params().get('filter_alerts_by_state')
             return fetch_incidents(client, alerts_states_to_retrieve)
         if command == 'tanium-tr-get-downloaded-file':
-            return get_downloaded_file(client, demisto.args())
+            get_downloaded_file(client, demisto.args())
 
         if command in commands:
             human_readable, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
     except Exception as e:
-        import traceback
         if command == 'fetch-incidents':
             LOG(traceback.format_exc())
             LOG.print_log()

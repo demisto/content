@@ -12,13 +12,6 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: The API token was created in the Tanium platform and should be used
-    for OAuth 2 authentication. See Help (?) for more information.
-  display: API Token
-  hidden: false
-  name: api_token
-  required: false
-  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -33,6 +26,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
+  display: Maximum number of incidents to fetch each time
   name: max_fetch
   required: false
   type: 0
@@ -65,7 +59,7 @@ script:
     - default: false
       description: The intel document ID.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: true
       secret: false
     deprecated: false
@@ -192,25 +186,25 @@ script:
     - default: false
       description: Filter alerts by the specified computer IP addresses.
       isArray: false
-      name: computer-ip-address
+      name: computer_ip_address
       required: false
       secret: false
     - default: false
       description: Filter alerts by the specified computer name.
       isArray: false
-      name: computer-name
+      name: computer_name
       required: false
       secret: false
     - default: false
       description: Filter alerts by the specified scan config ID.
       isArray: false
-      name: scan-config-id
+      name: scan_config_id
       required: false
       secret: false
     - default: false
       description: Filter alerts by the specified intel document ID.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: false
       secret: false
     - default: false
@@ -291,7 +285,7 @@ script:
     - default: false
       description: The alert ID.
       isArray: false
-      name: alert-id
+      name: alert_id
       required: true
       secret: false
     deprecated: false
@@ -339,7 +333,7 @@ script:
     - default: false
       description: The ID's of the alerts to update.
       isArray: true
-      name: alert-ids
+      name: alert_ids
       required: true
       secret: false
     - auto: PREDEFINED
@@ -389,7 +383,7 @@ script:
     - default: false
       description: The snapshot IDs to delete.
       isArray: true
-      name: snapshot-ids
+      name: snapshot_ids
       required: true
       secret: false
     deprecated: false
@@ -620,7 +614,7 @@ script:
       description: The label ID. (Use tanium-tr-intel-docs-labels-list command in
         order to get the available label IDs).
       isArray: false
-      name: label-id
+      name: label_id
       required: true
       secret: false
     deprecated: false
@@ -1361,56 +1355,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The connection name.
-      isArray: false
-      name: connection-name
-      required: true
-      secret: false
-    - default: false
-      description: The process instance ID.
-      isArray: false
-      name: ptid
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of entries to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: The offset number to begin listing entries.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets the parent process tree for the process instance.
-    execution: false
-    name: tanium-tr-get-parent-process-tree
-    outputs:
-    - contextPath: Tanium.ParentProcessTree.ID
-      description: The parent process ID.
-      type: Number
-    - contextPath: Tanium.ParentProcessTree.Name
-      description: File of the parent process.
-      type: String
-    - contextPath: Tanium.ParentProcessTree.PID
-      description: The parent process PID.
-      type: Number
-    - contextPath: Tanium.ParentProcessTree.PTID
-      description: The parent process instance ID.
-      type: Number
-    - contextPath: Tanium.ParentProcessTree.Parent
-      description: The parent process name.
-      type: String
-    - contextPath: Tanium.ParentProcessTree.Children
-      description: The parent process children.
-      type: Unknown
-  - arguments:
-    - default: false
       description: The connection id.
       isArray: false
       name: connection_id
@@ -1661,7 +1605,7 @@ script:
     - default: false
       description: The IDs of the evidences to delete.
       isArray: true
-      name: evidence-ids
+      name: evidence_ids
       required: true
       secret: false
     deprecated: false
@@ -1845,7 +1789,7 @@ script:
     - default: false
       description: List the label IDs for the intel document with this ID.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: true
       secret: false
     deprecated: false
@@ -1884,7 +1828,7 @@ script:
     - default: false
       description: Associate the new label with the intel document with this ID.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: true
       secret: false
     - default: false
@@ -1892,7 +1836,7 @@ script:
         (Use tanium-tr-intel-docs-labels-list command in order to get the available
         label IDs).
       isArray: false
-      name: label-id
+      name: label_id
       required: true
       secret: false
     deprecated: false
@@ -1931,7 +1875,7 @@ script:
     - default: false
       description: Remove the label from the intel document with this ID.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: true
       secret: false
     - default: false
@@ -1939,7 +1883,7 @@ script:
         (Use tanium-tr-intel-docs-labels-list command in order to get the available
         label IDs).
       isArray: false
-      name: label-id
+      name: label_id
       required: true
       secret: false
     deprecated: false
@@ -1976,7 +1920,7 @@ script:
     - default: false
       description: The file entry ID.
       isArray: false
-      name: entry-id
+      name: entry_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -1984,7 +1928,7 @@ script:
       description: The suffix at the end of a filename. (Available file types - yara,
         stix, ioc)
       isArray: false
-      name: file-extension
+      name: file_extension
       predefined:
       - ioc
       - yara
@@ -2028,13 +1972,13 @@ script:
     - default: false
       description: The ID of the intel document to update.
       isArray: false
-      name: intel-doc-id
+      name: intel_doc_id
       required: true
       secret: false
     - default: false
       description: The file entry ID.
       isArray: false
-      name: entry-id
+      name: entry_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -2042,7 +1986,7 @@ script:
       description: The suffix at the end of a filename. (Available file types - yara,
         stix, ioc)
       isArray: false
-      name: file-extension
+      name: file_extension
       predefined:
       - ioc
       - yara

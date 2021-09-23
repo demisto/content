@@ -85,7 +85,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      intel-doc-id:
+      intel_doc_id:
         complex:
           root: Tanium.IntelDoc
           filters:
@@ -404,7 +404,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      alert-id:
+      alert_id:
         simple: ${Tanium.Alert.ID}
     separatecontext: false
     view: |-
@@ -529,7 +529,7 @@ tasks:
       '#none#':
       - "47"
     scriptarguments:
-      alert-ids:
+      alert_ids:
         simple: ${Tanium.Alert.ID}
       state:
         simple: unresolved
@@ -652,7 +652,7 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      snapshot-ids:
+      snapshot_ids:
         complex:
           root: Tanium.Snapshot
           accessor: uuid
@@ -1152,7 +1152,7 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      label-id:
+      label_id:
         simple: ${Tanium.Label.id}
     separatecontext: false
     view: |-
@@ -3000,7 +3000,7 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      evidence-ids:
+      evidence_ids:
         complex:
           root: Tanium.Evidence
           filters:
@@ -3450,7 +3450,7 @@ tasks:
       '#none#':
       - "64"
     scriptarguments:
-      intel-doc-id:
+      intel_doc_id:
         complex:
           root: Tanium.IntelDoc
           filters:
@@ -3545,13 +3545,13 @@ tasks:
       '#none#':
       - "66"
     scriptarguments:
-      intel-doc-id:
+      intel_doc_id:
         complex:
           root: Tanium.IntelDoc
           accessor: ID
           transformers:
           - operator: FirstArrayElement
-      label-id:
+      label_id:
         simple: "1"
     separatecontext: false
     view: |-
@@ -3646,9 +3646,9 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      intel-doc-id:
+      intel_doc_id:
         simple: ${Tanium.IntelDocLabel.IntelDocID}
-      label-id:
+      label_id:
         simple: "1"
     separatecontext: false
     view: |-
