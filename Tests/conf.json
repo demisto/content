@@ -4175,7 +4175,7 @@
             ]
         },
         {
-            "playbookID": "Cymulate Immediate Threats",
+            "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
                 "cymulate_v2",

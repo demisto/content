@@ -1,23 +1,22 @@
+import asyncio
+import concurrent
+import ssl
+import threading
+from distutils.util import strtobool
 from typing import Tuple
+
+import aiohttp
+import slack_sdk
+from slack_sdk.errors import SlackApiError
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.socket_mode.request import SocketModeRequest
+from slack_sdk.socket_mode.response import SocketModeResponse
+from slack_sdk.web.async_client import AsyncWebClient
+from slack_sdk.web.slack_response import SlackResponse
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import ssl
-import asyncio
-import concurrent
-import slack_sdk
-import threading
-import aiohttp
-
-from distutils.util import strtobool
-from slack_sdk.web.async_client import AsyncWebClient
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.errors import SlackApiError
-from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.socket_mode.request import SocketModeRequest
-
 
 ''' CONSTANTS '''
 
@@ -64,7 +63,6 @@ DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
-NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
@@ -75,6 +73,7 @@ BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
+PERMITTED_NOTIFICATION_TYPES: List[str]
 
 
 ''' HELPER FUNCTIONS '''
@@ -95,14 +94,18 @@ def test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
-    if not DEDICATED_CHANNEL:
-        return_error('A dedicated slack channel must be provided.')
-    channel = get_conversation_by_name(DEDICATED_CHANNEL)
-    if not channel:
-        return_error('Dedicated channel not found.')
-    message = 'Hi there! This is a test message.'
+    if not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) > 0:
+        return_error(
+            "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    elif not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) == 0:
+        CLIENT.auth_test()  # type: ignore
+    else:
+        channel = get_conversation_by_name(DEDICATED_CHANNEL)
+        if not channel:
+            return_error('Dedicated channel not found.')
+        message = 'Hi there! This is a test message.'
 
-    CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
+        CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
 
     demisto.results('ok')
 
@@ -1298,6 +1301,11 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
+        if message_type != MIRROR_TYPE:
+            demisto.info(f"Message type is not in permitted options. Received: {message_type}")
+            return
+
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return
@@ -1330,7 +1338,7 @@ def slack_send():
 
     if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
-                 or not NOTIFY_INCIDENTS)):
+                 or not (len(PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
 
     if not (to or group or channel):
@@ -2036,8 +2044,9 @@ def init_globals(command_name: str = ''):
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
+    global PERMITTED_NOTIFICATION_TYPES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2058,18 +2067,18 @@ def init_globals(command_name: str = ''):
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
-    DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
+    DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
     ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
-    NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
     BOT_NAME = demisto.params().get('bot_name')  # Bot default name defined by the slack plugin (3-rd party)
     BOT_ICON_URL = demisto.params().get('bot_icon')  # Bot default icon url defined by the slack plugin (3-rd party)
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
+    PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
 
 
 def print_thread_dump():
