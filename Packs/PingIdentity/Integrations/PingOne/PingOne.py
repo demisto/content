@@ -487,7 +487,7 @@ def create_user_command(client, args):
     raw_response = client.create_user(username, pop_id)
     user_context = client.get_user_context(raw_response)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
+        'PingOne.Account(val.ID && val.ID === obj.ID)': createContext(user_context)
     }
     readable_output = tableToMarkdown(f"PingOne user created: {args.get('username')}",
                                       client.get_readable_user(raw_response))
