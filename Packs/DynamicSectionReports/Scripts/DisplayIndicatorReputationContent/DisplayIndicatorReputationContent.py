@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 try:
     scores = demisto.args()["cache"]["scores"]
-except:
+except Exception:
     demisto.results("No scores cached")
     sys.exit(0)
 
