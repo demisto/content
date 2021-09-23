@@ -99,6 +99,9 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
+  storage_base_path:
+    type: string
+    default: ""
   slack_channel:
     type: string
     default: "dmst-content-team"
@@ -118,6 +121,7 @@ references:
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+      STORAGE_BASE_PATH: << pipeline.parameters.storage_base_path >>
       SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       SDK_REF: << pipeline.parameters.sdk_ref >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
@@ -229,7 +233,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
         python3 --version
         node --version
@@ -851,7 +855,7 @@ jobs:
                     echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
                     exit 0
                   fi
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
             - run:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
@@ -1239,17 +1243,30 @@ jobs:
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
-                  fi
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+                    echo "DELETE AFTER TESTING: case 1: upload to prod bucket"
+                   if [[ -z $STORAGE_BASE_PATH ]] || [[ $STORAGE_BASE_PATH == "content/packs"; then
+                     STORAGE_BASE_PATH="content/packs"
+                   else
+                     echo -e "Can not triger an upload to the production bucket to a path specified by the storage_base_path parameter.\n Uploads to the production bucket can only be to the default path which is /"content/packs/"."
+                   fi
 
+                   if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+                     echo "DELETE AFTER TESTING: case 2: create a new target bucket"
+                   fi
+                  echo "DELETE AFTER TESTING: if non of the other cases was printed, we are in case 3: the default, the inserted value to storage_base_path is the one being transfered to the copy_and_upload script"
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
-                  fi
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+                   if [[ -z $STORAGE_BASE_PATH ]]; then
+                     STORAGE_BASE_PATH="content/packs"
+                   fi
+                   if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                     STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+                   fi
 
                   PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
                   ZIP_FOLDER=$(mktemp -d)
