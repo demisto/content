@@ -1871,11 +1871,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
             if date_fields:
                 for field in date_fields:
+
                     try:
                         entry_copy[field] = epochToTimestamp(int(entry_copy[field]), False)
 
-                    except:
-                        continue
+                    except BaseException:
+                        pass
 
             vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
