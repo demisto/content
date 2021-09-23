@@ -246,10 +246,10 @@ class Client(BaseClient):
 
         for group in raw_groups:
 
-            if group.get('_embedded', {}).get('group', {}).get('type') == 'DIRECT':
+            if group.get('type') == 'DIRECT':
                 grp = {
-                    'ID': group.get('_embedded', {}).get('group', {}).get('id'),
-                    'Name': group.get('_embedded', {}).get('group', {}).get('name')
+                    'ID': group.get('id'),
+                    'Name': group.get('name')
                 }
                 groups.append(grp)
 

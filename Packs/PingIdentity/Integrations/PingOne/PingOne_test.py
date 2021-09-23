@@ -329,11 +329,11 @@ def test_set_password(mocker, args, expected_context, expected_readable):
         ({"username": "emma.sharp",
           "groupId": "8c33d93e-a614-457a-80ed-5e922fccd906"},
          {},
-         'Sales'),
+         '8c33d93e-a614-457a-80ed-5e922fccd906'),
         ({"userId": "a8890eb9-38ea-469a-bc00-b64be7903633",
           "groupId": "8c33d93e-a614-457a-80ed-5e922fccd906"},
          {},
-         'Sales')
+         'a8890eb9-38ea-469a-bc00-b64be7903633')
     ]
 )
 def test_add_user_to_group(mocker, args, expected_context, expected_readable):
@@ -372,7 +372,7 @@ def test_remove_user_to_group(mocker, args, expected_context, expected_readable)
 
 
 @pytest.mark.parametrize(
-    "args ,expected_context, expected_readable",
+    "args, expected_context, expected_readable",
     [
         ({"username": "emma.sharp"},
          {'ID': 'a8890eb9-38ea-469a-bc00-b64be7903633',
@@ -392,13 +392,13 @@ def test_remove_user_to_group(mocker, args, expected_context, expected_readable)
           'UpdatedAt': "2021-09-08T20:18:19.419Z"}, 'emma.sharp@example.com')
     ]
 )
-def test_get_user_command(mocker, args, expected_context, expected_readable):
+def test_get_user_cmd(mocker, args, expected_context, expected_readable):
     client = ClientTestPing(mocker).client
 
     mocker.patch.object(client, 'get_user_by_id', return_value=user_data_by_id)
     mocker.patch.object(client, 'get_user_by_username', return_value=user_data_by_username)
     readable, outputs, _ = get_user_command(client, args)
-    assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0] == expected_context
+    assert outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)')[0] == expected_context
     assert expected_readable in readable
 
 
@@ -406,14 +406,19 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
 def test_get_groups_for_user_command(mocker, args):
     client = ClientTestPing(mocker).client
 
-    expected_context = [
-        {"ID": '8c33d93e-a614-457a-80ed-5e922fccd906', 'Name': 'Sales'}]
+    expected_context = [{
+        'ID': '8c33d93e-a614-457a-80ed-5e922fccd906',
+        'Name': 'Sales'
+        }
+    ]
+
     mocker.patch.object(client, 'get_user_id', return_value=TEST_USER_ID)
     mocker.patch.object(client, 'get_groups_for_user', return_value=group_data)
+
     _, outputs, _ = get_groups_for_user_command(client, args)
 
-    assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('Group') == expected_context
-    assert 'emma.sharp' == outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID')
+    assert outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('Group') == expected_context
+    assert 'emma.sharp' == outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('ID')
 
 
 @pytest.mark.parametrize(
@@ -427,7 +432,7 @@ def test_create_user_command(mocker, args):
     readable, outputs, _ = create_user_command(client, args)
 
     assert '9e45580c-79f3-4499-83cc-006a20dcc50e' in readable
-    assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('Enabled')
+    assert outputs.get('PingOne.Account(val.ID && val.ID === obj.ID)').get('Enabled')
 
 
 @pytest.mark.parametrize(
