@@ -213,7 +213,7 @@ script:
       description: Country code
     - name: Type
       description: Account type
-    description: Update a PingOne user
+    description: Update a PingOne user.
   - name: pingone-delete-user
     arguments:
     - name: username
