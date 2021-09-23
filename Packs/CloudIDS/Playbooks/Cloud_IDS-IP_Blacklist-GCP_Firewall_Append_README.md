@@ -13,4 +13,4 @@ GoogleCloudCompute.Operations error codes if applicable
 
 ## Playbook Image
 ---
-![Cloud_IDS-IP_Blacklist-GCP_Firewall_Append](./Cloud_IDS-IP_Blacklist-GCP_Firewall_Append.png)
+![Cloud_IDS-IP_Blacklist-GCP_Firewall_Append](../doc_files/Cloud_IDS-IP_Blacklist-GCP_Firewall_Append.png)

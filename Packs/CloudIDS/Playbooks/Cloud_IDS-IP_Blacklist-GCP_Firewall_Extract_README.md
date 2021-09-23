@@ -11,4 +11,4 @@ JsonObject - A JSON object loaded with the attacker's IP address.
 
 ## Playbook Image
 ---
-![Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract](./Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract.png)
+![Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract](../doc_files/Cloud_IDS-IP_Blacklist-GCP_Firewall_Extract.png)

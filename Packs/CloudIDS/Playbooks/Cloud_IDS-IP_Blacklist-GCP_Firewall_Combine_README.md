@@ -13,4 +13,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine](./Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine.png)
+![Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine](../doc_files/Cloud_IDS-IP_Blacklist-GCP_Firewall_Combine.png)
