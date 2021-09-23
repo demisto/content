@@ -92,7 +92,7 @@ script:
     - contextPath: Nexthink.Package.MAC Address
       description: Endpoint MAC Address
     description: Verify software installed in endpoint.
-  - name: nt_endpoint_details
+  - name: nt-endpoint-details
     arguments:
     - name: hostname
       required: true
