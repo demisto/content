@@ -11,7 +11,7 @@ comment: Gets all available devices from the IoT cloud and updates or creates th
 commonfields:
   id: SendAllPANWIoTDevicesToCiscoISE
   version: -1
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: SendAllPANWIoTDevicesToCiscoISE
 runas: DBotWeakRole
