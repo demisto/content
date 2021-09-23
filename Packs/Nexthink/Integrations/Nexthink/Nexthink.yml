@@ -66,7 +66,7 @@ script:
     - contextPath: Nexthink.Compliance.Device Antispyware Updated
       description: Endpoint Antispyware Update Status
     description: Verify antivirus/antispyware status.
-  - name: nt_installed_packages
+  - name: nt-installed-packages
     arguments:
     - name: hostname
       required: true
