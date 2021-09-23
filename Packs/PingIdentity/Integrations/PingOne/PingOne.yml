@@ -97,6 +97,7 @@ script:
     arguments:
     - name: username
       description: Username
+      required: true
     outputs:
     - contextPath: PingOne.Account.Group
       description: PingOne groups of the user.
