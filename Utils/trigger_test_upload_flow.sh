@@ -113,7 +113,8 @@ else
       "bucket_upload": "${_bucket_upload}",
       "force_pack_upload": "${_force}",
       "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}"
+      "slack_channel": "${_slack_channel}",
+      "storage_base_path": "{_storage_base_path}"
     }
   }
   EOF
