@@ -432,7 +432,7 @@ def test_module(client, data_args):
         if client.login():
             return demisto.results('ok')
     except Exception as e:
-        raise ValueError(f'Test Tanium integration failed - please check your credentials and try again.\n{str(e)}')
+        raise ValueError(f'Please check your credentials and try again. Error is:\n{str(e)}')
 
 
 def fetch_incidents(client, alerts_states_to_retrieve):
@@ -1712,8 +1712,8 @@ def get_evidence_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]
     evidence_id = data_args.get('evidence_id')
     raw_response = client.do_request('GET', f'/plugin/products/threat-response/api/v1/event-evidence/{evidence_id}')
 
-    evidence = raw_response.get('evidence')
-    data = evidence.get('data')
+    evidence = raw_response.get('evidence', {})
+    data = evidence.get('data', {})
     context = copy.deepcopy(evidence)
     context.update(data)
     if data:
