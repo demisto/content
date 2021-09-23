@@ -30,6 +30,7 @@ This playbook does not use any integrations.
 
 ### Commands
 * image-ocr-extract-text
+* rasterize-pdf
 
 ## Playbook Inputs
 ---
@@ -63,4 +64,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Extract Indicators From File - Generic v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Extract_Indicators_From_File_Generic_v2.png)
+![Extract Indicators From File - Generic v2](https://raw.githubusercontent.com/demisto/content/Enrichment_for_extract_indicators_playbook_v2/Packs/CommonPlaybooks/doc_files/Extract_Indicators_From_File_-_Generic_v2.png)
