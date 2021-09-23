@@ -1,0 +1,4 @@
+!nucleon-get-indicators
+!nucleon-get-indicators type="ip"
+!nucleon-get-indicators type="hash"
+!nucleon-get-indicators type="url"

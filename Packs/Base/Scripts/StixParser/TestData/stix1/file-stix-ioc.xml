@@ -19,6 +19,10 @@
                                     e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
                                 </cyboxCommon:Simple_Hash_Value>
                             </cyboxCommon:Hash>
+                            <cyboxCommon:Hash>
+                                <cyboxCommon:Type condition="Equals" xsi:type="cyboxVocabs:HashNameVocab-1.0">SSDEEP</cyboxCommon:Type>
+                                <cyboxCommon:Fuzzy_Hash_Value condition="Equals">193:iAklVz3fzvBk5oFblLPBN1iXf2bCRErwyN4aEbwyiNwyiQwNeDAi4XMG:iAklVzfzvBTFblLpN1iXOYpyuapyiWym</cyboxCommon:Fuzzy_Hash_Value>
+                            </cyboxCommon:Hash>
                         </FileObj:Hashes>
                     </cybox:Properties>
                 </cybox:Object>

@@ -316,7 +316,17 @@ def test_prettify_edl():
 
 
 def test_build_traffic_logs_query():
-    # (addr.src in 192.168.1.222) and (app eq netbios-dg) and (action eq allow) and (port.dst eq 138)
+    """
+    Given:
+     - a valid arguments for traffic logs query generation
+
+    When:
+     - running the build_traffic_logs_query utility function
+
+    Then:
+     - a proper query is generated
+        (addr.src in 192.168.1.222) and (app eq netbios-dg) and (action eq allow) and (port.dst eq 138)
+    """
     from Panorama import build_traffic_logs_query
     source = '192.168.1.222'
     application = 'netbios-dg'
@@ -334,6 +344,26 @@ def test_prettify_traffic_logs():
     response = prettify_traffic_logs(traffic_logs)
     expected = [{'Action': 'my_action1', 'Category': 'my_category1', 'Rule': 'my_rule1'},
                 {'Action': 'my_action2', 'Category': 'my_category2', 'Rule': 'my_rule2'}]
+    assert response == expected
+
+
+def test_build_logs_query():
+    """
+    Given:
+     - a valid arguments for logs query generation
+
+    When:
+     - running the build_logs_query utility function
+
+    Then:
+     - a proper query is generated
+        ((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))
+    """
+    from Panorama import build_logs_query
+
+    urls_as_string = "demisto.com, paloaltonetworks.com"
+    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None)
+    expected = "((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))"
     assert response == expected
 
 
@@ -414,6 +444,32 @@ def test_panorama_security_policy_match_command_no_target():
               "or for a Panorama instance, to be used with the target argument."
     with pytest.raises(DemistoException, match=err_msg):
         panorama_security_policy_match_command(demisto.args())
+
+
+def test_panorama_register_ip_tag_command_wrongful_args(mocker):
+    """
+    Given:
+     - a non valid arguments for the panorama_register_ip_tag_command function
+
+    When:
+     - running the panorama_register_ip_tag_command function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import panorama_register_ip_tag_command
+    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'true', 'timeout': '5'}
+
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    with pytest.raises(DemistoException,
+                       match='When the persistent argument is true, you can not use the timeout argument.'):
+        panorama_register_ip_tag_command(args)
+
+    args['persistent'] = 'false'
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    with pytest.raises(DemistoException,
+                       match='The timeout argument is only applicable on 9.x PAN-OS versions or higher.'):
+        panorama_register_ip_tag_command(args)
 
 
 def test_prettify_matching_rule():

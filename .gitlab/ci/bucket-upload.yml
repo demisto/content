@@ -1,23 +1,15 @@
 .bucket-upload-rule:
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
 .bucket-upload-rule-always:
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
       when: always
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
@@ -27,7 +19,7 @@
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
       echo "recieved content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" )
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
         exit 1
@@ -55,10 +47,7 @@ create-instances-upload-flow:
     - create-instances
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
@@ -163,6 +152,25 @@ upload-packs-to-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
       fi
     - section_end "Upload Packs To Marketplace Storage"
+    - section_start "Download packs from GCP"
+    - |
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      else
+        STORAGE_BASE_PATH="content/packs"
+      fi
+      PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+      ZIP_FOLDER=$(mktemp -d)
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
+      gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_end "Download packs from GCP"
+    - section_start "Zip Content Packs From GCS"
+    - |
+      python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+    - section_end "Zip Content Packs From GCS"
     - section_start "Validate Premium Packs"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
@@ -179,13 +187,9 @@ force-pack-upload:
   stage: upload-to-marketplace
   needs: ["create-instances-upload-flow"]
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
     - .default-job-settings
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)

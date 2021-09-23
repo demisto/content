@@ -1,0 +1,29 @@
+args:
+- description: Input string from incident.
+  name: value
+  required: true
+- description: Incident field values from incident, If you are using this automation as classification & mapping the recommended value is "${.}".
+  name: inc
+  required: true
+comment: Convert Splunk CIM Fields Dynamic Into Fields Value
+commonfields:
+  id: SplunkCIMFields
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+name: SplunkCIMFields
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

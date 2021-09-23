@@ -36,7 +36,7 @@ class ContentPackInstaller:
             demisto.debug(error_message)
             return
 
-        packs_data: List[Dict[str, str]] = res[0].get('Contents', {}).get('response', [])
+        packs_data: List[Dict[str, str]] = res.get('response', [])
         for pack in packs_data:
             self.installed_packs[pack['id']] = parse(pack['currentVersion'])
             self.already_on_machine_packs[pack['id']] = parse(pack['currentVersion'])
@@ -119,8 +119,7 @@ class ContentPackInstaller:
             str. The latest version of the pack.
         """
         res = self.get_pack_data_from_marketplace(pack_id)
-        return res.get('Contents', {}).get('response', {}).get(  # type: ignore[call-overload, union-attr]
-            'currentVersion')
+        return res.get('response', {}).get('currentVersion')  # type: ignore[call-overload, union-attr]
 
     def get_packs_data_for_installation(self, packs_to_install: List[Dict[str, str]]) -> List[Dict[str, str]]:
         """Creates a list of packs' data for the installation request.

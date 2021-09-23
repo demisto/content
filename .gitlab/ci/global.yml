@@ -58,7 +58,7 @@
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO -t $GITHUB_TOKEN
+      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
     fi
   - section_end "getting contrib packs"
 
@@ -172,6 +172,9 @@
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+            python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json -cov $ARTIFACTS_FOLDER/coverage_report/.coverage
+          fi
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
@@ -213,10 +216,9 @@
         echo "successfully merged public and private ID sets"
       fi
     - section_end "Merge public and private id sets"
-    - section_start "Update Tests"
-    - python3 ./Tests/scripts/update_conf_json.py
+    - section_start "Copy Tests To Artifact Folder"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - section_end "Update Tests"
+    - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
@@ -267,7 +269,11 @@
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
       gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)

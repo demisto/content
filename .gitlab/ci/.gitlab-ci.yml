@@ -17,7 +17,7 @@ stages:
 
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
-  GCS_MARKET_BUCKET: "marketplace-dist-dev"
+  GCS_MARKET_BUCKET: "marketplace-dist"
   SLACK_CHANNEL: "dmst-content-team"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
@@ -41,3 +41,4 @@ include:
   - local: .gitlab/ci/bucket-upload.yml
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
+  - local: .gitlab/ci/miscellaneous.yml

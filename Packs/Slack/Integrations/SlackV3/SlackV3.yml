@@ -20,11 +20,6 @@ configuration:
   name: incidentNotificationChannel
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Send notifications about incidents to the dedicated channel
-  name: notify_incidents
-  required: false
-  type: 8
 - defaultvalue: Low
   display: Minimum incident severity to send messages to slack by
   name: min_severity
@@ -36,6 +31,18 @@ configuration:
   - Critical
   required: false
   type: 15
+- display: Types of Notifications to Send.
+  name: permitted_notifications
+  type: 16
+  required: false
+  options:
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
@@ -425,11 +432,79 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  - arguments: [ ]
-    name: slack-get-integration-context
-    description: Returns the integration context as a file. Use this command for debug purposes only.
+  - deprecated: false
+    description: Returns the integration context as a file. Use this command for debug
+      purposes only.
     execution: false
     hidden: true
+    name: slack-get-integration-context
+  - arguments:
+    - default: false
+      description: The channel containing the message.
+      isArray: false
+      name: channel
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the thread of which to pin - can be retrieved from
+        a previous send-notification command.
+      isArray: false
+      name: threadID
+      required: true
+      secret: false
+    deprecated: false
+    description: Pins a selected message to the given channel.
+    execution: false
+    hidden: false
+    name: slack-pin-message
+  - arguments:
+    - default: false
+      description: The channel the message is posted in.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the thread of which to edit - can be retrieved from
+        a previous send-notification command.
+      isArray: false
+      name: threadID
+      required: true
+      secret: false
+    - default: false
+      description: The updated message.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: A JSON string of the block to send.
+      isArray: false
+      name: blocks
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ignore_add_url
+      required: false
+      secret: false
+      description: Whether to include a URL to the relevant component in XSOAR.
+        Can be "true" or "false". Default value is "false".
+    deprecated: false
+    description: Edit an existing Slack message.
+    execution: false
+    hidden: false
+    name: slack-edit-message
+    outputs:
+    - contextPath: Slack.Thread.ID
+      description: The timestamp identifier for the message.
+      type: String
+    - contextPath: Slack.Thread.Channel
+      description: The channel ID the message was posted in.
+      type: String
+    - contextPath: Slack.Thread.Text
+      description: The text the message was updated with.
+      type: String
   dockerimage: demisto/slackv3:1.0.0.23423
   feed: false
   isfetch: false

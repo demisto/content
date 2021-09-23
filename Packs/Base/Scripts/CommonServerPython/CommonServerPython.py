@@ -449,6 +449,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 'Course of Action'
         INTRUSION_SET = 'Intrusion Set'
         TOOL = 'Tool'
+        THREAT_ACTOR = 'Threat Actor'
+        INFRASTRUCTURE = 'Infrastructure'
 
     class ObjectsScore(object):
         """
@@ -463,6 +465,8 @@ class ThreatIntel:
         COURSE_OF_ACTION = 0
         INTRUSION_SET = 3
         TOOL = 2
+        THREAT_ACTOR = 3
+        INFRASTRUCTURE = 2
 
     class KillChainPhases(object):
         """
@@ -1814,6 +1818,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         mdResult += '**No entries.**\n'
         return mdResult
 
+    if not headers and isinstance(t, dict) and len(t.keys()) == 1:
+        # in case of a single key, create a column table where each element is in a different row.
+        headers = list(t.keys())
+        t = list(t.values())[0]
+
     if not isinstance(t, list):
         t = [t]
 
@@ -1825,7 +1834,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
-            t = map(lambda item: dict((h, item) for h in [header]), t)
+            t = [{header: item} for item in t]
         else:
             raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
 
@@ -2480,6 +2489,13 @@ class Common(object):
             }
             return ret_value
 
+        def to_readable(self):
+            dbot_score_to_text = {0: 'Unknown',
+                                  1: 'Good',
+                                  2: 'Suspicious',
+                                  3: 'Bad'}
+            return dbot_score_to_text.get(self.score, 'Undefined')
+
     class CustomIndicator(Indicator):
 
         def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
@@ -2527,7 +2543,7 @@ class Common(object):
 
         def to_context(self):
             custom_context = {
-                'Value': self.value
+                'value': self.value
             }
 
             custom_context.update(self.data)
@@ -6936,6 +6952,9 @@ if 'requests' in sys.modules:
         def __del__(self):
             try:
                 self._session.close()
+            except AttributeError:
+                # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
+                pass
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 

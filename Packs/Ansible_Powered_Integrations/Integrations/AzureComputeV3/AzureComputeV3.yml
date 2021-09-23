@@ -51,8 +51,8 @@ configuration:
   name: api_profile
   required: true
   type: 0
-description: Manage Azure Compute resources
-display: Azure Compute v3
+description: Manage Azure Compute resources. Deprecated. Use Ansible Azure (from the Ansible Azure pack) instead.
+display: Ansible Azure Compute (Deprecated)
 name: AzureComputeV3
 script:
   commands:
@@ -2300,7 +2300,7 @@ script:
       name: append_tags
     description: Manage Azure Web App slot
     name: azure-rm-webappslot
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -2308,3 +2308,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

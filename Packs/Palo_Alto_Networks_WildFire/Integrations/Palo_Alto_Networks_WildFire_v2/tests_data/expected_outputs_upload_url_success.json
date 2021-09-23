@@ -1,0 +1,126 @@
+{
+  "da_packages": [
+    "package--19a68e1d-2594-4184-b69d-81af2877a4ce"
+  ],
+  "detection_reasons": [
+    {
+      "artifacts": [
+        {
+          "entity_id": "malware-instance--ea309560-a4f5-4488-3686-fe10b552ce31",
+          "package": "package--28379977-652c-4811-816e-203d0ea98258",
+          "type": "artifact-ref"
+        }
+      ],
+      "description": "Known benign by a trusted source",
+      "name": "trusted_list",
+      "type": "detection-reason",
+      "verdict": "benign"
+    }
+  ],
+  "iocs": [],
+  "maec_packages": [
+    {
+      "id": "package--19a68e1d-2594-4184-b69d-81af2877a4ce",
+      "maec_objects": [
+        {
+          "analysis_metadata": [
+            {
+              "analysis_type": "combined",
+              "conclusion": "unknown",
+              "description": "Automated phishing analysis inside a custom web browser",
+              "end_time": "2021-07-26T19:44:07.208930Z",
+              "is_automated": "True",
+              "tool_refs": [
+                "1"
+              ]
+            }
+          ],
+          "id": "malware-instance--ef824738-0fd3-4994-3fee-d07ef0125704",
+          "instance_object_refs": [
+            "0"
+          ],
+          "type": "malware-instance"
+        }
+      ],
+      "observable_objects": {
+        "0": {
+          "type": "url",
+          "value": "http://www.google.com/"
+        },
+        "1": {
+          "name": "HtmlUnit v2.35",
+          "type": "software",
+          "vendor": "SourceForge Media, LLC dba Slashdot Media"
+        }
+      },
+      "schema_version": "5.0",
+      "type": "package"
+    },
+    {
+      "id": "package--28379977-652c-4811-816e-203d0ea98258",
+      "maec_objects": [
+        {
+          "attributes": {
+            "reason": "url or hostname in no-crawl list"
+          },
+          "description": "Dynamic analysis was restricted",
+          "id": "behavior--b337ee1f-8923-45d8-9c3e-39ce2964ded4",
+          "name": "no_crawl",
+          "type": "behavior"
+        },
+        {
+          "analysis_metadata": [
+            {
+              "analysis_type": "static",
+              "conclusion": "unknown",
+              "description": "Automated static URL analysis",
+              "end_time": "2021-07-27T08:12:16.578008Z",
+              "is_automated": "True"
+            },
+            {
+              "analysis_type": "static",
+              "conclusion": "benign",
+              "is_automated": "True"
+            }
+          ],
+          "dynamic_features": {
+            "behavior_refs": [
+              "behavior--b337ee1f-8923-45d8-9c3e-39ce2964ded4",
+              "behavior--229cbcd6-9717-4c0e-ba9b-47f6f835cfcc"
+            ]
+          },
+          "id": "malware-instance--ea309560-a4f5-4488-3686-fe10b552ce31",
+          "instance_object_refs": [
+            "0"
+          ],
+          "type": "malware-instance"
+        },
+        {
+          "description": "Known benign by a trusted source",
+          "id": "behavior--229cbcd6-9717-4c0e-ba9b-47f6f835cfcc",
+          "name": "trusted_list",
+          "type": "behavior"
+        }
+      ],
+      "observable_objects": {
+        "0": {
+          "type": "url",
+          "value": "http://www.google.com/"
+        }
+      },
+      "schema_version": "5.0",
+      "type": "package"
+    }
+  ],
+  "primary_malware_instances": {
+    "package--19a68e1d-2594-4184-b69d-81af2877a4ce": "malware-instance--ef824738-0fd3-4994-3fee-d07ef0125704",
+    "package--28379977-652c-4811-816e-203d0ea98258": "malware-instance--ea309560-a4f5-4488-3686-fe10b552ce31"
+  },
+  "sa_package": "package--28379977-652c-4811-816e-203d0ea98258",
+  "schema_version": "1.0",
+  "sha256": "191347bfe55d0ca9a574db77bc8648275ce258461450e793528e0cc6d2dcf8f5",
+  "type": "wf-report",
+  "verdict": "benign",
+  "URL": "www.google.com",
+  "Status": "Success"
+}

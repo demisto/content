@@ -846,8 +846,16 @@ script:
       isArray: false
       name: site_id
       required: true
-      secret: false
-    deprecated: false
+    - description: If false an expiration should be supplied
+      name: unlimited
+      required: false
+      isArray: false
+      default: false
+    - description: Expiration date in case unlimited is false, for example, "2019-08-03T04:49:26.257525Z".
+      name: expiration
+      isArray: false
+      default: false
+      required: false
     description: Reactivates an expired site.
     execution: false
     name: sentinelone-reactivate-site
@@ -1463,7 +1471,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   longRunning: false
   longRunningPort: false

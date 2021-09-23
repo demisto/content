@@ -402,7 +402,9 @@ def test_email_with_special_character(mocker):
 
 @pytest.mark.parametrize('encoded_subject, decoded_subject', [
     (
-        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',  # noqa E501
+        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= '
+        '=?utf-8?q?mmer=C3=A7ant_Pickup_!?=',
+        # noqa E501
         '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
     ),
     (
@@ -410,9 +412,30 @@ def test_email_with_special_character(mocker):
         'This Test® passes'
     ),
     (
-        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',    # test case: double utf-8 byte encoded
-        '\xe3\x80\x90\xe2\x91\xa0'              # 【①
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',  # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'  # 【①
     ),
+    (
+        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+        '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+        'メール�と�日本語文字が表示されない文字のテスト'
+    ),
+    (
+        '=?UTF-8?Q?TEST_UNDERSCORE?=',
+        'TEST UNDERSCORE'
+    ),
+    # (
+    #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+    #   '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+    #   'This is test メール�と�日本語文字が表示されない文字のテスト'
+    # )
+    # ( 'Test =?UTF-8?Q?Seguran=C3=A7a=20?=da =?UTF-8?Q?Informa=C3=A7=C3=A3o?=',
+    #   'Test Segurança da Informação'
+    #  )
+    # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
+    # encoding parts.
+    # **please DO NOT delete the commented tests**.
+    # they have been disabled in attempt to fix issue no. 40877, and they may be needed for a better solution in the future.
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
@@ -1017,3 +1040,35 @@ def test_PtypString():
 
     data_value = DataModel.PtypString(b'e\x9c\xe6\xb9pe')
     assert data_value == u'eśćąpe'
+
+
+@pytest.mark.parametrize('payload, answer', [
+    ('escape', 'escape'),
+    (u'eśćąpe', u'eśćąpe')
+])
+def test_decode_attachment_payload_non_base64(payload, answer):
+    class MockedMessage:
+        def __init__(self, payload=None):
+            self.payload = payload
+
+        def get_payload(self):
+            return self.payload
+
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))
+
+
+@pytest.mark.parametrize('payload, answer', [
+    ('//5lAFsBBwEFAXAAZQA=', '\xff\xfee\x00[\x01\x07\x01\x05\x01p\x00e\x00'),  # eśćąpe
+    ('ZXNjYXBl', 'escape')
+])
+def test_decode_attachment_payload_base64(payload, answer):
+    class MockedMessage:
+        def __init__(self, payload=None):
+            self.payload = payload
+
+        def get_payload(self):
+            return self.payload
+
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))
