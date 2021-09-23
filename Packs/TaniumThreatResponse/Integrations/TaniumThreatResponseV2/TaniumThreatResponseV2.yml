@@ -95,7 +95,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximum number of intel documents to return.
       isArray: false
       name: limit
