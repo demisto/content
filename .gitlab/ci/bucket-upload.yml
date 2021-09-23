@@ -208,9 +208,17 @@ force-pack-upload:
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |
-      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        echo "DELETE AFTER TESTING: case 1: upload to prod bucket"
+        STORAGE_BASE_PATH="content/packs"
       fi
+
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+       STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+       echo "DELETE AFTER TESTING: case 2: create a new target bucket"
+      fi
+       echo "DELETE AFTER TESTING: if non of the other cases was printed, we are in case 3: the default, the inserted value to storage_base_path is the one being transfered to the copy_and_upload script"
+
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
 
 
