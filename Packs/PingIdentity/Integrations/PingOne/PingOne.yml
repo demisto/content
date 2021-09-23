@@ -144,7 +144,7 @@ script:
     - contextPath: PingOne.Account.UpdatedAt
       description: PingOne account updated date.
       type: date
-    description: Returns a PingOne user.
+    description: Returns a PingOne user. One of the following has to be given username or userId.
   - name: pingone-create-user
     arguments:
     - name: username
