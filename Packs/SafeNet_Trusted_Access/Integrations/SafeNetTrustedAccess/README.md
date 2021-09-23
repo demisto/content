@@ -3,6 +3,9 @@ This integration enables you to process alerts from SafeNet Trusted Access (STA)
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+> **_NOTE :_**  Perform create, update and delete operations only for internal users or groups using commands. Such operations aren't recommended for synced users or groups using commands.
+
 ### sta-get-user-list
 ***
 Get list of users in the tenant.
