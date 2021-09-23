@@ -1,7 +1,7 @@
 import dateparser
 import demistomock as demisto
 from CommonServerPython import *
-# from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
@@ -887,7 +887,7 @@ def main() -> None:
                 client=client,
                 max_results=params.get('max_fetch'),
                 last_run=demisto.getLastRun(),
-                first_fetch_time=params.get('first_fetch', '1113 days'),
+                first_fetch_time=params.get('first_fetch', '3 days'),
                 status=params.get('alert_status', None),
                 feedname=params.get('alert_feed_name', None),
                 query=params.get('alert_query', None))
