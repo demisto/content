@@ -5,7 +5,7 @@ name: PingOne
 display: PingOne
 category: Identity and Access Management
 description: 'Integrates with the PingOne Management API to unlock, create, delete
-  and update users.  '
+  and update users. '
 configuration:
 - display: Your PingOne Environment ID
   name: environment_id
@@ -71,46 +71,46 @@ script:
       required: true
       description: The new password.
     description: "Sets a user's password. Further password details available here:
-    https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self"
+    https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
   - name: pingone-add-to-group
     arguments:
     - name: username
-      description: 'Username '
+      description: Username.
     - name: groupName
-      description: Group Name
+      description: Group name.
     - name: groupId
-      description: Group ID
+      description: Group id.
     - name: userId
-      description: User ID
+      description: User id.
     description: Add user to the group. One of the following has to be given username or userId and groupName or groupId.
   - name: pingone-remove-from-group
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: groupName
-      description: Group Name
+      description: Group name.
     - name: userId
-      description: User ID
+      description: User id.
     - name: groupId
-      description: Group ID
+      description: Group id.
     description: Remove user from the group. One of the following has to be given username or userId and groupName or groupId.
   - name: pingone-get-groups
     arguments:
     - name: username
-      description: Username
+      description: Username.
       required: true
     outputs:
     - contextPath: PingOne.Account.Group
       description: PingOne groups of the user.
       type: string
     - contextPath: PingOne.Account.ID
-      description: PingOne account ID.
+      description: PingOne account id.
       type: string
     - contextPath: PingOne.Account.Type
       description: PingOne account type.
       type: string
     - contextPath: PingOne.Account.Group.ID
-      description: Group unique ID.
+      description: Group unique id.
       type: string
     - contextPath: PingOne.Account.Group.Name
       description: Group name.
@@ -119,9 +119,9 @@ script:
   - name: pingone-get-user
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: userId
-      description: User ID
+      description: User id.
     - name: detailed
       description: PingOne user details.
     outputs:
@@ -184,42 +184,42 @@ script:
       required: true
       description: The username to be updated.
     - name: formatted
-      description: Formatted PingOne name
+      description: Formatted PingOne name.
     - name: given
-      description: Given name
+      description: Given name.
     - name: middle
-      description: Middle name
+      description: Middle name.
     - name: family
-      description: Family name
+      description: Family name.
     - name: nickname
-      description: Nickname
+      description: Nickname.
     - name: title
-      description: Title
+      description: Title.
     - name: locale
-      description: Locale
+      description: Locale.
     - name: email
-      description: Email
+      description: Email.
     - name: primaryPhone
-      description: Primary phone number
+      description: Primary phone number.
     - name: mobilePhone
-      description: Mobile phone number
+      description: Mobile phone number.
     - name: streetAddress
-      description: Street address
+      description: Street address.
     - name: locality
-      description: Locality
+      description: Locality.
     - name: region
-      description: Region
+      description: Region.
     - name: postalCode
-      description: Zip code
+      description: Zip code.
     - name: countryCode
-      description: Country code
+      description: Country code.
     - name: Type
-      description: Account type
+      description: Account type.
     description: Update a PingOne user.
   - name: pingone-delete-user
     arguments:
     - name: username
-      description: Username
+      description: Username.
     - name: userId
       description: User ID
     description: Delete a PingOne user. One of the following has to be given username or userId.
