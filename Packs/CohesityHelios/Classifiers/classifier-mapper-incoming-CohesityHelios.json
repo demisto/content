@@ -55,28 +55,6 @@
                         "transformers": []
                     },
                     "simple": ""
-                },
-                "severity": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "from": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "k"
-                                        }
-                                    }
-                                },
-                                "operator": "substringFrom"
-                            }
-                        ]
-                    },
-                    "simple": ""
                 }
             }
         }
