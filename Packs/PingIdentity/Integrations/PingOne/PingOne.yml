@@ -70,7 +70,8 @@ script:
     - name: password
       required: true
       description: The new password.
-    description: Sets a user's password.
+    description: "Sets a user's password. Further password details available here:
+    https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self"
   - name: pingone-add-to-group
     arguments:
     - name: username
@@ -81,7 +82,7 @@ script:
       description: Group ID
     - name: userId
       description: User ID
-    description: Add user to the group.
+    description: Add user to the group. One of the following has to be given username or userId and groupName or groupId.
   - name: pingone-remove-from-group
     arguments:
     - name: username
@@ -92,11 +93,12 @@ script:
       description: User ID
     - name: groupId
       description: Group ID
-    description: Remove user from the group.
+    description: Remove user from the group. One of the following has to be given username or userId and groupName or groupId.
   - name: pingone-get-groups
     arguments:
     - name: username
       description: Username
+      required: true
     outputs:
     - contextPath: PingOne.Account.Group
       description: PingOne groups of the user.
@@ -121,7 +123,7 @@ script:
     - name: userId
       description: User ID
     - name: detailed
-      description: Return PingOne User details.
+      description: PingOne user details.
     outputs:
     - contextPath: PingOne.Account.ID
       description: PingOne account ID.
@@ -144,14 +146,15 @@ script:
     - contextPath: PingOne.Account.UpdatedAt
       description: PingOne account updated date.
       type: date
-    description: Returns a PingOne user.
+    description: Returns a PingOne user. One of the following has to be given username or userId.
   - name: pingone-create-user
     arguments:
     - name: username
       required: true
       description: The username to create.
     - name: populationId
-      description: PingOne population ID where the new user will be created
+      description: PingOne population ID where the new user will be created.
+      required: true
     outputs:
     - contextPath: PingOne.Account.ID
       description: PingOne account ID.
@@ -212,14 +215,14 @@ script:
       description: Country code
     - name: Type
       description: Account type
-    description: Update a PingOne user
+    description: Update a PingOne user.
   - name: pingone-delete-user
     arguments:
     - name: username
       description: Username
     - name: userId
       description: User ID
-    description: Delete a PingOne user.
+    description: Delete a PingOne user. One of the following has to be given username or userId.
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   subtype: python3

@@ -246,10 +246,10 @@ class Client(BaseClient):
 
         for group in raw_groups:
 
-            if group.get('_embedded', {}).get('group', {}).get('type') == 'DIRECT':
+            if group.get('type') == 'DIRECT':
                 grp = {
-                    'ID': group.get('_embedded', {}).get('group', {}).get('id'),
-                    'Name': group.get('_embedded', {}).get('group', {}).get('name')
+                    'ID': group.get('id'),
+                    'Name': group.get('name')
                 }
                 groups.append(grp)
 
@@ -400,14 +400,21 @@ def add_user_to_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        raise Exception("PingOne errror: You must supply either 'Username' or 'userId")
+        raise Exception("PingOne error: You must supply either 'Username' or 'userId and 'groupName' or 'groupId'.")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
+        user_id_or_name = args.get('username')
+    else:
+        user_id_or_name = user_id
+
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
+        group_id_or_name = args.get('groupName')
+    else:
+        group_id_or_name = group_id
 
     raw_response = client.add_user_to_group(user_id, group_id)
-    readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
+    readable_output = f"User: {user_id_or_name} added to group: {group_id_or_name} successfully"
     return (
         readable_output,
         {},
@@ -420,15 +427,23 @@ def remove_from_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        raise Exception("PingOne errror: You must supply either 'Username' or 'userId' and either 'groupName' or 'groupId'")
+        raise Exception("PingOne error: You must supply either 'Username' or 'userId and 'groupName' or 'groupId'.")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
+        user_id_or_name = args.get('username')
+    else:
+        user_id_or_name = user_id
+
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
+        group_id_or_name = args.get('groupName')
+    else:
+        group_id_or_name = group_id
 
     client.remove_user_from_group(user_id, group_id)
 
-    readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
+    readable_output = f"User: {user_id_or_name} was removed from group: {group_id_or_name} successfully"
+
     return (
         readable_output,
         {},
@@ -442,7 +457,7 @@ def get_groups_for_user_command(client, args):
 
     context = createContext(groups, removeNull=True)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': {
+        'PingOne.Account(val.ID && val.ID === obj.ID)': {
             'Group': context,
             'ID': args.get('username'),
             'Type': 'PingOne'
@@ -460,10 +475,10 @@ def get_groups_for_user_command(client, args):
 def get_user_command(client, args):
 
     if args.get('userId'):
-        user_term = args.get('userId')
+        user_id_or_name = args.get('userId')
         raw_response = client.get_user_by_id(args.get('userId'))
     elif args.get('username'):
-        user_term = args.get('username')
+        user_id_or_name = args.get('username')
         raw_response = client.get_user_by_username(args.get('username'))
     else:
         raise Exception("PingOne error: You must supply either 'Username' or 'userId")
@@ -473,7 +488,7 @@ def get_user_command(client, args):
     outputs = {
         'PingOne.Account(val.ID && val.ID === obj.ID)': createContext([user_context])
     }
-    readable_output = f"{tableToMarkdown(f'User:{user_term}', [user_readable])} "
+    readable_output = f"{tableToMarkdown(f'User:{user_id_or_name}', [user_readable])} "
     return (
         readable_output,
         outputs,
@@ -487,7 +502,7 @@ def create_user_command(client, args):
     raw_response = client.create_user(username, pop_id)
     user_context = client.get_user_context(raw_response)
     outputs = {
-        'Account(val.ID && val.ID === obj.ID)': createContext(user_context)
+        'PingOne.Account(val.ID && val.ID === obj.ID)': createContext(user_context)
     }
     readable_output = tableToMarkdown(f"PingOne user created: {args.get('username')}",
                                       client.get_readable_user(raw_response))
@@ -520,11 +535,15 @@ def delete_user_command(client, args):
     if args.get('username'):
         user = client.get_user_by_username(args.get('username'))
         user_id = user.get('id')
+
+        # Output username when possible
+        user_id_or_name = args.get('username')
     else:
         user_id = args.get('userId')
+        user_id_or_name = user_id
 
     client.delete_user(user_id)
-    readable_output = f"User: {user_id} was Deleted successfully"
+    readable_output = f"User: {user_id_or_name} was Deleted successfully"
     return (
         readable_output,
         {},
@@ -543,7 +562,7 @@ def main():
 
     if region == 'EU':
         tld = '.eu'
-    elif region == 'ASIA':
+    elif region == 'Asia':
         tld = '.asia'
 
     base_url = urljoin(f'https://api.pingone{tld}', f'/v1/environments/{environment_id}/')
