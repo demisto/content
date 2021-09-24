@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 from datetime import datetime, timedelta
+from dateparser import parse
 from typing import Dict, Any
 import json
 import requests
@@ -17,6 +18,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+MAX_FETCH_DEFAULT = 20
 
 ''' CLIENT CLASS '''
 
@@ -106,26 +108,27 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-# Get date time from millis.
-
-
 def get_date_time_from_millis(time_in_millis):
+    # Get date time from millis.
     return datetime.fromtimestamp(time_in_millis / 1000.0)
-
 
 # Get millis from date time.
 def get_millis_from_date_time(dt):
     return int(dt.timestamp() * 1000)
 
-# Get current data time millis
-
-
 def get_current_millis():
+    # Get current epoch millis
     dt = datetime.now()
     return int(dt.timestamp() * 1000)
 
+def datestring_to_millis(ds: str):
+    # Get epoch millis from datestring
+    dt = parse(ds)
+    if dt is None:
+        return dt
 
-# Helper function to get alert properties dict.
+    return int(dt.timestamp()) * 1000
+
 def _get_property_dict(property_list):
     '''
     get property dictionary from list of property dicts
@@ -206,16 +209,18 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """Get_ransomware_alerts_command: Returns ransomware alerts detected
         in last num_minutes_ago.
     """
-    start_time_millis = args.get('created_after_millis', None)
-    end_time_millis = args.get('created_before_millis', None)
+    start_time_millis = datestring_to_millis(args.get('created_after', ''))
+    end_time_millis = datestring_to_millis(args.get('created_before', ''))
     severity_list = args.get('alert_severity_list', None)
     ids_list = args.get('alert_id_list', None)
+    limit = args.get('limit', MAX_FETCH_DEFAULT)
 
     # Fetch ransomware alerts from client.
     resp = client.get_ransomware_alerts(
         start_time_millis=start_time_millis,
         end_time_millis=end_time_millis, alert_ids=ids_list,
-        alert_severity_list=severity_list)
+        alert_severity_list=severity_list,
+        max_fetch=limit)
 
     # Create ransomware incidents from alerts.
     incidences = []
@@ -322,8 +327,8 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
 
     max_fetch = demisto.params().get('max_fetch')
     max_fetch = int(demisto.params().get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 200
-    ransomware_resp = client.get_ransomware_alerts(start_time_millis=start_time_millis,
-                                                   max_fetch=max_fetch)
+    ransomware_resp = client.get_ransomware_alerts(
+        start_time_millis=start_time_millis, max_fetch=max_fetch)
 
     # Parse alerts for readable_output.
     for alert in ransomware_resp:
@@ -363,8 +368,6 @@ def test_module(client: Client) -> str:
         else:
             raise e
     return message
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''

@@ -25,7 +25,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '200'
+- defaultvalue: '20'
   display: Maximum number of incidents to fetch every time
   hidden: false
   name: max_fetch
@@ -48,14 +48,22 @@ name: CohesityHelios
 script:
   commands:
   - arguments:
-    - name: created_after_millis
+    - name: created_after
       default: false
-      description: After timestamp in millis to fetch cohesity alerts.
+      description: Returns only alerts created after the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       required: false
-    - name: created_before_millis
+    - name: created_before
       default: false
-      description: Before timestamp in millis to fetch cohesity alerts.
+      description: Returns only alerts created before the provided timestamp (ISO8601
+        format YYYY-MM-DDTHH:MM:SSZ).
+      isArray: false
+      required: false
+    - name: limit
+      defaultValue: 20
+      default: false
+      description: Limits the number of alerts to return.
       isArray: false
       required: false
     - default: false
