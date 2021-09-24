@@ -1,0 +1,6 @@
+{
+	"error": {
+		"message": "The \"from\" query parameter is invalid (\"2021-13-01\") \n\"2021-13-01\" is an invalid date",
+		"statusCode": 400
+	}
+}

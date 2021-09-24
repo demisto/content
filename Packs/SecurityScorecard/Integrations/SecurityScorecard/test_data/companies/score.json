@@ -1,0 +1,10 @@
+{
+	"name": "Domain 1",
+	"domain": "domain1.com",
+	"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+	"industry": "technology",
+	"size": "size_51_to_200",
+	"score": 81,
+	"grade": "B",
+	"last30day_score_change": 4
+}

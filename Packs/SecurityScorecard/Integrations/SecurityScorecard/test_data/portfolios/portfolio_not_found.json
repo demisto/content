@@ -1,0 +1,12 @@
+{
+	"error": {
+		"message": "portfolio not found",
+		"statusCode": 404,
+		"data": {
+			"portfoliosRequested": ["asdasdasdas"],
+			"portfoliosWithAccess": [],
+			"portfoliosWithoutAccess": [],
+			"portfoliosNotFound": ["asdasdasdas"]
+		}
+	}
+}

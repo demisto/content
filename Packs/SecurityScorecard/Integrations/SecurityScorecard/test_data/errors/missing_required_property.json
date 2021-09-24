@@ -1,0 +1,6 @@
+{
+	"error": {
+		"message": "The \"ScoreAlertSetting\" body parameter is invalid ({\"target\":[\"my_scorecard\"],\"change_direction\":\"rises_above\",\"threshold\":60}) \nJSON Schema validation error. \nData path: \"\" \nSchema path: \"/required/2\" \nMissing required property: score_types",
+		"statusCode": 400
+	}
+}

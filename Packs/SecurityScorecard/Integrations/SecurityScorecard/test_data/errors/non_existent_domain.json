@@ -1,0 +1,9 @@
+{
+	"error": {
+		"message": "company not found: nonexistentdomain.com",
+		"statusCode": 404,
+		"data": {
+			"related": "nonexistentdomain.com"
+		}
+	}
+}

@@ -1,0 +1,476 @@
+{
+    "id": "SecurityScorecard Command Analytics",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "SecurityScorecard Command Analytics",
+    "layout": [
+        {
+            "id": "3f584040-dd81-11eb-8147-e9e3fd457d6b",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "3f584040-dd81-11eb-8147-e9e3fd457d6b",
+            "w": 5,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-06-28T11:15:49.890365778Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.1.1",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Command Average Runtime (s)",
+                "prevName": "Command average runtime per Instance (top 5)",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration and instance:SecurityScorecard_instance_1",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Command average runtime per Instance (top 5)",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "size": 5,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "9c348760-dd81-11eb-8147-e9e3fd457d6b",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "9c348760-dd81-11eb-8147-e9e3fd457d6b",
+            "w": 11,
+            "h": 4,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-06-28T11:15:49.890408658Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.1.1",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Command Execution Errors",
+                "prevName": "Command execution errors",
+                "dataType": "metrics",
+                "widgetType": "pie",
+                "query": "type:integration and command:securityscorecard-*",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Command execution errors",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "size": 5,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "016f4b10-dd82-11eb-8147-e9e3fd457d6b",
+            "forceRange": false,
+            "x": 5,
+            "y": 0,
+            "i": "016f4b10-dd82-11eb-8147-e9e3fd457d6b",
+            "w": 6,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-06-28T11:15:49.890711176Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.1.1",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Commands Executed",
+                "prevName": "Commands executed",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration and command:securityscorecard-*",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Commands executed",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "tableColumns": []
+                },
+                "size": 0,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "1d3c7340-dd82-11eb-8147-e9e3fd457d6b",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "1d3c7340-dd82-11eb-8147-e9e3fd457d6b",
+            "w": 11,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-06-28T11:15:49.892796942Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.1.1",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Least Executed Commands",
+                "prevName": "Least executed Commands",
+                "dataType": "metrics",
+                "widgetType": "column",
+                "query": "type:integration and command:securityscorecard-*",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Least executed Commands",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "hideLegend": true,
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "limitType": "bottom",
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "regular",
+                    "xAxisLabel": "Command",
+                    "yAxisLabel": "Executions"
+                },
+                "size": 5,
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "5e6338e0-dd82-11eb-8147-e9e3fd457d6b",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "5e6338e0-dd82-11eb-8147-e9e3fd457d6b",
+            "w": 11,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-06-28T11:15:49.89397906Z",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.1.1",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Top Executed Commands",
+                "prevName": "Top executed Commands",
+                "dataType": "metrics",
+                "widgetType": "column",
+                "query": "type:integration and command:securityscorecard-*",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Top executed Commands",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "hideLegend": true,
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Command",
+                    "yAxisLabel": "Executions"
+                },
+                "size": 5,
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

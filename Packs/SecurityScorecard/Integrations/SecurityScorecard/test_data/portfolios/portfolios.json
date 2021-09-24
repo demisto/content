@@ -1,0 +1,18 @@
+{
+	"entries": [{
+		"id": "1",
+		"name": "portfolio_1",
+		"privacy": "private",
+		"read_only": "true"
+	}, {
+		"id": "2",
+		"name": "portfolio_2",
+		"privacy": "shared",
+		"read_only": "true"
+	}, {
+		"id": "3",
+		"name": "portfolio_3",
+		"privacy": "private"
+	}],
+	"total": 3
+}

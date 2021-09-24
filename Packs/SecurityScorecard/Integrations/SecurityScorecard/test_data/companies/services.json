@@ -1,0 +1,16 @@
+{
+	"total": 3,
+	"entries": [{
+		"vendor_domain": "vendor1.com",
+		"client_domain": "domain1.com",
+		"categories": ["nameserver_provider"]
+	}, {
+		"vendor_domain": "vendor2.com",
+		"client_domain": "domain1.com",
+		"categories": ["nameserver_provider"]
+	}, {
+		"vendor_domain": "vendor3.com",
+		"client_domain": "domain1.com",
+		"categories": ["mail_provider"]
+	}]
+}

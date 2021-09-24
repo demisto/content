@@ -1,0 +1,2 @@
+TODO Let’s put the test data in one json file to avoid having too many files.
+TODO Make sure after you finish fixing everything (can take a couple of fixes rounds) to re-generate the integration README as it is created from the yml and code which you probably changed (for example even now there are differences).

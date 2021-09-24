@@ -1,0 +1,136 @@
+{
+    "description": "SecurityScorecard Alert Mapper",
+    "feed": false,
+    "id": "SecurityScorecard Alert Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "change_type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " "
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Company Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "company_name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Domain": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "domain",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Factor": {
+                    "complex": {
+                        "accessor": "factor",
+                        "filters": [],
+                        "root": "change_data",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " "
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Grade": {
+                    "complex": {
+                        "accessor": "grade_letter",
+                        "filters": [],
+                        "root": "change_data",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Score": {
+                    "complex": {
+                        "accessor": "score",
+                        "filters": [],
+                        "root": "change_data",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "SecurityScorecard Score Impact": {
+                    "complex": {
+                        "accessor": "score_impact",
+                        "filters": [],
+                        "root": "change_data",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "SecurityScorecard Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

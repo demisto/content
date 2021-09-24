@@ -1,0 +1,82 @@
+{
+	"entries": [{
+		"id": "1",
+		"username": "user@domain.com",
+		"change_type": "score_change",
+		"domain": "domain1.co.il",
+		"company_name": "Domain1",
+		"portfolios": [{
+			"id": "a",
+			"name": "test_portfolio"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-07-11T23:36:57.010Z",
+		"change_data": [{
+			"score": 77,
+			"factor": "network_security",
+			"direction": "drops",
+			"grade_letter": "C",
+			"score_impact": -3,
+			"direction": "drops",
+			"score": 77,
+			"grade_letter": "C",
+			"factor": "network_security",
+			"score_impact": -3
+		}, {
+			"score": 69,
+			"factor": "ip_reputation",
+			"direction": "drops",
+			"grade_letter": "D",
+			"score_impact": -3,
+			"direction": "drops",
+			"score": 69,
+			"grade_letter": "D",
+			"factor": "ip_reputation",
+			"score_impact": -3
+		}]
+	}, {
+		"id": "2",
+		"username": "user@domain.com",
+		"change_type": "score_change",
+		"domain": "domain2.com",
+		"company_name": "Domain2",
+		"portfolios": [{
+			"id": "b",
+			"name": "test_portfolio2"
+		}],
+		"my_scorecard": false,
+		"created_at": "2021-07-11T23:36:12.855Z",
+		"change_data": [{
+			"score": 78,
+			"factor": "network_security",
+			"direction": "drops",
+			"grade_letter": "C",
+			"score_impact": -2,
+			"direction": "drops",
+			"score": 78,
+			"grade_letter": "C",
+			"factor": "network_security",
+			"score_impact": -2
+		}]
+	}],
+	"page": 1,
+	"size": 2,
+	"sizes_by_category": {
+		"standard": {
+			"total": 0,
+			"unread": 0
+		},
+		"prioritized": {
+			"total": 0,
+			"unread": 0
+		},
+		"customer_contacts": {
+			"total": 0,
+			"unread": 0
+		},
+		"queued": {
+			"total": 0,
+			"unread": 0
+		}
+	}
+}
