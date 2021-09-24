@@ -64,4 +64,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Extract Indicators From File - Generic v2](https://raw.githubusercontent.com/demisto/content/Enrichment_for_extract_indicators_playbook_v2/Packs/CommonPlaybooks/doc_files/Extract_Indicators_From_File_-_Generic_v2.png)
+![Extract Indicators From File - Generic v2](https://raw.githubusercontent.com/demisto/content/master/Packs/CommonPlaybooks/doc_files/Extract_Indicators_From_File_-_Generic_v2.png)
