@@ -1,0 +1,32 @@
+commonfields:
+  id: AccessDataAwaitJob
+  version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: AccessDataAwaitJob
+script: '-'
+type: python
+tags:
+- AccessData
+comment: Awaits an end status for the specified job and returns when complete.
+enabled: true
+args:
+- name: caseid
+  required: true
+  description: The id of the target case.
+- name: jobid
+  required: true
+  description: The id of the target job.
+outputs:
+- contextPath: id
+  description: The identifying integer of the jobs started for the internal platform.
+- contextPath: state
+  description: The state of the job specified.
+- contextPath: resultdata
+  description: Any extra information about the job specified.
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.6.24019
+runas: DBotWeakRole
+engineinfo: {}
