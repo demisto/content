@@ -29,6 +29,11 @@ configuration:
   defaultvalue: 00000000-abcd-1234-5678-000000000000
   type: 0
   required: true
+- display: "The path to the public certificate required to authenticate."
+  name: PUBLIC_CERT
+  defaultvalue: 
+  type: 0
+  required: true
 
 script:
   commands:

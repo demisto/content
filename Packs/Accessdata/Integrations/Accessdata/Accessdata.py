@@ -234,12 +234,9 @@ is_secure = protocol[-1] == 's'
 # build client
 client = Client(url, apikey, validate=not is_secure)
 # if using ssl, gather certs and apply
-"""
 if is_secure:
     public_certificate = params.get("PUBLIC_CERT", None)
-    private_certificate = params.get("PRIVATE_CERT", None)
-    client.session.cert = (public_certificate, private_certificate)
-"""
+    client.session.cert = public_certificate
 
 # call function with supplied args
 command = demisto.command()
@@ -248,4 +245,8 @@ args = demisto.args()
 
 # return value from called function
 prefix, return_values = func(client, **args)
-return_results(return_values)
+results = CommandResults(
+    outputs_prefix=prefix,
+    outputs=return_values
+)
+return_results(results)
