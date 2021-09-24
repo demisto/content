@@ -119,10 +119,6 @@
                     "complex": null,
                     "simple": "source.repo"
                 },
-                "Flashpoint Source Title": {
-                    "complex": null,
-                    "simple": "source.title"
-                },
                 "Flashpoint Source URL": {
                     "complex": null,
                     "simple": "source.url"
