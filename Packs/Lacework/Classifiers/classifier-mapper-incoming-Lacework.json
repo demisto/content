@@ -8,7 +8,7 @@
 	"fromVersion": "6.0.0",
 	"mapping": {
 		"Lacework Event": {
-			"dontMapEventToLabels": true,
+			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Lacework Event Actor": {
 					"complex": {
@@ -42,6 +42,42 @@
 						"accessor": "",
 						"filters": [],
 						"root": "EVENT_TYPE",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Account Alias": {
+					"complex": {
+						"accessor": "ACCOUNT_ALIAS",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Account ID": {
+					"complex": {
+						"accessor": "ACCOUNT_ID",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation ID": {
+					"complex": {
+						"accessor": "REC_ID",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Title": {
+					"complex": {
+						"accessor": "TITLE",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
 						"transformers": []
 					},
 					"simple": ""
