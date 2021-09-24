@@ -326,10 +326,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointfpid",
+                                "fieldId": "flashpointid",
                                 "height": 53,
-                                "id": "5318e5b0-f9cb-11eb-b6c4-21962e827363",
-                                "index": 1,
+                                "id": "ca739e00-1c32-11ec-b4cd-a3eb8267777a",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -344,9 +344,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointalerthref",
+                                "fieldId": "flashpointlinktoalert",
                                 "height": 53,
-                                "id": "cfb5a9b0-00e6-11ec-9f3a-5f0872faa208",
+                                "id": "a44e4e50-1c41-11ec-b4cd-a3eb8267777a",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -413,9 +413,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointfpid",
+                                "fieldId": "flashpointid",
                                 "height": 53,
-                                "id": "e29da9f0-ea0d-11eb-ba35-536dc8b5ff33",
+                                "id": "e36dd010-1c32-11ec-b4cd-a3eb8267777a",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -561,9 +561,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "flashpointalerthref",
-                                "height": 22,
-                                "id": "d94bbbe0-00e6-11ec-9f3a-5f0872faa208",
+                                "fieldId": "flashpointlinktoalert",
+                                "height": 53,
+                                "id": "79500380-1c49-11ec-b4cd-a3eb8267777a",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0

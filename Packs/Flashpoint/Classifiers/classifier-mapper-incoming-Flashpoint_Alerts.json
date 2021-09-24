@@ -6,10 +6,40 @@
         "Flashpoint Alerts": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Flashpoint Alert Href": {
+                "Flashpoint Alert ID": {
+                    "complex": null,
+                    "simple": "alert_id"
+                },
+                "Flashpoint Alert Text": {
+                    "complex": null,
+                    "simple": "source.body.text/plain"
+                },
+                "Flashpoint Created Date": {
+                    "complex": null,
+                    "simple": "source.created_at.date-time"
+                },
+                "Flashpoint First Observed Date": {
+                    "complex": null,
+                    "simple": "source.first_observed_at.date-time"
+                },
+                "Flashpoint ID": {
+                    "complex": null,
+                    "simple": "fpid"
+                },
+                "Flashpoint Keyword Text": {
+                    "complex": null,
+                    "simple": "keyword.keyword_text"
+                },
+                "Flashpoint Last Observed Date": {
+                    "complex": null,
+                    "simple": "source.last_observed_at.date-time"
+                },
+                "Flashpoint Link to Alert": {
                     "complex": {
                         "accessor": "fpid",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "source",
                         "transformers": [
                             {
@@ -31,34 +61,6 @@
                         ]
                     },
                     "simple": ""
-                },
-                "Flashpoint Alert ID": {
-                    "complex": null,
-                    "simple": "alert_id"
-                },
-                "Flashpoint Alert Text": {
-                    "complex": null,
-                    "simple": "source.body.text/plain"
-                },
-                "Flashpoint Created Date": {
-                    "complex": null,
-                    "simple": "source.created_at.date-time"
-                },
-                "Flashpoint FPID": {
-                    "complex": null,
-                    "simple": "fpid"
-                },
-                "Flashpoint First Observed Date": {
-                    "complex": null,
-                    "simple": "source.first_observed_at.date-time"
-                },
-                "Flashpoint Keyword Text": {
-                    "complex": null,
-                    "simple": "keyword.keyword_text"
-                },
-                "Flashpoint Last Observed Date": {
-                    "complex": null,
-                    "simple": "source.last_observed_at.date-time"
                 },
                 "Flashpoint Native ID": {
                     "complex": null,
@@ -113,6 +115,10 @@
                 "Flashpoint Source Repo": {
                     "complex": null,
                     "simple": "source.repo"
+                },
+                "Flashpoint Source Title": {
+                    "complex": null,
+                    "simple": "source.title"
                 },
                 "Flashpoint Source URL": {
                     "complex": null,

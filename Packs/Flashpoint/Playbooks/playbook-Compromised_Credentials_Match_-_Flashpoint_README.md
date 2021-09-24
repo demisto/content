@@ -10,8 +10,6 @@ This playbook does not use any sub-playbooks.
 * Active Directory Query v2
 * OpenLDAP
 
-### Scripts
-* DeleteContext
 
 ### Commands
 * ad-authenticate

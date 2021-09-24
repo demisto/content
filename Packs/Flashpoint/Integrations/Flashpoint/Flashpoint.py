@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 FIRST_FETCH = "3 days"
 MAX_FETCH = 15
-DEFAULT_PAGE_SIZE = 100
+DEFAULT_PAGE_SIZE = 50
 MAX_PAGE_SIZE = 1000
 MAX_PRODUCT = 10000
 DEFAULT_SORT_ORDER = 'asc'
@@ -224,7 +224,10 @@ def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: s
     if not last_run.get('fetch_count'):
         last_run['fetch_count'] = 0
 
-    fetch_params['skip'] = last_run['fetch_count'] * max_fetch
+    if not last_run.get('fetch_sum'):
+        last_run['fetch_sum'] = 0
+
+    fetch_params['skip'] = last_run['fetch_sum']
 
     total = last_run.get('total')
     if total:
@@ -318,7 +321,7 @@ def parse_indicator_response(indicators):
         tags_list = [tag for tag in event['Tags']]
         tags_value = ', '.join(tags_list)
 
-        observed_time = time.strftime('%b %d, %Y  %H:%M', time.gmtime(float(event['timestamp'])))
+        observed_time = time.strftime(READABLE_DATE_FORMAT, time.gmtime(float(event['timestamp'])))
 
         events.append({
             'Date Observed (UTC)': observed_time,
@@ -339,7 +342,7 @@ def parse_event_response(client, event, fpid, href):
     :param event: event indicator from response
     :return: required event json object
     """
-    observed_time = time.strftime('%b %d, %Y  %H:%M', time.gmtime(float(event['timestamp'])))
+    observed_time = time.strftime(READABLE_DATE_FORMAT, time.gmtime(float(event['timestamp'])))
     name = event.get('info', '')
     uuid = event.get('uuid', '')
     if uuid:
@@ -450,7 +453,7 @@ def validate_alert_list_args(args: dict) -> dict:
     """
     params = {}
 
-    size = arg_to_number(args.get('size', 10))
+    size = arg_to_number(args.get('size', 50))
     if size is None or size < 1 or size > 100:  # type: ignore
         raise ValueError(MESSAGES['SIZE_ERROR'].format(size))
     params['size'] = size
@@ -848,6 +851,7 @@ def prepare_next_run_when_data_is_empty(next_run: dict, hits: List) -> None:
     if hits:
         next_run['start_time'] = next_run['last_time']
     next_run['fetch_count'] = 0
+    next_run['fetch_sum'] = 0
     next_run['total'] = None
 
 
@@ -1711,7 +1715,7 @@ def get_report_by_id_command(client, report_id):
             tag_string = tag_string[2:]
 
         if timestamp:
-            timestamp_str = time.strftime('%b %d, %Y  %H:%M', timestamp)
+            timestamp_str = time.strftime(READABLE_DATE_FORMAT, timestamp)
         else:
             timestamp_str = 'N/A'
 

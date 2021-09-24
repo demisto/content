@@ -2510,7 +2510,7 @@ Retrieves an alert or a list of alerts based on the filter values provided in th
 | since | Filters the alerts based on the earliest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
 | until | Filters the alerts based on the latest date when the alerts were created.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
 | scroll_id | Retrieves the next batch of alerts (scroll_id retrieved in previous alerts response). | Optional | 
-| size | Number of alerts to retrieve in the response. (Maximum allowed size is 100). Default is 10. | Optional | 
+| size | Number of alerts to retrieve in the response. (Maximum allowed size is 100). Default is 50. | Optional | 
 
 
 #### Context Output
@@ -2747,7 +2747,7 @@ Retrieves the compromised credentials based on the filter values provided in the
 | start_date | Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
 | end_date | Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
 | filter_date | Filters the compromised credential's breach data by either created or first observed date.<br/>Note: Requires the argument value for at least 'start_date' and 'end_date'. Possible values are: created_at, first_observed_at. | Optional | 
-| page_size | The maximum number of result objects to return per page. Note: The maximum value is 1,000. Default is 100. | Optional | 
+| page_size | The maximum number of result objects to return per page. Note: The maximum value is 1,000. Default is 50. | Optional | 
 | page_number | Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000. Default is 1. | Optional | 
 | sort_date | Sort the compromised credential's breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized. Possible values are: created_at, first_observed_at. | Optional | 
 | sort_order | Specify the order to sort the data in. Note: Requires sort_date along with the given argument. Possible values are: asc, desc. | Optional | 

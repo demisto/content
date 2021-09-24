@@ -1,12 +1,12 @@
 {
-    "id": "incident_flashpointpassword",
+    "id": "incident_flashpointlinktoalert",
     "version": -1,
-    "modified": "2021-07-17T08:40:01.261436096+05:30",
-    "name": "Flashpoint Password",
-    "description": "The password for the credential (in plain text, if possible).",
+    "modified": "2021-09-23T13:04:14.767097982+05:30",
+    "name": "Flashpoint Link to Alert",
     "ownerOnly": false,
-    "cliName": "flashpointpassword",
-    "type": "shortText",
+    "description": "The link of the alert.",
+    "cliName": "flashpointlinktoalert",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -19,7 +19,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Flashpoint Compromised Credentials"
+        "Flashpoint Alerts"
     ],
     "associatedToAll": false,
     "unmapped": false,

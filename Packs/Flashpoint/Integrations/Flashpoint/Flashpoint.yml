@@ -723,7 +723,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '10'
+      defaultValue: '50'
       description: Number of alerts to retrieve in the response. (Maximum allowed
         size is 100).
       isArray: false
@@ -918,7 +918,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '50'
       description: 'The maximum number of result objects to return per page. Note:
         The maximum value is 1,000.'
       isArray: false

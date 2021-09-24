@@ -1,11 +1,11 @@
 {
-    "id": "incident_flashpointfpid",
+    "id": "incident_flashpointcompromisedemail",
     "version": -1,
-    "modified": "2021-07-17T08:42:37.779651995+05:30",
-    "name": "Flashpoint FPID",
-    "description": "The Flashpoint ID of the alert.",
+    "modified": "2021-09-23T11:01:22.650813025+05:30",
+    "name": "Flashpoint Compromised Email",
     "ownerOnly": false,
-    "cliName": "flashpointfpid",
+    "description": "The email address for the compromised credential.",
+    "cliName": "flashpointcompromisedemail",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,6 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Flashpoint Alerts",
         "Flashpoint Compromised Credentials"
     ],
     "associatedToAll": false,

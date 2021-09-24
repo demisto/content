@@ -718,7 +718,8 @@ class MyTestCase(unittest.TestCase):
         last_run = {
             'fetch_count': 1,
             'end_time': '2021-08-05T03:43:52Z',
-            'start_time': start_time
+            'start_time': start_time,
+            'fetch_sum': 20
         }
         fetch_params = {
             'limit': 20,
@@ -848,7 +849,7 @@ class MyTestCase(unittest.TestCase):
         expected_next_run = {
             'total': None,
             'fetch_count': 0,
-            'fetch_sum': 100,
+            'fetch_sum': 0,
             'start_time': last_time,
             'end_time': end_time,
             'hit_ids': ['YOBETNFzX0Ohjiq0xi_2Eg'],
@@ -869,7 +870,7 @@ class MyTestCase(unittest.TestCase):
             'fetch_count': 0,
         }
         expected_next_run = {
-            'fetch_sum': 100,
+            'fetch_sum': 0,
             'fetch_count': 0,
             'total': None
         }
