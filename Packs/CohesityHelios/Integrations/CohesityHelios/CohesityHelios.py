@@ -19,6 +19,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_FETCH_DEFAULT = 20
+NUM_OF_RETRIES = 3
+BACKOFF_FACTOR = 1.0
 
 ''' CLIENT CLASS '''
 
@@ -59,7 +61,9 @@ class Client(BaseClient):
         resp = self._http_request(
             method='GET',
             url_suffix='/mcm/alerts',
-            params=request_params
+            params=request_params,
+            retries=NUM_OF_RETRIES,
+            backoff_factor=BACKOFF_FACTOR
         )
 
         # Filter ransomware alerts.
@@ -78,7 +82,9 @@ class Client(BaseClient):
             url_suffix='/mcm/alerts/' + alert_id,
             json_data={"status": "kSuppressed"},
             return_empty_response=True,
-            empty_valid_codes=[200]
+            empty_valid_codes=[200],
+            retries=NUM_OF_RETRIES,
+            backoff_factor=BACKOFF_FACTOR
         )
 
     def resolve_ransomware_alert_by_id(self, alert_id: str):
@@ -89,7 +95,9 @@ class Client(BaseClient):
             url_suffix='/mcm/alerts/' + alert_id,
             json_data={"status": "kResolved"},
             return_empty_response=True,
-            empty_valid_codes=[200]
+            empty_valid_codes=[200],
+            retries=NUM_OF_RETRIES,
+            backoff_factor=BACKOFF_FACTOR
         )
 
     def restore_vm_object(self, cluster_id, payload):
@@ -102,7 +110,9 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/irisservices/api/v1/public/restore/recover',
             json_data=payload,
-            headers=client_headers
+            headers=client_headers,
+            retries=NUM_OF_RETRIES,
+            backoff_factor=BACKOFF_FACTOR
         )
 
 
