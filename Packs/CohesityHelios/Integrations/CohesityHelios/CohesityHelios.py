@@ -31,24 +31,6 @@ COHESITY_HELIOS_SEVERITY_MAPPING = {
 class Client(BaseClient):
     """Cohesity Helios Client class to interact with Cohesity Helios.
     """
-
-    # Helper functions to interact with helios services.
-    def get_was_alerts(self, start_time_millis, end_time_millis) -> Dict[str, Any]:
-        """Gets the Wide Access Shield Alerts.
-
-        :return: dict containing the Wide Access Shields alerts
-        returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-        return self._http_request(
-            method='GET',
-            url_suffix='/mcm/argus/api/v1/public/shields/WIDE_ACCESS/incidences',
-            params={
-                "startTimeMsecs": start_time_millis,
-                "endTimeMsecs": end_time_millis
-            }
-        )
-
     def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None,
                               alert_ids=None, alert_state_list=None, alert_severity_list=None, alert_type_list=None,
                               regionIds=None, cluster_identifiers=None):
@@ -102,7 +84,6 @@ class Client(BaseClient):
             empty_valid_codes=[200]
         )
 
-    # Method to resolve a ransomware alert by its id.
     def resolve_ransomware_alert_by_id(self, alert_id: str):
         """Mark a ransonware alert as resolved.
         """
@@ -131,8 +112,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 # Get date time from millis.
-
-
 def get_date_time_from_millis(time_in_millis):
     return datetime.fromtimestamp(time_in_millis / 1000.0)
 
@@ -142,8 +121,6 @@ def get_millis_from_date_time(dt):
     return int(dt.timestamp() * 1000)
 
 # Get current data time millis
-
-
 def get_current_millis():
     dt = datetime.now()
     return int(dt.timestamp() * 1000)
@@ -166,20 +143,6 @@ def _get_property_dict(property_list):
     for property in property_list:
         property_dict[property['key']] = property['value']
     return property_dict
-
-
-def create_wide_access_incident(alert) -> Dict[str, Any]:
-    """Helper method to create wide-access incident from alert.
-    """
-    occurance_time = get_date_time_from_millis(
-        alert.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
-
-    return {
-        "name": "wide-access-incident",
-        "event_id": alert.get("id"),
-        "occurred": occurance_time,
-        "rawJSON": json.dumps(alert)
-    }
 
 
 def create_ransomware_incident(alert) -> Dict[str, Any]:
@@ -240,56 +203,6 @@ def parse_ransomware_alert(alert) -> Dict[str, Any]:
 
 
 ''' COMMAND FUNCTIONS '''
-
-
-def get_was_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """get_was_alerts command: Returns Wide Access Sheild Alerts.
-
-    :type client: ``Client``
-    :param Client: CohesityHelios client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains Wide Access Shield Alerts.
-
-    :rtype: ``CommandResults``
-    """
-    nMins = int(args.get('num_minutes_ago', "10080"))
-
-    # Fetch was alerts since last nHours.
-    start_time_millis = get_nMin_prev_date_time(nMins)
-    end_time_millis = get_current_millis()
-    resp = client.get_was_alerts(start_time_millis, end_time_millis)
-
-    # Parse alerts for readable_output.
-    raw_incidences = resp.get('incidences', {})
-    incidences = []
-
-    for raw_incidence in raw_incidences:
-        occurance_time = get_date_time_from_millis(
-            raw_incidence.get("incidenceTimeMsecs")).strftime(DATE_FORMAT)
-
-        incidence = {
-            "id": raw_incidence.get("id"),
-            "occurance_time": occurance_time,
-            "rule_id": raw_incidence.get("ruleId")
-        }
-        incidences.append(incidence)
-
-    md = tableToMarkdown('Alerts', incidences,
-                         ["id", "occurance_time", "ruleID"])
-
-    # return results.
-    return CommandResults(
-        readable_output=md,
-        outputs_prefix='CohesityHelios.WASAlert',
-        outputs_key_field='id',
-        outputs=incidences,
-    )
 
 
 def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -411,19 +324,9 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     # Fetch all new incidents.
     incidents = []
 
-    # Fetch new WAS alerts
-    # resp = client.get_was_alerts(start_time_millis, end_time_millis)
-
-    # Parse alerts for readable_output.
-    # was_incidences = resp.get('incidences', {})
-    # for alert in was_incidences:
-    #     incident = create_wide_access_incident(alert)
-    #     incidents.append(incident)
-
-    # Fetch new ransomware alerts.
     ransomware_resp = client.get_ransomware_alerts(start_time_millis=start_time_millis)
 
-    # # Parse alerts for readable_output.
+    # Parse alerts for readable_output.
     for alert in ransomware_resp:
         incident = create_ransomware_incident(alert)
         incidents.append(incident)
@@ -507,9 +410,6 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-        elif demisto.command() == 'cohesity-helios-get-was-alerts':
-            return_results(get_was_alerts_command(client, demisto.args()))
 
         elif demisto.command() == 'cohesity-helios-get-ransomware-alerts':
             return_results(get_ransomware_alerts_command(client, demisto.args()))

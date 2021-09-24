@@ -46,27 +46,6 @@ display: CohesityHelios
 name: CohesityHelios
 script:
   commands:
-  # - arguments:
-  #   - default: true
-  #     description: Num of minutes to fetch WAS alerts since. (Default) 7 days.
-  #     isArray: false
-  #     name: num_minutes_ago
-  #     required: false
-  #     secret: false
-  #   deprecated: false
-  #   description: Get Cohesity Helios wide-access Alerts command.
-  #   execution: false
-  #   name: cohesity-helios-get-was-alerts
-  #   outputs:
-  #   - contextPath: CohesityHelios.WASAlert.id
-  #     description: Identifier for WAS alert
-  #     type: String
-  #   - contextPath: CohesityHelios.WASAlert.occurance_time
-  #     description: WAS alert incidence time.
-  #     type: String
-  #   - contextPath: CohesityHelios.WASAlert.rule_id
-  #     description: Triggering rule identifier for WAS alert
-  #     type: String
   - arguments:
     - default: false
       defaultValue: '10080'
