@@ -1,6 +1,5 @@
 """Cohesity Helios Integration for Cortex XSOAR (aka Demisto).
 """
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -19,32 +18,27 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-COHESITY_HELIOS_SEVERITY_MAPPING = {
-    'kInfo': 0.5,   # Informational alert
-    'kWarning': 1,  # low severity
-    'kCritical': 4  # critical severity
-}
-
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     """Cohesity Helios Client class to interact with Cohesity Helios.
     """
-    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None,
-                              alert_ids=None, alert_state_list=None, alert_severity_list=None, alert_type_list=None,
+
+    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=200,
+                              alert_ids=None, alert_state_list=None, alert_severity_list=None,
                               regionIds=None, cluster_identifiers=None):
         """Gets the Cohesity Helios ransomware alerts.
         """
         # Prepare default request params.
         request_params = {
-            "maxAlerts": 1000,
+            "maxAlerts": max_fetch,
             "alertCategoryList": "kSecurity",
             "alertStateList": "kOpen",
             "_includeTenantInfo": True
         }
 
-        # Populate request params with provided data.
+        # Populate request params filters.
         if start_time_millis is not None:
             request_params["startDateUsecs"] = int(start_time_millis) * 1000
         if end_time_millis is not None:
@@ -57,7 +51,8 @@ class Client(BaseClient):
             request_params["alertSeverityList"] = alert_severity_list.split(',')
         if regionIds is not None:
             request_params["regionIds"] = regionIds.split(',')
-        # CohesityTBD: support more filters.
+        if regionIds is not None:
+            request_params["clusterIdentifiers"] = cluster_identifiers.split(',')
 
         resp = self._http_request(
             method='GET',
@@ -112,6 +107,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 # Get date time from millis.
+
+
 def get_date_time_from_millis(time_in_millis):
     return datetime.fromtimestamp(time_in_millis / 1000.0)
 
@@ -121,13 +118,10 @@ def get_millis_from_date_time(dt):
     return int(dt.timestamp() * 1000)
 
 # Get current data time millis
+
+
 def get_current_millis():
     dt = datetime.now()
-    return int(dt.timestamp() * 1000)
-
-
-def get_nMin_prev_date_time(nMins: int):
-    dt = datetime.now() - timedelta(minutes=nMins)
     return int(dt.timestamp() * 1000)
 
 
@@ -174,12 +168,15 @@ def convert_to_demisto_severity_int(severity: str):
     """Maps Cohesity helios severity to Cortex XSOAR severity
 
     :type severity: ``str``
-    :param severity: severity as returned from the Cognni API (str)
 
-    :return: Cortex XSOAR Severity (1 to 4)
+    :return: Cortex XSOAR Severity
     :rtype: ``int``
     """
-    return COHESITY_HELIOS_SEVERITY_MAPPING.get(severity, 0)
+    return {
+        'kInfo': IncidentSeverity.INFO,   # Informational alert
+        'kWarning': IncidentSeverity.LOW,  # low severity
+        'kCritical': IncidentSeverity.HIGH  # critical severity
+    }.get(severity, IncidentSeverity.UNKNOWN)
 
 
 def parse_ransomware_alert(alert) -> Dict[str, Any]:
@@ -209,11 +206,8 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """Get_ransomware_alerts_command: Returns ransomware alerts detected
         in last num_minutes_ago.
     """
-    nMins = int(args.get('num_minutes_ago', "10080"))
-    start_time_millis = get_nMin_prev_date_time(nMins)
-
-    start_time_millis = int(args.get('start_time_millis', start_time_millis))
-    end_time_millis = args.get('end_time_millis', None)
+    start_time_millis = args.get('created_after_millis', None)
+    end_time_millis = args.get('created_before_millis', None)
     severity_list = args.get('alert_severity_list', None)
     ids_list = args.get('alert_id_list', None)
 
@@ -310,6 +304,8 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def fetch_incidents_command(client: Client, args: Dict[str, Any]):
+    """ fetch_incidents_command: fetches incidents since last run or past 7 days in case of first run.
+    """
     # Get last run details.
     last_run = demisto.getLastRun()
 
@@ -324,7 +320,10 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     # Fetch all new incidents.
     incidents = []
 
-    ransomware_resp = client.get_ransomware_alerts(start_time_millis=start_time_millis)
+    max_fetch = demisto.params().get('max_fetch')
+    max_fetch = int(demisto.params().get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 200
+    ransomware_resp = client.get_ransomware_alerts(start_time_millis=start_time_millis,
+                                                   max_fetch=max_fetch)
 
     # Parse alerts for readable_output.
     for alert in ransomware_resp:

@@ -25,10 +25,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - defaultvalue: '200'
   display: Maximum number of incidents to fetch every time
   hidden: false
@@ -40,6 +36,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: true
+  required: false
+  type: 8
 description: '[Integrate with Cohesity Helios services to fetch alerts and take remedial
   action.]'
 display: CohesityHelios
@@ -47,35 +48,35 @@ name: CohesityHelios
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10080'
-      description: Num of minutes to fetch ransomware alerts since.
+    - name: created_after_millis
+      default: false
+      description: After timestamp in millis to fetch cohesity alerts.
       isArray: false
-      name: num_minutes_ago
       required: false
-      secret: false
-    - default: false
-      description: Start time to fetch ransomware alerts in Epoch millis.
+    - name: created_before_millis
+      default: false
+      description: Before timestamp in millis to fetch cohesity alerts.
       isArray: false
-      name: start_time_millis
       required: false
-      secret: false
     - default: false
-      description: End time to fetch ransomware alerts in Epoch millis.
-      isArray: false
-      name: end_time_millis
-      required: false
-      secret: false
-    - default: false
-      description: List(Comma-separated) of alert ids to fetch.
+      description: List of comma-separated alert ids to filter alerts.
       isArray: true
       name: alert_id_list
       required: false
-      secret: false
+    - default: false
+      description: List of comma-separated cluster identifiers to filter alerts.
+      isArray: true
+      name: clusterIdentifiers
+      required: false
+    - default: false
+      description: List of comma-separated region identifiers to filter alerts.
+      isArray: true
+      name: regionIds
+      required: false
     - auto: PREDEFINED
       default: true
       defaultValue: 'kCritical'
-      description: List(Comma-separated) of alert severities to fetch. 
+      description: List of comma separted alert severities filter.
       isArray: false
       name: alert_severity_list
       required: false
