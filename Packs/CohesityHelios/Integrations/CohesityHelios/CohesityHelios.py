@@ -273,8 +273,6 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
     restore_properties = {}
     object_name = args.get('object_name')
 
-    demisto.results("restore {object}".format(object=object_name))
-
     resp = client.get_ransomware_alerts()
     for alert in resp:
         if alert['severity'] == 'kCritical' and alert['alertState'] == 'kOpen':
