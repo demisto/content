@@ -131,7 +131,7 @@ script:
       description: Anomalous object name to be ignored.
       isArray: false
       name: object_name
-      required: false
+      required: true
     deprecated: false
     description: Ignore detected anomalous object.
     execution: false
@@ -141,7 +141,7 @@ script:
       description: Anomalous object name to be restored.
       isArray: false
       name: object_name
-      required: false
+      required: true
     deprecated: false
     description: Restore latest clean snapshot for given object.
     execution: false
