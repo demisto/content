@@ -31,7 +31,7 @@ class Client(BaseClient):
 
     def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=200,
                               alert_ids=None, alert_state_list=None, alert_severity_list=None,
-                              regionIds=None, cluster_identifiers=None):
+                              region_ids=None, cluster_identifiers=None):
         """Gets the Cohesity Helios ransomware alerts.
         """
         # Prepare default request params.
@@ -53,9 +53,9 @@ class Client(BaseClient):
             request_params["alertStateList"] = alert_state_list.split(',')
         if alert_severity_list is not None:
             request_params["alertSeverityList"] = alert_severity_list.split(',')
-        if regionIds is not None:
-            request_params["regionIds"] = regionIds.split(',')
-        if regionIds is not None:
+        if region_ids is not None:
+            request_params["region_ids"] = region_ids.split(',')
+        if region_ids is not None:
             request_params["clusterIdentifiers"] = cluster_identifiers.split(',')
 
         resp = self._http_request(
