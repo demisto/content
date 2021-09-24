@@ -221,7 +221,7 @@ script:
     - name: username
       description: Username.
     - name: userId
-      description: User ID
+      description: User id.
     description: Delete a PingOne user. One of the following has to be given username or userId.
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
