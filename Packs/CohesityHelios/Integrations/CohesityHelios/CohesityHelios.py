@@ -265,7 +265,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
     return "Ignored object {name}".format(name=object_name)
 
 
-def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> CommandResults:
+def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
     """restore_latest_clean_snapshot: Restore latest clean snapshot of given object.
     """
     # Filter ransomware alert for given object name.
@@ -311,7 +311,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
     # Resolve ransomware alert.
     client.resolve_ransomware_alert_by_id(alert_id)
 
-    return str(resp)
+    return "Restored object {name}".format(name=object_name)
 
 
 def fetch_incidents_command(client: Client, args: Dict[str, Any]):
