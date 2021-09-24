@@ -1,6 +1,6 @@
 {
     "name": "AccessData",
-    "description": "Use the AccessData integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
+    "description": "Use the AccessData integration to automate platform procedures, ingesting evidence, browsing/exporting data and running endpoint collections.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "AccessData",
