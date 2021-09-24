@@ -79,12 +79,12 @@ script:
     - default: false
       description: List of comma-separated cluster identifiers to filter alerts.
       isArray: true
-      name: clusterIdentifiers
+      name: cluster_identifiers
       required: false
     - default: false
       description: List of comma-separated region identifiers to filter alerts.
       isArray: true
-      name: regionIds
+      name: region_ids
       required: false
     - auto: PREDEFINED
       default: true

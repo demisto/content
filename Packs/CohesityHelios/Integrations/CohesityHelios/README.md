@@ -39,8 +39,8 @@ Get Cohesity Helios ransomware Alerts command.
 | created_before | Returns only alerts created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | limit | Limits the number of alerts to return. Default is 20. | Optional | 
 | alert_id_list | List of comma-separated alert ids to filter alerts. | Optional | 
-| clusterIdentifiers | List of comma-separated cluster identifiers to filter alerts. | Optional | 
-| regionIds | List of comma-separated region identifiers to filter alerts. | Optional | 
+| cluster_identifiers | List of comma-separated cluster identifiers to filter alerts. | Optional | 
+| region_ids | List of comma-separated region identifiers to filter alerts. | Optional | 
 | alert_severity_list | List of comma separted alert severities filter. Possible values are: kCritical, kWarning, kInfo. Default is kCritical. | Optional | 
 
 
