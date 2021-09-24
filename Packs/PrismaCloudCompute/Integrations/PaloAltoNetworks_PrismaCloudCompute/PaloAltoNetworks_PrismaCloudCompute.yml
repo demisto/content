@@ -39,11 +39,66 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your
+  Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: container
+      description: The policy type
+      isArray: false
+      name: policy_type
+      predefined:
+      - container
+      - host
+      - serverless
+      - app-embedded
+      required: false
+      secret: false
+    deprecated: false
+    description: List runtime policies
+    execution: false
+    name: prisma-cwpp-list-runtime-policies
+    outputs:
+    - contextPath: Prisma.CWPP.Policy._id
+      description: The Policy ID
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: container
+      description: The policy type
+      isArray: false
+      name: policy_type
+      predefined:
+      - container
+      - host
+      - serverless
+      - app-embedded
+      required: false
+      secret: false
+    - default: false
+      description: The rule object
+      isArray: false
+      name: rule_object
+      required: true
+      secret: false
+    - default: false
+      description: The policy to update
+      isArray: false
+      name: policy_to_update
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new policy rule
+    execution: false
+    name: prisma-cwpp-add-policy-rule
   dockerimage: demisto/python3:3.9.7.24076
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

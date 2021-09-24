@@ -27,33 +27,19 @@ HEADERS_BY_NAME = {
 
 class Client(BaseClient):
     def __init__(self, base_url, verify, project, proxy=False, ok_codes=tuple(), headers=None, auth=None):
-        """
-        Extends the init method of BaseClient by adding the arguments below,
-
-        verify: A 'True' or 'False' string, in which case it controls whether we verify
-            the server's TLS certificate, or a string that represents a path to a CA bundle to use.
-        project: A projectID string, set in the integration parameters.
-            the projectID is saved under self._project
-        """
 
         self._project = project
 
         if verify in ['True', 'False']:
             super().__init__(base_url, str_to_bool(verify), proxy, ok_codes, headers, auth)
         else:
-            # verify points a path to certificate
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
-        """
-        Extends the _http_request method of BaseClient.
-        If self._project is available, a 'project=projectID' query param is automatically added to all requests.
-        """
 
-        # if project is given add it to params and call super method
         if self._project:
             params = params or {}
             params.update({'project': self._project})
@@ -97,7 +83,35 @@ class Client(BaseClient):
                 )
             raise e
 
+    def list_runtime_policies(self, policy_type='container'):
+        try:
+            return self._http_request(
+                method='GET',
+                url_suffix=f'policies/runtime/{policy_type}'
+            )
+        except Exception as e:
+            if '[404]' in str(e):
+                return self._http_request(
+                    method='GET',
+                    url_suffix='demisto-alerts'
+                )
+            raise e
 
+    def update_runtime_policy(self, policy_type, updated_policy):
+        try:
+            return self._http_request(
+                method='PUT',
+                url_suffix=f'policies/runtime/{policy_type}',
+                json_data=updated_policy,
+                resp_type='text'
+            )
+        except Exception as e:
+            if '[404]' in str(e):
+                return self._http_request(
+                    method='GET',
+                    url_suffix='demisto-alerts'
+                )
+            raise e
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -131,11 +145,6 @@ def translate_severity(sev):
 
 
 def camel_case_transformer(s):
-    """
-    Converts a camel case string into space separated words starting with a capital letters
-    E.g. input: 'camelCase' output: 'Camel Case'
-    REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "CVE"
-    """
 
     transformed_string = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', str(s))
     if transformed_string in ['id', 'cve', 'arn']:
@@ -144,19 +153,6 @@ def camel_case_transformer(s):
 
 
 def get_headers(name: str, data: list) -> list:
-    """
-    Returns a list of headers to the given list of objects
-    If the list name is known (listed in the HEADERS_BY_NAME) it returns the list and checks for any additional headers
-     in the given list
-    Else returns the given headers from the given list
-    Args:
-        name: name of the list (e.g. vulnerabilities)
-        data: list of dicts
-
-    Returns: list of headers
-    """
-
-    # check the list for any additional headers that might have been added
     known_headers = HEADERS_BY_NAME.get(name)
     if known_headers:
         headers = known_headers[:]
@@ -173,13 +169,6 @@ def get_headers(name: str, data: list) -> list:
 
 
 def test_module(client):
-    """
-    Test connection, authentication and user authorization
-    Args:
-        client: Requests client
-    Returns:
-        'ok' if test passed, error from client otherwise
-    """
 
     client.test()
     return 'ok'
@@ -253,10 +242,45 @@ def fetch_incidents(client):
     return incidents
 
 
+def list_runtime_policies_command(client, args):
+    policy_type = args.get('policy_type')
+    results = client.list_runtime_policies(policy_type)
+
+    readable_results = results.copy()
+    rules = readable_results.pop('rules')
+    readable_results['rules'] = [rule['name'] for rule in rules]
+
+    readable_output = tableToMarkdown(f'Policies of type - {policy_type}:', readable_results)
+
+    return CommandResults(
+        outputs_prefix='Prisma.CWPP.Policy',
+        outputs_key_field='_id',
+        outputs=results,
+        readable_output=readable_output
+    )
+
+
+def add_runtime_policies_command(client, args):
+    policy_type = args.get('policy_type')
+    rule_object = json.loads(args.get('rule_object'))
+    policy_to_update = args.get('policy_to_update')
+    if policy_type in policy_to_update['_id']:
+        policy_to_update['rules'].append(rule_object)
+        updated_policy = policy_to_update
+        client.update_runtime_policy(policy_type, updated_policy)
+
+        readable_output = 'Policy successfully updated'
+
+        return CommandResults(
+            readable_output=readable_output
+        )
+    else:
+        return_error(f'The policy type: "{policy_type}" doesnt match the policy to update')
+
+
+
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
@@ -266,21 +290,17 @@ def main():
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
 
-    # If checked to verify and given a certificate, save the certificate as a temp file
-    # and set the path to the requests client
     if verify_certificate and cert:
         tmp = tempfile.NamedTemporaryFile(delete=False, mode='w')
         tmp.write(cert)
         tmp.close()
         verify = tmp.name
     else:
-        # Save boolean as a string
         verify = str(verify_certificate)
 
     try:
         LOG(f'Command being called is {demisto.command()}')
 
-        # Init the client
         client = Client(
             base_url=urljoin(base_url, 'api/v1/'),
             verify=verify,
@@ -289,17 +309,19 @@ def main():
             project=project)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button
             result = test_module(client)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Fetch incidents from Prisma Cloud Compute
-            # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
 
-    # Log exceptions
+        elif demisto.command() == 'prisma-cwpp-list-runtime-policies':
+            return_results(list_runtime_policies_command(client, demisto.args()))
+
+        elif demisto.command() == 'prisma-cwpp-add-policy-rule':
+            return_results(add_runtime_policies_command(client, demisto.args()))
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
