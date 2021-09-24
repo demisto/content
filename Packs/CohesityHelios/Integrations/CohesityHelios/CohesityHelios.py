@@ -248,7 +248,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
     for alert in resp:
         property_dict = _get_property_dict(alert['propertyList'])
         if property_dict.get('object', "") == object_name:
-            alert_id = alert['id']
+            alert_id = alert.get('id')
 
     if alert_id == '':
         raise ValueError('No anomalous object found by given name')
@@ -315,20 +315,23 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     last_run = demisto.getLastRun()
 
     # Compute start and end time to fetch for incidents.
-    start_time_millis = get_millis_from_date_time(
-        datetime.now() - timedelta(days=7))
-    if last_run and 'start_time' in last_run:
-        start_time_millis = int(last_run.get('start_time'))
-
+    start_time_millis = int(last_run.get('start_time')) if (
+        last_run and 'start_time' in last_run) else get_millis_from_date_time(
+            datetime.now() - timedelta(days=7))
     end_time_millis = get_current_millis()
-
-    # Fetch all new incidents.
     incidents = []
 
+    # Fetch all new incidents.
     max_fetch = demisto.params().get('max_fetch')
-    max_fetch = int(demisto.params().get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 200
+    max_fetch = int(demisto.params().get('max_fetch')) if (
+        max_fetch and max_fetch.isdigit()) else MAX_FETCH_DEFAULT
+    
     ransomware_resp = client.get_ransomware_alerts(
-        start_time_millis=start_time_millis, max_fetch=max_fetch)
+        start_time_millis=start_time_millis,
+        end_time_millis=end_time_millis,
+        max_fetch=max_fetch)
+    demisto.debug("Got {numAlerts} alerts between {start} and {end}".
+        format(numAlerts=len(ransomware_resp, start=start_time_millis, end=end_time_millis)))
 
     # Parse alerts for readable_output.
     for alert in ransomware_resp:
@@ -363,7 +366,7 @@ def test_module(client: Client) -> str:
         client.get_ransomware_alerts(start_time_millis=1631471400000)
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e

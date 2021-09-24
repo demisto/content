@@ -41,6 +41,11 @@ configuration:
   defaultvalue: true
   required: false
   type: 8
+- defaultvalue: "15"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: '[Integrate with Cohesity Helios services to fetch alerts and take remedial
   action.]'
 display: CohesityHelios
