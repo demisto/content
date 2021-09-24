@@ -3,6 +3,7 @@
 import concurrent.futures
 import threading
 import time
+from concurrent.futures import wait
 from typing import Dict, List, Optional
 
 import urllib3
@@ -73,7 +74,7 @@ class Client(BaseClient):
             self.calls_count = (self.calls_count + 1)
             demisto.debug(f"in the first print , call count all tags {self.calls_count}")
             if self.calls_count >= 100:
-                threading.Event.wait()
+                threading.Event.wait(threading.Event())
                 self.calls_count = 0
         with self.thread_lock_for_page_num:
             self.page_num += 1
@@ -94,7 +95,8 @@ class Client(BaseClient):
             self.calls_count = (self.calls_count + 1)
             demisto.debug(f"get tag details,  {self.calls_count}")
             if self.calls_count >= 100:
-                threading.Event.wait()
+                demisto.debug("im in sleep")
+                threading.Event.wait(threading.Event(), 70)
                 self.calls_count = 0
         res = self._http_request('POST',
                                  url_suffix=f'tag/{public_tag_name}',
@@ -118,7 +120,7 @@ class Client(BaseClient):
         real_all_tags = []
         total_count_of_tags = 3625
         num_of_calls = total_count_of_tags // PAGE_SIZE + 1
-        for i in range(num_of_calls):
+        for i in range(3):
             future_all_tags.append(
                 EXECUTOR.submit(
                     self.get_all_tags
@@ -137,6 +139,7 @@ class Client(BaseClient):
         demisto.debug("before the details")
         for tag in real_all_tags:
             public_tag_name = tag.get('public_tag_name', '')
+            demisto.debug(f"public tag name:{public_tag_name}")
             if public_tag_name:
                 futures.append(
                     EXECUTOR1.submit(
@@ -279,7 +282,6 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     for tag_details in iterator:
         tag = tag_details.get('tag')
         value_ = tag.get('tag_name')
-        print(value_)
         tag_class = tag.get('tag_class')
         source = tag.get('source')
         type_ = get_tag_class(tag_class, source)
@@ -335,7 +337,7 @@ def get_indicators_command(client: Client,
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators,
-                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
+                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='',
