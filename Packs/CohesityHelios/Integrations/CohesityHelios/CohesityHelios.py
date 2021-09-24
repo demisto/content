@@ -26,10 +26,10 @@ BACKOFF_FACTOR = 1.0
 
 
 class Client(BaseClient):
-    """Cohesity Helios Client class to interact with Cohesity Helios.
+    """ Client class to interact with Cohesity Helios.
     """
 
-    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=200,
+    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=MAX_FETCH_DEFAULT,
                               alert_ids=None, alert_state_list=None, alert_severity_list=None,
                               region_ids=None, cluster_identifiers=None):
         """Gets the Cohesity Helios ransomware alerts.
@@ -75,7 +75,7 @@ class Client(BaseClient):
         return ransomware_alerts
 
     def suppress_ransomware_alert_by_id(self, alert_id: str):
-        """Supress a ransomware alert.
+        """Patch API call to supress ransomware alert by id.
         """
         return self._http_request(
             method='PATCH',
@@ -88,7 +88,7 @@ class Client(BaseClient):
         )
 
     def resolve_ransomware_alert_by_id(self, alert_id: str):
-        """Mark a ransonware alert as resolved.
+        """Patch API call to resolve ransomware alert by id.
         """
         return self._http_request(
             method='PATCH',
@@ -120,24 +120,23 @@ class Client(BaseClient):
 
 
 def get_date_time_from_millis(time_in_millis):
-    # Get date time from millis.
+    """Get date time from epoch milllis"""
     return datetime.fromtimestamp(time_in_millis / 1000.0)
-
-# Get millis from date time.
 
 
 def get_millis_from_date_time(dt):
+    """Get epoch milllis from date time"""
     return int(dt.timestamp() * 1000)
 
 
 def get_current_millis():
-    # Get current epoch millis
+    """Get current epoch millis"""
     dt = datetime.now()
     return int(dt.timestamp() * 1000)
 
 
 def datestring_to_millis(ds: str):
-    # Get epoch millis from datestring
+    """Get epoch millis from datestring"""
     dt = parse(ds)
     if dt is None:
         return dt
@@ -146,16 +145,29 @@ def datestring_to_millis(ds: str):
 
 
 def _get_property_dict(property_list):
-    '''
-    get property dictionary from list of property dicts
+    """
+    Helper method to get a dictionary from list of property dicts
     with keys, values
-    :param property_list:
-    :return:
-    '''
+    """
     property_dict = {}
     for property in property_list:
         property_dict[property['key']] = property['value']
     return property_dict
+
+
+def convert_to_demisto_severity_int(severity: str):
+    """Maps Cohesity helios severity to Cortex XSOAR severity
+
+    :type severity: ``str``
+
+    :return: Cortex XSOAR Severity
+    :rtype: ``int``
+    """
+    return {
+        'kInfo': IncidentSeverity.INFO,   # Informational alert
+        'kWarning': IncidentSeverity.LOW,  # low severity
+        'kCritical': IncidentSeverity.HIGH  # critical severity
+    }.get(severity, IncidentSeverity.UNKNOWN)
 
 
 def create_ransomware_incident(alert) -> Dict[str, Any]:
@@ -183,23 +195,8 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
     }
 
 
-def convert_to_demisto_severity_int(severity: str):
-    """Maps Cohesity helios severity to Cortex XSOAR severity
-
-    :type severity: ``str``
-
-    :return: Cortex XSOAR Severity
-    :rtype: ``int``
-    """
-    return {
-        'kInfo': IncidentSeverity.INFO,   # Informational alert
-        'kWarning': IncidentSeverity.LOW,  # low severity
-        'kCritical': IncidentSeverity.HIGH  # critical severity
-    }.get(severity, IncidentSeverity.UNKNOWN)
-
-
-def parse_ransomware_alert(alert) -> Dict[str, Any]:
-    """Helper method to parse ransomware incident.
+def get_ransomware_alert_details(alert) -> Dict[str, Any]:
+    """Helper method to parse ransomware alert for details.
     """
     # Get alert properties.
     property_dict = _get_property_dict(alert['propertyList'])
@@ -222,8 +219,16 @@ def parse_ransomware_alert(alert) -> Dict[str, Any]:
 
 
 def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get_ransomware_alerts_command: Returns ransomware alerts detected
-        in last num_minutes_ago.
+    """
+    Gets ransomware alerts detected by Cohesity Helios.
+
+        :type client: ``Client``
+        :param Client:  cohesity helios client to use.
+
+        :type args: ``Dict[str, Any]``
+        :param args: Dictionary with get ransomware alerts parameters.
+
+    Returns command result with the list of fetched ransomware alerts.
     """
     start_time_millis = datestring_to_millis(args.get('created_after', ''))
     end_time_millis = datestring_to_millis(args.get('created_before', ''))
@@ -231,34 +236,44 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     ids_list = args.get('alert_id_list', None)
     limit = args.get('limit', MAX_FETCH_DEFAULT)
 
-    # Fetch ransomware alerts from client.
+    # Fetch ransomware alerts via client.
     resp = client.get_ransomware_alerts(
         start_time_millis=start_time_millis,
         end_time_millis=end_time_millis, alert_ids=ids_list,
         alert_severity_list=severity_list,
         max_fetch=limit)
+    demisto.debug("Got {numAlerts} alerts between {start} and {end}".
+                  format(numAlerts=len(resp), start=start_time_millis, end=end_time_millis))
 
-    # Create ransomware incidents from alerts.
-    incidences = []
-
+    # Parse alerts for readable output.
+    ransomware_alerts = []
     for alert in resp:
-        incident = parse_ransomware_alert(alert)
-        incidences.append(incident)
+        alert_details = get_ransomware_alert_details(alert)
+        ransomware_alerts.append(alert_details)
 
-    # CohesityTBD: Parse alert response.
     return CommandResults(
         outputs_prefix='CohesityHelios.RansomwareAlert',
         outputs_key_field='alert_id',
-        outputs=incidences,
+        outputs=ransomware_alerts,
     )
 
 
 def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> str:
-    """ignore_ransomware_anomaly_command: Ignore detected anomalous object on Helios.
+    """Ignore detected anomalous object on Helios.
+
+        :type client: ``Client``
+        :param Client:  cohesity helios client to use.
+
+        :type args: ``Dict[str, Any]``
+        :param args: Dictionary with ignore anomaly parameters.
+
+        :return: success message of the ignore anomaly operation.
+        :rtype: ``str``
     """
     # Filter ransomware alert for given object name.
     alert_id = ''
     object_name = args.get('object_name')
+    demisto.debug("Performing ignore anomaly operation for object {name}".format(name=object_name))
 
     resp = client.get_ransomware_alerts()
     for alert in resp:
@@ -276,12 +291,21 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
 
 
 def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
-    """restore_latest_clean_snapshot: Restore latest clean snapshot of given object.
+    """Restore latest clean snapshot of given object.
+
+        :type client: ``Client``
+        :param Client:  cohesity helios client to use.
+
+        :type args: ``Dict[str, Any]``
+
+        :return: success message of the restore operation.
+        :rtype: ``str``
     """
     # Filter ransomware alert for given object name.
     alert_id = ''
     restore_properties = {}
     object_name = args.get('object_name')
+    demisto.debug("Performing restore operation for object {name}".format(name=object_name))
 
     resp = client.get_ransomware_alerts()
     for alert in resp:
@@ -324,8 +348,12 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
     return "Restored object {name}".format(name=object_name)
 
 
-def fetch_incidents_command(client: Client, args: Dict[str, Any]):
-    """ fetch_incidents_command: fetches incidents since last run or past 7 days in case of first run.
+def fetch_incidents_command(client: Client):
+    """ Fetches incidents since last run or past 7 days in case of first run
+        and sends them to Cortex XSOAR.
+
+        :type client: ``Client``
+        :param Client:  cohesity helios client to use
     """
     # Get last run details.
     last_run = demisto.getLastRun()
@@ -335,7 +363,6 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
         last_run and 'start_time' in last_run) else get_millis_from_date_time(
             datetime.now() - timedelta(days=7))
     end_time_millis = get_current_millis()
-    incidents = []
 
     # Fetch all new incidents.
     max_fetch = demisto.params().get('max_fetch')
@@ -349,7 +376,8 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     demisto.debug("Got {numAlerts} alerts between {start} and {end}".
                   format(numAlerts=len(ransomware_resp), start=start_time_millis, end=end_time_millis))
 
-    # Parse alerts for readable_output.
+    # Get incidents for ransomware alerts.
+    incidents = []
     for alert in ransomware_resp:
         incident = create_ransomware_incident(alert)
         incidents.append(incident)
@@ -442,7 +470,7 @@ def main() -> None:
             return_results(restore_latest_clean_snapshot(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents_command(client, demisto.args())
+            fetch_incidents_command(client)
 
     # Log exceptions and return errors
     except Exception as e:
