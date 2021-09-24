@@ -4286,8 +4286,6 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    if url and url[-1] != '/':
-        url += '/'
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
@@ -4299,8 +4297,7 @@ def panorama_query_logs_command(args: dict):
 
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query logs failed' + message)
+            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
         else:
             raise Exception('Query logs failed.')
 
