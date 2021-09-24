@@ -267,7 +267,7 @@ Returns a PingOne user. One of the following has to be given username or userId.
 | PingOne.Account.DisplayName | string | PingOne account display name. | 
 | PingOne.Account.Email | string | PingOne account email. | 
 | PingOne.Account.Enabled | boolean | PingOne account enabled status. | 
-| Account.CreatedAt | date | PingOne account create date. | 
+| PingOne.Account.CreatedAt | date | PingOne account create date. | 
 | PingOne.Account.UpdatedAt | date | PingOne account updated date. | 
 
 

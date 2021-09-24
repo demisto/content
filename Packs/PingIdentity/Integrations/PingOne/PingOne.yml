@@ -140,7 +140,7 @@ script:
     - contextPath: PingOne.Account.Enabled
       description: PingOne account enabled status.
       type: boolean
-    - contextPath: Account.CreatedAt
+    - contextPath: PingOne.Account.CreatedAt
       description: PingOne account create date.
       type: date
     - contextPath: PingOne.Account.UpdatedAt
