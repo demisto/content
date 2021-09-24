@@ -228,7 +228,7 @@ script:
       description: A JSON representation of the filter created.
       type: string
 
-  dockerimage: demisto/accessdata-python3:latest
+  dockerimage: demisto/accessdata:latest
   runonce: false
   script: '-'
   type: python
