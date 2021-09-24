@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # IMPORTS
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -221,7 +220,7 @@ class Client(BaseClient):
 
     @staticmethod
     def build_user_profile(args):
-        profile = {}
+        profile = {}  # type:ignore
         keys = args.keys()
         for key in PROFILE_ARGS:
             if key in keys:
@@ -473,7 +472,6 @@ def get_groups_for_user_command(client, args):
 
 
 def get_user_command(client, args):
-
     if args.get('userId'):
         user_id_or_name = args.get('userId')
         raw_response = client.get_user_by_id(args.get('userId'))

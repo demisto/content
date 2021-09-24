@@ -104,7 +104,6 @@ user_data_by_id = {
     "verifyStatus": "NOT_INITIATED"
 }
 
-
 create_user_response = {
     "id": "9e45580c-79f3-4499-83cc-006a20dcc50e",
     "environment": {
@@ -134,19 +133,23 @@ create_user_response = {
 single_group_data = {
     "_links": {
         "self": {
-            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/users/a8890eb9-38ea-469a-bc00-b64be7903633/memberOfGroups/8c33d93e-a614-457a-80ed-5e922fccd906"
+            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/users/a8890eb9-38ea"
+                    "-469a-bc00-b64be7903633/memberOfGroups/8c33d93e-a614-457a-80ed-5e922fccd906"
         },
         "user": {
-            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/users/a8890eb9-38ea-469a-bc00-b64be7903633"
+            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/users/a8890eb9-38ea"
+                    "-469a-bc00-b64be7903633"
         },
         "environment": {
             "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431"
         },
         "population": {
-            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/populations/4cd45bdb-0eb2-42fe-8475-4bcd908269f1"
+            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/populations/4cd45bdb"
+                    "-0eb2-42fe-8475-4bcd908269f1"
         },
         "group": {
-            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/groups/8c33d93e-a614-457a-80ed-5e922fccd906"
+            "href": "https://api.pingone.com/v1/environments/b4f5e266-a946-4f77-9cc5-5dc91b046431/groups/8c33d93e-a614"
+                    "-457a-80ed-5e922fccd906"
         }
     },
     "id": "8c33d93e-a614-457a-80ed-5e922fccd906",
@@ -409,8 +412,7 @@ def test_get_groups_for_user_command(mocker, args):
     expected_context = [{
         'ID': '8c33d93e-a614-457a-80ed-5e922fccd906',
         'Name': 'Sales'
-        }
-    ]
+    }]
 
     mocker.patch.object(client, 'get_user_id', return_value=TEST_USER_ID)
     mocker.patch.object(client, 'get_groups_for_user', return_value=group_data)
@@ -441,33 +443,34 @@ def test_create_user_command(mocker, args):
        'populationId': '4cd45bdb-0eb2-42fe-8475-4bcd908269f1',
        'nickname': 'Freddie'},
       {"id": "3930766f-9e36-422d-ab4d-d8a2297f98f2",
-        "environment": {
-            "id": "b4f5e266-a946-4f77-9cc5-5dc91b046431"
-        },
-        "account": {
-            "canAuthenticate": True,
-            "status": "OK"
-        },
-        "createdAt": "2021-09-09T01:02:14.247Z",
-        "enabled": True,
-        "identityProvider": {
-            "type": "PING_ONE"
-        },
-        "lifecycle": {
-            "status": "ACCOUNT_OK"
-        },
-        "mfaEnabled": False,
-        "nickname": "Freddie",
-        "population": {
-            "id": "4cd45bdb-0eb2-42fe-8475-4bcd908269f1"
-        },
-        "type": "",
-        "updatedAt": "2021-09-09T01:05:28.536Z",
-        "username": "fred.smith4",
-        "verifyStatus": "NOT_INITIATED"
-      },
+       "environment": {
+           "id": "b4f5e266-a946-4f77-9cc5-5dc91b046431"
+       },
+       "account": {
+           "canAuthenticate": True,
+           "status": "OK"
+       },
+       "createdAt": "2021-09-09T01:02:14.247Z",
+       "enabled": True,
+       "identityProvider": {
+           "type": "PING_ONE"
+       },
+       "lifecycle": {
+           "status": "ACCOUNT_OK"
+       },
+       "mfaEnabled": False,
+       "nickname": "Freddie",
+       "population": {
+           "id": "4cd45bdb-0eb2-42fe-8475-4bcd908269f1"
+       },
+       "type": "",
+       "updatedAt": "2021-09-09T01:05:28.536Z",
+       "username": "fred.smith4",
+       "verifyStatus": "NOT_INITIATED"
+       },
       'fred.smith4'
-     )])
+      )
+     ])
 def test_update_user_command(mocker, args, expected_context, expected_readable):
     client = ClientTestPing(mocker).client
 
