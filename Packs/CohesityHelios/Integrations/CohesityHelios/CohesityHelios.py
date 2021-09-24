@@ -108,18 +108,23 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+
 def get_date_time_from_millis(time_in_millis):
     # Get date time from millis.
     return datetime.fromtimestamp(time_in_millis / 1000.0)
 
 # Get millis from date time.
+
+
 def get_millis_from_date_time(dt):
     return int(dt.timestamp() * 1000)
+
 
 def get_current_millis():
     # Get current epoch millis
     dt = datetime.now()
     return int(dt.timestamp() * 1000)
+
 
 def datestring_to_millis(ds: str):
     # Get epoch millis from datestring
@@ -128,6 +133,7 @@ def datestring_to_millis(ds: str):
         return dt
 
     return int(dt.timestamp()) * 1000
+
 
 def _get_property_dict(property_list):
     '''
@@ -267,6 +273,8 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> Comma
     restore_properties = {}
     object_name = args.get('object_name')
 
+    demisto.results("restore {object}".format(object=object_name))
+
     resp = client.get_ransomware_alerts()
     for alert in resp:
         if alert['severity'] == 'kCritical' and alert['alertState'] == 'kOpen':
@@ -325,13 +333,13 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]):
     max_fetch = demisto.params().get('max_fetch')
     max_fetch = int(demisto.params().get('max_fetch')) if (
         max_fetch and max_fetch.isdigit()) else MAX_FETCH_DEFAULT
-    
+
     ransomware_resp = client.get_ransomware_alerts(
         start_time_millis=start_time_millis,
         end_time_millis=end_time_millis,
         max_fetch=max_fetch)
     demisto.debug("Got {numAlerts} alerts between {start} and {end}".
-        format(numAlerts=len(ransomware_resp, start=start_time_millis, end=end_time_millis)))
+                  format(numAlerts=len(ransomware_resp), start=start_time_millis, end=end_time_millis))
 
     # Parse alerts for readable_output.
     for alert in ransomware_resp:
