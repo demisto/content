@@ -437,7 +437,7 @@ class MyTestCase(unittest.TestCase):
 
         context = util_load_json("TestData/alert_list.json")
 
-        with open('TestData/alert_hr.md') as data:
+        with open('TestData/alert_hr.json') as data:
             expected_hr = data.read()
 
         result = flashpoint_alert_list_command(self.client, {})
@@ -618,7 +618,7 @@ class MyTestCase(unittest.TestCase):
 
         context = util_load_json("TestData/compromised_credentials_list.json")
 
-        with open('TestData/compromised_credentials_hr.md') as data:
+        with open('TestData/compromised_credentials_hr.json') as data:
             expected_hr = data.read()
 
         result = flashpoint_compromised_credentials_list_command(self.client, {})
