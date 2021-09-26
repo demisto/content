@@ -10,6 +10,7 @@ configuration:
   type: 0
 - display: Subscription ID
   hidden: false
+  additionalinfo: Azure Active Directory subscription ID.
   name: subscription_id
   required: true
   type: 0
@@ -67,7 +68,7 @@ configuration:
   name: fetch_user_principal_name
   required: false
   type: 0
-description: Gets information from Azure Active Directory Identity Protection service.
+description: Gets information from the Azure Active Directory Identity Protection service.
 display: Azure Active Directory Identity Protection (Beta)
 name: Azure Active Directory Identity Protection
 script:
