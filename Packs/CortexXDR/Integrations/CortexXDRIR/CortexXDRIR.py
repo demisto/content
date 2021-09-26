@@ -45,7 +45,9 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
-    'resolved_other': 'Other'
+    'resolved_other': 'Other',
+    'resolved_true_positive': 'Other',
+    'resolved_security_testing': 'Other'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
@@ -2521,7 +2523,8 @@ def handle_incoming_user_unassignment(incident_data):
 
 def handle_incoming_closing_incident(incident_data):
     closing_entry = {}  # type: Dict
-    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
+    incident_status = incident_data.get('status')
+    if incident_status in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
         closing_entry = {
             'Type': EntryType.NOTE,
@@ -2538,7 +2541,8 @@ def handle_incoming_closing_incident(incident_data):
         if incident_data.get('status') == 'resolved_known_issue':
             closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
             incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-
+    else:
+        demisto.debug(f'Not closing the mirrored XSOAR incident. Mirrored XDR incident status is {incident_status}.')
     return closing_entry
 
 
