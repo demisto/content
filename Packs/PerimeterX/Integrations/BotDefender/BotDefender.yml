@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence#
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: BotDefender
   version: -1

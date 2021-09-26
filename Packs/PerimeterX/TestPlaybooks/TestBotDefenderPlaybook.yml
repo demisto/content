@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'aba53630-f452-4905-823b-93153d7d0f52'
     type: start
     task:
-      id: '0'
+      id: 'aba53630-f452-4905-823b-93153d7d0f52'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 'e2a92799-a695-485e-b045-9d8fb527bdf5'
     type: regular
     task:
-      id: '1'
+      id: 'e2a92799-a695-485e-b045-9d8fb527bdf5'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '261ba2db-9713-4fd5-addd-3fbda03f54bb'
     type: regular
     task:
-      id: '2'
+      id: '261ba2db-9713-4fd5-addd-3fbda03f54bb'
       version: -1
       name: ip
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '74c526f8-a30f-4532-8245-14f211b21168'
     type: condition
     task:
-      id: '3'
+      id: '74c526f8-a30f-4532-8245-14f211b21168'
       version: -1
       name: Verify Outputs
       type: condition
@@ -132,10 +132,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 'e858b8c3-c542-44e3-8bbb-f63410dd5dc4'
     type: regular
     task:
-      id: '4'
+      id: 'e858b8c3-c542-44e3-8bbb-f63410dd5dc4'
       version: -1
       name: perimeterx-get-investigate-details
       description: ''
@@ -155,10 +155,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '6ec4a251-82a8-4322-be62-450379df2811'
     type: condition
     task:
-      id: '5'
+      id: '6ec4a251-82a8-4322-be62-450379df2811'
       version: -1
       name: Verify Outputs
       type: condition
@@ -284,10 +284,10 @@ tasks:
     skipunavailable: false
   '6':
     id: '6'
-    taskid: '6'
+    taskid: 'cce2f0a7-0bfa-46d7-8eaf-9258b1e5ac97'
     type: title
     task:
-      id: '6'
+      id: 'cce2f0a7-0bfa-46d7-8eaf-9258b1e5ac97'
       version: -1
       name: Test Done
       type: title

@@ -145,7 +145,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix = f'/investigate?{request_params["ip_address"]}',
+            url_suffix = f'/investigate?{request_params["ip_address"]}&tops=user-agent,path,socket_ip_classification',
             headers=headers
         )
 
