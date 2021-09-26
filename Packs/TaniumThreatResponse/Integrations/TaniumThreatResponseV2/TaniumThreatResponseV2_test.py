@@ -1,7 +1,9 @@
 import io
 import json
+from datetime import datetime
 
 import pytest
+from dateparser import parse
 
 import TaniumThreatResponseV2
 
@@ -1081,3 +1083,81 @@ def test_get_system_status(requests_mock):
     human_readable, outputs, _ = TaniumThreatResponseV2.get_system_status(MOCK_CLIENT, args)
     assert 'Reporting clients' in human_readable
     assert outputs.get('Tanium.SystemStatus(val.clientId === obj.clientId)', {})[0].get('clientId') == 1
+
+
+def test_fetch_all_incidents(requests_mock):
+    """
+        Given
+            fetch incidents command running for the first time.
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client gets all 3 relevant incidents
+    """
+
+    test_incidents = util_load_json('test_files/fetch_incidents.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+                      json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
+
+    alerts_states_to_retrieve = 'unresolved'
+    last_run = {}
+    fetch_time = '3 days'
+    max_fetch = 2
+
+    incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
+        MOCK_CLIENT,
+        alerts_states_to_retrieve,
+        last_run,
+        fetch_time,
+        max_fetch
+    )
+
+    assert len(incidents) == 2
+    assert incidents[0].get(
+        'name') == 'hostname found test'
+    assert incidents[0].get(
+        'occurred') == "2021-09-26T14:01:31.000Z"
+    assert next_run.get('id') == "2"
+    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:02:59.000Z"), TaniumThreatResponseV2.DATE_FORMAT)
+
+
+def test_fetch_new_incidents(requests_mock):
+    """
+        Given
+            fetch incidents command running for the first time.
+        When
+            mock the Client's http_request.
+        Then
+            validate fetch incidents command using the Client gets all 3 relevant incidents
+    """
+
+    test_incidents = util_load_json('test_files/fetch_incidents_new.json')
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+                      json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
+
+    alerts_states_to_retrieve = 'unresolved'
+    last_run = {'time': '2021-09-26T14:02:59.000000Z', 'id': '2'}
+    fetch_time = '3 days'
+    max_fetch = 2
+
+    incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
+        MOCK_CLIENT,
+        alerts_states_to_retrieve,
+        last_run,
+        fetch_time,
+        max_fetch
+    )
+
+    assert len(incidents) == 2
+    assert incidents[0].get(
+        'name') == 'hostname found test'
+    assert incidents[0].get(
+        'occurred') == "2021-09-26T14:01:31.000Z"
+    assert next_run.get('id') == "4"
+    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:04:59.000Z"),
+                                                     TaniumThreatResponseV2.DATE_FORMAT)
+
