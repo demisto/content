@@ -2372,36 +2372,31 @@ def prettify_get_url_filter(url_filter: dict):
     if 'override' in url_filter:
         override_category_list = url_filter['override']['member']
 
-    if not isinstance(alert_category_list, list):
-        alert_category_list = [alert_category_list]
+    alert_category_list = argToList(alert_category_list)
     for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'alert'
         })
-    if not isinstance(block_category_list, list):
-        block_category_list = [block_category_list]
+    block_category_list = argToList(block_category_list)
     for category in block_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    if not isinstance(allow_category_list, list):
-        allow_category_list = [allow_category_list]
+    allow_category_list = argToList(allow_category_list)
     for category in allow_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    if not isinstance(continue_category_list, list):
-        continue_category_list = [continue_category_list]
+    continue_category_list = argToList(continue_category_list)
     for category in continue_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    if not isinstance(override_category_list, list):
-        override_category_list = [override_category_list]
+    override_category_list = argToList(override_category_list)
     for category in override_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
