@@ -2,7 +2,8 @@ delete-mismatched-branches:
   tags:
     - gke
   stage: .pre
-  extends: .default-job-settings
+  extends:
+    - .default-job-settings
   rules:
     - if: '$DELETE_MISMATCHED_BRANCHES'
   script:
