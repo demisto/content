@@ -437,14 +437,13 @@ class MyTestCase(unittest.TestCase):
 
         context = util_load_json("TestData/alert_list.json")
 
-        with open('TestData/alert_hr.json') as data:
-            expected_hr = data.read()
+        expected_hr = util_load_json("TestData/alert_hr.json")
 
         result = flashpoint_alert_list_command(self.client, {})
 
         assert result.raw_response == response
         assert result.outputs == context
-        assert result.readable_output == expected_hr
+        assert result.readable_output == expected_hr.get('Data')
 
     @patch("Flashpoint.Client.http_request")
     def test_alert_list_command_when_empty_response_is_returned(self, mocker):
@@ -618,14 +617,13 @@ class MyTestCase(unittest.TestCase):
 
         context = util_load_json("TestData/compromised_credentials_list.json")
 
-        with open('TestData/compromised_credentials_hr.json') as data:
-            expected_hr = data.read()
+        expected_hr = util_load_json("TestData/compromised_credentials_hr.json")
 
         result = flashpoint_compromised_credentials_list_command(self.client, {})
 
         assert result.outputs == context
         assert result.raw_response == response
-        assert result.readable_output == expected_hr
+        assert result.readable_output == expected_hr.get('Data')
 
     @patch("Flashpoint.Client.http_request")
     def test_compromised_credentials_list_command_when_empty_response_is_returned(self, mocker):
