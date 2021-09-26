@@ -1,7 +1,8 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Traps"
+		"Traps",
+		"Azure Active Directory Identity and Access"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

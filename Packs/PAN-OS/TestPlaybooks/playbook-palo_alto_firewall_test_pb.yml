@@ -1020,7 +1020,8 @@ tasks:
       profile_setting:
         simple: test_group_profile
       rulename: {}
-      service: {}
+      service:
+        simple: serice_tcp_test_pb,serice_udp_test_pb
       source: {}
       source_user: {}
       tags: {}

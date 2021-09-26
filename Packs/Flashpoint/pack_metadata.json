@@ -2,7 +2,7 @@
     "name": "Flashpoint",
     "description": "Use the Flashpoint integration to reduce business risk.",
     "support": "partner",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.5",
     "author": "Flashpoint",
     "url": "",
     "email": "demisto_support@flashpoint-intel.com",

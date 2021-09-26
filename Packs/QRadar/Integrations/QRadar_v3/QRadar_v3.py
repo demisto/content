@@ -1113,6 +1113,7 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
             # safe to int parse without catch because regex checks for number
             user_offense_id = int(id_query.group(0).split(operator)[1].strip())
             user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            print_debug_msg(f'Found ID in user query: {user_lowest_offense_id}, last highest ID: {highest_offense_id}')
             return max(highest_offense_id, user_lowest_offense_id)
     return highest_offense_id
 
@@ -1286,11 +1287,13 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
             return None
         try:
             return client.search_create(query_expression=query_expression)
-        except Exception as e:
-            err = str(e)
+        except Exception:
+            print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
+                            f'Retry number {num_of_failures}/{max_retries}.')
+            print_debug_msg(traceback.format_exc())
             num_of_failures += 1
             if num_of_failures == max_retries:
-                print_debug_msg(f'Unable to create search for offense. Error: {err}')
+                print_debug_msg(f'Max retries for creating search for offense: {offense_id}. Returning empty.')
                 break
             time.sleep(FAILURE_SLEEP)
     return None
@@ -1328,7 +1331,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 search_results_response = client.search_results_get(search_id)
                 events = search_results_response.get('events', [])
                 sanitized_events = sanitize_outputs(events)
-                print_debug_msg(f'Events fetched for offense {offense_id}.')
+                print_debug_msg(f'Fetched {len(sanitized_events)} events for offense {offense_id}.')
                 return sanitized_events
             elapsed = time.time() - start_time
             if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
@@ -1341,6 +1344,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             num_of_failures += 1
             if num_of_failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
+    print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array.')
     return []
 
 
@@ -1374,10 +1378,14 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if not search_response:
             continue
 
-        events = poll_offense_events_with_retry(client, search_response['search_id'], offense['id'])
-        if len(events) >= min(offense.get('event_count', 0), events_limit):
+        offense_id = offense['id']
+        events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        min_events_size = min(offense.get('event_count', 0), events_limit)
+        if len(events) >= min_events_size:
             offense = dict(offense, events=events)
             break
+        print_debug_msg(f'Did not fetch enough events. Expected at least {min_events_size}. Retrying to fetch events '
+                        f'for offense ID: {offense_id}. Retry number {i}/{max_retries}')
         if i < max_retries - 1:
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
@@ -1415,11 +1423,13 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     user_query = f' AND {user_query}' if user_query else ''
 
     filter_fetch_query = f'id>{offense_highest_id}{user_query}'
+    print_debug_msg(f'Filter query to QRadar: {filter_fetch_query}')
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
     offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
     new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
+    print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
 
     if fetch_mode != FetchMode.no_events.value:
         futures = []
@@ -1509,15 +1519,19 @@ def long_running_execution_command(client: Client, params: Dict):
                 continue
 
             incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                     'last_mirror_update': ctx.get('last_mirror_update')})
+            if incident_batch_for_sample:
+                print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
+                set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                         'last_mirror_update': ctx.get('last_mirror_update')})
 
             demisto.createIncidents(incidents)
 
-        except Exception as e:
-            demisto.error(str(e))
+        except Exception:
+            demisto.error('Error occurred during long running loop')
+            demisto.error(traceback.format_exc())
 
         finally:
+            print_debug_msg('Finished fetch loop')
             time.sleep(FETCH_SLEEP)
 
 
@@ -2815,6 +2829,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
 
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
+    print_debug_msg(f'Saving New Highest ID: {ctx.get(LAST_FETCH_KEY, 0)}')
     set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
                              LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
 

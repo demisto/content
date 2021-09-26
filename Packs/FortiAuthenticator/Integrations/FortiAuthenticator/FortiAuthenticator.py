@@ -45,20 +45,24 @@ def test_module():
 @logger
 def get_user_command():
     user_context = []
-    email = demisto.args().get('email')
     userType = demisto.args().get('user_type')
-    userItems = get_addresses_request(email, userType)
+    userItems = get_user_request(userType)
 
     if userItems:
+
         user_context.append({
+            'id': userItems["objects"][0]["id"],
             'username': userItems["objects"][0]["username"],
             'email': userItems["objects"][0]["email"],
             'active': userItems["objects"][0]["active"],
-            'id': userItems["objects"][0]["id"]
+            'token_auth': userItems["objects"][0]["token_auth"],
+            'token_type': userItems["objects"][0]["token_type"],
+            'token_serial': userItems["objects"][0]["token_serial"]
         })
 
         markdown = 'FortiAuthenticator\n'
-        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context, headers=['id', 'username', 'email', 'active'])
+        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context,
+                                    headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='FortiAuthenticator.user',
@@ -68,18 +72,34 @@ def get_user_command():
         return_results(results)
     else:
         markdown = 'No such user.\n'
-        results = CommandResults(
-            readable_output=markdown
-        )
+        results = CommandResults(readable_output=markdown)
         return_results(results)
 
 
 @logger
-def get_addresses_request(email, userType):
-    params = {
-        'format': 'json',
-        'email': email
-    }
+def get_user_request(userType):
+    email = demisto.args().get('email')
+    username = demisto.args().get('username')
+    token_serial = demisto.args().get('token_serial')
+
+    if email:
+        params = {
+            'format': 'json',
+            'email': email
+        }
+    elif username:
+        params = {
+            'format': 'json',
+            'username': username
+        }
+    elif token_serial:
+        params = {
+            'format': 'json',
+            'token_serial': token_serial
+        }
+    else:
+        return False
+
     res = requests.get(BASE_URL + userType, params=params, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
     tmp = res.json()
     if tmp['meta']['total_count'] == 0:
@@ -91,32 +111,34 @@ def get_addresses_request(email, userType):
 @logger
 def update_user_command():
     user_context = []
-    email = demisto.args().get('email')
     active = demisto.args().get('active')
     userType = demisto.args().get('user_type')
-    userItems = get_addresses_request(email, userType)
+    userItems = get_user_request(userType)
 
     if userItems:
-        userID = str(userItems["objects"][0]["id"])
+        userURI = str(userItems["objects"][0]["resource_uri"])
 
         userDict = {
             "active": active
         }
         jsonData = json.dumps(userDict)
 
-        res = requests.patch(BASE_URL + 'localusers/' + userID + '/', data=jsonData, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
+        res = requests.patch(SERVER + userURI, data=jsonData, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
 
         if res.status_code == 202:
             user_context.append({
+                'id': userItems["objects"][0]["id"],
                 'username': userItems["objects"][0]["username"],
                 'email': userItems["objects"][0]["email"],
                 'active': active,
-                'id': userItems["objects"][0]["id"]
+                'token_auth': userItems["objects"][0]["token_auth"],
+                'token_type': userItems["objects"][0]["token_type"],
+                'token_serial': userItems["objects"][0]["token_serial"]
             })
 
             markdown = 'FortiAuthenticator\n'
             markdown += tableToMarkdown('Updated FortiAuthenticator User Info', user_context,
-                                        headers=['id', 'username', 'email', 'active'])
+                                        headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
             results = CommandResults(
                 readable_output=markdown,
                 outputs_prefix='FortiAuthenticator.user',
@@ -124,13 +146,9 @@ def update_user_command():
                 outputs=user_context
             )
         else:
-            results = CommandResults(
-                readable_output='Fail to update user.\n'
-            )
+            results = CommandResults(readable_output='Fail to update user.\n')
     else:
-        results = CommandResults(
-            readable_output='No such user for update.\n'
-        )
+        results = CommandResults(readable_output='No such user for update.\n')
     return_results(results)
 
 

@@ -2801,7 +2801,7 @@ def panorama_create_rule_command(args: dict):
     negate_source = args.get('negate_source')
     negate_destination = args.get('negate_destination')
     action = args.get('action')
-    service = args.get('service')
+    service = argToList(args.get('service'))
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
@@ -2903,7 +2903,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/' + element_to_change
+    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
@@ -4286,8 +4286,6 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    if url and url[-1] != '/':
-        url += '/'
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
@@ -4299,8 +4297,7 @@ def panorama_query_logs_command(args: dict):
 
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query logs failed' + message)
+            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
         else:
             raise Exception('Query logs failed.')
 
