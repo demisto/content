@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Cortex XDR - IR
+  id: Cortex XDR - IR Mirror Bug Fix
   version: -1
 configuration:
 - display: Fetch incidents
@@ -92,7 +92,7 @@ configuration:
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
-name: Cortex XDR - IR
+name: Cortex XDR - IR  Mirror Bug Fix
 script:
   commands:
   - arguments:
