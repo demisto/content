@@ -999,7 +999,6 @@ def test_get_modified_data_command(mocker):
         - Returns a list of changed incidents
     """
     from JiraV2 import get_modified_remote_data_command
-
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
     mocker.patch("JiraV2.json", return_value={"timeZone": "Asia/Jerusalem"})
@@ -1019,7 +1018,7 @@ def test_get_modified_data_command(mocker):
         return_value=(None, None, {"issues": [{"id": "123"}]}),
     )
 
-    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"})
+    modified_ids = get_modified_remote_data_command({"lastUpdate": "1"})
     assert modified_ids.modified_incident_ids == ["123"]
 
 
