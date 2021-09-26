@@ -2559,6 +2559,7 @@ def set_edit_url_filter_xpaths(major_version: int) -> Tuple[str, str]:
         return 'allow', 'block'
     return 'allow-list', 'block-list'
 
+
 @logger
 def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, element_value: str,
                              add_remove_element: Optional[str] = None):
