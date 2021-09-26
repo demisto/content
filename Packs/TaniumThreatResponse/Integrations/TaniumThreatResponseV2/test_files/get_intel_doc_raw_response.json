@@ -4,7 +4,7 @@
     "type": "tanium-test",
     "typeVersion": "1.0",
     "isSchemaValid": true,
-    "intrinsicId": "test",
+    "intrinsicId": "test123456",
     "md5": "abcd123456",
     "name": "get_doc_test",
     "description": "get_doc_test",

@@ -2025,6 +2025,25 @@ script:
     - contextPath: Tanium.IntelDoc.UpdatedAt
       description: The date when this intel was last updated.
       type: Date
+    - contextPath: Tanium.IntelDoc.revisionId
+      description: The number of times the contents of the intel with this ID have been updated.
+      type: Number
+    - contextPath: Tanium.IntelDoc.Type
+      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      type: String
+    - contextPath: Tanium.IntelDoc.typeVersion
+      description: The version number of the intel type. For example, "1.0", "2.3", etc.
+      type: String
+    - contextPath: Tanium.IntelDoc.intrinsicId
+      description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+      type: String
+    - contextPath: Tanium.IntelDoc.Md5
+      description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+      type: String
+    - contextPath: Tanium.IntelDoc.Size
+      description: The size of the intel document contents, in bytes.
+      type: String
+
   - arguments:
     - default: false
       description: The ID of the intel document to update.
@@ -2057,32 +2076,50 @@ script:
     hidden: false
     name: tanium-tr-intel-doc-update
     outputs:
-    - contextPath: Tanium.IntelDoc.AlertCount
-      description: The number of alerts that currently exist for this intel.
-      type: Number
-    - contextPath: Tanium.IntelDoc.CreatedAt
-      description: The date at which this intel was first added to the system.
-      type: Date
-    - contextPath: Tanium.IntelDoc.Description
-      description: The description of the intel, as declared in the document or as
-        updated by a user.
-      type: String
-    - contextPath: Tanium.IntelDoc.ID
-      description: The unique identifier for this intel in this instance of the system.
-      type: Number
-    - contextPath: Tanium.IntelDoc.LabelIds
-      description: The IDs of all labels applied to this intel.
-      type: Number
-    - contextPath: Tanium.IntelDoc.Name
-      description: The name of the intel, as declared in the document or as updated
-        by a user.
-      type: String
-    - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
-      description: The number of unresolved alerts that currently exist for this intel.
-      type: Number
-    - contextPath: Tanium.IntelDoc.UpdatedAt
-      description: The date when this intel was last updated.
-      type: Date
+      - contextPath: Tanium.IntelDoc.AlertCount
+        description: The number of alerts that currently exist for this intel.
+        type: Number
+      - contextPath: Tanium.IntelDoc.CreatedAt
+        description: The date at which this intel was first added to the system.
+        type: Date
+      - contextPath: Tanium.IntelDoc.Description
+        description: The description of the intel, as declared in the document or as
+          updated by a user.
+        type: String
+      - contextPath: Tanium.IntelDoc.ID
+        description: The unique identifier for this intel in this instance of the system.
+        type: Number
+      - contextPath: Tanium.IntelDoc.LabelIds
+        description: The IDs of all labels applied to this intel.
+        type: Number
+      - contextPath: Tanium.IntelDoc.Name
+        description: The name of the intel, as declared in the document or as updated
+          by a user.
+        type: String
+      - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
+        description: The number of unresolved alerts that currently exist for this intel.
+        type: Number
+      - contextPath: Tanium.IntelDoc.UpdatedAt
+        description: The date when this intel was last updated.
+        type: Date
+      - contextPath: Tanium.IntelDoc.revisionId
+        description: The number of times the contents of the intel with this ID have been updated.
+        type: Number
+      - contextPath: Tanium.IntelDoc.Type
+        description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+        type: String
+      - contextPath: Tanium.IntelDoc.typeVersion
+        description: The version number of the intel type. For example, "1.0", "2.3", etc.
+        type: String
+      - contextPath: Tanium.IntelDoc.intrinsicId
+        description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+        type: String
+      - contextPath: Tanium.IntelDoc.Md5
+        description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+        type: String
+      - contextPath: Tanium.IntelDoc.Size
+        description: The size of the intel document contents, in bytes.
+        type: String
   - deprecated: false
     description: Deploys intel using the service account context.
     execution: false
@@ -2202,7 +2239,7 @@ script:
     - contextPath: Tanium.SystemStatus.status
       description: Host status.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: devdemisto/lxml:1.0.0.24126
   feed: false
   isfetch: true
   longRunning: false

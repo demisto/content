@@ -237,9 +237,10 @@ def test_create_intel_doc(mocker, requests_mock):
     with open('test_files/test.ioc') as f:
         file_content = f.read()
     entry_id = 'Test'
-    file_extension = '.ioc'
+    file_extension = 'ioc'
     api_expected_response = util_load_json('test_files/create_intel_docs_raw_response.json')
-    mocker.patch('TaniumThreatResponseV2.get_file_name_and_content', return_value=("test_name", file_content))
+    mocker.patch('TaniumThreatResponseV2.get_file_data',
+                 return_value=("test_name", "test_files/test.ioc", file_content))
     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/intels', json=api_expected_response)
 
@@ -250,25 +251,53 @@ def test_create_intel_doc(mocker, requests_mock):
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('Name') == 'VIRUS TEST'
 
 
-# def test_update_intel_doc(mocker, requests_mock): TODO waiting for a response from Tanium about that.
-#
-#     intel_doc_id = 423
-#     with open('test_files/test.ioc') as f:
-#         file_content = f.read()
-#     entry_id = 'Test'
-#     file_extension = '.ioc'
-#     api_expected_response = util_load_json('test_files/update_intel_docs_raw_response.json')
-#     mocker.patch('TaniumThreatResponseV2.get_file_name_and_content', return_value=("test_name", file_content))
-#     requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-#     requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
-#                       json=api_expected_response)
-#
-#     human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
-#         'intel-doc-id': intel_doc_id,
-#         'entry-id': entry_id,
-#         'file-extension': file_extension})
-#     assert 'Generic indicator for the virus test updated.' in human_readable
-#     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('Name') == 'VIRUS TEST 2'
+def test_update_intel_doc_ioc(mocker, requests_mock):
+    intel_doc_id = 423
+    with open('test_files/test.ioc') as f:
+        file_content = f.read()
+    entry_id = 'Test'
+    file_extension = 'ioc'
+    api_update_expected_response = util_load_json('test_files/update_intel_docs_raw_response.json')
+    api_get_expected_response = util_load_json('test_files/get_intel_doc_raw_response.json')
+    mocker.patch('TaniumThreatResponseV2.get_file_data',
+                 return_value=("test_name", 'test_files/test.ioc', file_content))
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_get_expected_response)
+    requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
+                      json=api_update_expected_response,
+                      request_headers={'Content-Disposition': 'filename=file.ioc',
+                                       'Content-Type': 'application/xml'})
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
+        'intel-doc-id': intel_doc_id,
+        'entry-id': entry_id,
+        'file-extension': file_extension})
+    assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('IntrinsicId') == 'test123456'
+    assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
+
+
+def test_update_intel_doc_yara(mocker, requests_mock):
+    intel_doc_id = 423
+    with open('test_files/test.yara') as f:
+        file_content = f.read()
+    entry_id = 'Test'
+    file_extension = 'yara'
+    api_update_expected_response = util_load_json('test_files/update_intel_docs_raw_response.json')
+    api_get_expected_response = util_load_json('test_files/get_intel_doc_raw_response.json')
+    mocker.patch('TaniumThreatResponseV2.get_file_data',
+                 return_value=("test_name", 'test_files/test.yara', file_content))
+    requests_mock.get(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/423', json=api_get_expected_response)
+    requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
+                      request_headers={'Content-Disposition': 'filename=test123456',
+                                       'Content-Type': 'application/xml'}, json=api_update_expected_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
+        'intel-doc-id': intel_doc_id,
+        'entry-id': entry_id,
+        'file-extension': file_extension})
+    assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('IntrinsicId') == 'test123456'
+    assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
 
 
 def test_deploy_intel(requests_mock):

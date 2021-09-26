@@ -12,6 +12,7 @@ import urllib3
 import urllib.parse
 from dateutil.parser import parse
 from typing import Any, Tuple
+from lxml import etree
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -194,14 +195,14 @@ def filter_to_tanium_api_syntax(filter_str):
         raise ValueError('Invalid filter argument.')
 
 
-def get_file_name_and_content(entry_id: str) -> Tuple[str, str]:
+def get_file_data(entry_id: str) -> Tuple[str, str, str]:
     """ Gets a file name and content from the file's entry ID.
 
         :type entry_id: ``str``
         :param entry_id:
             the file's entry ID.
 
-        :return: file name and content
+        :return: file name, path and content
         :rtype: ``tuple``
 
     """
@@ -210,7 +211,7 @@ def get_file_name_and_content(entry_id: str) -> Tuple[str, str]:
     file_name = file.get('name')
     with open(file_path, 'r') as f:
         file_content = f.read()
-    return file_name, file_content
+    return file_name, file_path, file_content
 
 
 def init_commands_dict():
@@ -370,6 +371,32 @@ def get_intel_doc_status(status_data):
     }
 
 
+def update_content_from_xml(file_path: str, intrinsic_id: str) -> str:
+    """ Parse an xml file, and update the content to match the same intrinsic_id as the current content.
+        the api will update docs only if the intel doc content (before update) has the same intrinsic_id as the new content,
+        otherwise it will create a new intel doc.
+        this function will force update so if they are not equal it changes the new ID to be equal to the previous ID.
+
+        :type file_path: ``str``
+        :param file_path:
+            The xml file path
+
+        :type intrinsic_id: ``str``
+        :param intrinsic_id:
+            The current intel doc id (before update)
+
+        :return: an updated xml content where the id matches the previous intrinsic_id
+        :rtype: ``str``
+
+    """
+    xml_tree = etree.parse(file_path)
+    xml_root = xml_tree.getroot()
+    content_id = xml_root.attrib.get('id', '')
+    if intrinsic_id != content_id:
+        xml_root.attrib['id'] = intrinsic_id
+    return etree.tostring(xml_root, encoding='unicode', pretty_print=True)
+
+
 ''' ALERTS DOCS HELPER FUNCTIONS '''
 
 
@@ -512,7 +539,7 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     # with a "Not Found" message.
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
     intel_doc = get_intel_doc_item(raw_response)
     # A more readable format for the human readble section.
     if intel_doc:
@@ -580,7 +607,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
         raw_response = client.do_request('GET',
                                          f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
     except requests.HTTPError as e:
-        raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+        raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
@@ -620,12 +647,12 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     # with a "Not Found" message.
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
     # If the user provided a label ID which does not exist, the do_request will throw a DemistoException
     # with "internal server error" message.
     except DemistoException as e:
         if 'internal server error' in str(e):
-            raise DemistoException(f'Please check the given label ID.\n({str(e)})')
+            raise DemistoException(f'Check the given label ID.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
@@ -665,12 +692,12 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
     # with a "Not Found" message.
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
     # If the user provided a label ID which does not exist, the do_request will throw a DemistoException
     # with "internal server error" message.
     except DemistoException as e:
         if 'internal server error' in str(e):
-            raise DemistoException(f'Please check the given label ID.\n({str(e)})')
+            raise DemistoException(f'Check the given label ID.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
@@ -706,9 +733,9 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     file_extension = data_args.get('file-extension')
     raw_response = {}
     try:
-        file_name, file_content = get_file_name_and_content(str(entry_id))
+        file_name, _,  file_content = get_file_data(str(entry_id))
     except Exception as e:
-        raise DemistoException(f'Please check your file entry ID.\n{str(e)}')
+        raise DemistoException(f'Check your file entry ID.\n{str(e)}')
 
     try:
         raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
@@ -716,7 +743,8 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
                                                   'Content-Type': 'application/xml'}, body=file_content)
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
+        raise
 
     intel_doc = get_intel_doc_item(raw_response)
     # A more readable format for the human readble section.
@@ -747,21 +775,43 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     """
 
     id_ = data_args.get('intel-doc-id')
+    intrinsic_id = ''
+    try:
+        # get intel doc intrinsicId
+        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
+        intrinsic_id = raw_response.get('intrinsicId')
+    # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
+    # with a "Not Found" message.
+    except requests.HTTPError as e:
+        if 'not found' in str(e):
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
+
     entry_id = data_args.get('entry-id')
     file_extension = data_args.get('file-extension')
+    content_disposition = f'filename=file.{file_extension}'
     raw_response = {}
     try:
-        file_name, file_content = get_file_name_and_content(str(entry_id))
+        file_name, file_path, file_content = get_file_data(str(entry_id))
     except Exception as e:
-        raise DemistoException(f'Please check your file entry ID.\n{str(e)}')
+        raise DemistoException(f'Check your file entry ID.\n{str(e)}')
+
+    updated_content = file_content
+    if file_extension in ['ioc', 'stix']:
+        updated_content = update_content_from_xml(file_path, intrinsic_id)
+
+    elif file_extension == 'yara':
+        # in yara files the update will take place when the previous intrinsic_id is entered in the Content Disposition
+        content_disposition = f'filename={intrinsic_id}'
 
     try:
         raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
-                                         headers={'Content-Disposition': f'filename=file.{file_extension}',
-                                                  'Content-Type': 'application/xml'}, body=file_content)
+                                         headers={'Content-Disposition': content_disposition,
+                                                  'Content-Type': 'application/xml'}, body=updated_content)
     except requests.HTTPError as e:
         if 'not found' in str(e):
-            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+            raise DemistoException(f'Check the intel doc ID and try again.\n({str(e)})')
+        else:
+            raise DemistoException(f'{str(e)}')
 
     intel_doc = get_intel_doc_item(raw_response)
     # A more readable format for the human readble section.
