@@ -41,9 +41,3 @@ ignore=IF100
 
 [file:widget-Cortex_XDR_Disconnected_Endpoints.json]
 ignore=BA113
-
-[file:XDRDisconnectedEndpoints.yml]
-ignore=BC103
-
-[file:XDRConnectedEndpoints.yml]
-ignore=BC103
