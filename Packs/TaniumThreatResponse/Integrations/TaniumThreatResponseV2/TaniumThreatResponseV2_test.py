@@ -1160,4 +1160,3 @@ def test_fetch_new_incidents(requests_mock):
     assert next_run.get('id') == "4"
     assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:04:59.000Z"),
                                                      TaniumThreatResponseV2.DATE_FORMAT)
-
