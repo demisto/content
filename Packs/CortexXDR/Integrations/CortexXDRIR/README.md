@@ -2906,7 +2906,7 @@ Returns the number of the connected\disconnected endpoints.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Required | 
-| last_seen_gte | All the agents that were last seen before {last_seen_gte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
+| last_seen_gte | All the agents that were last seen after {last_seen_gte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
 | last_seen_lte | All the agents that were last seen before {last_seen_lte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
 
 
