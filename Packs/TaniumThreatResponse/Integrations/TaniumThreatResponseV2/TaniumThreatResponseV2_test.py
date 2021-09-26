@@ -271,9 +271,9 @@ def test_update_intel_doc_ioc(mocker, requests_mock):
                                        'Content-Type': 'application/xml'})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
-        'intel-doc-id': intel_doc_id,
-        'entry-id': entry_id,
-        'file-extension': file_extension})
+        'intel_doc_id': intel_doc_id,
+        'entry_id': entry_id,
+        'file_extension': file_extension})
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('IntrinsicId') == 'test123456'
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
 
@@ -295,9 +295,9 @@ def test_update_intel_doc_yara(mocker, requests_mock):
                                        'Content-Type': 'application/xml'}, json=api_update_expected_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
-        'intel-doc-id': intel_doc_id,
-        'entry-id': entry_id,
-        'file-extension': file_extension})
+        'intel_doc_id': intel_doc_id,
+        'entry_id': entry_id,
+        'file_extension': file_extension})
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('IntrinsicId') == 'test123456'
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
 
