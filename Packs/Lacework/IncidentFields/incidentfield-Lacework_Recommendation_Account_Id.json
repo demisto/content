@@ -12,7 +12,7 @@
     "columns": null,
     "content": true,
     "defaultRows": null,
-    "description": "",
+    "description": "The cloud service provider 'Account ID' associated with the compliance violation.",
     "editForm": true,
     "fieldCalcScript": "",
     "group": 0,

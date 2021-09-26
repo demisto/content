@@ -12,7 +12,7 @@
     "columns": null,
     "content": true,
     "defaultRows": null,
-    "description": "",
+    "description": "The 'Event Type' within the 'Model' and 'Actor' categories that generated the Lacework event.",
     "editForm": true,
     "fieldCalcScript": "",
     "group": 0,

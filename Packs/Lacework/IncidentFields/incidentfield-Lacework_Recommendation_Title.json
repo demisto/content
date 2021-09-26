@@ -12,7 +12,7 @@
     "columns": null,
     "content": true,
     "defaultRows": null,
-    "description": "",
+    "description": "The Title of the recommendation which generated a compliance violation event within Lacework.",
     "editForm": true,
     "fieldCalcScript": "",
     "group": 0,
