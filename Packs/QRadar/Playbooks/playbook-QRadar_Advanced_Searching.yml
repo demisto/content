@@ -1,0 +1,4764 @@
+id: QRadar Advanced Searching
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: QRadar Advanced Searching
+description: |-
+  The Playbook queries QRadar SIEM using complex queries in case the provided search values require several conditions. Complex queries take into consideration several inputs and allow to include or exclude each of the values as well as perform a full or partial search. Each of the values can be searched across several fields.
+  The playbook supports 3 full separate conditions to be evaluated
+
+  For example in the first inputs will evaluate several user names that may or may not exist in several fields. The second input can for example evaluate for IP addresses in several fields that may or may not exist in several fields and a third value can search for an event id that may or may not exist in several fields. The results of all of the inputs will create an AQL query that covers all of the inputs combining all of the different conditions.
+
+  Each of the inputs is validated so in case the inputs are not set correctly the user can review and run again.
+  Also notice that populated inputs will be combined, meaning by populating the first and second values the resulting AQL query will be a combination of all of them and not 3 separate searches. In addition to that make sure to populate the inputs in order both according to the indexed fields in QRadar (indexed fields should be provided before non indexed ones) and don't leave a blanc input, meaning if you have 1 inputs make sure its in the first input and if you have two inputs they need to be in the first and second input and not skip to the third.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 60742575-4d10-4e7f-8982-ebcb9c1a8019
+    type: start
+    task:
+      id: 60742575-4d10-4e7f-8982-ebcb9c1a8019
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 53898dd6-0038-405c-8d4b-331ad59113ee
+    type: title
+    task:
+      id: 53898dd6-0038-405c-8d4b-331ad59113ee
+      version: -1
+      name: First Input Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "231"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": -1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 44983474-48ac-441d-8e98-f110bab978b2
+    type: condition
+    task:
+      id: 44983474-48ac-441d-8e98-f110bab978b2
+      version: -1
+      name: Were the first inputs provided properly?
+      description: Is there an IP on which to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "232"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FirstFieldValue
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 807ef13a-3637-4fd4-832f-11def93c4b16
+    type: condition
+    task:
+      id: 807ef13a-3637-4fd4-832f-11def93c4b16
+      version: -1
+      name: Are there fields for the first input?
+      description: Is there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FirstFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 9d5a7c2c-b014-4519-806d-933e1b918a96
+    type: condition
+    task:
+      id: 9d5a7c2c-b014-4519-806d-933e1b918a96
+      version: -1
+      name: Is Qradar enabled?
+      description: Is Qradar enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "164"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: ae6e33ca-0ad7-4298-8e1e-e5cac7cfe384
+    type: title
+    task:
+      id: ae6e33ca-0ad7-4298-8e1e-e5cac7cfe384
+      version: -1
+      name: QRadar query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "168"
+      - "169"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: a5ff9983-ca56-4293-8282-2db0c5b7134c
+    type: title
+    task:
+      id: a5ff9983-ca56-4293-8282-2db0c5b7134c
+      version: -1
+      name: QRadar query without custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "178"
+      - "177"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
+    type: title
+    task:
+      id: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
+      version: -1
+      name: Sort internal and external IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 5420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: b8f2ec71-559f-46ca-8a13-9eff306b9c52
+    type: regular
+    task:
+      id: b8f2ec71-559f-46ca-8a13-9eff306b9c52
+      version: -1
+      name: Set detected IP addresses as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "165"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedExternalIPs
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 6100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 00e1d579-b406-4db4-8af2-27369eee70f3
+    type: condition
+    task:
+      id: 00e1d579-b406-4db4-8af2-27369eee70f3
+      version: -1
+      name: Are there detected IP addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "165"
+      "yes":
+      - "142"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.DetectedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 5550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: c11c8eda-919b-409e-805d-bac3d7625b98
+    type: regular
+    task:
+      id: c11c8eda-919b-409e-805d-bac3d7625b98
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      ip:
+        simple: ${QRadar.DetectedIPs}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: c6f7a18d-5499-46a0-8060-acb9a13d9e23
+    type: regular
+    task:
+      id: c6f7a18d-5499-46a0-8060-acb9a13d9e23
+      version: -1
+      name: Set detected IP addresses as internal
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedInternalIPs
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 5950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: b5c837ba-5e3d-4bfe-859a-a65e8999377d
+    type: regular
+    task:
+      id: b5c837ba-5e3d-4bfe-859a-a65e8999377d
+      version: -1
+      name: Set detected source and destination IP addresses
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "161"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedIPs
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: QRadar.Search.Result.events
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: 952ba242-20e8-4f24-8f95-35b33d35c0e6
+    type: regular
+    task:
+      id: 952ba242-20e8-4f24-8f95-35b33d35c0e6
+      version: -1
+      name: Set detected usernames
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedUsers
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: QRadar.Search.Result.events
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "162":
+    id: "162"
+    taskid: be5ae3b8-84fa-4733-895d-d8f8fb424d39
+    type: regular
+    task:
+      id: be5ae3b8-84fa-4733-895d-d8f8fb424d39
+      version: -1
+      name: Get hostnames from assets
+      description: List all assets found in the model
+      script: '|||qradar-get-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "163"
+    scriptarguments:
+      filter:
+        complex:
+          root: ${QRadar
+          accessor: DetectedIPs}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: interfaces contains ip_addresses contains value= "
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 4970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 1453c864-a986-4422-8f04-4678b69fa4b5
+    type: regular
+    task:
+      id: 1453c864-a986-4422-8f04-4678b69fa4b5
+      version: -1
+      name: Set detected hostnames from assets
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedInternalHosts
+      value:
+        complex:
+          root: ${QRadar
+          accessor: Asset.Name.Value}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 5180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "164":
+    id: "164"
+    taskid: 62f9be0a-4de9-4ead-89b7-4455030ea30d
+    type: condition
+    task:
+      id: 62f9be0a-4de9-4ead-89b7-4455030ea30d
+      version: -1
+      name: Have results been detected?
+      description: Is domain or url detected by QRadar?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "165"
+      "yes":
+      - "166"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.Search.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 4280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "165":
+    id: "165"
+    taskid: 299c8685-8d43-4ef6-8a1c-0cfb2c00e518
+    type: title
+    task:
+      id: 299c8685-8d43-4ef6-8a1c-0cfb2c00e518
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "166":
+    id: "166"
+    taskid: c53ecc0c-38d3-4c8b-8103-ca8dd816672c
+    type: title
+    task:
+      id: c53ecc0c-38d3-4c8b-8103-ca8dd816672c
+      version: -1
+      name: Set detecetd Values
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "160"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 4470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "167":
+    id: "167"
+    taskid: bbceab59-bdb9-4f2e-808b-61d86d92a932
+    type: playbook
+    task:
+      id: bbceab59-bdb9-4f2e-808b-61d86d92a932
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${FirstInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "168":
+    id: "168"
+    taskid: 041102ec-6904-4ba7-8d3b-706abfc31960
+    type: regular
+    task:
+      id: 041102ec-6904-4ba7-8d3b-706abfc31960
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      key:
+        simple: State1
+      value:
+        complex:
+          root: inputs.FirstFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: 1c29cb94-2f80-48e8-8bed-e9c6d310af18
+    type: regular
+    task:
+      id: 1c29cb94-2f80-48e8-8bed-e9c6d310af18
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      key:
+        simple: Match1
+      value:
+        complex:
+          root: inputs.FirstFieldMatch
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' ILIKE '
+              equals:
+                value:
+                  simple: exact
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' = '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "170":
+    id: "170"
+    taskid: 582ff579-521d-4843-88cf-bf8ad1eb1a02
+    type: regular
+    task:
+      id: 582ff579-521d-4843-88cf-bf8ad1eb1a02
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "174"
+    scriptarguments:
+      key:
+        simple: FirstInputQuery
+      value:
+        complex:
+          root: inputs.FirstFieldName
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${FirstStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${FirstValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: 48e94a3b-9f90-4ac2-8d93-badb5cf35890
+    type: condition
+    task:
+      id: 48e94a3b-9f90-4ac2-8d93-badb5cf35890
+      version: -1
+      name: First match exact or partial?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exact:
+      - "172"
+      partial:
+      - "173"
+    separatecontext: false
+    conditions:
+    - label: exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    - label: partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 5981e6d7-dc1e-4580-8116-12fadc6b4cea
+    type: regular
+    task:
+      id: 5981e6d7-dc1e-4580-8116-12fadc6b4cea
+      version: -1
+      name: Set exact values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "170"
+    scriptarguments:
+      key:
+        simple: FirstValues
+      value:
+        complex:
+          root: inputs.FirstFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ''''
+              suffix:
+                value:
+                  simple: ''''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 2da07f4d-260b-40ad-8ffd-d6bfef4f81c2
+    type: regular
+    task:
+      id: 2da07f4d-260b-40ad-8ffd-d6bfef4f81c2
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "170"
+    scriptarguments:
+      key:
+        simple: FirstValues
+      value:
+        complex:
+          root: inputs.FirstFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "174":
+    id: "174"
+    taskid: 8fc29142-9c8a-43a8-8b79-a56d33bba36e
+    type: condition
+    task:
+      id: 8fc29142-9c8a-43a8-8b79-a56d33bba36e
+      version: -1
+      name: Are there second input values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "167"
+      "yes":
+      - "187"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SecondFieldValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 29957d3a-550c-4fa2-8304-afe0ea5db91f
+    type: regular
+    task:
+      id: 29957d3a-550c-4fa2-8304-afe0ea5db91f
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "171"
+    scriptarguments:
+      key:
+        simple: FirstStateMatch
+      value:
+        complex:
+          root: ${State1}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match1}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: f303c8c9-5be6-4767-8cae-198581e6c075
+    type: regular
+    task:
+      id: f303c8c9-5be6-4767-8cae-198581e6c075
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "179"
+    scriptarguments:
+      key:
+        simple: State1
+      value:
+        complex:
+          root: inputs.FirstFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: dba2047b-f522-4f56-8dc0-2ff4a1772709
+    type: regular
+    task:
+      id: dba2047b-f522-4f56-8dc0-2ff4a1772709
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "179"
+    scriptarguments:
+      key:
+        simple: Match1
+      value:
+        simple: ' ILIKE '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 31064a22-c25c-48e5-8a9f-dbc2c62e39eb
+    type: regular
+    task:
+      id: 31064a22-c25c-48e5-8a9f-dbc2c62e39eb
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "182"
+    scriptarguments:
+      key:
+        simple: FirstStateMatch
+      value:
+        complex:
+          root: ${State1}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match1}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 0f70d81d-a497-430f-8df4-8ec6b7e21786
+    type: regular
+    task:
+      id: 0f70d81d-a497-430f-8df4-8ec6b7e21786
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "184"
+    scriptarguments:
+      key:
+        simple: FirstValues
+      value:
+        complex:
+          root: inputs.FirstFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "183":
+    id: "183"
+    taskid: 8890137c-7e71-44ca-8c9c-cde8e972b338
+    type: regular
+    task:
+      id: 8890137c-7e71-44ca-8c9c-cde8e972b338
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "186"
+    scriptarguments:
+      key:
+        simple: FirstInputQuery
+      value:
+        complex:
+          root: UTF
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${FirstStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${FirstValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: 6bed7c35-8992-41dc-8063-d068324f06a6
+    type: regular
+    task:
+      id: 6bed7c35-8992-41dc-8063-d068324f06a6
+      version: -1
+      name: Set UTF8(payload)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "183"
+    scriptarguments:
+      key:
+        simple: UTF
+      value:
+        simple: UTF8(payload)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: de41daeb-7008-4fc3-8b68-c5bc0cbc6723
+    type: playbook
+    task:
+      id: de41daeb-7008-4fc3-8b68-c5bc0cbc6723
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${FirstInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: 4be83ca9-639e-457f-8353-f4e5700a727e
+    type: condition
+    task:
+      id: 4be83ca9-639e-457f-8353-f4e5700a727e
+      version: -1
+      name: Are there second input values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "185"
+      "yes":
+      - "187"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SecondFieldValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: 80fe5497-ad03-4b03-868a-5bdc4cd61e3b
+    type: title
+    task:
+      id: 80fe5497-ad03-4b03-868a-5bdc4cd61e3b
+      version: -1
+      name: Second Input Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "188"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 98998a76-f3f1-4a9a-8741-b790c0da170c
+    type: condition
+    task:
+      id: 98998a76-f3f1-4a9a-8741-b790c0da170c
+      version: -1
+      name: Were the second inputs provided properly?
+      description: Is there an IP on which to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "234"
+      "yes":
+      - "189"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SecondFieldValue
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "189":
+    id: "189"
+    taskid: 9e219da4-496d-494e-8d36-425e1bf34c30
+    type: condition
+    task:
+      id: 9e219da4-496d-494e-8d36-425e1bf34c30
+      version: -1
+      name: Are there fields for the second input?
+      description: Is there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "191"
+      "yes":
+      - "190"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SecondFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "190":
+    id: "190"
+    taskid: 6630d087-aee7-489c-8344-a50050117163
+    type: title
+    task:
+      id: 6630d087-aee7-489c-8344-a50050117163
+      version: -1
+      name: QRadar query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "193"
+      - "194"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "191":
+    id: "191"
+    taskid: 83243c04-b11e-4ea8-8937-f360f4334bfa
+    type: title
+    task:
+      id: 83243c04-b11e-4ea8-8937-f360f4334bfa
+      version: -1
+      name: QRadar query without custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+      - "201"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "192":
+    id: "192"
+    taskid: d86550ba-151d-448e-8960-297f358d48db
+    type: playbook
+    task:
+      id: d86550ba-151d-448e-8960-297f358d48db
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${SecondInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        headers: {}
+        interval:
+          simple: "1"
+        query_expression:
+          complex:
+            root: ${FirstInputQuery}
+            transformers:
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.AdditionalSelectFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  iscontext: true
+        range: {}
+        timeout:
+          simple: "600"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 2435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "193":
+    id: "193"
+    taskid: 6760839c-ebef-4f5d-8d0e-cfe80f9e97b5
+    type: regular
+    task:
+      id: 6760839c-ebef-4f5d-8d0e-cfe80f9e97b5
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: State2
+      value:
+        complex:
+          root: inputs.SecondFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "194":
+    id: "194"
+    taskid: 3372b283-1602-445c-8886-9f1fa7fceeae
+    type: regular
+    task:
+      id: 3372b283-1602-445c-8886-9f1fa7fceeae
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: Match2
+      value:
+        complex:
+          root: inputs.SecondFieldMatch
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' ILIKE '
+              equals:
+                value:
+                  simple: exact
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' = '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2870,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "195":
+    id: "195"
+    taskid: 3db2099b-fd9c-4366-8700-f0b5437ed5e4
+    type: regular
+    task:
+      id: 3db2099b-fd9c-4366-8700-f0b5437ed5e4
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "199"
+    scriptarguments:
+      key:
+        simple: SecondInputQuery
+      value:
+        complex:
+          root: inputs.SecondFieldName
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${SecondStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${SecondValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' AND '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${FirstInputQuery}
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "196":
+    id: "196"
+    taskid: 8c06eb6f-4d77-4746-8b5d-7341e6c84c16
+    type: condition
+    task:
+      id: 8c06eb6f-4d77-4746-8b5d-7341e6c84c16
+      version: -1
+      name: First match exact or partial?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exact:
+      - "197"
+      partial:
+      - "198"
+    separatecontext: false
+    conditions:
+    - label: exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    - label: partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: 0ca81e6f-58ba-4098-8ebe-940e274401ac
+    type: regular
+    task:
+      id: 0ca81e6f-58ba-4098-8ebe-940e274401ac
+      version: -1
+      name: Set exact values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "195"
+    scriptarguments:
+      key:
+        simple: SecondValues
+      value:
+        complex:
+          root: inputs.SecondFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ''''
+              suffix:
+                value:
+                  simple: ''''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "198":
+    id: "198"
+    taskid: 2bc6b1c9-eda1-4db0-80df-c4655eda02de
+    type: regular
+    task:
+      id: 2bc6b1c9-eda1-4db0-80df-c4655eda02de
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "195"
+    scriptarguments:
+      key:
+        simple: SecondValues
+      value:
+        complex:
+          root: inputs.SecondFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: 0107925d-4419-4f76-8019-cc43ab107449
+    type: condition
+    task:
+      id: 0107925d-4419-4f76-8019-cc43ab107449
+      version: -1
+      name: Are there third input values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "192"
+      "yes":
+      - "209"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThirdFieldValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 2115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: 32f27649-4def-4d8a-8a93-480ef5a4eee1
+    type: regular
+    task:
+      id: 32f27649-4def-4d8a-8a93-480ef5a4eee1
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "196"
+    scriptarguments:
+      key:
+        simple: SecondStateMatch
+      value:
+        complex:
+          root: ${State2}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match2}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "201":
+    id: "201"
+    taskid: 3cb83b87-5f64-48c7-87c5-6894a0fc8003
+    type: regular
+    task:
+      id: 3cb83b87-5f64-48c7-87c5-6894a0fc8003
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "203"
+    scriptarguments:
+      key:
+        simple: State2
+      value:
+        complex:
+          root: inputs.SecondFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 3661874a-2545-48d7-8fec-b45ff86324cb
+    type: regular
+    task:
+      id: 3661874a-2545-48d7-8fec-b45ff86324cb
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "203"
+    scriptarguments:
+      key:
+        simple: Match2
+      value:
+        simple: ' ILIKE '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "203":
+    id: "203"
+    taskid: 5b53c244-0872-455a-8936-df798c72d48f
+    type: regular
+    task:
+      id: 5b53c244-0872-455a-8936-df798c72d48f
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "204"
+    scriptarguments:
+      key:
+        simple: SecondStateMatch
+      value:
+        complex:
+          root: ${State2}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match2}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "204":
+    id: "204"
+    taskid: 47a93aa7-fefb-4363-8f8f-3174736ea43d
+    type: regular
+    task:
+      id: 47a93aa7-fefb-4363-8f8f-3174736ea43d
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "206"
+    scriptarguments:
+      key:
+        simple: SecondValues
+      value:
+        complex:
+          root: inputs.SecondFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "205":
+    id: "205"
+    taskid: 00e28e3c-5acb-4713-8539-e5d249382a98
+    type: regular
+    task:
+      id: 00e28e3c-5acb-4713-8539-e5d249382a98
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "208"
+    scriptarguments:
+      key:
+        simple: SecondInputQuery
+      value:
+        complex:
+          root: UTF
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${SecondStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${SecondValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' AND '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${FirstInputQuery}
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "206":
+    id: "206"
+    taskid: 50f91788-a821-4f81-89b4-d8b0ccbbd0d2
+    type: regular
+    task:
+      id: 50f91788-a821-4f81-89b4-d8b0ccbbd0d2
+      version: -1
+      name: Set UTF8(payload)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "205"
+    scriptarguments:
+      key:
+        simple: UTF
+      value:
+        simple: UTF8(payload)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "207":
+    id: "207"
+    taskid: 40169a3b-7026-4385-82af-59f3aa961592
+    type: playbook
+    task:
+      id: 40169a3b-7026-4385-82af-59f3aa961592
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${SecondInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        headers: {}
+        interval:
+          simple: "1"
+        query_expression:
+          complex:
+            root: ${FirstInputQuery}
+            transformers:
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.AdditionalSelectFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+        range: {}
+        timeout:
+          simple: "600"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "208":
+    id: "208"
+    taskid: 097b7b10-ca91-45ed-802a-9eb75b0569b2
+    type: condition
+    task:
+      id: 097b7b10-ca91-45ed-802a-9eb75b0569b2
+      version: -1
+      name: Are there third input values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "207"
+      "yes":
+      - "209"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThirdFieldValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "209":
+    id: "209"
+    taskid: a4d0344a-7f2f-4452-8803-d154e9d0944b
+    type: title
+    task:
+      id: a4d0344a-7f2f-4452-8803-d154e9d0944b
+      version: -1
+      name: Third Input Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "210"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2940,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "210":
+    id: "210"
+    taskid: 442b927e-4a1e-4cef-89ce-8e61131f2854
+    type: condition
+    task:
+      id: 442b927e-4a1e-4cef-89ce-8e61131f2854
+      version: -1
+      name: Were the third inputs provided properly?
+      description: Is there an IP on which to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "235"
+      "yes":
+      - "211"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThirdFieldValue
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 2940,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "211":
+    id: "211"
+    taskid: 6e614b52-4a36-4c10-88f1-370f3a106d39
+    type: condition
+    task:
+      id: 6e614b52-4a36-4c10-88f1-370f3a106d39
+      version: -1
+      name: Are there fields for the third input?
+      description: Is there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "213"
+      "yes":
+      - "212"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ThirdFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2940,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "212":
+    id: "212"
+    taskid: fdb23616-0e3a-48f9-81da-163b8aeab91d
+    type: title
+    task:
+      id: fdb23616-0e3a-48f9-81da-163b8aeab91d
+      version: -1
+      name: QRadar query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "215"
+      - "216"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "213":
+    id: "213"
+    taskid: 5b020fde-71df-42c0-8751-2e40c319d04a
+    type: title
+    task:
+      id: 5b020fde-71df-42c0-8751-2e40c319d04a
+      version: -1
+      name: QRadar query without custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "224"
+      - "223"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "214":
+    id: "214"
+    taskid: ab9be065-b686-4373-85c5-ca90ae5cdff1
+    type: playbook
+    task:
+      id: ab9be065-b686-4373-85c5-ca90ae5cdff1
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${ThirdInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        interval:
+          simple: "1"
+        query_expression:
+          complex:
+            root: ${SecondInputQuery}
+            transformers:
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.AdditionalSelectFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  iscontext: true
+        timeout:
+          simple: "600"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3150,
+          "y": 4105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "215":
+    id: "215"
+    taskid: 70c0b1f6-6b6f-4867-89da-be52b16b32a0
+    type: regular
+    task:
+      id: 70c0b1f6-6b6f-4867-89da-be52b16b32a0
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "222"
+    scriptarguments:
+      key:
+        simple: State3
+      value:
+        complex:
+          root: inputs.ThirdFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 3245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "216":
+    id: "216"
+    taskid: 87ed104e-7f73-4312-87e0-cb4d7f0098cb
+    type: regular
+    task:
+      id: 87ed104e-7f73-4312-87e0-cb4d7f0098cb
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "222"
+    scriptarguments:
+      key:
+        simple: Match3
+      value:
+        complex:
+          root: inputs.ThirdFieldMatch
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' ILIKE '
+              equals:
+                value:
+                  simple: exact
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' = '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3710,
+          "y": 3245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "217":
+    id: "217"
+    taskid: 05fa5668-b655-457e-81e7-2983e47501d8
+    type: regular
+    task:
+      id: 05fa5668-b655-457e-81e7-2983e47501d8
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "214"
+    scriptarguments:
+      key:
+        simple: ThirdInputQuery
+      value:
+        complex:
+          root: inputs.ThirdFieldName
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${ThirdStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${ThirdValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' AND '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${SecondInputQuery}
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3150,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 8b34eccb-bc36-4f5a-8e5c-246a6f3f4238
+    type: condition
+    task:
+      id: 8b34eccb-bc36-4f5a-8e5c-246a6f3f4238
+      version: -1
+      name: First match exact or partial?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exact:
+      - "219"
+      partial:
+      - "220"
+    separatecontext: false
+    conditions:
+    - label: exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    - label: partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "219":
+    id: "219"
+    taskid: 7e6b6053-fd8f-4f18-8ccb-fbb1e01d8627
+    type: regular
+    task:
+      id: 7e6b6053-fd8f-4f18-8ccb-fbb1e01d8627
+      version: -1
+      name: Set exact values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "217"
+    scriptarguments:
+      key:
+        simple: ThirdValues
+      value:
+        complex:
+          root: inputs.ThirdFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ''''
+              suffix:
+                value:
+                  simple: ''''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3150,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 72c2eadc-e726-4b99-8ba3-487a29b0cbb4
+    type: regular
+    task:
+      id: 72c2eadc-e726-4b99-8ba3-487a29b0cbb4
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "217"
+    scriptarguments:
+      key:
+        simple: ThirdValues
+      value:
+        complex:
+          root: inputs.ThirdFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3560,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "222":
+    id: "222"
+    taskid: 83570e53-8253-4697-8ffc-ff28908a5bbc
+    type: regular
+    task:
+      id: 83570e53-8253-4697-8ffc-ff28908a5bbc
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "218"
+    scriptarguments:
+      key:
+        simple: ThirdStateMatch
+      value:
+        complex:
+          root: ${State3}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match3}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "223":
+    id: "223"
+    taskid: fcd3c0ed-8a8d-4338-897a-94620bb8bf95
+    type: regular
+    task:
+      id: fcd3c0ed-8a8d-4338-897a-94620bb8bf95
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "225"
+    scriptarguments:
+      key:
+        simple: State3
+      value:
+        complex:
+          root: inputs.ThirdFieldState
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ' NOT '
+              equals:
+                value:
+                  simple: include
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 3245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "224":
+    id: "224"
+    taskid: c6030062-b668-4ccd-84d8-cb20eba30586
+    type: regular
+    task:
+      id: c6030062-b668-4ccd-84d8-cb20eba30586
+      version: -1
+      name: Set match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "225"
+    scriptarguments:
+      key:
+        simple: Match3
+      value:
+        simple: ' ILIKE '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2870,
+          "y": 3245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "225":
+    id: "225"
+    taskid: 592a469e-3dbd-437c-880a-47e83aaa3c2a
+    type: regular
+    task:
+      id: 592a469e-3dbd-437c-880a-47e83aaa3c2a
+      version: -1
+      name: Set state and match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "226"
+    scriptarguments:
+      key:
+        simple: ThirdStateMatch
+      value:
+        complex:
+          root: ${State3}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${Match3}
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "226":
+    id: "226"
+    taskid: 7ad6a5e1-5f0a-462b-8b91-ba425dbf7979
+    type: regular
+    task:
+      id: 7ad6a5e1-5f0a-462b-8b91-ba425dbf7979
+      version: -1
+      name: Set partial values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "228"
+    scriptarguments:
+      key:
+        simple: ThirdValues
+      value:
+        complex:
+          root: inputs.ThirdFieldValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '''%'
+              suffix:
+                value:
+                  simple: '%'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "227":
+    id: "227"
+    taskid: da637e6d-c90a-4a4f-8f6e-d12df03b147f
+    type: regular
+    task:
+      id: da637e6d-c90a-4a4f-8f6e-d12df03b147f
+      version: -1
+      name: Set values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "229"
+    scriptarguments:
+      key:
+        simple: ThirdInputQuery
+      value:
+        complex:
+          root: UTF
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ${ThirdStateMatch}
+                iscontext: true
+              list2:
+                value:
+                  simple: ${ThirdValues}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR '
+              toReplace:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' AND '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${SecondInputQuery}
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "228":
+    id: "228"
+    taskid: 16a0e1c5-ad99-4bdf-84bd-1078de8d8faf
+    type: regular
+    task:
+      id: 16a0e1c5-ad99-4bdf-84bd-1078de8d8faf
+      version: -1
+      name: Set UTF8(payload)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "227"
+    scriptarguments:
+      key:
+        simple: UTF
+      value:
+        simple: UTF8(payload)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "229":
+    id: "229"
+    taskid: 4320d80d-7852-447d-8489-41e0e2eafca6
+    type: playbook
+    task:
+      id: 4320d80d-7852-447d-8489-41e0e2eafca6
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "164"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        complex:
+          root: ${ThirdInputQuery}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.AdditionalSelectFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        interval:
+          simple: "1"
+        query_expression:
+          complex:
+            root: ${SecondInputQuery}
+            transformers:
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ' from events where '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.TimeFrame
+                  iscontext: true
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: ' '
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationUserFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.InvestigationIPFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: inputs.AdditionalSelectFields
+                  iscontext: true
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: ','
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+                suffix: {}
+            - operator: concat
+              args:
+                prefix:
+                  value:
+                    simple: 'select '
+                suffix:
+                  iscontext: true
+        timeout:
+          simple: "600"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 4105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "231":
+    id: "231"
+    taskid: 1a67d673-dc55-44e0-83f5-163bbe933fb4
+    type: condition
+    task:
+      id: 1a67d673-dc55-44e0-83f5-163bbe933fb4
+      version: -1
+      name: Was a first input provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "164"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FirstFieldValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": -1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "232":
+    id: "232"
+    taskid: 2577bda1-1bb1-4900-8399-207226fb85df
+    type: regular
+    task:
+      id: 2577bda1-1bb1-4900-8399-207226fb85df
+      version: -1
+      name: Review and validate first inputs and rerun playbook
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "164"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "234":
+    id: "234"
+    taskid: 3323a248-c8e4-40e6-88e6-ca3a9ecbcdce
+    type: regular
+    task:
+      id: 3323a248-c8e4-40e6-88e6-ca3a9ecbcdce
+      version: -1
+      name: Review and validate second inputs and rerun playbook
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "164"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "235":
+    id: "235"
+    taskid: 4758a6e1-b88a-4e88-8faf-c777ac3c46a3
+    type: regular
+    task:
+      id: 4758a6e1-b88a-4e88-8faf-c777ac3c46a3
+      version: -1
+      name: Review and validate third inputs and rerun playbook
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "164"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8645,
+        "width": 3620,
+        "x": 470,
+        "y": -2260
+      }
+    }
+  }
+inputs:
+- key: FirstFieldValue
+  value: {}
+  required: false
+  description: The values of the first field to search. This can be a single value
+    or a list of comma delimited values. For example admin1,admin2
+  playbookInputQuery:
+- key: FirstFieldName
+  value: {}
+  required: false
+  description: The field names of the first field to search. This can be a single
+    value or a list of comma delimited values. For example username,user
+  playbookInputQuery:
+- key: FirstFieldState
+  value:
+    simple: include
+  required: false
+  description: The state of the first field to search, meaning are the values in the
+    field should be included or excluded. Valid options are include or exclude.
+  playbookInputQuery:
+- key: FirstFieldMatch
+  value:
+    simple: exact
+  required: false
+  description: Are the values of the first field suppose to be exact match or partial
+    match. Valid options are exact or partial. When choosing exact the AQL query will
+    use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
+    to the values.
+  playbookInputQuery:
+
+- key: SecondFieldValue
+  value: {}
+  required: false
+  description: The values of the second field to search
+  playbookInputQuery:
+- key: SecondFieldName
+  value: {}
+  required: false
+  description: The field names of the second field to search. This can be a single
+    value or a list of comma delimited values. For example admin1,admin2
+  playbookInputQuery:
+- key: SecondFieldState
+  value:
+    simple: exclude
+  required: false
+  description: The state of the second field to search, meaning are the values in
+    the field should be included or excluded. Valid options are include or exclude.
+  playbookInputQuery:
+- key: SecondFieldMatch
+  value:
+    simple: partial
+  required: false
+  description: 'Are the values of the second field suppose to be exact match or partial
+    match. Valid options are exact or partial. '
+  playbookInputQuery:
+- key: ThirdFieldValue
+  value: {}
+  required: false
+  description: The values of the third field to search. This can be a single value
+    or a list of comma delimited values. For example admin1,admin2
+  playbookInputQuery:
+- key: ThirdFieldName
+  value: {}
+  required: false
+  description: The field names of the third field to search. This can be a single
+    value or a list of comma delimited values. For example username,user
+  playbookInputQuery:
+- key: ThirdFieldState
+  value:
+    simple: include
+  required: false
+  description: The state of the third field to search, meaning are the values in the
+    field should be included or excluded. Valid options are include or exclude.
+  playbookInputQuery:
+- key: ThirdFieldMatch
+  value:
+    simple: exact
+  required: false
+  description: Are the values of the third field suppose to be exact match or partial
+    match. Valid options are exact or partial. When choosing exact the AQL query will
+    use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
+    to the values.
+  playbookInputQuery:
+- key: AdditionalSelectFields
+  value: {}
+  required: false
+  description: |
+    Add any additional fields you would like to be in the AQL select section.
+  playbookInputQuery:
+- key: TimeFrame
+  value:
+    simple: LAST 7 DAYS
+  required: false
+  description: |-
+    Time frame as used in AQL
+    Examples can be
+    LAST 7 DAYS
+    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+    For more examples review IBM's AQL documentation.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: InvestigationIPFields
+  value:
+    simple: sourceip,destinationip
+  required: true
+  description: The values of these QRadar fields will be used for the playbook IP
+    addresses outputs.
+  playbookInputQuery:
+- key: InvestigationUserFields
+  value:
+    simple: username
+  required: true
+  description: The values of these QRadar fields will be used for the playbook user
+    name outputs.
+  playbookInputQuery:
+outputs:
+- contextPath: QRadar.DetectedUsers
+  description: Users detected based on the username field in your search.
+  type: string
+- contextPath: QRadar.DetectedInternalIPs
+  description: Internal IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: QRadar.DetectedExternalIPs
+  description: External IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: QRadar.DetectedInternalHosts
+  description: Internal host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  type: string
+- contextPath: QRadar.DetectedExternalHosts
+  description: External host names detected based on hosts in your assets table. Note
+    that the data accuracy depends on how the Asset mapping is configured in QRadar.
+  type: string
+- contextPath: QRadar.Search.Result
+  description: The full result of the search.
+  type: string
+tests:
+- QRadar_v3-test
+- QRadar Indicator Hunting Test
+- test playbook - QRadarCorrelations For V2
+- test playbook - QRadarCorrelations
+- test_Qradar_v2
+fromversion: 6.0.0
