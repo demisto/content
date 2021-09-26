@@ -1802,7 +1802,6 @@ List the latest versions of all Rules.
 | GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. |
 | GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. |
 | GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. |
-| Metadata Information (GoogleChronicleBackstory.Rules.Metadata) |
 | GoogleChronicleBackstory.Rules.Metadata.severity | String | Severity for the rule. |
 | GoogleChronicleBackstory.Rules.Metadata.author | String | Name of author for the rule. |
 | GoogleChronicleBackstory.Rules.Metadata.description | String | Description of the rule. |
