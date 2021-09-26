@@ -5,7 +5,8 @@ delete-mismatched-branches:
   extends:
     - .default-job-settings
   rules:
-    - if: '$DELETE_MISMATCHED_BRANCHES'
+    - if: '$DELETE_MISMATCHED_BRANCHES == "true"'
+      when: always
   script:
     - python3 ./Utils/delete_mismatched_branches.py
   retry:
