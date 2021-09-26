@@ -62,4 +62,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![QRadar Advanced Searching](Insert the link to your image here)
+![QRadar Advanced Searching](./../doc_files/QRadar_Advanced_Searching.png)
