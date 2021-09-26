@@ -2231,6 +2231,7 @@ tasks:
         simple: 2020/05/05 13:20:14
       sessionID:
         simple: "84190"
+    continueonerror: true
     separatecontext: false
     view: |-
       {
