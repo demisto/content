@@ -1031,7 +1031,7 @@ def create_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 
     connection_id, _ = client.do_request('POST', '/plugin/products/threat-response/api/v1/conns/connect', data=body,
                                          resp_type='content')
-    outputs = {'Tanium.Connection(val.id === obj.id)': {'id': connection_id.decode("utf-8")}}
+    outputs = {'Tanium.Connection(val.id === obj.id)': {'id': connection_id.decode("utf-8").strip('"')}}
     return f'Initiated connection request to {connection_id.decode("utf-8")}.', outputs, {}
 
 
@@ -1623,7 +1623,7 @@ def event_evidence_get_properties(client, data_args) -> Tuple[str, dict, Union[l
     """
     evidence_properties = client.do_request('GET', 'plugin/products/threat-response/api/v1/event-evidence/properties')
 
-    outputs = {'Tanium.EvidenceProperties(val.type === obj.type)': evidence_properties}
+    outputs = {'Tanium.EvidenceProperties(val.value === obj.value)': evidence_properties}
     human_readable = tableToMarkdown('Evidence Properties', evidence_properties,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, evidence_properties
@@ -1679,6 +1679,7 @@ def create_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     summary = data_args.get('summary')
 
     params = {'match': 'all', 'f1': 'process_table_id', 'o1': 'eq', 'v1': ptid}
+    # call get-events-by-connection
     process_data = \
         client.do_request('GET',
                           f'/plugin/products/threat-response/api/v1/conns/{cid}/views/process/events',

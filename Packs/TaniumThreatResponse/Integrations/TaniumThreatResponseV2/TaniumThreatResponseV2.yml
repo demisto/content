@@ -530,7 +530,7 @@ script:
       description: Commputers platform - "Windows", "Linux", etc.
       isArray: false
       name: platform
-      required: false
+      required: true
       secret: false
     - default: false
       description: Hostname of the computer to connect. Use `tanium-tr-get-system-status`
@@ -1523,7 +1523,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets evidence by evidence ID.
+    description: Gets event evidence by evidence ID.
     execution: false
     name: tanium-tr-get-evidence-by-id
     outputs:
