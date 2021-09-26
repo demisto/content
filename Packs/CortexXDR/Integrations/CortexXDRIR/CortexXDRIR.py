@@ -3259,7 +3259,7 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
     ec = {'status': status, 'count': endpoints_count}
 
     return CommandResults(
-        readable_output=f'{status} endpoins count: {endpoints_count}',
+        readable_output=f'{status} endpoints count: {endpoints_count}',
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
         outputs_key_field='status',
         outputs=ec,

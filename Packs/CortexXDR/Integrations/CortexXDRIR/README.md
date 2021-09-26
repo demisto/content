@@ -2935,4 +2935,4 @@ Returns the number of the connected\disconnected endpoints.
 
 #### Human Readable Output
 
->connected endpoins count: 4
+>connected endpoints count: 4
