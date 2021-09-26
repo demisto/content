@@ -1,0 +1,707 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: MISP Feed
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Token
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Fetch indicators
+  name: feed
+  required: false
+  defaultvalue: 'true'
+  type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 8
+  hidden: true
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- display: Attribute Tags
+  additionalinfo: Attribute tags to get. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>.
+  name: attribute_tags
+  required: false
+  type: 0
+- display: Attribute Types
+  additionalinfo: Attribute types to get. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>.
+  name: attribute_types
+  required: false
+  type: 0
+- display: Query
+  additionalinfo: JSON query to filter MISP attributes. When the query parameter is used Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes.
+  name: query
+  required: false
+  type: 12
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- name: feedTags
+  display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: 'Indicators feed from MISP'
+display: MISP Feed
+name: MISP Feed
+script:
+  commands:
+  - arguments:
+    - name: limit
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: tags
+      description: Tags of the attributes to search for.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: attribute_type
+      description: Types of the attributes to search for.
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: query
+      description: JSON query to filter MISP attributes. When query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: misp-feed-get-indicators
+  isfetch: false
+  feed: true
+  runonce: false
+  script: >
+    import urllib3
+
+
+
+
+
+    # disable insecure warnings
+
+    urllib3.disable_warnings()
+
+
+
+    """
+
+    Constants
+
+    ---------
+
+    """
+
+
+    INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
+        ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
+            FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+            DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+        },
+        ThreatIntel.ObjectsNames.MALWARE: {
+            FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+            DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+        },
+        ThreatIntel.ObjectsNames.TOOL: {
+            FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.USES,
+            DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+        },
+        ThreatIntel.ObjectsNames.INTRUSION_SET: {
+            FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
+            FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.RELATED_TO,
+            DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.ATTRIBUTED_TO,
+        },
+        ThreatIntel.ObjectsNames.COURSE_OF_ACTION: {
+            FeedIndicatorType.File: EntityRelationship.Relationships.RELATED_TO,
+            FeedIndicatorType.IP: EntityRelationship.Relationships.RELATED_TO,
+            FeedIndicatorType.Domain: EntityRelationship.Relationships.RELATED_TO,
+            FeedIndicatorType.URL: EntityRelationship.Relationships.RELATED_TO,
+            FeedIndicatorType.Email: EntityRelationship.Relationships.RELATED_TO,
+            FeedIndicatorType.Registry: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.THREAT_ACTOR: EntityRelationship.Relationships.RELATED_TO,
+            DBotScoreType.CRYPTOCURRENCY: EntityRelationship.Relationships.RELATED_TO,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.MITIGATED_BY,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.RELATED_TO,
+        }
+    }
+
+
+    ATTRIBUTE_TO_INDICATOR_MAP = {
+        'sha256': FeedIndicatorType.File,
+        'md5': FeedIndicatorType.File,
+        'sha1': FeedIndicatorType.File,
+        'filename|md5': FeedIndicatorType.File,
+        'filename|sha1': FeedIndicatorType.File,
+        'filename|sha256': FeedIndicatorType.File,
+        'ip-src': FeedIndicatorType.IP,
+        'ip-dst': FeedIndicatorType.IP,
+        'domain': FeedIndicatorType.Domain,
+        'email': FeedIndicatorType.Email,
+        'email-src': FeedIndicatorType.Email,
+        'email-dst': FeedIndicatorType.Email,
+        'url': FeedIndicatorType.URL,
+        'regkey': FeedIndicatorType.Registry,
+        'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+        'btc': DBotScoreType.CRYPTOCURRENCY,
+        'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
+        'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
+        'malware-type': ThreatIntel.ObjectsNames.MALWARE,
+    }
+
+
+    GALAXY_MAP = {
+        'misp-galaxy:mitre-attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+        'misp-galaxy:mitre-malware': ThreatIntel.ObjectsNames.MALWARE,
+        'misp-galaxy:mitre-tool': ThreatIntel.ObjectsNames.TOOL,
+        'misp-galaxy:mitre-intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+        'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    }
+
+
+    """ Client Class """
+
+
+
+    class Client(BaseClient):
+        def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
+            """
+            Creates a request to MISP to get all attributes filtered by query in the body argument
+            Args:
+                body: Dictionary containing query to filter MISP attributes.
+            Returns: bytes representing the response from MISP API
+            """
+            headers = {
+                'Authorization': demisto.get(demisto.params(), 'credentials.password'),
+                "Accept": "application/json",
+                'Content-Type': 'application/json'
+            }
+            response = self._http_request('POST',
+                                          full_url=f'{self._base_url}attributes/restSearch',
+                                          resp_type='json',
+                                          headers=headers,
+                                          data=json.dumps(body))
+            return response
+
+
+    """ Helper Functions """
+
+
+
+    def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) -> List[Dict[str, Any]]:
+        """
+        Creates a list of valid indicators types to be created
+        Args:
+            attributes: List of attributes returned from MISP
+            url: Feed URL
+        Returns: List of indicators and their types
+        """
+        indicators_iterator = []
+        try:
+            attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
+            for attribute in attributes_list:
+                if indicator_type := get_attribute_indicator_type(attribute):
+                    indicators_iterator.append({
+                        'value': attribute,
+                        'type': indicator_type,
+                        'raw_type': attribute['type'],
+                        'FeedURL': url,
+                    })
+        except KeyError as err:
+            demisto.debug(str(err))
+            raise KeyError(f'Could not parse returned data as attributes list. \nError massage: {err}')
+        return indicators_iterator
+
+
+    def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
+        """
+        Adds tags from the attribute to the indicator if they're a valid indicator
+        Args:
+            indicator_obj: Indicator currently being built
+            tags: List of tags of the attribute retrieved from MISP
+        Returns: None
+        """
+        indicator_obj['fields']['Tags'] = []
+        for tag in tags:
+            tag_name = tag.get('name', None)
+            if tag_name and not get_galaxy_indicator_type(tag_name):
+                indicator_obj['fields']['Tags'].append(tag_name)
+
+
+    def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> None:
+        """
+        If the attribute is of type sha1,sha256 or MD5 - will add SHA1 or
+        SHA256 or MD5 field and their value to the indicator.
+        If the attribute type is 'filename|<sha1/sha256/md5>' will add the filename to Associated File Names field,
+        will update the indicator value and will add the hash field.
+        Args:
+            raw_type: Type of the attribute
+            indicator_obj: Indicator currently being built
+        Returns: None
+        """
+        hash_value = indicator_obj['value']
+        if 'filename|' in raw_type:
+            pipe_index = hash_value.index("|")
+            filename = hash_value[0:pipe_index]
+            hash_value = hash_value[pipe_index + 1:]
+
+            indicator_obj['fields']['Associated File Names'] = filename
+            indicator_obj['value'] = hash_value
+            raw_type = raw_type[raw_type.index("|") + 1:]
+
+        indicator_obj['fields'][raw_type.upper()] = hash_value
+
+
+    def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
+        """
+        Creates a dictionary in the format required by MISP to be used as a query.
+        Args:
+            tags: List of tags to filter by
+            attribute_type: List of types to filter by
+        Returns: Dictionary used as a search query for MISP
+        """
+        params: Dict[str, Any] = {
+            'returnFormat': 'json',
+            'type': {
+                'OR': attribute_type if attribute_type else [],
+            },
+            'tags': {
+                'OR': tags if tags else [],
+            },
+        }
+        return params
+
+
+    def clean_user_query(query: str) -> Dict[str, Any]:
+        """
+        Takes the query string created by the user, adds necessary argument and removes unnecessary arguments
+        Args:
+            query: User's query string
+        Returns: Dict which has only needed arguments to be sent to MISP
+        """
+        try:
+            params = json.loads(query)
+            params["returnFormat"] = "json"
+            params.pop("timestamp", None)
+        except Exception as err:
+            demisto.debug(str(err))
+            raise DemistoException(f'Could not parse user query. \nError massage: {err}')
+        return params
+
+
+    def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
+        """
+        Gets the correct Indicator type that matches the attribute type, attribute type is not supported
+        returns None
+        Args:
+            attribute: Dictionary containing information about the attribute
+        Returns: The matching indicator type or None if the attribute type is not supported
+        """
+        attribute_type = attribute['type']
+        return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
+
+
+    def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
+        """
+        Returns an Indicator type matching to the galaxy type
+        Args:
+            galaxy_tag_name: name of the galaxy
+        Returns: type of the indicator if there's one matching to the provided galaxy or None
+        """
+        if 'galaxy' in galaxy_tag_name:
+            galaxy_name = galaxy_tag_name[0:galaxy_tag_name.index("=")]
+            return GALAXY_MAP.get(galaxy_name, None)
+        return None
+
+
+    def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Creates an indicator object
+        Args:
+            value_: value of the indicator
+            type_: type of the indicator
+            raw_data: raw data of the indicator
+        Returns: Dictionray which is the indicator object
+        """
+        indicator_obj = {
+            'value': value_,
+            'type': type_,
+            'service': 'MISP',
+            'fields': {},
+            'rawJSON': raw_data,
+        }
+        return indicator_obj
+
+
+    def fetch_indicators(client: Client,
+                         tags: List[str],
+                         attribute_type: List[str],
+                         query: Optional[str],
+                         tlp_color: Optional[str],
+                         url: Optional[str],
+                         limit: int = -1) -> List[Dict]:
+        if query:
+            params_dict = clean_user_query(query)
+        else:
+            params_dict = build_params_dict(tags, attribute_type)
+
+        response = client.search_query(params_dict)
+        indicators_iterator = build_indicators_iterator(response, url)
+        indicators = []
+
+        if limit > 0:
+            indicators_iterator = indicators_iterator[:limit]
+
+        for indicator in indicators_iterator:
+            value_ = indicator['value']['value']
+            type_ = indicator['type']
+            raw_type = indicator.pop('raw_type')
+
+            indicator_obj = build_indicator(value_, type_, indicator)
+
+            update_indicator_fields(indicator_obj, tlp_color, raw_type)
+            galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
+            indicators.extend(galaxy_indicators)
+            create_and_add_relationships(indicator_obj, galaxy_indicators)
+
+            indicators.append(indicator_obj)
+
+        return indicators
+
+
+    def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Builds indicators from the galaxy tags in the attribute
+        Args:
+            indicator_obj: Indicator being built
+        Returns: List of indicators created from the galaxies
+        """
+        tags = indicator_obj['rawJSON']['value'].get('Tag', [])
+        galaxy_indicators = []
+        for tag in tags:
+            tag_name = tag.get('name', None)
+            type_ = get_galaxy_indicator_type(tag_name)
+            if tag_name and type_:
+                value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
+                galaxy_indicators.append(build_indicator(value_, type_, tag))
+
+        return galaxy_indicators
+
+
+    def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
+        """
+        Creates relationships between the indicators created from the attributes and
+        the indicators created from the galaxies
+        Args:
+            indicator_obj: Indicator being built
+            galaxy_indicators: List of indicators created from the galaxies
+        Returns: None
+        """
+        indicator_obj_type = indicator_obj['type']
+        relationships_indicators = []
+        for galaxy_indicator in galaxy_indicators:
+            galaxy_indicator_type = galaxy_indicator['type']
+
+            indicator_to_galaxy_relation = INDICATOR_TO_GALAXY_RELATION_DICT[galaxy_indicator_type][indicator_obj_type]
+            galaxy_to_indicator_relation = EntityRelationship.Relationships.\
+                RELATIONSHIPS_NAMES[indicator_to_galaxy_relation]
+
+            indicator_relation = EntityRelationship(
+                name=indicator_to_galaxy_relation,
+                entity_a=indicator_obj['value'],
+                entity_a_type=indicator_obj_type,
+                entity_b=galaxy_indicator['value'],
+                entity_b_type=galaxy_indicator_type,
+            ).to_indicator()
+
+            galaxy_relation = EntityRelationship(
+                name=galaxy_to_indicator_relation,
+                entity_a=galaxy_indicator['value'],
+                entity_a_type=galaxy_indicator_type,
+                entity_b=indicator_obj['value'],
+                entity_b_type=indicator_obj_type,
+            ).to_indicator()
+
+            relationships_indicators.append(indicator_relation)
+            galaxy_indicator['Relationships'] = [galaxy_relation]
+
+        if relationships_indicators:
+            indicator_obj['Relationships'] = relationships_indicators
+
+
+    def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
+        """
+        Updating required fields of the indicator with values from the attribute
+        Args:
+            indicator_obj: Indicator being built
+            tlp_color: Traffic Light Protocol color.
+            raw_type: Type of the attribute
+        Returns: None
+        """
+        raw_json_value = indicator_obj['rawJSON']['value']
+        first_seen = raw_json_value.get('first_seen', None)
+        last_seen = raw_json_value.get('last_seen', None)
+        timestamp = raw_json_value.get('timestamp', None)
+        category = raw_json_value.get('category', None)
+        comment = raw_json_value.get('comment', None)
+        tags = raw_json_value.get('Tag', None)
+
+        if first_seen:
+            indicator_obj['fields']['First Seen By Source'] = first_seen
+
+        if last_seen:
+            indicator_obj['fields']['Last Seen By Source'] = last_seen
+
+        if timestamp:
+            indicator_obj['fields']['Updated Date'] = timestamp
+
+        if category:
+            indicator_obj['fields']['Category'] = category
+
+        if comment:
+            indicator_obj['fields']['Description'] = comment
+
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        if tags:
+            handle_tags_fields(indicator_obj, tags)
+
+        if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
+            handle_file_type_fields(raw_type, indicator_obj)
+
+
+    """
+
+    Command Functions
+
+    """
+
+
+
+    def test_module(client: Client, params: Dict[str, str]) -> str:
+        """Builds the iterator to check that the feed is accessible.
+        Args:
+            client: Client object.
+        Returns:
+            ok if feed is accessible
+        """
+        tags = argToList(params.get('attribute_tags', ''))
+        attribute_types = argToList(params.get('attribute_types', ''))
+        query = params.get('query', None)
+
+        if query:
+            params_dict = clean_user_query(query)
+        else:
+            params_dict = build_params_dict(tags, attribute_types)
+
+        client.search_query(params_dict)
+        return 'ok'
+
+
+    def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
+        """Wrapper for retrieving indicators from the feed to the war-room.
+        Args:
+            client: Client object with request
+            args: demisto.args()
+            params: demisto.params()
+        Returns:
+            CommandResults object containing the indicators retrieved
+        """
+        limit = arg_to_number(args.get('limit', '10')) or 10
+        tlp_color = params.get('tlp_color')
+        tags = argToList(args.get('tags', ''))
+        query = args.get('query', None)
+        attribute_type = argToList(args.get('attribute_type', ''))
+
+        indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
+
+        hr_indicators = []
+        for indicator in indicators:
+            hr_indicators.append({
+                'Value': indicator.get('value'),
+                'Type': indicator.get('type'),
+                'rawJSON': indicator.get('rawJSON'),
+                'fields': indicator.get('fields'),
+            })
+
+        human_readable = tableToMarkdown("Indicators from MISP:", hr_indicators,
+                                         headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MISPFeed.Indicators',
+            outputs_key_field='value',
+            raw_response=indicators,
+        )
+
+
+    def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+        """
+        Wrapper for fetching indicators from the feed to the Indicators tab.
+        Args:
+            client: Client object with request
+            params: demisto.params()
+        Returns: List of indicators.
+        """
+        tlp_color = params.get('tlp_color')
+        tags = argToList(params.get('attribute_tags', ''))
+        attribute_types = argToList(params.get('attribute_types', ''))
+        query = params.get('query', None)
+
+        indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color, params.get('url'))
+        return indicators
+
+
+    def main():
+        """
+        main function, parses params and runs command functions
+        """
+
+        params = demisto.params()
+        base_url = params.get('url')
+        insecure = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        command = demisto.command()
+        args = demisto.args()
+
+        demisto.debug(f'Command being called is {command}')
+        try:
+            client = Client(base_url=base_url, verify=insecure, proxy=proxy,)
+
+            if command == 'test-module':
+                return_results(test_module(client, params))
+            elif command == 'misp-feed-get-indicators':
+                return_results(get_attributes_command(client, args, params))
+            elif command == 'fetch-indicators':
+                indicators = fetch_attributes_command(client, params)
+                for iter_ in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(iter_)
+            else:
+                raise NotImplementedError(f'Command {command} is not implemented.')
+
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
+        main()
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.5.0
+tests:
+- MISPfeed Test
+- Fetch Indicators Test
+image: data:image/png;base64,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
+detaileddescription: "## MISP Feed Help\n\nHow to configure the MISP Feed integration\n- Use your MISP instance URL as 'https://x.x.x.x/'.\n- You can find your API key in **Global Actions** >**My Profile** >**Auth key**>. Click the eye symbol to view your key.\n\nHow to configure your fetch indicators query\n\n- You can enter a list of types and tags. All indicators that are of those tags and types will be returned.\n- You can enter a JSON query that will be used as the search query.\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/misp-feed)"
