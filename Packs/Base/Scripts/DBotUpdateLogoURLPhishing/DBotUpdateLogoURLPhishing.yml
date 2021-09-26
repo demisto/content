@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Url of the logo image. Usually the url ends by the extension of the
+  description: URL of the logo image. Usually the URL ends with the extension of the
     image.
   isArray: false
   name: logoImageURL
@@ -12,7 +12,7 @@ args:
   name: logoName
   required: false
   secret: false
-comment: Add new logo to the phishing URL model
+comment: Add new logo to the phishing URL model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
