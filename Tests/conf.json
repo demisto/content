@@ -2202,7 +2202,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115,
+            "memory_threshold": 150,
             "pid_threshold": 80
         },
         {
@@ -2215,7 +2215,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 160,
             "pid_threshold": 80
         },
         {
@@ -2447,8 +2447,12 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
+            "integrations": [
+                "Image OCR",
+                "Rasterize"
+            ],
             "timeout": 350,
+            "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -4270,7 +4274,14 @@
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
