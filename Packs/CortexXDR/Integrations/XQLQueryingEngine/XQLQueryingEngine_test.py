@@ -32,7 +32,7 @@ def set_integration_context(integration_context):
     [('12345678,87654321', '"12345678","87654321"'),
      ('[12345678, 87654321]', '"12345678","87654321"'),
      ("12345678", '"12345678"'),
-     ("", ""),
+     ("", '""'),
      ]
 )
 def test_wrap_list_items_in_double_quotes(input_arg, expected):
@@ -138,9 +138,33 @@ def test_get_network_connection_query():
     }
     response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and
- action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and action_remote_port in(7777,8888)
- | fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
+ and action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and action_remote_port in(7777,8888)|
+ fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
+ action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
+ actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
+
+
+def test_get_network_connection_query_only_remote_ip():
+    """
+    Given:
+    - ENDPOINT_IDS and remote_ip_list (as a string).
+
+    When:
+    - Calling get_network_connection_query function.
+
+    Then:
+    - Ensure the returned query is correct.
+    """
+
+    args = {
+        'remote_ip': '3.3.3.3,4.4.4.4',
+    }
+    response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
+
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
+  and action_remote_ip in("3.3.3.3","4.4.4.4") |
+ fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
  actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
 
@@ -209,8 +233,33 @@ def test_get_dns_query():
     }
     response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and
- dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4")| fields
+    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
+ (dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4"))| fields
+ agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
+ action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
+ action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
+ os_actor_process_instance_id, os_actor_process_causality_id'''
+
+
+def test_get_dns_query_no_external_domain_arg():
+    """
+    Given:
+    - ENDPOINT_IDS and dns_query list (as a string).
+
+    When:
+    - Calling get_dns_query function.
+
+    Then:
+    - Ensure the returned query is correct.
+    """
+
+    args = {
+        'dns_query': 'testARG3,testARG4',
+    }
+    response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
+
+    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
+ (dst_action_external_hostname in ("") or dns_query_name in ("testARG3","testARG4"))| fields
  agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
  action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
@@ -235,8 +284,35 @@ def test_get_file_dropper_query():
     }
     response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
- FILE_WRITE, FILE_RENAME) and action_file_path in ("testARG1","testARG2") or action_file_sha256 in ("testARG3","testARG4") |
+    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
+ FILE_WRITE, FILE_RENAME)) and (action_file_path in ("testARG1","testARG2") or action_file_sha256 in ("testARG3","testARG4")) |
+ fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
+ actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
+ actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
+ os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor,
+ os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username,
+ causality_actor_remote_host,causality_actor_remote_ip'''
+
+
+def test_get_file_dropper_query_no_file_path_arg():
+    """
+    Given:
+    - ENDPOINT_IDS and file_sha256 list (as a string).
+
+    When:
+    - Calling get_file_dropper_query function.
+
+    Then:
+    - Ensure the returned query is correct.
+    """
+
+    args = {
+        'file_sha256': 'testARG3,testARG4',
+    }
+    response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
+
+    assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
+ FILE_WRITE, FILE_RENAME)) and (action_file_path in ("") or action_file_sha256 in ("testARG3","testARG4")) |
  fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
  actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
  actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
