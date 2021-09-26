@@ -518,7 +518,7 @@ script:
     - contextPath: CiscoASA.Interface.Type
       description: The type of interface.
       type: String
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   script: '-'

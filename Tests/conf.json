@@ -624,10 +624,6 @@
             "playbookID": "Akamai_WAF-Test"
         },
         {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
-        },
-        {
             "integrations": "abuse.ch SSL Blacklist Feed",
             "playbookID": "SSL Blacklist test",
             "fromversion": "5.5.0"
@@ -801,11 +797,6 @@
         {
             "integrations": "CIRCL",
             "playbookID": "CirclIntegrationTest"
-        },
-        {
-            "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test",
-            "timeout": 300
         },
         {
             "integrations": "MISP V3",
@@ -2211,7 +2202,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115,
+            "memory_threshold": 150,
             "pid_threshold": 80
         },
         {
@@ -2224,7 +2215,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 160,
             "pid_threshold": 80
         },
         {
@@ -2456,8 +2447,12 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
+            "integrations": [
+                "Image OCR",
+                "Rasterize"
+            ],
             "timeout": 350,
+            "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -2545,7 +2540,8 @@
         },
         {
             "integrations": "MITRE ATT&CK v2",
-            "playbookID": "FeedMitreAttackv2_test"
+            "playbookID": "FeedMitreAttackv2_test",
+            "memory_threshold": 150
         },
         {
             "integrations": "ANYRUN",
@@ -2695,6 +2691,11 @@
             "integrations": "vmray",
             "playbookID": "VMRay-Test-File",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "File Enrichment - VMRay - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -2926,6 +2927,10 @@
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
         {
+            "integrations": "SaasSecurity",
+            "playbookID": "SaasSecurity-Test"
+        },
+        {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
@@ -2963,7 +2968,8 @@
         {
             "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
@@ -3407,7 +3413,8 @@
         },
         {
             "integrations": "HPEArubaClearPass",
-            "playbookID": "HPEArubaClearPass_TestPlaybook"
+            "playbookID": "HPEArubaClearPass_TestPlaybook",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -3513,6 +3520,11 @@
             "integrations": "jamf v2",
             "playbookID": "Jamf_v2_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GuardiCore v2",
+            "playbookID": "GuardiCoreV2-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
@@ -4162,7 +4174,7 @@
             ]
         },
         {
-            "playbookID": "Cymulate Immediate Threats",
+            "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
                 "cymulate_v2",
@@ -4220,7 +4232,14 @@
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
@@ -4517,9 +4536,23 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {
+        "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -4613,9 +4646,15 @@
         "Microsoft Teams Management - Test": "Issue 33410",
         "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "Cisco Umbrella Test": "Issue 24338",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
-        "Domain Enrichment - Generic v2 - Test": "Issue 40862"
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862",
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "TestIPQualityScorePlaybook": "Issue 40915",
+        "VerifyOOBV2Predictions-Test": "Issue 37947",
+        "HybridAnalysis-Test": "Issue 26599",
+        "Infoblox Test": "Issue 25651",
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322"
     },
     "skipped_integrations": {
         
@@ -4732,11 +4771,10 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance",
-        "AutoFocus V2": "Nightly build troubleshooting"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988"
     },
     "nightly_integrations": [
-        "Lastline v2",
+        "Laline v2",
         "TruSTAR",
         "VulnDB"
     ],

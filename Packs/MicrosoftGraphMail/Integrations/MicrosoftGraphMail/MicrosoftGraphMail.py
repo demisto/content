@@ -63,11 +63,11 @@ class MsGraphClient:
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -1041,11 +1041,14 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
             'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
         }
 
         contact_properties = {
             'Sender': 'sender',
             'From': 'from',
+            'Recipients': 'toRecipients',
             'CCRecipients': 'ccRecipients',
             'BCCRecipients': 'bccRecipients',
             'ReplyTo': 'replyTo'
@@ -1157,7 +1160,7 @@ def list_mails_command(client: MsGraphClient, args):
         human_readable = tableToMarkdown(
             human_readable_header,
             mail_context,
-            headers=['Subject', 'From', 'SendTime', 'ID']
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
         )
     else:
         human_readable = '### No mails were found'
@@ -1243,7 +1246,7 @@ def get_message_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,
@@ -1573,10 +1576,11 @@ def main():
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
+    timeout = arg_to_number(params.get('timeout', '10') or '10')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit)
+                                          first_fetch_interval, emails_fetch_limit, timeout)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

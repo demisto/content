@@ -46,6 +46,7 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 timeout: Optional[int] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -91,6 +92,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint
+        self.timeout = timeout
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -124,6 +126,10 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
+
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
