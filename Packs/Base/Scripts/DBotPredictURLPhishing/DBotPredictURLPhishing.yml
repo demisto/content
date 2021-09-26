@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Comma-separated list of incident urls
+  description: Comma-separated list of incident URLs.
   isArray: false
   name: urls
   required: false
@@ -8,9 +8,9 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to force the model to run in case the url belongs to the whitelist.
-    If True the model will run in every cases. If False the model will run only if
-    the url does not belongs to the whitelist
+  description: Whether to force the model to run in case the URL belongs to the whitelist.
+    If True, the model will run in every case. If False, the model will run only if
+    the URL does not belongs to the whitelist.
   isArray: false
   name: forceModel
   predefined:
@@ -20,8 +20,8 @@ args:
   secret: false
 - default: false
   defaultValue: '1'
-  description: Number of url on which we provide additional information and verdict
-    explanations. The script will always provide information on malicious url at first.
+  description: Number of URL for which we provide additional information and verdict
+    explanations. The script will always provide information on a malicious URL at first.
   isArray: false
   name: numberDetailedReports
   required: false
@@ -29,7 +29,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to reset the model to the model existing in the docker
+  description: Whether to reset the model to the model existing in Docker.
   isArray: false
   name: resetModel
   predefined:
@@ -37,7 +37,7 @@ args:
   - 'True'
   required: false
   secret: false
-comment: Predict phishing URLs using pre-trained model
+comment: Predict phishing URLs using pre-trained model.
 commonfields:
   id: DBotPredictURLPhishing
   version: -1
