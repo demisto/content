@@ -1,15 +1,16 @@
-import shutil
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-''' IMPORTS '''
 import json
+import shutil
+import sys
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+''' IMPORTS '''
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -288,18 +289,17 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
-                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
+                                 profile_setting: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
 
     # flake8: noqa
-    rulename = rulename if rulename else f'demisto-{str(uuid.uuid4())[:8]}'
+    rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
         'action': api_action,
         'key': API_KEY,
-        'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
         + add_argument_target(target, 'target')
         + add_argument_open(description, 'description', False)
@@ -319,21 +319,14 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         + add_argument_list(tags, 'tag', True)
         + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
-    if dst:
-        if where not in ('before', 'after'):
-            raise DemistoException('Please provide a dst rule only when the where argument is before or after.')
-        else:
-            params['dst'] = dst
-
     if DEVICE_GROUP:
         if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when configuring '
-                            'a security rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when configuring'
+                            ' a security rule in Panorama instance.')
         else:
-            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
+            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
-        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
-
+        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
     return params
 
 
@@ -476,14 +469,42 @@ def panorama_command(args: dict):
     """
     params = {}
     for arg in args.keys():
-        params[arg] = args[arg]
+        if arg not in ['additional_params']:
+            params[arg] = args[arg]
+
+    if args.get('additional_params', None):
+        for arg in args.get('additional_params', '').split("::"):
+            if "=" in arg:
+                key = arg.split("=")[0]
+                value = arg.split("=")[1]
+                params[key] = value
+
     params['key'] = API_KEY
 
-    result = http_request(
-        URL,
-        'POST',
-        body=params
-    )
+    file_input = args.get('entryID')
+
+    if file_input:
+        file_info = demisto.getFilePath(file_input)
+
+        with open(file_info.get('path'), 'rb') as fp:
+
+            files = {
+                'file': fp
+            }
+
+            result = http_request(
+                URL,
+                'POST',
+                body=params,
+                files=files
+            )
+
+    else:
+        result = http_request(
+            URL,
+            'POST',
+            body=params
+        )
 
     return_results({
         'Type': entryTypes['note'],
@@ -497,7 +518,8 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
-    if device_group := args.get('device-group'):
+    if device_group:
+        = args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
     params = {
         'type': 'commit',
@@ -517,28 +539,142 @@ def panorama_commit_command(args: dict):
     """
     Commit and show message in the war room
     """
-    result = panorama_commit(args)
+    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = args.get('polling', use_polling)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    script_results = []
+    cmd = 'panorama-commit'
 
-    if 'result' in result['response']:
-        # commit has been given a jobid
-        commit_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending',
-            'Description': args.get('description')
-        }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit:', commit_output, ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {
-                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
-            }
-        })
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
+
+        # Create a new commit job
+        if not job_id:
+            result = panorama_commit(args)
+
+            if 'result' in result['response']:
+                # commit has been given a jobid
+                job_id = result['response']['result']['job']
+                commit_output = {
+                    'JobID': job_id,
+                    'Status': 'Pending',
+                    'Description': args.get('description')
+                }
+
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+
+                readable_output = f"Committing any pending changes (Job ID: {job_id})"
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=readable_output,
+                    scheduled_command=scheduled_command,
+                    ignore_auto_extract=True
+                ))
+
+            else:
+                script_results.append("There are no pending changes to commit.")
+
+        # Check existing job
+        else:
+            result = panorama_commit_status(args)
+
+            if result['response']['result']['job']['type'] != 'Commit':
+                raise Exception('JobID given is not of a commit.')
+
+            # Reschedule job if it's not complete
+            if result['response']['result']['job']['status'] != 'FIN':
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+
+            # Check the status of a completed job
+            else:
+                commit_status_output = {'JobID': result['response']['result']['job']['id']}
+                if result['response']['result']['job']['result'] == 'OK':
+                    commit_status_output['Status'] = 'Completed'
+                else:
+                    commit_status_output['Status'] = 'Failed'
+                commit_status_output['Details'] = result['response']['result']['job']['details']['line']
+
+                status_warnings = []
+                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
+                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
+                        'line',
+                        [])
+                ignored_error = 'configured with no certificate profile'
+                commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+                readable_output = tableToMarkdown(
+                    'Commit status:',
+                    commit_status_output,
+                    ['JobID', 'Status', 'Details', 'Warnings'],
+                    removeNull=True
+                )
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_status_output,
+                    readable_output=readable_output,
+                    ignore_auto_extract=True
+                ))
+
     else:
-        # no changes to commit
-        return_results(result['response']['msg'])
+        result = panorama_commit(args)
+
+        if 'result' in result['response']:
+            # commit has been given a jobid
+            commit_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending',
+                'Description': args.get('description')
+            }
+
+            readable_output = tableToMarkdown(
+                'Commit:',
+                commit_output,
+                ['JobID', 'Status'],
+                removeNull=True
+            )
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Commit',
+                outputs_key_field='JobID',
+                outputs=commit_output,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no changes to commit
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -608,7 +744,8 @@ def panorama_push_to_device_group(args: dict):
         command += '<validate-only>yes</validate-only>'
     if not argToBoolean(args.get('include-template', 'true')):
         command += '<include-template>no</include-template>'
-    if description := args.get('description'):
+    if description:
+        = args.get('description'):
         command += f'<description>{description}</description>'
 
     params = {
@@ -717,14 +854,14 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
-    status_errors = []  # type: ignore
+    status_errors = []   # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
-            device_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not device_errors else device_errors)
+            status_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not status_errors else status_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
 
@@ -746,22 +883,23 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
     if not isinstance(addresses_arr, list):
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
-
     for address in addresses_arr:
         pretty_address = {'Name': address['@name']}
         if DEVICE_GROUP:
             pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
+
         if 'ip-netmask' in address:
             pretty_address['IP_Netmask'] = address['ip-netmask']
+
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
+
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
-        if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
-            # handling edge cases in which the Tag value is None, e.g:
-            # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
+
+        if 'tag' in address and 'member' in address['tag']:
             pretty_address['Tags'] = address['tag']['member']
 
         pretty_addresses_arr.append(pretty_address)
@@ -826,9 +964,7 @@ def prettify_address(address: Dict) -> Dict:
     if 'fqdn' in address:
         pretty_address['FQDN'] = address['fqdn']
 
-    if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
-        # handling edge cases in which the Tag value is None, e.g:
-        # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
+    if 'tag' in address and 'member' in address['tag']:
         pretty_address['Tags'] = address['tag']['member']
 
     return pretty_address
@@ -997,9 +1133,7 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
             pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
-        if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
-            # handling edge cases in which the Tag value is None, e.g:
-            # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
+        if 'tag' in address_group and 'member' in address_group['tag']:
             pretty_address_group['Tags'] = address_group['tag']['member']
 
         if pretty_address_group['Type'] == 'static':
@@ -1063,11 +1197,10 @@ def prettify_address_group(address_group: Dict) -> Dict:
     }
     if DEVICE_GROUP:
         pretty_address_group['DeviceGroup'] = DEVICE_GROUP
+
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
-    if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
-        # handling edge cases in which the Tag value is None, e.g:
-        # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
+    if 'tag' in address_group and 'member' in address_group['tag']:
         pretty_address_group['Tags'] = address_group['tag']['member']
 
     if pretty_address_group['Type'] == 'static':
@@ -1256,8 +1389,8 @@ def panorama_edit_address_group_command(args: dict):
     """
     Edit an address group
     """
-    address_group_name = args.get('name', '')
-    type_ = args.get('type', '').lower()
+    address_group_name = args['name']
+    type_ = args['type']
     match = args.get('match')
     element_to_add = argToList(args['element_to_add']) if 'element_to_add' in args else None
     element_to_remove = argToList(
@@ -1267,7 +1400,7 @@ def panorama_edit_address_group_command(args: dict):
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
-        match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
+        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -1283,7 +1416,7 @@ def panorama_edit_address_group_command(args: dict):
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
         addresses_param = add_argument_list(addresses, 'member', False)
-        addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
+        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static"
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -1323,7 +1456,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if description:
         description_param = add_argument_open(description, 'description', False)
-        description_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/description"
+        description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description"
         params['xpath'] = description_path
         params['element'] = description_param
         result = http_request(
@@ -1335,7 +1468,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if tags:
         tag_param = add_argument_list(tags, 'tag', True)
-        tag_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/tag"
+        tag_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/tag"
         params['xpath'] = tag_path
         params['element'] = tag_param
         result = http_request(
@@ -1371,7 +1504,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
             pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
-        if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
+        if 'tag' in service and 'member' in service['tag']:
             pretty_service['Tags'] = service['tag']['member']
 
         protocol = ''
@@ -1444,7 +1577,7 @@ def prettify_service(service: Dict):
         pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
-    if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
+    if 'tag' in service and 'member' in service['tag']:
         pretty_service['Tags'] = service['tag']['member']
 
     protocol = ''
@@ -1623,9 +1756,7 @@ def prettify_service_groups_arr(service_groups_arr: list):
         }
         if DEVICE_GROUP:
             pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-        if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
-            # handling edge cases in which the Tag value is None, e.g:
-            # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
+        if 'tag' in service_group and 'member' in service_group['tag']:
             pretty_service_group['Tags'] = service_group['tag']['member']
 
         pretty_service_groups_arr.append(pretty_service_group)
@@ -1681,9 +1812,7 @@ def prettify_service_group(service_group: dict):
     }
     if DEVICE_GROUP:
         pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-    if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
-        # handling edge cases in which the Tag value is None, e.g:
-        # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
+    if 'tag' in service_group and 'member' in service_group['tag']:
         pretty_service_group['Tags'] = service_group['tag']['member']
 
     return pretty_service_group
@@ -1975,15 +2104,15 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     element = add_argument(description, 'description', False)
     if major_version <= 8:
         if type_ or categories:
-            raise DemistoException('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+            raise Exception('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
         element += add_argument_list(sites, 'list', True)
     else:  # major is 9.x
         if not type_:
-            raise DemistoException('The type argument is mandatory for PAN-OS 9.x versions.')
+            raise Exception('The type argument is mandatory for PAN-OS 9.x versions.')
         if (not sites and not categories) or (sites and categories):
-            raise DemistoException('Exactly one of the sites and categories arguments should be defined.')
+            raise Exception('Exactly one of the sites and categories arguments should be defined.')
         if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
-            raise DemistoException('URL List type is only for sites, Category Match is only for categories.')
+            raise Exception('URL List type is only for sites, Category Match is only for categories.')
 
         if type_ == 'URL List':
             element += add_argument_list(sites, 'list', True)
@@ -1994,7 +2123,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f'{XPATH_OBJECTS}profiles/custom-url-category/entry[@name=\'{custom_url_category_name}\']',
+        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
         'element': element,
         'key': API_KEY
     }
@@ -2372,31 +2501,26 @@ def prettify_get_url_filter(url_filter: dict):
     if 'override' in url_filter:
         override_category_list = url_filter['override']['member']
 
-    alert_category_list = argToList(alert_category_list)
     for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'alert'
         })
-    block_category_list = argToList(block_category_list)
     for category in block_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    allow_category_list = argToList(allow_category_list)
     for category in allow_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    continue_category_list = argToList(continue_category_list)
     for category in continue_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
-    override_category_list = argToList(override_category_list)
     for category in override_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
@@ -2417,7 +2541,7 @@ def panorama_get_url_filter(name: str):
     params = {
         'action': 'get',
         'type': 'config',
-        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\"{name}\"]',
+        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + name + "']",
         'key': API_KEY
     }
     result = http_request(
@@ -2453,39 +2577,24 @@ def panorama_get_url_filter_command(name: str):
 
 
 @logger
-def create_url_filter_params(
-        url_filter_name: str, action: str,
-        url_category_list: str,
-        override_allow_list: Optional[str] = None,
-        override_block_list: Optional[str] = None,
-        description: Optional[str] = None):
-    element = add_argument_list(url_category_list, action, True) + \
-        add_argument_list(override_allow_list, 'allow-list', True) + \
-        add_argument_list(override_block_list, 'block-list', True) + \
-        add_argument(description, 'description', False)
-    major_version = get_pan_os_major_version()
-    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
-        element += "<action>block</action>"
-    url_filter_params = {
-        'action': 'set',
-        'type': 'config',
-        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
-        'element': element,
-        'key': API_KEY
-    }
-    return url_filter_params
-
-
-@logger
 def panorama_create_url_filter(
         url_filter_name: str, action: str,
         url_category_list: str,
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    params = create_url_filter_params(url_filter_name, action, url_category_list, override_allow_list,
-                                      override_block_list, description)
+    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
+                                                                                     True) + add_argument_list(
+        override_block_list, 'block-list', True) + add_argument(description, 'description',
+                                                                False) + "<action>block</action>"
 
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+        'element': element,
+        'key': API_KEY
+    }
     result = http_request(
         URL,
         'POST',
@@ -2498,17 +2607,17 @@ def panorama_create_url_filter_command(args: dict):
     """
     Create a URL Filter
     """
-    url_filter_name = str(args.get('name', ''))
-    action = str(args.get('action', ''))
-    url_category_list = argToList(args.get('url_category'))
+    url_filter_name = args['name']
+    action = args['action']
+    url_category_list = argToList(args['url_category'])
     override_allow_list = argToList(args.get('override_allow_list'))
     override_block_list = argToList(args.get('override_block_list'))
-    description = args.get('description', '')
+    description = args.get('description')
 
     result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list,
                                         override_block_list, description)
 
-    url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
+    url_filter_output = {'Name': url_filter_name}
     if DEVICE_GROUP:
         url_filter_output['DeviceGroup'] = DEVICE_GROUP
     url_filter_output['Category'] = []
@@ -2537,31 +2646,12 @@ def panorama_create_url_filter_command(args: dict):
 
 
 @logger
-def verify_edit_url_filter_args(major_version: int, element_to_change: str) -> None:
-    if major_version >= 9:  # only url categories are allowed, e.g gambling, abortion
-        if element_to_change not in ('allow_categories', 'block_categories', 'description'):
-            raise DemistoException('Only the allow_categories, block_categories, description properties can be changed'
-                                   ' in PAN-OS 9.x or later versions.')
-    else:  # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
-        if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
-            raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
-                                   ' changed in PAN-OS 8.x or earlier versions.')
-
-
-@logger
-def set_edit_url_filter_xpaths(major_version: int) -> Tuple[str, str]:
-    if major_version >= 9:
-        return 'allow', 'block'
-    return 'allow-list', 'block-list'
-
-
-@logger
 def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, element_value: str,
                              add_remove_element: Optional[str] = None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
         LOG(f'Found uncommitted item:\n{url_filter_prev}')
-        raise DemistoException('Please commit the instance prior to editing the URL Filter.')
+        raise Exception('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
@@ -2572,46 +2662,36 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         'key': API_KEY,
     }
 
-    major_version = get_pan_os_major_version()
-    # it seems that in major 9.x pan-os changed the terminology from allow-list/block-list to allow/block
-    # with regards to url filter xpaths
-    verify_edit_url_filter_args(major_version, element_to_change)
-    allow_name, block_name = set_edit_url_filter_xpaths(major_version)
-
     if element_to_change == 'description':
-        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
+        params['xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
 
-    elif element_to_change in ('override_allow_list', 'allow_categories'):
-        previous_allow = argToList(url_filter_prev.get(allow_name, {}).get('member', []))
+    elif element_to_change == 'override_allow_list':
+        prev_override_allow_list = argToList(url_filter_prev['allow-list']['member'])
         if add_remove_element == 'add':
-            new_allow = list((set(previous_allow)).union(set([element_value])))
+            new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
         else:
-            if element_value not in previous_allow:
-                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
-            new_allow = [url for url in previous_allow if url != element_value]
+            new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
 
-        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{allow_name}"
-        params['element'] = add_argument_list(new_allow, allow_name, True)
+        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
+        params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_allow
+        url_filter_output[element_to_change] = new_override_allow_list
 
-    # element_to_change in ('override_block_list', 'block_categories')
+    # element_to_change == 'override_block_list'
     else:
-        previous_block = argToList(url_filter_prev.get(block_name, {}).get('member', []))
+        prev_override_block_list = argToList(url_filter_prev['block-list']['member'])
         if add_remove_element == 'add':
-            new_block = list((set(previous_block)).union(set([element_value])))
+            new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
         else:
-            if element_value not in previous_block:
-                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
-            new_block = [url for url in previous_block if url != element_value]
+            new_override_block_list = [url for url in prev_override_block_list if url != element_value]
 
-        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{block_name}"
-        params['element'] = add_argument_list(new_block, block_name, True)
+        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
+        params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_block
+        url_filter_output[element_to_change] = new_override_block_list
 
     return result, url_filter_output
 
@@ -2620,10 +2700,10 @@ def panorama_edit_url_filter_command(args: dict):
     """
     Edit a URL Filter
     """
-    url_filter_name = str(args.get('name'))
-    element_to_change = str(args.get('element_to_change'))
-    add_remove_element = str(args.get('add_remove_element'))
-    element_value = str(args.get('element_value'))
+    url_filter_name = args['name']
+    element_to_change = args['element_to_change']
+    add_remove_element = args['add_remove_element']
+    element_value = args['element_value']
 
     result, url_filter_output = panorama_edit_url_filter(url_filter_name, element_to_change, element_value,
                                                          add_remove_element)
@@ -2835,7 +2915,7 @@ def panorama_create_rule_command(args: dict):
     negate_source = args.get('negate_source')
     negate_destination = args.get('negate_destination')
     action = args.get('action')
-    service = argToList(args.get('service'))
+    service = args.get('service')
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
@@ -2846,8 +2926,6 @@ def panorama_create_rule_command(args: dict):
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
     profile_setting = args.get('profile_setting')
-    where = args.get('where', 'bottom')
-    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -2862,8 +2940,7 @@ def panorama_create_rule_command(args: dict):
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting,
-                                          where=where, dst=dst)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
     result = http_request(
         URL,
         'POST',
@@ -2937,7 +3014,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
+    params["xpath"] = f'{params["xpath"]}/' + element_to_change
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
@@ -3081,8 +3158,6 @@ def panorama_custom_block_rule_command(args: dict):
     target = argToList(args.get('target')) if 'target' in args else None
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
-    where = args.get('where', 'bottom')
-    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -3108,12 +3183,12 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                                  log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                                  log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['IP'] = object_value
 
@@ -3121,26 +3196,26 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                                  log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                                  log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                              log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
+                                              log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
 
@@ -3724,21 +3799,18 @@ def panorama_refresh_edl_command(args: dict):
 
 
 @logger
-def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
     entry: str = ''
     for ip in ips:
-        if timeout:
-            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}' \
-                     f'</member></tag></entry>'
-        else:
-            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
+        entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
-        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
-               f'</register></payload></uid-message>',
+        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry
+               + '</register></payload></uid-message>',
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -3752,21 +3824,13 @@ def panorama_register_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag: str = args.get('tag', '')
-    ips: list = argToList(args.get('IPs'))
-    persistent = args.get('persistent', 'true')
+    tag = args['tag']
+    ips = argToList(args['IPs'])
+
+    persistent = args['persistent'] if 'persistent' in args else 'true'
     persistent = '1' if persistent == 'true' else '0'
-    # if not given, timeout will be 0 and persistent will be used
-    timeout = int(args.get('timeout', '0'))
 
-    major_version = get_pan_os_major_version()
-
-    if timeout and persistent == '1':
-        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
-    if major_version <= 8 and timeout:
-        raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
-
-    result = panorama_register_ip_tag(tag, ips, persistent, timeout)
+    result = panorama_register_ip_tag(tag, ips, str(persistent))
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
@@ -4320,39 +4384,158 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
+    ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
+    use_polling = args.get('use_polling', 'false') == 'true'
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-query-logs'
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    timeout = int(args.get('timeout', 600))
+    if url and url[-1] != '/':
+        url += '/'
+    polling = args.get('polling', use_polling)
+    script_results = []
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
         raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                 zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
+        if not job_id:
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
+            # create new search
+            result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
+                                         zone_src, zone_dst, time_generated, action,
+                                         port_dst, rule, url, filedigest)
+
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Query logs failed' + message)
+                else:
+                    raise Exception('Query logs failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            job_id = result['response']['result']['job']
+
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+            readable_output = "Panorama log query search created successfully."
+            script_results.append(CommandResults(
+                readable_output=readable_output,
+                scheduled_command=scheduled_command
+            ))
+
         else:
-            raise Exception('Query logs failed.')
+            result = panorama_get_traffic_logs(job_id)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Query logs failed' + message)
+                else:
+                    raise Exception('Query logs failed.')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        raise Exception('Missing JobID in response.')
+            if result['response']['result']['job']['status'] != "FIN":
 
-    query_logs_output = {
-        'JobID': result['response']['result']['job'],
-        'Status': 'Pending',
-        'LogType': log_type,
-        'Message': result['response']['result']['msg']['line']
-    }
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-    })
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+            else:
+                result = panorama_get_traffic_logs(job_id)
+
+                if result['response']['@status'] == 'error':
+                    if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                        message = '. Reason is: ' + result['response']['msg']['line']
+                        raise Exception('Query logs failed' + message)
+                    else:
+                        raise Exception('Query logs failed.')
+
+                query_logs_output = {
+                    'JobID': job_id,
+                    'Status': 'Pending'
+                }
+
+                if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                        or 'status' not in result['response']['result']['job']:
+                    raise Exception('Missing JobID status in response.')
+
+                query_logs_output['Status'] = 'Completed'
+                if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
+                    'result'] \
+                        or 'logs' not in result['response']['result']['log']:
+                    raise Exception('Missing logs in response.')
+
+                logs = result['response']['result']['log']['logs']
+                if logs['@count'] == '0':
+                    human_readable = f'No {log_type} logs matched the query.'
+                else:
+                    pretty_logs = prettify_logs(logs['entry'])
+                    query_logs_output['Logs'] = pretty_logs
+                    human_readable = tableToMarkdown(f'Query {log_type} Logs:', query_logs_output['Logs'],
+                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True)
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.Monitor',
+                    outputs_key_field='JobID',
+                    outputs=result,
+                    readable_output=human_readable,
+                    ignore_auto_extract=True))
+
+    else:
+
+        result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
+                                     zone_src, zone_dst, time_generated, action,
+                                     port_dst, rule, url, filedigest)
+
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                raise Exception('Query logs failed' + message)
+            else:
+                raise Exception('Query logs failed.')
+
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+            raise Exception('Missing JobID in response.')
+
+        query_logs_output = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending',
+            'LogType': log_type,
+            'Message': result['response']['result']['msg']['line']
+        }
+
+        script_results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+        })
+    return_results(script_results)
 
 
 def panorama_check_logs_status_command(job_id: str):
@@ -4592,8 +4775,8 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None, target: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY, 'target': target,
+                                   source_user: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4660,11 +4843,8 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def panorama_security_policy_match_command(args: dict):
-    target = args.get('target')
-    if not VSYS and not target:
-        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
-                  "or for a Panorama instance, to be used with the target argument."
-        raise DemistoException(err_msg)
+    if not VSYS:
+        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
 
     application = args.get('application')
     category = args.get('category')
@@ -4677,7 +4857,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user, target)
+                                                    protocol, source, source_user)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
     else:
@@ -5069,35 +5249,141 @@ def panorama_download_latest_content_update_content(target: str):
     return result
 
 
-def panorama_download_latest_content_update_command(target: Optional[str] = None):
+def panorama_download_latest_content_update_command(args: dict = {}):
+    target = args.get('target')
+    job_id = args.get('job_id')
+    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = args.get('polling', use_polling)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    cmd = 'panorama-download-latest-content-update'
+    script_results = []
+
     """
     Download content and show message in war room
     """
     if DEVICE_GROUP:
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
-    result = panorama_download_latest_content_update_content(target)
 
-    if 'result' in result['response']:
-        # download has been given a jobid
-        download_status_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown('Content download:',
-                                         download_status_output, ['JobID', 'Status'], removeNull=True)
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        # Create new job if this is not an existing polling job
+        if not job_id:
+
+            # Create a new download schedule
+            result = panorama_download_latest_content_update_content(target)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            job_id = result['response']['result']['job']
+
+            polling_args = {
+                "job_id": job_id,
+                "polling": True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+
+            readable_output = f"Started download of latest content update (Job ID: {job_id})"
+            script_results.append(CommandResults(
+                readable_output=readable_output,
+                scheduled_command=scheduled_command))
+
+        # Check the existing job
+        else:
+            result = panorama_content_update_download_status(target, job_id)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            # re-schedule the check if the job is not finished
+            if result['response']['result']['job']['status'] != "FIN":
+
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+
+            # Output the result if the job has finished
+            else:
+                content_download_status = {
+                    'JobID': result['response']['result']['job']['id']
+                }
+                if result['response']['result']['job']['result'] == 'OK':
+                    content_download_status['Status'] = 'Completed'
+                else:
+                    content_download_status['Status'] = 'Failed'
+                content_download_status['Details'] = result['response']['result']['job']
+                readable_output = tableToMarkdown('Content download status:', content_download_status,
+                                                  ['JobID', 'Status', 'Details'], removeNull=True)
+
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.Content.Download',
+                    outputs_key_field='JobID',
+                    outputs=content_download_status,
+                    readable_output=readable_output,
+                    ignore_auto_extract=True
+                ))
+
     else:
-        # no download took place
-        return_results(result['response']['msg'])
+        result = panorama_download_latest_content_update_content(target)
+
+        if 'result' in result['response']:
+            # download has been given a jobid
+            download_status_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+            readable_output = tableToMarkdown(
+                'Content download:',
+                download_status_output,
+                ['JobID', 'Status'],
+                removeNull=True
+            )
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Content.Download',
+                outputs_key_field='JobID',
+                outputs=download_status_output,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no download took place
+            script_results.append(result['response']['msg'])
+    return_results(script_results)
 
 
 @logger
@@ -5171,34 +5457,139 @@ def panorama_install_latest_content_update(target: str):
     return result
 
 
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
-    """
-        Check jobID of content content install status
-    """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    result = panorama_install_latest_content_update(target)
+def panorama_install_latest_content_update_command(args: dict = {}):
 
-    if 'result' in result['response']:
-        # installation has been given a jobid
-        content_install_info = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+    target = args.get('target')
+    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = args.get('polling', use_polling)
+    job_id = args.get('job_id', None)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    cmd = 'panorama-install-latest-content-update'
+    script_results = []
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+    # Is polling requested
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
+
+        # Create new job if this is not an existing polling job
+        if not job_id:
+
+            # Create a new installation schedule
+            result = panorama_install_latest_content_update(target)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            job_id = result['response']['result']['job']
+
+            polling_args = {
+                "job_id": job_id,
+                "polling": True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+
+            readable_output = f"Started instllation of latest content update (Job ID: {job_id})"
+            script_results.append(CommandResults(
+                readable_output=readable_output,
+                scheduled_command=scheduled_command))
+
+        # Check the existing job
+        else:
+            result = panorama_content_update_install_status(target, job_id)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            # re-schedule the check if the job is not finished
+            if result['response']['result']['job']['status'] != "FIN":
+
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+
+            # Output the result if the job has finished
+            else:
+                content_install_status = {
+                    'JobID': result['response']['result']['job']['id']
+                }
+                if result['response']['result']['job']['result'] == 'OK':
+                    content_install_status['Status'] = 'Completed'
+                else:
+                    content_install_status['Status'] = 'Failed'
+                content_install_status['Details'] = result['response']['result']['job']
+
+                readable_output = tableToMarkdown('Content install status:', content_install_status,
+                                                  ['JobID', 'Status', 'Details'], removeNull=True)
+
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.Content.Install',
+                    outputs_key_field='JobID',
+                    outputs=content_install_status,
+                    readable_output=readable_output,
+                    ignore_auto_extract=True
+                ))
+
     else:
-        # no content install took place
-        return_results(result['response']['msg'])
+        """
+            Check jobID of content content install status
+        """
+        if DEVICE_GROUP:
+            raise Exception('Content download status is only supported on Firewall (not Panorama).')
+        result = panorama_install_latest_content_update(target)
+
+        if 'result' in result['response']:
+            # installation has been given a jobid
+            content_install_info = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+
+            readable_output = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Content.Install',
+                outputs_key_field='JobID',
+                outputs=content_install_info,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+        else:
+            # no content install took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -5293,29 +5684,126 @@ def panorama_download_panos_version_command(args: dict):
     """
     if DEVICE_GROUP:
         raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    target_version = str(args['target_version'])
-    result = panorama_download_panos_version(target, target_version)
+    target = args.get('target', None)
+    target_version = args.get('target_version')
+    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = args.get('polling', use_polling)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-download-panos-version'
+    script_results = []
 
-    if 'result' in result['response']:
-        # download has been given a jobid
-        panos_version_download = {
-            'JobID': result['response']['result']['job']
-        }
-        entry_context = {"Panorama.PANOS.Download(val.JobID == obj.JobID)": panos_version_download}
-        human_readable = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        # create new download
+        if not job_id:
+            result = panorama_download_panos_version(target, target_version)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+                raise Exception('Missing JobID in response.')
+
+            job_id = result['response']['result']['job']
+
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+
+            readable_output = f"Started download of PANOS version {target_version} (Job ID: {job_id})"
+            script_results.append(CommandResults(
+                readable_output=readable_output,
+                scheduled_command=scheduled_command
+            ))
+
+        # Check the existing job
+        else:
+            result = panorama_download_panos_status(target, job_id)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Download failed' + message)
+                else:
+                    raise Exception('Download failed.')
+
+            # If the job has not yet completed, re-schedule it
+            if result['response']['result']['job']['status'] != "FIN":
+
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+
+            # If the job has finished
+            else:
+                panos_download_status = {
+                    'JobID': result['response']['result']['job']['id']
+                }
+
+                if result['response']['result']['job']['result'] == 'OK':
+                    panos_download_status['Status'] = 'Completed'
+                else:
+                    panos_download_status['Status'] = 'Failed'
+                panos_download_status['Details'] = result['response']['result']['job']
+
+                readable_output = tableToMarkdown('PAN-OS download status:', panos_download_status,
+                                                  ['JobID', 'Status', 'Details'], removeNull=True)
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.PANOS.Download',
+                    outputs_key_field='JobID',
+                    outputs=panos_download_status,
+                    readable_output=readable_output,
+                    ignore_auto_extract=True
+                ))
+
     else:
-        # no panos download took place
-        return_results(result['response']['msg'])
+        result = panorama_download_panos_version(target, target_version)
+
+        if 'result' in result['response']:
+            # download has been given a jobid
+            panos_version_download = {
+                'JobID': result['response']['result']['job']
+            }
+            readable_output = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.PANOS.Download',
+                outputs_key_field='JobID',
+                outputs=panos_version_download,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no panos download took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -5396,27 +5884,131 @@ def panorama_install_panos_version_command(args: dict):
         raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     target_version = str(args['target_version'])
-    result = panorama_install_panos_version(target, target_version)
+    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = args.get('polling', use_polling)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-install-panos-version'
+    script_results = []
 
-    if 'result' in result['response']:
-        # panos install has been given a jobid
-        panos_install = {
-            'JobID': result['response']['result']['job']
-        }
-        entry_context = {"Panorama.PANOS.Install(val.JobID == obj.JobID)": panos_install}
-        human_readable = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+    if polling:
+        ScheduledCommand.raise_error_if_not_supported()
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        # create new download
+        if not job_id:
+            result = panorama_install_panos_version(target, target_version)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Update content failed' + message)
+                else:
+                    raise Exception('Update content failed.')
+
+            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
+                    'result']:
+                raise Exception('Missing JobID in response.')
+
+            job_id = result['response']['result']['job']
+
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+
+            readable_output = f"Started installation of PANOS version {target_version} (Job ID: {job_id})"
+            script_results.append(CommandResults(
+                readable_output=readable_output,
+                scheduled_command=scheduled_command
+            ))
+
+            # Check the existing job
+
+        # Check the existing job
+        else:
+            result = panorama_install_panos_status(target, job_id)
+            if result['response']['@status'] == 'error':
+                if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                    message = '. Reason is: ' + result['response']['msg']['line']
+                    raise Exception('Download failed' + message)
+                else:
+                    raise Exception('Download failed.')
+
+            # If the job has not yet completed, re-schedule it
+            if result['response']['result']['job']['status'] != "FIN":
+
+                polling_args = {
+                    'job_id': job_id,
+                    'polling': True,
+                    **args
+                }
+
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_seconds,
+                    args=polling_args,
+                    timeout_in_seconds=timeout
+                )
+                script_results.append(CommandResults(
+                    scheduled_command=scheduled_command
+                ))
+
+            # If the job has finished
+            else:
+                panos_install_status = {
+                    'JobID': result['response']['result']['job']['id']
+                }
+                if result['response']['result']['job']['status'] == 'FIN':
+                    if result['response']['result']['job']['result'] == 'OK':
+                        panos_install_status['Status'] = 'Completed'
+                    else:
+                        # result['response']['job']['result'] == 'FAIL'
+                        panos_install_status['Status'] = 'Failed'
+                    panos_install_status['Details'] = result['response']['result']['job']
+
+                readable_output = tableToMarkdown(
+                    'PAN-OS installation status:',
+                    panos_install_status,
+                    ['JobID', 'Status', 'Details'],
+                    removeNull=True
+                )
+                script_results.append(CommandResults(
+                    outputs_prefix='Panorama.PANOS.Install',
+                    outputs_key_field='JobID',
+                    outputs=panos_install_status,
+                    readable_output=readable_output
+                ))
+
     else:
-        # no panos install took place
-        return_results(result['response']['msg'])
+        result = panorama_install_panos_version(target, target_version)
+
+        if 'result' in result['response']:
+            # panos install has been given a jobid
+            panos_install = {
+                'JobID': result['response']['result']['job']
+            }
+
+            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.PANOS.Install',
+                outputs_key_field='JobID',
+                outputs=panos_install,
+                readable_output=readable_output
+            ))
+
+        else:
+            # no panos install took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -7358,7 +7950,7 @@ def main():
 
         # Download the latest content update
         elif demisto.command() == 'panorama-download-latest-content-update':
-            panorama_download_latest_content_update_command(args.get('target'))
+            panorama_download_latest_content_update_command(args)
 
         # Download the latest content update
         elif demisto.command() == 'panorama-content-update-download-status':
@@ -7366,7 +7958,7 @@ def main():
 
         # Install the latest content update
         elif demisto.command() == 'panorama-install-latest-content-update':
-            panorama_install_latest_content_update_command(args.get('target'))
+            panorama_install_latest_content_update_command(args)
 
         # Content update install status
         elif demisto.command() == 'panorama-content-update-install-status':
@@ -7487,6 +8079,7 @@ def main():
 
     finally:
         LOG.print_log()
+
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
