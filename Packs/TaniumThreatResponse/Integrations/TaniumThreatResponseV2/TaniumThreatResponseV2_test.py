@@ -834,7 +834,7 @@ def test_event_evidence_get_properties(requests_mock):
     args = {}
     human_readable, outputs, _ = TaniumThreatResponseV2.event_evidence_get_properties(MOCK_CLIENT, args)
     assert 'Evidence Properties' in human_readable
-    assert outputs.get('Tanium.EvidenceProperties(val.type === obj.type)', [{}])[0].get('type') == 'ProcessId'
+    assert outputs.get('Tanium.EvidenceProperties(val.value === obj.value)', [{}])[0].get('type') == 'ProcessId'
 
 
 def test_get_evidence_by_id(requests_mock):
