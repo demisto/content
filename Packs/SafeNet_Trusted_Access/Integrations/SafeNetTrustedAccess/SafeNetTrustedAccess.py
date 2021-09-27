@@ -147,6 +147,7 @@ class Client(BaseClient):
 
     # Get information of a group in a tenant.
     def get_group_info_sta(self, groupName):
+
         self.validate_mandatory_argument_sta(fields={"group": groupName})
         response = self.http_request(
             method='GET',
