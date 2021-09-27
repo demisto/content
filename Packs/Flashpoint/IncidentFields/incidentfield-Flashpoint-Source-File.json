@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointsourcefile",
+    "version": -1,
+    "modified": "2021-08-06T14:28:57.430796051+05:30",
+    "name": "Flashpoint Source File",
+    "ownerOnly": false,
+    "description": "File name for the matched alert.",
+    "cliName": "flashpointsourcefile",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}
