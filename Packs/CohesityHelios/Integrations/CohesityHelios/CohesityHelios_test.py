@@ -1,13 +1,4 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
+"""Cohesity Helios Cortex XSOAR - Unit Tests file
 """
 
 import json
@@ -19,23 +10,21 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: ADD HERE unit tests for every command
-def test_cohesity_helios_get_was_alerts():
-    """Tests cohesity-helios-get-was-alerts command function.
+def test_test_module(requests_mock):
+    """Tests test-module command function.
 
     Checks the output of the command function with the expected output.
-
-    CohesityTBD: Add code for unit testsing.
-
     """
-    # from BaseIntegration import Client, CohesityHelios_command
+    from CohesityHelios import Client, test_module
 
-    # client = Client(base_url='some_mock_url', verify=False)
-    # args = {
-    #     'dummy': 'this is a dummy response'
-    # }
-    # response = baseintegration_dummy_command(client, args)
+    client = Client(
+        base_url='https://helios.cohesity.com',
+        verify=False)
 
-    # mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    # set up mock response.
+    mock_response = {}
+    requests_mock.get('https://helios.cohesity.com/mcm/alerts', json=mock_response)
 
-    # assert response.outputs == mock_response
+    response = test_module(client)
+
+    assert response == "ok"

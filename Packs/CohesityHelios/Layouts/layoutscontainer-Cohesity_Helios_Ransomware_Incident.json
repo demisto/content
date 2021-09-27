@@ -72,6 +72,8 @@
                             }
                         ],
                         "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Case Details",
                         "static": false,
@@ -85,13 +87,15 @@
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Team Members",
                         "static": false,
                         "type": "team",
                         "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "x": 1,
+                        "y": 2
                     },
                     {
                         "displayType": "CARD",
@@ -118,15 +122,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "dbotduedate",
-                                "height": 53,
-                                "id": "incident-dueDate-field",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "dbotcreated",
                                 "height": 53,
                                 "id": "incident-created-field",
@@ -145,6 +140,8 @@
                             }
                         ],
                         "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
@@ -215,9 +212,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "description",
+                                "fieldId": "cohesityheliosalertdescription",
                                 "height": 22,
-                                "id": "3cefa800-1b77-11ec-b233-87ab18a97b71",
+                                "id": "8ae49be0-1f52-11ec-be5e-2f7dff0fc3dd",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -233,11 +230,65 @@
                             }
                         ],
                         "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
                         "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-809cdfa0-1ed3-11ec-955c-63fcadc57d2b",
+                        "items": [
+                            {
+                                "args": {
+                                    "object_name": {
+                                        "simple": "${incident.cohesityanomalousobjectname}"
+                                    },
+                                    "using": {
+                                        "simple": "CohesityHelios_instance_1"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "9428b030-1ed3-11ec-955c-63fcadc57d2b",
+                                "index": 0,
+                                "name": "Ignore anomalous object",
+                                "scriptId": "CohesityHelios|||cohesity-helios-ignore-anomalous-object",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "object_name": {
+                                        "simple": "${incident.cohesityanomalousobjectname}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "957bbd10-1ed3-11ec-955c-63fcadc57d2b",
+                                "index": 1,
+                                "name": "Restore object to latest clean snapshot",
+                                "scriptId": "CohesityHelios|||cohesity-helios-restore-latest-clean-snapshot",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Take remediatory actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
                         "y": 0
                     }
                 ],

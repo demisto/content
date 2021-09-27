@@ -14,6 +14,10 @@
                     "complex": null,
                     "simple": "alertDocument.alertName"
                 },
+                "Cohesity Helios Alert Description": {
+                    "complex": null,
+                    "simple": "alertDocument.alertDescription"
+                },
                 "Cohesity Helios Alert Cause": {
                     "complex": null,
                     "simple": "alertDocument.alertCause"
@@ -37,15 +41,6 @@
                 "Cohesity Helios Object Environment": {
                     "complex": null,
                     "simple": "propertyList.[9].value"
-                },
-                "Description": {
-                    "complex": {
-                        "accessor": "alertDescription",
-                        "filters": [],
-                        "root": "alertDocument",
-                        "transformers": []
-                    },
-                    "simple": ""
                 },
                 "State": {
                     "complex": {

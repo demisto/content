@@ -24,6 +24,7 @@ configuration:
 - display: Incident type
   name: incidentType
   required: false
+  defaultvalue: Cohesity Helios Ransomware Incident
   type: 13
 - defaultvalue: '20'
   display: Maximum number of incidents to fetch every time
