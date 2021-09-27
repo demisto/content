@@ -47,8 +47,8 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: '[Integrate with Cohesity Helios services to fetch alerts and take remedial
-  action.]'
+description: 'Integrate with Cohesity Helios services to fetch alerts and take remedial
+  action.'
 display: CohesityHelios
 name: CohesityHelios
 script:

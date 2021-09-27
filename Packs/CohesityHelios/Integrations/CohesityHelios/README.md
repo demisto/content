@@ -1,4 +1,4 @@
-[Integrate with Cohesity Helios services to fetch alerts and take remedial action.]
+Integrate with Cohesity Helios services to fetch alerts and take remedial action.
 This integration was integrated and tested with version 08.01 of CohesityHelios
 
 ## Configure CohesityHelios on Cortex XSOAR
