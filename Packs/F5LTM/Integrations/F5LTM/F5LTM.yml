@@ -39,11 +39,15 @@ name: F5LTM
 script:
   commands:
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'False'
       description: Expand pools in the response
       isArray: false
       name: expand
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -51,8 +55,20 @@ script:
     execution: false
     name: f5-ltm-get-pools
     outputs:
+    - contextPath: F5.LTM.Pools.membersReference.isSubcollection
+      description: Member reference subcollection retrieved
+      type: Boolean
+    - contextPath: F5.LTM.Pools.membersReference.link
+      description: Member reference links
+      type: String
+    - contextPath: F5.LTM.Pools.monitor
+      description: Pool monitor listener
+      type: String
     - contextPath: F5.LTM.Pools.name
-      description: The pool name
+      description: Pool names
+      type: String
+    - contextPath: F5.LTM.Pools.partition
+      description: Configuration partition
       type: String
   - arguments:
     - default: false
@@ -66,9 +82,87 @@ script:
     execution: false
     name: f5-ltm-get-pool
     outputs:
-    - contextPath: F5.LTM.Pools.name
-      description: The pool name
+    - contextPath: F5.LTM.Pools.allowNat
+      description: Pool Nat allowed
       type: String
+    - contextPath: F5.LTM.Pools.allowSnat
+      description: Pool SNat allowed
+      type: String
+    - contextPath: F5.LTM.Pools.fullPath
+      description: Pool full path
+      type: String
+    - contextPath: F5.LTM.Pools.generation
+      description: Pool generation
+      type: Number
+    - contextPath: F5.LTM.Pools.ignorePersistedWeight
+      description: Ignore Persisted Weight status
+      type: String
+    - contextPath: F5.LTM.Pools.ipTosToClient
+      description: Client pass through status
+      type: String
+    - contextPath: F5.LTM.Pools.ipTosToServer
+      description: Server pass through status
+      type: String
+    - contextPath: F5.LTM.Pools.kind
+      description: Pool kind
+      type: String
+    - contextPath: F5.LTM.Pools.linkQosToClient
+      description: Link QOS to client status
+      type: String
+    - contextPath: F5.LTM.Pools.linkQosToServer
+      description: Link QOS to server status
+      type: String
+    - contextPath: F5.LTM.Pools.loadBalancingMode
+      description: Pool load balancing mode
+      type: String
+    - contextPath: F5.LTM.Pools.membersReference.isSubcollection
+      description: Members reference subcollection retrieved
+      type: Boolean
+    - contextPath: F5.LTM.Pools.membersReference.link
+      description: Members reference link
+      type: String
+    - contextPath: F5.LTM.Pools.minActiveMembers
+      description: Pool minimum active members
+      type: Number
+    - contextPath: F5.LTM.Pools.minUpMembers
+      description: Pool minimum Up members
+      type: Number
+    - contextPath: F5.LTM.Pools.minUpMembersAction
+      description: Pool minimum Up members action
+      type: String
+    - contextPath: F5.LTM.Pools.minUpMembersChecking
+      description: Pool minimum Up members checking
+      type: String
+    - contextPath: F5.LTM.Pools.monitor
+      description: Pool monitor listener
+      type: String
+    - contextPath: F5.LTM.Pools.name
+      description: Pool name
+      type: String
+    - contextPath: F5.LTM.Pools.partition
+      description: Configuration partition
+      type: String
+    - contextPath: F5.LTM.Pools.queueDepthLimit
+      description: Pool depth limit
+      type: Number
+    - contextPath: F5.LTM.Pools.queueOnConnectionLimit
+      description: Pool depth queue on connection limit
+      type: String
+    - contextPath: F5.LTM.Pools.queueTimeLimit
+      description: Pool queue time limit
+      type: Number
+    - contextPath: F5.LTM.Pools.reselectTries
+      description: Pool reselect tries
+      type: Number
+    - contextPath: F5.LTM.Pools.selfLink
+      description: Pool self link
+      type: String
+    - contextPath: F5.LTM.Pools.serviceDownAction
+      description: Pool service down action
+      type: String
+    - contextPath: F5.LTM.Pools.slowRampTime
+      description: Pool slow ramp time
+      type: Number
   - arguments:
     - default: false
       description: Pool Name
@@ -81,16 +175,82 @@ script:
     execution: false
     name: f5-ltm-get-pool-members
     outputs:
+    - contextPath: F5.LTM.Pools.members.address
+      description: Pool member address
+      type: String
+    - contextPath: F5.LTM.Pools.members.connectionLimit
+      description: Pool member connection limit
+      type: Number
+    - contextPath: F5.LTM.Pools.members.dynamicRatio
+      description: Pool member dynamic ratio
+      type: Number
+    - contextPath: F5.LTM.Pools.members.ephemeral
+      description: Pool member ephemeral
+      type: String
+    - contextPath: F5.LTM.Pools.members.fqdn.autopopulate
+      description: Pool member fqdn autopopulate
+      type: String
+    - contextPath: F5.LTM.Pools.members.fullPath
+      description: Pool member full path
+      type: String
+    - contextPath: F5.LTM.Pools.members.generation
+      description: Pool member generation
+      type: Number
+    - contextPath: F5.LTM.Pools.members.inheritProfile
+      description: Pool member inherit profile
+      type: String
+    - contextPath: F5.LTM.Pools.members.kind
+      description: Pool member kind
+      type: String
+    - contextPath: F5.LTM.Pools.members.logging
+      description: Pool member logging
+      type: String
+    - contextPath: F5.LTM.Pools.members.monitor
+      description: Pool member monitor
+      type: String
     - contextPath: F5.LTM.Pools.members.name
-      description: Members Names
+      description: Pool member name
+      type: String
+    - contextPath: F5.LTM.Pools.members.partition
+      description: Pool member config partition
+      type: String
+    - contextPath: F5.LTM.Pools.members.priorityGroup
+      description: Pool member priority group
+      type: Number
+    - contextPath: F5.LTM.Pools.members.rateLimit
+      description: Pool member rate limit
+      type: String
+    - contextPath: F5.LTM.Pools.members.ratio
+      description: Pool member ratio
+      type: Number
+    - contextPath: F5.LTM.Pools.members.selfLink
+      description: Pool member self link
+      type: String
+    - contextPath: F5.LTM.Pools.members.session
+      description: Pool member session
+      type: String
+    - contextPath: F5.LTM.Pools.members.state
+      description: Pool member state
       type: String
   - deprecated: false
     description: Get a list of all nodes
     execution: false
     name: f5-ltm-get-nodes
     outputs:
+    - contextPath: F5.LTM.Nodes.address
+      description: Node address
+      type: String
     - contextPath: F5.LTM.Nodes.name
-      description: The node name
+      description: Node name
+      type: String
+    - contextPath: F5.LTM.Nodes.partition
+      description: Configuration parition
+      type: String
+    - contextPath: F5.LTM.Nodes.session
+      description: Node session status
+      type: String
+    - contextPath: F5.LTM.Nodes.state
+      description: Node checking state
       type: String
   - arguments:
     - default: false
@@ -104,8 +264,65 @@ script:
     execution: false
     name: f5-ltm-get-node
     outputs:
+    - contextPath: F5.LTM.Nodes.address
+      description: Node address
+      type: String
+    - contextPath: F5.LTM.Nodes.connectionLimit
+      description: Pool node connection limit
+      type: Number
+    - contextPath: F5.LTM.Nodes.dynamicRatio
+      description: Pool node dynamic ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.ephemeral
+      description: Pool node ephemeral
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.addressFamily
+      description: Pool node fqdn address family
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.autopopulate
+      description: Pool node fqdn autopopulate
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.downInterval
+      description: Pool node fqdn down interval
+      type: Number
+    - contextPath: F5.LTM.Nodes.fqdn.interval
+      description: Pool node fqdn interval
+      type: String
+    - contextPath: F5.LTM.Nodes.fullPath
+      description: Pool member full path
+      type: String
+    - contextPath: F5.LTM.Nodes.generation
+      description: Pool node generation
+      type: Number
+    - contextPath: F5.LTM.Nodes.kind
+      description: Pool node kind
+      type: String
+    - contextPath: F5.LTM.Nodes.logging
+      description: Pool node logging status
+      type: String
+    - contextPath: F5.LTM.Nodes.monitor
+      description: Pool node monitor listener
+      type: String
     - contextPath: F5.LTM.Nodes.name
-      description: The node name
+      description: Pool node name
+      type: String
+    - contextPath: F5.LTM.Nodes.partition
+      description: Pool node configuration partition
+      type: String
+    - contextPath: F5.LTM.Nodes.rateLimit
+      description: Pool node rate limit
+      type: String
+    - contextPath: F5.LTM.Nodes.ratio
+      description: Pool node ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.selfLink
+      description: Pool node self link
+      type: String
+    - contextPath: F5.LTM.Nodes.session
+      description: Pool node session status
+      type: String
+    - contextPath: F5.LTM.Nodes.state
+      description: Pool node checking state
       type: String
   - arguments:
     - default: false
@@ -118,6 +335,67 @@ script:
     description: Disable a node
     execution: false
     name: f5-ltm-disable-node
+    outputs:
+    - contextPath: F5.LTM.Nodes.address
+      description: Node address
+      type: String
+    - contextPath: F5.LTM.Nodes.connectionLimit
+      description: Pool node connection limit
+      type: Number
+    - contextPath: F5.LTM.Nodes.dynamicRatio
+      description: Pool node dynamic ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.ephemeral
+      description: Pool node ephemeral
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.addressFamily
+      description: Pool node fqdn address family
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.autopopulate
+      description: Pool node fqdn autopopulate
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.downInterval
+      description: Pool node fqdn down interval
+      type: Number
+    - contextPath: F5.LTM.Nodes.fqdn.interval
+      description: Pool node fqdn interval
+      type: String
+    - contextPath: F5.LTM.Nodes.fullPath
+      description: Pool member full path
+      type: String
+    - contextPath: F5.LTM.Nodes.generation
+      description: Pool node generation
+      type: Number
+    - contextPath: F5.LTM.Nodes.kind
+      description: Pool node kind
+      type: String
+    - contextPath: F5.LTM.Nodes.logging
+      description: Pool node logging status
+      type: String
+    - contextPath: F5.LTM.Nodes.monitor
+      description: Pool node monitor listener
+      type: String
+    - contextPath: F5.LTM.Nodes.name
+      description: Pool node name
+      type: String
+    - contextPath: F5.LTM.Nodes.partition
+      description: Pool node configuration partition
+      type: String
+    - contextPath: F5.LTM.Nodes.rateLimit
+      description: Pool node rate limit
+      type: String
+    - contextPath: F5.LTM.Nodes.ratio
+      description: Pool node ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.selfLink
+      description: Pool node self link
+      type: String
+    - contextPath: F5.LTM.Nodes.session
+      description: Pool node session status
+      type: String
+    - contextPath: F5.LTM.Nodes.state
+      description: Pool node checking state
+      type: String
   - arguments:
     - default: false
       description: Node to enable
@@ -129,6 +407,67 @@ script:
     description: Enable a node
     execution: false
     name: f5-ltm-enable-node
+    outputs:
+    - contextPath: F5.LTM.Nodes.address
+      description: Node address
+      type: String
+    - contextPath: F5.LTM.Nodes.connectionLimit
+      description: Pool node connection limit
+      type: Number
+    - contextPath: F5.LTM.Nodes.dynamicRatio
+      description: Pool node dynamic ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.ephemeral
+      description: Pool node ephemeral
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.addressFamily
+      description: Pool node fqdn address family
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.autopopulate
+      description: Pool node fqdn autopopulate
+      type: String
+    - contextPath: F5.LTM.Nodes.fqdn.downInterval
+      description: Pool node fqdn down interval
+      type: Number
+    - contextPath: F5.LTM.Nodes.fqdn.interval
+      description: Pool node fqdn interval
+      type: String
+    - contextPath: F5.LTM.Nodes.fullPath
+      description: Pool member full path
+      type: String
+    - contextPath: F5.LTM.Nodes.generation
+      description: Pool node generation
+      type: Number
+    - contextPath: F5.LTM.Nodes.kind
+      description: Pool node kind
+      type: String
+    - contextPath: F5.LTM.Nodes.logging
+      description: Pool node logging status
+      type: String
+    - contextPath: F5.LTM.Nodes.monitor
+      description: Pool node monitor listener
+      type: String
+    - contextPath: F5.LTM.Nodes.name
+      description: Pool node name
+      type: String
+    - contextPath: F5.LTM.Nodes.partition
+      description: Pool node configuration partition
+      type: String
+    - contextPath: F5.LTM.Nodes.rateLimit
+      description: Pool node rate limit
+      type: String
+    - contextPath: F5.LTM.Nodes.ratio
+      description: Pool node ratio
+      type: Number
+    - contextPath: F5.LTM.Nodes.selfLink
+      description: Pool node self link
+      type: String
+    - contextPath: F5.LTM.Nodes.session
+      description: Pool node session status
+      type: String
+    - contextPath: F5.LTM.Nodes.state
+      description: Pool node checking state
+      type: String
   - arguments:
     - default: false
       description: Pool to get its stats

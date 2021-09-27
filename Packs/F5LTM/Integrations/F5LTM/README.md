@@ -1,5 +1,5 @@
 Manages F5 LTM
-This integration was integrated and tested with version xx of F5LTM
+This integration was integrated and tested with version 16.1.0 of F5LTM
 
 ## Configure F5 LTM on Cortex XSOAR
 
@@ -33,14 +33,18 @@ Get a list of all pools
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| expand | Expand pools in the response. Default is False. | Optional | 
+| expand | Expand pools in the response. Possible values are: True, False. Default is False. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Pools.name | Unknown | Pool Name | 
+| F5.LTM.Pools.membersReference.isSubcollection | Boolean | Member reference subcollection retrieved | 
+| F5.LTM.Pools.membersReference.link | String | Member reference links | 
+| F5.LTM.Pools.monitor | String | Pool monitor listener | 
+| F5.LTM.Pools.name | String | Pool names | 
+| F5.LTM.Pools.partition | String | Configuration partition | 
 
 
 #### Command Example
@@ -104,7 +108,33 @@ Get pool details
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Pools.name | String | Pool Name | 
+| F5.LTM.Pools.allowNat | String | Pool Nat allowed | 
+| F5.LTM.Pools.allowSnat | String | Pool SNat allowed | 
+| F5.LTM.Pools.fullPath | String | Pool full path | 
+| F5.LTM.Pools.generation | Number | Pool generation | 
+| F5.LTM.Pools.ignorePersistedWeight | String | Ignore Persisted Weight status | 
+| F5.LTM.Pools.ipTosToClient | String | Client pass through status | 
+| F5.LTM.Pools.ipTosToServer | String | Server pass through status | 
+| F5.LTM.Pools.kind | String | Pool kind | 
+| F5.LTM.Pools.linkQosToClient | String | Link QOS to client status | 
+| F5.LTM.Pools.linkQosToServer | String | Link QOS to server status | 
+| F5.LTM.Pools.loadBalancingMode | String | Pool load balancing mode | 
+| F5.LTM.Pools.membersReference.isSubcollection | Boolean | Members reference subcollection retrieved | 
+| F5.LTM.Pools.membersReference.link | String | Members reference link | 
+| F5.LTM.Pools.minActiveMembers | Number | Pool minimum active members | 
+| F5.LTM.Pools.minUpMembers | Number | Pool minimum Up members | 
+| F5.LTM.Pools.minUpMembersAction | String | Pool minimum Up members action | 
+| F5.LTM.Pools.minUpMembersChecking | String | Pool minimum Up members checking | 
+| F5.LTM.Pools.monitor | String | Pool monitor listener | 
+| F5.LTM.Pools.name | String | Pool name | 
+| F5.LTM.Pools.partition | String | Configuration partition | 
+| F5.LTM.Pools.queueDepthLimit | Number | Pool depth limit | 
+| F5.LTM.Pools.queueOnConnectionLimit | String | Pool depth queue on connection limit | 
+| F5.LTM.Pools.queueTimeLimit | Number | Pool queue time limit | 
+| F5.LTM.Pools.reselectTries | Number | Pool reselect tries | 
+| F5.LTM.Pools.selfLink | String | Pool self link | 
+| F5.LTM.Pools.serviceDownAction | String | Pool service down action | 
+| F5.LTM.Pools.slowRampTime | Number | Pool slow ramp time | 
 
 
 #### Command Example
@@ -178,7 +208,25 @@ Get Pool Members
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Pools.members.name | String | Members Names | 
+| F5.LTM.Pools.members.address | String | Pool member address | 
+| F5.LTM.Pools.members.connectionLimit | Number | Pool member connection limit | 
+| F5.LTM.Pools.members.dynamicRatio | Number | Pool member dynamic ratio | 
+| F5.LTM.Pools.members.ephemeral | String | Pool member ephemeral | 
+| F5.LTM.Pools.members.fqdn.autopopulate | String | Pool member fqdn autopopulate | 
+| F5.LTM.Pools.members.fullPath | String | Pool member full path | 
+| F5.LTM.Pools.members.generation | Number | Pool member generation | 
+| F5.LTM.Pools.members.inheritProfile | String | Pool member inherit profile | 
+| F5.LTM.Pools.members.kind | String | Pool member kind | 
+| F5.LTM.Pools.members.logging | String | Pool member logging | 
+| F5.LTM.Pools.members.monitor | String | Pool member monitor | 
+| F5.LTM.Pools.members.name | String | Pool member name | 
+| F5.LTM.Pools.members.partition | String | Pool member config partition | 
+| F5.LTM.Pools.members.priorityGroup | Number | Pool member priority group | 
+| F5.LTM.Pools.members.rateLimit | String | Pool member rate limit | 
+| F5.LTM.Pools.members.ratio | Number | Pool member ratio | 
+| F5.LTM.Pools.members.selfLink | String | Pool member self link | 
+| F5.LTM.Pools.members.session | String | Pool member session | 
+| F5.LTM.Pools.members.state | String | Pool member state | 
 
 
 #### Command Example
@@ -269,7 +317,11 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | String | Node Name | 
+| F5.LTM.Nodes.address | String | Node address | 
+| F5.LTM.Nodes.name | String | Node name | 
+| F5.LTM.Nodes.partition | String | Configuration parition | 
+| F5.LTM.Nodes.session | String | Node session status | 
+| F5.LTM.Nodes.state | String | Node checking state | 
 
 
 #### Command Example
@@ -337,7 +389,26 @@ Get node details
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | String | Node Name | 
+| F5.LTM.Nodes.address | String | Node address | 
+| F5.LTM.Nodes.connectionLimit | Number | Pool node connection limit | 
+| F5.LTM.Nodes.dynamicRatio | Number | Pool node dynamic ratio | 
+| F5.LTM.Nodes.ephemeral | String | Pool node ephemeral | 
+| F5.LTM.Nodes.fqdn.addressFamily | String | Pool node fqdn address family | 
+| F5.LTM.Nodes.fqdn.autopopulate | String | Pool node fqdn autopopulate | 
+| F5.LTM.Nodes.fqdn.downInterval | Number | Pool node fqdn down interval | 
+| F5.LTM.Nodes.fqdn.interval | String | Pool node fqdn interval | 
+| F5.LTM.Nodes.fullPath | String | Pool member full path | 
+| F5.LTM.Nodes.generation | Number | Pool node generation | 
+| F5.LTM.Nodes.kind | String | Pool node kind | 
+| F5.LTM.Nodes.logging | String | Pool node logging status | 
+| F5.LTM.Nodes.monitor | String | Pool node monitor listener | 
+| F5.LTM.Nodes.name | String | Pool node name | 
+| F5.LTM.Nodes.partition | String | Pool node configuration partition | 
+| F5.LTM.Nodes.rateLimit | String | Pool node rate limit | 
+| F5.LTM.Nodes.ratio | Number | Pool node ratio | 
+| F5.LTM.Nodes.selfLink | String | Pool node self link | 
+| F5.LTM.Nodes.session | String | Pool node session status | 
+| F5.LTM.Nodes.state | String | Pool node checking state | 
 
 
 #### Command Example
@@ -402,7 +473,29 @@ Disable a node
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| F5.LTM.Nodes.address | String | Node address | 
+| F5.LTM.Nodes.connectionLimit | Number | Pool node connection limit | 
+| F5.LTM.Nodes.dynamicRatio | Number | Pool node dynamic ratio | 
+| F5.LTM.Nodes.ephemeral | String | Pool node ephemeral | 
+| F5.LTM.Nodes.fqdn.addressFamily | String | Pool node fqdn address family | 
+| F5.LTM.Nodes.fqdn.autopopulate | String | Pool node fqdn autopopulate | 
+| F5.LTM.Nodes.fqdn.downInterval | Number | Pool node fqdn down interval | 
+| F5.LTM.Nodes.fqdn.interval | String | Pool node fqdn interval | 
+| F5.LTM.Nodes.fullPath | String | Pool member full path | 
+| F5.LTM.Nodes.generation | Number | Pool node generation | 
+| F5.LTM.Nodes.kind | String | Pool node kind | 
+| F5.LTM.Nodes.logging | String | Pool node logging status | 
+| F5.LTM.Nodes.monitor | String | Pool node monitor listener | 
+| F5.LTM.Nodes.name | String | Pool node name | 
+| F5.LTM.Nodes.partition | String | Pool node configuration partition | 
+| F5.LTM.Nodes.rateLimit | String | Pool node rate limit | 
+| F5.LTM.Nodes.ratio | Number | Pool node ratio | 
+| F5.LTM.Nodes.selfLink | String | Pool node self link | 
+| F5.LTM.Nodes.session | String | Pool node session status | 
+| F5.LTM.Nodes.state | String | Pool node checking state | 
+
 
 #### Command Example
 ```!f5-ltm-disable-node node_name="XSOAR1"```
@@ -424,7 +517,7 @@ There is no context output for this command.
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 73,
+                "generation": 460,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -446,7 +539,7 @@ There is no context output for this command.
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 73 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 460 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
 
 
 ### f5-ltm-enable-node
@@ -466,7 +559,29 @@ Enable a node
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| F5.LTM.Nodes.address | String | Node address | 
+| F5.LTM.Nodes.connectionLimit | Number | Pool node connection limit | 
+| F5.LTM.Nodes.dynamicRatio | Number | Pool node dynamic ratio | 
+| F5.LTM.Nodes.ephemeral | String | Pool node ephemeral | 
+| F5.LTM.Nodes.fqdn.addressFamily | String | Pool node fqdn address family | 
+| F5.LTM.Nodes.fqdn.autopopulate | String | Pool node fqdn autopopulate | 
+| F5.LTM.Nodes.fqdn.downInterval | Number | Pool node fqdn down interval | 
+| F5.LTM.Nodes.fqdn.interval | String | Pool node fqdn interval | 
+| F5.LTM.Nodes.fullPath | String | Pool member full path | 
+| F5.LTM.Nodes.generation | Number | Pool node generation | 
+| F5.LTM.Nodes.kind | String | Pool node kind | 
+| F5.LTM.Nodes.logging | String | Pool node logging status | 
+| F5.LTM.Nodes.monitor | String | Pool node monitor listener | 
+| F5.LTM.Nodes.name | String | Pool node name | 
+| F5.LTM.Nodes.partition | String | Pool node configuration partition | 
+| F5.LTM.Nodes.rateLimit | String | Pool node rate limit | 
+| F5.LTM.Nodes.ratio | Number | Pool node ratio | 
+| F5.LTM.Nodes.selfLink | String | Pool node self link | 
+| F5.LTM.Nodes.session | String | Pool node session status | 
+| F5.LTM.Nodes.state | String | Pool node checking state | 
+
 
 #### Command Example
 ```!f5-ltm-enable-node node_name="XSOAR1"```
@@ -488,7 +603,7 @@ There is no context output for this command.
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 72,
+                "generation": 459,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -510,7 +625,7 @@ There is no context output for this command.
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 72 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 459 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
 
 
 ### f5-ltm-get-pool-member-stats
@@ -741,7 +856,7 @@ Get Node Stats
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.stats.serverside\.curConns.value | String | current connections | 
+| F5.LTM.Nodes.stats.serverside\.curConns.value | String | The current connections | 
 
 
 #### Command Example
@@ -840,7 +955,7 @@ Get node information by address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.name | String | Node name | 
+| F5.LTM.Nodes.name | String | The node name | 
 
 
 #### Command Example
@@ -890,7 +1005,7 @@ Get pool information by node
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.pools | String | Pool names | 
+| F5.LTM.Nodes.pools | String | The pool names | 
 
 
 #### Command Example
