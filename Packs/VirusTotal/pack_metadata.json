@@ -3,8 +3,8 @@
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
     "support": "partner",
     "currentVersion": "2.1.9",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "author": "VirusTotal",
+    "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
