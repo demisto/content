@@ -1,0 +1,25 @@
+{
+  "name": "HackerOne",
+  "description": "HackerOne allows users to fetch reports by using the fetch incidents capability. It also provides commands to retrieve all the reports and programs.",
+  "support": "xsoar",
+  "currentVersion": "1.0.0",
+  "author": "Cortex XSOAR",
+  "url": "https://www.hackerone.com/contact",
+  "email": "",
+  "created": "2021-08-24T06:32:22Z",
+  "categories": [
+    "Vulnerability Management"
+  ],
+  "tags": [
+    "Security"
+  ],
+  "useCases": [
+    "Vulnerability Management"
+  ],
+  "keywords": [
+    "HackerOne",
+    "reports",
+    "vulnerability"
+  ],
+  "githubUser": []
+}

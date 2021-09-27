@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportweaknessdescription",
+    "version": -1,
+    "modified": "2021-08-26T18:53:28.992498729+05:30",
+    "name": "HackerOne Report Weakness Description",
+    "ownerOnly": false,
+    "description": "The raw description of the weakness.",
+    "cliName": "hackeronereportweaknessdescription",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}
