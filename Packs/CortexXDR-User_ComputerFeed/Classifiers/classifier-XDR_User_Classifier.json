@@ -1,0 +1,36 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": true,
+	"fromServerVersion": "",
+	"id": "e28a3163-7d29-47fb-8429-d954e9ba3816",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"host": "hostRep",
+		"ip": "ipRep",
+		"user": "accountRep"
+	},
+	"locked": false,
+	"logicalVersion": 4,
+	"mapping": null,
+	"name": "XDR User Classifier",
+	"nameRaw": "XDR User Classifier",
+	"packID": "1aedcb9a-05c3-4e77-85f0-34e29ffcfc7e",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "indicator_source_type"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

@@ -1,0 +1,32 @@
+args:
+- name: value
+  required: true
+- defaultValue: "10"
+  description: Timeout applied to the User-ID mapping (in minutes)
+  name: timeout
+  required: true
+commonfields:
+  id: b02b7054-4969-4001-8597-1b490c467f1f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1aedcb9a-05c3-4e77-85f0-34e29ffcfc7e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+name: XDRUserMappingConvertToXML
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+type: python

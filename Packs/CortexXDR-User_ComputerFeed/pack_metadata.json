@@ -1,0 +1,17 @@
+{
+    "name": "Cortex XDR - User & Computer Feed",
+    "description": "The Cortex XDR - User & Computer Feed will pull the user and host information from XDR via an XQL query. It will then populate 'Host', 'Account' and 'IP' indicators in TIM. The pack also comes with an playbook that can be used to populate these indicators as User-ID values in Panorama.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-09-27T11:59:26Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}

@@ -1,0 +1,124 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cortex XDR - Computer & User Feed
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: ""
+  displaypassword: API Key ID
+  hiddenusername: true
+  name: apikey_id
+  required: true
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Whether to automatically creates the relationship between the Account
+    and Host indicator.
+  defaultvalue: "false"
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+- additionalinfo: A CSV of tenant IDs for which to collect the information from.
+  display: Default tenant IDS
+  name: tenant_ids
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1aedcb9a-05c3-4e77-85f0-34e29ffcfc7e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Cortex XDR - Queries (using XQL) for the latest computer and user mappings
+  to create indicators for export into other technologies.
+display: Cortex XDR - Computer & User Feed
+name: Cortex XDR - Computer & User Feed
+script:
+  commands:
+  - arguments: []
+    name: xdr-get-indicators
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: true
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: Cortex XDR - XQL Query Engine

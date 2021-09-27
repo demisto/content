@@ -1,0 +1,264 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": true,
+	"fromServerVersion": "",
+	"id": "f49ef79d-b643-43d3-8d27-5e7b222ffcd1",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 13,
+	"mapping": {
+		"accountRep": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Display Name": {
+					"complex": null,
+					"simple": "user"
+				},
+				"Domain Name": {
+					"complex": null,
+					"simple": "domain"
+				},
+				"First Seen By Source": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "first_seen",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Hostname": {
+					"complex": null,
+					"simple": "endpoint_name"
+				},
+				"Last Seen By Source": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "last_seen",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Username": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "domain",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false,
+										"value": null
+									},
+									"defaultValue": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "."
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "\\"
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${user}"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		},
+		"hostRep": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Domain Name": {
+					"complex": null,
+					"simple": "domain"
+				},
+				"First Seen By Source": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "first_seen",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"IP Address": {
+					"complex": null,
+					"simple": "ip_address"
+				},
+				"Internal": {
+					"complex": null,
+					"simple": "\"true\""
+				},
+				"Last Seen By Source": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "last_seen",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"MAC Address": {
+					"complex": null,
+					"simple": "mac_address"
+				},
+				"Operating System": {
+					"complex": null,
+					"simple": "operating_system"
+				},
+				"Operating System Version": {
+					"complex": null,
+					"simple": "os_version"
+				}
+			}
+		},
+		"ipRep": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Hostname": {
+					"complex": null,
+					"simple": "endpoint_name"
+				},
+				"MAC Address": {
+					"complex": null,
+					"simple": "mac_address"
+				},
+				"Username": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "domain",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false,
+										"value": null
+									},
+									"defaultValue": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "."
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "\\"
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "user"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "XDR User Mapper",
+	"nameRaw": "XDR User Mapper",
+	"packID": "1aedcb9a-05c3-4e77-85f0-34e29ffcfc7e",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

@@ -1,0 +1,191 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1aedcb9a-05c3-4e77-85f0-34e29ffcfc7e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 62eb5cb7-7b88-4e34-8650-03341e45e521
+inputs:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue: null
+        tovalue: null
+      todate: "0001-01-01T00:00:00Z"
+    query: type:IP and sourceBrands:"Cortex XDR - Computer & User Feed"
+    queryEntity: indicators
+    results: null
+    runFromLastJobTime: false
+  required: false
+  value: {}
+name: XDR User Map - Populate Panorama UserID
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d8453187-2334-44ab-8475-d4aa5b1fcb9c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d8453187-2334-44ab-8475-d4aa5b1fcb9c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: e2cbfa59-2970-45c2-80cb-957d4525f281
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e2cbfa59-2970-45c2-80cb-957d4525f281
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3586014f-a9cb-4557-896d-c9944d1450b7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 3586014f-a9cb-4557-896d-c9944d1450b7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        complex:
+          root: playbookQuery
+          transformers:
+          - args:
+              timeout:
+                value:
+                  simple: "360"
+            operator: b02b7054-4969-4001-8597-1b490c467f1f
+          - args:
+              separator: {}
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: <uid-message><version>1.0</version><type>update</type><payload><login>
+              suffix:
+                value:
+                  simple: </login></payload></uid-message>
+            operator: concat
+      type:
+        simple: user-id
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run any command supported in the API.
+      id: 21ea6819-3eff-4ad0-839b-2e2f2ec9810c
+      iscommand: true
+      name: Update User-IDs
+      script: '|||panorama'
+      type: regular
+      version: -1
+    taskid: 21ea6819-3eff-4ad0-839b-2e2f2ec9810c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
