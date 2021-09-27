@@ -94,10 +94,6 @@
           "complex": null,
           "simple": "relationships.reporter.data.attributes.website"
         },
-        "HackerOne Report Severity": {
-          "complex": null,
-          "simple": "relationships.severity.data.attributes.rating"
-        },
         "HackerOne Report Severity ID": {
           "complex": null,
           "simple": "relationships.severity.data.id"
