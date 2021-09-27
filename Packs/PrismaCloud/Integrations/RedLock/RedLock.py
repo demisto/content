@@ -591,11 +591,11 @@ def redlock_list_scans():
         readable_output = []
         for item in items:
             readable_output.append({
-                "id": item.get('id'),
-                "name": item.get('attributes')['name'],
-                "type": item.get('attributes')['type'],
-                "scanTime": item.get('attributes')['scanTime'],
-                "user": item.get('attributes')['user']
+                "ID": item.get('id'),
+                "Name": item.get('attributes')['name'],
+                "Type": item.get('attributes')['type'],
+                "Scan Time": item.get('attributes')['scanTime'],
+                "User": item.get('attributes')['user']
             })
         md = tableToMarkdown("Scans List:", readable_output)
         demisto.results({
@@ -622,8 +622,8 @@ def redlock_get_scan_status():
     else:
         result = response['data']
         readable_output = {
-                "id": result.get('id'),
-                "status": result.get('attributes')['status']
+                "ID": result.get('id'),
+                "Status": result.get('attributes')['status']
         }
         md = tableToMarkdown("Scan Status:", readable_output)
         demisto.results({
@@ -631,6 +631,44 @@ def redlock_get_scan_status():
             'ContentsFormat': formats['json'],
             'Contents': result,
             'EntryContext': {'Redlock.Scans(val.id == obj.id)': result},
+            'HumanReadable': md
+        })
+
+
+def redlock_get_scan_results():
+    """
+    Get DevOps Scan Results
+    """
+    scan_id = demisto.args().get('scan_id', None)
+
+    response = req('GET', f'iac/v2/scans/{scan_id}/results', param_data={}, data={})
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response['data']
+        readable_output = []
+        for item in items:
+            readable_output.append({
+                "ID": item.get('id'),
+                "Name": item.get('attributes')['name'],
+                "Policy ID": item.get('attributes')['policyId'],
+                "Description": item.get('attributes')['desc'],
+                "Severity": item.get('attributes')['severity']
+            })
+        results = {
+            "id": scan_id,
+            "results": items
+        }
+        md = tableToMarkdown("Scan Results:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': results},
             'HumanReadable': md
         })
 
@@ -707,6 +745,8 @@ def main():
             redlock_list_scans()
         elif command == 'redlock-get-scan-status':
             redlock_get_scan_status()
+        elif command == 'redlock-get-scan-results':
+            redlock_get_scan_results()
         elif command == 'fetch-incidents':
             incidents, new_run = fetch_incidents()
             demisto.incidents(incidents)

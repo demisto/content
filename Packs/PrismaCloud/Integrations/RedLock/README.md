@@ -1125,7 +1125,7 @@ List DevOps Scans
 #### Human Readable Output
 
 >### Scans List:
->|id|name|scanTime|type|user|
+>|ID|Name|Scan Time|Type|User|
 >|---|---|---|---|---|
 >| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | Github Asset Dev | 2021-09-23T04:49:22Z | GitHub | amahmoud@paloaltonetworks.com |
 
@@ -1168,6 +1168,406 @@ Get scan status
 ```
 #### Human Readable Output
 >### Scans Status:
->|id|status|
+>|ID|Status|
 >|---|---|
 >| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | failed |
+
+### redlock-get-scan-results
+***
+Get scan results
+
+
+#### Base Command
+
+`redlock-get-scan-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.id | String | Scan ID | 
+| Redlock.Scans.results.attributes.name | String | Scan result name | 
+| Redlock.Scans.results.attributes.policyId | String | Scan result policy id | 
+| Redlock.Scans.results.attributes.desc | String | Scan result description | 
+| Redlock.Scans.results.id | String | Scan result ID | 
+| Redlock.Scans.results.attributes.severity | String | Scan result severity | 
+
+
+#### Command Example
+```json
+{
+    "Redlock": {
+        "Scans": {
+            "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783",
+            "results": [
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Ensure that all capabilities are dropped.",
+                        "docUrl": "https://prisma.fyi/p93",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "All capabilities should be dropped",
+                        "policyId": "cca6bb6a-4e05-47a1-acaa-29f198799aa2",
+                        "rule": "($.kind equals Pod and (spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL )] exists)) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists))",
+                        "severity": "high",
+                        "systemDefault": false
+                    },
+                    "id": "cca6bb6a-4e05-47a1-acaa-29f198799aa2"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Docker has a list of capabilities which are allowed by default for a container. These capabilities should be restricted to only the required set.",
+                        "docUrl": "https://prisma.fyi/p120",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Container configured to use the default set of capabilities",
+                        "policyId": "a5662da6-733a-4aba-b764-ba06c37419b1",
+                        "rule": "($.kind equals Pod and ((($.spec.containers.securityContext exists and $.spec.containers.securityContext[*] is empty) or ($.spec.containers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists)) or (($.spec.initContainers.securityContext exists and $.spec.initContainers.securityContext[*] is empty) or ($.spec.initContainers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists)))) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ((($.spec.template.spec.containers.securityContext exists and $.spec.template.spec.containers.securityContext[*] is empty) or ($.spec.template.spec.containers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists)) or (($.spec.template.spec.initContainers.securityContext exists and $.spec.template.spec.initContainers.securityContext is empty) or ($.spec.template.spec.initContainers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists)))) or ($.kind equals CronJob and ((($.spec.jobTemplate.spec.template.spec.containers.securityContext exists and $.spec.jobTemplate.spec.template.spec.containers.securityContext[*] is empty) or ($.spec.jobTemplate.spec.template.spec.containers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists)) or (($.spec.jobTemplate.spec.template.spec.initContainers.securityContext exists and $.spec.jobTemplate.spec.template.spec.initContainers.securityContext[*] is empty) or ($.spec.jobTemplate.spec.template.spec.initContainers[?any(securityContext.capabilities does not exist or securityContext.capabilities[*] is empty)] exists))))",
+                        "severity": "medium",
+                        "systemDefault": false
+                    },
+                    "id": "a5662da6-733a-4aba-b764-ba06c37419b1"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 23,
+                                        "path": "/spec/template/spec/containers/0/securityContext/runAsUser"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Ensure entrypoint of the container runs with a user with a high ID.",
+                        "docUrl": "https://prisma.fyi/p89",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[23]"
+                        ],
+                        "name": "Entrypoint of the container must be run with a user with a high ID",
+                        "policyId": "aea7eaac-fbd7-4f1d-8e2c-f85b8119998a",
+                        "rule": "$.spec.template.spec.containers[*].securityContext.runAsUser exists and $.spec.template.spec.containers[*].securityContext.runAsUser \u003c 9999",
+                        "severity": "medium",
+                        "systemDefault": false
+                    },
+                    "id": "aea7eaac-fbd7-4f1d-8e2c-f85b8119998a"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Ensure that all capabilities are dropped.",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Gordon All capabilities should be dropped",
+                        "policyId": "212b481a-4132-4bdd-a0f8-e429d5d9842a",
+                        "rule": "($.kind equals Pod and (spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL )] exists)) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists))",
+                        "severity": "medium",
+                        "systemDefault": false
+                    },
+                    "id": "212b481a-4132-4bdd-a0f8-e429d5d9842a"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "The root filesytem for a container should be set to read-only to prevent any attackers from making any machine level changes.",
+                        "docUrl": "https://prisma.fyi/p53",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Root filesystem is writable",
+                        "policyId": "03b12ba0-63fc-4157-a71b-16f70cd7fed2",
+                        "rule": "(kind equals Pod and (spec.containers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists or spec.initContainers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists)) or (kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists ) or (spec.template.spec.initContainers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists)) or  (kind equals CronJob and (spec.jobTemplate.spec.template.spec.containers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists or spec.jobTemplate.spec.template.spec.initContainers[?any(securityContext.readOnlyRootFilesystem does not exist or securityContext.readOnlyRootFilesystem equals false)] exists))",
+                        "severity": "medium",
+                        "systemDefault": false
+                    },
+                    "id": "03b12ba0-63fc-4157-a71b-16f70cd7fed2"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Without CPU limits the container can cause the host to be crash and become non-responsive.",
+                        "docUrl": "https://prisma.fyi/p119",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "CPU limits not configued",
+                        "policyId": "4dd625e4-21af-4804-b957-ba1539e3b38d",
+                        "rule": "($.kind equals Pod and ((spec.containers[?any(resources.limits.cpu does not exist)] exists) or (spec.initContainers[?any(resources.limits.cpu does not exist)] exists))) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(resources.limits.cpu does not exist)] exists) or (spec.template.spec.initContainers[?any(resources.limits.cpu does not exist)] exists)) or ($.kind equals CronJob and ((spec.jobTemplate.spec.template.spec.containers[?any(resources.limits.cpu does not exist)] exists) or (spec.jobTemplate.spec.template.spec.initContainers[?any(resources.limits.cpu does not exist)] exists)))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "4dd625e4-21af-4804-b957-ba1539e3b38d"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Custom hosts configuration should be avoided.",
+                        "docUrl": "https://prisma.fyi/p112",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2]"
+                        ],
+                        "name": "Container configured with custom hosts",
+                        "policyId": "3697e567-0687-4728-81dd-a67c8f7c414f",
+                        "rule": "(kind equals Pod and (spec.hostAliases is not empty or spec.containers[*].volumeMounts[*].mountPath equals /etc/hosts)) or (kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.hostAliases is not empty or spec.template.spec.containers[*].volumeMounts[*].mountPath equals /etc/hosts)) or (kind equals CronJob and (spec.jobTemplate.spec.template.spec.hostAliases is not empty or spec.jobTemplate.spec.template.spec.containers[*].volumeMounts[*].mountPath equals /etc/hosts))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "3697e567-0687-4728-81dd-a67c8f7c414f"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "By default images are not pulled from remote if the image is available locally. This combined with image tags like \"latest\" can result in containers running with outdated images.",
+                        "docUrl": "https://prisma.fyi/p123",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Container could run using outdated docker image",
+                        "policyId": "15ebd2f1-f49d-45b8-8f46-2e9e42117bb8",
+                        "rule": "(kind equals Pod and ((spec.containers[?any(imagePullPolicy does not contain Always)] exists) or (spec.initContainers[?any(imagePullPolicy does not contain Always)] exists) or (spec.containers[?any(imagePullPolicy does not exist)] exists and spec.containers[?any(image none end with latest)] exists) or (spec.initContainers[?any(imagePullPolicy exists)] exists and spec.initContainers[?any(imagePullPolicy does not exist)] exists and spec.initContainers[?any(image none end with latest)] exists))) or (kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ((spec.template.spec.containers[?any(imagePullPolicy does not contain Always)] exists) or (spec.template.spec.initContainers[?any(imagePullPolicy does not contain Always)] exists) or (spec.template.spec.initContainers[?any(imagePullPolicy does not exist)] exists and spec.template.spec.initContainers[?any(image none end with latest)] exists) or (spec.template.spec.containers[?any(imagePullPolicy does not exist)] exists and $.spec.template.spec.containers[?any(image none end with latest)] exists))) or (kind equals CronJob and ((spec.jobTemplate.spec.template.spec.containers[?any(imagePullPolicy exists)] exists and spec.jobTemplate.spec.template.spec.containers[?any(imagePullPolicy does not contain Always)] exists) or (spec.jobTemplate.spec.template.spec.initContainers[?any(imagePullPolicy exists)] exists and spec.jobTemplate.spec.template.spec.initContainers[?any(imagePullPolicy does not contain Always)] exists) or (spec.jobTemplate.spec.template.spec.initContainers[?any(imagePullPolicy does not exist)] exists and spec.jobTemplate.spec.template.spec.initContainers[?any(image none end with latest)] exists) or (spec.jobTemplate.spec.template.spec.containers[?any(imagePullPolicy does not exist)] exists and $.spec.jobTemplate.spec.template.spec.containers[?any(image none end with latest)] exists)))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "15ebd2f1-f49d-45b8-8f46-2e9e42117bb8"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Liveness probe is used to detect responsiveness of a container and schedule restarts.",
+                        "docUrl": "https://prisma.fyi/p115",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Liveness probe not configured",
+                        "policyId": "fe0c2150-79a5-4d33-8d6b-5debfbd67863",
+                        "rule": "($.kind equals Pod and ($.spec.containers[?any(livenessProbe does not exist or livenessProbe[*] is empty)] exists)) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ($.spec.template.spec.containers[?any(livenessProbe does not exist or livenessProbe[*] is empty)] exists)) or ($.kind equals CronJob and ($.spec.jobTemplate.spec.template.spec.containers[?any(livenessProbe does not exist or livenessProbe[*] is empty)] exists))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "fe0c2150-79a5-4d33-8d6b-5debfbd67863"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Without memory limits the containers can keep allocating memory until the host runs out of memory.",
+                        "docUrl": "https://prisma.fyi/p128",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Memory limits not configured",
+                        "policyId": "a6e6cfc8-aec7-4dc1-b7e6-78defc6875bb",
+                        "rule": "(kind equals Pod and (spec.containers[?any(resources.limits.memory does not exist)] exists or spec.initContainers[?any(resources.limits.memory does not exist)] exists)) or (kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(resources.limits.memory does not exist)] exists or spec.template.spec.initContainers[?any(resources.limits.memory does not exist)] exists)) or (kind equals CronJob and (spec.jobTemplate.spec.template.spec.containers[?any(resources.limits.memory does not exist)] exists or spec.jobTemplate.spec.template.spec.initContainers[?any(resources.limits.memory does not exist)] exists))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "a6e6cfc8-aec7-4dc1-b7e6-78defc6875bb"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Rediness probe is used to determine if a container is ready to receive traffic.",
+                        "docUrl": "https://prisma.fyi/p118",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Readiness probe not configured",
+                        "policyId": "3497d330-ee07-4f58-9662-c0259b3f8d78",
+                        "rule": "($.kind equals Pod and ($.spec.containers[?any(readinessProbe does not exist or readinessProbe[*] is empty)] exists)) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ($.spec.template.spec.containers[?any(readinessProbe does not exist or readinessProbe[*] is empty)] exists)) or ($.kind equals CronJob and ($.spec.jobTemplate.spec.template.spec.containers[?any(readinessProbe does not exist or readinessProbe[*] is empty)] exists))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "3497d330-ee07-4f58-9662-c0259b3f8d78"
+                },
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Container UID should be set to a high value to avoid conflicts with processes running on the host system.",
+                        "docUrl": "https://prisma.fyi/p113",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "Use high UID for containers",
+                        "policyId": "6a558fd3-606b-4ce1-9ccd-f6f1759f2b38",
+                        "rule": "($.kind equals Pod and ($.spec.securityContext.runAsUser \u003c 10000 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists)) or ($.spec.securityContext.runAsUser \u003e 9999 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser \u003c 10000)] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser \u003c 10000)] exists)) or ($.spec.securityContext.runAsUser does not exist and (($.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists) or ($.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists)))) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ($.spec.template.spec.securityContext.runAsUser \u003c 10000 and ($.spec.template.spec.containers exists and $.spec.template.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists)) or (($.spec.template.spec.securityContext.runAsUser exists and $.spec.template.spec.securityContext.runAsUser \u003e 9999) and ($.spec.template.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser \u003c 10000)] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser \u003c 10000)] exists)) or ($.spec.template.spec.securityContext.runAsUser does not exist and (($.spec.template.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists) or ($.spec.template.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists))))",
+                        "severity": "low",
+                        "systemDefault": false
+                    },
+                    "id": "6a558fd3-606b-4ce1-9ccd-f6f1759f2b38"
+                }
+            ]
+        }
+    }
+}
+```
+#### Human Readable Output
+
+>### Scans Results:
+>|Description|ID|Name|Policy ID|Severity|
+>|---|---|---|---|---|
+>| Ensure that all capabilities are dropped. | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | All capabilities should be dropped | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | high |
+>| Ensure entrypoint of the container runs with a user with a high ID. | aea7eaac-fbd7-4f1d-8e2c-f85b8119998a | Entrypoint of the container must be run with a user with a high ID | aea7eaac-fbd7-4f1d-8e2c-f85b8119998a | medium |
+
+

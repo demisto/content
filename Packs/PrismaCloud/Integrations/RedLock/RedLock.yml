@@ -1120,6 +1120,36 @@ script:
     - contextPath: Redlock.Scans.attributes.status
       description: Scan status
       type: String
+  - arguments:
+    - default: false
+      description: The scan ID
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get scan results
+    execution: false
+    name: redlock-get-scan-results
+    outputs:
+    - contextPath: Redlock.Scans.id
+      description: Scan ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.name
+      description: Scan result name
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.policyId
+      description: Scan result policy id
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.desc
+      description: Scan result description
+      type: String
+    - contextPath: Redlock.Scans.results.id
+      description: Scan result ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.severity
+      description: Scan result severity
+      type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
