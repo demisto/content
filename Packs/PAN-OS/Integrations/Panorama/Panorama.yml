@@ -1,9 +1,9 @@
 commonfields:
-  id: Panorama v3
+  id: Panorama
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Panorama v3
-display: Panorama v3
+name: Panorama
+display: Panorama
 category: Network Security
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
