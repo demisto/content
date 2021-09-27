@@ -1010,3 +1010,121 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 >|Account|Deleted|Region|Resource Name|Service|
 >|---|---|---|---|---|
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
+
+
+### redlock-list-scans
+***
+List DevOps Scans
+
+
+#### Base Command
+
+`redlock-list-scans`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_by | Aggregate scan results by group. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
+| page_size | Pagination size. Default is 25. | Optional | 
+| page_number | Pagination number. Default is 1. | Optional | 
+| sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
+| filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
+| filter_time_amount | Number of time units. Default is 1. | Optional | 
+| filter_time_unit | Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
+| filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
+| filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
+| filter_asset_type | Asset type to search with. | Optional | 
+| filter_asset_name | Asset name to search with. | Optional | 
+| filter_user | User to filter with, example: ayman@example.domain. | Optional | 
+| filter_status | Status to filter with, example: passed. Possible values are: . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.id | String | Scan ID | 
+| Redlock.Scans.attributes.user.[0] | String | Scan user | 
+
+
+#### Command Example
+```json
+{
+    "Redlock": {
+        "Scans": [
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "my-devsecops",
+                        "pullRequestId": "94",
+                        "repository": "moon",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "my-devsecops"
+                    },
+                    "scanTime": "2021-09-23T04:49:22Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "amahmoud@paloaltonetworks.com"
+                    ]
+                },
+                "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783",
+                "links": {
+                    "self": "/v2/scans/94cc4018-5f4b-4b52-a38f-3cd5117e4783"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+#### Human Readable Output
+
+>### Scans List:
+>|id|name|scanTime|type|user|
+>|---|---|---|---|---|
+>| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | Github Asset Dev | 2021-09-23T04:49:22Z | GitHub | amahmoud@paloaltonetworks.com |
