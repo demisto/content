@@ -1,5 +1,3 @@
-Note: Support for this pack will be moving to the partner around September 28, 2021.
-
 VirusTotal inspects submitted hashes, URLs, domains, and IP addresses for suspicious behavior.
 
 ## What does this pack do?
