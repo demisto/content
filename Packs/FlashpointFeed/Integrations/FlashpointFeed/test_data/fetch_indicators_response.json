@@ -159,7 +159,7 @@
       ],
       "attribute_count": "4",
       "date": "2021-07-05",
-      "event_creator_email": "info@flashpoint-intel.com",
+      "event_creator_email": "dummy@flashpoint-dummy.com",
       "fpid": "JWTy97NhWeW3xDleT3CFyg",
       "href": "https://fp.tools/api/v4/indicators/event/JWTy97NhWeW3xDleT3CFyg",
       "info": "Analysis: quasar \"jLikteQnlDEVdTa\" [2021-07-05 06:10:32]",
