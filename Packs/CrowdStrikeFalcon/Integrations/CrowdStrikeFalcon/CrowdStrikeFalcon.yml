@@ -83,12 +83,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The status of the device. Possible values are: "Normal", "containment_pending",
+      description: 'The status of the device. Possible values are: "normal", "containment_pending",
         "contained", and "lift_containment_pending".'
       isArray: false
       name: status
       predefined:
-      - Normal
+      - normal
       - containment_pending
       - contained
       - lift_containment_pending
