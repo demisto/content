@@ -99,7 +99,7 @@ script:
       - kWarning
       - kInfo
     deprecated: false
-    description: Get Cohesity Helios ransomware Alerts command.
+    description: Get Cohesity Helios ransomware alerts.
     execution: false
     name: cohesity-helios-get-ransomware-alerts
     outputs:
@@ -144,7 +144,7 @@ script:
       name: object_name
       required: true
     deprecated: false
-    description: Restore latest clean snapshot for given object.
+    description: Restore the latest clean snapshot for the given object.
     execution: false
     name: cohesity-helios-restore-latest-clean-snapshot
   isfetch: true
@@ -153,7 +153,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 defaultmapperin: Cohesity Helios Incoming mapper

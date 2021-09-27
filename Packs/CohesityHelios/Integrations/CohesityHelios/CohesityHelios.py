@@ -75,7 +75,7 @@ class Client(BaseClient):
         return ransomware_alerts
 
     def suppress_ransomware_alert_by_id(self, alert_id: str):
-        """Patch API call to supress ransomware alert by id.
+        """Patch API call to suppress ransomware alert by id.
         """
         return self._http_request(
             method='PATCH',
@@ -233,7 +233,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     start_time_millis = datestring_to_millis(args.get('created_after', ''))
     end_time_millis = datestring_to_millis(args.get('created_before', ''))
     severity_list = args.get('alert_severity_list', None)
-    ids_list = args.get('alert_id_list', None)
+    ids_list = argToList(args.get('alert_id_list', []))
     limit = args.get('limit', MAX_FETCH_DEFAULT)
 
     # Fetch ransomware alerts via client.
@@ -242,8 +242,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
         end_time_millis=end_time_millis, alert_ids=ids_list,
         alert_severity_list=severity_list,
         max_fetch=limit)
-    demisto.debug("Got {numAlerts} alerts between {start} and {end}".
-                  format(numAlerts=len(resp), start=start_time_millis, end=end_time_millis))
+    demisto.debug(f"Got {len(resp)} alerts between {start_time_millis} and {end_time_millis}.")
 
     # Parse alerts for readable output.
     ransomware_alerts = []
@@ -273,8 +272,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
     # Filter ransomware alert for given object name.
     alert_id = ''
     object_name = args.get('object_name')
-    demisto.debug("Performing ignore anomaly operation for object {name}".format(name=object_name))
-
+    demisto.debug(f"Performing ignore anomaly operation for object {object_name}.")
     resp = client.get_ransomware_alerts()
     for alert in resp:
         property_dict = _get_property_dict(alert['propertyList'])
@@ -282,12 +280,12 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
             alert_id = alert.get('id')
 
     if alert_id == '':
-        raise ValueError('No anomalous object found by given name')
+        raise ValueError(f'CohesityHelios error: no anomalous object found by the given name: {object_name}. ')
 
     # Suppress ransomware alert.
     client.suppress_ransomware_alert_by_id(alert_id)
 
-    return "Ignored object {name}".format(name=object_name)
+    return f"Ignored object {object_name}."
 
 
 def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
@@ -305,7 +303,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
     alert_id = ''
     restore_properties = {}
     object_name = args.get('object_name')
-    demisto.debug("Performing restore operation for object {name}".format(name=object_name))
+    demisto.debug(f"Performing restore operation for object {object_name}.")
 
     resp = client.get_ransomware_alerts()
     for alert in resp:
@@ -316,7 +314,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
                 break
 
     if alert_id == '':
-        raise ValueError('No anomalous object found by given name')
+        raise ValueError(f"CohesityHelios error: no anomalous object found by the given name {object_name}.")
 
     # Prepare restore vm properties.
     request_payload = {
@@ -340,12 +338,11 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
     cluster_id = restore_properties['cid']
 
     # Post restore request to helios
-    resp = client.restore_vm_object(cluster_id, request_payload)
+    client.restore_vm_object(cluster_id, request_payload)
 
     # Resolve ransomware alert.
     client.resolve_ransomware_alert_by_id(alert_id)
-
-    return "Restored object {name}".format(name=object_name)
+    return f"Restored object {object_name}."
 
 
 def fetch_incidents_command(client: Client):
@@ -365,16 +362,16 @@ def fetch_incidents_command(client: Client):
     end_time_millis = get_current_millis()
 
     # Fetch all new incidents.
-    max_fetch = demisto.params().get('max_fetch')
-    max_fetch = int(demisto.params().get('max_fetch')) if (
+    params = demisto.params()
+    max_fetch = params.get('max_fetch')
+    max_fetch = int(params.get('max_fetch')) if (
         max_fetch and max_fetch.isdigit()) else MAX_FETCH_DEFAULT
 
     ransomware_resp = client.get_ransomware_alerts(
         start_time_millis=start_time_millis,
         end_time_millis=end_time_millis,
         max_fetch=max_fetch)
-    demisto.debug("Got {numAlerts} alerts between {start} and {end}".
-                  format(numAlerts=len(ransomware_resp), start=start_time_millis, end=end_time_millis))
+    demisto.debug(f"Got {len(ransomware_resp)} alerts between {start_time_millis} and {end_time_millis}.")
 
     # Get incidents for ransomware alerts.
     incidents = []
@@ -427,20 +424,21 @@ def main() -> None:
     :rtype:
     """
 
+    params = demisto.params()
     # Get API key for authentication.
-    api_key = demisto.params().get('apikey')
+    api_key = params.get('apikey')
 
     # Get helios service API url.
-    base_url = demisto.params()['url']
+    base_url = params['url']
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
