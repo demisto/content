@@ -1128,3 +1128,46 @@ List DevOps Scans
 >|id|name|scanTime|type|user|
 >|---|---|---|---|---|
 >| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | Github Asset Dev | 2021-09-23T04:49:22Z | GitHub | amahmoud@paloaltonetworks.com |
+
+
+### redlock-get-scan-status
+***
+Get scan status
+
+
+#### Base Command
+
+`redlock-get-scan-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.id | String | Scan ID | 
+| Redlock.Scans.attributes.status | String | Scan status | 
+
+
+#### Command Example
+```json
+{
+    "Redlock": {
+        "Scans": {
+            "attributes": {
+                "status": "failed"
+            },
+            "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783"
+        }
+    }
+}
+```
+#### Human Readable Output
+>### Scans Status:
+>|id|status|
+>|---|---|
+>| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | failed |

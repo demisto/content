@@ -1099,6 +1099,27 @@ script:
     - contextPath: Redlock.Scans.attributes.user.[0]
       description: Scan user
       type: String
+    - contextPath: Redlock.Scans.attributes.status
+      description: Scan status
+      type: String
+  - arguments:
+    - default: false
+      description: The scan ID
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get scan status
+    execution: false
+    name: redlock-get-scan-status
+    outputs:
+    - contextPath: Redlock.Scans.id
+      description: Scan ID
+      type: String
+    - contextPath: Redlock.Scans.attributes.status
+      description: Scan status
+      type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true

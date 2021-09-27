@@ -607,6 +607,34 @@ def redlock_list_scans():
         })
 
 
+def redlock_get_scan_status():
+    """
+    Get DevOps Scan Status
+    """
+    scan_id = demisto.args().get('scan_id', None)
+
+    response = req('GET', f'iac/v2/scans/{scan_id}/status', param_data={}, data={})
+    if (
+            not response
+            or 'data' not in response
+    ):
+        demisto.results('No results found')
+    else:
+        result = response['data']
+        readable_output = {
+                "id": result.get('id'),
+                "status": result.get('attributes')['status']
+        }
+        md = tableToMarkdown("Scan Status:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': result},
+            'HumanReadable': md
+        })
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
@@ -677,6 +705,8 @@ def main():
             redlock_search_config()
         elif command == 'redlock-list-scans':
             redlock_list_scans()
+        elif command == 'redlock-get-scan-status':
+            redlock_get_scan_status()
         elif command == 'fetch-incidents':
             incidents, new_run = fetch_incidents()
             demisto.incidents(incidents)
