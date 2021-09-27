@@ -1,7 +1,6 @@
 commonfields:
   id: Panorama
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Panorama
 display: Panorama
 category: Network Security
@@ -193,6 +192,7 @@ script:
     - name: interval_in_seconds
       description: Interval (in seconds) to check each polling.
     - name: job_id
+      description: Used only in polling and does not need to be filled in.
     outputs:
     - contextPath: Panorama.Commit.JobID
       description: Job ID to commit.
@@ -946,6 +946,7 @@ script:
       default: true
       description: URL to check.
       isArray: true
+      required: true
     outputs:
     - contextPath: Panorama.URLFilter.URL
       description: The URL.
@@ -2757,6 +2758,8 @@ script:
     - name: interval_in_seconds
       description: Interval for polling.
     - name: job_id
+      description: Used only in the polling command and does not need to be filled
+        in.
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
       description: Job ID of the PAN-OS download.
@@ -2805,6 +2808,7 @@ script:
     - name: interval_in_seconds
       description: Interval (in seconds_ for polling.
     - name: job_id
+      description: Used only with polling and does not need to be filled in.
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
       description: Job ID of the PAN-OS installation.
@@ -3480,8 +3484,10 @@ script:
       type: string
     description: Installs specific content update file.
     polling: true
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   subtype: python3
-sourcemoduleid: Panorama
-polling: true
+fromversion: 5.0.0
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
