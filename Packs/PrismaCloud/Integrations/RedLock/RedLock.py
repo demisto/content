@@ -8,7 +8,7 @@ VERIFY = False
 DEFAULT_LIMIT = 100
 
 # Standard headers
-HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+HEADERS = {'Content-Type': 'application/json', 'Accept': '*/*'}
 TOKEN = None
 
 
@@ -48,6 +48,7 @@ def req(method, path, data, param_data):
     if not TOKEN:
         get_token()
     response = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS, verify=VERIFY)
+
     if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         text = response.text
         if response.headers.get('x-redlock-status'):
@@ -95,11 +96,11 @@ def list_filters():
     })
 
 
-def convert_date_to_unix(date_str):
+def convert_date_to_unix(date_str, date_format="%m/%d/%Y"):
     """
     Convert a given string with MM/DD/YYYY format to millis since epoch
     """
-    date = datetime.strptime(date_str, '%m/%d/%Y')
+    date = datetime.strptime(date_str, date_format)
     return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
 
@@ -520,6 +521,92 @@ def redlock_search_config():
         })
 
 
+def redlock_list_scans():
+    """
+    List DevOps Scans
+    """
+    group_by = demisto.args().get('group_by', 'scanId')
+    page_size = demisto.args().get('page_size', 25)
+    page_number = demisto.args().get('page_number', 1)
+    sort = demisto.args().get('sort', None)
+    filter_type = demisto.args().get('filter_type', 'relative')
+    filter_time_amount = demisto.args().get('filter_time_amount', 1)
+    filter_time_unit = demisto.args().get('filter_time_unit', 'day')
+    filter_user = demisto.args().get('filter_user', None)
+    filter_status = demisto.args().get('filter_status', None)
+    filter_asset_type = demisto.args().get('filter_asset_type', None)
+    filter_asset_name = demisto.args().get('filter_asset_name', None)
+    filter_start_time = demisto.args().get('filter_start_time', None)
+    filter_end_time = demisto.args().get('filter_end_time', None)
+
+    list_filter = {
+        'groupBy': group_by,
+        'page[size]': page_size,
+        'page[number]': page_number,
+        'filter[timeType]': filter_type
+    }
+
+    if sort:
+        list_filter['sort'] = sort
+
+    if filter_type == 'relative':
+        if filter_time_unit and filter_time_amount:
+            list_filter['filter[timeUnit]'] = filter_time_unit
+            list_filter['filter[timeAmount]'] = filter_time_amount
+        else:
+            return_error('You must specify a filter_time_unit and filter_time_amount with relative type filter')
+    elif filter_type == 'to_now':
+        if filter_start_time:
+            list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
+        else:
+            return_error('You must specify filter_start_time with to_now type filter')
+    elif filter_type == 'absolute':
+        if filter_start_time and filter_end_time:
+            list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
+            list_filter['filter[endTime]'] = convert_date_to_unix(filter_end_time, date_format="%m/%d/%Y %H:%M:%S")
+        else:
+            return_error('You must specify a filter_start_time and filter_end_time with absolute type filter')
+
+    if filter_user:
+        list_filter['filter[user]'] = filter_user
+
+    if filter_status:
+        list_filter['filter[status]'] = filter_status
+
+    if filter_asset_type:
+        list_filter['filter[assetType]'] = filter_asset_type
+
+    if filter_asset_name:
+        list_filter['filter[assetName]'] = filter_asset_name
+
+    response = req('GET', 'iac/v2/scans', param_data=list_filter, data={})
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response['data']
+        readable_output = []
+        for item in items:
+            readable_output.append({
+                "id": item.get('id'),
+                "name": item.get('attributes')['name'],
+                "type": item.get('attributes')['type'],
+                "scanTime": item.get('attributes')['scanTime'],
+                "user": item.get('attributes')['user']
+            })
+        md = tableToMarkdown("Scans List:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': items,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': items},
+            'HumanReadable': md
+        })
+
+
 def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
@@ -588,6 +675,8 @@ def main():
             get_rql_response(demisto.args())
         elif command == 'redlock-search-config':
             redlock_search_config()
+        elif command == 'redlock-list-scans':
+            redlock_list_scans()
         elif command == 'fetch-incidents':
             incidents, new_run = fetch_incidents()
             demisto.incidents(incidents)
