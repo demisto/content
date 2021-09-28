@@ -26,7 +26,7 @@ configuration:
   required: false
   defaultvalue: Cohesity Helios Ransomware Incident
   type: 13
-- defaultvalue: '20'
+- defaultvalue: '200'
   display: Maximum number of incidents to fetch every time
   hidden: false
   name: max_fetch
@@ -67,7 +67,7 @@ script:
       isArray: false
       required: false
     - name: limit
-      defaultValue: 20
+      defaultValue: 200
       default: false
       description: Limits the number of alerts to return.
       isArray: false
