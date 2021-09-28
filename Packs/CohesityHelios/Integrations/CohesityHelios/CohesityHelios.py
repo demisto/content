@@ -103,7 +103,11 @@ class Client(BaseClient):
     def restore_vm_object(self, cluster_id, payload):
         """Posts recover vm object details to Helios.
         """
-        client_headers = self._headers.copy()
+        if self._headers is not None:
+            client_headers = self._headers.copy()
+        else:
+            client_headers = {}
+                
         client_headers['clusterid'] = cluster_id
 
         return self._http_request(
@@ -400,6 +404,7 @@ def fetch_incidents_command(client: Client):
     # Send incidents to Cortex-XSOAR.
     demisto.incidents(incidents)
 
+    return incidents
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
