@@ -41,7 +41,7 @@ TEST_MODULE = "(select (name) (from device ) (limit 1))"
 def isIPv4(s):
     try:
         return str(int(s)) == s and 0 <= int(s) <= 255
-    except:
+    except ValueError:
         return False
 
 
@@ -93,7 +93,7 @@ def nexthink_endpoint_details(device: None, ip: None):
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
             sys.exit(0)
     else:
-        if device[0].isalpha() == True:
+        if device[0].isalpha():
             data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
         else:
             return_results('Please enter valid hostname. (e.g. AMCE1234)')
@@ -164,7 +164,7 @@ def nexthink_compliance_check(device: None, ip: None):
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
             sys.exit(0)
     else:
-        if device[0].isalpha() == True:
+        if device[0].isalpha():
             data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
         else:
             return_results('Please enter valid endpoint hostname. (e.g. AMCE1234)')
