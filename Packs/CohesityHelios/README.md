@@ -6,6 +6,6 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 
 - Command to fetch ransomware alerts based on attributes such as time duration, severity level, cluster identifiers and region identifiers.
 
-- Command to restore a specified backedup object from its latest clean snapshot.
+- Command to restore a specified backed up object from its latest clean snapshot.
 
 - Command to ignore a specified ransomware alert.
