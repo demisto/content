@@ -449,7 +449,6 @@ class Actions():
         command_results = self.__build_rep_context(entity_data, entity_type)
         return command_results
 
-
     def __build_rep_markdown(
         self, ent: Dict[str, Any], entity_type: str
     ) -> str:
@@ -500,7 +499,7 @@ class Actions():
                 }
                 for x, detail in evidence.items()
             ]
-            evid_table.sort(key=lambda x: x.get("Level"), reverse=True) # type: ignore
+            evid_table.sort(key=lambda x: x.get("Level"), reverse=True)  # type: ignore
             markdown.append(
                 tableToMarkdown(
                     "Risk Rules Triggered",
@@ -510,7 +509,6 @@ class Actions():
                 )
             )
         return "\n".join(markdown)
-
 
     def __build_rep_context(
         self, entity_data: Dict[str, Any], entity_type: str
@@ -580,12 +578,12 @@ class Actions():
                 readable_output="No records found"
             )]
 
-
     def triage_command(
         self, entities: Dict[str, List[str]], context: str
     ) -> List[CommandResults]:
         """Do Auto Triage."""
         zero_filter = entities.pop('filter', False)
+
         def include_score(score):
             if zero_filter and score > 0:
                 return True
@@ -608,7 +606,6 @@ class Actions():
             )
         )
         return command_results
-
 
     def __build_triage_markdown(
         self, context_data: Dict[str, Any], context: str
@@ -667,7 +664,6 @@ class Actions():
             )
         return "\n".join(tables)
 
-
     def __build_triage_context(
         self, context_data: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], List]:
@@ -707,7 +703,6 @@ class Actions():
             command_results.append(command_result)
         return context, command_results
 
-
     def enrich_command(
         self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = "All"
     ) -> List[CommandResults]:
@@ -715,9 +710,9 @@ class Actions():
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
             if entity_data.get("data", {}).get("relatedEntities"):
-                    entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
-                        entity_data["data"].pop("relatedEntities")
-                    )
+                entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
+                    entity_data["data"].pop("relatedEntities")
+                )
             markdown = self.__build_intel_markdown(entity_data, entity_type)
             return self.__build_intel_context(entity, entity_data, entity_type, markdown)
         except DemistoException as err:
@@ -851,8 +846,8 @@ class Actions():
                             "CPE Information",
                             parse_cpe(data.get("cpe")),
                             ['Part', 'Vendor', 'Product', 'Version', 'Update', 'Edition',
-                            'Language', 'Software Edition', 'Target Software',
-                            'Target Hardware', 'Other']
+                             'Language', 'Software Edition', 'Target Software',
+                             'Target Hardware', 'Other']
                         )
                     )
                 if data.get('relatedLinks', None):
@@ -917,7 +912,6 @@ class Actions():
             return "\n".join(markdown)
         else:
             return "No records found"
-
 
     def __build_intel_context(
         self, entity: str, entity_data: Dict[str, Any], entity_type: str, markdown: str
@@ -994,7 +988,6 @@ class Actions():
             )
         return command_results
 
-
     def __handle_related_entities(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         return_data = []
         for related in data:
@@ -1012,7 +1005,6 @@ class Actions():
                 }
             )
         return return_data
-
 
     def get_alert_rules_command(
         self, rule_name: str, limit: int
@@ -1047,7 +1039,6 @@ class Actions():
                 )
             },
         }
-
 
     def __document_formatting(self, data):
         title = data['title']
@@ -1106,7 +1097,6 @@ class Actions():
                 )
             }
         }
-
 
     def __entity_formatting(self, data):
         entities = []
@@ -1169,7 +1159,6 @@ class Actions():
             }
         }
 
-
     def get_alert_single_command(self, _id: str) -> CommandResults:
         """Command to get a single alert"""
         data = self.client.get_single_alert(_id)["data"]
@@ -1189,7 +1178,6 @@ class Actions():
                 readable_output=msg,
                 outputs_key_field="",
             )
-
 
     def get_alerts_command(
         self, params: Dict[str, str]
@@ -1305,7 +1293,7 @@ class Actions():
                         entities.append(link)
                     lists.append({
                         "entities": entities,
-                        "entity_type":  LINK_CATEGORIES.get(sec_list["type"]["name"], sec_list["type"]["name"])
+                        "entity_type": LINK_CATEGORIES.get(sec_list["type"]["name"], sec_list["type"]["name"])
                     })
                 categories.append({
                     "category": section["section_id"]["name"],
@@ -1365,11 +1353,11 @@ class Actions():
 
     def __build_links_context(self, links_data: Dict[str, List], markdown: str) -> CommandResults:
         return CommandResults(
-                    outputs_prefix=get_output_prefix('links'),
-                    outputs=links_data,
-                    readable_output=markdown,
-                    outputs_key_field=""
-                )
+            outputs_prefix=get_output_prefix('links'),
+            outputs=links_data,
+            readable_output=markdown,
+            outputs_key_field=""
+        )
 
     def fetch_incidents(self, rule_names_arg: Optional[str], first_fetch: str, max_fetch: Optional[int] = None) -> None:
         if rule_names_arg:
@@ -1422,7 +1410,7 @@ class Actions():
             alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # The API returns also alerts that are triggered in the same time
             if alert_time > current_time:
-                #Set alerts status to pending
+                # Set alerts status to pending
                 update_data.append({"id": alert['id'], "status": "pending"})
                 alert_data = self.client.get_single_alert(alert['id'])
                 if alert_data and 'data' in alert_data:
@@ -1454,20 +1442,21 @@ class Actions():
             # We are working only with one alert so there is one element in response list
             context_data = response.get('success')[0]
             result = CommandResults(
-                    readable_output=f'## Status {status} for Alert {alert_id} was successfully set',
-                    outputs_prefix=get_output_prefix('alerts'),
-                    outputs=context_data,
-                )
+                readable_output=f'## Status {status} for Alert {alert_id} was successfully set',
+                outputs_prefix=get_output_prefix('alerts'),
+                outputs=context_data,
+                outputs_key_field='id',
+            )
         else:
             error_message = "; ".join(
                 error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
             )
             result = CommandResults(
-                    readable_output= (
-                        f'## Error setting the {status} status for Alert {alert_id}.'
-                        f'Reason: {error_message}'
-                    ),
-                )
+                readable_output=(
+                    f'## Error setting the {status} status for Alert {alert_id}.'
+                    f'Reason: {error_message}'
+                ),
+            )
         return result
 
     def alert_set_note(self, alert_id: str, note: str):
@@ -1480,17 +1469,18 @@ class Actions():
             # We are working only with one alert so there is one element in response list
             context_data = response.get('success')[0]
             result = CommandResults(
-                    readable_output=f'## Note for Alert {alert_id} was successfully set',
-                    outputs_prefix=get_output_prefix('alerts'),
-                    outputs=context_data,
-                )
+                readable_output=f'## Note for Alert {alert_id} was successfully set',
+                outputs_prefix=get_output_prefix('alerts'),
+                outputs=context_data,
+                outputs_key_field='id',
+            )
         else:
             error_message = "; ".join(
                 error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
             )
             result = CommandResults(
-                    readable_output=f'## Error setting the note for Alert {alert_id}. Reason: {error_message}',
-                )
+                readable_output=f'## Error setting the note for Alert {alert_id}. Reason: {error_message}',
+            )
         return result
 
 

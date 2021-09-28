@@ -85,7 +85,7 @@ class RFTest(unittest.TestCase):
         resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']])  # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
         self.assertEqual(list_of_lists, sorted(expected))
 
