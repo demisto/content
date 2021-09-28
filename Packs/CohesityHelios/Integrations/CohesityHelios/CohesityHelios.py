@@ -250,7 +250,12 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
         alert_details = get_ransomware_alert_details(alert)
         ransomware_alerts.append(alert_details)
 
+    readable_output = tableToMarkdown('Cohesity Helios Ransomware Alerts',
+                                      ransomware_alerts,
+                                      ["alert_id", "alert_description", "alert_cause", "anomalous_object_env", "anomalous_object_name", "anomaly_strength"],
+                                      headerTransform=string_to_table_header)
     return CommandResults(
+        readable_output=readable_output,
         outputs_prefix='CohesityHelios.RansomwareAlert',
         outputs_key_field='alert_id',
         outputs=ransomware_alerts,
