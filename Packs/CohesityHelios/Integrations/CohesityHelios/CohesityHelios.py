@@ -107,7 +107,7 @@ class Client(BaseClient):
             client_headers = self._headers.copy()
         else:
             client_headers = {}
-                
+
         client_headers['clusterid'] = cluster_id
 
         return self._http_request(
@@ -405,6 +405,7 @@ def fetch_incidents_command(client: Client):
     demisto.incidents(incidents)
 
     return incidents
+
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
