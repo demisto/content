@@ -278,6 +278,7 @@ def ignore_ransomware_anomaly_command(client: Client, args: Dict[str, Any]) -> s
         property_dict = _get_property_dict(alert['propertyList'])
         if property_dict.get('object', "") == object_name:
             alert_id = alert.get('id')
+            break
 
     if alert_id == '':
         raise ValueError(f'CohesityHelios error: no anomalous object found by the given name: {object_name}. ')
