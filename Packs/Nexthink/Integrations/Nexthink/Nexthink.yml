@@ -8,8 +8,8 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: "1671"
-  display: Nexthink Connector Port (e.g. 1671)
+- defaultvalue: '1671'
+  display: Nexthink Engine Port (e.g. 1671)
   name: port
   required: false
   type: 0
@@ -33,15 +33,13 @@ display: Nexthink
 name: Nexthink
 script:
   commands:
-  - name: nt-compliance-check
-    arguments:
-    - name: ipaddress
-      required: true
-      description: Endpoint IP Address.
-    - name: hostname
-      required: true
-      default: true
-      description: Endpoint Hostname.
+  - arguments:
+    - description: Endpoint IP Address.
+      name: ipaddress
+    - description: Endpoint Hostname.
+      name: hostname
+    description: Verify antivirus/antispyware status.
+    name: nt-compliance-check
     outputs:
     - contextPath: Nexthink.Compliance.DeviceName
       description: Endpoint device host name.
@@ -73,17 +71,17 @@ script:
     - contextPath: Nexthink.Compliance.DeviceAntispywareUpdated
       description: Endpoint Antispyware update status.
       type: string
-    description: Verify antivirus/antispyware status.
-  - name: nt-installed-packages
-    arguments:
-    - name: hostname
+  - arguments:
+    - description: Endpoint Hostname.
+      name: hostname
       required: true
-      description: Endpoint Hostname.
-    - name: package
-      required: true
-      default: true
-      description: Installed Software Name.
+    - default: true
       defaultValue: agent
+      description: Installed Software Name.
+      name: package
+      required: true
+    description: Query installed software in endpoint.
+    name: nt-installed-packages
     outputs:
     - contextPath: Nexthink.Package.PackageName
       description: Package name.
@@ -106,16 +104,13 @@ script:
     - contextPath: Nexthink.Package.MACAddress
       description: Endpoint MAC address.
       type: string
-    description: Query installed software in endpoint.
-  - name: nt-endpoint-details
-    arguments:
-    - name: hostname
-      required: true
-      description: Endpoint hostname.
-    - name: ipaddress
-      required: true
-      default: true
-      description: Endpoint IP Address.
+  - arguments:
+    - description: Endpoint hostname.
+      name: hostname
+    - description: Endpoint IP Address.
+      name: ipaddress
+    description: Get endpoint details.
+    name: nt-endpoint-details
     outputs:
     - contextPath: Nexthink.Endpoint.EndpointName
       description: Endpoint device host name.
@@ -129,7 +124,6 @@ script:
     - contextPath: Nexthink.Endpoint.MACAddress
       description: Endpoint MAC address.
       type: string
-    description: Get endpoint details.
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
@@ -137,4 +131,4 @@ script:
   type: python
 fromversion: 6.0.0
 tests:
-  - No test
+- No test

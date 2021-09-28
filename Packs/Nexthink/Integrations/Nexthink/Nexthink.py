@@ -38,6 +38,13 @@ SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
 
 
+def isIPv4(s):
+    try:
+        return str(int(s)) == s and 0 <= int(s) <= 255
+    except:
+        return False
+
+
 def nexthink_request(method, nxql):
     params = demisto.params()
     username = params.get('credentials').get('identifier')
@@ -76,10 +83,22 @@ def nexthink_request(method, nxql):
 
 
 def nexthink_endpoint_details(device: None, ip: None):
-    if not device:
-        data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
+    if not ip and not device:
+        return_results('Please provide hostname or ipaddress argument')
+        sys.exit(0)
+    elif not device:
+        if ip.count(".") == 3 and all(isIPv4(i) for i in ip.split(".")):
+            data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
+        else:
+            return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
+            sys.exit(0)
     else:
-        data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
+        if device[0].isalpha() == True:
+            data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
+        else:
+            return_results('Please enter valid hostname. (e.g. AMCE1234)')
+            sys.exit(0)
+
     if len(data) > 0:
         deviceEntry['EndpointName'] = data[0]['name']
         deviceEntry['LastLoggedOnUser'] = data[0]['last_logged_on_user']
@@ -97,7 +116,10 @@ def nexthink_endpoint_details(device: None, ip: None):
 
         return dArgs
     else:
-        return 'Endpoint Not Found'
+        if not device:
+            return 'No endpoint found with ip "{0}"'.format(ip)
+        else:
+            return 'No endpoint found with hostname "{0}"'.format(device)
 
 
 def nexthink_installed_packages(device: None, package: None):
@@ -128,14 +150,24 @@ def nexthink_installed_packages(device: None, package: None):
 
         return dArgs
     else:
-        return 'Package Not Found'
+        return 'No package "{0}" found on endpoint {1}'.format(package, device)
 
 
 def nexthink_compliance_check(device: None, ip: None):
-    if not device:
-        data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
+    if not device and not ip:
+        return_results('Please provide hostname or ipaddress argument')
+        sys.exit(0)
+    elif not device:
+        if ip.count(".") == 3 and all(isIPv4(i) for i in ip.split(".")):
+            data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
+        else:
+            return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
+            sys.exit(0)
     else:
-        data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
+        if device[0].isalpha() == True:
+            data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
+        else:
+            return_results('Please enter valid endpoint hostname. (e.g. AMCE1234)')
 
     if len(data) > 0:
         for t in data:
@@ -165,7 +197,10 @@ def nexthink_compliance_check(device: None, ip: None):
 
         return dArgs
     else:
-        return 'Endpoint Not Found'
+        if not device:
+            return 'No endpoint found with ip "{0}"'.format(ip)
+        else:
+            return 'No endpoint found with hostname "{0}"'.format(device)
 
 
 def main():
