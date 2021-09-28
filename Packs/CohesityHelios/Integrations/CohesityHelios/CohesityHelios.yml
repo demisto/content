@@ -73,20 +73,32 @@ script:
       isArray: false
       required: false
     - default: false
-      description: List of comma-separated alert ids to filter alerts.
+      description: List of comma-separated alert identifiers to filter alerts.
       isArray: true
       name: alert_id_list
       required: false
     - default: false
       description: List of comma-separated cluster identifiers to filter alerts.
       isArray: true
-      name: cluster_identifiers
+      name: cluster_id_list
       required: false
     - default: false
       description: List of comma-separated region identifiers to filter alerts.
       isArray: true
-      name: region_ids
+      name: region_id_list
       required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: kOpen
+      description: One or more state values.
+      isArray: true
+      name: alert_state_list
+      required: false
+      predefined:
+      - kOpen
+      - kSuppressed
+      - kResolved
+      - kNote
     - auto: PREDEFINED
       default: true
       defaultValue: kCritical,kWarning

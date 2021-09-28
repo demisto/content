@@ -232,15 +232,21 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     start_time_millis = datestring_to_millis(args.get('created_after', ''))
     end_time_millis = datestring_to_millis(args.get('created_before', ''))
-    severity_list = argToList(args.get('alert_severity_list', []))
-    ids_list = argToList(args.get('alert_id_list', []))
+    alert_severity_list = argToList(args.get('alert_severity_list', []))
+    alert_id_list = argToList(args.get('alert_id_list', []))
+    region_id_list = argToList(args.get('region_id_list', []))
+    cluster_id_list = argToList(args.get('cluster_id_list', []))
+    alert_state_list = argToList(args.get('alert_state_list', []))
     limit = args.get('limit', MAX_FETCH_DEFAULT)
 
     # Fetch ransomware alerts via client.
     resp = client.get_ransomware_alerts(
         start_time_millis=start_time_millis,
-        end_time_millis=end_time_millis, alert_ids=ids_list,
-        alert_severity_list=severity_list,
+        end_time_millis=end_time_millis, alert_ids=alert_id_list,
+        alert_state_list=alert_state_list,
+        alert_severity_list=alert_severity_list,
+        region_ids=region_id_list,
+        cluster_ids=cluster_id_list,
         max_fetch=limit)
     demisto.debug(f"Got {len(resp)} alerts between {start_time_millis} and {end_time_millis}.")
 
@@ -252,7 +258,8 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
 
     readable_output = tableToMarkdown('Cohesity Helios Ransomware Alerts',
                                       ransomware_alerts,
-                                      ["alert_id", "alert_description", "alert_cause", "anomalous_object_env", "anomalous_object_name", "anomaly_strength"],
+                                      ["alert_id", "alert_description", "alert_cause", "anomalous_object_env",
+                                          "anomalous_object_name", "anomaly_strength"],
                                       headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=readable_output,
