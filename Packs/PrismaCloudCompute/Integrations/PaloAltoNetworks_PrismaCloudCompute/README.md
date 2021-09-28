@@ -72,3 +72,248 @@ If any alerts are missing in Cortex XSOAR, check the status of the integration.
 
 ![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
 
+### prisma-cwpp-list-runtime-policies
+***
+List runtime policies
+
+
+#### Base Command
+
+`prisma-cwpp-list-runtime-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_type | The policy type. Possible values are: container, host, serverless, app-embedded. Default is container. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Prisma.CWPP.Policy._id | String | The Policy ID | 
+
+
+#### Command Example
+```json
+{
+    "Prisma": {
+        "CWPP": {
+            "Policy": {
+                "_id": "containerRuntime",
+                "learningDisabled": false,
+                "rules": [
+                    {
+                        "advancedProtection": true,
+                        "cloudMetadataEnforcement": false,
+                        "collections": [
+                            {
+                                "accountIDs": [
+                                    "*"
+                                ],
+                                "appIDs": [
+                                    "*"
+                                ],
+                                "clusters": [
+                                    "aks-sm"
+                                ],
+                                "codeRepos": [
+                                    "*"
+                                ],
+                                "color": "#DB2798",
+                                "containers": [
+                                    "*"
+                                ],
+                                "functions": [
+                                    "*"
+                                ],
+                                "hosts": [
+                                    "*"
+                                ],
+                                "images": [
+                                    "vulnerables/web-dvwa:latest"
+                                ],
+                                "labels": [
+                                    "*"
+                                ],
+                                "modified": "2021-09-24T06:23:00.353Z",
+                                "name": "dvwa",
+                                "namespaces": [
+                                    "default"
+                                ],
+                                "owner": "smangkalopak@paloaltonetworks.com",
+                                "prisma": false,
+                                "system": false
+                            }
+                        ],
+                        "dns": {
+                            "blacklist": [],
+                            "effect": "disable",
+                            "whitelist": []
+                        },
+                        "filesystem": {
+                            "backdoorFiles": true,
+                            "blacklist": [],
+                            "checkNewFiles": true,
+                            "effect": "alert",
+                            "skipEncryptedBinaries": false,
+                            "suspiciousELFHeaders": true,
+                            "whitelist": []
+                        },
+                        "kubernetesEnforcement": false,
+                        "modified": "2021-09-24T06:23:11.615Z",
+                        "name": "demo exec proc",
+                        "network": {
+                            "blacklistIPs": [],
+                            "blacklistListeningPorts": [],
+                            "blacklistOutboundPorts": [],
+                            "detectPortScan": true,
+                            "effect": "alert",
+                            "skipModifiedProc": false,
+                            "skipRawSockets": false,
+                            "whitelistIPs": [],
+                            "whitelistListeningPorts": [],
+                            "whitelistOutboundPorts": []
+                        },
+                        "owner": "smangkalopak@paloaltonetworks.com",
+                        "previousName": "",
+                        "processes": {
+                            "blacklist": [
+                                "apt-get",
+                                "curl",
+                                "ps"
+                            ],
+                            "checkCryptoMiners": true,
+                            "checkLateralMovement": true,
+                            "effect": "prevent",
+                            "whitelist": []
+                        },
+                        "wildFireAnalysis": "alert"
+                    },
+                    {
+                        "advancedProtection": true,
+                        "cloudMetadataEnforcement": false,
+                        "collections": [
+                            {
+                                "accountIDs": [
+                                    "*"
+                                ],
+                                "appIDs": [
+                                    "*"
+                                ],
+                                "clusters": [
+                                    "*"
+                                ],
+                                "codeRepos": [
+                                    "*"
+                                ],
+                                "color": "#C8D6DD",
+                                "containers": [
+                                    "*"
+                                ],
+                                "description": "C RULE",
+                                "functions": [
+                                    "*"
+                                ],
+                                "hosts": [
+                                    "*"
+                                ],
+                                "images": [
+                                    "UBUNTU:LATEST"
+                                ],
+                                "labels": [
+                                    "*"
+                                ],
+                                "modified": "2021-09-08T18:41:03.187Z",
+                                "name": "JRULE",
+                                "namespaces": [
+                                    "*"
+                                ],
+                                "owner": "caswalker@paloaltonetworks.com",
+                                "prisma": false,
+                                "system": false
+                            }
+                        ],
+                        "dns": {
+                            "blacklist": [],
+                            "effect": "disable",
+                            "whitelist": []
+                        },
+                        "filesystem": {
+                            "backdoorFiles": true,
+                            "blacklist": [],
+                            "checkNewFiles": true,
+                            "effect": "alert",
+                            "skipEncryptedBinaries": false,
+                            "suspiciousELFHeaders": true,
+                            "whitelist": []
+                        },
+                        "kubernetesEnforcement": false,
+                        "modified": "2021-09-08T18:42:28.502Z",
+                        "name": "jrule",
+                        "network": {
+                            "blacklistIPs": [],
+                            "blacklistListeningPorts": [],
+                            "blacklistOutboundPorts": [],
+                            "detectPortScan": true,
+                            "effect": "alert",
+                            "skipModifiedProc": false,
+                            "skipRawSockets": false,
+                            "whitelistIPs": [],
+                            "whitelistListeningPorts": [],
+                            "whitelistOutboundPorts": []
+                        },
+                        "owner": "caswalker@paloaltonetworks.com",
+                        "previousName": "",
+                        "processes": {
+                            "blacklist": [
+                                "apt"
+                            ],
+                            "checkCryptoMiners": true,
+                            "checkLateralMovement": true,
+                            "effect": "alert",
+                            "whitelist": []
+                        },
+                        "wildFireAnalysis": "alert"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+#### Human Readable Output
+
+
+>### Policies of type - container:
+>|_id|learningDisabled|rules|
+>|---|---|---|
+>| containerRuntime | false | demo exec proc, jrule, sm cve, ba-dvwa, dimar-aks, Phimm Rule |
+
+### prisma-cwpp-add-policy-rule
+***
+Add a new policy rule
+
+
+#### Base Command
+
+`prisma-cwpp-add-policy-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_type | The policy type. Possible values are: container, host, serverless, app-embedded. Default is container. | Optional | 
+| rule_object | The rule object. | Required | 
+| policy_to_update | The policy to update. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+Policy successfully updated
