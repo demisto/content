@@ -30,8 +30,8 @@ class Client(BaseClient):
     """
 
     def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=MAX_FETCH_DEFAULT,
-                              alert_ids=None, alert_state_list=None, alert_severity_list=None,
-                              region_ids=None, cluster_identifiers=None):
+                              alert_ids=[], alert_state_list=[], alert_severity_list=[],
+                              region_ids=[], cluster_ids=[]):
         """Gets the Cohesity Helios ransomware alerts.
         """
         # Prepare default request params.
@@ -47,16 +47,16 @@ class Client(BaseClient):
             request_params["startDateUsecs"] = int(start_time_millis) * 1000
         if end_time_millis is not None:
             request_params["endDateUsecs"] = int(end_time_millis) * 1000
-        if alert_ids is not None:
-            request_params["alertIdList"] = alert_ids.split(',')
-        if alert_state_list is not None:
-            request_params["alertStateList"] = alert_state_list.split(',')
-        if alert_severity_list is not None:
-            request_params["alertSeverityList"] = alert_severity_list.split(',')
-        if region_ids is not None:
-            request_params["region_ids"] = region_ids.split(',')
-        if region_ids is not None:
-            request_params["clusterIdentifiers"] = cluster_identifiers.split(',')
+        if alert_ids is not []:
+            request_params["alertIdList"] = alert_ids
+        if alert_state_list is not []:
+            request_params["alertStateList"] = alert_state_list
+        if alert_severity_list is not []:
+            request_params["alertSeverityList"] = alert_severity_list
+        if region_ids is not []:
+            request_params["region_ids"] = region_ids
+        if cluster_ids is not []:
+            request_params["clusterIdentifiers"] = cluster_ids
 
         resp = self._http_request(
             method='GET',
@@ -232,7 +232,7 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     start_time_millis = datestring_to_millis(args.get('created_after', ''))
     end_time_millis = datestring_to_millis(args.get('created_before', ''))
-    severity_list = args.get('alert_severity_list', None)
+    severity_list = argToList(args.get('alert_severity_list', []))
     ids_list = argToList(args.get('alert_id_list', []))
     limit = args.get('limit', MAX_FETCH_DEFAULT)
 
