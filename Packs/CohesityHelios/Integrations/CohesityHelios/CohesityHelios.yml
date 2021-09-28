@@ -89,9 +89,9 @@ script:
       required: false
     - auto: PREDEFINED
       default: true
-      defaultValue: 'kCritical'
-      description: List of comma separted alert severities filter.
-      isArray: false
+      defaultValue: kCritical,kWarning
+      description: One or more severity levels.
+      isArray: true
       name: alert_severity_list
       required: false
       predefined:
