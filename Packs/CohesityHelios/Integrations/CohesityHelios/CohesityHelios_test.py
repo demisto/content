@@ -39,7 +39,7 @@ def test_test_module(requests_mock):
 
 
 def test_fetch_incidents_command(requests_mock):
-    """Tests fetch incidents. Since fetch_incidents_command calls 
+    """Tests fetch incidents. Since fetch_incidents_command calls
        get_ransomware_alerts_command(), that command is also tested.
 
     Checks the output of the command function with the expected output.
@@ -62,7 +62,7 @@ def test_fetch_incidents_command(requests_mock):
 
 
 def test_ignore_ransomware_anomaly_command(requests_mock):
-    """Tests ignore_ransomware_anomaly_command. 
+    """Tests ignore_ransomware_anomaly_command.
 
     Checks the output of the command function with the expected output.
     """
