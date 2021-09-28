@@ -59,6 +59,8 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
     example:
         string_of_argument: '12345678, 87654321'
         output: '"12345678","87654321"'
+        string_of_argument: ''
+        output: '""'
 
     Args:
         string_of_argument (str): The string s of_argument to format.
@@ -68,7 +70,7 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
     """
     if not string_of_argument:
         string_of_argument = ''
-    list_of_args = argToList(string_of_argument)
+    list_of_args = argToList(string_of_argument) if string_of_argument != '' else ['']
     return ','.join(f'"{item}"' for item in list_of_args)
 
 
@@ -147,19 +149,22 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
     remote_ip_list = args.get('remote_ip', '')
     if not remote_ip_list:
         raise DemistoException('Please provide a remote_ip argument.')
-    local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', '*'))
     remote_ip_list = wrap_list_items_in_double_quotes(remote_ip_list)
-    port_list = args.get('port', '*')
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and
- action_local_ip in({local_ip_list}) and action_remote_ip in({remote_ip_list}) and action_remote_port in({port_list})
- | fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
+    local_ip_filter = ''
+    if args.get('local_ip'):
+        local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', ''))
+        local_ip_filter = f'and action_local_ip in({local_ip_list})'
+    port_list = args.get('port')
+    port_list_filter = f'and action_remote_port in({port_list})' if port_list else ''
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY
+ {local_ip_filter} and action_remote_ip in({remote_ip_list}) {port_list_filter}|
+ fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path,
  actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
 
 
 def get_registry_query(endpoint_ids: str, args: dict) -> str:
     """Create the registry query.
-
 
     Args:
         endpoint_ids (str): The endpoint IDs to use.
@@ -209,10 +214,10 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('external_domain') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
-    external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', '*'))
-    dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', '*'))
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and
- dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list})| fields
+    external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', ''))
+    dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', ''))
+    return f'''dataset = xdr_data | filter (agent_id in ({endpoint_ids}) and event_type = STORY) and
+ (dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list}))| fields
  agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, action_remote_ip,
  action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, action_total_download,
  action_total_upload, action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line,
@@ -231,11 +236,11 @@ def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('file_path') and not args.get('file_sha256'):
         raise DemistoException('Please provide at least one of the file_path, file_sha256 arguments.')
-    file_path_list = wrap_list_items_in_double_quotes(args.get('file_path', '*'))
-    file_sha256_list = wrap_list_items_in_double_quotes(args.get('file_sha256', '*'))
+    file_path_list = wrap_list_items_in_double_quotes(args.get('file_path', ''))
+    file_sha256_list = wrap_list_items_in_double_quotes(args.get('file_sha256', ''))
 
-    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = FILE and event_sub_type in (
- FILE_WRITE, FILE_RENAME) and action_file_path in ({file_path_list}) or action_file_sha256 in ({file_sha256_list}) |
+    return f'''dataset = xdr_data | filter (agent_id in ({endpoint_ids}) and event_type = FILE and event_sub_type in (
+ FILE_WRITE, FILE_RENAME)) and (action_file_path in ({file_path_list}) or action_file_sha256 in ({file_sha256_list})) |
  fields agent_hostname, agent_ip_addresses, agent_id, action_file_sha256, action_file_path, actor_process_image_name,
  actor_process_image_path, actor_process_image_path, actor_process_command_line, actor_process_signature_vendor,
  actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user,
