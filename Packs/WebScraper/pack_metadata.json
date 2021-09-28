@@ -1,0 +1,19 @@
+{
+    "name": "Web Scraper",
+    "description": "A Web Scraper tool built on beautiful soup",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "amahmoud@paloaltonetworks.com",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "amahmoud@paloaltonetworks.com"
+    ],
+    "githubUser": []
+}
