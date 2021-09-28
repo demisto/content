@@ -12,15 +12,16 @@ cookies created by the page, and a myriad of other observations. If the site is
 targeting the users one of the more than 660 brands tracked by urlscan.io, it
 will be highlighted as potentially malicious in the scan results.
 
-To use the urlscan.io integration, sign up for a free user account and create
-an API key first: https://urlscan.io/user/signup
+To use the urlscan.io integration, [sign up for a free user account and create
+an API key first.](https://urlscan.io/user/signup)
 
-urlscan.io has a free user tier which will allow you to perform a little number
-of scans and searches on our platform. If you need to perform more scans you
-can subscribe to one of our commercial API plans available on
-https://urlscan.io/products/. If you are also interested in a Threat
-Intelligence platform subscription you should take a look at our "urlscan Pro -
-Threat Hunting" platform here: https://urlscan.io/products/urlscanpro/
+urlscan.io has a free user tier which will allow you to perform 50 private
+scans and 5,000 public scans as well as 1,000 searches on our platform. If you
+need to perform more scans you can subscribe to one of our commercial API plans
+available on [our product page](https://urlscan.io/products/). If you are also
+interested in a Threat Intelligence platform subscription you should take a
+look at our ["urlscan Pro - Threat Hunting"
+platform.](https://urlscan.io/products/urlscanpro/)
 
 The urlscan.io content pack includes commands for:
 
