@@ -359,6 +359,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
 
     # Resolve ransomware alert.
     client.resolve_ransomware_alert_by_id(alert_id)
+
     return f"Restored object {object_name}."
 
 
