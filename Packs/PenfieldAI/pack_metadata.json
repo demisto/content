@@ -1,0 +1,20 @@
+{
+    "name": "PenfieldAI",
+    "description": "Penfield is the industry’s first human-machine intelligence platform to model Cybersecurity Analysts actions and processes in real-time.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Chandler Piche",
+    "url": "https://penfield.ai/",
+    "email": "chandler@penfield.ai",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "created": "2021-09-28T21:56:05Z",
+    "useCases": [],
+    "keywords": ["assign", "ai"],
+    "devEmail": [
+        "chandler@penfield.ai"
+    ],
+    "githubUser": ["the-naturel"]
+}
