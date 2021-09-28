@@ -47,15 +47,15 @@ class Client(BaseClient):
             request_params["startDateUsecs"] = int(start_time_millis) * 1000
         if end_time_millis is not None:
             request_params["endDateUsecs"] = int(end_time_millis) * 1000
-        if alert_ids is not []:
+        if alert_ids != []:
             request_params["alertIdList"] = alert_ids
-        if alert_state_list is not []:
+        if alert_state_list != []:
             request_params["alertStateList"] = alert_state_list
-        if alert_severity_list is not []:
+        if alert_severity_list != []:
             request_params["alertSeverityList"] = alert_severity_list
-        if region_ids is not []:
+        if region_ids != []:
             request_params["region_ids"] = region_ids
-        if cluster_ids is not []:
+        if cluster_ids != []:
             request_params["clusterIdentifiers"] = cluster_ids
 
         resp = self._http_request(
