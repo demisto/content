@@ -248,10 +248,7 @@
                             {
                                 "args": {
                                     "object_name": {
-                                        "simple": "${incident.cohesityanomalousobjectname}"
-                                    },
-                                    "using": {
-                                        "simple": "CohesityHelios_instance_1"
+                                        "simple": "${incident.cohesityheliosanomalousobjectname}"
                                     }
                                 },
                                 "endCol": 2,
@@ -267,7 +264,7 @@
                             {
                                 "args": {
                                     "object_name": {
-                                        "simple": "${incident.cohesityanomalousobjectname}"
+                                        "simple": "${incident.cohesityheliosanomalousobjectname}"
                                     }
                                 },
                                 "endCol": 2,
