@@ -540,7 +540,7 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

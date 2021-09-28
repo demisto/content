@@ -227,7 +227,7 @@ class TestCreateFile:
         mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
-        expected_data = self.get_file(f'test_data/{out_iocs}.json')
+        expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_sync with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     def test_create_file_sync_all_types(self, mocker):
@@ -239,7 +239,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'json')
+        all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
@@ -261,7 +261,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'json')
+        all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'txt')
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
@@ -616,7 +616,7 @@ class TestCommands:
 
     def test_sync(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'json')
+        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         sync(client)
@@ -634,7 +634,7 @@ class TestCommands:
     def test_tim_insert_jsons(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'time': '2020-06-03T00:00:00Z'})
-        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'json')
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         tim_insert_jsons(client)

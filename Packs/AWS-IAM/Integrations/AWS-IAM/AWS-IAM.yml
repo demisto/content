@@ -74,7 +74,7 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services Identity and Access Management (IAM)
-display: AWS - IAM
+display: AWS - Identity and Access Management
 name: AWS - IAM
 script:
   commands:
@@ -2280,7 +2280,7 @@ script:
     description: Retrieves information about the specified managed policy, including
       the policy's default version and the total number of IAM users, groups, and
       roles to which the policy is attached.
-  dockerimage: demisto/boto3:2.0.0.23135
+  dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: false
   longRunning: false

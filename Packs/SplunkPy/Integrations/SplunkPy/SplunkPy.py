@@ -112,11 +112,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1083,11 +1084,11 @@ def update_remote_system_command(args, params, service, auth_token):
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
                     auth_token=auth_token, sessionKey=session_key
                 )
-                msg = response_info.get('message')
                 if 'success' not in response_info or not response_info['success']:
-                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
                 else:
-                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id,
+                                                                                   response_info.get('message')))
 
             except Exception as e:
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
@@ -1149,11 +1150,12 @@ def get_mapping_fields_command(service):
     start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
     last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
