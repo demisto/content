@@ -26,8 +26,8 @@ class ShiftLeftClient(BaseClient):
         )
 
     def list_apps(
-        self,
-        org_id: str,
+            self,
+            org_id: str,
     ) -> Dict[str, str]:
         """Returns list of apps"""
         return self._http_request(
@@ -36,12 +36,12 @@ class ShiftLeftClient(BaseClient):
         )
 
     def list_app_findings(
-        self,
-        org_id: str,
-        app_name: str,
-        severity: Union[str, List[str], None],
-        type: Union[str, List[str], None],
-        version: Union[str, None],
+            self,
+            org_id: str,
+            app_name: str,
+            severity: Union[str, List[str], None],
+            type: Union[str, List[str], None],
+            version: Union[str, None],
     ) -> Dict[str, str]:
         """Returns list of findings"""
         return self._http_request(
@@ -77,16 +77,12 @@ def test_module(client: ShiftLeftClient, org_id: str) -> str:
     return message
 
 
-def list_apps_command(
-    client: ShiftLeftClient, org_id: str, args: Dict[str, Any]
-) -> CommandResults:
+def list_apps_command(client: ShiftLeftClient, org_id: str) -> CommandResults:
     result = client.list_apps(org_id)
     apps: Any = result.get("response") if result.get("ok") else []
     for a in apps:
         if a.get("tags"):
-            a["labels"] = "\n".join(
-                [f'`{t.get("key")}`: {t.get("value")}' for t in a.get("tags")]
-            )
+            a["labels"] = "\n".join([f'`{t.get("key")}`: {t.get("value")}' for t in a.get("tags")])
     if apps:
         markdown = f"### Apps List ({len(apps)})\n"
         markdown += tableToMarkdown(
@@ -105,19 +101,13 @@ def list_apps_command(
             outputs=apps,
         )
     else:
-        return CommandResults(
-            outputs_prefix="ShiftLeft.Apps",
-            outputs_key_field="",
-            outputs={},
-        )
+        return CommandResults(readable_output="No apps were found.")
 
 
-def list_app_secrets_command(
-    client: ShiftLeftClient, org_id: str, args: Dict[str, Any]
-) -> CommandResults:
+def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
     app_name = args.get("app_name", None)
     if not app_name:
-        raise ValueError("app_name not specified")
+        raise ValueError("Shiftleft error: app_name not specified")
     version = args.get("version")
     entropy = args.get("entropy", 0.48)
     result = client.list_app_findings(org_id, app_name, None, "secret", version)
@@ -159,7 +149,7 @@ def list_app_secrets_command(
         )
         markdown += "\n### Recommendation\n"
         if len(filtered_findings):
-            markdown += "\nReview the secrets in this list!"
+            markdown += "\nPlease review the secrets in this list!"
         else:
             markdown += "\nNo secrets in this app require your attention."
         markdown += f"\n### ShiftLeft Findings ({len(filtered_findings)})\n"
@@ -183,12 +173,10 @@ def list_app_secrets_command(
         return CommandResults()
 
 
-def list_app_findings_command(
-    client: ShiftLeftClient, org_id: str, args: Dict[str, Any]
-) -> CommandResults:
+def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
     app_name = args.get("app_name", None)
     if not app_name:
-        raise ValueError("app_name not specified")
+        raise ValueError("Shiftleft error: app_name not specified")
     severity = args.get("severity", ["critical"])
     type = args.get("type", ["vuln"])
     version = args.get("version", None)
@@ -284,10 +272,11 @@ def main() -> None:
     :return:
     :rtype:
     """
-    org_id = demisto.params().get("org_id")
-    access_token = demisto.params().get("access_token")
+    params = demisto.params()
+    org_id = params.get("org_id")
+    access_token = params.get("access_token")
     if not org_id or not access_token:
-        return_error("Both organization id and access token must be set")
+        return_error("Shiftleft error: Both organization id and access token must be set.")
     # get the service API url
     base_url = "https://www.shiftleft.io/api/v4"  # disable-secrets-detection
 
@@ -295,9 +284,10 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get("proxy", False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     try:
         headers: Dict = {
             "Content-Type": "application/json",
@@ -308,27 +298,30 @@ def main() -> None:
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client, org_id)
             return_results(result)
 
-        elif demisto.command() == "shiftleft-list-app-findings":
+        elif command == "shiftleft-list-app-findings":
             return_results(list_app_findings_command(client, org_id, demisto.args()))
 
-        elif demisto.command() == "shiftleft-list-app-secrets":
+        elif command == "shiftleft-list-app-secrets":
             return_results(list_app_secrets_command(client, org_id, demisto.args()))
 
-        elif demisto.command() == "shiftleft-list-apps":
-            return_results(list_apps_command(client, org_id, demisto.args()))
+        elif command == "shiftleft-list-apps":
+            return_results(list_apps_command(client, org_id))
+
+        else:
+            raise NotImplementedError(f'{command} is not an existing Shiftleft command')
 
     # Log exceptions and return errors
-    except Exception:
+    except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 """ ENTRY POINT """
-
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -1,5 +1,5 @@
 Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
-This integration was integrated and tested with v4 api of ShiftLeft CORE
+This integration was integrated and tested with v4 api of ShiftLeft CORE.
 
 ## Configure ShiftLeft CORE on Cortex XSOAR
 
@@ -19,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### shiftleft-list-apps
 ***
-List Apps
+Return list of apps.
 
 
 #### Base Command
@@ -31,13 +31,11 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ShiftLeft | unknown | API response | 
+There is no context output for this command.
 
 
 #### Command Example
-``` ```
+```!shiftleft-list-apps```
 
 #### Human Readable Output
 
@@ -45,7 +43,7 @@ There are no input arguments for this command.
 
 ### shiftleft-list-app-findings
 ***
-List App Findings
+Return list of app findings.
 
 
 #### Base Command
@@ -66,7 +64,7 @@ List App Findings
 There is no context output for this command.
 
 #### Command Example
-``` ```
+``` !shiftleft-list-app-findings ```
 
 #### Human Readable Output
 
@@ -74,7 +72,7 @@ There is no context output for this command.
 
 ### shiftleft-list-app-secrets
 ***
-List App secrets
+Return list of app secrets.
 
 
 #### Base Command
@@ -94,7 +92,7 @@ List App secrets
 There is no context output for this command.
 
 #### Command Example
-``` ```
+``` !shiftleft-list-app-secrets app_name=myapp123```
 
 #### Human Readable Output
 

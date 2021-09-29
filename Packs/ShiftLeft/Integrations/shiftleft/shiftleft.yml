@@ -25,20 +25,20 @@ script:
   type: python
   commands:
   - name: shiftleft-list-apps
-    description: List Apps
+    description: Return list of apps.
   - name: shiftleft-list-app-findings
     arguments:
     - name: app_name
       required: true
       default: true
-      description: App name
+      description: App name.
     - name: severity
       auto: PREDEFINED
       predefined:
       - critical
       - moderate
       - info
-      description: Severity of findings
+      description: Severity of findings.
       isArray: true
       defaultValue: critical
     - name: type
@@ -49,27 +49,27 @@ script:
       - insight
       - extscan
       - oss_vuln
-      description: Findings Type
+      description: Findings Type.
       isArray: true
       defaultValue: vuln
     - name: version
-      description: App version
-    description: List App Findings
+      description: App version.
+    description: Return list of app findings.
   - name: shiftleft-list-app-secrets
     arguments:
     - name: app_name
       required: true
       default: true
-      description: App name
+      description: App name.
     - name: version
-      description: App version
+      description: App version.
     - name: entropy
-      description: Entropy
-    description: List App secrets
+      description: Entropy.
+    description: Return list of app secrets.
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   subtype: python3
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
