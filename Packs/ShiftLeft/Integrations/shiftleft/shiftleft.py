@@ -118,7 +118,7 @@ def list_app_secrets_command(
     app_name = args.get("app_name", None)
     if not app_name:
         raise ValueError("app_name not specified")
-    version = args.get("version", None)
+    version = args.get("version")
     entropy = args.get("entropy", 0.48)
     result = client.list_app_findings(org_id, app_name, None, "secret", version)
     response: Any = result.get("response") if result.get("ok") else {}
