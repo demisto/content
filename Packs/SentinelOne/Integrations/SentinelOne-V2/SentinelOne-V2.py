@@ -1251,10 +1251,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-    if fetch_site_ids is None:
-        threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string)
-    else:
-        threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
+    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
 
     for threat in threats:
         rank = threat.get('rank')
