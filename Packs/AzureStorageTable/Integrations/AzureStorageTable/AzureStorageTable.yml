@@ -11,11 +11,11 @@ configuration:
   name: account_sas_token
   required: true
   type: 4
-- display: Use system proxy settings
+- display: Use system proxy
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (not secure)
+- display: Trust any certificate
   name: insecure
   required: false
   type: 8
@@ -26,7 +26,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Table name.
+      description: The name of the new table to create.
       isArray: false
       name: table_name
       required: true
@@ -34,14 +34,14 @@ script:
     deprecated: false
     description: Creates a new table in a storage account.
     execution: false
-    name: azure-storage-table-table-create
+    name: azure-storage-table-create
     outputs:
-    - contextPath: AzureStorageTable.Table.TableName
+    - contextPath: AzureStorageTable.Table.name
       description: Table name.
       type: String
   - arguments:
     - default: false
-      description: Table name.
+      description: The name of the table to delete.
       isArray: false
       name: table_name
       required: true
@@ -49,9 +49,9 @@ script:
     deprecated: false
     description: Delete the specified table and any data it contains.
     execution: true
-    name: azure-storage-table-table-delete
+    name: azure-storage-table-delete
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Number of Tables to retrieve. Default is 50.
       isArray: false
@@ -65,7 +65,7 @@ script:
       name: filter
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: Page Number.  Default is 1.
       isArray: false
@@ -75,52 +75,10 @@ script:
     deprecated: false
     description: List tables under the specified account.
     execution: false
-    name: azure-storage-table-table-query
+    name: azure-storage-table-query
     outputs:
-    - contextPath: AzureStorageTable.Table.TableName
+    - contextPath: AzureStorageTable.Table.name
       description: Table name.
-      type: String
-  - arguments:
-    - default: false
-      description: Table name.
-      isArray: false
-      name: table_name
-      required: true
-      secret: false
-    - default: false
-      description: Unique identifier for the partition within a given table
-      isArray: false
-      name: partition_key
-      required: true
-      secret: false
-    - default: false
-      description: Unique identifier for an entity within a given partition.
-      isArray: false
-      name: row_key
-      required: true
-      secret: false
-    - default: false
-      description: 'Entity records in JSON format: { "Key1": Value1, "Key2": Value2}'
-      isArray: false
-      name: entity_fields
-      required: true
-      secret: false
-    deprecated: false
-    description: Insert a new entity into a table.
-    execution: false
-    name: azure-storage-table-entity-insert
-    outputs:
-    - contextPath: AzureStorageTable.Entity.PartitionKey
-      description: Entity partition key.
-      type: String
-    - contextPath: AzureStorageTable.Entity.RowKey
-      description: Entity row key.
-      type: String
-    - contextPath: AzureStorageTable.Entity.Timestamp
-      description: Entity last update UTC time.
-      type: Date
-    - contextPath: AzureStorageTable.Entity.table_name
-      description: Table Name.
       type: String
   - arguments:
     - default: false
@@ -142,13 +100,55 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Entity records in JSON format: { "Key1": Value1, "Key2": Value2}'
+      description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
       isArray: false
       name: entity_fields
       required: true
       secret: false
     deprecated: false
-    description: Update an existing entity in a table.The Update Entity command does
+    description: Insert a new entity into a table.
+    execution: false
+    name: azure-storage-table-entity-insert
+    outputs:
+    - contextPath: AzureStorageTable.Table.Entity.PartitionKey
+      description: Entity partition key.
+      type: String
+    - contextPath: AzureStorageTable.Table.Entity.RowKey
+      description: Entity row key.
+      type: String
+    - contextPath: AzureStorageTable.Table.Entity.Timestamp
+      description: Entity last update UTC time.
+      type: Date
+    - contextPath: AzureStorageTable.Table.name
+      description: Entity table name.
+      type: String
+  - arguments:
+    - default: false
+      description: Entity table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table.
+      isArray: false
+      name: partition_key
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition.
+      isArray: false
+      name: row_key
+      required: true
+      secret: false
+    - default: false
+      description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
+      isArray: false
+      name: entity_fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing entity in a table. The Update Entity command does
       not replace the existing entity.
     execution: false
     name: azure-storage-table-entity-update
@@ -178,25 +178,27 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Replace an existing entity in a table.The Replace Entity command
+    description: Replace an existing entity in a table. The Replace Entity command
       replace the entire entity and can be used to remove properties.
-    execution: false
+    execution: true
     name: azure-storage-table-entity-replace
   - arguments:
     - default: false
-      description: Table name.
+      description: Entity table name.
       isArray: false
       name: table_name
       required: true
       secret: false
     - default: false
-      description: Unique identifier for the partition within a given table.
+      description: Unique identifier for the partition within a given table. If specified,
+        'row_key' argument must also be specified.
       isArray: false
       name: partition_key
       required: false
       secret: false
     - default: false
-      description: Unique identifier for an entity within a given partition.
+      description: Unique identifier for an entity within a given partition. If specified,
+        'partition_key' argument must also be specified.
       isArray: false
       name: row_key
       required: false
@@ -210,21 +212,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated Entity properties to return.
+      description: Comma-separated Entity properties to return. If not specified -
+        all fields will be retrieved.
       isArray: false
       name: select
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: |-
         Number of entities to retrieve. Default is 50.
-        This argument is unusable when 'partition_key' is provided.
+        This argument is unusable when 'partition_key' or 'row_key'  are provided.
       isArray: false
       name: limit
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: |-
         Page number. Default is 1.
@@ -238,12 +241,12 @@ script:
     execution: false
     name: azure-storage-table-entity-query
     outputs:
-    - contextPath: AzureStorageTable.Entity.table_name
-      description: Table Name.
+    - contextPath: AzureStorageTable.Table.name
+      description: Entity table Name.
       type: String
   - arguments:
     - default: false
-      description: Table name.
+      description: Entity table name.
       isArray: false
       name: table_name
       required: true
@@ -262,9 +265,9 @@ script:
       secret: false
     deprecated: false
     description: Delete an existing entity in a table.
-    execution: false
+    execution: true
     name: azure-storage-table-entity-delete
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.8.6.12176
   feed: false
   isfetch: false
   longRunning: false

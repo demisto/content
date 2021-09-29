@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 63a187b8-efd0-4a6c-882e-41f075357278
+    taskid: 45fdd6f7-42f6-40bd-8bdd-365cefc960fc
     type: start
     task:
-      id: 63a187b8-efd0-4a6c-882e-41f075357278
+      id: 45fdd6f7-42f6-40bd-8bdd-365cefc960fc
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: edeeaacb-ffeb-4493-86b1-dc10fafb579d
+    taskid: c5a1b605-f6bc-490f-8430-5d6684d0f41d
     type: regular
     task:
-      id: edeeaacb-ffeb-4493-86b1-dc10fafb579d
+      id: c5a1b605-f6bc-490f-8430-5d6684d0f41d
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,13 +63,13 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 5fae7ded-d5f6-495d-8f8d-c0f8c1b2f451
+    taskid: dd9d7d81-5960-4bb4-8207-fafdbf5ac63c
     type: regular
     task:
-      id: 5fae7ded-d5f6-495d-8f8d-c0f8c1b2f451
+      id: dd9d7d81-5960-4bb4-8207-fafdbf5ac63c
       version: -1
-      name: azure-storage-table-table-create
-      script: '|||azure-storage-table-table-create'
+      name: azure-storage-table-create
+      script: '|||azure-storage-table-create'
       type: regular
       iscommand: true
       brand: ""
@@ -94,10 +94,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a1d7870a-11ba-4d81-8344-95899caa69b5
+    taskid: bfda41ec-e515-4910-8e01-a915f747f4f1
     type: condition
     task:
-      id: a1d7870a-11ba-4d81-8344-95899caa69b5
+      id: bfda41ec-e515-4910-8e01-a915f747f4f1
       version: -1
       name: Verify Outputs
       type: condition
@@ -113,7 +113,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Table.TableName
+              simple: AzureStorageTable.Table.name
             iscontext: true
     view: |-
       {
@@ -129,13 +129,13 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 476cb28a-2597-4a42-8674-1bbe2b7c07eb
+    taskid: c4709bfb-a17d-4421-8b1c-28db5c4c9b67
     type: regular
     task:
-      id: 476cb28a-2597-4a42-8674-1bbe2b7c07eb
+      id: c4709bfb-a17d-4421-8b1c-28db5c4c9b67
       version: -1
-      name: azure-storage-table-table-delete
-      script: '|||azure-storage-table-table-delete'
+      name: azure-storage-table-delete
+      script: '|||azure-storage-table-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -150,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2830
+          "y": 2805
         }
       }
     note: false
@@ -160,13 +160,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ec704ad3-a5cc-4723-8407-aabc4737be6f
+    taskid: 56cb3faa-a085-44d1-852a-b5e212b0f869
     type: regular
     task:
-      id: ec704ad3-a5cc-4723-8407-aabc4737be6f
+      id: 56cb3faa-a085-44d1-852a-b5e212b0f869
       version: -1
-      name: azure-storage-table-table-query
-      script: '|||azure-storage-table-table-query'
+      name: azure-storage-table-query
+      script: '|||azure-storage-table-query'
       type: regular
       iscommand: true
       brand: ""
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f6ba89e0-c865-485e-8d59-398e87f50a38
+    taskid: f146d763-417d-4d5d-8f76-638687653b9b
     type: condition
     task:
-      id: f6ba89e0-c865-485e-8d59-398e87f50a38
+      id: f146d763-417d-4d5d-8f76-638687653b9b
       version: -1
       name: Verify Outputs
       type: condition
@@ -207,7 +207,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Table.TableName
+              simple: AzureStorageTable.Table.name
             iscontext: true
     view: |-
       {
@@ -223,10 +223,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 50b7281d-c4f9-4715-882b-31ec34eee099
+    taskid: d49dd996-5a1f-451d-8763-e9a1c6f900ee
     type: regular
     task:
-      id: 50b7281d-c4f9-4715-882b-31ec34eee099
+      id: d49dd996-5a1f-451d-8763-e9a1c6f900ee
       version: -1
       name: azure-storage-table-entity-insert
       script: '|||azure-storage-table-entity-insert'
@@ -260,10 +260,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: aa77fcd1-3610-4307-8803-7a978f969dc6
+    taskid: 7056de94-d927-4a2b-8e00-801e59bb6185
     type: condition
     task:
-      id: aa77fcd1-3610-4307-8803-7a978f969dc6
+      id: 7056de94-d927-4a2b-8e00-801e59bb6185
       version: -1
       name: Verify Outputs
       type: condition
@@ -279,22 +279,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Entity.PartitionKey
+              simple: AzureStorageTable.Table.Entity.PartitionKey
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Entity.RowKey
+              simple: AzureStorageTable.Table.Entity.RowKey
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Entity.Timestamp
+              simple: AzureStorageTable.Table.Entity.Timestamp
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Entity.table_name
+              simple: AzureStorageTable.Table.name
             iscontext: true
     view: |-
       {
@@ -310,10 +310,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 005c5e13-a445-4462-84be-131c78d7e213
+    taskid: d484b971-f4df-4901-805f-773b87f4f95b
     type: regular
     task:
-      id: 005c5e13-a445-4462-84be-131c78d7e213
+      id: d484b971-f4df-4901-805f-773b87f4f95b
       version: -1
       name: azure-storage-table-entity-update
       script: '|||azure-storage-table-entity-update'
@@ -347,10 +347,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: c5c38c36-04e2-4909-8990-1b20ef664754
+    taskid: 5c272a43-1bf2-4f81-8781-b3175663debe
     type: regular
     task:
-      id: c5c38c36-04e2-4909-8990-1b20ef664754
+      id: 5c272a43-1bf2-4f81-8781-b3175663debe
       version: -1
       name: azure-storage-table-entity-replace
       script: '|||azure-storage-table-entity-replace'
@@ -384,10 +384,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 45d51d2e-ad41-4419-8cb0-f90c5c96dc99
+    taskid: 0ab5abca-2be1-4cc6-8247-9f675ef6b128
     type: regular
     task:
-      id: 45d51d2e-ad41-4419-8cb0-f90c5c96dc99
+      id: 0ab5abca-2be1-4cc6-8247-9f675ef6b128
       version: -1
       name: azure-storage-table-entity-query
       script: '|||azure-storage-table-entity-query'
@@ -421,10 +421,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 8598326b-d2c6-46e9-80ee-9f3601e2fea9
+    taskid: c059abf9-9ec7-4960-84c3-38280d487cd8
     type: condition
     task:
-      id: 8598326b-d2c6-46e9-80ee-9f3601e2fea9
+      id: c059abf9-9ec7-4960-84c3-38280d487cd8
       version: -1
       name: Verify Outputs
       type: condition
@@ -440,7 +440,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageTable.Entity.table_name
+              simple: AzureStorageTable.Table.name
             iscontext: true
     view: |-
       {
@@ -456,10 +456,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 061abc5d-65c9-4878-8178-8c5dfe2120ca
+    taskid: 3206b686-a5e7-4103-8381-4af95f9e065a
     type: regular
     task:
-      id: 061abc5d-65c9-4878-8178-8c5dfe2120ca
+      id: 3206b686-a5e7-4103-8381-4af95f9e065a
       version: -1
       name: azure-storage-table-entity-delete
       script: '|||azure-storage-table-entity-delete'
@@ -491,10 +491,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 44b6b5d7-abd9-41ab-859e-fa4330ed244c
+    taskid: 60305b52-9d91-4400-8e38-8217c71f55ab
     type: title
     task:
-      id: 44b6b5d7-abd9-41ab-859e-fa4330ed244c
+      id: 60305b52-9d91-4400-8e38-8217c71f55ab
       version: -1
       name: Test Done
       type: title
@@ -505,7 +505,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3100
+          "y": 3060
         }
       }
     note: false
@@ -518,7 +518,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3115,
+        "height": 3075,
         "width": 380,
         "x": 50,
         "y": 50

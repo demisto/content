@@ -214,21 +214,21 @@ def create_table_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    table_name = args.get('table_name')
+    table_name = args['table_name']
+
+    table_name_regex = "^[A-Za-z][A-Za-z0-9]{2,62}$"
+
+    if not re.search(table_name_regex, table_name):
+        raise Exception('The specified table name is invalid.')
 
     response = client.create_table_request(table_name)
-
-    readable_output = tableToMarkdown(
-        'Table:',
-        response,
-        headerTransform=pascalToSpace
-    )
+    outputs = {"name": response.get("TableName")}
 
     command_results = CommandResults(
-        readable_output=readable_output,
+        readable_output=f'Table {table_name} successfully created.',
         outputs_prefix='AzureStorageTable.Table',
-        outputs_key_field='TableName',
-        outputs=response,
+        outputs_key_field='name',
+        outputs=outputs,
         raw_response=response
     )
 
@@ -246,7 +246,7 @@ def delete_table_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    table_name = args.get('table_name')
+    table_name = args['table_name']
 
     client.delete_table_request(table_name)
     command_results = CommandResults(
@@ -268,7 +268,7 @@ def query_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit')
+    limit = args.get('limit') or '50'
     query_filter = args.get('filter')
     page = arg_to_number(args.get('page', '1'))
     next_table = None
@@ -292,7 +292,9 @@ def query_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     raw_response = client.query_tables_request(limit, query_filter, next_table).json()
 
-    outputs = raw_response.get("value")
+    outputs = []
+    for table in raw_response.get("value"):
+        outputs.append({"name": table.get("TableName")})
 
     readable_output = tableToMarkdown(
         readable_message,
@@ -302,12 +304,27 @@ def query_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureStorageTable.Table',
-        outputs_key_field='TableName',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
 
     return command_results
+
+
+def convert_dict_time_format(data: dict, keys: list):
+    """
+    Convert dictionary data values time format.
+    Args:
+        data (dict): Data.
+        keys (list): Keys list to convert
+
+    """
+    for key in keys:
+        if data.get(key):
+            str_time = data.get(key)[:-2] + 'Z'
+            iso_time = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
+            data[key] = iso_time
 
 
 def insert_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -322,38 +339,35 @@ def insert_entity_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    table_name = args.get('table_name')
-    partition_key = args.get('partition_key')
-    row_key = args.get('row_key')
-    entity_fields = args.get('entity_fields')
+    table_name = args['table_name']
+    partition_key = args['partition_key']
+    row_key = args['row_key']
+    entity_fields = args['entity_fields']
 
     try:
         entity_fields = json.loads(entity_fields)
-    except Exception:
-        raise Exception('Failed to parse entity_fields argument')
+    except ValueError:
+        raise ValueError('Failed to parse entity_fields argument. Please provide valid JSON format entity data.')
 
     entity_fields['PartitionKey'] = partition_key
     entity_fields['RowKey'] = row_key
 
     response = client.insert_entity_request(table_name, entity_fields)
-    outputs = copy.deepcopy(response)
-    outputs['table_name'] = table_name
 
-    if response.get('Timestamp'):
-        str_time = response.get('Timestamp')[:-2] + 'Z'
-        iso_time = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
-        outputs['Timestamp'] = iso_time
+    outputs = {"name": table_name, "Entity": [copy.deepcopy(response)]}
+
+    convert_dict_time_format(outputs.get('Entity')[0], ['Timestamp'])
 
     readable_output = tableToMarkdown(
-        'Entity Fields:',
-        outputs,
+        f'Entity Fields for {table_name} Table:',
+        outputs.get('Entity'),
         headerTransform=pascalToSpace
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageTable.Entity',
-        outputs_key_field=['table_name', 'PartitionKey', 'RowKey'],
+        outputs_prefix='AzureStorageTable.Table',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=response
     )
@@ -374,15 +388,15 @@ def replace_entity_command(client: Client, args: Dict[str, Any]) -> CommandResul
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    table_name = args.get('table_name')
-    partition_key = args.get('partition_key')
-    row_key = args.get('row_key')
-    entity_fields = args.get('entity_fields')
+    table_name = args['table_name']
+    partition_key = args['partition_key']
+    row_key = args['row_key']
+    entity_fields = args['entity_fields']
 
     try:
         entity_fields = json.loads(entity_fields)
-    except Exception:
-        raise Exception('Failed to parse entity_fields argument')
+    except ValueError:
+        raise ValueError('Failed to parse entity_fields argument. Please provide valid JSON format entity data.')
 
     client.replace_entity_request(table_name, partition_key, row_key, entity_fields)
     command_results = CommandResults(
@@ -406,15 +420,15 @@ def update_entity_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     """
 
-    table_name = args.get('table_name')
-    partition_key = args.get('partition_key')
-    row_key = args.get('row_key')
-    entity_fields = args.get('entity_fields')
+    table_name = args['table_name']
+    partition_key = args['partition_key']
+    row_key = args['row_key']
+    entity_fields = args['entity_fields']
 
     try:
         entity_fields = json.loads(entity_fields)
-    except Exception:
-        raise Exception('Failed to parse entity_fields argument')
+    except ValueError:
+        raise ValueError('Failed to parse entity_fields argument. Please provide valid JSON format entity data.')
 
     client.update_entity_request(table_name, partition_key, row_key, entity_fields)
     command_results = CommandResults(
@@ -436,12 +450,12 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    table_name = args.get('table_name')
+    table_name = args['table_name']
     partition_key = args.get('partition_key')
     row_key = args.get('row_key')
     query_filter = args.get('filter')
     select = args.get('select')
-    limit = None if partition_key else args.get('limit', '50')
+    limit = None if partition_key else args.get('limit') or '50'
     page = None if partition_key else arg_to_number(args.get('page', '1'))
     next_partition_key = None
     next_row_key = None
@@ -449,7 +463,10 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if (partition_key and not row_key) or (row_key and not partition_key):
         raise Exception('Please provide both \'partition_key\' and \'row_key\' arguments, or no one of them.')
 
-    readable_message = f'Entity Fields:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+    readable_message = f'Entity Fields for {table_name} table:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+
+    if partition_key:
+        readable_message = f'Entity Fields for {table_name} table:\n Current page size: 50\n Showing page 1 out others that may exist'
 
     if page and page > 1:
         offset = int(limit) * (page - 1)
@@ -462,8 +479,7 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
         if not next_partition_key:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureStorageTable.Entity',
-                outputs_key_field=['table_name', 'PartitionKey', 'RowKey'],
+                outputs_prefix='AzureStorageTable.Table',
                 outputs=[],
                 raw_response=[]
             )
@@ -471,27 +487,27 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     raw_response = client.query_entity_request(table_name, partition_key, row_key, query_filter, select, limit,
                                                next_partition_key, next_row_key).json()
 
-    if partition_key:
-        outputs = [raw_response]
-    else:
-        outputs = raw_response.get('value')
+    outputs = {"name": table_name}
+    response_copy = copy.deepcopy(raw_response)
 
-    for entity in outputs:
-        entity["table_name"] = table_name
-        if entity.get('Timestamp'):
-            str_time = entity.get('Timestamp')[:-2] + 'Z'
-            iso_time = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
-            entity['Timestamp'] = iso_time
+    if partition_key:
+        outputs["Entity"] = [response_copy]
+    else:
+        outputs["Entity"] = response_copy.get('value')
+
+    for entity in outputs.get("Entity"):
+        convert_dict_time_format(entity, ['Timestamp'])
 
     readable_output = tableToMarkdown(
         readable_message,
-        outputs,
+        outputs.get("Entity"),
         headerTransform=pascalToSpace
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageTable.Entity',
+        outputs_prefix='AzureStorageTable.Table',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -513,9 +529,9 @@ def delete_entity_command(client: Client, args: Dict[str, Any]) -> CommandResult
     Returns:
 
     """
-    table_name = args.get('table_name')
-    partition_key = args.get('partition_key')
-    row_key = args.get('row_key')
+    table_name = args['table_name']
+    partition_key = args['partition_key']
+    row_key = args['row_key']
 
     client.delete_entity_request(table_name, partition_key, row_key)
     command_results = CommandResults(
@@ -558,8 +574,8 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    account_sas_token = params.get('account_sas_token')
-    storage_account_name = params.get('storage_account_name')
+    account_sas_token = params['account_sas_token']
+    storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.table.core.windows.net/'
 
@@ -572,9 +588,9 @@ def main() -> None:
                                 api_version)
 
         commands = {
-            'azure-storage-table-table-create': create_table_command,
-            'azure-storage-table-table-delete': delete_table_command,
-            'azure-storage-table-table-query': query_tables_command,
+            'azure-storage-table-create': create_table_command,
+            'azure-storage-table-delete': delete_table_command,
+            'azure-storage-table-query': query_tables_command,
             'azure-storage-table-entity-insert': insert_entity_command,
             'azure-storage-table-entity-update': update_entity_command,
             'azure-storage-table-entity-query': query_entity_command,
