@@ -1,6 +1,6 @@
 ## ShiftLeft CORE
 
-ShiftLeft CORE provides static application security testing (SAST) that can be integrated into your CI/CD for automated scans.  Each test is completed in minutes and, depending on the complexity of your application, can be run at each pull request.  Known open source vulnerabilities are automatically checked against data flow analysis to tell whether or not an attacker can "reach" them from the attack surface of the application.
+ShiftLeft CORE provides static application security testing (SAST) that can be integrated into your CI/CD for automated scans. Each test is completed in minutes and, depending on the complexity of your application, can be run at each pull request.  Known open source vulnerabilities are automatically checked against data flow analysis to tell whether or not an attacker can "reach" them from the attack surface of the application.
 
 A single scan combines:
 
