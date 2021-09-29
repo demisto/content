@@ -439,7 +439,12 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
         returns the indicator with highest confidence score.
     """
     # get the indicator
-    params = dict(value=ip, type=DBotScoreType.IP, status=status, limit=0)
+    params = {
+        'value': ip,
+        'type': DBotScoreType.IP,
+        'status': status,
+        'limit': 0,
+    }
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
         return NO_INDICATORS_FOUND_MSG.format(searchable_value=ip)
@@ -1019,19 +1024,6 @@ def get_submission_status(client: Client, report_id, output_as_command_result=Tr
         return status, verdict
 
 
-def file_name_to_valid_string(file_name):
-    try:
-        # In case the user uses Cortex XSOAR version < 5.0 and the new docker image will not be automatically changed
-        import emoji
-
-        if emoji.emoji_count(file_name):  # type: ignore
-            return emoji.demojize(file_name)  # type: ignore
-    except Exception:
-        pass
-
-    return file_name
-
-
 def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
                   report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
@@ -1057,7 +1049,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
             raise DemistoException(f'{THREAT_STREAM} - Entry {submission_value} does not contain a file.')
 
         uploaded_file = open(file_info['path'], 'rb')
-        file_name = file_name_to_valid_string(file_info.get('name'))
+        file_name = file_info.get('name')
         files = {'report_radio-file': (file_name, uploaded_file)}
     else:
         data['report_radio-url'] = submission_value
@@ -1088,7 +1080,7 @@ def get_report(client: Client, report_id):
     """
         Returns the report from ThreatStream sandbox by id.
     """
-    response = client.http_request("GET", F"v1/submit/{report_id}/report", resp_type='response')
+    response = client.http_request('GET', f'v1/submit/{report_id}/report', resp_type='response')
     if response.status_code == 404:
         return f'No report found with id {report_id}'
 
@@ -1115,7 +1107,7 @@ def add_tag_to_model(client: Client, model_id, tags, model="intelligence"):
     """
         Adds tag to specific Threat Model. By default is set to intelligence (indicators).
     """
-    tags = tags if isinstance(tags, list) else tags.split(',')
+    tags = argToList(tags)
 
     data = {
         'tags': [{'name': t, 'tlp': 'red'} for t in tags]
@@ -1207,7 +1199,7 @@ def main():
         'threatstream-create-model': create_model,
         'threatstream-update-model': update_model,
         'threatstream-submit-to-sandbox': submit_report,
-        'threatstream-add-tag-to-model': add_tag_to_model
+        'threatstream-add-tag-to-model': add_tag_to_model,
     }
     try:
 

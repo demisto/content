@@ -1,7 +1,7 @@
 Use Anomali ThreatStream to query and submit threats.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-anomali-threatstream-v3).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-anomali-threatstream-v3).
 
 ## Configure Anomali ThreatStream v3 on Cortex XSOAR
 
