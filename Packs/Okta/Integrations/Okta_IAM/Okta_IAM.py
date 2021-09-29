@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
+BATCH_SIZE = 2000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
 USER_IS_DISABLED_MSG = 'Action failed because the user is disabled.'
@@ -44,10 +45,10 @@ class Client(BaseClient):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email):
+    def get_user(self, username):
         uri = 'users'
         query_params = {
-            'filter': f'profile.login eq "{email}"'
+            'filter': f'profile.login eq "{username}"'
         }
 
         res = self._http_request(
@@ -306,23 +307,60 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
+def get_all_user_profiles():
+    query = 'type:"User Profile"'
+    email_to_user_profile = {}
+
+    search_indicators = IndicatorsSearcher()
+    user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
+    while user_profiles:
+        for user_profile in user_profiles:
+            user_profile = user_profile.get('CustomFields', {})
+            email_to_user_profile[user_profile.get('email')] = user_profile
+
+        user_profiles = search_indicators.search_indicators_by_version(query=query, size=BATCH_SIZE).get('iocs', [])
+
+    return email_to_user_profile
+
+
+def get_event_username(log_entry):
+    for target in log_entry.get('target', []):
+        if target.get('type') == 'User':
+            return target.get('alternateId')
+    return None
+
+
+def should_drop_event(log_entry, email_to_user_profile):
+    """ Returns a boolean value indicates whether the incident should be dropped.
+
+    Args:
+        log_entry (dict): The log entry.
+
+    Returns:
+        (bool) True iff the event should be dropped.
+    """
+    username = get_event_username(log_entry)
+    return username is not None and email_to_user_profile.get(username) is None
+
+
+def add_user_profile_data_to_entry(log_entry, email_to_user_profile):
+    username = get_event_username(log_entry)
+    user_profile = email_to_user_profile.get(username, {})
+    log_entry.update(user_profile)
+    log_entry['UserProfile'] = user_profile
+
+
 def get_query_filter(context):
-    application_ids = []
-
-    query_filter = '(eventType eq "application.user_membership.add" ' \
-                   'or eventType eq "application.user_membership.remove") and'
-
     iam_configuration = context.get('IAMConfiguration', [])
     if not iam_configuration:
         raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
 
-    for row in iam_configuration:
-        application_ids.append(row['ApplicationID'])
+    application_ids = [row['ApplicationID'] for row in iam_configuration]
 
-    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + \
-                   ') or (eventType eq "user.account.update_profile")'
+    query_filter = '(eventType eq "application.user_membership.add" ' \
+                   'or eventType eq "application.user_membership.remove") and'
 
-    query_filter += query_suffix
+    query_filter += '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
 
     return query_filter
 
@@ -421,7 +459,7 @@ def get_mapping_fields_command(client):
 def get_user_command(client, args, mapper_in):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
+        okta_user = client.get_user(user_profile.get_attribute('username'))
         if not okta_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -454,7 +492,7 @@ def disable_user_command(client, args, is_command_enabled):
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            okta_user = client.get_user(user_profile.get_attribute('username'))
             if not okta_user:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -486,7 +524,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            okta_user = client.get_user(user_profile.get_attribute('username'))
             if okta_user:
                 # if user exists, update its data
                 return update_user_command(client, args, mapper_out, is_update_user_enabled, is_enable_enabled,
@@ -521,7 +559,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email', use_old_user_data=True))
+            okta_user = client.get_user(user_profile.get_attribute('username', use_old_user_data=True))
             if okta_user:
                 user_id = okta_user.get('id')
 
@@ -696,12 +734,15 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
+        email_to_user_profile = get_all_user_profiles()
+
         log_events, last_run_full_url = client.get_logs(last_run_full_url, last_run_time, time_now,
                                                         query_filter, auto_generate_filter, context)
         for entry in log_events:
-            # mapping is done at the classification and mapping stage
-            incident = {'rawJSON': json.dumps(entry)}
-            incidents.append(incident)
+            if not should_drop_event(entry, email_to_user_profile):
+                add_user_profile_data_to_entry(entry, email_to_user_profile)
+                incident = {'rawJSON': json.dumps(entry)}
+                incidents.append(incident)
 
     next_run = {
         'incidents': incidents[fetch_limit:],
