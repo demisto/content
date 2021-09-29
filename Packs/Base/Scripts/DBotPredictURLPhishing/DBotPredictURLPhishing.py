@@ -14,13 +14,15 @@ requests.packages.urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
 
-NO_FETCH_EXTRACT = TLDExtract(suffix_list_urls=None, cache_dir=False)
+no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
 MAJOR_VERSION = 0
 MINOR_DEFAULT_VERSION = 0
 
+MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
+MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
 MSG_INVALID_URL = "Error: "
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
@@ -31,7 +33,7 @@ MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
 EMPTY_STRING = ""
-URL_PHISHING_MODEL_NAME = "phishing_model"
+URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 THRESHOLD_NEW_DOMAIN_MONTHS = 6
@@ -183,7 +185,7 @@ def image_from_base64_to_bytes(base64_message: str):
 
 
 def extract_domainv2(url):
-    ext = NO_FETCH_EXTRACT(url)
+    ext = no_fetch_extract(url)
     return ext.domain + "." + ext.suffix
 
 
@@ -456,7 +458,6 @@ def get_prediction_single_url(model, url, force_model):
             return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
-    # sys.exit(0)
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
@@ -482,7 +483,7 @@ def get_prediction_single_url(model, url, force_model):
 
 def return_general_summary(results, tag="Summary"):
     df_summary = pd.DataFrame()
-    df_summary['Url'] = [x.get('url') for x in results]
+    df_summary['URL'] = [x.get('url') for x in results]
     df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict')
                                      if x.get('verdict') in MAPPING_VERDICT_COLOR.keys()
                                      else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
@@ -491,12 +492,12 @@ def return_general_summary(results, tag="Summary"):
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
-                                         headers=['Url', KEY_FINAL_VERDICT]),
+                                         headers=['URL', KEY_FINAL_VERDICT]),
         "Contents": df_summary_json,
         "EntryContext": {'DBotPredictURLPhishing': df_summary_json}
     }
     if tag is not None:
-        return_entry["Tags"] = ['SimilarIncidents_{}'.format(tag)]
+        return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]
     demisto.results(return_entry)
     return df_summary_json
 
@@ -542,11 +543,12 @@ def main():
     msg_list = []
     exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
-    if exist:
-        demisto.results("Model version in demisto: %s.%s" % (demisto_major_version, demisto_minor_version))
-    else:
-        demisto.results("There is no existing model version in demisto")
-
+    debug = demisto.args().get('debug', 'False') == 'True'
+    if debug:
+        if exist:
+            msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
+        else:
+            msg_list.append(MSG_NO_MODEL_IN_DEMISTO)
     if reset_model or not exist or (
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
@@ -562,8 +564,7 @@ def main():
             'image'].named_steps.trans.logo_dict = model.logos_dict
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
-        msg_list.append(MSG_UPDATE_LOGO)
-        demisto.results(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
+        msg_list.append(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         return_error(MSG_WRONG_CONFIG_MODEL)
@@ -578,6 +579,8 @@ def main():
     results = [get_prediction_single_url(model, x, force_model) for x in urls]
     general_summary = return_general_summary(results)
     detailed_summary = return_detailed_summary(results, number_entries_to_return)
+    if debug:
+        demisto.results(msg_list)
     return general_summary, detailed_summary, msg_list
 
 

@@ -7,7 +7,7 @@ import dill
 
 MAJOR_VERSION = 3
 
-URL_PHISHING_MODEL_NAME = "phishing_model"
+URL_PHISHING_MODEL_NAME = "url_phishing_model"
 MSG_EMPTY_NAME_OR_URL = "Empty logo name or URL"
 MINOR_DEFAULT_VERSION = 0
 OOB_VERSION_INFO_KEY = 'oob_version'
@@ -129,6 +129,7 @@ def main():
     msg_list = []
     logo_url = demisto.args().get('logoImageURL', '')
     logo_name = demisto.args().get('logoName', '')
+    debug = demisto.args().get('debug', 'False') == 'True'
 
     if not logo_url or not logo_name:
         return_error(MSG_EMPTY_NAME_OR_URL)
@@ -176,7 +177,8 @@ def main():
     else:
         msg_list.append(MSG_WRONG_CONFIGURATION)
         return_error(MSG_WRONG_CONFIGURATION)
-    demisto.results(msg_list)
+    if debug:
+        demisto.results(msg_list)
     return msg_list
 
 

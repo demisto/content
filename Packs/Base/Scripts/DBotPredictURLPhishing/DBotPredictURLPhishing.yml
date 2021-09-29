@@ -21,7 +21,8 @@ args:
 - default: false
   defaultValue: '1'
   description: Number of URL for which we provide additional information and verdict
-    explanations. The script will always provide information on a malicious URL at first.
+    explanations. The script will always provide information on a malicious URL at
+    first.
   isArray: false
   name: numberDetailedReports
   required: false
@@ -32,6 +33,17 @@ args:
   description: Whether to reset the model to the model existing in Docker.
   isArray: false
   name: resetModel
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to enter debug mode.
+  isArray: false
+  name: debug
   predefined:
   - 'False'
   - 'True'

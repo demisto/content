@@ -12,6 +12,17 @@ args:
   name: logoName
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to enter debug mode.
+  isArray: false
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
 comment: Add new logo to the phishing URL model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
