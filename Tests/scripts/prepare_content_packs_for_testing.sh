@@ -42,7 +42,7 @@ else
     gsutil -m cp -r "gs://$GCS_PRODUCTION_BUCKET/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
     echo "Finished copying successfully."
     # ====== UPDATING TESTING BUCKET ======
-  else  # case 3: a test upload, the source is of an exiting target bucket, no need to copy from the prod bucket TODO: add override option
+  else  # case 3: a test upload, the source is of an exiting target bucket, no need to copy from the prod bucket TODO: add documentation
     SOURCE_PATH=$2  # should look like: "upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
 
   fi

@@ -134,7 +134,7 @@ references:
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
-      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
+      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>  # TODO: add _PARAMETER to sbp as here
 
   container_config: &container_config
     docker:
