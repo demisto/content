@@ -1209,7 +1209,7 @@ jobs:
             fi
              echo "DELETE AFTER TESTING: if non of the other cases was printed, we are in case 3: the default, the inserted value to storage_base_path is the one being transfered to the copy_and_upload script"
 
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp $STORAGE_BASE_PATH/packs
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
           when: on_success
       - *store_artifacts
 
@@ -1252,7 +1252,7 @@ jobs:
                     echo "DELETE AFTER TESTING: case 2: create a new target bucket"
                   fi
                   echo "DELETE AFTER TESTING: if non of the other cases was printed, we are in case 3: the default, the inserted value to storage_base_path is the one being transfered to the copy_and_upload script"
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp $STORAGE_BASE_PATH/packs
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH/packs"
             - run:
                 name: Download packs from GCP
                 command: |
