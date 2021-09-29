@@ -176,6 +176,7 @@ def main():
     else:
         msg_list.append(MSG_WRONG_CONFIGURATION)
         return_error(MSG_WRONG_CONFIGURATION)
+    demisto.results(msg_list)
     return msg_list
 
 
