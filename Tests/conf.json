@@ -4654,7 +4654,11 @@
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "Carbon Black Edr - Test": "Issue 40132",
-        "Phishing v2 - Test - Actual Incident": "Issue 41322"
+        "Phishing v2 - Test - Actual Incident": "Issue 41322",
+        "AutoFocus V2 test": "Issue 26464",
+        "Kaspersky Security Center - Test": "Issue 36487",
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
         
