@@ -302,22 +302,26 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     dashboard_id = argToList(args.get('dashboard_id', ''))
 
     panel_id = args.get('panel_id')
-    query = args.get('query')
+    query = args.get('name')
     state = set_state(args.get('state'))
     limit = args.get('limit')
     folder_id = argToList(args.get('folder_id', ''))
-    dashboard_query = args.get('dashboard_query')
+    dashboard_query = args.get('dashboard_name')
     dashboard_tag = argToList(args.get('dashboard_tag', ''))
 
-    response = client.alerts_list_request(dashboard_id, panel_id, query, state,
-                                          limit, folder_id, dashboard_query, dashboard_tag)
+    responses = client.alerts_list_request(dashboard_id, panel_id, query, state,
+                                           limit, folder_id, dashboard_query, dashboard_tag)
 
+    for response in responses:
+        change_key(response, 'dashboardSlug', 'dashboardName')
+
+    headers = ['id', 'name', 'state', 'newStateDate', 'panelId', 'dashboardId', 'dashboardUid', 'dashboardName', 'url']
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown('Alerts', response, removeNull=True, headerTransform=pascalToSpace)
+        outputs=responses,
+        raw_response=responses,
+        readable_output=tableToMarkdown('Alerts', responses, headers=headers, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -482,14 +486,9 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     text = str(args.get('text'))
 
     response = client.annotation_create_request(text, dashboard_id, panel_id, time_start, time_end, tags)
-    output = {key: response[key] for key in response.keys() - {'message'}}
 
     command_results = CommandResults(
-        outputs_prefix='Grafana.Annotation',
-        outputs_key_field='id',
-        outputs=output,
-        raw_response=response,
-        readable_output=tableToMarkdown('Annotation', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=f'Annotation {response["id"]} Added'
     )
 
     return command_results
@@ -699,11 +698,8 @@ def test_module(client: Client, params: dict) -> None:
             if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
                 raise DemistoException(f'Maximum number of incidents to fetch exceeds the limit '
                                        f'(restricted to {MAX_INCIDENTS_TO_FETCH}), or is below zero.')
-            query = params.get('query')
-            if query:
-                query = url_encode(query)
             client.alerts_list_request(dashboard_id=argToList(params.get('dashboard_id')), panel_id=params.get('panel_id'),
-                                       query=query, state=params.get('state'))
+                                       query=params.get('alert_name'), state=params.get('state'))
 
     except DemistoException as e:
         if 'Unauthorized' in str(e):

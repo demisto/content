@@ -1,4 +1,4 @@
-category: Utilities
+category: Analytics & SIEM
 commonfields:
   id: Grafana
   version: -1
@@ -37,13 +37,13 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A comma-separated list.
+- additionalinfo: A comma-separated list, can be found by running the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
   hidden: false
   name: dashboard_id
   required: false
   type: 0
-- additionalinfo: add
+- additionalinfo: See "help".
   display: Panel ID to fetch
   hidden: false
   name: panel_id
@@ -54,7 +54,7 @@ configuration:
   name: alert_name
   required: false
   type: 0
-- display: State to fetch
+- display: States to fetch
   hidden: false
   name: state
   options:
@@ -93,12 +93,12 @@ script:
     - default: false
       description: Limit response to alerts having a name like this value.
       isArray: false
-      name: query
+      name: name
       required: false
       secret: false
     - default: false
       description: 'A comma-separated list of states by which to filter the results.
-        The options are: all, no_data, paused, alerting, ok, pending.'
+        The options are: all, no_data, paused, alerting, ok, pending, unknown.'
       isArray: true
       name: state
       required: false
@@ -118,7 +118,7 @@ script:
     - default: false
       description: Dashboard's name by which to filter the results.
       isArray: false
-      name: dashboard_query
+      name: dashboard_name
       required: false
       secret: false
     - default: false
@@ -142,8 +142,8 @@ script:
     - contextPath: Grafana.Alert.dashboardUid
       description: Alert dashboard uid
       type: String
-    - contextPath: Grafana.Alert.dashboardSlug
-      description: Alert dashboard slug
+    - contextPath: Grafana.Alert.dashboardName
+      description: Alert dashboard name
       type: String
     - contextPath: Grafana.Alert.panelId
       description: Alert panel id
@@ -337,7 +337,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: User theme
+      description: User theme when using Grafana's interface, either light or dark.
       isArray: false
       name: theme
       predefined:
@@ -352,9 +352,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Login or name is mandatory. Pay attantion that if you change your
-      own login information, you won't be able to continue quering.
-    execution: false
+    description: Login or email is mandatory. Pay attantion that if you change your
+      own login information, you won't be able to continue quering as your username
+      will change. Login and email should be unique.
+    execution: true
     name: grafana-user-update
   - arguments:
     - default: false
@@ -397,10 +398,6 @@ script:
     description: Creates annotation.
     execution: false
     name: grafana-annotation-create
-    outputs:
-    - contextPath: Grafana.Annotation.id
-      description: Annotation id
-      type: Number
   - arguments:
     - default: false
       description: Number of results wanted in one page.
@@ -415,7 +412,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Contained in the name of a team
+      description: Value is contained in the name of a team.
       isArray: false
       name: query
       required: false
@@ -567,7 +564,7 @@ script:
       secret: false
     deprecated: false
     description: Deletes a team.
-    execution: false
+    execution: true
     name: grafana-team-delete
   - arguments:
     - default: false
@@ -586,7 +583,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Query
+      description: Value is contained in the name of the dashboard.
       isArray: false
       name: query
       required: false
