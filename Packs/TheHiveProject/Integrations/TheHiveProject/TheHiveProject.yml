@@ -402,10 +402,10 @@ script:
       description: Raw query (for use with v4 upwards)
     outputs:
     - contextPath: TheHive.Cases._routing
-      description: _routing
+      description: _routing top level object of which the current object belongs to
       type: string
     - contextPath: TheHive.Cases._parent
-      description: _parent
+      description: _parent the above object the current object belongs to
       type: string
     - contextPath: TheHive.Cases.customFields
       description: Custom Fields

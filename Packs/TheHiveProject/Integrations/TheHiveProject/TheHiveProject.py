@@ -976,14 +976,14 @@ def main() -> None:
     command_map = {
         'thehive-list-cases': list_cases_command,
         'thehive-get-case': get_case_command,
-        'thehive-search-cases': search_cases_command,
+        'thehive-search-cases': search_cases_command,  # deprecated
         'thehive-update-case': update_case_command,
         'thehive-create-case': create_case_command,
-        'thehive-get-linked-cases': get_linked_cases_command,
+        'thehive-get-linked-cases': get_linked_cases_command,  # should be deprecated
         'thehive-merge-cases': merge_cases_command,
         'thehive-get-case-tasks': get_case_tasks_command,
         'thehive-get-task': get_task_command,
-        'thehive-get-attachment': get_attachment_command,
+        'thehive-get-attachment': get_attachment_command,  # no create attachment
         'thehive-update-task': update_task_command,
         'thehive-list-users': get_users_list_command,
         'thehive-get-user': get_user_command,
@@ -991,10 +991,10 @@ def main() -> None:
         'thehive-list-observables': list_observables_command,
         'thehive-create-observable': create_observable_command,
         'thehive-update-observable': update_observable_command,
-        'get-remote-data': get_remote_data_command,
+        'get-remote-data': get_remote_data_command,  #
         'get-modified-remote-data': get_modified_remote_data_command,
         'update-remote-system': update_remote_system_command,
-        'get-mapping-fields': get_mapping_fields_command,
+        'get-mapping-fields': get_mapping_fields_command,  #
         'thehive-create-task': create_task_command,
         'thehive-remove-case': remove_case_command,
         'thehive-block-user': block_user_command,

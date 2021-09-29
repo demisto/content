@@ -114,6 +114,82 @@ List cases.
                 "mirroring": "Both",
                 "observables": [
                     {
+                        "_createdAt": 1632316225834,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~41418904",
+                        "_type": "Observable",
+                        "data": "datas for test 2",
+                        "dataType": "domain",
+                        "extraData": {
+                            "permissions": [
+                                "manageShare",
+                                "manageAnalyse",
+                                "manageTask",
+                                "manageCaseTemplate",
+                                "manageCase",
+                                "manageUser",
+                                "manageProcedure",
+                                "managePage",
+                                "manageObservable",
+                                "manageTag",
+                                "manageConfig",
+                                "manageAlert",
+                                "accessTheHiveFS",
+                                "manageAction"
+                            ],
+                            "seen": {
+                                "ioc": false,
+                                "seen": 0
+                            },
+                            "shareCount": 0
+                        },
+                        "ioc": false,
+                        "message": "messages for test 2",
+                        "reports": {},
+                        "sighted": false,
+                        "startDate": 1632316225834,
+                        "tags": [],
+                        "tlp": 2
+                    },
+                    {
+                        "_createdAt": 1632316030325,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~41377816",
+                        "_type": "Observable",
+                        "data": "datas for test",
+                        "dataType": "domain",
+                        "extraData": {
+                            "permissions": [
+                                "manageShare",
+                                "manageAnalyse",
+                                "manageTask",
+                                "manageCaseTemplate",
+                                "manageCase",
+                                "manageUser",
+                                "manageProcedure",
+                                "managePage",
+                                "manageObservable",
+                                "manageTag",
+                                "manageConfig",
+                                "manageAlert",
+                                "accessTheHiveFS",
+                                "manageAction"
+                            ],
+                            "seen": {
+                                "ioc": false,
+                                "seen": 0
+                            },
+                            "shareCount": 0
+                        },
+                        "ioc": false,
+                        "message": "messages for test",
+                        "reports": {},
+                        "sighted": false,
+                        "startDate": 1632316030325,
+                        "tags": [],
+                        "tlp": 2
+                    },
+                    {
                         "_createdAt": 1632307576963,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
                         "_id": "~446472",
@@ -255,6 +331,38 @@ List cases.
                 "tags": [],
                 "tasks": [
                     {
+                        "_createdAt": 1632307981876,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~430144",
+                        "_type": "Task",
+                        "description": "new description",
+                        "extraData": {
+                            "shareCount": 0
+                        },
+                        "flag": false,
+                        "group": "default",
+                        "logs": [],
+                        "order": 0,
+                        "status": "Waiting",
+                        "title": "newly added task"
+                    },
+                    {
+                        "_createdAt": 1632307981851,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~454688",
+                        "_type": "Task",
+                        "description": "new description",
+                        "extraData": {
+                            "shareCount": 0
+                        },
+                        "flag": false,
+                        "group": "default",
+                        "logs": [],
+                        "order": 0,
+                        "status": "Waiting",
+                        "title": "newly added task"
+                    },
+                    {
                         "_createdAt": 1632307552125,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
                         "_id": "~323720",
@@ -287,9 +395,9 @@ List cases.
                         "title": "newly added task"
                     },
                     {
-                        "_createdAt": 1632307981851,
+                        "_createdAt": 1632308185938,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~454688",
+                        "_id": "~462856",
                         "_type": "Task",
                         "description": "new description",
                         "extraData": {
@@ -303,9 +411,9 @@ List cases.
                         "title": "newly added task"
                     },
                     {
-                        "_createdAt": 1632307981876,
+                        "_createdAt": 1632308185978,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~430144",
+                        "_id": "~331912",
                         "_type": "Task",
                         "description": "new description",
                         "extraData": {
@@ -353,53 +461,7 @@ List cases.
                 ],
                 "title": "updated title",
                 "tlp": 2,
-                "updatedAt": 1632307985846,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~41328712",
-                "_type": "case",
-                "caseId": 3,
-                "createdAt": "2021-09-19T09:22:28Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~41328712",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632043348219,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632043373896,
+                "updatedAt": 1632316446722,
                 "updatedBy": "adrugobitski@paloaltonetworks.com"
             },
             {
@@ -679,52 +741,6 @@ List cases.
                 "updatedBy": "adrugobitski@paloaltonetworks.com"
             },
             {
-                "_id": "~327816",
-                "_type": "case",
-                "caseId": 12,
-                "createdAt": "2021-09-22T10:53:00Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~327816",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632307980076,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632308031887,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
                 "_id": "~413824",
                 "_type": "case",
                 "caseId": 12,
@@ -769,6 +785,98 @@ List cases.
                 "tlp": 2,
                 "updatedAt": 1632308031147,
                 "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~458760",
+                "_type": "case",
+                "caseId": 14,
+                "createdAt": "2021-09-22T10:56:23Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "description for new case",
+                "endDate": null,
+                "flag": false,
+                "id": "~458760",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1632308183798,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [],
+                "title": "new created case",
+                "tlp": 2,
+                "updatedAt": 1632308211253,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~327816",
+                "_type": "case",
+                "caseId": 15,
+                "createdAt": "2021-09-22T10:53:00Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "description for new case",
+                "endDate": null,
+                "flag": false,
+                "id": "~327816",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1632307980076,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [],
+                "title": "new created case",
+                "tlp": 2,
+                "updatedAt": 1632308031887,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
             }
         ]
     }
@@ -781,15 +889,15 @@ List cases.
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~41324616 | updated title | description for new case | 2021-09-19T09:22:28Z |
->| ~41328712 | new created case | description for new case | 2021-09-19T09:22:28Z |
 >| ~352336 | new created case | description for new case | 2021-09-22T10:01:26Z |
 >| ~409848 | new created case | description for new case | 2021-09-22T10:01:26Z |
 >| ~413944 | new created case | description for new case | 2021-09-22T10:03:12Z |
 >| ~430088 | new created case | description for new case | 2021-09-22T10:09:25Z |
 >| ~364624 | new created case | description for new case | 2021-09-22T10:09:25Z |
 >| ~418040 | new created case | description for new case | 2021-09-22T10:03:12Z |
->| ~327816 | new created case | description for new case | 2021-09-22T10:53:00Z |
 >| ~413824 | new created case | description for new case | 2021-09-22T10:53:00Z |
+>| ~458760 | new created case | description for new case | 2021-09-22T10:56:23Z |
+>| ~327816 | new created case | description for new case | 2021-09-22T10:53:00Z |
 
 
 ### thehive-get-case
@@ -878,6 +986,82 @@ Get a case
             "id": "~41324616",
             "impactStatus": null,
             "observables": [
+                {
+                    "_createdAt": 1632316225834,
+                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_id": "~41418904",
+                    "_type": "Observable",
+                    "data": "datas for test 2",
+                    "dataType": "domain",
+                    "extraData": {
+                        "permissions": [
+                            "manageShare",
+                            "manageAnalyse",
+                            "manageTask",
+                            "manageCaseTemplate",
+                            "manageCase",
+                            "manageUser",
+                            "manageProcedure",
+                            "managePage",
+                            "manageObservable",
+                            "manageTag",
+                            "manageConfig",
+                            "manageAlert",
+                            "accessTheHiveFS",
+                            "manageAction"
+                        ],
+                        "seen": {
+                            "ioc": false,
+                            "seen": 0
+                        },
+                        "shareCount": 0
+                    },
+                    "ioc": false,
+                    "message": "messages for test 2",
+                    "reports": {},
+                    "sighted": false,
+                    "startDate": 1632316225834,
+                    "tags": [],
+                    "tlp": 2
+                },
+                {
+                    "_createdAt": 1632316030325,
+                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_id": "~41377816",
+                    "_type": "Observable",
+                    "data": "datas for test",
+                    "dataType": "domain",
+                    "extraData": {
+                        "permissions": [
+                            "manageShare",
+                            "manageAnalyse",
+                            "manageTask",
+                            "manageCaseTemplate",
+                            "manageCase",
+                            "manageUser",
+                            "manageProcedure",
+                            "managePage",
+                            "manageObservable",
+                            "manageTag",
+                            "manageConfig",
+                            "manageAlert",
+                            "accessTheHiveFS",
+                            "manageAction"
+                        ],
+                        "seen": {
+                            "ioc": false,
+                            "seen": 0
+                        },
+                        "shareCount": 0
+                    },
+                    "ioc": false,
+                    "message": "messages for test",
+                    "reports": {},
+                    "sighted": false,
+                    "startDate": 1632316030325,
+                    "tags": [],
+                    "tlp": 2
+                },
                 {
                     "_createdAt": 1632307576963,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
@@ -1020,6 +1204,38 @@ Get a case
             "tags": [],
             "tasks": [
                 {
+                    "_createdAt": 1632307981876,
+                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_id": "~430144",
+                    "_type": "Task",
+                    "description": "new description",
+                    "extraData": {
+                        "shareCount": 0
+                    },
+                    "flag": false,
+                    "group": "default",
+                    "logs": [],
+                    "order": 0,
+                    "status": "Waiting",
+                    "title": "newly added task"
+                },
+                {
+                    "_createdAt": 1632307981851,
+                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_id": "~454688",
+                    "_type": "Task",
+                    "description": "new description",
+                    "extraData": {
+                        "shareCount": 0
+                    },
+                    "flag": false,
+                    "group": "default",
+                    "logs": [],
+                    "order": 0,
+                    "status": "Waiting",
+                    "title": "newly added task"
+                },
+                {
                     "_createdAt": 1632307552125,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
                     "_id": "~323720",
@@ -1052,9 +1268,9 @@ Get a case
                     "title": "newly added task"
                 },
                 {
-                    "_createdAt": 1632307981851,
+                    "_createdAt": 1632308185938,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~454688",
+                    "_id": "~462856",
                     "_type": "Task",
                     "description": "new description",
                     "extraData": {
@@ -1068,9 +1284,9 @@ Get a case
                     "title": "newly added task"
                 },
                 {
-                    "_createdAt": 1632307981876,
+                    "_createdAt": 1632308185978,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~430144",
+                    "_id": "~331912",
                     "_type": "Task",
                     "description": "new description",
                     "extraData": {
@@ -1118,7 +1334,7 @@ Get a case
             ],
             "title": "updated title",
             "tlp": 2,
-            "updatedAt": 1632307985846,
+            "updatedAt": 1632316446722,
             "updatedBy": "adrugobitski@paloaltonetworks.com"
         }
     }
@@ -1259,7 +1475,7 @@ Update a case
             "tags": [],
             "title": "updated title",
             "tlp": 2,
-            "updatedAt": 1632308182098,
+            "updatedAt": 1632316670768,
             "updatedBy": "adrugobitski@paloaltonetworks.com"
         }
     }
@@ -1361,16 +1577,16 @@ Create a new case
     "TheHive": {
         "Cases": [
             {
-                "_id": "~41373720",
+                "_id": "~454904",
                 "_type": "case",
-                "caseId": 13,
-                "createdAt": "2021-09-22T10:56:23Z",
+                "caseId": 16,
+                "createdAt": "2021-09-22T13:17:52Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
-                "id": "~41373720",
+                "id": "~454904",
                 "impactStatus": null,
                 "owner": "adrugobitski@paloaltonetworks.com",
                 "pap": 2,
@@ -1392,7 +1608,7 @@ Create a new case
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632308183788,
+                "startDate": 1632316672635,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
@@ -1403,16 +1619,16 @@ Create a new case
                 "updatedBy": null
             },
             {
-                "_id": "~458760",
+                "_id": "~385104",
                 "_type": "case",
-                "caseId": 13,
-                "createdAt": "2021-09-22T10:56:23Z",
+                "caseId": 17,
+                "createdAt": "2021-09-22T13:17:52Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
-                "id": "~458760",
+                "id": "~385104",
                 "impactStatus": null,
                 "owner": "adrugobitski@paloaltonetworks.com",
                 "pap": 2,
@@ -1434,7 +1650,7 @@ Create a new case
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632308183798,
+                "startDate": 1632316672673,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
@@ -1454,7 +1670,7 @@ Create a new case
 >### TheHive newly Created Case:
 >|id|title|description|createdAt|
 >|---|---|---|---|
->| ~41373720 | new created case | description for new case | 2021-09-22T10:56:23Z |
+>| ~454904 | new created case | description for new case | 2021-09-22T13:17:52Z |
 
 
 ### thehive-create-task
@@ -1499,27 +1715,27 @@ Create a new task
     "TheHive": {
         "Tasks": [
             {
-                "_id": "~462856",
+                "_id": "~41381960",
                 "_type": "case_task",
-                "createdAt": "2021-09-22T10:56:25Z",
+                "createdAt": "2021-09-22T13:17:54Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
-                "id": "~462856",
+                "id": "~41381960",
                 "order": 0,
                 "status": "Waiting",
                 "title": "newly added task"
             },
             {
-                "_id": "~331912",
+                "_id": "~41386056",
                 "_type": "case_task",
-                "createdAt": "2021-09-22T10:56:25Z",
+                "createdAt": "2021-09-22T13:17:54Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
-                "id": "~331912",
+                "id": "~41386056",
                 "order": 0,
                 "status": "Waiting",
                 "title": "newly added task"
@@ -1534,7 +1750,7 @@ Create a new task
 >### The newly created task
 >|id|title|createdAt|status|
 >|---|---|---|---|
->| ~331912 | newly added task | 2021-09-22T10:56:25Z | Waiting |
+>| ~41381960 | newly added task | 2021-09-22T13:17:54Z | Waiting |
 
 
 ### thehive-remove-case
@@ -1732,7 +1948,7 @@ There is no context output for this command.
             {
                 "_createdAt": "2021-09-22T10:56:25Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~462856",
+                "_id": "~331912",
                 "_type": "Task",
                 "description": "new description",
                 "extraData": {
@@ -1748,7 +1964,39 @@ There is no context output for this command.
             {
                 "_createdAt": "2021-09-22T10:56:25Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~331912",
+                "_id": "~462856",
+                "_type": "Task",
+                "description": "new description",
+                "extraData": {
+                    "shareCount": 0
+                },
+                "flag": false,
+                "group": "default",
+                "logs": [],
+                "order": 0,
+                "status": "Waiting",
+                "title": "newly added task"
+            },
+            {
+                "_createdAt": "2021-09-22T13:17:54Z",
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~41381960",
+                "_type": "Task",
+                "description": "new description",
+                "extraData": {
+                    "shareCount": 0
+                },
+                "flag": false,
+                "group": "default",
+                "logs": [],
+                "order": 0,
+                "status": "Waiting",
+                "title": "newly added task"
+            },
+            {
+                "_createdAt": "2021-09-22T13:17:54Z",
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~41386056",
                 "_type": "Task",
                 "description": "new description",
                 "extraData": {
@@ -1807,8 +2055,10 @@ There is no context output for this command.
 >| ~454688 | newly added task | 2021-09-22T10:53:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~323720 | newly added task | 2021-09-22T10:45:52Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~430328 | newly added task | 2021-09-22T10:45:52Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~462856 | newly added task | 2021-09-22T10:56:25Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~331912 | newly added task | 2021-09-22T10:56:25Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~462856 | newly added task | 2021-09-22T10:56:25Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~41381960 | newly added task | 2021-09-22T13:17:54Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~41386056 | newly added task | 2021-09-22T13:17:54Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~41357336 | task1 | 2021-09-22T10:36:48Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 >| ~41349144 | task1 | 2021-09-22T10:36:48Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 
@@ -2226,6 +2476,82 @@ List observables for a case.
     "TheHive": {
         "Observables": [
             {
+                "_createdAt": 1632316225834,
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~41418904",
+                "_type": "Observable",
+                "data": "datas for test 2",
+                "dataType": "domain",
+                "extraData": {
+                    "permissions": [
+                        "manageShare",
+                        "manageAnalyse",
+                        "manageTask",
+                        "manageCaseTemplate",
+                        "manageCase",
+                        "manageUser",
+                        "manageProcedure",
+                        "managePage",
+                        "manageObservable",
+                        "manageTag",
+                        "manageConfig",
+                        "manageAlert",
+                        "accessTheHiveFS",
+                        "manageAction"
+                    ],
+                    "seen": {
+                        "ioc": false,
+                        "seen": 0
+                    },
+                    "shareCount": 0
+                },
+                "ioc": false,
+                "message": "messages for test 2",
+                "reports": {},
+                "sighted": false,
+                "startDate": 1632316225834,
+                "tags": [],
+                "tlp": 2
+            },
+            {
+                "_createdAt": 1632316030325,
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~41377816",
+                "_type": "Observable",
+                "data": "datas for test",
+                "dataType": "domain",
+                "extraData": {
+                    "permissions": [
+                        "manageShare",
+                        "manageAnalyse",
+                        "manageTask",
+                        "manageCaseTemplate",
+                        "manageCase",
+                        "manageUser",
+                        "manageProcedure",
+                        "managePage",
+                        "manageObservable",
+                        "manageTag",
+                        "manageConfig",
+                        "manageAlert",
+                        "accessTheHiveFS",
+                        "manageAction"
+                    ],
+                    "seen": {
+                        "ioc": false,
+                        "seen": 0
+                    },
+                    "shareCount": 0
+                },
+                "ioc": false,
+                "message": "messages for test",
+                "reports": {},
+                "sighted": false,
+                "startDate": 1632316030325,
+                "tags": [],
+                "tlp": 2
+            },
+            {
                 "_createdAt": 1632307576963,
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
                 "_id": "~446472",
@@ -2349,6 +2675,8 @@ List observables for a case.
 >### Observables for Case ~41324616:
 >|data|dataType|message|
 >|---|---|---|
+>| datas for test 2 | domain | messages for test 2 |
+>| datas for test | domain | messages for test |
 >| google | domain | new observable |
 >| demisto | domain | test observ |
 >| demisto | domain | test observ |

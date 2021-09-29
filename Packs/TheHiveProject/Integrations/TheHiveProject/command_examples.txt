@@ -8,7 +8,8 @@
 !thehive-list-observables id="~41324616"
 !thehive-list-users
 !thehive-get-version
-!thehive-create-observable data="google" dataType="domain" id="~41324616" message="new observable 2"
+!thehive-create-observable id="~41324616" data="datas for test 3" dataType="domain"  message="datas for test 3"
+!thehive-get-linked-cases
 
 
 
