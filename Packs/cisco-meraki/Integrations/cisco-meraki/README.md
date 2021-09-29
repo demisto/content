@@ -63,7 +63,7 @@ List the organizations that the api-key has privileges on.
 
 ### meraki-get-organization-license-state
 ***
-License state for an organization
+License state for an organization.
 
 
 #### Base Command
@@ -81,8 +81,9 @@ License state for an organization
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| status | String | License status. |
-| expirationDate | String | License expiration date. |
+| status | String | License status. | 
+| expirationDate | String | License expiration date. | 
+
 
 #### Command Example
 ```!meraki-get-organization-license-state organizationId=828552```
@@ -119,15 +120,17 @@ List of inventories for an organization.
 
 
 #### Command Example
-``` ```
+```!meraki-fetch-organization-inventory organizationId=828552```
 
 #### Human Readable Output
 
+>### Organization Inventory
+>**No entries.**
 
 
 ### meraki-fetch-networks
 ***
-List the networks in an organization..
+List the networks in an organization.
 
 
 #### Base Command
@@ -199,10 +202,12 @@ List the devices in a network.
 
 
 #### Command Example
-``` ```
+```!meraki-fetch-devices networkId=N_645140646620837008```
 
 #### Human Readable Output
 
+>### Devices
+>**No entries.**
 
 
 ### meraki-fetch-device-uplink
@@ -226,7 +231,7 @@ List of uplink information for a device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uplink | List | List of device uplink. Eeach includes Status, and Interface. | 
+| Uplink | List | List of device uplink. Each includes Status and Interface | 
 
 
 #### Command Example
@@ -238,7 +243,7 @@ List of uplink information for a device.
 
 ### meraki-fetch-ssids
 ***
-List the SSIDs in a network
+List the SSIDs in a network.
 
 
 #### Base Command
@@ -268,7 +273,7 @@ List the SSIDs in a network
 
 ### meraki-fetch-clients
 ***
-List the clients of a device, up to a maximum of a month ago
+List the clients of a device, up to a maximum of a month ago.
 
 
 #### Base Command
@@ -318,7 +323,7 @@ List of L3 firewall rules for an SSID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Firewall | List | List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment | 
+| Firewall | List | List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment. | 
 
 
 #### Command Example
@@ -330,7 +335,7 @@ List of L3 firewall rules for an SSID.
 
 ### meraki-remove-device
 ***
-Remove a single device
+Remove a single device.
 
 
 #### Base Command
@@ -357,7 +362,7 @@ There is no context output for this command.
 
 ### meraki-get-device
 ***
-Get a single device
+Get a single device.
 
 
 #### Base Command
@@ -376,7 +381,7 @@ Get a single device
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Device | unknown | Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address. | 
+| Device | unknown | Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address | 
 
 
 #### Command Example
@@ -388,7 +393,7 @@ Get a single device
 
 ### meraki-update-device
 ***
-Update the attributes of a device
+Update the attributes of a device.
 
 
 #### Base Command
@@ -398,7 +403,7 @@ Update the attributes of a device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| networkId | Network id. | Required | 
+| networkId | Network ID. | Required | 
 | serial | Serial number of the device to update. | Required | 
 | name | New name of the device. | Optional | 
 | tags | New tags of the device. | Optional | 
@@ -461,14 +466,14 @@ Update rule to L3 firewall rules of an SSID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | networkId | Network ID. | Required | 
-| number | SSID number. | Required | 
-| allowLanAccess | Whether to allow or deny wireless client access to the local LAN. True allows access and false denies access. Possible values: true, false. | Required | 
-| policy | Whether to allow or deny a protocol.  Possible values: allow, deny. | Required | 
-| protocol | The type of protocol. Possible values: tcp, udp, icmp, any. | Required | 
-| destPort | The destination port. Can be 'any' or an integer within the range of 1-6553). | Required | 
-| destCidr | The destination IP address or subnet in CIDR form. Can also be 'any'. | Required | 
+| number | SSID number. Default is  . | Required | 
+| allowLanAccess | Whether to allow or deny wireless client access to the local LAN. True allows access and false denies access. Possible values: true, false. Possible values are: true, false. | Required | 
+| policy | Whether to allow or deny a protocol. Possible values: "allow" and "deny". Possible values are: allow, deny. | Required | 
+| protocol | The type of protocol. Possi ble values: "tcp", "udp", "icmp", and "any". Possible values are: tcp, udp, icmp, any. | Required | 
+| destPort | The destination port. Can be "any" or an integer within the range of 1-65535. | Required | 
+| destCidr | The destination IP address or subnet in CIDR form. Can also be "any". | Required | 
 | comment | A note about the rule. | Optional | 
-| removeOthers | Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values are: true, false. | Required | 
+| removeOthers | Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values: "true" and "false". Possible values are: true, false. | Required | 
 
 
 #### Context Output
