@@ -49,7 +49,7 @@ def main():
 
     # delete gitlab branches
     for gitlab_branch in gitlab_branches:
-        if gitlab_branch_name := gitlab_branch.name not in github_branch_names:
+        if (gitlab_branch_name := gitlab_branch.name) not in github_branch_names:
             try:
                 gitlab_branch.delete()
                 print(f'{GREEN}deleted "{gitlab_branch_name}"{RESET}')
