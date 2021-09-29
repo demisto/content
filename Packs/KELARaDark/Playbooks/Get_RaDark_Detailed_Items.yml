@@ -313,7 +313,7 @@ tasks:
       brand: ""
       id: 5028a5a3-7b9f-401f-8d5f-ccedf35cf94b
       iscommand: false
-      name: Extract Grid Type
+      name: RaDark - Extract Grid Type
       type: condition
       version: -1
     taskid: 5028a5a3-7b9f-401f-8d5f-ccedf35cf94b

@@ -120,11 +120,14 @@ script:
     - contextPath: Radark.itemDetails.items.password
       description: The password of the item.
       type: string
-    - contextPath: Radark.itemDetails.items.available_data
-      description: The available data of the item.
+    - contextPath: Radark.itemDetails.items.additional_data
+      description: The additional data of the item.
       type: string
     - contextPath: Radark.itemDetails.items.price
       description: The price of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.isp
+      description: The ISP of the item.
       type: string
     - contextPath: Radark.itemDetails.details
       description: General details of the incident.

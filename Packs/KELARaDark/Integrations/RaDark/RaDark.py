@@ -428,7 +428,7 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def incident_get_items_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
+def incident_get_items_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     try:
         incident_id = str(args.get('incident_id', ''))
         incident_data = client.incident_get_items(incident_id=incident_id)
@@ -436,7 +436,7 @@ def incident_get_items_command(client: Client, args: Dict[str, Any]) -> Union[Co
                 isinstance(incident_data['data'].get('incidents'), list) and len(incident_data['data']['incidents']) > 0:
             parsed_data, readable_output = parse_incident_markdown_table(incident_data['data'], incident_id)
         else:
-            readable_output = f'No data found for item ID: {incident_id}'
+            readable_output = f'No data found for item ID: {incident_id}.'
             parsed_data = []
         return CommandResults(
             readable_output=readable_output,
@@ -444,12 +444,10 @@ def incident_get_items_command(client: Client, args: Dict[str, Any]) -> Union[Co
             outputs_key_field='items',
             outputs={'items': parsed_data, "details": readable_output})
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute command.\nError:\n {str(e)} {incident_data}')
-        return None
+        raise Exception(f'RaDark Error: Failed to execute command.\nError:\n {str(e)} {incident_data}')
 
 
-def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
+def email_enrich_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     try:
         email = str(args.get('email', ''))
         email_data = client.email_enrich_data(email=email)
@@ -457,7 +455,7 @@ def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandR
                 isinstance(email_data['data'].get('incidents'), list) and len(email_data['data']['incidents']) > 0:
             parsed_data, readable_output = parse_email_enrichment_markdown_table(email_data['data'])
         else:
-            readable_output = f'No data found for email: {email}'
+            readable_output = f'No data found for email: {email}.'
             parsed_data = None
         return CommandResults(
             readable_output=readable_output,
@@ -465,28 +463,24 @@ def email_enrich_command(client: Client, args: Dict[str, Any]) -> Union[CommandR
             outputs_key_field='emails',
             outputs={'emails': parsed_data})
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute command.\nError:\n {str(e)} {email}')
-        return None
+        raise Exception(f'RaDark Error: Failed to execute command.\nError:\n {str(e)} {email}')
 
 
-def item_handle_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
+def item_handle_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     try:
         item_id = str(args.get('item_id', ''))
         action_res = client.action_on_item(item_id=item_id, action="handled")
         if isinstance(action_res, dict) and isinstance(action_res.get('data'), dict) \
                 and action_res['data'].get('value'):
-            readable_output = f'Item ID ({item_id}) marked as handled'
+            readable_output = f'Item ID ({item_id}) marked as handled.'
             return CommandResults(readable_output=readable_output)
         else:
             raise Exception("RaDark Error: Mark item action failed!")
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute command on {item_id}.\nError:\n {str(e)}')
-        return None
+        raise Exception(f'RaDark Error: Failed to execute command on {item_id}.\nError:\n {str(e)}')
 
 
-def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, None]:
+def item_purchase_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     try:
         item_id = str(args.get('item_id', ''))
         bot_id = ''
@@ -541,7 +535,7 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
                     if isinstance(message_res, dict) and isinstance(message_res.get('data', ''), dict) \
                             and message_res['data'].get('roomId', ''):
                         # readable_output = 'Item marked for purchasing'
-                        readable_output = f"Bot ID ('{bot_id}') marked for purchasing"
+                        readable_output = f"Bot ID ('{bot_id}') marked for purchasing."
                     else:
                         raise Exception("RaDark Error: Purchase message was not created!")
                 else:
@@ -552,9 +546,7 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> Union[Command
             raise Exception("RaDark Error: Mentions list was not found!")
         return CommandResults(readable_output=readable_output)
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute command on {item_id}.\nError:\n {str(e)}')
-        return None
+        raise Exception(f'RaDark Error: Failed to execute command on {item_id}.\nError:\n {str(e)}')
 
 
 ''' MAIN FUNCTION '''
