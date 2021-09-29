@@ -159,7 +159,7 @@ def list_app_secrets_command(
         )
         markdown += "\n### Recommendation\n"
         if len(filtered_findings):
-            markdown += "\nReview the secrets in this list and follow the appropriate Secrets Disclosure & Management playbook!"
+            markdown += "\nReview the secrets in this list!"
         else:
             markdown += "\nNo secrets in this app require your attention."
         markdown += f"\n### ShiftLeft Findings ({len(filtered_findings)})\n"
@@ -176,7 +176,7 @@ def list_app_secrets_command(
         return CommandResults(
             readable_output=markdown,
             outputs_prefix="ShiftLeft.Secrets",
-            outputs_key_field="scan.id",
+            outputs_key_field="",
             outputs=response,
         )
     else:

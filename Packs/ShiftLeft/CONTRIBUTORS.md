@@ -1,5 +1,0 @@
-### Pack Contributors:
-
----
- - Prabhu Subramanian
- 
