@@ -73,6 +73,8 @@ def main():
     if base_url and not base_url.endswith('/publicapi'):
         base_url += '/publicapi'
     token = params.get('token')
+    if not token:
+        token = demisto.getLicenseCustomField("WildFire-Reports.token")
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
