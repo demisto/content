@@ -25,9 +25,6 @@ script:
   type: python
   commands:
   - name: shiftleft-list-apps
-    outputs:
-    - contextPath: ShiftLeft
-      description: API response
     description: List Apps
   - name: shiftleft-list-app-findings
     arguments:
