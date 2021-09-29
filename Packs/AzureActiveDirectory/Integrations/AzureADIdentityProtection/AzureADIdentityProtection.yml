@@ -7,6 +7,7 @@ configuration:
   hidden: false
   name: app_id
   required: true
+  defaultvalue: 4ffef4a4-601f-4393-a789-432f3f3b8470
   type: 0
 - display: Subscription ID
   hidden: false
