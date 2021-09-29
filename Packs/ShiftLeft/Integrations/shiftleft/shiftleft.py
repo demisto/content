@@ -105,7 +105,7 @@ def list_apps_command(client: ShiftLeftClient, org_id: str) -> CommandResults:
 
 
 def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
-    app_name = args.get("app_name", None)
+    app_name = args.get("app_name")
     if not app_name:
         raise ValueError("Shiftleft error: app_name not specified")
     version = args.get("version")
@@ -174,13 +174,13 @@ def list_app_secrets_command(client: ShiftLeftClient, org_id: str, args: Dict[st
 
 
 def list_app_findings_command(client: ShiftLeftClient, org_id: str, args: Dict[str, Any]) -> CommandResults:
-    app_name = args.get("app_name", None)
+    app_name = args.get("app_name")
     if not app_name:
         raise ValueError("Shiftleft error: app_name not specified")
-    severity = args.get("severity", ["critical"])
-    type = args.get("type", ["vuln"])
-    version = args.get("version", None)
-    result = client.list_app_findings(org_id, app_name, severity, type, version)
+    severity = argToList(args.get("severity", "critical"))
+    app_type = argToList(args.get("type", "vuln"))
+    version = args.get("version")
+    result = client.list_app_findings(org_id, app_name, severity, app_type, version)
     response: Any = result.get("response") if result.get("ok") else {}
     findings = response.get("findings", {})
     scan = response.get("scan", [])
