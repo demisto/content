@@ -1,5 +1,6 @@
 import base64
 import copy
+import gc
 
 from CommonServerPython import *
 
@@ -62,6 +63,8 @@ def main():
     if is_error(res):
         return_error(get_error(res))
     incidents = res[-1]['Contents']
+    del res
+    gc.collect()
 
     text_pre_process_args = copy.deepcopy(d_args)
     text_pre_process_args['inputType'] = 'json_b64_string'
@@ -75,9 +78,11 @@ def main():
     res = demisto.executeCommand("DBotPreProcessTextData", text_pre_process_args)
     if is_error(res):
         return_error(get_error(res))
-
     processed_text_data = res[0]['Contents']
     demisto.results(res)
+    del res
+    gc.collect()
+
     train_model_args = copy.deepcopy(d_args)
     train_model_args['inputType'] = 'json_b64_string'
     train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8')).decode('ascii')
