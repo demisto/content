@@ -1,14 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 import copy
+import gzip
 import hashlib
-import requests
-import traceback
 import secrets
 import string
-from typing import Dict, Any, Tuple
+import traceback
+from typing import Any, Dict, Tuple
+
+import requests
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -587,7 +588,7 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     Returns:
         CommandResults: The command results.
     """
-    if not (query_name := args.get('query_name')):
+    if not (query_name: = args.get('query_name')):
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if not execution_id:
@@ -621,6 +622,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
+    return_file = args.get('return_file', 'true') == 'true'
     integration_context = get_integration_context()
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
@@ -635,9 +637,13 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
                                      raw_response=copy.deepcopy(outputs))
     # if there are more then 1000 results - a file is returned
     if file_data:
-        file = fileResult(filename="results.gz", data=file_data)
-        remove_query_id_from_integration_context(query_id)
-        return [file, command_results]
+        if return_file:
+            file = fileResult(filename="results.gz", data=file_data)
+            remove_query_id_from_integration_context(query_id)
+            return [file, command_results]
+        else:
+            file_data = gzip.decompress(file_data).decode()
+            outputs['results'] = [json.loads(line) for line in file_data.split("\n") if len(line) > 0]
 
     # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
@@ -647,7 +653,6 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
-        command_results.readable_output = 'Query is still running, it may take a little while...'
         return command_results
 
     results_to_format = outputs.pop('results')
