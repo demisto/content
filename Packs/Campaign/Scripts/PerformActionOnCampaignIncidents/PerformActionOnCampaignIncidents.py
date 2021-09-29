@@ -99,9 +99,9 @@ def _remove_incident_from_lower_similarity_context(incident_context, incident_id
 
     lower_similarity_incident_context = list(filter(
         lambda x: x.get('id') != incident_id, lower_similarity_incident_context))
-    res = demisto.executeCommand('DeleteContext', {'key': 'EmailCampaign.LowerSimilarityIncidents'})
-    if is_error(res):
-        return_error('Failed to delete current context. Error details:\n{}'.format(get_error(res)))
+
+    demisto.executeCommand('DeleteContext', {'key': 'EmailCampaign.LowerSimilarityIncidents'})
+
     res = demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.LowerSimilarityIncidents',
                                                      'value': lower_similarity_incident_context})
     if is_error(res):

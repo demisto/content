@@ -82,14 +82,21 @@ CASES = [
        'recipientsdomain': ['example.com'], 'severity': 3, 'similarity': 0.9, 'status': 1},
       {'emailfrom': 'example@example.com', 'emailfromdomain': 'example.com', 'id': '398', 'name': 'example3',
        'occurred': '2021-07-13T08:47:28.067532466Z', 'recipients': ['victim-test2@demistodev.onmicrosoft.com'],
-       'recipientsdomain': ['example.com'], 'severity': 3, 'similarity': 0.85, 'status': 1}]),
-    (CONTEXT_EXAMPLE_EMPTY, 0.84, [], [])
+       'recipientsdomain': ['example.com'], 'severity': 3, 'similarity': 0.85, 'status': 1}], False),
+    (CONTEXT_EXAMPLE, 0.84, [],
+     [{'emailfrom': 'example@example.com', 'emailfromdomain': 'example.com', 'id': '4', 'name': 'example4',
+       'occurred': '2021-07-13T11:20:43.144384137Z', 'recipients': ['victim-test2@demistodev.onmicrosoft.com'],
+       'recipientsdomain': ['example.com'], 'severity': 1, 'similarity': 0.82, 'status': 1},
+      {'emailfrom': 'example@example.com', 'emailfromdomain': 'example.com', 'id': '4', 'name': 'example4',
+       'occurred': '2021-07-13T11:20:43.144384137Z', 'recipients': ['victim-test2@demistodev.onmicrosoft.com'],
+       'recipientsdomain': ['example.com'], 'severity': 1, 'similarity': 0.85, 'status': 1}], True
+     ),
+    (CONTEXT_EXAMPLE_EMPTY, 0.84, [], [], False)
 ]
 
 
-#
-@pytest.mark.parametrize('context, threshold, expected_low, expected_high', CASES)
-def test_filter_by_threshold(context, threshold, expected_low, expected_high):
+@pytest.mark.parametrize('context, threshold, expected_low, expected_high, part_of_campaign', CASES)
+def test_filter_by_threshold(mocker, context, threshold, expected_low, expected_high, part_of_campaign):
     """
     Given:
         Context with incidents with different similarities and a threshold for low similarity
@@ -98,6 +105,7 @@ def test_filter_by_threshold(context, threshold, expected_low, expected_high):
     Then:
         Makes sure the incidents with low similarities goes to 'low' similarity and the rest to 'high'
     """
+    mocker.patch.object(SplitCampaignContext, '_get_incident_campaign', return_value=part_of_campaign)
     low, high = SplitCampaignContext.filter_by_threshold(context, threshold)
     assert low == expected_low, high == expected_high
 
