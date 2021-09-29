@@ -1262,6 +1262,7 @@ jobs:
                     else
                       STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
                     fi
+                  fi
 
                   PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
                   ZIP_FOLDER=$(mktemp -d)
