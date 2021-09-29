@@ -25,7 +25,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cohesity-helios-get-ransomware-alerts
 ***
-Get Cohesity Helios ransomware Alerts command.
+Get Cohesity Helios ransomware alerts.
 
 
 #### Base Command
@@ -37,11 +37,12 @@ Get Cohesity Helios ransomware Alerts command.
 | --- | --- | --- |
 | created_after | Returns only alerts created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | created_before | Returns only alerts created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ). | Optional | 
-| limit | Limits the number of alerts to return. Default is 20. | Optional | 
-| alert_id_list | List of comma-separated alert ids to filter alerts. | Optional | 
-| cluster_identifiers | List of comma-separated cluster identifiers to filter alerts. | Optional | 
-| region_ids | List of comma-separated region identifiers to filter alerts. | Optional | 
-| alert_severity_list | List of comma separted alert severities filter. Possible values are: kCritical, kWarning, kInfo. Default is kCritical. | Optional | 
+| limit | Limits the number of alerts to return. Default is 200. | Optional | 
+| alert_id_list | List of comma-separated alert identifiers to filter alerts. | Optional | 
+| cluster_id_list | List of comma-separated cluster identifiers to filter alerts. | Optional | 
+| region_id_list | List of comma-separated region identifiers to filter alerts. | Optional | 
+| alert_state_list | One or more state values. Possible values are: kOpen, kSuppressed, kResolved, kNote. Default is kOpen. | Optional | 
+| alert_severity_list | One or more severity levels. Possible values are: kCritical, kWarning, kInfo. Default is kCritical,kWarning. | Optional | 
 
 
 #### Context Output
@@ -59,7 +60,7 @@ Get Cohesity Helios ransomware Alerts command.
 
 
 #### Command Example
-```!cohesity-helios-get-ransomware-alerts created_after=2021-09-21T created_before=2021-09-25T limit=2 alert_severity_list=kCritical,kInfo```
+```!cohesity-helios-get-ransomware-alerts created_after=2021-09-26T created_before=2021-09-230T limit=2 alert_severity_list=kCritical,kInfo```
 
 #### Context Example
 ```json
@@ -67,23 +68,23 @@ Get Cohesity Helios ransomware Alerts command.
     "CohesityHelios": {
         "RansomwareAlert": [
             {
-                "alert_cause": "The recent protection run of Protection Group testSimJob98LLwith job id 20548 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
-                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-04, a symptom of potential ransomware attack on your primary environment",
-                "alert_id": "8757180793808645:1632484721485079",
+                "alert_cause": "The recent protection run of Protection Group testSimJobCWWMwith job id 24248 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
+                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-06, a symptom of potential ransomware attack on your primary environment",
+                "alert_id": "9346668452014081:1632849269030240",
                 "anomalous_object_env": "kVMware",
-                "anomalous_object_name": "pankajk-ubuntu18-04",
-                "anomaly_strength": "86",
-                "occurrence_time": "2021-09-24T11:58:41Z",
+                "anomalous_object_name": "pankajk-ubuntu18-06",
+                "anomaly_strength": "66",
+                "occurrence_time": "2021-09-28T17:14:29Z",
                 "severity": "kCritical"
             },
             {
-                "alert_cause": "The recent protection run of Protection Group testSimJobGLW3with job id 20536 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
-                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-03, a symptom of potential ransomware attack on your primary environment",
-                "alert_id": "2810156198598750:1632484334435401",
+                "alert_cause": "The recent protection run of Protection Group testSimJobBTYAwith job id 24229 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
+                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-05, a symptom of potential ransomware attack on your primary environment",
+                "alert_id": "2122491972847952:1632848348897740",
                 "anomalous_object_env": "kVMware",
-                "anomalous_object_name": "pankajk-ubuntu18-03",
-                "anomaly_strength": "88",
-                "occurrence_time": "2021-09-24T11:52:14Z",
+                "anomalous_object_name": "pankajk-ubuntu18-05",
+                "anomaly_strength": "63",
+                "occurrence_time": "2021-09-28T16:59:08Z",
                 "severity": "kCritical"
             }
         ]
@@ -93,12 +94,11 @@ Get Cohesity Helios ransomware Alerts command.
 
 #### Human Readable Output
 
->### Results
->|alert_cause|alert_description|alert_id|anomalous_object_env|anomalous_object_name|anomaly_strength|occurrence_time|severity|
->|---|---|---|---|---|---|---|---|
->| The recent protection run of Protection Group testSimJob98LLwith job id 20548 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | Anomalous change in file system detected on pankajk-ubuntu18-04, a symptom of potential ransomware attack on your primary environment | 8757180793808645:1632484721485079 | kVMware | pankajk-ubuntu18-04 | 86 | 2021-09-24T11:58:41Z | kCritical |
->| The recent protection run of Protection Group testSimJobGLW3with job id 20536 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | Anomalous change in file system detected on pankajk-ubuntu18-03, a symptom of potential ransomware attack on your primary environment | 2810156198598750:1632484334435401 | kVMware | pankajk-ubuntu18-03 | 88 | 2021-09-24T11:52:14Z | kCritical |
-
+>### Cohesity Helios Ransomware Alerts
+>|Alert Id|Alert Description|Alert Cause|Anomalous Object Env|Anomalous Object Name|Anomaly Strength|
+>|---|---|---|---|---|---|
+>| 9346668452014081:1632849269030240 | Anomalous change in file system detected on pankajk-ubuntu18-06, a symptom of potential ransomware attack on your primary environment | The recent protection run of Protection Group testSimJobCWWMwith job id 24248 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | kVMware | pankajk-ubuntu18-06 | 66 |
+>| 2122491972847952:1632848348897740 | Anomalous change in file system detected on pankajk-ubuntu18-05, a symptom of potential ransomware attack on your primary environment | The recent protection run of Protection Group testSimJobBTYAwith job id 24229 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | kVMware | pankajk-ubuntu18-05 | 63 |
 
 ### cohesity-helios-ignore-anomalous-object
 ***
@@ -126,9 +126,10 @@ There is no context output for this command.
 
 >Ignored object pankajk-ubuntu18-02
 
+
 ### cohesity-helios-restore-latest-clean-snapshot
 ***
-Restore latest clean snapshot for given object.
+Restore the latest clean snapshot for the given object.
 
 
 #### Base Command
@@ -146,8 +147,8 @@ Restore latest clean snapshot for given object.
 There is no context output for this command.
 
 #### Command Example
-```!cohesity-helios-restore-latest-clean-snapshot  object_name=pankajk-ubuntu18-02```
+```!cohesity-helios-restore-latest-clean-snapshot  object_name=pankajk-ubuntu18-05```
 
 #### Human Readable Output
 
->Restored object pankajk-ubuntu18-02
+>Restored object pankajk-ubuntu18-05.
