@@ -4,13 +4,47 @@ import RaDark as integration
 
 API_KEY = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 MONITOR_ID = '0000'
-CLIENT = integration.Client(base_url=integration.BASE_URL, verify=True, headers={}, proxy=False)
+CLIENT = integration.Client(
+    base_url=integration.BASE_URL,
+    verify=True,
+    headers={},
+    proxy=False,
+    api_key=API_KEY,
+    monitor_id=MONITOR_ID)
 
 
 def load_mock_response(file_name: str) -> dict:
     data_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "test_data", file_name))
     with open(data_path, mode='r', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
+
+
+def test_fetch_incidents(requests_mock):
+    mock_data = load_mock_response('fetch_incidents_info.json')
+    fetch_incidents_response = mock_data.get('FETCH_INCIDENTS_RESPONSE', {})
+    fetch_incidents_params = mock_data.get('FETCH_INCIDENTS_PARAMS', {})
+    fetch_incidents_results = mock_data.get('FETCH_INCIDENTS_RESULTS', {})
+
+    api = integration.FETCH_INCIDENTS_API.format(
+        MONITOR_ID=MONITOR_ID,
+        API_KEY=API_KEY,
+        max_results=fetch_incidents_params.get('max_results', 0))
+
+    url = f'{integration.BASE_URL}/{api}'
+    requests_mock.post(url, json=fetch_incidents_response)
+    next_run, incidents = integration.fetch_incidents(
+        CLIENT,
+        max_results=fetch_incidents_params.get('max_results', 0),
+        last_run=fetch_incidents_params.get('last_run', {}),
+        first_fetch_time=fetch_incidents_params.get('first_fetch_time', 0),
+        incident_types=fetch_incidents_params.get('incident_types', []))
+
+    assert next_run == fetch_incidents_results.get('next_run')
+    assert len(incidents) == len(fetch_incidents_results.get('incidents', [])) == 1
+    assert isinstance(incidents, list) == isinstance(fetch_incidents_results.get('incidents', []), list)
+    assert incidents[0]["name"] == fetch_incidents_results.get('incidents', [])[0]["name"]
+    assert incidents[0]["occurred"] == fetch_incidents_results.get('incidents', [])[0]["occurred"]
+    assert json.loads(incidents[0]["rawJSON"]) == fetch_incidents_results.get('incidents', [])[0]["rawJSON"]
 
 
 def test_incident_get_items_command(requests_mock):

@@ -47,6 +47,17 @@ MONITOR_ID = demisto.params().get('monitor_id')
 
 
 class Client(BaseClient):
+    def __init__(self,
+                 base_url: str,
+                 verify: bool,
+                 headers: Dict[str, str],
+                 proxy: bool,
+                 api_key: str,
+                 monitor_id: str):
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+        self.api_key = api_key
+        self.monitor_id = monitor_id
+
     def search_alerts(self, start_time: Optional[int], max_results: int, incident_types: List[str]):
         # Base filter
         params: Dict[str, Dict] = {
@@ -75,7 +86,10 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='POST',
-                url_suffix=FETCH_INCIDENTS_API.format(MONITOR_ID=MONITOR_ID, API_KEY=API_KEY, max_results=max_results),
+                url_suffix=FETCH_INCIDENTS_API.format(
+                    MONITOR_ID=self.monitor_id,
+                    API_KEY=self.api_key,
+                    max_results=max_results),
                 json_data=params,
                 headers=headers)
         except Exception as e:
@@ -85,7 +99,10 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='GET',
-                url_suffix=FETCH_ITEMS_API.format(incident_id=incident_id, API_KEY=API_KEY, MONITOR_ID=MONITOR_ID)
+                url_suffix=FETCH_ITEMS_API.format(
+                    incident_id=incident_id,
+                    API_KEY=self.api_key,
+                    MONITOR_ID=self.monitor_id)
             )
         except Exception as e:
             return_error(str(e))
@@ -107,7 +124,7 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='POST',
-                url_suffix=EMAIL_ENRICHMENT_API.format(MONITOR_ID=MONITOR_ID, API_KEY=API_KEY),
+                url_suffix=EMAIL_ENRICHMENT_API.format(MONITOR_ID=self.monitor_id, API_KEY=self.api_key),
                 json_data=params,
                 headers=headers
             )
@@ -116,12 +133,12 @@ class Client(BaseClient):
             return None
 
     def action_on_item(self, item_id: str, action: str) -> Union[Dict[str, Any], None]:
-        params = {'monitor_id': MONITOR_ID, 'value': True, 'force': False}
+        params = {'monitor_id': self.monitor_id, 'value': True, 'force': False}
         headers = {'Content-Type': 'application/json'}
         try:
             return self._http_request(
                 method='POST',
-                url_suffix=INCIDENT_ACTION_API.format(item_id=item_id, action=action, API_KEY=API_KEY),
+                url_suffix=INCIDENT_ACTION_API.format(item_id=item_id, action=action, API_KEY=self.api_key),
                 json_data=params,
                 headers=headers
             )
@@ -133,19 +150,19 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='GET',
-                url_suffix=FETCH_AN_ITEM_API.format(item_id=item_id, API_KEY=API_KEY, MONITOR_ID=MONITOR_ID)
+                url_suffix=FETCH_AN_ITEM_API.format(item_id=item_id, API_KEY=self.api_key, MONITOR_ID=self.monitor_id)
             )
         except Exception as e:
             return_error(str(e))
             return None
 
     def message_on_incident(self, message: Dict[str, Any], room: Dict[str, str]) -> Union[Dict[str, Any], None]:
-        params = {'monitorId': MONITOR_ID, 'message': message, 'room': room}
+        params = {'monitorId': self.monitor_id, 'message': message, 'room': room}
         headers = {'Content-Type': 'application/json'}
         try:
             return self._http_request(
                 method='POST',
-                url_suffix=MESSAGE_API.format(API_KEY=API_KEY),
+                url_suffix=MESSAGE_API.format(API_KEY=self.api_key),
                 json_data=params,
                 headers=headers
             )
@@ -157,7 +174,7 @@ class Client(BaseClient):
         try:
             return self._http_request(
                 method='GET',
-                url_suffix=MENTIONS_LIST_API.format(API_KEY=API_KEY, MONITOR_ID=MONITOR_ID)
+                url_suffix=MENTIONS_LIST_API.format(API_KEY=self.api_key, MONITOR_ID=self.monitor_id)
             )
         except Exception as e:
             return_error(str(e))
@@ -563,7 +580,12 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         # Initialize Client
-        client = Client(base_url=BASE_URL, verify=verify_certificate, headers={}, proxy=proxy)
+        client = Client(base_url=BASE_URL,
+                        verify=verify_certificate,
+                        headers={},
+                        proxy=proxy,
+                        api_key=API_KEY,
+                        monitor_id=MONITOR_ID)
 
         # Run the requested command
         if demisto.command() == 'test-module':
