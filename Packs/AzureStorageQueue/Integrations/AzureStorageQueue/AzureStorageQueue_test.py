@@ -1,3 +1,5 @@
+import pytest
+
 from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
@@ -24,14 +26,14 @@ def test_azure_storage_queue_list_queues_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-queue-queue-list called.
+     - azure-storage-queue-list called.
     Then:
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
     from AzureStorageQueue import Client, list_queues_command
-    url = f'{BASE_URL}/{SAS_TOKEN}&comp=list&maxresults=3'
+    url = f'{BASE_URL}/{SAS_TOKEN}&comp=list&maxresults=50'
 
     mock_response = load_xml_mock_response('queues.xml')
     requests_mock.get(url, text=mock_response)
@@ -39,10 +41,13 @@ def test_azure_storage_queue_list_queues_command(requests_mock):
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
-    result = list_queues_command(client, {'limit': 3})
+    result = list_queues_command(client, {})
+    print(result.outputs)
     assert len(result.outputs) == 3
     assert result.outputs_prefix == 'AzureStorageQueue.Queue'
-    assert result.outputs[0].get('Name') == 'my-queue'
+    assert result.outputs[0].get('name') == 'my-queue'
+    assert result.outputs[1].get('name') == 'test'
+    assert result.outputs[2].get('name') == 'xsoar-test'
 
 
 def test_azure_storage_queue_create_queue_command(requests_mock):
@@ -53,15 +58,15 @@ def test_azure_storage_queue_create_queue_command(requests_mock):
     When:
      - azure-storage-queue-queue-create called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure validation of the queue name.
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, create_queue_command
     queue_name = "test-queue"
     url = f'{BASE_URL}/{queue_name}{SAS_TOKEN}'
 
-    requests_mock.put(url, text='')
+    requests_mock.put(url, text='', status_code=201)
 
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
@@ -70,6 +75,12 @@ def test_azure_storage_queue_create_queue_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Queue {queue_name} successfully created.'
+
+    invalid_queue_name = 'test--1'
+
+    with pytest.raises(Exception):
+        create_queue_command(client, {'queue_name': invalid_queue_name})
 
 
 def test_azure_storage_queue_delete_queue_command(requests_mock):
@@ -78,11 +89,10 @@ def test_azure_storage_queue_delete_queue_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-queue-queue-delete called.
+     - azure-storage-queue-delete called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, delete_queue_command
     queue_name = "test-queue"
@@ -97,6 +107,7 @@ def test_azure_storage_queue_delete_queue_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Queue {queue_name} successfully deleted.'
 
 
 def test_azure_storage_queue_create_message_command(requests_mock):
@@ -122,11 +133,14 @@ def test_azure_storage_queue_create_message_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = create_message_command(client, {'message_content': "test", 'queue_name': queue_name})
-    assert len(result.outputs) == 6
-    assert result.outputs_prefix == 'AzureStorageQueue.Message'
-    assert result.outputs.get('MessageId') == '111111111'
-    assert result.outputs.get('InsertionTime') == '2021-08-10T13:42:46'
-    assert result.outputs.get('queue_name') == queue_name
+
+    print(result.outputs)
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'AzureStorageQueue.Queue'
+    assert result.outputs.get('name') == queue_name
+    assert len(result.outputs.get('Message')) == 5
+    assert result.outputs.get('Message').get('MessageId') == '111111111'
+    assert result.outputs.get('Message').get('InsertionTime') == '2021-08-10T13:42:46'
 
 
 def test_azure_storage_queue_get_messages_command(requests_mock):
@@ -152,12 +166,14 @@ def test_azure_storage_queue_get_messages_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = get_messages_command(client, {'queue_name': queue_name})
-    assert len(result.outputs) == 1
-    assert len(result.outputs[0]) == 8
-    assert result.outputs_prefix == 'AzureStorageQueue.Message'
-    assert result.outputs[0].get('MessageId') == '1111111111111'
-    assert result.outputs[0].get('InsertionTime') == '2021-08-22T13:00:49'
-    assert result.outputs[0].get('queue_name') == queue_name
+
+    assert len(result.outputs) == 2
+    assert len(result.outputs.get('Message')) == 1
+    assert len(result.outputs.get('Message')[0]) == 7
+    assert result.outputs_prefix == 'AzureStorageQueue.Queue'
+    assert result.outputs.get('Message')[0].get('MessageId') == '1111111111111'
+    assert result.outputs.get('Message')[0].get('InsertionTime') == '2021-08-22T13:00:49'
+    assert result.outputs.get('name') == queue_name
 
 
 def test_azure_storage_queue_peek_messages_command(requests_mock):
@@ -183,12 +199,15 @@ def test_azure_storage_queue_peek_messages_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = peek_messages_command(client, {'queue_name': queue_name})
-    assert len(result.outputs) == 1
-    assert len(result.outputs[0]) == 6
-    assert result.outputs_prefix == 'AzureStorageQueue.Message'
-    assert result.outputs[0].get('MessageId') == '222222222'
-    assert result.outputs[0].get('InsertionTime') == '2021-08-22T13:00:49'
-    assert result.outputs[0].get('queue_name') == queue_name
+
+    assert len(result.outputs) == 2
+    assert len(result.outputs.get('Message')) == 1
+    assert len(result.outputs.get('Message')[0]) == 6
+    assert result.outputs_prefix == 'AzureStorageQueue.Queue'
+    assert result.outputs.get('Message')[0].get('MessageId') == '222222222'
+    assert result.outputs.get('Message')[0].get('InsertionTime') == '2021-08-22T13:00:49'
+    assert result.outputs.get('Message')[0].get('TimeNextVisible') is None
+    assert result.outputs.get('name') == queue_name
 
 
 def test_azure_storage_queue_dequeue_messages_command(requests_mock):
@@ -199,9 +218,8 @@ def test_azure_storage_queue_dequeue_messages_command(requests_mock):
     When:
      - azure-storage-queue-message-dequeue called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, dequeue_message_command
     queue_name = "test-queue"
@@ -220,8 +238,10 @@ def test_azure_storage_queue_dequeue_messages_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = dequeue_message_command(client, {'queue_name': queue_name})
+
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Message in {queue_name} successfully deleted.'
 
 
 def test_azure_storage_queue_update_messages_command(requests_mock):
@@ -232,9 +252,8 @@ def test_azure_storage_queue_update_messages_command(requests_mock):
     When:
      - azure-storage-queue-message-update called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, update_message_command
     queue_name = "test-queue"
@@ -256,8 +275,10 @@ def test_azure_storage_queue_update_messages_command(requests_mock):
                                              'pop_receipt': pop_receipt,
                                              'message_content': 'update test',
                                              'visibility_time_out': visibility_time_out})
+
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'The message in {queue_name} successfully updated.'
 
 
 def test_azure_storage_queue_delete_messages_command(requests_mock):
@@ -268,9 +289,8 @@ def test_azure_storage_queue_delete_messages_command(requests_mock):
     When:
      - azure-storage-queue-message-delete called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, delete_message_command
     queue_name = "test-queue"
@@ -287,8 +307,10 @@ def test_azure_storage_queue_delete_messages_command(requests_mock):
     result = delete_message_command(client, {'queue_name': queue_name,
                                              'message_id': message_id,
                                              'pop_receipt': pop_receipt})
+
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Message in {queue_name} successfully deleted.'
 
 
 def test_azure_storage_queue_clear_queue_command(requests_mock):
@@ -299,9 +321,8 @@ def test_azure_storage_queue_clear_queue_command(requests_mock):
     When:
      - azure-storage-queue-message-clear called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
     from AzureStorageQueue import Client, clear_messages_command
     queue_name = "test-queue"
@@ -316,3 +337,4 @@ def test_azure_storage_queue_clear_queue_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'{queue_name} was cleared of messages successfully.'

@@ -1,3 +1,5 @@
+from typing import Callable
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -85,8 +87,6 @@ class Client:
         """
 
         params = assign_params(messagettl=time_to_live, visibilitytimeout=visibility_time_out)
-
-        print(params)
 
         response = self.ms_client.http_request(method="POST", url_suffix=f'/{queue_name}/messages', params=params,
                                                resp_type="text", data=xml_data)
@@ -289,6 +289,27 @@ def encode_message(string: str) -> str:
     return base64.b64encode(message_bytes).decode("utf-8")
 
 
+def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+    """
+    Get next marker element for request pagination.
+    Args:
+        limit (str): Number of elements to retrieve.
+        page (str): Page number.
+        client_request (Callable): Client request function.
+        params (dict): Request params.
+
+    Returns:
+        str: Next marker.
+
+    """
+    offset = int(limit) * (page - 1)
+    response = client_request(limit=str(offset), **params)
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    return root.findtext('NextMarker')
+
+
 def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
      List queues in Azure storage account.
@@ -300,7 +321,7 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit', '50')
+    limit = args.get('limit') or '50'
     prefix = args.get('prefix')
 
     page = arg_to_number(args.get('page', '1'))
@@ -308,11 +329,8 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_message = f'Queues List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
-        response = client.list_queues_request(str(offset), prefix)
-        tree = ET.ElementTree(ET.fromstring(response))
-        root = tree.getroot()
-        marker = root.findtext('NextMarker')
+        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_queues_request,
+                                             params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
@@ -326,18 +344,19 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     xml_response = parse_xml_response(xml_string_response=response, tag_path="./Queues/Queue/Name", find_tag=True)
 
-    raw_response = [{"Name": element.text} for element in xml_response]
+    raw_response = [{"name": element.text} for element in xml_response]
 
     readable_output = tableToMarkdown(
         readable_message,
         raw_response,
-        headers='Name'
+        headers='name',
+        headerTransform=pascalToSpace
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureStorageQueue.Queue',
-        outputs_key_field='Name',
+        outputs_key_field='name',
         outputs=raw_response,
         raw_response=raw_response
     )
@@ -357,6 +376,12 @@ def create_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     """
     queue_name = args["queue_name"]
+
+    queue_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+
+    if not re.search(queue_name_regex, queue_name):
+        raise Exception('The specified queue name is invalid.')
+
     response = client.create_queue_request(queue_name)
 
     readable_output = f'Queue {queue_name} successfully created.' if response.status_code == 201 else f'Queue {queue_name} already exists.'
@@ -391,6 +416,21 @@ def delete_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
+def convert_dict_time_format(data: dict, keys: list):
+    """
+    Convert dictionary data values time format.
+    Args:
+        data (dict): Data.
+        keys (list): Keys list to convert
+
+    """
+    for key in keys:
+        if data.get(key):
+            time_value = datetime.strptime(data.get(key), DATE_FORMAT)
+            iso_time = FormatIso8601(time_value)
+            data[key] = iso_time
+
+
 def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Add a new message to the back of the message queue.
@@ -421,25 +461,22 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     raw_response = parse_xml_response(xml_string_response=response, tag_path="QueueMessage")
 
-    outputs = copy.deepcopy(raw_response)[0]
-    outputs['queue_name'] = queue_name
+    message_outputs = copy.deepcopy(raw_response)[0]
 
-    time_headers = ['ExpirationTime', 'InsertionTime', 'TimeNextVisible']
-    for header in time_headers:
-        time_value = datetime.strptime(outputs.get(header), DATE_FORMAT)
-        iso_time = FormatIso8601(time_value)
-        outputs[header] = iso_time
+    convert_dict_time_format(message_outputs, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+
+    outputs = {'name': queue_name, 'Message': message_outputs}
 
     readable_output = tableToMarkdown(f'{queue_name} Queue message:',
-                                      outputs,
+                                      message_outputs,
                                       headers=['MessageId', 'ExpirationTime',
                                                'InsertionTime', 'TimeNextVisible', 'PopReceipt'],
                                       headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageQueue.Message',
-        outputs_key_field=['queue_name', 'MessageId'],
+        outputs_prefix='AzureStorageQueue.Queue',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -459,35 +496,35 @@ def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit', '1')
+    limit = args.get('limit') or '1'
     queue_name = args["queue_name"]
     visibility_time_out = arg_to_number(args.get("visibility_time_out"))
+
+    if int(limit) <= 0 or int(limit) > 32:
+        raise Exception('Invalid limit value. Minimum value is 1, maximum value is 32')
 
     response = client.get_messages_request(queue_name, limit, visibility_time_out)
 
     raw_response = parse_xml_response(xml_string_response=response, tag_path="QueueMessage")
 
-    outputs = copy.deepcopy(raw_response)
+    message_outputs = copy.deepcopy(raw_response)
 
-    time_headers = ['ExpirationTime', 'InsertionTime', 'TimeNextVisible']
-    for message in outputs:
-        message['queue_name'] = queue_name
+    for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        for header in time_headers:
-            time_value = datetime.strptime(message.get(header), DATE_FORMAT)
-            iso_time = FormatIso8601(time_value)
-            message[header] = iso_time
+        convert_dict_time_format(message, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+
+    outputs = {'name': queue_name, 'Message': message_outputs}
 
     readable_output = tableToMarkdown(f'{queue_name} Queue messages:',
-                                      outputs,
+                                      message_outputs,
                                       headers=['MessageText', 'MessageId', 'PopReceipt', 'DequeueCount',
                                                'ExpirationTime', 'InsertionTime', 'TimeNextVisible'],
                                       headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageQueue.Message',
-        outputs_key_field=['queue_name', 'MessageId'],
+        outputs_prefix='AzureStorageQueue.Queue',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -506,34 +543,34 @@ def peek_messages_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit', '1')
+    limit = args.get('limit') or '1'
     queue_name = args["queue_name"]
+
+    if int(limit) <= 0 or int(limit) > 32:
+        raise Exception('Invalid limit value. Minimum value is 1, maximum value is 32')
 
     response = client.peek_messages_request(limit, queue_name)
 
     raw_response = parse_xml_response(xml_string_response=response, tag_path="QueueMessage")
 
-    outputs = copy.deepcopy(raw_response)
+    message_outputs = copy.deepcopy(raw_response)
 
-    time_headers = ['ExpirationTime', 'InsertionTime']
-    for message in outputs:
-        message['queue_name'] = queue_name
+    for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        for header in time_headers:
-            time_value = datetime.strptime(message.get(header), DATE_FORMAT)
-            iso_time = FormatIso8601(time_value)
-            message[header] = iso_time
+        convert_dict_time_format(message, ['ExpirationTime', 'InsertionTime'])
+
+    outputs = {'name': queue_name, 'Message': message_outputs}
 
     readable_output = tableToMarkdown(f'{queue_name} Queue messages:',
-                                      outputs,
+                                      message_outputs,
                                       headers=['MessageText', 'MessageId', 'DequeueCount',
                                                'ExpirationTime', 'InsertionTime'],
                                       headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageQueue.Message',
-        outputs_key_field=['queue_name', 'MessageId'],
+        outputs_prefix='AzureStorageQueue.Queue',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -677,7 +714,7 @@ def parse_incident(message: dict) -> dict:
     message['MessageText'] = decode_message(message['MessageText'])
     for header in time_headers:
         time_value = datetime.strptime(message.get(header), DATE_FORMAT)
-        iso_time = FormatIso8601(time_value)
+        iso_time = FormatIso8601(time_value) + 'Z'
         message[header] = iso_time
 
     incident = {}
@@ -689,7 +726,7 @@ def parse_incident(message: dict) -> dict:
 
 def fetch_incidents(client: Client, queue_name: str, max_fetch: str) -> None:
     """
-    Fetch messaged from the Queue.
+    Fetch messages from the Queue.
 
     Args:
         client (Client): Azure Queue Storage API client.
@@ -756,8 +793,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    account_sas_token = params.get('account_sas_token')
-    storage_account_name = params.get('storage_account_name')
+    account_sas_token = params['account_sas_token']
+    storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.queue.core.windows.net'
 
@@ -770,9 +807,9 @@ def main() -> None:
                                 api_version)
 
         commands = {
-            'azure-storage-queue-queue-list': list_queues_command,
-            'azure-storage-queue-queue-create': create_queue_command,
-            'azure-storage-queue-queue-delete': delete_queue_command,
+            'azure-storage-queue-list': list_queues_command,
+            'azure-storage-queue-create': create_queue_command,
+            'azure-storage-queue-delete': delete_queue_command,
             'azure-storage-queue-message-create': create_message_command,
             'azure-storage-queue-message-get': get_messages_command,
             'azure-storage-queue-message-peek': peek_messages_command,
