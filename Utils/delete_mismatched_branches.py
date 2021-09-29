@@ -2,7 +2,7 @@
 
 import gitlab
 from github import Github
-from .github_workflow_scripts.utils import timestamped_print, get_env_var
+from github_workflow_scripts.utils import timestamped_print, get_env_var
 
 
 GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
