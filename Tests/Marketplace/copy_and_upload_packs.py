@@ -50,7 +50,7 @@ def get_pack_names(target_packs: str) -> set:
 
 
 def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_generation: str, production_bucket: Bucket,
-               build_bucket: Bucket, storage_base_path, build_bucket_base_path):
+               build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
     """ Copies the build bucket index to the production bucket index path.
 
     Args:
@@ -59,7 +59,8 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         build_index_generation (str): downloaded build index generation.
         production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is copied to.
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where index is copied from.
-
+        storage_base_path (str): the path to upload the index to.
+        build_bucket_base_path (str): the path in the build bucket of the index.
     """
     try:
         build_index_blob.reload()
@@ -106,7 +107,7 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
-                             build_bucket: Bucket, storage_base_path, build_bucket_base_path):
+                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path:str):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
@@ -114,6 +115,8 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         build_number (str): CircleCI build number.
         extract_destination_path (str): Full path of folder to extract the corepacks file
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
+        storage_base_path (str): the path to upload the corepacks.json to.
+        build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
 
     """
     # download the corepacks.json stored in the build bucket to temp dir
@@ -154,12 +157,13 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path):
+def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str, build_bucket_base_path: str):
     """Downloads and extracts production and build indexes zip from cloud storage.
 
     Args:
         build_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where build index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        build_bucket_base_path (str): the path in the build bucket of the index.
     Returns:
         str: extracted build index folder full path.
         Blob: google cloud storage object that represents prod index.zip blob.
@@ -203,12 +207,14 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         sys.exit(1)
 
 
-def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path, build_bucket_base_path):
+def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
         production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied to.
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied from.
+        storage_base_path (str): the path to upload the id_set.json to.
+        build_bucket_base_path (str): the path in the build bucket of the id_set.json.
     """
 
     build_id_set_path = os.path.join(os.path.dirname(build_bucket_base_path), 'id_set.json')
@@ -326,8 +332,6 @@ def main():
     # Initialize build and prod base paths
     build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
     build_bucket_base_path = os.path.join(build_bucket_path, GCPConfig.CONTENT_PACKS_PATH)
-    # if production_base_path:
-    #     GCPConfig.STORAGE_BASE_PATH = production_base_path TODO: remove
 
     # Relevant when triggering test upload flow
     if production_bucket_name:
@@ -372,20 +376,22 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        task_status = pack.copy_integration_images(
+            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        task_status = pack.copy_author_image(
+            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              pc_successful_packs_dict, production_base_path, build_bucket_base_path)
+        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
+            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
@@ -399,7 +405,8 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
-    upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket, production_base_path, build_bucket_base_path)
+    upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
+                             production_base_path, build_bucket_base_path)
 
     # finished iteration over content packs
     copy_index(build_index_folder_path, build_index_blob, build_index_generation, production_bucket,

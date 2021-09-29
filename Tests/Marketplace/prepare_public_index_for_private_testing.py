@@ -212,8 +212,6 @@ def main():
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
-        # if storage_base_path:
-        #     GCPConfig.STORAGE_BASE_PATH = storage_base_path TODO: remove
 
         extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
         public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,

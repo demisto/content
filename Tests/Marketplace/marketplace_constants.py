@@ -40,7 +40,6 @@ class GCPConfig(object):
 
     """
     CONTENT_PACKS_PATH = "content/packs"
-    # STORAGE_BASE_PATH = "content/packs"  TODO: remove
     PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_PATH_PREFIX = "content/builds"

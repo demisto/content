@@ -79,12 +79,14 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
+        -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_base_path (str): the source path of the index in the target bucket.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -192,7 +194,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         return task_status
 
 
-def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any, storage_base_path) -> bool:
+def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
+                             storage_base_path: str) -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -201,6 +204,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         index_folder_path (str): full path to downloaded index folder.
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+        storage_base_path (str): the source path of the packs in the target bucket.
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -329,7 +333,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: Optional[str], storage_base_path):
+                            artifacts_dir: Optional[str], storage_base_path: str):
     """Create corepacks.json file to artifacts dir. Corepacks file includes core packs for server installation.
 
      Args:
@@ -337,6 +341,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
         artifacts_dir: The CI artifacts directory to upload the corepacks.json to.
+        storage_base_path (str): the source path of the core packs in the target bucket.
 
     """
     core_packs_public_urls = []
@@ -834,7 +839,7 @@ def get_packs_summary(packs_list):
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
-                           public_pack_names, storage_base_path) -> Tuple[bool, list, list]:
+                           public_pack_names, storage_base_path: str) -> Tuple[bool, list, list]:
     """
     1. Add private packs to public index.json.
     2. Checks if there are private packs that were added/deleted/updated.
@@ -845,6 +850,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         extract_destination_path: full path to extract directory.
         storage_client : initialized google cloud storage client.
         public_pack_names : unique collection of public packs names to upload.
+        storage_base_path (str): the source path in the target bucket.
 
     Returns:
         is_private_content_updated (bool): True if there is at least one private pack that was updated/released.

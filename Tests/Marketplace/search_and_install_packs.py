@@ -500,7 +500,6 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
 
     storage_client = init_storage_client(service_account)
     build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
-    # GCPConfig.STORAGE_BASE_PATH = bucket_packs_root_path  # TODO: remove
     index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path, bucket_packs_root_path)
 
     for pack_id in os.listdir(index_folder_path):

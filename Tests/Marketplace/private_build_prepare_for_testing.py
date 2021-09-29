@@ -71,9 +71,6 @@ def main():
     pack_name = upload_config.pack_names
     storage_base_path = upload_config.storage_base_path
 
-    # if storage_base_path:
-    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path TODO: remove
-
     storage_client = init_storage_client(service_account)
     private_testing_bucket_client = storage_client.bucket(GCPConfig.CI_PRIVATE_BUCKET)
 
