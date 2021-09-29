@@ -4,11 +4,8 @@ from CommonServerPython import *
 SCRIPT_NAME = 'CollectPacksData'
 
 
-def get_packs_data_from_context() -> List[Dict[str, str]]:
+def get_packs_data_from_context() -> None:
     """Fetched packs' data from context and formats it to an installable object.
-
-    Returns:
-        List[Dict[str, str]]: Installable objects list.
     """
     instance_context = demisto.context()
     context_packs_data = instance_context.get('ContentData', [])
