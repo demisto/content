@@ -1239,7 +1239,7 @@ def get_processes(client: Client, args: dict) -> CommandResults:
         raw_response=processes)
 
 
-def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids):
+def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -1304,7 +1304,7 @@ def main():
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
-    fetch_site_ids = params.get('fetch_site_ids', [])
+    fetch_site_ids = params.get('fetch_site_ids', None)
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
