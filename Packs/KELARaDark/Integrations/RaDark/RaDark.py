@@ -422,11 +422,13 @@ def fetch_incidents(
         sub_type = alert['sub_type']
         if sub_type in SUPPORTED_SUB_TYPES:
             alert['type_description'] = get_name(alert['type'])
-            alert['incident_url'] = INCIDENT_URL.format(MONITOR_ID=MONITOR_ID, incident_id=alert['feed_property_id'])
+            alert['incident_url'] = INCIDENT_URL.format(
+                MONITOR_ID=client.monitor_id,
+                incident_id=alert['feed_property_id'])
             alert.pop('title', None)
 
             # Add monitor ID to the incident.
-            alert['monitor_id'] = MONITOR_ID
+            alert['monitor_id'] = client.monitor_id
 
             # Parse incident
             incident = {
