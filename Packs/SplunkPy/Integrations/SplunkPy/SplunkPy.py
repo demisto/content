@@ -1000,11 +1000,12 @@ def get_remote_data_command(service, args, close_incident):
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
     delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
-    if delta.get('comment'):
-        delta['comments_data'] = MessagesHandler.get_messages_data(notable_id)
 
     if delta:
         demisto.debug('notable {} delta: {}'.format(notable_id, delta))
+        if delta.get('comment'):
+            delta['comments_data'] = MessagesHandler.get_messages_data(notable_id)
+
         if delta.get('status') == '5' and close_incident:
             demisto.info('Closing incident related to notable {}'.format(notable_id))
             entries = [{
@@ -2174,17 +2175,18 @@ class MessagesHandler:
 
     @staticmethod
     def get_messages_data(notable_id):
-        if MessagesHandler.service is not None:
-            comments = []
-            query = '|`incident_review` | where rule_id="{}" | search comment=* reviewer=*'.format(notable_id)
-            for comment in json.load(MessagesHandler.service.jobs.oneshot(query, output_mode='json'))['results']:
-                comments.append({
-                    'comment': comment['comment'],
-                    'reviewer': comment['reviewer'],
-                    'time': comment['_time']
-                })
+        if MessagesHandler.service is None:
+            return []
+        comments = []
+        query = '|`incident_review` | where rule_id="{}" | search comment=* reviewer=*'.format(notable_id)
+        for comment in json.load(MessagesHandler.service.jobs.oneshot(query, output_mode='json'))['results']:
+            comments.append({
+                'comment': comment['comment'],
+                'reviewer': comment['reviewer'],
+                'time': comment['_time'],
+            })
 
-            return comments
+        return comments
 
 
 def main():
