@@ -1,3 +1,5 @@
+import pytest
+
 from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
@@ -24,13 +26,13 @@ def test_azure_storage_create_share_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-share-create called.
+     - azure-storage-fileshare-create called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
+     - Ensure validation of the share name.
     """
-    from AzureStorageFileShares import Client, create_share_command
+    from AzureStorageFileShare import Client, create_share_command
     share_name = 'test'
     url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=share'
 
@@ -43,6 +45,12 @@ def test_azure_storage_create_share_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Share {share_name} successfully created.'
+
+    invalid_share_name = 'test--1'
+
+    with pytest.raises(Exception):
+        create_share_command(client, {'share_name': invalid_share_name})
 
 
 def test_azure_storage_delete_share_command(requests_mock):
@@ -51,13 +59,12 @@ def test_azure_storage_delete_share_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-share-delete called.
+     - azure-storage-fileshare-delete called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
-    from AzureStorageFileShares import Client, delete_share_command
+    from AzureStorageFileShare import Client, delete_share_command
     share_name = 'test'
     url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=share'
 
@@ -70,6 +77,7 @@ def test_azure_storage_delete_share_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'Share {share_name} successfully deleted.'
 
 
 def test_azure_storage_list_shares_command(requests_mock):
@@ -78,13 +86,13 @@ def test_azure_storage_list_shares_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-share-list called.
+     - azure-storage-fileshare-list called.
     Then:
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureStorageFileShares import Client, list_shares_command
+    from AzureStorageFileShare import Client, list_shares_command
     url = f'{BASE_URL}{SAS_TOKEN}&comp=list&maxresults=50'
     mock_response = load_xml_mock_response('shares.xml')
     requests_mock.get(url, text=mock_response)
@@ -95,8 +103,9 @@ def test_azure_storage_list_shares_command(requests_mock):
     result = list_shares_command(client, {})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'AzureStorageFileShares.Share'
+    assert result.outputs_prefix == 'AzureStorageFileShare.Share'
     assert result.outputs[0].get('Name') == 'my-file-share'
+    assert result.outputs[1].get('Name') == 'my-share'
 
 
 def test_azure_storage_list_directories_and_files_command(requests_mock):
@@ -105,13 +114,13 @@ def test_azure_storage_list_directories_and_files_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-directory-file-list called.
+     - azure-storage-fileshare-content-list called.
     Then:
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureStorageFileShares import Client, list_directories_and_files_command
+    from AzureStorageFileShare import Client, list_directories_and_files_command
     share_name = "test"
     url = f'{BASE_URL}{share_name}{SAS_TOKEN}&restype=directory&comp=list&include=Timestamps&maxresults=50'
     mock_response = load_xml_mock_response('files.xml')
@@ -122,12 +131,13 @@ def test_azure_storage_list_directories_and_files_command(requests_mock):
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = list_directories_and_files_command(client, {'share_name': share_name})
 
-    assert len(result.outputs) == 5
-    assert len(result.outputs['Directory']) == 1
-    assert len(result.outputs['File']) == 1
-    assert result.outputs_prefix == 'AzureStorageFileShares.Directory'
-    assert result.outputs['File'][0].get('Name') == 'AzureStorage_image.png'
-    assert result.outputs.get('share_name') == share_name
+    assert len(result.outputs) == 2
+    assert len(result.outputs.get('Content')) == 4
+    assert len(result.outputs.get('Content').get('Directory')) == 1
+    assert len(result.outputs.get('Content').get('File')) == 1
+    assert result.outputs_prefix == 'AzureStorageFileShare.Share'
+    assert result.outputs.get('Content')['File'][0].get('Name') == 'AzureStorage_image.png'
+    assert result.outputs.get('Name') == share_name
 
 
 def test_azure_storage_create_directory_command(requests_mock):
@@ -136,13 +146,13 @@ def test_azure_storage_create_directory_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-directory-create called.
+     - azure-storage-fileshare-directory-create called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
+     - Ensure validation of the directory name.
     """
-    from AzureStorageFileShares import Client, create_directory_command
+    from AzureStorageFileShare import Client, create_directory_command
     share_name = "test"
     directory_name = "test_new_directory"
     url = f'{BASE_URL}{share_name}/{directory_name}{SAS_TOKEN}&restype=directory'
@@ -157,6 +167,13 @@ def test_azure_storage_create_directory_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'{directory_name} Directory successfully created in {share_name}.'
+
+    invalid_directory_name = 'test<1'
+
+    with pytest.raises(Exception):
+        create_directory_command(client, {'share_name': share_name,
+                                          'directory_name': invalid_directory_name})
 
 
 def test_azure_storage_delete_directory_command(requests_mock):
@@ -165,13 +182,12 @@ def test_azure_storage_delete_directory_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-directory-delete called.
+     - azure-storage-fileshare-directory-delete called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
-    from AzureStorageFileShares import Client, delete_directory_command
+    from AzureStorageFileShare import Client, delete_directory_command
     share_name = "test"
     directory_name = "test_new_directory"
     url = f'{BASE_URL}{share_name}/{directory_name}{SAS_TOKEN}&restype=directory'
@@ -186,21 +202,20 @@ def test_azure_storage_delete_directory_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'{directory_name} Directory successfully deleted from {share_name}.'
 
 
 def test_azure_storage_get_file_command(requests_mock):
     """
-    Scenario: Get file
+    Scenario: Get file.
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-file-get called.
+     - azure-storage-fileshare-file-get called.
     Then:
-         - Ensure that the return ContentsFormat of the file is 'text'.
-         - Ensure that the return Type is file.
-         - Ensure the name of the file.
+     - Ensure XSOAR File output.
     """
-    from AzureStorageFileShares import Client, get_file_command
+    from AzureStorageFileShare import Client, get_file_command
     share_name = "test"
     file_name = "test_file.txt"
     url = f'{BASE_URL}{share_name}/{file_name}{SAS_TOKEN}'
@@ -217,6 +232,7 @@ def test_azure_storage_get_file_command(requests_mock):
     assert result['ContentsFormat'] == 'text'
     assert result['Type'] == EntryType.FILE
     assert result['File'] == file_name
+    assert len(result) == 5
 
 
 def test_azure_storage_delete_file_command(requests_mock):
@@ -225,13 +241,12 @@ def test_azure_storage_delete_file_command(requests_mock):
     Given:
      - User has provided valid credentials.
     When:
-     - azure-storage-fileshares-file-delete called.
+     - azure-storage-fileshare-file-delete called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure that the output is empty (None).
+     - Ensure readable output message content.
     """
-    from AzureStorageFileShares import Client, delete_file_command
+    from AzureStorageFileShare import Client, delete_file_command
     share_name = "test"
     file_name = "test_file.txt"
     url = f'{BASE_URL}{share_name}/{file_name}{SAS_TOKEN}'
@@ -246,3 +261,4 @@ def test_azure_storage_delete_file_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
+    assert result.readable_output == f'File {file_name} successfully deleted from {share_name}.'

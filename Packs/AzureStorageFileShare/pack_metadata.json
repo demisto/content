@@ -1,6 +1,6 @@
 {
-    "name": "Azure Storage FileShares",
-    "description": "Create and Manage Azure FileShares Files and Directories.",
+    "name": "Azure Storage FileShare",
+    "description": "Create and Manage Azure FileShare Files and Directories.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

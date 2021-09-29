@@ -1,5 +1,6 @@
 import copy
 import shutil
+from collections import Callable
 
 from requests import Response
 
@@ -292,12 +293,17 @@ def create_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
+    share_name = args['share_name']
+
+    share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+
+    if not re.search(share_name_regex, share_name):
+        raise Exception('The specified share name is invalid.')
 
     client.create_share_request(share_name)
 
     command_results = CommandResults(
-        readable_output=f'Shared {share_name} successfully created.',
+        readable_output=f'Share {share_name} successfully created.',
     )
 
     return command_results
@@ -313,14 +319,35 @@ def delete_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
+    share_name = args['share_name']
 
     client.delete_share_request(share_name)
     command_results = CommandResults(
-        readable_output=f'Shared {share_name} successfully deleted.',
+        readable_output=f'Share {share_name} successfully deleted.',
     )
 
     return command_results
+
+
+def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+    """
+    Get next marker element for request pagination.
+    Args:
+        limit (str): Number of elements to retrieve.
+        page (str): Page number.
+        client_request (Callable): Client request function.
+        params (dict): Request params.
+
+    Returns:
+        str: Next marker.
+
+    """
+    offset = int(limit) * (page - 1)
+    response = client_request(limit=str(offset), **params)
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    return root.findtext('NextMarker')
 
 
 def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -333,23 +360,20 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit', '50')
+    limit = args.get('limit') or '50'
     prefix = args.get('prefix')
     page = arg_to_number(args.get('page', '1'))
     marker = ''
     readable_message = f'Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
-        response = client.list_shares_request(str(offset), prefix)
-        tree = ET.ElementTree(ET.fromstring(response))
-        root = tree.getroot()
-        marker = root.findtext('NextMarker')
+        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_shares_request,
+                                             params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureStorageFileShares.Share',
+                outputs_prefix='AzureStorageFileShare.Share',
                 outputs=[],
                 raw_response=[]
             )
@@ -383,7 +407,7 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageFileShares.Share',
+        outputs_prefix='AzureStorageFileShare.Share',
         outputs_key_field='Name',
         outputs=outputs,
         raw_response=raw_response
@@ -403,7 +427,7 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
 
     """
     prefix = args.get('prefix')
-    limit = args.get('limit', '50')
+    limit = args.get('limit') or '50'
     share_name = args['share_name']
     directory_path = args.get('directory_path', '')
 
@@ -412,16 +436,15 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     readable_message = f'Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
-        response = client.list_directories_and_files_request(share_name, directory_path, prefix, str(offset))
-        tree = ET.ElementTree(ET.fromstring(response))
-        root = tree.getroot()
-        marker = root.findtext('NextMarker')
+        marker = get_pagination_next_element(limit=limit, page=page,
+                                             client_request=client.list_directories_and_files_request,
+                                             params={"prefix": prefix, "share_name": share_name,
+                                                     "directory_path": directory_path})
 
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureStorageFileShares.Directory',
+                outputs_prefix='AzureStorageFileShare.Share',
                 outputs=[],
                 raw_response=[]
             )
@@ -432,8 +455,7 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     root = tree.getroot()
 
     xml_path = ['Directory', 'File']
-    raw_response = {'Directory': [], 'File': []}
-    raw_response['DirectoryId'] = root.findtext('DirectoryId')
+    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}
 
     for path in xml_path:
         for element in root.iter(path):
@@ -448,33 +470,35 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
 
             raw_response[path].append(data)
 
-    outputs = copy.deepcopy(raw_response)
-
-    outputs["share_name"] = share_name
-    outputs["path"] = directory_path
+    response_copy = copy.deepcopy(raw_response)
+    outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response['DirectoryId']}}
 
     time_headers = ['CreationTime', 'LastAccessTime', 'LastWriteTime', 'ChangeTime']
 
     for path in xml_path:
-        for file in outputs.get(path):
+        for element in response_copy.get(path):
             for header in time_headers:
-                str_time = file['Properties'].get(header)
+                str_time = element['Properties'].get(header)
                 str_time = str_time[:-2] + 'Z'
-                file['Properties'][header] = FormatIso8601(datetime.strptime(str_time, GENERAL_DATE_FORMAT))
+                element['Properties'][header] = FormatIso8601(datetime.strptime(str_time, GENERAL_DATE_FORMAT))
 
-            file['Properties']['Last-Modified'] = FormatIso8601(
-                datetime.strptime(file['Properties']['Last-Modified'], DATE_FORMAT))
+            element['Properties']['Last-Modified'] = FormatIso8601(
+                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))
+
+            element['Property'] = element.pop('Properties')
+
+    outputs["Content"].update(response_copy)
 
     directories_outputs = tableToMarkdown(
         'Directories:',
-        outputs["Directory"],
+        outputs["Content"]["Directory"],
         headers=['Name', 'FileId'],
         headerTransform=pascalToSpace
     )
 
     files_outputs = tableToMarkdown(
         'Files:',
-        outputs["File"],
+        outputs["Content"]["File"],
         headers=['Name', 'FileId'],
         headerTransform=pascalToSpace
     )
@@ -483,8 +507,8 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_key_field=['DirectoryId', 'share_name', 'path'],
-        outputs_prefix='AzureStorageFileShares.Directory',
+        outputs_key_field='Name',
+        outputs_prefix='AzureStorageFileShare.Share',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -502,14 +526,19 @@ def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
-    directory_name = args.get('directory_name')
+    share_name = args['share_name']
+    directory_name = args['directory_name']
     directory_path = args.get('directory_path')
+
+    invalid_characters = "\"\/:|<>*?"
+    for character in invalid_characters:
+        if character in directory_name:
+            raise Exception('The specified directory name is invalid.')
 
     client.create_directory_request(share_name, directory_name, directory_path)
 
     command_results = CommandResults(
-        readable_output=f'{directory_name} Directory successfully created.',
+        readable_output=f'{directory_name} Directory successfully created in {share_name}.',
     )
 
     return command_results
@@ -525,13 +554,13 @@ def delete_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
-    directory_name = args.get('directory_name')
+    share_name = args['share_name']
+    directory_name = args['directory_name']
     directory_path = args.get('directory_path')
 
     client.delete_directory_request(share_name, directory_name, directory_path)
     command_results = CommandResults(
-        readable_output=f'{directory_name} Directory successfully deleted.'
+        readable_output=f'{directory_name} Directory successfully deleted from {share_name}.'
     )
 
     return command_results
@@ -547,8 +576,8 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
-    file_entry_id = args.get('file_entry_id')
+    share_name = args['share_name']
+    file_entry_id = args['file_entry_id']
     directory_path = args.get('directory_path')
     file_name = args.get('file_name')
 
@@ -556,7 +585,7 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     client.put_file_range_request(share_name, file_entry_id, file_name, directory_path)
 
     command_results = CommandResults(
-        readable_output='File successfully created.'
+        readable_output=f'File successfully created in {share_name}.'
     )
 
     return command_results
@@ -572,8 +601,8 @@ def get_file_command(client: Client, args: Dict[str, Any]) -> fileResult:
         fileResult: XSOAR File Result.
 
     """
-    share_name = args.get('share_name')
-    file_name = args.get('file_name')
+    share_name = args['share_name']
+    file_name = args['file_name']
     directory_path = args.get('directory_path')
 
     response = client.get_file_request(share_name, file_name, directory_path)
@@ -591,13 +620,13 @@ def delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    share_name = args.get('share_name')
-    file_name = args.get('file_name')
+    share_name = args['share_name']
+    file_name = args['file_name']
     directory_path = args.get('directory_path')
 
     client.delete_file_request(share_name, file_name, directory_path)
     command_results = CommandResults(
-        readable_output=f'File {file_name} successfully deleted.',
+        readable_output=f'File {file_name} successfully deleted from {share_name}.',
     )
 
     return command_results
@@ -634,8 +663,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    account_sas_token = params.get('account_sas_token')
-    storage_account_name = params.get('storage_account_name')
+    account_sas_token = params['account_sas_token']
+    storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.file.core.windows.net/'
 
@@ -648,15 +677,15 @@ def main() -> None:
                                 api_version)
 
         commands = {
-            'azure-storage-fileshares-share-create': create_share_command,
-            'azure-storage-fileshares-share-delete': delete_share_command,
-            'azure-storage-fileshares-share-list': list_shares_command,
-            'azure-storage-fileshares-directory-file-list': list_directories_and_files_command,
-            'azure-storage-fileshares-directory-create': create_directory_command,
-            'azure-storage-fileshares-directory-delete': delete_directory_command,
-            'azure-storage-fileshares-file-create': create_file_command,
-            'azure-storage-fileshares-file-get': get_file_command,
-            'azure-storage-fileshares-file-delete': delete_file_command,
+            'azure-storage-fileshare-create': create_share_command,
+            'azure-storage-fileshare-delete': delete_share_command,
+            'azure-storage-fileshare-list': list_shares_command,
+            'azure-storage-fileshare-content-list': list_directories_and_files_command,
+            'azure-storage-fileshare-directory-create': create_directory_command,
+            'azure-storage-fileshare-directory-delete': delete_directory_command,
+            'azure-storage-fileshare-file-create': create_file_command,
+            'azure-storage-fileshare-file-get': get_file_command,
+            'azure-storage-fileshare-file-delete': delete_file_command,
         }
 
         if command == 'test-module':
@@ -670,7 +699,113 @@ def main() -> None:
         return_error(str(e))
 
 
-from MicrosoftAzureStorageApiModule import *  # noqa: E402
+class MicrosoftStorageClient(BaseClient):
+    """
+    Microsoft Azure Storage API Client
+    """
+
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
+        self._account_sas_token = account_sas_token
+        self._storage_account_name = storage_account_name
+        self._api_version = api_version
+        self._base_url = server_url
+
+    def http_request(
+            self, *args, method, url_suffix="", params=None, resp_type='response', headers=None,
+            return_empty_response=False, full_url="", **kwargs):
+        """
+        Overrides Base client request function.
+        Create and adds to the headers the Authorization Header component before sending the request.
+        Parse Azure XML response.
+        Args:
+            method (str): Request method.
+            url_suffix (str): Request URL suffix.
+            params (dict): Request Params.
+            resp_type (str): Determines which data format to return from the HTTP request.
+            headers (dict): Request Header.
+            return_empty_response (bool): Return the response itself if the return_code is 201 or 204.
+            full_url (str): Request full URL.
+        Returns:
+            Response from API according to resp_type.
+        """
+
+        if 'ok_codes' not in kwargs:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
+
+        if not full_url:
+            params_query = self.params_dict_to_qury_string(params, prefix='')
+            url_suffix = f'{url_suffix}{self._account_sas_token}{params_query}'
+            params = None
+
+        default_headers = {'x-ms-version': self._api_version}
+
+        if headers:
+            default_headers.update(headers)
+
+        response = super()._http_request(  # type: ignore[misc]
+            *args, method=method, url_suffix=url_suffix, params=params, resp_type='response', headers=default_headers,
+            full_url=full_url, **kwargs)
+
+        # 206 indicates Partial Content, reason will be in the warning header.
+        # In that case, logs with the warning header will be written.
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+
+        is_response_empty_and_successful = (response.status_code == 204 or response.status_code == 201)
+        if is_response_empty_and_successful and return_empty_response:
+            return response
+
+        # Handle 404 errors instead of raising them as exceptions:
+        if response.status_code == 404:
+            try:
+                error_message = response.json()
+            except Exception:
+                error_message = f'Not Found - 404 Response \nContent: {response.content}'
+            raise NotFoundError(error_message)
+
+        try:
+            if resp_type == 'json':
+                return response.json()
+            if resp_type == 'text':
+                return response.text
+            if resp_type == 'content':
+                return response.content
+            if resp_type == 'xml':
+                ET.parse(response.text)
+            return response
+        except ValueError as exception:
+            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+
+    def params_dict_to_qury_string(self, params: dict, prefix: str = "") -> str:
+        """
+        Convert request params to string query.
+        Args:
+            params (dict): Request Params.
+            prefix (str): String prefix.
+
+        Returns:
+            str: String query.
+
+        """
+        if not params:
+            return ""
+        query = prefix
+        for key, value in params.items():
+            query += f'&{key}={value}'
+
+        return query
+
+
+class NotFoundError(Exception):
+    """Exception raised for 404 - Not Found errors.
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

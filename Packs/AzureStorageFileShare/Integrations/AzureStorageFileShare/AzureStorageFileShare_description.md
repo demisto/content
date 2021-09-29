@@ -14,4 +14,4 @@ To create and copy your storage account SAS Token you have to:
 
 A new window will appear with the SAS token.
 
-Copy and paste the SAS token. It's only be displayed once and can't be retrieved once the window is closed.
+Copy and paste the SAS token. Note it will only be displayed once and can't be retrieved once the window is closed.
