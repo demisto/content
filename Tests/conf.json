@@ -2202,7 +2202,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115,
+            "memory_threshold": 150,
             "pid_threshold": 80
         },
         {
@@ -2215,7 +2215,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 160,
             "pid_threshold": 80
         },
         {
@@ -2447,8 +2447,12 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
+            "integrations": [
+                "Image OCR",
+                "Rasterize"
+            ],
             "timeout": 350,
+            "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -2536,7 +2540,8 @@
         },
         {
             "integrations": "MITRE ATT&CK v2",
-            "playbookID": "FeedMitreAttackv2_test"
+            "playbookID": "FeedMitreAttackv2_test",
+            "memory_threshold": 150
         },
         {
             "integrations": "ANYRUN",
@@ -2686,6 +2691,11 @@
             "integrations": "vmray",
             "playbookID": "VMRay-Test-File",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "File Enrichment - VMRay - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -3512,6 +3522,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GuardiCore v2",
+            "playbookID": "GuardiCoreV2-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -4159,7 +4174,7 @@
             ]
         },
         {
-            "playbookID": "Cymulate Immediate Threats",
+            "playbookID": "Cymulate V1 Test",
             "fromversion": "6.0.0",
             "integrations": [
                 "cymulate_v2",
@@ -4217,7 +4232,14 @@
         },
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
         },
         {
             "playbookID": "Phishing v2 - Test - Actual Incident",
@@ -4514,6 +4536,19 @@
             "integrations": [
                 "TOPdesk"
             ]
+        },
+        {
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
         }
     ],
     "skipped_tests": {
@@ -4618,7 +4653,12 @@
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
-        "Carbon Black Edr - Test": "Issue 40132"
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322",
+        "AutoFocus V2 test": "Issue 26464",
+        "Kaspersky Security Center - Test": "Issue 36487",
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
         
