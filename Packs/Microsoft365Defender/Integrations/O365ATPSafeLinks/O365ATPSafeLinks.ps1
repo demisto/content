@@ -74,7 +74,7 @@ class ExchangeOnlinePowershellV2Client {
             "Organization" = $this.organization
             "Certificate"  = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession() {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue | Out-Null
