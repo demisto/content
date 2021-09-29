@@ -1,6 +1,5 @@
 id: playbook-AzureStorageFileShare-Test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-AzureStorageFileShare-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -380,6 +380,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -438,3 +439,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.1
+description: ''

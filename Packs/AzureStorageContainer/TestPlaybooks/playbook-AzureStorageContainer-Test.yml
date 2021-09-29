@@ -1,6 +1,5 @@
 id: playbook-AzureStorageContainer-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: playbook-AzureStorageContainer-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -327,6 +327,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -354,3 +355,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.1

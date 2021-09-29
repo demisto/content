@@ -247,7 +247,6 @@ def test_azure_storage_query_entity_command(requests_mock):
 
     result = query_entity_command(client, {'table_name': table_name, 'limit': '1'})
 
-    print(result.outputs)
     assert len(result.outputs) == 2
     assert len(result.outputs.get('Entity')) == 1
     assert len(result.outputs.get('Entity')[0]) == 4

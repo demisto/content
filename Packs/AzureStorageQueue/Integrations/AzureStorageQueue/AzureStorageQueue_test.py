@@ -42,7 +42,7 @@ def test_azure_storage_queue_list_queues_command(requests_mock):
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = list_queues_command(client, {})
-    print(result.outputs)
+
     assert len(result.outputs) == 3
     assert result.outputs_prefix == 'AzureStorageQueue.Queue'
     assert result.outputs[0].get('name') == 'my-queue'
@@ -134,7 +134,6 @@ def test_azure_storage_queue_create_message_command(requests_mock):
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
     result = create_message_command(client, {'message_content': "test", 'queue_name': queue_name})
 
-    print(result.outputs)
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'AzureStorageQueue.Queue'
     assert result.outputs.get('name') == queue_name
@@ -202,7 +201,7 @@ def test_azure_storage_queue_peek_messages_command(requests_mock):
 
     assert len(result.outputs) == 2
     assert len(result.outputs.get('Message')) == 1
-    assert len(result.outputs.get('Message')[0]) == 6
+    assert len(result.outputs.get('Message')[0]) == 5
     assert result.outputs_prefix == 'AzureStorageQueue.Queue'
     assert result.outputs.get('Message')[0].get('MessageId') == '222222222'
     assert result.outputs.get('Message')[0].get('InsertionTime') == '2021-08-22T13:00:49'
