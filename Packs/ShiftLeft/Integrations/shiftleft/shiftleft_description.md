@@ -15,3 +15,8 @@ With ShiftLeft CORE and Cortex XSOAR, Application Security engineers can run pla
 - Gather application threat intelligence to help prioritize bug fixes.
 - Identify and create incidents to rotate secrets discovered in code.
 - Proactively monitor applications for critical attacker-reachable vulnerabilities that enter production.
+
+To use this content pack, you will need to have a premium account with ShiftLeft CORE in order to access the API and get coverage for known open source vulnerabilities. To get your Org ID and Token in ShiftLeft CORE:
+- Log in to ShiftLeft.
+- Click the avatar in the top-right and select Account Settings.
+- On the right side (under Organization Info), you will see both the "Org ID" and Access Token . You can copy from the field or click the “copy to clipboard” link.

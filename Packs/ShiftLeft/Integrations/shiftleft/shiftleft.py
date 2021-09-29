@@ -41,7 +41,7 @@ class ShiftLeftClient(BaseClient):
         app_name: str,
         severity: Union[str, List[str], None],
         type: Union[str, List[str], None],
-        version: str,
+        version: Union[str, None],
     ) -> Dict[str, str]:
         """Returns list of findings"""
         return self._http_request(
@@ -180,7 +180,7 @@ def list_app_secrets_command(
             outputs=response,
         )
     else:
-        return CommandResult()
+        return CommandResults()
 
 
 def list_app_findings_command(

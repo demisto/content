@@ -57,9 +57,6 @@ script:
       defaultValue: vuln
     - name: version
       description: App version
-    outputs:
-    - contextPath: ShiftLeft
-      description: API response
     description: List App Findings
   - name: shiftleft-list-app-secrets
     arguments:
@@ -71,9 +68,6 @@ script:
       description: App version
     - name: entropy
       description: Entropy
-    outputs:
-    - contextPath: ShiftLeft
-      description: API response
     description: List App secrets
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
