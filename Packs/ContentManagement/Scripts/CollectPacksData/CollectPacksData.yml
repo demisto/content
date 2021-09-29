@@ -1,0 +1,26 @@
+args: []
+commonfields:
+  id: CollectPacksData
+  version: -1
+enabled: false
+name: CollectPacksData
+comment: Collects the data about the packs that needs to be installed on the machine.
+outputs:
+- contextPath: ConfigurationSetup.MarketplacePacks.packid
+  description: The ID of the pack to install.
+  type: Unknown
+- contextPath: ConfigurationSetup.MarketplacePacks.packversion
+  description: The version of the pack to install.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- configuration
+- Content Management
+timeout: '0'
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.23423
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
