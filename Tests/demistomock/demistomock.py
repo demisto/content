@@ -1142,3 +1142,7 @@ def parentEntry():
 
     """
     return {}
+
+
+def getLicenseCustomField(arg):
+    return arg
