@@ -3534,7 +3534,12 @@
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
-        }
+        },
+	 {
+            "integrations": "FireMonSecurityManager",
+            "playbookID": "FireMon Create Policy Planner Ticket - Test",
+            "fromversion": "5.0.0"
+	 }
     ],
     "skipped_tests": {
         "Zscaler Test": "We won't get license (Issues 40157,17784)",

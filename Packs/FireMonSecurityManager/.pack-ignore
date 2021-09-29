@@ -1,0 +1,17 @@
+[file:FireMonSecurityManager.yml]
+ignore=IN134,DO106,IM106,IN136,ST107,DS107,IN126
+
+[file:layoutscontainer-FireMon_Incident_Pre_Change_Assessment.json]
+ignore=ST110
+
+[file:layoutscontainer-FireMon_Incident_Policy_Planner.json]
+ignore=ST110,ST108
+
+[file:incidenttype-FireMonSecurityManager-FireMon_Policy_Planner.json]
+ignore=ST108
+
+[file:incidenttype-FireMonSecurityManager-FireMon_Pre_Change_Assessment.json]
+ignore=ST108
+
+[file:FireMonSecurityManager_description.md]
+ignore=DS104

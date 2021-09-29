@@ -32,6 +32,7 @@
 		]
 	},
 	"description": "Layout for FireMon Policy Planner - Create PP Ticket",
+	"fromVersion": "5.0.0",
 	"detached": false,
 	"details": null,
 	"detailsV2": {

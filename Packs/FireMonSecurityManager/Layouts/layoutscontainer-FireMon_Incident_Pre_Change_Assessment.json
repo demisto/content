@@ -1,6 +1,7 @@
 {
 	"close": null,
 	"description": "Layout for FireMon Pre Change Assessment",
+	"fromVersion": "5.0.0",
 	"detached": false,
 	"details": null,
 	"detailsV2": {

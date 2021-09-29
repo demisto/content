@@ -1,12 +1,14 @@
 id: 4d69da7b-f9e5-4a82-8cfa-8f4f2175dfec
 version: 40
-vcShouldKeepItemLegacyProdMachine: false
+description: Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box
+fromversion: 5.0.0
 name: FireMon Create Policy Planner Ticket
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     taskid: 35b4a2d3-4658-48f9-8b03-16bfc62dc693
+    description: Initiates the playbook
     type: start
     task:
       id: 35b4a2d3-4658-48f9-8b03-16bfc62dc693
@@ -33,6 +35,7 @@ tasks:
   "5":
     id: "5"
     taskid: 11c46959-b4e1-435e-81c3-e49916190755
+    description: Close the playbook
     type: title
     task:
       id: 11c46959-b4e1-435e-81c3-e49916190755

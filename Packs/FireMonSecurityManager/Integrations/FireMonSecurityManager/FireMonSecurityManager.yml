@@ -4,7 +4,7 @@ commonfields:
   id: FireMonSecurityManager
   version: -1
 configuration:
-- defaultvalue: https://192.168.21.98
+- defaultvalue: 
   display: Server URL (e.g. https://example.net)
   name: url
   required: true
@@ -45,6 +45,7 @@ script:
     outputs:
     - contextPath: token
       type: Unknown
+      description: Authentication token
   - arguments:
     - default: false
       description: Domain Id
@@ -65,7 +66,7 @@ script:
       name: requirement
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: LOW
       description: Priority of Policy Planner Ticket
       isArray: false
@@ -115,6 +116,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: PCA
       isArray: false
       name: action
       required: true
@@ -126,7 +128,7 @@ script:
     execution: false
     hidden: false
     name: pca
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
@@ -135,3 +137,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

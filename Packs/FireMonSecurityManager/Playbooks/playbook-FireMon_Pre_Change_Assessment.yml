@@ -1,12 +1,14 @@
 id: 958512cf-49f7-4978-8a0d-c8d4b5cecd66
 version: 9
-vcShouldKeepItemLegacyProdMachine: false
 name: FireMon Pre Change Assessment
+description: Validates and Return Pre Changes Assessment on Rules added as Requirement.
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     taskid: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
+    description: Initiates the playbook
     type: start
     task:
       id: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
@@ -33,6 +35,7 @@ tasks:
   "2":
     id: "2"
     taskid: fd4a6a7b-6c45-4ab5-891b-4be842775762
+    description: Close the playbook
     type: title
     task:
       id: fd4a6a7b-6c45-4ab5-891b-4be842775762
