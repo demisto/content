@@ -19,7 +19,7 @@
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
       echo "recieved content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc -xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
         exit 1
