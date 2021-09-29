@@ -10,7 +10,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0
 comment: Entry widget that returns the number of hosts in a Cortex XDR incident.
