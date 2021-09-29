@@ -121,11 +121,11 @@ references:
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
-      STORAGE_BASE_PATH: << pipeline.parameters.storage_base_path >>
       SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       SDK_REF: << pipeline.parameters.sdk_ref >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
+      STORAGE_BASE_PATH_PAREMETER: << pipeline.parameters.storage_base_path >>
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
@@ -134,7 +134,7 @@ references:
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
       FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
       PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
-      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>  # TODO: add _PARAMETER to sbp as here
+      BUCKET_UPLOAD_PARAMETER: << pipeline.parameters.bucket_upload >>
 
   container_config: &container_config
     docker:
@@ -203,6 +203,10 @@ references:
         if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${STORAGE_BASE_PATH_PAREMETER}" ];
+        then
+            echo "export STORAGE_BASE_PATH=$STORAGE_BASE_PATH_PAREMETER" >> $BASH_ENV
         fi
 
         echo "=== sourcing $BASH_ENV ==="
