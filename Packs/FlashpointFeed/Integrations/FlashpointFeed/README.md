@@ -26,7 +26,7 @@ Fetching the Flashpoint indicators. The indicators that are created or updated a
     | Tags | Supports CSV values. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
     | feedIncremental | To indicate to the Cortex XSOAR server that a feed is incremental. Generally feeds that fetch based on a time range. For example, a daily feed which provides new indicators for the last day or a feed which is immutable and provides indicators from a search date onwards. | False |
-    | Relationship | Create relationships between indicators as part of Enrichment. | False |
+    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
     | Default Indicator Mapping | When selected, all the incoming indicators will map to the Flashpoint Indicator. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
