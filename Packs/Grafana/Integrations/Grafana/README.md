@@ -56,7 +56,7 @@ Gets alerts.
 | Grafana.Alert.id | Number | Alert id | 
 | Grafana.Alert.dashboardId | Number | Alert dashboard id | 
 | Grafana.Alert.dashboardUid | String | Alert dashboard uid | 
-| Grafana.Alert.dashboardSlug | String | Alert dashboard slug | 
+| Grafana.Alert.dashboardName | String | Alert dashboard name | 
 | Grafana.Alert.panelId | Number | Alert panel id | 
 | Grafana.Alert.name | String | Alert name | 
 | Grafana.Alert.state | String | Alert state | 
@@ -77,7 +77,7 @@ Gets alerts.
         "Alert": [
             {
                 "dashboardId": 2,
-                "dashboardSlug": "streaming2",
+                "dashboardName": "streaming2",
                 "dashboardUid": "yzDQUOR7z",
                 "evalData": {
                     "noData": true
@@ -93,7 +93,7 @@ Gets alerts.
             },
             {
                 "dashboardId": 1,
-                "dashboardSlug": "streaming",
+                "dashboardName": "streaming",
                 "dashboardUid": "TXSTREZ",
                 "evalData": {
                     "noData": true
@@ -109,7 +109,7 @@ Gets alerts.
             },
             {
                 "dashboardId": 2,
-                "dashboardSlug": "streaming2",
+                "dashboardName": "streaming2",
                 "dashboardUid": "yzDQUOR7z",
                 "evalData": {
                     "noData": true
@@ -501,32 +501,14 @@ Creates annotation.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Grafana.Annotation.id | Number | Annotation id | 
-
+There is no context output for this command.
 
 #### Command Example
 ```!grafana-annotation-create text="annotate"```
 
-#### Context Example
-```json
-{
-    "Grafana": {
-        "Annotation": {
-          "id": 40
-        }
-    }
-}
-```
-
 #### Human Readable Output
 
->### Annotation
->|Id|Message|
->|---|---|
->| 40 | Annotation added |
-
+>Annotation 33 Added
 
 ### grafana-teams-search
 ***

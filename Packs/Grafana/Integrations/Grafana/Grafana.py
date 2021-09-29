@@ -303,7 +303,7 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     panel_id = args.get('panel_id')
     query = args.get('name')
-    state = set_state(args.get('state'))
+    state = set_state(args.get('state', ''))
     limit = args.get('limit')
     folder_id = argToList(args.get('folder_id', ''))
     dashboard_query = args.get('dashboard_name')
