@@ -1250,7 +1250,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['closeReason'] = 'True Positive'
+    expected_modified_incident['closeReason'] = 'Resolved'
     expected_modified_incident['closeNotes'] = 'Handled'
     expected_modified_incident['in_mirror_error'] = ''
     del expected_modified_incident['creation_time']
@@ -1261,7 +1261,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'Type': 1,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': 'True Positive',
+            'closeReason': 'Resolved',
             'closeNotes': 'Handled'
         },
         'ContentsFormat': 'json'
