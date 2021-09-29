@@ -1,5 +1,5 @@
 Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
-This integration was integrated and tested with version xx of ShiftLeft CORE
+This integration was integrated and tested with v4 api of ShiftLeft CORE
 
 ## Configure ShiftLeft CORE on Cortex XSOAR
 
