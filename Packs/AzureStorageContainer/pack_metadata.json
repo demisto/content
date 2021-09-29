@@ -1,6 +1,6 @@
 {
-    "name": "Azure Storage Blob",
-    "description": "Create and Manage Azure Storage Blob services.",
+    "name": "Azure Storage Container",
+    "description": "Create and Manage Azure Storage Container services.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

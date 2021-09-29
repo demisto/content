@@ -1,19 +1,19 @@
-id: playbook-AzureStorageBlob-Test
+id: playbook-AzureStorageContainer-Test
 version: -1
-name: playbook-AzureStorageBlob-Test
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-AzureStorageContainer-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c8702f1-6b93-49d4-8d78-4641994d201f
+    taskid: fb89b0d6-239d-4c0e-8de5-b2079860e309
     type: start
     task:
-      id: 0c8702f1-6b93-49d4-8d78-4641994d201f
+      id: fb89b0d6-239d-4c0e-8de5-b2079860e309
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 120
+          "y": 50
         }
       }
     note: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e94ed2b3-b1fd-43b9-8906-7a4362da7f1d
+    taskid: 5b38f8a6-6e7a-4b33-8427-1a925eff9af5
     type: regular
     task:
-      id: e94ed2b3-b1fd-43b9-8906-7a4362da7f1d
+      id: 5b38f8a6-6e7a-4b33-8427-1a925eff9af5
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 300
+          "y": 200
         }
       }
     note: false
@@ -63,13 +63,13 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 9dda82cb-5983-4d9d-88e4-79fd75d2fc3d
+    taskid: 1eba8782-a078-4ea9-8fc9-ced99af2ee66
     type: regular
     task:
-      id: 9dda82cb-5983-4d9d-88e4-79fd75d2fc3d
+      id: 1eba8782-a078-4ea9-8fc9-ced99af2ee66
       version: -1
-      name: azure-storage-blob-container-list
-      script: '|||azure-storage-blob-container-list'
+      name: azure-storage-container-list
+      script: '|||azure-storage-container-list'
       type: regular
       iscommand: true
       brand: ""
@@ -81,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1150
+          "y": 980
         }
       }
     note: false
@@ -91,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 56b85964-2300-4763-8019-c79ac240f6a4
+    taskid: 695851b0-87a0-49bd-87f4-0b63930a959c
     type: condition
     task:
-      id: 56b85964-2300-4763-8019-c79ac240f6a4
+      id: 695851b0-87a0-49bd-87f4-0b63930a959c
       version: -1
       name: Verify Outputs
       type: condition
@@ -110,13 +110,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.container_name
+              simple: AzureStorageContainer.Container.name
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1350
+          "y": 1180
         }
       }
     note: false
@@ -126,13 +126,13 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a417296b-f83c-4ffc-87dd-58feaee6e739
+    taskid: 5f26f1b6-d142-4927-8b3d-7aa26116c9d7
     type: regular
     task:
-      id: a417296b-f83c-4ffc-87dd-58feaee6e739
+      id: 5f26f1b6-d142-4927-8b3d-7aa26116c9d7
       version: -1
-      name: azure-storage-blob-container-create
-      script: '|||azure-storage-blob-container-create'
+      name: azure-storage-container-create
+      script: '|||azure-storage-container-create'
       type: regular
       iscommand: true
       brand: ""
@@ -147,7 +147,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 520
+          "y": 410
         }
       }
     note: false
@@ -157,13 +157,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ba1aa8dc-c027-4bed-8da9-c842e83f5c12
+    taskid: 7a013dcb-aeb6-4fa7-8be9-cbd2ad14b993
     type: regular
     task:
-      id: ba1aa8dc-c027-4bed-8da9-c842e83f5c12
+      id: 7a013dcb-aeb6-4fa7-8be9-cbd2ad14b993
       version: -1
-      name: azure-storage-blob-container-properties-get
-      script: '|||azure-storage-blob-container-properties-get'
+      name: azure-storage-container-property-get
+      script: '|||azure-storage-container-property-get'
       type: regular
       iscommand: true
       brand: ""
@@ -178,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 730
+          "y": 600
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0c2050eb-d7a2-4dce-833b-c78c0118f596
+    taskid: 30dde8b0-7ae2-429b-8606-acd5c5b5a4d3
     type: condition
     task:
-      id: 0c2050eb-d7a2-4dce-833b-c78c0118f596
+      id: 30dde8b0-7ae2-429b-8606-acd5c5b5a4d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -207,43 +207,43 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.last_modified
+              simple: AzureStorageContainer.Container.Property.last_modified
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.etag
+              simple: AzureStorageContainer.Container.Property.etag
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.lease_status
+              simple: AzureStorageContainer.Container.Property.lease_status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.lease_state
+              simple: AzureStorageContainer.Container.Property.lease_state
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.has_immutability_policy
+              simple: AzureStorageContainer.Container.Property.has_immutability_policy
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.Properties.has_legal_hold
+              simple: AzureStorageContainer.Container.Property.has_legal_hold
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureStorageBlob.Container.container_name
+              simple: AzureStorageContainer.Container.name
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 930
+          "y": 800
         }
       }
     note: false
@@ -253,13 +253,13 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b786b720-c9b0-4419-899a-f359460cd8eb
+    taskid: 5d6f2872-99e0-451a-810c-7b5bbe5236ac
     type: regular
     task:
-      id: b786b720-c9b0-4419-899a-f359460cd8eb
+      id: 5d6f2872-99e0-451a-810c-7b5bbe5236ac
       version: -1
-      name: azure-storage-blob-container-delete
-      script: '|||azure-storage-blob-container-delete'
+      name: azure-storage-container-delete
+      script: '|||azure-storage-container-delete'
       type: regular
       iscommand: true
       brand: ""
@@ -274,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1830
+          "y": 1690
         }
       }
     note: false
@@ -284,13 +284,13 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e86aee30-555d-4fed-8a6c-3ef79b72fc47
+    taskid: ad1975cf-b41a-4f74-85f0-3e683022d396
     type: regular
     task:
-      id: e86aee30-555d-4fed-8a6c-3ef79b72fc47
+      id: ad1975cf-b41a-4f74-85f0-3e683022d396
       version: -1
-      name: azure-storage-blob-blob-list
-      script: '|||azure-storage-blob-blob-list'
+      name: azure-storage-container-blob-list
+      script: '|||azure-storage-container-blob-list'
       type: regular
       iscommand: true
       brand: ""
@@ -308,7 +308,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1600
+          "y": 1430
         }
       }
     note: false
@@ -318,22 +318,21 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 8ae4b941-d6a4-46b7-8c25-fb71acb7203d
+    taskid: ef990744-e0e3-46a8-83ec-e320efc1a4c9
     type: title
     task:
-      id: 8ae4b941-d6a4-46b7-8c25-fb71acb7203d
+      id: ef990744-e0e3-46a8-83ec-e320efc1a4c9
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2090
+          "y": 1930
         }
       }
     note: false
@@ -346,14 +345,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2035,
+        "height": 1945,
         "width": 380,
         "x": 50,
-        "y": 120
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: 6.0.1
-description: Azure Storage Blob commands test playbook.

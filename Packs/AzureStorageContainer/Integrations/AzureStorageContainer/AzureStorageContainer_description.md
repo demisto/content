@@ -1,5 +1,6 @@
-To configure an instance of the integration in Cortex XSOAR, you need to supply your Storage Account Name and Storage Account SAS Token.
-When you configure the integration instance, enter the Storage Account name in the Storage Account field, and the Storage Account SAS Token in the Account SAS Token field.
+To configure an instance of the integration in Cortex XSOAR, you need to supply your Storage Account Name and Storage
+Account SAS Token. When you configure the integration instance, enter the Storage Account name in the Storage Account
+field, and the Storage Account SAS Token in the Account SAS Token field.
 
 To create and copy your storage account SAS Token you have to:
 
@@ -14,4 +15,4 @@ To create and copy your storage account SAS Token you have to:
 
 A new window will appear with the SAS token.
 
-Copy and paste the SAS token. It's only be displayed once and can't be retrieved once the window is closed.
+Copy and paste the SAS token. Note it will only be displayed once and can't be retrieved once the window is closed.

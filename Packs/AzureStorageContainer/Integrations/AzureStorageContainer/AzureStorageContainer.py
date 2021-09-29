@@ -1,4 +1,5 @@
 import shutil
+from typing import Callable
 
 from requests import Response
 
@@ -263,6 +264,27 @@ class Client:
         return response
 
 
+def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+    """
+    Get next marker element for request pagination.
+    Args:
+        limit (str): Number of elements to retrieve.
+        page (str): Page number.
+        client_request (Callable): Client request function.
+        params (dict): Request params.
+
+    Returns:
+        str: Next marker.
+
+    """
+    offset = int(limit) * (page - 1)
+    response = client_request(limit=str(offset), **params)
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    return root.findtext('NextMarker')
+
+
 def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     List Containers under the specified storage account.
@@ -275,7 +297,7 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    limit = args.get('limit', '50')
+    limit = args.get('limit') or '50'
     prefix = args.get('prefix')
     page = arg_to_number(args.get('page', '1'))
 
@@ -283,16 +305,13 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
     readable_message = f'Containers List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:
-        offset = int(limit) * (page - 1)
-        response = client.list_containers_request(str(offset), prefix)
-        tree = ET.ElementTree(ET.fromstring(response))
-        root = tree.getroot()
-        marker = root.findtext('NextMarker')
+        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_containers_request,
+                                             params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureStorageBlob.Container',
+                outputs_prefix='AzureStorageContainer.Container',
                 outputs=[],
                 raw_response=[]
             )
@@ -306,27 +325,27 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
     outputs = []
 
     for element in root.iter('Container'):
-        outputs.append({'container_name': element.findtext('Name')})
+        outputs.append({'name': element.findtext('Name')})
         data = {'Name': element.findtext('Name')}
         properties = {}
         for container_property in element.findall('Properties'):
             for attribute in container_property:
                 properties[attribute.tag] = attribute.text
 
-        data['Properties'] = properties
+        data['Property'] = properties
         raw_response.append(data)
 
     readable_output = tableToMarkdown(
         readable_message,
         outputs,
-        headers=['container_name'],
+        headers=['name'],
         headerTransform=string_to_table_header
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageBlob.Container',
-        outputs_key_field='container_name',
+        outputs_prefix='AzureStorageContainer.Container',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -346,7 +365,12 @@ def create_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
+    container_name = args['container_name']
+
+    container_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+
+    if not re.search(container_name_regex, container_name):
+        raise Exception('The specified container name is invalid.')
 
     client.create_container_request(container_name)
 
@@ -355,6 +379,21 @@ def create_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
     return command_results
+
+
+def convert_dict_time_format(data: dict, keys: list):
+    """
+    Convert dictionary data values time format.
+    Args:
+        data (dict): Data.
+        keys (list): Keys list to convert
+
+    """
+    for key in keys:
+        if data.get(key):
+            time_value = datetime.strptime(data.get(key), DATE_FORMAT)
+            iso_time = FormatIso8601(time_value)
+            data[key] = iso_time
 
 
 def get_container_properties_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -369,7 +408,7 @@ def get_container_properties_command(client: Client, args: Dict[str, Any]) -> Co
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
+    container_name = args['container_name']
 
     response = client.get_container_properties_request(container_name)
 
@@ -379,29 +418,24 @@ def get_container_properties_command(client: Client, args: Dict[str, Any]) -> Co
     response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = {key.replace('x-ms-', '').replace('-', '_').lower(): value
-                  for key, value in raw_response.items() if key in response_headers}
+    properties = replace_dict_keys(raw_response, response_headers)
 
-    outputs['container_name'] = container_name
-    outputs['Properties'] = properties
+    outputs['name'] = container_name
+    outputs['Property'] = properties
 
-    for header in ['last_modified', 'date']:
-        if outputs.get('Properties').get(header):
-            time_value = datetime.strptime(outputs.get('Properties').get(header), DATE_FORMAT)
-            iso_time = FormatIso8601(time_value)
-            outputs['Properties'][header] = iso_time
+    convert_dict_time_format(outputs['Property'], ['last_modified', 'date'])
 
     readable_output = tableToMarkdown(
-        'Containers Properties:',
-        outputs.get('Properties'),
+        f'Container {container_name} Properties:',
+        outputs.get('Property'),
         headers=['last_modified', 'etag', 'lease_status', 'lease_state', 'has_immutability_policy', 'has_legal_hold'],
         headerTransform=string_to_table_header
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageBlob.Container',
-        outputs_key_field='container_name',
+        outputs_prefix='AzureStorageContainer.Container',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -419,7 +453,7 @@ def delete_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
+    container_name = args['container_name']
 
     client.delete_container_request(container_name)
 
@@ -442,25 +476,21 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    limit = args.get('limit', '50')
+    container_name = args['container_name']
+    limit = args.get('limit') or '50'
     prefix = args.get('prefix')
     page = arg_to_number(args.get('page', '1'))
 
     marker = ''
-    readable_message = f'Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
-
+    readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
     if page > 1:
-        offset = int(limit) * (page - 1)
-        response = client.list_blobs_request(container_name, str(offset), prefix, marker)
-        tree = ET.ElementTree(ET.fromstring(response))
-        root = tree.getroot()
-        marker = root.findtext('NextMarker')
+        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_blobs_request,
+                                             params={"container_name": container_name, "prefix": prefix})
 
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='AzureStorageBlob.Blob',
+                outputs_prefix='AzureStorageContainer.Container',
                 outputs=[],
                 raw_response=[]
             )
@@ -471,32 +501,34 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     root = tree.getroot()
 
     raw_response = []
-    outputs = []
+    blobs = []
 
     for element in root.iter('Blob'):
-        outputs.append({'container_name': container_name, 'blob_name': element.findtext('Name')})
-        data = {'Name': element.findtext('Name')}
+        data = {'name': element.findtext('Name')}
+        blobs.append(dict(data))
         properties = {}
         for blob_property in element.findall('Properties'):
             for attribute in blob_property:
                 properties[attribute.tag] = attribute.text
 
-        data['Properties'] = properties
+        data['Property'] = properties
         raw_response.append(data)
 
+    outputs = {"name": container_name, "Blob": blobs}
     readable_output = tableToMarkdown(
         readable_message,
-        outputs,
-        headers=['blob_name'],
+        outputs.get('Blob'),
+        headers='name',
         headerTransform=string_to_table_header
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageBlob.Blob',
-        outputs_key_field=['container_name', 'blob_name'],
+        outputs_prefix='AzureStorageContainer.Container',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
+
     )
 
     return command_results
@@ -514,8 +546,8 @@ def create_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    file_entry_id = args.get('file_entry_id')
+    container_name = args['container_name']
+    file_entry_id = args['file_entry_id']
     blob_name = args.get('blob_name')
 
     client.put_blob_request(container_name, file_entry_id, blob_name)
@@ -539,9 +571,9 @@ def update_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    file_entry_id = args.get('file_entry_id')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    file_entry_id = args['file_entry_id']
+    blob_name = args['blob_name']
 
     client.put_blob_request(container_name, file_entry_id, blob_name)
 
@@ -564,8 +596,8 @@ def get_blob_command(client: Client, args: Dict[str, Any]) -> fileResult:
         fileResult: XSOAR File Result.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
 
     response = client.get_blob_request(container_name, blob_name)
 
@@ -584,8 +616,8 @@ def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
 
     response = client.get_blob_tags_request(container_name, blob_name)
 
@@ -593,30 +625,55 @@ def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
     root = tree.getroot()
 
     raw_response = []
-    outputs = {'container_name': container_name, 'blob_name': blob_name}
+    outputs = {'name': container_name, 'Blob': {'name': blob_name}}
 
     for element in root.iter('Tag'):
         tag = {'Key': element.findtext('Key'), 'Value': element.findtext('Value')}
         raw_response.append(dict(tag))
 
-    outputs['Tag'] = raw_response
+    outputs['Blob']['Tag'] = raw_response
 
     readable_output = tableToMarkdown(
-        'Blob Tags:',
-        outputs['Tag'],
+        f'Blob {blob_name} Tags:',
+        outputs['Blob']['Tag'],
         headers=['Key', 'Value'],
         headerTransform=pascalToSpace
     )
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageBlob.Blob',
-        outputs_key_field=['container_name', 'blob_name'],
+        outputs_prefix='AzureStorageContainer.Container',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
 
     return command_results
+
+
+def create_set_tags_request_body(tags: dict) -> str:
+    """
+    Create XML request body for set blob tags.
+    Args:
+        tags (dict): Tags data. Key represents tag name , and value represents tag Value.
+
+    Returns:
+        str: Set tags request body.
+
+    """
+    top = ET.Element('Tags')
+
+    tag_set = ET.SubElement(top, 'TagSet')
+
+    for key, value in tags.items():
+        tag = ET.SubElement(tag_set, 'Tag')
+        tag_key = ET.SubElement(tag, 'Key')
+        tag_key.text = key
+
+        tag_value = ET.SubElement(tag, 'Value')
+        tag_value.text = value
+
+    return ET.tostring(top, encoding='unicode')
 
 
 def set_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -631,28 +688,16 @@ def set_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
-    tags = args.get('tags')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
+    tags = args['tags']
 
     try:
         tags = json.loads(tags)
-    except Exception:
-        raise Exception('Failed to parse tags argument')
+    except ValueError:
+        raise ValueError('Failed to parse tags argument. Please provide valid JSON format tags data.')
 
-    top = ET.Element('Tags')
-
-    tag_set = ET.SubElement(top, 'TagSet')
-
-    for key, value in tags.items():
-        tag = ET.SubElement(tag_set, 'Tag')
-        tag_key = ET.SubElement(tag, 'Key')
-        tag_key.text = key
-
-        tag_value = ET.SubElement(tag, 'Value')
-        tag_value.text = value
-
-    xml_data = ET.tostring(top, encoding='unicode')
+    xml_data = create_set_tags_request_body(tags)
 
     client.set_blob_tags_request(container_name, blob_name, xml_data)
 
@@ -675,8 +720,8 @@ def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
 
     client.delete_blob_request(container_name, blob_name)
 
@@ -685,6 +730,21 @@ def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     return command_results
+
+
+def replace_dict_keys(data: dict, keys: list) -> dict:
+    """
+    Remove and replace keys in dictionary.
+    Args:
+        data (dict): Data to exchange.
+        keys (list): Keys to filter.
+
+    Returns:
+        dict: Processed data.
+
+    """
+    return {key.replace('x-ms-', '').replace('-', '_').lower(): value
+            for key, value in data.items() if key in keys}
 
 
 def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -699,8 +759,8 @@ def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
 
     response = client.get_blob_properties_request(container_name, blob_name)
 
@@ -710,30 +770,24 @@ def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
     response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = {key.replace('x-ms-', '').replace('-', '_').lower(): value
-                  for key, value in raw_response.items() if key in response_headers}
+    properties = replace_dict_keys(raw_response, response_headers)
 
-    outputs['container_name'] = container_name
-    outputs['blob_name'] = blob_name
-    outputs['Properties'] = properties
+    outputs['name'] = container_name
+    outputs['Blob'] = {'name': blob_name, 'Property': properties}
 
-    for header in ['creation_time', 'last_modified', 'date']:
-        if outputs.get('Properties').get(header):
-            time_value = datetime.strptime(outputs.get('Properties').get(header), DATE_FORMAT)
-            iso_time = FormatIso8601(time_value)
-            outputs['Properties'][header] = iso_time
+    convert_dict_time_format(outputs['Blob']['Property'], ['creation_time', 'last_modified', 'date'])
 
     readable_output = tableToMarkdown(
-        'Blob Properties:',
-        outputs.get('Properties'),
+        f'Blob {blob_name} Properties:',
+        outputs.get('Blob').get('Property'),
         headers=['creation_time', 'last_modified', 'content_length', 'content_type', 'etag'],
         headerTransform=string_to_table_header
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AzureStorageBlob.Blob',
-        outputs_key_field=['container_name', 'blob_name'],
+        outputs_prefix='AzureStorageContainer.Container',
+        outputs_key_field='name',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -751,8 +805,8 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
     content_type = args.get('content_type')
     content_md5 = args.get('content_md5')
     content_encoding = args.get('content_encoding')
@@ -814,8 +868,8 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    account_sas_token = params.get('account_sas_token')
-    storage_account_name = params.get('storage_account_name')
+    account_sas_token = params['account_sas_token']
+    storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
 
@@ -828,19 +882,19 @@ def main() -> None:
                                 api_version)
 
         commands = {
-            'azure-storage-blob-container-list': list_containers_command,
-            'azure-storage-blob-container-create': create_container_command,
-            'azure-storage-blob-container-properties-get': get_container_properties_command,
-            'azure-storage-blob-container-delete': delete_container_command,
-            'azure-storage-blob-blob-list': list_blobs_command,
-            'azure-storage-blob-blob-create': create_blob_command,
-            'azure-storage-blob-blob-update': update_blob_command,
-            'azure-storage-blob-blob-get': get_blob_command,
-            'azure-storage-blob-blob-tag-get': get_blob_tags_command,
-            'azure-storage-blob-blob-tag-set': set_blob_tags_command,
-            'azure-storage-blob-blob-delete': delete_blob_command,
-            'azure-storage-blob-blob-properties-get': get_blob_properties_command,
-            'azure-storage-blob-blob-properties-set': set_blob_properties_command,
+            'azure-storage-container-list': list_containers_command,
+            'azure-storage-container-create': create_container_command,
+            'azure-storage-container-property-get': get_container_properties_command,
+            'azure-storage-container-delete': delete_container_command,
+            'azure-storage-container-blob-list': list_blobs_command,
+            'azure-storage-container-blob-create': create_blob_command,
+            'azure-storage-container-blob-update': update_blob_command,
+            'azure-storage-container-blob-get': get_blob_command,
+            'azure-storage-container-blob-tag-get': get_blob_tags_command,
+            'azure-storage-container-blob-tag-set': set_blob_tags_command,
+            'azure-storage-container-blob-delete': delete_blob_command,
+            'azure-storage-container-blob-property-get': get_blob_properties_command,
+            'azure-storage-container-blob-property-set': set_blob_properties_command,
         }
 
         if command == 'test-module':
