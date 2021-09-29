@@ -2901,3 +2901,48 @@ There is no context output for this command.
 
 #### Command Example
 ```!xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4```
+
+
+### 40. xdr-get-endpoints-by-status
+***
+Returns the number of the connected\disconnected endpoints.
+
+
+#### Base Command
+
+`xdr-get-endpoints-by-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Required | 
+| last_seen_gte | All the agents that were last seen after {last_seen_gte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.EndpointsStatus.status | String | The endpoint's status. | 
+| PaloAltoNetworksXDR.EndpointsStatus.count | Number | The number of endpoint's with this status. | 
+
+
+#### Command Example
+```!xdr-get-endpoints-by-status status=connected```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "EndpointsStatus": {
+            "count": 4,
+            "status": "connected"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>connected endpoints count: 4
