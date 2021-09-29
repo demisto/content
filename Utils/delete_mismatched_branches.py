@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import gitlab
+from blessings import Terminal
 from github import Github
 from github_workflow_scripts.utils import timestamped_print, get_env_var
 
@@ -20,6 +21,7 @@ def main():
     from the Github repository from which we mirror from. This script deletes from GitLab the branches which no
     longer exist in Github.
     """
+    t = Terminal()
     # get github content repo's branches
     github = Github(get_env_var('CONTENT_GITHUB_TOKEN'), verify=False)
     organization = 'demisto'
@@ -44,8 +46,11 @@ def main():
     # delete gitlab branches
     for gitlab_branch in gitlab_branches:
         if gitlab_branch_name := gitlab_branch.name not in github_branch_names:
-            gitlab_branch.delete()
-            print(f'deleted "{gitlab_branch_name}"')
+            try:
+                gitlab_branch.delete()
+                print(f'deleted "{gitlab_branch_name}"')
+            except gitlab.exceptions.GitlabError as e:
+                print(f'{t.red}Deletion of {gitlab_branch_name} encountered an issue: {str(e)}{t.normal}')
 
 
 if __name__ == "__main__":
