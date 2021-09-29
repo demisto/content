@@ -180,11 +180,7 @@ def list_app_secrets_command(
             outputs=response,
         )
     else:
-        return CommandResults(
-            outputs_prefix="ShiftLeft.Secrets",
-            outputs_key_field="",
-            outputs={},
-        )
+        return CommandResult()
 
 
 def list_app_findings_command(
