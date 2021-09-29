@@ -1,7 +1,7 @@
 delete-mismatched-branches:
   tags:
     - gke
-  stage: .pre
+  stage: fan-in
   extends:
     - .default-job-settings
   rules:
