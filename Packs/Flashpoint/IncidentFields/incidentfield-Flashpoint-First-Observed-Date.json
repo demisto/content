@@ -1,0 +1,32 @@
+{
+    "id": "incident_flashpointfirstobserveddate",
+    "version": -1,
+    "modified": "2021-07-17T08:48:49.232969073+05:30",
+    "name": "Flashpoint First Observed Date",
+    "description": "The first observed date of the alert. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.",
+    "ownerOnly": false,
+    "cliName": "flashpointfirstobserveddate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts",
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}
