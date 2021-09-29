@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: 'The incident ID in xsoar (used for mirrored events).'
+  isArray: false
+  name: incident_id
+- default: false
+  description: 'The notable ID in splunk SIEM.'
+  isArray: false
+  name: notable_id
+- default: false
+  description: 'The comment body'
+  isArray: false
+  name: comment
+  required: true
+comment: 'Add a comment to splunk notable event.'
+commonfields:
+  id: SplunkCommentNotableEvent
+  version: -1
+enabled: false
+name: SplunkCommentNotableEvent
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.0.0
+runas: DBotRole
+tests:
+- No tests (auto formatted)
