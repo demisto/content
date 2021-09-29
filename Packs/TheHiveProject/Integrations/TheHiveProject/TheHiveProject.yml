@@ -1441,7 +1441,7 @@ script:
       time. Note that this method is here for debugging purposes. The get-modified-remote-data
       command is used as part of a Mirroring feature, which is available from version
       6.1.
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3
