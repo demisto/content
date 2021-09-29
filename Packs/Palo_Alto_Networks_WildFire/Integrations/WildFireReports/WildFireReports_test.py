@@ -14,7 +14,7 @@ def test_wildfire_report(mocker):
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
     mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
-    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
 
     with open('test_data/response.pdf', 'rb') as file:
@@ -44,7 +44,7 @@ def test_report_not_found(mocker):
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567891'
     mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
-    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
     demisto_mock = mocker.patch.object(demisto, 'results')
 
@@ -67,7 +67,7 @@ def test_incorrect_sha256(mocker):
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456789'  # The length is 63 insteadof 64
     mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
-    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/'})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
     mocker.patch.object(demisto, 'error')
     mock_error = mocker.patch('WildFireReports.return_error')

@@ -75,6 +75,8 @@ def main():
     token = params.get('token')
     if not token:
         token = demisto.getLicenseCustomField("WildFire-Reports.token")
+    if not token:
+        return_error("The Token can't be empty")
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
