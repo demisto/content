@@ -24,6 +24,14 @@ DEFAULT_CUSTOM_FIELDS = {
     'campaignemailbody': 'Fill here message for the recipients',
     'selectcampaignincidents': ['All']
 }
+SEVERITIES = {
+    4: 'Critical',
+    3: 'High',
+    2: 'Medium',
+    1: 'Low',
+    0.5: 'Info',
+    0: 'Unknown'
+}
 
 
 def update_incident_with_required_keys(incidents, required_keys):
@@ -75,6 +83,9 @@ def convert_incident_to_hr(incident):
 
         if key == 'id':
             converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
+
+        if key == 'severity':
+            converted_incident[key] = SEVERITIES.get(converted_incident.get(key), '')
 
         converted_incident[key] = converted_incident.get(key.replace('_', ''))
 
