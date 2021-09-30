@@ -1,5 +1,8 @@
-Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer – either as playbook tasks or through API calls in the War Room.
-This integration was integrated and tested with version xx of HYAS Protect
+# HYAS Protect
+HYAS Protect is a generational leap forward utilizing authoritative knowledge of attacker infrastructure including unrivaled domain-based intelligence to proactively protect enterprises from cyberattacks. HYAS Protect is deployed as a cloud-based DNS security solution or through API integration with existing solutions. HYAS Protect combines infrastructure expertise and multi-variant communication pattern analysis to deliver reputational verdicts for any domain and infrastructure, allowing enterprises to preempt attacks while proactively assessing risk in real-time. HYAS Protect can enforce security, block command and control (C2) communication used by malware, ransomware, and botnets, block phishing attacks, and deliver a high-fidelity threat signal that enhances an enterprise’s existing security and IT governance stack.
+
+Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer.
+This integration was integrated and tested with version 1.0.0 of HYAS Protect.
 
 ## Configure HYAS Protect on Cortex XSOAR
 
@@ -9,7 +12,7 @@ This integration was integrated and tested with version xx of HYAS Protect
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | HYAS Protect Api Key |  | True |
+    | HYAS Protect Api Key | HYAS Protect API Key. | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
     | Use system proxy settings | Use system proxy settings. | False |
 
