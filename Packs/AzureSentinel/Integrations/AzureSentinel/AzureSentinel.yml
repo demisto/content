@@ -663,7 +663,7 @@ script:
     description: Tests connectivity to Azure Sentinel.
     execution: false
     name: azure-sentinel-test
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
