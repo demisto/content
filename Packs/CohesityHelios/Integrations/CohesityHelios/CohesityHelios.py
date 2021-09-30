@@ -145,7 +145,7 @@ def datestring_to_usecs(ds: str):
     if dt is None:
         return dt
 
-    return int(dt.timestamp()) * 1000000
+    return int(dt.timestamp() * 1000000)
 
 
 def _get_property_dict(property_list):
@@ -398,7 +398,8 @@ def fetch_incidents_command(client: Client):
         incident = create_ransomware_incident(alert)
         incidents.append(incident)
 
-    # Update last run.
+    # Update last run to 1 usec more than last found alert.
+    new_start_time_usecs += 1
     demisto.setLastRun({
         'start_time': new_start_time_usecs
     })
