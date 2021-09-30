@@ -381,7 +381,7 @@ class MsGraphClient:
                 '@odata.type': cls.FILE_ATTACHMENT,
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
-                'name': attach_name if provided_names else uploaded_file_name,
+                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
                 'size': file_size
             }
             file_attachments_result.append(attachment)
@@ -1041,11 +1041,14 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
             'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
         }
 
         contact_properties = {
             'Sender': 'sender',
             'From': 'from',
+            'Recipients': 'toRecipients',
             'CCRecipients': 'ccRecipients',
             'BCCRecipients': 'bccRecipients',
             'ReplyTo': 'replyTo'
@@ -1157,7 +1160,7 @@ def list_mails_command(client: MsGraphClient, args):
         human_readable = tableToMarkdown(
             human_readable_header,
             mail_context,
-            headers=['Subject', 'From', 'SendTime', 'ID']
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
         )
     else:
         human_readable = '### No mails were found'
@@ -1243,7 +1246,7 @@ def get_message_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,

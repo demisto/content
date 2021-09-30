@@ -25,9 +25,9 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_threat_handled\","
-                              "\"resolved_known_issue\",\"resolved_duplicate\","
-                              "\"resolved_false_positive\",\"resolved_other\"",
+                              "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                              "\"resolved_duplicate\",\"resolved_false_positive\","
+                              "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
                "xsoar_field_name": 'xdrstatusv2'},
     "assigned_user_mail": {"description": "Email address of the assigned user.",
                            'xsoar_field_name': "xdrassigneduseremail"},
@@ -45,14 +45,16 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
+    'resolved_true_positive': 'Resolved',
+    'resolved_security_testing': 'Other',
     'resolved_other': 'Other'
 }
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
-    'Resolved': 'resolved_threat_handled',
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
-    'False Positive': 'resolved_false_positive'
+    'False Positive': 'resolved_false_positive',
+    'Resolved': 'resolved_true_positive',
 }
 
 MIRROR_DIRECTION = {
@@ -254,7 +256,7 @@ class Client(BaseClient):
 
         request_data = {
             'search_from': search_from,
-            'search_to': search_to
+            'search_to': search_to,
         }
 
         if sort_by_creation_time and sort_by_modification_time:
@@ -344,7 +346,7 @@ class Client(BaseClient):
         """
         request_data = {
             'incident_id': incident_id,
-            'alerts_limit': alerts_limit
+            'alerts_limit': alerts_limit,
         }
 
         reply = self._http_request(
@@ -384,7 +386,7 @@ class Client(BaseClient):
 
         request_data = {
             'incident_id': incident_id,
-            'update_data': update_data
+            'update_data': update_data,
         }
 
         self._http_request(
@@ -419,7 +421,7 @@ class Client(BaseClient):
 
         request_data = {
             'search_from': search_from,
-            'search_to': search_to
+            'search_to': search_to,
         }
 
         if no_filter:
@@ -550,28 +552,30 @@ class Client(BaseClient):
         return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
+        request_data = {
+            'endpoint_id': endpoint_id,
+        }
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         self._http_request(
             method='POST',
             url_suffix='/endpoints/isolate',
-            json_data={
-                'request_data': {
-                    'endpoint_id': endpoint_id,
-                    'incident_id': incident_id
-                }
-            },
+            json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
+        request_data = {
+            'endpoint_id': endpoint_id,
+        }
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         self._http_request(
             method='POST',
             url_suffix='/endpoints/unisolate',
-            json_data={
-                'request_data': {
-                    'endpoint_id': endpoint_id,
-                    'incident_id': incident_id
-                }
-            },
+            json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
@@ -645,13 +649,13 @@ class Client(BaseClient):
                 'platform': platform,
                 'package_type': package_type,
                 'agent_version': agent_version,
-                'description': description
+                'description': description,
             }
         elif package_type == 'upgrade':
             request_data = {
                 'name': name,
                 'package_type': package_type,
-                'description': description
+                'description': description,
             }
 
             if platform == 'windows':
@@ -813,7 +817,8 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -829,7 +834,8 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -856,7 +862,8 @@ class Client(BaseClient):
 
         request_data['file_path'] = file_path
         request_data['file_hash'] = file_hash
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -871,8 +878,10 @@ class Client(BaseClient):
 
     def restore_file(self, file_hash, endpoint_id=None, incident_id=None):
         request_data: Dict[str, Any] = {'file_hash': file_hash}
-        request_data['endpoint_id'] = endpoint_id
-        request_data['incident_id'] = incident_id
+        if incident_id:
+            request_data['incident_id'] = incident_id
+        if endpoint_id:
+            request_data['endpoint_id'] = endpoint_id
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -979,8 +988,9 @@ class Client(BaseClient):
             request_data['filters'] = filters
         else:
             request_data['filters'] = 'all'
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
-        request_data['incident_id'] = incident_id
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
@@ -1129,8 +1139,9 @@ class Client(BaseClient):
                 }
             ],
             'files': files,
-            'incident_id': incident_id
         }
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         reply = self._http_request(
             method='POST',
@@ -1249,8 +1260,10 @@ class Client(BaseClient):
             'operator': 'in',
             'value': endpoint_ids
         }]
-        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters, 'incident_id': incident_id,
+        request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
                                         'parameters_values': parameters}
+        if incident_id:
+            request_data['incident_id'] = incident_id
 
         return self._http_request(
             method='POST',
@@ -1260,21 +1273,25 @@ class Client(BaseClient):
         )
 
     @logger
-    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list, incident_id: Optional[int] = None) -> Dict[
-        str, Any]:
+    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list,
+                                incident_id: Optional[int] = None) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids
+            }],
+            'snippet_code': snippet_code,
+        }
+
+        if incident_id:
+            request_data['incident_id'] = incident_id
+
         return self._http_request(
             method='POST',
             url_suffix='/scripts/run_snippet_code_script',
             json_data={
-                'request_data': {
-                    'filters': [{
-                        'field': 'endpoint_id_list',
-                        'operator': 'in',
-                        'value': endpoint_ids
-                    }],
-                    'snippet_code': snippet_code,
-                    'incident_id': incident_id
-                }
+                'request_data': request_data
             },
             timeout=self.timeout,
         )
@@ -1355,6 +1372,39 @@ class Client(BaseClient):
             modified_incidents_context[incident_id] = incident.get('modification_time')
 
         set_integration_context({'modified_incidents': modified_incidents_context})
+
+    def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
+        filters = []
+
+        filters.append({
+            'field': 'endpoint_status',
+            'operator': 'IN',
+            'value': [status]
+        })
+
+        if last_seen_gte:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'gte',
+                'value': last_seen_gte
+            })
+
+        if last_seen_lte:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'lte',
+                'value': last_seen_lte
+            })
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': {'filters': filters}},
+            timeout=self.timeout
+        )
+
+        endpoints_count = reply.get('reply').get('total_count', 0)
+        return endpoints_count, reply
 
     def get_original_alerts(self, alert_id_list):
         res = self._http_request(
@@ -1637,7 +1687,7 @@ def get_last_mirrored_in_time(args):
 
 
 def get_incident_extra_data_command(client, args):
-    incident_id = arg_to_number(args.get('incident_id'))
+    incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
@@ -1718,7 +1768,7 @@ def get_incident_extra_data_command(client, args):
 
 
 def update_incident_command(client, args):
-    incident_id = arg_to_number(args.get('incident_id'))
+    incident_id = args.get('incident_id')
     assigned_user_mail = args.get('assigned_user_mail')
     assigned_user_pretty_name = args.get('assigned_user_pretty_name')
     status = args.get('status')
@@ -3376,9 +3426,10 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
 
 def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
+    incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     parameters = {'commands_list': argToList(args.get('commands'))}
-    response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout)
+    response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout, incident_id)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script Execute Commands', reply),
@@ -3391,12 +3442,13 @@ def run_script_execute_commands_command(client: Client, args: Dict) -> CommandRe
 
 def run_script_delete_file_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
+    incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
     all_files_response = []
     for file_path in file_paths:
         parameters = {'file_path': file_path}
-        response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
+        response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
         all_files_response.append(CommandResults(
             readable_output=tableToMarkdown(f'Run Script Delete File on {file_path}', reply),
@@ -3410,12 +3462,13 @@ def run_script_delete_file_command(client: Client, args: Dict) -> List[CommandRe
 
 def run_script_file_exists_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
+    incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
     all_files_response = []
     for file_path in file_paths:
         parameters = {'path': file_path}
-        response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
+        response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
         all_files_response.append(CommandResults(
             readable_output=tableToMarkdown(f'Run Script File Exists on {file_path}', reply),
@@ -3429,12 +3482,13 @@ def run_script_file_exists_command(client: Client, args: Dict) -> List[CommandRe
 
 def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
+    incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     processes_names = argToList(args.get('process_name'))
     all_processes_response = []
     for process_name in processes_names:
         parameters = {'process_name': process_name}
-        response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
+        response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
         all_processes_response.append(CommandResults(
             readable_output=tableToMarkdown(f'Run Script Kill Process on {process_name}', reply),
@@ -3445,6 +3499,31 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
         ))
 
     return all_processes_response
+
+
+def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
+    status = args.get('status')
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+
+    ec = {'status': status, 'count': endpoints_count}
+
+    return CommandResults(
+        readable_output=f'{status} endpoints count: {endpoints_count}',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
+        outputs_key_field='status',
+        outputs=ec,
+        raw_response=raw_res)
 
 
 def main():
@@ -3643,6 +3722,9 @@ def main():
 
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, args))
+
+        elif demisto.command() == 'xdr-get-endpoints-by-status':
+            return_results(get_endpoints_by_status_command(client, args))
 
         elif demisto.command() == 'xdr-generic-api-execution':
             return_results(generic_api_execution_command(client, args))
