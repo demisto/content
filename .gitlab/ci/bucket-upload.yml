@@ -30,16 +30,16 @@
   - section_end "Check User Permissions to Upload Packs"
 
 
-run-validations-upload-flow:
-  extends:
-    - .run-validations
-    - .bucket-upload-rule
-
-
-run-unittests-and-lint-upload-flow:
-  extends:
-    - .run-unittests-and-lint
-    - .bucket-upload-rule
+#run-validations-upload-flow:
+#  extends:
+#    - .run-validations
+#    - .bucket-upload-rule
+#
+#
+#run-unittests-and-lint-upload-flow:
+#  extends:
+#    - .run-unittests-and-lint
+#    - .bucket-upload-rule
 
 
 create-instances-upload-flow:
