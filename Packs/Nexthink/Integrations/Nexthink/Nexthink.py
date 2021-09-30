@@ -1,3 +1,4 @@
+import re
 import json
 import urllib.parse
 
@@ -29,6 +30,8 @@ if 'package' in args:
 else:
     package = None
 
+ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'    
+
 SEARCH_DEVICE_USING_IP = "(select (*) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(ip)
 SEARCH_DEVICE_USING_DEVICE = "(select (*) (from device (where device ( eq name (string {0})))))".format(device)
 SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from (device package)
@@ -38,11 +41,13 @@ SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from
 TEST_MODULE = "(select (name) (from device ) (limit 1))"
 
 
-def isIPv4(s):
-    try:
-        return str(int(s)) == s and 0 <= int(s) <= 255
-    except ValueError:
+def is_valid_hostname(hostname):
+    if len(hostname) > 255:
         return False
+    if hostname[-1] == ".":
+        hostname = hostname[:-1] # strip exactly one dot from the right, if present
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    return all(allowed.match(x) for x in hostname.split("."))
 
 
 def nexthink_request(method, nxql):
@@ -87,13 +92,13 @@ def nexthink_endpoint_details(device: None, ip: None):
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)
     elif not device:
-        if ip.count(".") == 3 and all(isIPv4(i) for i in ip.split(".")):
+        if re.match(ipv4Regex,ip):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
         else:
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
             sys.exit(0)
     else:
-        if device[0].isalpha():
+        if is_valid_hostname(device):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
         else:
             return_results('Please enter valid hostname. (e.g. AMCE1234)')
@@ -158,13 +163,13 @@ def nexthink_compliance_check(device: None, ip: None):
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)
     elif not device:
-        if ip.count(".") == 3 and all(isIPv4(i) for i in ip.split(".")):
+        if re.match(ipv4Regex,ip):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
         else:
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
             sys.exit(0)
     else:
-        if device[0].isalpha():
+        if is_valid_hostname(device):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_DEVICE)
         else:
             return_results('Please enter valid endpoint hostname. (e.g. AMCE1234)')
