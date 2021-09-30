@@ -498,8 +498,7 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
-    if device_group:
-        = args.get('device-group'):
+    if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
     params = {
         'type': 'commit',
