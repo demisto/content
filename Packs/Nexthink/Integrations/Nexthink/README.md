@@ -1,5 +1,5 @@
 Nexthink helps IT teams deliver on the promise of the modern digital workplace. Nexthink is the only solution to provide enterprises with a way to visualize, act and engage across the entire IT ecosystem to lower IT cost and improve digital employee experience.
-This integration was integrated and tested with version xx of Nexthink
+This integration was integrated and tested with version 1.0.1 of Nexthink
 
 ## Configure Nexthink on Cortex XSOAR
 
