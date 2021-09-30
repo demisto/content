@@ -65,6 +65,20 @@ The integration supports only Application permission type, and does not support 
 ## Commands
 You can execute the command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### msgraph-api-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+### msgraph-api-auth-complete
+***
+Run this command to complete the authorization process.
+Should be used after running the ***msgraph-api-auth-start*** command.
+
+### msgraph-api-test
+***
+Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
+
 ### msgraph-api-request
 ***
 Run a Microsoft Graph API query.

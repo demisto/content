@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Automatic Certificate Management Environment of Linux hosts
-display: ACME
+description: Automatic Certificate Management Environment of Linux hosts. Deprecated. Use Ansible ACME (in the Ansible Linux pack) instead.
+display: Ansible ACME (Deprecated)
 name: ACME
 script:
   commands:
@@ -604,7 +604,7 @@ script:
       - openssl
     description: Send direct requests to an ACME server
     name: acme-inspect
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -612,3 +612,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

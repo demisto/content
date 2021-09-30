@@ -1,0 +1,68 @@
+commonfields:
+  id: Devo
+  version: -1
+name: Devo
+display: Devo
+category: Analytics & SIEM
+description: Query data from Devo
+configuration:
+- display: Server URL (e.g https://api-us.logtrust.com/)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API secret
+  name: api_secret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: devo-query
+    arguments:
+    - name: query
+      description: A LINQ query to launch. The body must have a query or queryId parameter.
+    - name: queryId
+      description: A query Id to launch. The body must have a query or queryId parameter.
+    - name: from
+      required: true
+      description: 'The start date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z'
+    - name: to
+      description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z,
+        set to the current time by default.'
+    - name: skip
+      description: Skip the first X elements of the query.
+    - name: limit
+      description: Limit the results of the query. The query will stop after returning
+        the first X elements of the query or reaching its end.
+      defaultValue: "30"
+    - name: writeToContext
+      description: Whether to write results to context or not
+      defaultValue: "true"
+    outputs:
+    - contextPath: Devo.Results
+      description: The query results
+    description: Perform a query.
+  runonce: false
+  dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests
+fromversion: 5.0.0

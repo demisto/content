@@ -714,11 +714,11 @@ script:
 
     def build_brief_report(res, sha1, threshold):
         report_json = json.loads(xml2json(res.text))
-        brief_report_json = report_json['REPORT']['BRIEF_REPORT']
+        brief_report_json = report_json.get('REPORT', {}).get('BRIEF_REPORT', {})
         hr = {
             'SHA1': sha1,
-            'Risk Level': brief_report_json['RiskLevel'],
-            'Status': brief_report_json['STATUS'],
+            'Risk Level': brief_report_json.get('RiskLevel'),
+            'Status': brief_report_json.get('STATUS'),
         }
         return hr
 
@@ -1085,7 +1085,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-  dockerimage: demisto/python:2.7.17.5734
+  dockerimage: demisto/python:2.7.18.24066
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

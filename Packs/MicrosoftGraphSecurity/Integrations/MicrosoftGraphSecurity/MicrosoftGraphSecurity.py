@@ -422,6 +422,11 @@ def update_alert_command(client: MsGraphClient, args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
     human_readable = 'Alert {} has been successfully updated.'.format(alert_id)
+    if status and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
+        human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
+Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
+        For more details, see the \
+[Microsoft documentation](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts)'
     return human_readable, ec, context
 
 

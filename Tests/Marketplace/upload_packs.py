@@ -542,7 +542,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
-            logging.info(f'metadata of changed private pack: {metadata}')
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
@@ -989,7 +988,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, modified_pack_files_paths, pack_was_modified = pack.detect_modified(
+        task_status, modified_rn_files_paths, pack_was_modified = pack.detect_modified(
             content_repo, index_folder_path, current_commit_hash, previous_commit_hash)
 
         if not task_status:
@@ -1017,7 +1016,7 @@ def main():
             continue
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
-                                                                    modified_pack_files_paths)
+                                                                    modified_rn_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()

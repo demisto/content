@@ -21,7 +21,7 @@
     "associatedTypes": [
         "IAM - App Add",
         "IAM - App Remove",
-        "Google Activity"
+        "IAM - Group Membership Update"
     ],
     "associatedToAll": false,
     "unmapped": false,

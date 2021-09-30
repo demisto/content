@@ -1,0 +1,34 @@
+args:
+- default: false
+  description: 'Integration name to check its health status.'
+  isArray: false
+  name: integration_name
+  required: true
+  secret: false
+comment: 'Checks for existing errors in a given integration.'
+commonfields:
+  id: VerifyIntegrationHealth
+  version: -1
+enabled: false
+name: VerifyIntegrationHealth
+outputs:
+- contextPath: IntegrationHealth.isHealthy
+  description: 'Determines the health status of the integration.'
+  type: Boolean
+- contextPath: IntegrationHealth.fetchDone
+  description: 'Determines whether the fetch-indicators command completed.'
+  type: Boolean
+- contextPath: IntegrationHealth.integrationName
+  description: 'Requested integration name.'
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
+tests:
+- No test

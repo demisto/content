@@ -1,31 +1,24 @@
-from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob, zip_packs,\
-    remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures
+import pytest
+
+from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_pack_files, zip_packs,\
+    remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures, get_zipped_packs_names,\
+    copy_zipped_packs_to_artifacts
 
 
 class TestZipPacks:
-    class FakeBlob:
-        def __init__(self, name):
-            self.name = name
+    BLOB_NAMES = [
+        'content/packs/Slack/1.0.0/Slack.zip',
+        'content/packs/Slack/1.0.2/Slack.zip',
+        'content/packs/Slack/1.0.1/Slack.zip',
+        'content/packs/SlackSheker/2.0.0/SlackSheker.zip',
+        'content/packs/Slack/Slack.png',
+        'content/packs/SlackSheker/SlackSheker.png'
+    ]
 
-        def download_to_filename(self, dest):
-            pass
-
-    class FakeDirEntry:
-        def __init__(self, name, path):
-            self.name = name
-            self.path = path
-
-    class FakeBucket:
-        @staticmethod
-        def list_blobs(prefix):
-            return TestZipPacks.BLOBS
-
-    BLOBS = [
-        FakeBlob('content/packs/Slack/1.0.0/Slack.zip'),
-        FakeBlob('content/packs/Slack/1.0.1/Slack.zip'),
-        FakeBlob('content/packs/SlackSheker/2.0.0/SlackSheker.zip'),
-        FakeBlob('content/packs/Slack/Slack.png'),
-        FakeBlob('content/packs/SlackSheker/SlackSheker.png')
+    BLOB_NAMES_NO_ZIP = [
+        'content/packs/SlackSheker/2.0.0/SlackSheker.zip',
+        'content/packs/Slack/Slack.png',
+        'content/packs/SlackSheker/SlackSheker.png'
     ]
 
     def test_get_latest_pack_zip_from_blob(self):
@@ -40,40 +33,101 @@ class TestZipPacks:
             Return the correct pack zip blob
         """
 
-        blob = get_latest_pack_zip_from_blob('Slack', TestZipPacks.BLOBS)
+        blob_name = get_latest_pack_zip_from_pack_files('Slack', TestZipPacks.BLOB_NAMES)
+        assert blob_name == 'content/packs/Slack/1.0.2/Slack.zip'
 
-        assert blob.name == 'content/packs/Slack/1.0.1/Slack.zip'
-
-    def test_download_packs_from_gcp(self, mocker):
-        from Tests.Marketplace import zip_packs
+    def test_get_zipped_packs_name(self, mocker):
         """
         Given:
-            Packs in the content repo and a GCP bucket
-
+            Some general path information of the packs and the build
         When:
-            Downloading the packs from the bucket
-
+            There is a valid pack which should be stored in the created dictionary
         Then:
-            Download the packs correctly
+            Create a dict which has one dictionary of the found pack
         """
-        packs = [
-            TestZipPacks.FakeDirEntry('Slack', 'Packs/Slack'),
-            TestZipPacks.FakeDirEntry('SlackFake', 'Packs/SlackFake'),
-            TestZipPacks.FakeDirEntry('ApiModules', 'Packs/ApiModules'),
-        ]
+        from Tests.Marketplace import zip_packs
+        list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
+        pack_files = TestZipPacks.BLOB_NAMES
+        mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
+        mocker.patch('os.listdir', return_value=list_dir_result)
+        mocker.patch('os.path.isdir', return_value=True)
+        zipped_packs = get_zipped_packs_names('content')
 
-        bucket = TestZipPacks.FakeBucket()
+        assert zipped_packs == {'Slack': 'content/packs/Slack/1.0.2/Slack.zip'}
 
-        mocker.patch('os.scandir', return_value=packs)
-        mocker.patch.object(bucket, 'list_blobs', side_effect=TestZipPacks.FakeBucket.list_blobs)
-        mocker.patch.object(zip_packs, 'executor_submit')
+    def test_get_zipped_packs_name_no_zipped_packs(self, mocker):
+        """
+        Given:
+            Some general path information of the packs and the build
+        When:
+            There are no valid packs in the packs directory
+        Then:
+            exit since no packs were found
+        """
+        with pytest.raises(Exception):
+            from Tests.Marketplace import zip_packs
+            list_dir_result = ['ApiModules', 'python_file.py']
+            pack_files = TestZipPacks.BLOB_NAMES
+            mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
+            mocker.patch('os.listdir', return_value=list_dir_result)
+            mocker.patch('os.path.isdir', return_value=True)
+            get_zipped_packs_names('content')
 
-        zipped_packs = download_packs_from_gcp(bucket, zip_packs.BUILD_GCP_PATH, 'path', '', '')
+    def test_get_zipped_packs_name_no_latest_zip(self, mocker):
+        """
+        Given:
+            Some general path information of the packs and the build
+        When:
+            There are is one valid pack but it has no valid zip files
+        Then:
+            exit since no zipped packs were found
+        """
+        with pytest.raises(Exception):
+            from Tests.Marketplace import zip_packs
+            list_dir_result = ['Slack', 'ApiModules', 'python_file.py']
+            pack_files = TestZipPacks.BLOB_NAMES_NO_ZIP
+            mocker.patch.object(zip_packs, 'get_files_in_dir', return_value=pack_files)
+            mocker.patch('os.listdir', return_value=list_dir_result)
+            mocker.patch('os.path.isdir', return_value=True)
+            get_zipped_packs_names('content')
 
-        assert bucket.list_blobs.call_count == 2
-        assert zip_packs.executor_submit.call_count == 1
-        assert zip_packs.executor_submit.call_args[0][1] == 'path/Slack.zip'
-        assert zipped_packs == [{'Slack': 'path/Slack.zip'}]
+    def test_copy_zipped_packs_to_artifacts(self, mocker):
+        """
+        Given:
+            A dict containing information about a single pack
+        When:
+            The information is valid
+        Then:
+            make a single call to the copy function
+        """
+        import shutil
+        zipped_packs = {'Slack': 'content/packs/Slack/1.0.1/Slack.zip'}
+        artifacts_path = 'dummy_path'
+        mocker.patch.object(shutil, 'copy', side_effect=None)
+        mocker.patch('os.path.exists', return_value=True)
+
+        copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
+
+        assert shutil.copy.call_count == 1
+
+    def test_copy_zipped_packs_to_artifacts_no_zipped_packs(self, mocker):
+        """
+        Given:
+            A dict containing no information about packs
+        When:
+            There are no packs to copy
+        Then:
+            make no calls to the copy function
+        """
+        import shutil
+        zipped_packs = {}
+        artifacts_path = 'dummy_path'
+        mocker.patch.object(shutil, 'copy', side_effect=None)
+        mocker.patch('os.path.exists', return_value=True)
+
+        copy_zipped_packs_to_artifacts(zipped_packs, artifacts_path)
+
+        assert shutil.copy.call_count == 0
 
     def test_zip_packs(self, mocker):
         """
@@ -91,7 +145,7 @@ class TestZipPacks:
         mocker.patch.object(ZipFile, '__init__', return_value=None)
         mocker.patch.object(ZipFile, 'write')
         mocker.patch.object(ZipFile, 'close')
-        packs = [{'Slack': 'path/Slack.zip'}]
+        packs = {'Slack': 'path/Slack.zip'}
 
         zip_packs(packs, 'oklol')
 
