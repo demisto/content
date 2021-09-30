@@ -7,7 +7,7 @@ Displays the phishing campaign senders' email addresses and the number of incide
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 and later |
 
 ## Inputs
 ---
