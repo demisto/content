@@ -36,6 +36,7 @@ class WarningsHandler(object):
             demisto.info("python warning: " + msg)
         except Exception:
             # ignore the warning if it can't be handled for some reason
+            # trigger running all tests.
             pass
 
     def __init__(self):
