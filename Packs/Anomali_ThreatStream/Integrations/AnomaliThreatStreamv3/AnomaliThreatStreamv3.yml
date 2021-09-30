@@ -164,9 +164,6 @@ script:
     - contextPath: ThreatStream.IP.Source
       description: The source of the indicator.
       type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
     - contextPath: IP.Malicious.Vendor
       description: The vendor that reported the indicator as malicious.
       type: String
