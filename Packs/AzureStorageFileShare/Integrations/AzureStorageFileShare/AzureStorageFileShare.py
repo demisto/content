@@ -236,7 +236,8 @@ class Client:
 
                 params = {'comp': 'range'}
 
-                put_range_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else f'{share_name}/{new_file_name}'
+                put_range_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else \
+                    f'{share_name}/{new_file_name}'
 
                 put_range_response = self.ms_client.http_request(method='PUT', url_suffix=put_range_url,
                                                                  headers=put_rang_headers, params=params,

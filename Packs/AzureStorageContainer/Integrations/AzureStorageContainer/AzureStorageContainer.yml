@@ -382,37 +382,43 @@ script:
       required: true
       secret: false
     - default: false
-      description: Blob content type.
+      description: Blob content type. Indicates the media type of the blob.
       isArray: false
       name: content_type
       required: false
       secret: false
     - default: false
-      description: Blob MD5 hash.
+      description: Blob MD5 hash value. Can be used by the client to check for content
+        integrity.
       isArray: false
       name: content_md5
       required: false
       secret: false
     - default: false
-      description: Blob content encoding.
+      description: Blob content encoding. Used to specify the compression algorithm
+        of the blob content.
       isArray: false
       name: content_encoding
       required: false
       secret: false
     - default: false
-      description: Blob content language.
+      description: Blob content language. Describes the human languages of the blob
+        content.
       isArray: false
       name: content_language
       required: false
       secret: false
     - default: false
-      description: Blob content disposition.
+      description: Blob content disposition. Conveys additional information about
+        how to process the response payload, and also can be used to attach additional
+        metadata.
       isArray: false
       name: content_disposition
       required: false
       secret: false
     - default: false
-      description: Modifies the cache control string for the blob.
+      description: Modifies the cache control string for the blob. Indicates directives
+        for caching in both requests and responses.
       isArray: false
       name: cache_control
       required: false

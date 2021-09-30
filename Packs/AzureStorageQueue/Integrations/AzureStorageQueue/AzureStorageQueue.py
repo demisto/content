@@ -268,7 +268,7 @@ def decode_message(string: str) -> str:
     if is_base_64(string):
         try:
             return base64.b64decode(string).decode("utf-8")
-        except Exception as e:
+        except Exception:
             return string
 
     return string
@@ -384,7 +384,8 @@ def create_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     response = client.create_queue_request(queue_name)
 
-    readable_output = f'Queue {queue_name} successfully created.' if response.status_code == 201 else f'Queue {queue_name} already exists.'
+    readable_output = f'Queue {queue_name} successfully created.' if response.status_code == 201 \
+        else f'Queue {queue_name} already exists.'
 
     command_results = CommandResults(
         readable_output=readable_output

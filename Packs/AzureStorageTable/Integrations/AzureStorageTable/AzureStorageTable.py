@@ -172,7 +172,8 @@ class Client:
                                         "NextPartitionKey": next_partition_key,
                                         "NextRowKey": next_row_key})
 
-        url_suffix = f'{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\')' if partition_key else f'{table_name}()'
+        url_suffix = f'{table_name}(PartitionKey=\'{partition_key}\',RowKey=\'{row_key}\')' if partition_key \
+            else f'{table_name}()'
 
         response = self.ms_client.http_request(method='GET', url_suffix=url_suffix,
                                                params=params, headers=headers, return_empty_response=True)
@@ -489,7 +490,8 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if (partition_key and not row_key) or (row_key and not partition_key):
         raise Exception('Please provide both \'partition_key\' and \'row_key\' arguments, or no one of them.')
 
-    readable_message = f'Entity Fields for {table_name} table:\n Current page size: {limit or 50}\n Showing page {page or 1} out others that may exist'
+    readable_message = f'Entity Fields for {table_name} table:\n Current page size: {limit or 50}\n ' \
+                       f'Showing page {page or 1} out others that may exist'
 
     if page and page > 1:
         offset = int(limit) * (page - 1)
