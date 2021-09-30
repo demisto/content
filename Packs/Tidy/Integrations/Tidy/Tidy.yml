@@ -599,7 +599,7 @@ script:
   - arguments: []
     description: Install python environment.
     name: tidy-python-env
-  dockerimage: demisto/tidy:1.0.0.22176
+  dockerimage: demisto/tidy:1.0.0.23674
   runonce: false
   script: ''
   subtype: python3
