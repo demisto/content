@@ -7,7 +7,7 @@ Displays the similarity range between the incidents that make up the phishing ca
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 and later |
 
 ## Inputs
 ---
