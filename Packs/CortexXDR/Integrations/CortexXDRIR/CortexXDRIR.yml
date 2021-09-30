@@ -801,9 +801,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
-      description: Whether to return an error when trying to isolate a disconnected
-        endpoint. When sets to false, a warning will be returned.
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to isolate a disconnected
+        endpoint. When sets to false, an error will be returned.
       isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:
@@ -835,9 +835,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
-      description: Whether to return an error when trying to unisolate a disconnected
-        endpoint. When sets to false, a warning will be returned.
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to unisolate a disconnected
+        endpoint. When sets to false, an error will be returned.
       isArray: false
       name: suppress_disconnected_endpoint_error
       predefined:

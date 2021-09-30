@@ -429,7 +429,7 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
 
     args = {
         "endpoint_id": "1111",
-        "suppress_disconnected_endpoint_error": True
+        "suppress_disconnected_endpoint_error": False
     }
     with pytest.raises(ValueError, match='Error: Endpoint 1111 is disconnected and therefore can not be isolated.'):
         isolate_endpoint_command(client, args)
@@ -489,7 +489,7 @@ def test_unisolate_endpoint_unconnected_machine(requests_mock):
 
     args = {
         "endpoint_id": "1111",
-        "suppress_disconnected_endpoint_error": False
+        "suppress_disconnected_endpoint_error": True
     }
 
     readable_output, _, _ = unisolate_endpoint_command(client, args)
