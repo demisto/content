@@ -29,7 +29,7 @@ class Client(BaseClient):
     """ Client class to interact with Cohesity Helios.
     """
 
-    def get_ransomware_alerts(self, start_time_millis=None, end_time_millis=None, max_fetch=MAX_FETCH_DEFAULT,
+    def get_ransomware_alerts(self, start_time_usecs=None, end_time_usecs=None, max_fetch=MAX_FETCH_DEFAULT,
                               alert_ids=[], alert_state_list=[], alert_severity_list=[],
                               region_ids=[], cluster_ids=[]):
         """Gets the Cohesity Helios ransomware alerts.
@@ -43,10 +43,10 @@ class Client(BaseClient):
         }
 
         # Populate request params filters.
-        if start_time_millis is not None:
-            request_params["startDateUsecs"] = int(start_time_millis) * 1000
-        if end_time_millis is not None:
-            request_params["endDateUsecs"] = int(end_time_millis) * 1000
+        if start_time_usecs is not None:
+            request_params["startDateUsecs"] = int(start_time_usecs)
+        if end_time_usecs is not None:
+            request_params["endDateUsecs"] = int(end_time_usecs)
         if alert_ids != []:
             request_params["alertIdList"] = alert_ids
         if alert_state_list != []:
@@ -123,29 +123,29 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_date_time_from_millis(time_in_millis):
-    """Get date time from epoch milllis"""
-    return datetime.fromtimestamp(time_in_millis / 1000.0)
+def get_date_time_from_usecs(time_in_usecs):
+    """Get date time from epoch usecs"""
+    return datetime.fromtimestamp(time_in_usecs / 1000000.0)
 
 
-def get_millis_from_date_time(dt):
+def get_usecs_from_date_time(dt):
     """Get epoch milllis from date time"""
-    return int(dt.timestamp() * 1000)
+    return int(dt.timestamp() * 1000000)
 
 
-def get_current_millis():
-    """Get current epoch millis"""
+def get_current_usecs():
+    """Get current epoch usecs"""
     dt = datetime.now()
-    return int(dt.timestamp() * 1000)
+    return int(dt.timestamp() * 1000000)
 
 
-def datestring_to_millis(ds: str):
-    """Get epoch millis from datestring"""
+def datestring_to_usecs(ds: str):
+    """Get epoch usecs from datestring"""
     dt = parse(ds)
     if dt is None:
         return dt
 
-    return int(dt.timestamp()) * 1000
+    return int(dt.timestamp()) * 1000000
 
 
 def _get_property_dict(property_list):
@@ -178,9 +178,9 @@ def create_ransomware_incident(alert) -> Dict[str, Any]:
     """Helper method to create ransomware incident from alert.
     """
     property_dict = _get_property_dict(alert['propertyList'])
-    incidence_millis = alert.get("latestTimestampUsecs", 0) / 1000
-    occurance_time = get_date_time_from_millis(
-        incidence_millis).strftime(DATE_FORMAT)
+    incidence_usecs = alert.get("latestTimestampUsecs", 0)
+    occurance_time = get_date_time_from_usecs(
+        incidence_usecs).strftime(DATE_FORMAT)
 
     return {
         "name": alert['alertDocument']['alertName'],
@@ -204,8 +204,8 @@ def get_ransomware_alert_details(alert) -> Dict[str, Any]:
     """
     # Get alert properties.
     property_dict = _get_property_dict(alert['propertyList'])
-    occurance_time = get_date_time_from_millis(
-        alert.get("latestTimestampUsecs", 0) / 1000).strftime(DATE_FORMAT)
+    occurance_time = get_date_time_from_usecs(
+        alert.get("latestTimestampUsecs", 0)).strftime(DATE_FORMAT)
 
     return {
         "alert_id": alert['id'],
@@ -234,8 +234,8 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
 
     Returns command result with the list of fetched ransomware alerts.
     """
-    start_time_millis = datestring_to_millis(args.get('created_after', ''))
-    end_time_millis = datestring_to_millis(args.get('created_before', ''))
+    start_time_usecs = datestring_to_usecs(args.get('created_after', ''))
+    end_time_usecs = datestring_to_usecs(args.get('created_before', ''))
     alert_severity_list = argToList(args.get('alert_severity_list', []))
     alert_id_list = argToList(args.get('alert_id_list', []))
     region_id_list = argToList(args.get('region_id_list', []))
@@ -245,14 +245,14 @@ def get_ransomware_alerts_command(client: Client, args: Dict[str, Any]) -> Comma
 
     # Fetch ransomware alerts via client.
     resp = client.get_ransomware_alerts(
-        start_time_millis=start_time_millis,
-        end_time_millis=end_time_millis, alert_ids=alert_id_list,
+        start_time_usecs=start_time_usecs,
+        end_time_usecs=end_time_usecs, alert_ids=alert_id_list,
         alert_state_list=alert_state_list,
         alert_severity_list=alert_severity_list,
         region_ids=region_id_list,
         cluster_ids=cluster_id_list,
         max_fetch=limit)
-    demisto.debug(f"Got {len(resp)} alerts between {start_time_millis} and {end_time_millis}.")
+    demisto.debug(f"Got {len(resp)} alerts between {start_time_usecs} and {end_time_usecs}.")
 
     # Parse alerts for readable output.
     ransomware_alerts = []
@@ -340,7 +340,7 @@ def restore_latest_clean_snapshot(client: Client, args: Dict[str, Any]) -> str:
         "vmwareParameters": {
             "poweredOn": True,
             "prefix": "Recover-",
-            "suffix": "-VM-" + str(get_current_millis())
+            "suffix": "-VM-" + str(get_current_usecs())
         },
         "objects": [
             {
@@ -374,10 +374,9 @@ def fetch_incidents_command(client: Client):
     last_run = demisto.getLastRun()
 
     # Compute start and end time to fetch for incidents.
-    start_time_millis = int(last_run.get('start_time')) if (
-        last_run and 'start_time' in last_run) else get_millis_from_date_time(
+    start_time_usecs = int(last_run.get('start_time')) if (
+        last_run and 'start_time' in last_run) else get_usecs_from_date_time(
             datetime.now() - timedelta(days=7))
-    end_time_millis = get_current_millis()
 
     # Fetch all new incidents.
     params = demisto.params()
@@ -386,21 +385,24 @@ def fetch_incidents_command(client: Client):
         max_fetch and max_fetch.isdigit()) else MAX_FETCH_DEFAULT
 
     ransomware_resp = client.get_ransomware_alerts(
-        start_time_millis=start_time_millis,
-        end_time_millis=end_time_millis,
+        start_time_usecs=start_time_usecs,
         max_fetch=max_fetch)
-    demisto.debug(f"Got {len(ransomware_resp)} alerts between {start_time_millis} and {end_time_millis}.")
+    demisto.debug(f"Got {len(ransomware_resp)} alerts from {start_time_usecs}.")
 
     # Get incidents for ransomware alerts.
     incidents = []
+    new_start_time_usecs = start_time_usecs
     for alert in ransomware_resp:
+        new_start_time_usecs = max(new_start_time_usecs,
+                                   alert.get("latestTimestampUsecs", 0))
         incident = create_ransomware_incident(alert)
         incidents.append(incident)
 
     # Update last run.
     demisto.setLastRun({
-        'start_time': end_time_millis
+        'start_time': new_start_time_usecs
     })
+    demisto.debug(f"Next run start time usecs {new_start_time_usecs}.")
 
     # Send incidents to Cortex-XSOAR.
     demisto.incidents(incidents)
@@ -424,7 +426,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.get_ransomware_alerts(start_time_millis=1631471400000)
+        client.get_ransomware_alerts(start_time_usecs=1631471400000)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):

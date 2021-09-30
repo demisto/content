@@ -94,7 +94,7 @@
                         "static": false,
                         "type": "team",
                         "w": 1,
-                        "x": 1,
+                        "x": 2,
                         "y": 2
                     },
                     {
@@ -146,8 +146,8 @@
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 2
+                        "x": 1,
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -169,10 +169,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
+                                "fieldId": "cohesityheliosobjectenvironment",
+                                "height": 22,
+                                "id": "4c506c80-1b77-11ec-b233-87ab18a97b71",
+                                "index": 1,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "cohesityheliosclusterid",
                                 "height": 22,
                                 "id": "495f4000-1b77-11ec-b233-87ab18a97b71",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -187,57 +198,17 @@
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cohesityheliosobjectenvironment",
-                                "height": 22,
-                                "id": "4c506c80-1b77-11ec-b233-87ab18a97b71",
-                                "index": 3,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cohesityheliosanomalystrength",
-                                "height": 22,
-                                "id": "480fdca0-1b77-11ec-b233-87ab18a97b71",
-                                "index": 4,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "cohesityheliosalertdescription",
-                                "height": 22,
-                                "id": "8ae49be0-1f52-11ec-be5e-2f7dff0fc3dd",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "cohesityheliosalertcause",
-                                "height": 22,
-                                "id": "452e4080-1b77-11ec-b233-87ab18a97b71",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Investigation Data",
+                        "name": "Object details",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "x": 0,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -251,6 +222,7 @@
                                         "simple": "${incident.cohesityheliosanomalousobjectname}"
                                     }
                                 },
+                                "buttonClass": "primary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
@@ -267,6 +239,7 @@
                                         "simple": "${incident.cohesityheliosanomalousobjectname}"
                                     }
                                 },
+                                "buttonClass": "success",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 22,
@@ -287,6 +260,52 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-a25b16c5-2158-11ec-9155-d941fe7e773e",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cohesityheliosanomalystrength",
+                                "height": 22,
+                                "id": "a25b16c2-2158-11ec-9155-d941fe7e773e",
+                                "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cohesityheliosalertdescription",
+                                "height": 44,
+                                "id": "a25b16c3-2158-11ec-9155-d941fe7e773e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cohesityheliosalertcause",
+                                "height": 44,
+                                "id": "a25b16c4-2158-11ec-9155-d941fe7e773e",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Alert details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
                     }
                 ],
                 "type": "custom"
