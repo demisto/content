@@ -1,5 +1,5 @@
 Manages F5 LTM
-This integration was integrated and tested with version 16.1.0 of F5LTM
+This integration was integrated and tested with version xx of F5LTM
 
 ## Configure F5 LTM on Cortex XSOAR
 
@@ -344,7 +344,7 @@ There are no input arguments for this command.
                     "address": "10.10.10.102",
                     "name": "XSOAR1",
                     "partition": "Common",
-                    "session": "user-disabled",
+                    "session": "user-enabled",
                     "state": "unchecked"
                 },
                 {
@@ -366,7 +366,7 @@ There are no input arguments for this command.
 >|address|name|partition|session|state|
 >|---|---|---|---|---|
 >| 2.2.2.2 | Test | Common | user-enabled | unchecked |
->| 10.10.10.102 | XSOAR1 | Common | user-disabled | unchecked |
+>| 10.10.10.102 | XSOAR1 | Common | user-enabled | unchecked |
 >| 1.1.1.1 | XSOAR2 | Common | user-enabled | unchecked |
 
 
@@ -517,7 +517,7 @@ Disable a node
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 460,
+                "generation": 68,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -539,7 +539,7 @@ Disable a node
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 460 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 68 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-disabled | unchecked |
 
 
 ### f5-ltm-enable-node
@@ -603,7 +603,7 @@ Enable a node
                     "interval": "3600"
                 },
                 "fullPath": "/Common/XSOAR1",
-                "generation": 459,
+                "generation": 67,
                 "kind": "tm:ltm:node:nodestate",
                 "logging": "disabled",
                 "monitor": "default",
@@ -625,7 +625,7 @@ Enable a node
 >### Results
 >|address|connectionLimit|dynamicRatio|ephemeral|fqdn|fullPath|generation|kind|logging|monitor|name|partition|rateLimit|ratio|selfLink|session|state|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 459 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
+>| 10.10.10.102 | 0 | 1 | false | addressFamily: ipv4<br/>autopopulate: disabled<br/>downInterval: 5<br/>interval: 3600 | /Common/XSOAR1 | 67 | tm:ltm:node:nodestate | disabled | default | XSOAR1 | Common | disabled | 1 | https://localhost/mgmt/tm/ltm/node/~Common~XSOAR1?ver=16.1.0 | user-enabled | unchecked |
 
 
 ### f5-ltm-get-pool-member-stats
@@ -646,7 +646,12 @@ Get Pool Member Stats
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| F5.LTM.Stats.members.stats.serverside\.curConns.value | String | The current connections of the Pool Member | 
+| F5.LTM.Stats.members.name | String | The pool member name | 
+| F5.LTM.Stats.members.stats.sessionStatus.description | String | The pool member status | 
+
 
 #### Command Example
 ```!f5-ltm-get-pool-member-stats pool_name="XSOAR" member_name="XSOAR1:443"```
@@ -740,13 +745,13 @@ There is no context output for this command.
                                 "value": 0
                             },
                             "sessionStatus": {
-                                "description": "addr-disabled"
+                                "description": "enabled"
                             },
                             "status.availabilityState": {
                                 "description": "available"
                             },
                             "status.enabledState": {
-                                "description": "disabled-by-parent"
+                                "description": "enabled"
                             },
                             "status.statusReason": {
                                 "description": "Pool member is available"
@@ -760,7 +765,7 @@ There is no context output for this command.
                 "pool": "XSOAR",
                 "stats": {
                     "activeMemberCnt": {
-                        "value": 1
+                        "value": 2
                     },
                     "availableMemberCnt": {
                         "value": 2
@@ -856,7 +861,9 @@ Get Node Stats
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| F5.LTM.Nodes.stats.serverside\.curConns.value | String | The current connections | 
+| F5.LTM.Nodes.stats.serverside\.curConns.value | String | The current connections of the Node | 
+| F5.LTM.Nodes.name | String | The node name | 
+| F5.LTM.Nodes.stats.sessionStatus.description | String | The node status | 
 
 
 #### Command Example
@@ -904,13 +911,13 @@ Get Node Stats
                         "value": 0
                     },
                     "sessionStatus": {
-                        "description": "user-disabled"
+                        "description": "enabled"
                     },
                     "status.availabilityState": {
                         "description": "unknown"
                     },
                     "status.enabledState": {
-                        "description": "disabled"
+                        "description": "enabled"
                     },
                     "status.statusReason": {
                         "description": "Node address does not have service checking enabled"
@@ -956,6 +963,7 @@ Get node information by address
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | F5.LTM.Nodes.name | String | The node name | 
+| F5.LTM.Nodes.address | String | The node address | 
 
 
 #### Command Example
@@ -970,7 +978,7 @@ Get node information by address
                 "address": "10.10.10.102",
                 "name": "XSOAR1",
                 "partition": "Common",
-                "session": "user-disabled",
+                "session": "user-enabled",
                 "state": "unchecked"
             }
         }
@@ -983,7 +991,7 @@ Get node information by address
 >### Results
 >|address|name|partition|session|state|
 >|---|---|---|---|---|
->| 10.10.10.102 | XSOAR1 | Common | user-disabled | unchecked |
+>| 10.10.10.102 | XSOAR1 | Common | user-enabled | unchecked |
 
 
 ### f5-ltm-get-pool-by-node
@@ -1006,6 +1014,7 @@ Get pool information by node
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | F5.LTM.Nodes.pools | String | The pool names | 
+| F5.LTM.Nodes.name | String | The node name | 
 
 
 #### Command Example
