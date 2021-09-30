@@ -45,7 +45,7 @@ SUSPICIOUS_VERDICT = "Suspicious"
 BENIGN_VERDICT_WHITELIST = "Benign - whitelisted"
 
 BENIGN_THRESHOLD = 0.5
-SUSPICIOUS_THRESHOLD = 0.7
+SUSPICIOUS_THRESHOLD = 0.8
 
 SCORE_INVALID_URL = -1.0
 SCORE_BENIGN = 0.0  # type: float
@@ -77,6 +77,15 @@ KEY_CONTENT_LOGIN = "LoginForm"
 KEY_CONTENT_URL_SCORE = "URLScore"
 KEY_CONTENT_SEO = "ContentBasedVerdict"
 KEY_CONTENT_AGE = "DomainAge"
+
+KEY_HR_DOMAIN = "Domain"
+KEY_HR_SEO = "Domain reputation"
+KEY_HR_LOGIN = "Is there a Login form ?"
+KEY_HR_LOGO = "Suspiscious use of company logo"
+KEY_HR_URL_SCORE = "URL severity score (from 0 to 1)"
+
+KEY_CONTENT_SUMMARY_URL = 'URL'
+KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
 
 KEY_FINAL_VERDICT = "Final Verdict"
 
@@ -288,35 +297,36 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     :param whitelist: if url belongs to whitelist of the model
     :return: entry to demisto
     """
-    if not pred_json:
-        return
-    if whitelist:
+    if whitelist or not pred_json:
         url_score = SCORE_BENIGN
-        url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
+        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
             url_score)
     else:
         url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
-        url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(url_score)  # type: ignore
-    pred_json_colored = get_colored_pred_json(pred_json)
+        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(url_score)  # type: ignore
+    if pred_json:
+        pred_json_colored = get_colored_pred_json(pred_json)
+    else:
+        pred_json_colored = {}
     domain = extract_domainv2(url)
     explain = {
         KEY_CONTENT_DOMAIN: domain,
         KEY_CONTENT_URL: url,
-        KEY_CONTENT_LOGO: str(pred_json[MODEL_KEY_LOGO_FOUND]),
-        KEY_CONTENT_LOGIN: str(pred_json[MODEL_KEY_LOGIN_FORM]),
+        KEY_CONTENT_LOGO: str(pred_json.get(MODEL_KEY_LOGO_FOUND, None)),
+        KEY_CONTENT_LOGIN: str(pred_json.get(MODEL_KEY_LOGIN_FORM, None)),
         KEY_CONTENT_URL_SCORE: url_score,
-        KEY_CONTENT_SEO: str(pred_json[MODEL_KEY_SEO])
+        KEY_CONTENT_SEO: str(pred_json.get(MODEL_KEY_SEO, None)),
     }
-    if pred_json[DOMAIN_AGE_KEY] is not None:
+    if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
-        "Domain": domain,
-        "Domain reputation": str(pred_json_colored[MODEL_KEY_SEO]),
-        "Is there a Login form ?": str(pred_json_colored[MODEL_KEY_LOGIN_FORM]),
-        "Suspiscious use of company logo": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
-        "URL severity score (from 0 to 1)": url_score
+        KEY_HR_DOMAIN: domain,
+        KEY_HR_SEO: str(pred_json_colored.get(MODEL_KEY_SEO, None)),
+        KEY_HR_LOGIN: str(pred_json_colored.get(MODEL_KEY_LOGIN_FORM, None)),
+        KEY_HR_LOGO: str(pred_json_colored.get(MODEL_KEY_LOGO_FOUND, None)),
+        KEY_HR_URL_SCORE: url_score_colored
     }
-    if pred_json[DOMAIN_AGE_KEY] is not None:
+    if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain_hr[DOMAIN_AGE_KEY] = str(pred_json_colored[DOMAIN_AGE_KEY])
     return_entry = {
         "Type": entryTypes["note"],
@@ -327,12 +337,13 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     }
     demisto.results(return_entry)
     # Get rasterize image or logo detection if logo was found
-    image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
-    if not image:
-        image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
-    res = fileResult(filename='Logo detection engine', data=image)
-    res['Type'] = entryTypes['image']
-    demisto.results(res)
+    if pred_json:
+        image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
+        if not image:
+            image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
+        res = fileResult(filename='Logo detection engine', data=image)
+        res['Type'] = entryTypes['image']
+        demisto.results(res)
     return explain
 
 
@@ -352,12 +363,12 @@ def return_entry_white_list(url):
         KEY_CONTENT_SEO: MSG_WHITE_LIST
     }
     explain_hr = {
-        "Domain": extract_domainv2(url),
-        "Has the domain good SEO ?": MSG_WHITE_LIST,
+        KEY_HR_DOMAIN: extract_domainv2(url),
+        KEY_HR_SEO: MSG_WHITE_LIST,
         DOMAIN_AGE_KEY: MSG_WHITE_LIST,
-        "Has the website a login page?": MSG_WHITE_LIST,
-        "Logo found that does not correspond to the given domain": MSG_WHITE_LIST,
-        "URL severity score (from 0 to 1)": MSG_WHITE_LIST
+        KEY_HR_LOGIN: MSG_WHITE_LIST,
+        KEY_HR_LOGO: MSG_WHITE_LIST,
+        KEY_HR_URL_SCORE: MSG_WHITE_LIST
     }
     verdict_hr = {
         "Verdict": BENIGN_VERDICT,
@@ -487,14 +498,18 @@ def return_general_summary(results, tag="Summary"):
     df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict')
                                      if x.get('verdict') in MAPPING_VERDICT_COLOR.keys()
                                      else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
+    summary_context = {
+        KEY_CONTENT_SUMMARY_URL: [x.get('url') for x in results],
+        KEY_CONTENT_SUMMARY_FINAL_VERDICT: [x.get('verdict') for x in results]
+    }
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
                                          headers=['URL', KEY_FINAL_VERDICT]),
-        "Contents": df_summary_json,
-        "EntryContext": {'DBotPredictURLPhishing': df_summary_json}
+        "Contents": summary_context,
+        "EntryContext": {'DBotPredictURLPhishing': summary_context}
     }
     if tag is not None:
         return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]

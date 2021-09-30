@@ -67,7 +67,7 @@ def test_regular_malicious_new_domain(mocker):
     assert detailed_summary[0][KEY_CONTENT_LOGIN] == 'True'
     assert detailed_summary[0][KEY_CONTENT_SEO] == 'True'
     assert detailed_summary[0][KEY_CONTENT_AGE] == 'True'
-    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == RED_COLOR % model_prediction[MODEL_KEY_URL_SCORE]
+    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == model_prediction[MODEL_KEY_URL_SCORE]
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -96,7 +96,7 @@ def test_regular_benign(mocker):
     assert detailed_summary[0][KEY_CONTENT_LOGIN] == 'True'
     assert detailed_summary[0][KEY_CONTENT_SEO] == 'False'
     assert detailed_summary[0][KEY_CONTENT_AGE] == 'False'
-    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == GREEN_COLOR % model_prediction[MODEL_KEY_URL_SCORE]
+    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == model_prediction[MODEL_KEY_URL_SCORE]
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -141,7 +141,6 @@ def test_white_list_not_force(mocker):
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
     assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT_WHITELIST
-    assert not detailed_summary
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -169,7 +168,7 @@ def test_white_list_force(mocker):
     assert detailed_summary[0][KEY_CONTENT_LOGIN] == 'True'
     assert detailed_summary[0][KEY_CONTENT_SEO] == 'False'
     assert detailed_summary[0][KEY_CONTENT_AGE] == 'False'
-    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == GREEN_COLOR % SCORE_BENIGN
+    assert detailed_summary[0][KEY_CONTENT_URL_SCORE] == SCORE_BENIGN
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
