@@ -1,0 +1,138 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: IP-API
+  version: -1
+configuration:
+- additionalinfo: Use of HTTPS requires an API key
+  defaultvalue: "false"
+  display: Use HTTPS to communicate with the API
+  name: https
+  required: false
+  type: 8
+- additionalinfo: Only required to bypass rate limits and/or use HTTPS
+  display: API Key
+  name: apikey
+  required: false
+  type: 4
+- additionalinfo: See https://members.ip-api.com/docs/json for details
+  defaultvalue: "536608767"
+  display: Fields to return
+  name: fields
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: |
+  This integration will enrich IP addresses from IP-API with data about the geolocation, as well as a determination of the IP address being associated with a mobile device, hosting or proxy. Revers DNS is also returned.
+
+  This service is available for free (with a throttle) - or paid.
+display: IP-API
+name: IP-API
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+    description: Return IP information
+    name: ip
+    outputs:
+    - contextPath: IP-API.continentCode
+      description: continentCode
+      type: string
+    - contextPath: IP-API.zip
+      description: zip
+      type: string
+    - contextPath: IP-API.mobile
+      description: mobile
+      type: boolean
+    - contextPath: IP-API.reverse
+      description: reverse
+      type: string
+    - contextPath: IP-API.countryCode
+      description: countryCode
+      type: string
+    - contextPath: IP-API.org
+      description: org
+      type: string
+    - contextPath: IP-API.isp
+      description: isp
+      type: string
+    - contextPath: IP-API.currentTime
+      description: currentTime
+      type: string
+    - contextPath: IP-API.query
+      description: query
+      type: string
+    - contextPath: IP-API.city
+      description: city
+      type: string
+    - contextPath: IP-API.lon
+      description: lon
+      type: number
+    - contextPath: IP-API.proxy
+      description: proxy
+      type: boolean
+    - contextPath: IP-API.district
+      description: district
+      type: string
+    - contextPath: IP-API.countryCode3
+      description: countryCode3
+      type: string
+    - contextPath: IP-API.currency
+      description: currency
+      type: string
+    - contextPath: IP-API.callingCode
+      description: callingCode
+      type: number
+    - contextPath: IP-API.as
+      description: as
+      type: string
+    - contextPath: IP-API.status
+      description: status
+      type: string
+    - contextPath: IP-API.offset
+      description: offset
+      type: string
+    - contextPath: IP-API.continent
+      description: continent
+      type: string
+    - contextPath: IP-API.region
+      description: region
+      type: string
+    - contextPath: IP-API.country
+      description: country
+      type: string
+    - contextPath: IP-API.timezone
+      description: timezone
+      type: string
+    - contextPath: IP-API.hosting
+      description: hosting
+      type: boolean
+    - contextPath: IP-API.asname
+      description: asname
+      type: string
+    - contextPath: IP-API.lat
+      description: lat
+      type: number
+    - contextPath: IP-API.regionName
+      description: regionName
+      type: string
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

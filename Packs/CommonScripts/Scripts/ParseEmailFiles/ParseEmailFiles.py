@@ -3408,7 +3408,7 @@ def mime_decode(word_mime_encoded):
     if encoding.lower() == 'b':
         byte_string = base64.b64decode(encoded_text)
     elif encoding.lower() == 'q':
-        byte_string = quopri.decodestring(encoded_text)
+        byte_string = quopri.decodestring(encoded_text, header=True)
     return prefix + byte_string.decode(charset) + suffix
 
 

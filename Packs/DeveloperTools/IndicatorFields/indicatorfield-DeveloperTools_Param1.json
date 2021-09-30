@@ -1,0 +1,30 @@
+{
+    "id": "indicator_developertoolsparam1",
+    "version": -1,
+    "name": "Developer Tools param1",
+    "ownerOnly": false,
+    "cliName": "developertoolsparam1",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "custom",
+        "MyCustomIndicator"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

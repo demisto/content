@@ -1,0 +1,30 @@
+args:
+- defaultValue: sta_unusual_activity_group
+  description: Name of the list containing the Unusual Activity Group.
+  name: list_name
+  required: true
+comment: This script will get the Unusual Activity Group from "sta_unusual_activity_group"
+  List.
+commonfields:
+  id: STA-FetchListContent
+  version: -1
+dependson:
+  must:
+  - Builtin|||getList
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: STA-FetchListContent
+outputs:
+- contextPath: STA.GET.GROUP
+  description: Return Unusual Activity Group name.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
