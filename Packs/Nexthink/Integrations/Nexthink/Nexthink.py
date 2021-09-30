@@ -30,8 +30,6 @@ if 'package' in args:
 else:
     package = None
 
-ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'    
-
 SEARCH_DEVICE_USING_IP = "(select (*) (from device (where device ( eq ip_addresses (ip_address '{0}')))))".format(ip)
 SEARCH_DEVICE_USING_DEVICE = "(select (*) (from device (where device ( eq name (string {0})))))".format(device)
 SEARCH_COMPLIANCE_PACKAGE_DEVICE = """(select ((device (*)) (package (*))) (from (device package)
@@ -45,7 +43,7 @@ def is_valid_hostname(hostname):
     if len(hostname) > 255:
         return False
     if hostname[-1] == ".":
-        hostname = hostname[:-1] # strip exactly one dot from the right, if present
+        hostname = hostname[:-1]  # strip exactly one dot from the right, if present
     allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
@@ -92,7 +90,7 @@ def nexthink_endpoint_details(device: None, ip: None):
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)
     elif not device:
-        if re.match(ipv4Regex,ip):
+        if re.match(ipv4Regex, ip):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
         else:
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
@@ -163,7 +161,7 @@ def nexthink_compliance_check(device: None, ip: None):
         return_results('Please provide hostname or ipaddress argument')
         sys.exit(0)
     elif not device:
-        if re.match(ipv4Regex,ip):
+        if re.match(ipv4Regex, ip):
             data = nexthink_request('GET', SEARCH_DEVICE_USING_IP)
         else:
             return_results('Please enter valid ip address. (e.g. 192.168.1.100)')
