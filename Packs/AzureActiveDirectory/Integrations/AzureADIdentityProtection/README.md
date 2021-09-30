@@ -9,22 +9,15 @@ This integration was integrated and tested with the beta version of Azure Active
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
-    | Subscription ID | Azure Active Directory subscription ID. | True |
-    | Azure Active Directory endpoint | Azure Active Directory endpoint associated with a national cloud. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-5. Call the **!azure-ad-auth-start** command to start the connection process.
-6. Follow the instruction shown, the last of them should be calling the **!azure-ad-auth-complete** command.
-7. Call the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
-## Commands
-You can execute these commands from the Cortex XSOAR command line interface, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### azure-ad-auth-test
-***
-Tests the connectivity to Azure.
-
-
+    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` (used to update user status, for example by calling the `!azure-ad-identity-protection-risky-user-confirm-compromised` command). <br> Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. | True |
+    | Subscription ID | The Azure Active Directory subscription ID. | True |
+    | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
+    | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
+    | Use system proxy settings | When selected, runs the integraion instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+5. Run the **!azure-ad-auth-start** command to start the connection process.
+6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
+7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
+    
 #### Base Command
 
 `azure-ad-auth-test`
