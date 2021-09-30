@@ -426,7 +426,7 @@ def test_module(client):
 
 def list_incidents_command(client, args, is_fetch_incidents=False):
     filter_expression = args.get('filter')
-    limit = None if is_fetch_incidents else min(50, int(args.get('limit')))
+    limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
