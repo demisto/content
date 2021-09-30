@@ -485,6 +485,16 @@ script:
     description: Get Pool Member Stats
     execution: false
     name: f5-ltm-get-pool-member-stats
+    outputs:
+    - contextPath: F5.LTM.Stats.members.stats.serverside\.curConns.value
+      description: The current connections of the Pool Member
+      type: String
+    - contextPath: F5.LTM.Stats.members.name
+      description: The pool member name
+      type: String
+    - contextPath: F5.LTM.Stats.members.stats.sessionStatus.description
+      description: The pool member status
+      type: String
   - arguments:
     - default: false
       description: Node To Query
@@ -498,7 +508,13 @@ script:
     name: f5-ltm-get-node-stats
     outputs:
     - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
-      description: The current connections
+      description: The current connections of the Node
+      type: String
+    - contextPath: F5.LTM.Nodes.name
+      description: The node name
+      type: String
+    - contextPath: F5.LTM.Nodes.stats.sessionStatus.description
+      description: The node status
       type: String
   - arguments:
     - default: false
@@ -515,6 +531,9 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: The node name
       type: String
+    - contextPath: F5.LTM.Nodes.address
+      description: The node address
+      type: String
   - arguments:
     - default: false
       description: Node name
@@ -529,6 +548,9 @@ script:
     outputs:
     - contextPath: F5.LTM.Nodes.pools
       description: The pool names
+      type: String
+    - contextPath: F5.LTM.Nodes.name
+      description: The node name
       type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false

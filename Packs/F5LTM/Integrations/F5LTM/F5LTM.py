@@ -269,17 +269,16 @@ def ltm_get_node_stats_command(client, args) -> CommandResults:
 
 def ltm_get_node_by_address_command(client, args) -> CommandResults:
     ip_address = args.get('ip_address')
-    node = None
     results = client.get_nodes()
     for item in results:
         if item.get('address') == ip_address:
             node = item
-            break
-    return CommandResults(
-        outputs_prefix='F5.LTM.Nodes',
-        outputs_key_field='name',
-        outputs=node,
-    )
+            return CommandResults(
+                outputs_prefix='F5.LTM.Nodes',
+                outputs_key_field='name',
+                outputs=node,
+            )
+    return_error(f'No nodes found matching the address: {ip_address}')
 
 
 def ltm_get_pools_by_node_command(client, args) -> CommandResults:
