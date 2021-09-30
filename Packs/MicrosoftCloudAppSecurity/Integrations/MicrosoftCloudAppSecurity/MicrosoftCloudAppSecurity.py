@@ -898,7 +898,7 @@ def main():  # pragma: no cover
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
                 filters=filters,
-                fetch_delta_time=fetch_delta_time)
+                fetch_delta_time=fetch_delta_time)  # type:ignore
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
