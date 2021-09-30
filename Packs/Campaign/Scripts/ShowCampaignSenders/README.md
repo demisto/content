@@ -1,4 +1,4 @@
-Displays the phishing campaign senders email addresses and their amount.
+Displays the phishing campaign senders' email addresses and the number of incidents each email address appears in.
 
 ## Script Data
 ---
