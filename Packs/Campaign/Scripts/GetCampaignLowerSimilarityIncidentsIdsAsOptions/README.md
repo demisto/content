@@ -1,4 +1,4 @@
-Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select "Phishing Campaign Select Campaign Lower Similarity Incidents" incident field.
+Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select **Phishing Campaign Select Campaign Lower Similarity Incidents** incident field.
 
 ## Script Data
 ---
@@ -7,7 +7,7 @@ Gets the IDs of incidents with lower similarity. Used to fill the optional value
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-display |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 and later |
 
 ## Inputs
 ---
