@@ -723,8 +723,7 @@ def panorama_push_to_device_group(args: dict):
         command += '<validate-only>yes</validate-only>'
     if not argToBoolean(args.get('include-template', 'true')):
         command += '<include-template>no</include-template>'
-    if description:
-        = args.get('description'):
+    if description := args.get('description'):
         command += f'<description>{description}</description>'
 
     params = {
