@@ -222,7 +222,7 @@ script:
       defaultValue: '50'
       description: |-
         Number of entities to retrieve. Default is 50.
-        This argument is unusable when 'partition_key' or 'row_key'  are provided.
+        This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided.
       isArray: false
       name: limit
       required: false
@@ -231,7 +231,7 @@ script:
       defaultValue: '1'
       description: |-
         Page number. Default is 1.
-        This argument is unusable when 'partition_key' is provided.
+        This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided.
       isArray: false
       name: page
       required: false

@@ -160,9 +160,10 @@ class Client:
 
 
         """
-        xsoar_file_data = demisto.getFilePath(file_entry_id)
-        file_path = xsoar_file_data['path']
-        file_name = file_name if file_name else xsoar_file_data['name']
+        xsoar_file_data = demisto.getFilePath(
+            file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+        xsoar_system_file_path = xsoar_file_data['path']
+        new_file_name = file_name if file_name else xsoar_file_data['name']
 
         create_file_headers = {'x-ms-type': 'file',
                                'x-ms-file-permission': 'Inherit',
@@ -171,15 +172,15 @@ class Client:
                                'x-ms-file-last-write-time': 'now'
                                }
 
-        create_file_url = f'{share_name}/{directory_path}/{file_name}' if directory_path else f'{share_name}/{file_name}'
+        create_file_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else f'{share_name}/{new_file_name}'
 
         try:
-            shutil.copy(file_path, file_name)
-        except Exception:
+            shutil.copy(xsoar_system_file_path, new_file_name)
+        except FileNotFoundError:
             raise Exception('Failed to prepare file for upload.')
 
         try:
-            with open(file_name, 'rb') as file:
+            with open(new_file_name, 'rb') as file:
                 file.seek(0, 2)
                 content_length = file.tell()
                 create_file_headers['x-ms-content-length'] = str(content_length)
@@ -189,7 +190,7 @@ class Client:
                                                                    return_empty_response=True)
 
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            shutil.rmtree(new_file_name, ignore_errors=True)
 
         return create_file_response
 
@@ -207,17 +208,18 @@ class Client:
             Response: API response from Azure.
 
         """
-        xsoar_file_data = demisto.getFilePath(file_entry_id)
-        file_path = xsoar_file_data['path']
-        file_name = file_name if file_name else xsoar_file_data['name']
+        xsoar_file_data = demisto.getFilePath(
+            file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+        xsoar_system_file_path = xsoar_file_data['path']
+        new_file_name = file_name if file_name else xsoar_file_data['name']
 
         try:
-            shutil.copy(file_path, file_name)
-        except Exception:
+            shutil.copy(xsoar_system_file_path, new_file_name)
+        except FileNotFoundError:
             raise Exception('Failed to prepare file for upload.')
 
         try:
-            with open(file_name, 'rb') as file:
+            with open(new_file_name, 'rb') as file:
                 file.seek(0, 2)
                 content_length = file.tell()
                 file.seek(0)
@@ -234,14 +236,14 @@ class Client:
 
                 params = {'comp': 'range'}
 
-                put_range_url = f'{share_name}/{directory_path}/{file_name}' if directory_path else f'{share_name}/{file_name}'
+                put_range_url = f'{share_name}/{directory_path}/{new_file_name}' if directory_path else f'{share_name}/{new_file_name}'
 
                 put_range_response = self.ms_client.http_request(method='PUT', url_suffix=put_range_url,
                                                                  headers=put_rang_headers, params=params,
                                                                  return_empty_response=True, data=file)
 
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            shutil.rmtree(new_file_name, ignore_errors=True)
 
         return put_range_response
 

@@ -127,27 +127,28 @@ class Client:
 
         """
 
-        xsoar_file_data = demisto.getFilePath(file_entry_id)
-        file_path = xsoar_file_data['path']
-        file_name = file_name if file_name else xsoar_file_data['name']
+        xsoar_file_data = demisto.getFilePath(
+            file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+        xsoar_system_file_path = xsoar_file_data['path']
+        blob_name = file_name if file_name else xsoar_file_data['name']
 
         headers = {'x-ms-blob-type': 'BlockBlob'}
 
         try:
-            shutil.copy(file_path, file_name)
-        except Exception:
+            shutil.copy(xsoar_system_file_path, blob_name)
+        except FileNotFoundError:
             raise Exception('Failed to prepare file for upload.')
 
         try:
-            with open(file_name, 'rb') as file:
+            with open(blob_name, 'rb') as file:
                 response = self.ms_client.http_request(method='PUT',
-                                                       url_suffix=f'{container_name}/{file_name}',
+                                                       url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
                                                        return_empty_response=True,
                                                        data=file)
 
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            shutil.rmtree(blob_name, ignore_errors=True)
 
         return response
 
@@ -735,6 +736,7 @@ def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def replace_dict_keys(data: dict, keys: list) -> dict:
     """
     Remove and replace keys in dictionary.
+    Remove 'x-ms' prefix and replace '-' to '_' for more readable and conventional variables.
     Args:
         data (dict): Data to exchange.
         keys (list): Keys to filter.

@@ -438,6 +438,32 @@ def update_entity_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
+def create_query_entity_output(table_name: str, raw_response: dict, is_entity_query: bool) -> dict:
+    """
+    Create query_entity_command outputs.
+    Args:
+        table_name (str): Command table name.
+        raw_response (str): API response from Azure.
+        is_entity_query (bool): Indicates to path to the response data.
+
+    Returns:
+        dict: Command response.
+
+    """
+    outputs = {"name": table_name}
+    response_copy = copy.deepcopy(raw_response)
+
+    if is_entity_query:
+        outputs["Entity"] = [response_copy]
+    else:
+        outputs["Entity"] = response_copy.get('value')
+
+    for entity in outputs.get("Entity"):
+        convert_dict_time_format(entity, ['Timestamp'])
+
+    return outputs
+
+
 def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Query entities in a table.
@@ -463,10 +489,7 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if (partition_key and not row_key) or (row_key and not partition_key):
         raise Exception('Please provide both \'partition_key\' and \'row_key\' arguments, or no one of them.')
 
-    readable_message = f'Entity Fields for {table_name} table:\n Current page size: {limit}\n Showing page {page} out others that may exist'
-
-    if partition_key:
-        readable_message = f'Entity Fields for {table_name} table:\n Current page size: 50\n Showing page 1 out others that may exist'
+    readable_message = f'Entity Fields for {table_name} table:\n Current page size: {limit or 50}\n Showing page {page or 1} out others that may exist'
 
     if page and page > 1:
         offset = int(limit) * (page - 1)
@@ -487,16 +510,7 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     raw_response = client.query_entity_request(table_name, partition_key, row_key, query_filter, select, limit,
                                                next_partition_key, next_row_key).json()
 
-    outputs = {"name": table_name}
-    response_copy = copy.deepcopy(raw_response)
-
-    if partition_key:
-        outputs["Entity"] = [response_copy]
-    else:
-        outputs["Entity"] = response_copy.get('value')
-
-    for entity in outputs.get("Entity"):
-        convert_dict_time_format(entity, ['Timestamp'])
+    outputs = create_query_entity_output(table_name, raw_response, is_entity_query=partition_key is not None)
 
     readable_output = tableToMarkdown(
         readable_message,

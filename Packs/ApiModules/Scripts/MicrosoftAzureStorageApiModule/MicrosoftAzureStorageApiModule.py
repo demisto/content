@@ -38,7 +38,7 @@ class MicrosoftStorageClient(BaseClient):
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
 
         if not full_url:
-            params_query = self.params_dict_to_qury_string(params, prefix='')
+            params_query = self.params_dict_to_query_string(params, prefix='')
             url_suffix = f'{url_suffix}{self._account_sas_token}{params_query}'
             params = None
 
@@ -81,7 +81,7 @@ class MicrosoftStorageClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def params_dict_to_qury_string(self, params: dict, prefix: str = "") -> str:
+    def params_dict_to_query_string(self, params: dict, prefix: str = "") -> str:
         """
         Convert request params to string query.
         Args:
