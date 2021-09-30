@@ -1,4 +1,4 @@
-Displays the phishing campaign recipients email addresses and their amount.
+Displays the phishing campaign recipients' email addresses and the number of incidents each email address appears in. .
 
 ## Script Data
 ---
@@ -7,7 +7,7 @@ Displays the phishing campaign recipients email addresses and their amount.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 and later |
 
 ## Inputs
 ---
