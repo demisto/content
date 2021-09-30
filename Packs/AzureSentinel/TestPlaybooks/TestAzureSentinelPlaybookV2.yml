@@ -1,6 +1,6 @@
-id: TestAzureSentinelPlaybook
+id: TestAzureSentinelPlaybookV2
 version: -1
-name: TestAzureSentinelPlaybook
+name: TestAzureSentinelPlaybookV2
 starttaskid: "0"
 tasks:
   "0":
@@ -709,7 +709,7 @@ tasks:
     scriptarguments:
       items_search_key:
         simple: IP
-      raw_content:
+      file_entry_id:
         simple: ${File.EntryID}
       source:
         simple: Local file
