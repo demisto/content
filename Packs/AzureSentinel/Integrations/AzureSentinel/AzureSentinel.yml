@@ -934,6 +934,6 @@ script:
   subtype: python3
   type: python
 tests:
-- TestAzureSentinelPlaybook
+- TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
