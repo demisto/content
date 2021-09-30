@@ -1,0 +1,33 @@
+args:
+- default: true
+  defaultValue: "1"
+  description: timeframe to fetch in hours
+  name: timeframe
+comment: 'This Automation script uses the XSOAR API to get the audit logs and pushes
+  them to Splunk HEC. Dependencies: SlunkPy and Demisto REST API integrations'
+commonfields:
+  id: a5f052e5-0328-46c3-8710-85964e37683e
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1051dd86-5c9e-447b-837b-80dfeecbca24
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dependson:
+  must: []
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+name: ForwardAuditLogsToSplunkHEC
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
