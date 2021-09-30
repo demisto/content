@@ -82,6 +82,8 @@ create-instances:
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
+    - echo "$STORAGE_BASE_PATH"
+    - echo "!!!!!!!!!!!!!!!!!!!!!!!!!"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
     - section_start "Create Instances"
