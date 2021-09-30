@@ -333,7 +333,7 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
             for attribute in container_property:
                 properties[attribute.tag] = attribute.text
 
-        data['Property'] = properties
+        data['Property'] = properties  # type: ignore
         raw_response.append(data)
 
     readable_output = tableToMarkdown(
@@ -483,7 +483,8 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = arg_to_number(args.get('page', '1'))
 
     marker = ''
-    readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
+    readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n ' \
+                       f'Showing page {page} out others that may exist'
     if page > 1:  # type: ignore
         marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
                                              client_request=client.list_blobs_request,

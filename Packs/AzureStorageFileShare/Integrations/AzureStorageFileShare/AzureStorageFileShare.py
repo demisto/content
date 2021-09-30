@@ -482,10 +482,10 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
             for header in time_headers:
                 str_time = element['Properties'].get(header)  # type: ignore
                 str_time = str_time[:-2] + 'Z'
-                element['Properties'][header] = FormatIso8601(
+                element['Properties'][header] = FormatIso8601(  # type: ignore
                     datetime.strptime(str_time, GENERAL_DATE_FORMAT))  # type: ignore
 
-            element['Properties']['Last-Modified'] = FormatIso8601(
+            element['Properties']['Last-Modified'] = FormatIso8601(  # type: ignore
                 datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))  # type: ignore
 
             element['Property'] = element.pop('Properties')  # type: ignore

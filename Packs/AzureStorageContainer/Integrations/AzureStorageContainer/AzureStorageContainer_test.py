@@ -393,6 +393,7 @@ def test_create_set_tags_request_body():
     tags = {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2-yehuda"}
 
     result = create_set_tags_request_body(tags)
-    expected = "<Tags><TagSet><Tag><Key>tag-name-1</Key><Value>tag-value-1</Value></Tag><Tag><Key>tag-name-2</Key><Value>tag-value-2-yehuda</Value></Tag></TagSet></Tags>"
+    expected = "<Tags><TagSet><Tag><Key>tag-name-1</Key><Value>tag-value-1</Value></Tag><Tag><Key>tag-name-2</Key>" \
+               "<Value>tag-value-2-yehuda</Value></Tag></TagSet></Tags>"
 
     assert result == expected
