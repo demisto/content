@@ -1881,7 +1881,7 @@ def insert_cef_alerts_command(client, args):
 
 def isolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
-    disconnected_should_return_error = argToBoolean(args.get('suppress_disconnected_endpoint_error', True))
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
         raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
@@ -1928,7 +1928,7 @@ def isolate_endpoint_command(client, args):
 
 def unisolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
-    disconnected_should_return_error = argToBoolean(args.get('suppress_disconnected_endpoint_error', True))
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
         raise ValueError(f'Error: Endpoint {endpoint_id} was not found')

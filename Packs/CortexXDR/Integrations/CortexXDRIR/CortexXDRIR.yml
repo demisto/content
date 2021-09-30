@@ -791,7 +791,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'true'
       description: Whether to return an error when trying to isolate a disconnected
         endpoint. When sets to false, a warning will be returned.
       isArray: false
@@ -819,7 +819,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'true'
       description: Whether to return an error when trying to unisolate a disconnected
         endpoint. When sets to false, a warning will be returned.
       isArray: false
