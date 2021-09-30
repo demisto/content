@@ -7,7 +7,7 @@ name: PerformActionOnCampaignIncidents
 runas: DBotRole
 runonce: false
 script: ''
-comment: Perform user actions like Link, Close, etc., on selected incidents from a
+comment: Perform user actions such as link, close, etc., on selected incidents from a
   campaign.
 args:
 - name: similarity
@@ -15,7 +15,7 @@ args:
   predefined:
   - High
   - Low
-  description: The incidents similarity to take from the context.
+  description: The incident similarity parameter (High or Low) to take from the context.
   defaultValue: High
 scripttarget: 0
 subtype: python3
