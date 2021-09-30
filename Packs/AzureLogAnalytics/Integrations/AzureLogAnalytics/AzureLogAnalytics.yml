@@ -279,7 +279,7 @@ script:
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
     name: azure-log-analytics-delete-saved-search
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false
