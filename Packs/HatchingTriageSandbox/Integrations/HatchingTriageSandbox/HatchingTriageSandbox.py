@@ -1,19 +1,14 @@
-import collections
-import json
-
-import demistomock as demisto  # noqa: F401
-import requests
-from CommonServerPython import *  # noqa: F401
-
 ################################################################################################
 
+import json
+import requests
+import collections
 
 requests.packages.urllib3.disable_warnings()
 
 api_url = demisto.params().get('api_url')
 api_key = demisto.params().get('api_key')
 ######################################File-Operation###############################################
-
 
 def file_upload(entry_id):
     entry_id = demisto.getFilePath(entry_id)
@@ -22,7 +17,6 @@ def file_upload(entry_id):
     return file_path
 
 ################################################################################################
-
 
 def hatching_triage_report(sample_id):
 
@@ -35,6 +29,7 @@ def hatching_triage_report(sample_id):
     }
     response = requests.get(URL, headers=headers)
     return response.json()
+
 
 
 ################################################################################################
@@ -51,7 +46,7 @@ def hatching_triage_submit(entry_id):
     }
     files = {
         'file': (file_path, open(file_path, 'rb')),
-        '_json': (None, '{"kind":"file","interactive":false,"password":"Picard-2399"}'),
+        '_json': (None, '{"kind":"file","interactive":false}'),
 
     }
     res = requests.post(URL, headers=headers, files=files)
