@@ -2,7 +2,7 @@
     "defaultIncidentType": "Cohesity Helios Ransomware Incident",
     "description": "",
     "feed": false,
-    "id": "b28ced57-1175-4ea3-807c-e2ce6c96f6a2",
+    "id": "CohesityHelios Incident Classifier",
     "keyTypeMap": {
         "CE01516011": "Cohesity Helios Ransomware Incident"
     },
