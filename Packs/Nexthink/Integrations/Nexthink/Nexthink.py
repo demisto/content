@@ -40,12 +40,10 @@ TEST_MODULE = "(select (name) (from device ) (limit 1))"
 
 
 def is_valid_hostname(hostname):
-    if len(hostname) > 255:
+    if len(hostname) > 15:
         return False
-    if hostname[-1] == ".":
-        hostname = hostname[:-1]  # strip exactly one dot from the right, if present
     allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-    return all(allowed.match(x) for x in hostname.split("."))
+    return all(allowed.match(x) for x in hostname)
 
 
 def nexthink_request(method, nxql):
