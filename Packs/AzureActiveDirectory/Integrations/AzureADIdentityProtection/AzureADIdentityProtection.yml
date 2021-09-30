@@ -127,7 +127,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. Default is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
