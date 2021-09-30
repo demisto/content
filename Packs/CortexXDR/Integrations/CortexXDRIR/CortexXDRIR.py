@@ -8,9 +8,8 @@ from operator import itemgetter
 from typing import Any, Dict, Tuple
 
 import dateparser
-import urllib3
-
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -721,7 +720,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blacklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201),
+            ok_codes=(200, 201, 500,),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -1249,6 +1248,39 @@ class Client(BaseClient):
             modified_incidents_context[incident_id] = incident.get('modification_time')
 
         set_integration_context({'modified_incidents': modified_incidents_context})
+
+    def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
+        filters = []
+
+        filters.append({
+            'field': 'endpoint_status',
+            'operator': 'IN',
+            'value': [status]
+        })
+
+        if last_seen_gte:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'gte',
+                'value': last_seen_gte
+            })
+
+        if last_seen_lte:
+            filters.append({
+                'field': 'last_seen',
+                'operator': 'lte',
+                'value': last_seen_lte
+            })
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': {'filters': filters}},
+            timeout=self.timeout
+        )
+
+        endpoints_count = reply.get('reply').get('total_count', 0)
+        return endpoints_count, reply
 
 
 def get_incidents_command(client, args):
@@ -1902,10 +1934,10 @@ def isolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1943,10 +1975,10 @@ def unisolate_endpoint_command(client, args):
             None,
             None
         )
+    if endpoint_status == 'UNINSTALLED':
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
@@ -2209,7 +2241,9 @@ def blacklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
 
-    client.blacklist_files(hash_list=hash_list, comment=comment)
+    res = client.blacklist_files(hash_list=hash_list, comment=comment)
+    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
+        raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
     return (
@@ -2685,7 +2719,8 @@ def get_update_args(delta, inc_status):
     update_args = delta
     handle_outgoing_incident_owner_sync(update_args)
     handle_user_unassignment(update_args)
-    handle_outgoing_issue_closure(update_args, inc_status)
+    if update_args.get('closingUserId'):
+        handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 
@@ -3206,6 +3241,31 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
+def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
+    status = args.get('status')
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+
+    ec = {'status': status, 'count': endpoints_count}
+
+    return CommandResults(
+        readable_output=f'{status} endpoints count: {endpoints_count}',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
+        outputs_key_field='status',
+        outputs=ec,
+        raw_response=raw_res)
+
+
 def main():
     """
     Executes an integration command
@@ -3400,6 +3460,9 @@ def main():
 
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, args))
+
+        elif demisto.command() == 'xdr-get-endpoints-by-status':
+            return_results(get_endpoints_by_status_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

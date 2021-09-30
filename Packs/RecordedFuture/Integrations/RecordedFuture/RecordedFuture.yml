@@ -67,7 +67,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   commands:
   - name: domain
     arguments:
@@ -78,16 +78,16 @@ script:
       description: The domain for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
@@ -144,16 +144,16 @@ script:
       description: IP address for which to get the reputation
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Malicious.Vendor
       description: For malicious IP addresses, the vendor that made the decision
@@ -212,16 +212,16 @@ script:
         SHA256, SHA512, CRC32 or CTPH
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: File.SHA256
       description: SHA-256 hash of the file
@@ -293,16 +293,16 @@ script:
       description: CVE for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: CVE.ID
       description: Vulnerability name
@@ -353,16 +353,16 @@ script:
       description: URL for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
@@ -2009,6 +2009,45 @@ script:
       description: Recorded Future Related Type
       type: string
     description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+  - name: recordedfuture-links
+    arguments:
+    - name: entity_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - file
+      - url
+      - cve
+      description: The type of entity for which to fetch context. Should be provided
+        with its value in entityValue argument. Can be "domain", "ip", "file", "url",
+        or "cve".
+    - name: entity
+      required: true
+      description: 'The value of the entity for which to fetch context. Should be
+        provided with its type in entity_type argument. Supported hash types: MD5,
+        SHA1, SHA256, SHA512, CRC32, and CTPH. Vulnerability supports CVEs.'
+    outputs:
+    - contextPath: RecordedFuture.Links.category
+      description: Recorded Future links category
+      type: String
+    - contextPath: RecordedFuture.Links.type
+      description: Recorded Future Links Type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entity_type
+      description: Recorded Future Links type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.type
+      description: RRecorded Future Link entity type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.name
+      description: Recorded Future Link entity name
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.score
+      description: Recorded Future Link Entity Risk Score
+      type: Number
+    description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
   isfetch: false
   runonce: false
 tests:

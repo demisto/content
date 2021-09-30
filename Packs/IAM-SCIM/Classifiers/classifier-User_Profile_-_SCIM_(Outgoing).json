@@ -358,6 +358,10 @@
      "complex": null,
      "simple": "username"
     },
+    "displayName": {
+     "complex": null,
+     "simple": "displayname"
+    },
     "userType": {
      "complex": null,
      "simple": "employeetype"
@@ -718,6 +722,10 @@
     "userName": {
      "complex": null,
      "simple": "username"
+    },
+    "displayName": {
+     "complex": null,
+     "simple": "displayname"
     },
     "userType": {
      "complex": null,

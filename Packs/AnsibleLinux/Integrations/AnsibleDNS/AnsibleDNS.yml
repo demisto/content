@@ -1,0 +1,110 @@
+category: IT Services
+commonfields:
+  id: AnsibleDNS
+  version: -1
+configuration:
+- additionalinfo: DNS Server Address
+  display: Server Address
+  name: server
+  required: true
+  type: 0
+- additionalinfo: Use this port when connecting to the Server
+  display: DNS Server Port
+  name: port
+  required: true
+  type: 0
+  defaultvalue: '53'
+- additionalinfo: Use TSIG key name to authenticate against DNS `server'
+  display: TSIG Key Name
+  displaypassword: TSIG Key Secret
+  name: creds
+  required: true
+  type: 9
+- additionalinfo: Specify key algorithm used by TSIG Key Secret
+  defaultvalue: 'hmac-md5'
+  display: Key Algorithm
+  name: key_algorithm
+  required: true
+  type: 15
+  options:
+  - HMAC-MD5.SIG-ALG.REG.INT
+  - hmac-md5
+  - hmac-sha1
+  - hmac-sha224
+  - hmac-sha256
+  - hmac-sha384
+  - hmac-sha512
+- additionalinfo: Sets the transport protocol (TCP or UDP). TCP is the recommended
+    and a more robust option.
+  defaultvalue: 'tcp'
+  display: Protocol
+  name: protocol
+  required: true
+  type: 15
+  options:
+  - tcp
+  - udp
+description: Manage DNS records using NSUpdate
+display: Ansible DNS
+fromversion: 6.0.0
+name: AnsibleDNS
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Manage DNS record.
+      name: state
+      predefined:
+      - present
+      - absent
+    - description: 'DNS record will be modified on this `zone`. When omitted DNS will
+        be queried to attempt finding the correct zone. Starting with Ansible 2.7
+        this parameter is optional.'
+      name: zone
+    - description: Sets the DNS record to modify. When zone is omitted this has to
+        be absolute (ending with a dot).
+      name: record
+      required: true
+    - defaultValue: A
+      description: Sets the record type.
+      name: type
+    - defaultValue: '3600'
+      description: Sets the record TTL.
+      name: ttl
+    - description: Sets the record value.
+      name: value
+    description: "Manage DNS records.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nsupdate_module.html"
+    name: dns-nsupdate
+    outputs:
+    - contextPath: DNS.Nsupdate.changed
+      description: If module has modified record
+      type: string
+    - contextPath: DNS.Nsupdate.record
+      description: DNS record
+      type: string
+    - contextPath: DNS.Nsupdate.ttl
+      description: DNS record TTL
+      type: number
+    - contextPath: DNS.Nsupdate.type
+      description: DNS record type
+      type: string
+    - contextPath: DNS.Nsupdate.value
+      description: DNS record value(s)
+      type: unknown
+    - contextPath: DNS.Nsupdate.zone
+      description: DNS record zone
+      type: string
+    - contextPath: DNS.Nsupdate.dns_rc
+      description: dnspython return code
+      type: number
+    - contextPath: DNS.Nsupdate.dns_rc_str
+      description: dnspython return code (string representation)
+      type: string
+  dockerimage: demisto/ansible-runner:1.0.0.23806
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)

@@ -375,11 +375,22 @@ def feed_main(params, feed_name, prefix):
             create_relationships = params.get('create_relationships')
             indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                              create_relationships)
-            if not len(indicators):
-                demisto.createIndicators(indicators, noUpdate=no_update)
+
+            # check if the version is higher than 6.5.0 so we can use noUpdate parameter
+            if is_demisto_version_ge('6.5.0'):
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)
+                else:
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)
+
             else:
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b, noUpdate=no_update)
+                # call createIndicators without noUpdate arg
+                if not indicators:
+                    demisto.createIndicators(indicators)
+                else:
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
