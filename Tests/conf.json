@@ -4552,7 +4552,7 @@
         },
         {
             "integrations": "Azure Sentinel",
-            "playbookID": "TestAzureSentinelPlaybook"
+            "playbookID": "TestAzureSentinelPlaybookV2"
         }
     ],
     "skipped_tests": {
