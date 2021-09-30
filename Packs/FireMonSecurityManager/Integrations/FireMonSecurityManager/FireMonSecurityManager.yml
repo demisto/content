@@ -43,8 +43,8 @@ script:
     hidden: false
     name: user-authentication
     outputs:
-    - contextPath: token
-      type: Unknown
+    - contextPath: FireMonSecurityManager.Authentication.token
+      type: String
       description: Authentication token
   - arguments:
     - default: false
@@ -84,6 +84,10 @@ script:
     execution: false
     hidden: false
     name: create-pp-ticket
+    outputs:
+      - contextPath: FireMonSecurityManager.CreatePPTicket.pp_ticket
+        type: Unknown
+        description: Response for Policy Planner Ticket
   - arguments:
     - default: false
       description: Domain ID
@@ -128,6 +132,10 @@ script:
     execution: false
     hidden: false
     name: pca
+    outputs:
+      - contextPath: FireMonSecurityManager.PCA.pca
+        type: Unknown
+        description: Response for PCA
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true

@@ -177,7 +177,7 @@ class Client(BaseClient):
                                           json_data=payload_pca,
                                           headers=headers,
                                           params=None,
-                                          timeout=20)
+                                          timeout=40)
         return api_response
 
     def rule_rec_api(self, auth_token, payload):
@@ -240,21 +240,35 @@ def test_module(client):
 
 
 def authenticate_command(client):
-    return client.authenticate_user().get('token')
+    response = client.authenticate_user()
+    return CommandResults(outputs_prefix='FireMonSecurityManager.Authentication',
+                          outputs_key_field='token',
+                          outputs=response.get('token'),
+                          readable_output=tableToMarkdown(name="FireMon SecurityManager Authentication Token:",
+                                                          t={"token": response.get('token')},
+                                                          removeNull=True),
+                          raw_response=response)
 
 
 def create_pp_ticket_command(client, args):
-    auth_token = authenticate_command(client)
-
+    auth_token_cmd_result = authenticate_command(client)
+    auth_token = auth_token_cmd_result.outputs
     payload = dict(domainId=args.get('domain_id'), workflowName=args.get('workflow_name'),
                    requirements=args.get("requirement"), priority=args.get("priority"),
                    due_date=args.get("due_date"))
-    result = client.create_pp_ticket(auth_token, payload)
-    return result
+    response = client.create_pp_ticket(auth_token, payload)
+    return CommandResults(outputs_prefix='FireMonSecurityManager.CreatePPTicket',
+                          outputs_key_field='pp_ticket',
+                          outputs=response,
+                          readable_output=tableToMarkdown(name="FireMon SecurityManager Create PP Ticket:",
+                                                          t=response,
+                                                          removeNull=True),
+                          raw_response=response)
 
 
 def pca_command(client, args):
-    auth_token = authenticate_command(client)
+    auth_token_cmd_result = authenticate_command(client)
+    auth_token = auth_token_cmd_result.outputs
     payload = dict(sources=list(args.get("sources").split(",")),
                    destinations=list(args.get('destinations').split(",")),
                    services=list(args.get('services').split(",")),
@@ -280,22 +294,45 @@ def pca_command(client, args):
         result[i] = client.validate_pca_change(filtered_rules,
                                                PCA_URL_SUFFIX.format(args.get('domain_id'), device_id),
                                                headers)
-        del result[i]['requestId']
-        del result[i]['pcaResult']['startDate']
-        del result[i]['pcaResult']['endDate']
-        del result[i]['pcaResult']['device']['parents']
-        del result[i]['pcaResult']['device']['children']
-        del result[i]['pcaResult']['device']['gpcDirtyDate']
-        del result[i]['pcaResult']['device']['gpcComputeDate']
-        del result[i]['pcaResult']['device']['gpcImplementDate']
-        del result[i]['pcaResult']['device']['state']
-        del result[i]['pcaResult']['device']['managedType']
-        del result[i]['pcaResult']['device']['gpcStatus']
-        del result[i]['pcaResult']['device']['updateMemberRuleDoc']
-        del result[i]['pcaResult']['device']['devicePack']
-        del result[i]['pcaResult']['affectedRules']
+        if 'requestId' in result[i]:
+            del result[i]['requestId']
+        if 'pcaResult' in result[i]:
+            if 'startDate' in result[i]['pcaResult']:
+                del result[i]['pcaResult']['startDate']
+            if 'endDate' in result[i]['pcaResult']:
+                del result[i]['pcaResult']['endDate']
+            if 'affectedRules' in result[i]['pcaResult']:
+                del result[i]['pcaResult']['affectedRules']
 
-    return result
+            if 'device' in result[i]['pcaResult']:
+                if 'parents' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['parents']
+                if 'children' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['children']
+                if 'gpcDirtyDate' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['gpcDirtyDate']
+                if 'gpcComputeDate' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['gpcComputeDate']
+                if 'gpcImplementDate' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['gpcImplementDate']
+                if 'state' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['state']
+                if 'managedType' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['managedType']
+                if 'gpcStatus' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['gpcStatus']
+                if 'updateMemberRuleDoc' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['updateMemberRuleDoc']
+                if 'devicePack' in result[i]['pcaResult']['device']:
+                    del result[i]['pcaResult']['device']['devicePack']
+
+    return CommandResults(outputs_prefix='FireMonSecurityManager.PCA',
+                          outputs_key_field='pca',
+                          outputs=result,
+                          readable_output=tableToMarkdown(name="FireMon SecurityManager PCA:",
+                                                          t={"pca": result},
+                                                          removeNull=True),
+                          raw_response=list_of_device_changes)
 
 
 def main():
