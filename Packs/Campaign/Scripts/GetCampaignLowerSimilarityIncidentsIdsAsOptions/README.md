@@ -1,4 +1,4 @@
-Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select **Phishing Campaign Select Campaign Lower Similarity Incidents** incident field.
+Gets the IDs of incidents with lower similarity. Used to fill the optional values of the multi-select **Select Low Similarity Incidents** incident field.
 
 ## Script Data
 ---
