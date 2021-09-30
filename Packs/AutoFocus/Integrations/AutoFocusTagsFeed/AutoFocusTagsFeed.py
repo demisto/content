@@ -62,14 +62,14 @@ class Client(BaseClient):
         super().__init__(BASE_URL, verify, proxy)
         self.api_key = api_key
 
-    def get_tags(self, page_num: int):
+    def get_tags(self, page_num: int=0):
         res = self._http_request('POST',
                                  url_suffix='tags',
                                  headers={
                                      'apiKey': self.api_key,
                                      'Content-Type': 'application/json'
                                  },
-                                 json_data={"pageNum": page_num, "pageSize": PAGE_SIZE},
+                                 json_data={"pageNum": page_num, "pageSize": PAGE_SIZE, "sortBy": "updated_at", "order": "desc"},
                                  )
         return res
 
@@ -90,20 +90,23 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         results = []
+        integration_context = {}
         if is_get_command:
             page_num = 0
         else:
             integration_context = demisto.getIntegrationContext()
             if not integration_context:
                 page_num = 0
+                time_of_first_fetch = time.time()
+                set_integration_context({'time_of_first_fetch': str(time_of_first_fetch)})
             else:
                 page_num = int(integration_context.get('page_num'))
-            if is_last_page_for_first_fetch():
-                pass
-        get_tags_response = self.get_tags(page_num)
+        get_tags_response = self.get_tags(page_num=page_num)
         tags = get_tags_response.get('tags', [])
-        demisto.debug(tags)
-        demisto.debug(f"page num{page_num}")
+        # when finishing the first level fetch, calling the api with
+        # page num greater than the total pages return empty tags list.
+        if not tags:
+            return only_updated_tags(integration_context, self)
         for tag in tags:
             public_tag_name = tag.get('public_tag_name', '')
             demisto.debug(f"puvlic tag name is {public_tag_name}")
@@ -112,15 +115,31 @@ class Client(BaseClient):
             demisto.debug(f"public tag name is {public_tag_name}")
         if not is_get_command:
             page_num += 1
-            set_integration_context({'page_num': str(page_num)})
+            update_integration_context({'page_num': str(page_num),
+                                        'most_updated_tag': get_most_updated_tag_update_time(tags)})
         return results
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def is_last_page_for_first_fetch():
-    pass
+def get_most_updated_tag_update_time(tags: list) -> str:
+    if len(tags)> 0:
+        return tags[0].get('updated_at', '').replae(' ', 'T')
+    return ''
+
+
+def only_updated_tags(integration_context: Dict[str, str], client: Client) -> list:
+    response = client.get_tags()
+    tags = response.get('tags', [])
+    most_updated_tag = get_most_updated_tag_update_time(tags)
+    time_from_last_update = integration_context.get('time_of_first_fetch')
+    if time_from_last_update:
+        update_integration_context({'time_of_first_fetch': ''})
+    else:
+        time_from_last_update = integration_context.get('most_updated_tag')
+    while most_updated_tag > time_from_last_update:
+        pass
 
 
 def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[str]:
@@ -165,7 +184,6 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     fields['description'] = tag.get('description')
     fields['lastseenbysource'] = tag.get('lasthit', '')
     fields['updateddate'] = tag.get('updated_at', '')
-    fields['threattypes'] = [{'threatcategory': tag_details.get('tag_groups')}]
     fields['reportedby'] = tag.get('source')
     remove_nulls_from_dictionary(fields)
     return fields
@@ -249,8 +267,6 @@ def fetch_indicators(client: Client,
     """
     iterator = client.build_iterator(is_get_command)
     indicators = []
-    all_tags = create_dict_of_all_tags(iterator)
-    # extract values from iterator
     for tag_details in iterator:
         tag = tag_details.get('tag')
         value_ = tag.get('tag_name')
@@ -263,7 +279,6 @@ def fetch_indicators(client: Client,
             'value': value_,
             'type': type_,
         }
-
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
         for key, value in tag_details.items():
