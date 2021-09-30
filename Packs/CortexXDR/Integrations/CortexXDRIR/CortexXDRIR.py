@@ -3377,7 +3377,8 @@ def filter_general_fields(alert: dict):
             if key not in ALERTS_GENERAL_FIELDS:
                 event.pop(key)
     else:
-        raise DemistoException('No XDR cloud analytics event.')
+        return_warning('No XDR cloud analytics event.')
+        sys.exit(0)
 
 
 def filter_vendor_fields(alert):
@@ -3705,7 +3706,7 @@ def main():
         elif demisto.command() == 'xdr-get-script-execution-result-files':
             return_results(get_script_execution_result_files_command(client, args))
 
-        elif demisto.command() == 'xdr-get-cloud-original_alerts':
+        elif demisto.command() == 'xdr-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-execute-commands':
