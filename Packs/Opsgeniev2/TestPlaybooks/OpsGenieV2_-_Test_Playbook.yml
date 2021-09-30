@@ -68,8 +68,8 @@ tasks:
     task:
       id: bbcdb8ce-d13d-4a06-851e-678d6dbcd328
       version: -1
-      name: list-alerts
-      script: '|||list-alerts'
+      name: opsgenie-list-alerts
+      script: '|||opsgenie-list-alerts'
       type: regular
       iscommand: true
       brand: ""
@@ -236,8 +236,8 @@ tasks:
     task:
       id: 4a8c0a3c-1c87-484e-870a-1341fd91a2b8
       version: -1
-      name: create-alert
-      script: '|||create-alert'
+      name: opsgenie-create-alert
+      script: '|||opsgenie-create-alert'
       type: regular
       iscommand: true
       brand: ""
@@ -346,8 +346,8 @@ tasks:
     task:
       id: d1b703d9-162f-497a-8725-3d67ccf4cf54
       version: -1
-      name: delete-alert
-      script: '|||delete-alert'
+      name: opsgenie-delete-alert
+      script: '|||opsgenie-delete-alert'
       type: regular
       iscommand: true
       brand: ""
@@ -452,8 +452,8 @@ tasks:
     task:
       id: b2fe7d04-0ecb-4c8a-8426-20f95586ca9b
       version: -1
-      name: get-alert
-      script: '|||get-alert'
+      name: opsgenie-get-alert
+      script: '|||opsgenie-get-alert'
       type: regular
       iscommand: true
       brand: ""
@@ -598,8 +598,8 @@ tasks:
     task:
       id: b710f5e9-094a-4bd6-8ccc-9e235eb90d7f
       version: -1
-      name: ack-alert
-      script: '|||ack-alert'
+      name: opsgenie-ack-alert
+      script: '|||opsgenie-ack-alert'
       type: regular
       iscommand: true
       brand: ""
@@ -704,8 +704,8 @@ tasks:
     task:
       id: 0fd76a5a-1f9e-41d5-81de-f9f43352e9dc
       version: -1
-      name: get-schedule
-      script: '|||get-schedule'
+      name: opsgenie-get-schedule
+      script: '|||opsgenie-get-schedule'
       type: regular
       iscommand: true
       brand: ""
@@ -739,8 +739,8 @@ tasks:
     task:
       id: b808cb03-79d2-4547-8c6a-678b79c81fbc
       version: -1
-      name: list-schedules
-      script: '|||list-schedules'
+      name: opsgenie-list-schedules
+      script: '|||opsgenie-list-schedules'
       type: regular
       iscommand: true
       brand: ""
@@ -817,8 +817,8 @@ tasks:
     task:
       id: 1835e7cb-14b4-4539-8d2e-ba62ce23a396
       version: -1
-      name: get-on-call
-      script: '|||get-on-call'
+      name: opsgenie-get-on-call
+      script: '|||opsgenie-get-on-call'
       type: regular
       iscommand: true
       brand: ""
@@ -908,8 +908,8 @@ tasks:
     task:
       id: 2cc9ef39-8585-4dcb-83a8-1fb7ea8c5a67
       version: -1
-      name: close-alert
-      script: '|||close-alert'
+      name: opsgenie-close-alert
+      script: '|||opsgenie-close-alert'
       type: regular
       iscommand: true
       brand: ""
