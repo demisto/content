@@ -8,10 +8,11 @@ configuration:
   defaultvalue: 'true'
   required: false
   type: 8
-- defaultvalue: Worldwide
+- defaultvalue: All
   display: Regions
   name: regions
   options:
+  - All
   - China
   - Germany
   - USGovDoD
@@ -141,7 +142,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

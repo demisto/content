@@ -1123,8 +1123,10 @@ def test_get_mapping_fields_command():
     """
     from CortexXDRIR import get_mapping_fields_command
     expected_mapping = {"Cortex XDR Incident": {
-        "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
-                  "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
+        "status": "Current status of the incident: \"new\",\"under_"
+                  "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                  "\"resolved_duplicate\",\"resolved_false_positive\","
+                  "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
         "assigned_user_mail": "Email address of the assigned user.",
         "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
@@ -1269,7 +1271,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'lastUpdate': 0
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    raw_incident['reply']['incident']['status'] = 'resolved_threat_handled'
+    raw_incident['reply']['incident']['status'] = 'resolved_true_positive'
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
@@ -2094,7 +2096,7 @@ def test_run_script_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and script parameters
+        - Endpoint IDs, script UID, script parameters and incident ID
     When
         - Running run-script command
     Then
@@ -2117,7 +2119,8 @@ def test_run_script_command(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2132,6 +2135,7 @@ def test_run_script_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': json.loads(parameters)
         }
     }
@@ -2141,7 +2145,7 @@ def test_run_script_command_empty_params(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and empty params
+        - Endpoint IDs, script UID, empty params and incident ID
     When
         - Running run-script command
     Then
@@ -2164,7 +2168,8 @@ def test_run_script_command_empty_params(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2179,12 +2184,13 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {}
         }
     }
 
 
-def test_run_snippet_code_script_command(requests_mock):
+def test_run_snippet_code_script_command_no_incident_id(requests_mock):
     """
     Given:
         - XDR client
@@ -2209,7 +2215,7 @@ def test_run_snippet_code_script_command(requests_mock):
     args = {
         'snippet_code': snippet_code,
         'endpoint_ids': endpoint_ids,
-        'timeout': timeout
+        'timeout': timeout,
     }
 
     response = run_snippet_code_script_command(client, args)
@@ -2222,7 +2228,52 @@ def test_run_snippet_code_script_command(requests_mock):
                 'field': 'endpoint_id_list',
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
-            }]
+            }],
+        }
+    }
+
+
+def test_run_snippet_code_script_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs snippet code and incident ID
+    When
+        - Running run-snippet-code-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_snippet_code_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_snippet_code_script', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    snippet_code = 'print("hello world")'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    args = {
+        'snippet_code': snippet_code,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'incident_id': '4',
+    }
+
+    response = run_snippet_code_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'snippet_code': snippet_code,
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4
         }
     }
 
@@ -2359,7 +2410,7 @@ def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and shell commands
+        - Endpoint IDs, shell commands and incident ID
     When
         - Running run-script-execute-commands command
     Then
@@ -2380,7 +2431,8 @@ def test_run_script_execute_commands_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'commands': commands
+        'commands': commands,
+        'incident_id': '4',
     }
 
     response = run_script_execute_commands_command(client, args)
@@ -2395,6 +2447,7 @@ def test_run_script_execute_commands_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'commands_list': commands.split(',')}
         }
     }
@@ -2404,7 +2457,7 @@ def test_run_script_delete_file_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-delete-file command
     Then
@@ -2425,7 +2478,8 @@ def test_run_script_delete_file_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_delete_file_command(client, args)
@@ -2440,6 +2494,7 @@ def test_run_script_delete_file_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'file_path': args.get('file_path')}
         }
     }
@@ -2449,7 +2504,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and files paths
+        - Endpoint IDs, files paths and incident ID
     When
         - Running run-script-delete-file command
     Then
@@ -2470,7 +2525,8 @@ def test_run_script_delete_multiple_files_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_delete_file_command(client, args)
@@ -2485,6 +2541,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'file_path': 'my_file.txt'}
         }
     }
@@ -2497,6 +2554,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'file_path': 'test.txt'}
         }
     }
@@ -2506,7 +2564,7 @@ def test_run_script_file_exists_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-file-exists command
     Then
@@ -2527,7 +2585,8 @@ def test_run_script_file_exists_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_file_exists_command(client, args)
@@ -2542,6 +2601,7 @@ def test_run_script_file_exists_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'path': args.get('file_path')}
         }
     }
@@ -2551,7 +2611,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and files paths
+        - Endpoint IDs, files paths and incident ID
     When
         - Running run-script-file-exists command
     Then
@@ -2572,7 +2632,8 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_file_exists_command(client, args)
@@ -2587,6 +2648,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'path': 'my_file.txt'}
         }
     }
@@ -2599,6 +2661,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'path': 'test.txt'}
         }
     }
@@ -2608,7 +2671,7 @@ def test_run_script_kill_process_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and process name
+        - Endpoint IDs, process name and incident ID
     When
         - Running run-script-kill-process command
     Then
@@ -2629,7 +2692,8 @@ def test_run_script_kill_process_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'process_name': process_name
+        'process_name': process_name,
+        'incident_id': '4',
     }
 
     response = run_script_kill_process_command(client, args)
@@ -2644,6 +2708,7 @@ def test_run_script_kill_process_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'process_name': process_name}
         }
     }
@@ -2653,7 +2718,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and multiple processes names
+        - Endpoint IDs, multiple processes names and incident ID
     When
         - Running run-script-kill-process command
     Then
@@ -2674,7 +2739,8 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'process_name': processes_names
+        'process_name': processes_names,
+        'incident_id': '4',
     }
 
     response = run_script_kill_process_command(client, args)
@@ -2689,6 +2755,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'process_name': 'process1.exe'}
         }
     }
@@ -2701,6 +2768,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }

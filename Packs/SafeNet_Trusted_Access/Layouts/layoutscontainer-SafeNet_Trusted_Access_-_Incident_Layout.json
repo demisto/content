@@ -756,18 +756,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_chronicleassetsupportcontact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleautoblockentities",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleskipentityisolation",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_classification",
                         "isVisible": true
                     },
@@ -789,18 +777,6 @@
                     },
                     {
                         "fieldId": "incident_country",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvelist",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {
@@ -964,10 +940,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_niststage",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_objective",
                         "isVisible": true
                     },
@@ -1005,10 +977,6 @@
                     },
                     {
                         "fieldId": "incident_rulename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sansstage",
                         "isVisible": true
                     },
                     {
@@ -1077,10 +1045,6 @@
                     },
                     {
                         "fieldId": "incident_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_target",
                         "isVisible": true
                     },
                     {
@@ -1288,18 +1252,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_chronicleassetsupportcontact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleautoblockentities",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_chronicleskipentityisolation",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_classification",
                         "isVisible": true
                     },
@@ -1321,18 +1273,6 @@
                     },
                     {
                         "fieldId": "incident_country",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvelist",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {
@@ -1500,10 +1440,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_niststage",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_objective",
                         "isVisible": true
                     },
@@ -1545,10 +1481,6 @@
                     },
                     {
                         "fieldId": "incident_rulename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sansstage",
                         "isVisible": true
                     },
                     {
@@ -1617,10 +1549,6 @@
                     },
                     {
                         "fieldId": "incident_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_target",
                         "isVisible": true
                     },
                     {

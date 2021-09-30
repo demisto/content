@@ -159,7 +159,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto | Optional |
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other, resolved_auto | Optional |
 
 
 ##### Context Output
@@ -179,7 +179,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
 | PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", or "resolved_other". | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", "resolved_true_positive", "resolved_security_testing", or "resolved_other". | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -301,7 +301,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.modification_time | Date | Date and time that the incident was last modified. |
 | PaloAltoNetworksXDR.Incident.detection_time | Date | Date and time that the first alert occurred in the incident. |
 | PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are:
-"new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other" |
+"new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other" |
 | PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" |
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. |
 | PaloAltoNetworksXDR.Incident.assigned_user_mail | String | Email address of the assigned user. |
@@ -734,7 +734,7 @@ Updates one or more fields of a specified incident. Missing fields will be ignor
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). | Optional | 
 | assigned_user_mail | Email address of the user to assigned to the incident. | Optional | 
 | assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
-| status | Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER). | Optional | 
+| status | Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER, RESOLVED_SECURITY_TESTING, RESOLVED_TRUE_POSSITIVE). | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. | Optional | 
 
@@ -819,6 +819,7 @@ Isolates the specified endpoint.
 | endpoint_id | The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints | Required | 
 | suppress_disconnected_endpoint_error | Whether to return an error when trying to isolate a disconnected endpoint. When sets to false, a warning will be returned. Possible values are: true, false. Default is True. | Optional | 
 
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 ##### Context Output
 
@@ -843,6 +844,7 @@ Reverses the isolation of an endpoint.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints | Required | 
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 | suppress_disconnected_endpoint_error | Whether to return an error when trying to unisolate a disconnected endpoint. When sets to false, a warning will be returned. Possible values are: true, false. Default is True. | Optional | 
 
 
@@ -1566,7 +1568,7 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
 | generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on, e.g.,"C:\Users\demisto\Desktop\CortexXSOAR.txt".  | Optional | 
-
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 #### Context Output
 
@@ -2084,6 +2086,7 @@ Initiates a new endpoint script execution action using a script from the script 
 | script_uid | Unique identifier of the script. Can be retrieved by running the [xdr-get-scripts](#19-xdr-get-scripts) command. | Required | 
 | parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"path":"test.txt"}. Can be retrieved by running the [xdr-get-script-metadata](#20-xdr-get-script-metadata) command. | Optional |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2135,6 +2138,7 @@ Initiates a new endpoint script execution action using provided snippet code.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required | 
 | snippet_code | Section of a script you want to initiate on an endpoint (e.g. print("7")). | Required | 
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2362,6 +2366,7 @@ Initiates a new endpoint script execution of shell commands.
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
 | commands | Comma-separated list of shell commands to execute. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2414,6 +2419,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
 | file_path |  Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2465,6 +2471,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
 | file_path | Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2516,6 +2523,7 @@ Initiates a new endpoint script execution kill process.
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
 | process_name | Names of processes to kill. Will run all processes on all endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2575,6 +2583,7 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
 | all | Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2633,6 +2642,7 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
 | all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2778,6 +2788,7 @@ Blacklists requested files which have not already been blacklisted or whiteliste
 | --- | --- | --- |
 | hash_list | String that represents a list of hashed files you want to blacklist. Must be a valid SHA256 hash. | Required |
 | comment | String that represents additional information regarding the action. | Optional |
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 
 #### Context Output
@@ -2800,7 +2811,7 @@ Whitelists requested files which have not already been blacklisted or whiteliste
 | --- | --- | --- |
 | hash_list | String that represents a list of hashed files you want to whitelist. Must be a valid SHA256 hash. | Required |
 | comment | String that represents additional information regarding the action. | Optional |
-
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 #### Context Output
 
@@ -2825,7 +2836,7 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 | endpoint_id_list | List of endpoint IDs. | Required |
 | file_path | String that represents the path of the file you want to quarantine. | Required |
 | file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required |
-
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 #### Context Output
 
@@ -2885,7 +2896,7 @@ Restores a quarantined file on requested endpoints.
 | --- | --- | --- |
 | file_hash | String that represents the file in hash. Must be a valid SHA256 hash. | Required |
 | endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined. | Optional |
-
+| incident_id | Allows to link the response action to the incident that triggered it. | Optional |
 
 #### Context Output
 
@@ -2893,3 +2904,48 @@ There is no context output for this command.
 
 #### Command Example
 ```!xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4```
+
+
+### 40. xdr-get-endpoints-by-status
+***
+Returns the number of the connected\disconnected endpoints.
+
+
+#### Base Command
+
+`xdr-get-endpoints-by-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Required | 
+| last_seen_gte | All the agents that were last seen after {last_seen_gte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.EndpointsStatus.status | String | The endpoint's status. | 
+| PaloAltoNetworksXDR.EndpointsStatus.count | Number | The number of endpoint's with this status. | 
+
+
+#### Command Example
+```!xdr-get-endpoints-by-status status=connected```
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "EndpointsStatus": {
+            "count": 4,
+            "status": "connected"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>connected endpoints count: 4
