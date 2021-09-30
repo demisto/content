@@ -400,7 +400,7 @@ script:
     description: Upsert a resource record set. If a resource record set does not already
       exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
       it with the values in the request.
-  dockerimage: demisto/boto3:2.0.0.19411
+  dockerimage: demisto/boto3:2.0.0.24033
   runonce: false
 tests:
 - No tests
