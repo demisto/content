@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: Displays the phishing campaign recipients email addresses and their amount.
+comment: Displays the phishing campaign recipients' email addresses and the number of incidents each email address appears in.
 enabled: true
 scripttarget: 0
 subtype: python3
