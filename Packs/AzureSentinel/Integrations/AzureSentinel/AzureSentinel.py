@@ -722,108 +722,6 @@ def incident_add_comment_command(client, args):
     )
 
 
-# deprecated
-def get_entity_by_id_command(client, args):
-    entity_id = args.get('entity_id')
-    expand_entity_information = argToBoolean(args.get('expand_entity_information'))
-
-    if not expand_entity_information:
-        url_suffix = f'entities/{entity_id}'
-
-        result = client.http_request('GET', url_suffix)
-
-        flattened_result = result.get('properties', {})
-        flattened_result['ID'] = result.get('name')
-        flattened_result['Kind'] = result.get('kind')
-
-        readable_output = tableToMarkdown(f'Entity {entity_id} details',
-                                          flattened_result,
-                                          removeNull=True,
-                                          headerTransform=pascalToSpace)
-
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='AzureSentinel.Entity',
-            outputs=flattened_result,
-            outputs_key_field='ID',
-            raw_response=result
-        )
-
-    else:
-        # This expansion_id is written according to -
-        # https://techcommunity.microsoft.com/t5/azure-sentinel/get-entities-for-a-sentinel-incidient-by-api/m-p/1422643
-
-        expansion_id = "98b974fd-cc64-48b8-9bd0-3a209f5b944b"
-        url_suffix = f'entities/{entity_id}/expand'
-        data = {
-            "expansionId": expansion_id
-        }
-
-        result = client.http_request('POST', url_suffix, data=data)
-
-        result_value = result.get('value', {})
-        result_entities = result_value.get('entities', [])
-        readable_output = tableToMarkdown(f'Entity {entity_id} details',
-                                          result_entities,
-                                          removeNull=True,
-                                          headerTransform=pascalToSpace)
-
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='AzureSentinel.Entity',
-            outputs=result_entities,
-            outputs_key_field='ID',
-            raw_response=result
-        )
-
-
-# deprecated
-def list_entity_relations_command(client, args):
-    entity_id = args.get('entity_id')
-    limit = min(50, int(args.get('limit')))
-    next_link = args.get('next_link', '')
-    entity_kinds = args.get('entity_kinds')
-    filter_expression = args.get('filter', '')
-
-    if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
-        result = client.http_request('GET', full_url=next_link)
-    else:
-        # Handle entity kinds to filter by
-        if entity_kinds:
-            if filter_expression:
-                filter_expression += ' and '
-            filter_expression += f"search.in(properties/relatedResourceKind, '{entity_kinds}', ',')"
-
-        url_suffix = f'entities/{entity_id}/relations'
-        params = {
-            '$top': limit,
-            '$filter': filter_expression
-        }
-        remove_nulls_from_dictionary(params)
-
-        result = client.http_request('GET', url_suffix, params=params)
-
-    relations = [
-        entity_related_resource_data_to_xsoar_format(resource, entity_id) for resource in result.get('value')
-    ]
-
-    outputs = {f'AzureSentinel.EntityRelatedResource(val.ID === obj.ID && val.EntityID == {entity_id})': relations}
-
-    update_next_link_in_context(result, outputs)
-
-    readable_output = tableToMarkdown(f'Entity {entity_id} Relations ({len(relations)} results)', relations,
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
-    return CommandResults(
-        outputs_prefix='AzureSentinel.EntityRelatedResource',
-        outputs_key_field=['ID', 'EntityID'],
-        readable_output=readable_output,
-        outputs=relations,
-        raw_response=result
-    )
-
-
 def list_incident_entities_command(client, args):
     """
     Get a list of incident's entities.
@@ -993,8 +891,6 @@ def main():
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
-            'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
-            'azure-sentinel-list-entity-relations': list_entity_relations_command,
             'azure-sentinel-list-incident-entities': list_incident_entities_command,
             'azure-sentinel-list-incident-alerts': list_incident_alerts_command,
             'azure-sentinel-list-watchlists': list_watchlists_command,
