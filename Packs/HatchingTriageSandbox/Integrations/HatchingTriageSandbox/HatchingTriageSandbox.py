@@ -46,7 +46,7 @@ def hatching_triage_submit(entry_id):
     }
     files = {
         'file': (file_path, open(file_path, 'rb')),
-        '_json': (None, '{"kind":"file","interactive":false}'),
+        '_json': (None, '{"kind":"file","interactive":false,"password":"Picard-2399"}'),
 
     }
     res = requests.post(URL, headers=headers, files=files)
