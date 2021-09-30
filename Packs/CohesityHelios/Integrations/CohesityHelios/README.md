@@ -112,7 +112,7 @@ Ignore detected anomalous object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Anomalous object name to be ignored. | Required | 
+| object_name | Anomalous object name to be ignored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts. | Required | 
 
 
 #### Context Output
@@ -139,7 +139,7 @@ Restore the latest clean snapshot for the given object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Anomalous object name to be restored. | Required | 
+| object_name | Anomalous object name to be restored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts. | Required | 
 
 
 #### Context Output

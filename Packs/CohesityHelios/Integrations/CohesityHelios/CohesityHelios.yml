@@ -141,7 +141,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Anomalous object name to be ignored.
+      description: Anomalous object name to be ignored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
@@ -151,7 +151,7 @@ script:
     name: cohesity-helios-ignore-anomalous-object
   - arguments:
     - default: false
-      description: Anomalous object name to be restored.
+      description: Anomalous object name to be restored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
