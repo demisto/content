@@ -350,7 +350,7 @@ def get_pagination_next_element(limit: str, page: int, client_request: Callable,
     tree = ET.ElementTree(ET.fromstring(response))
     root = tree.getroot()
 
-    return root.findtext('NextMarker')
+    return root.findtext('NextMarker')  # type: ignore
 
 
 def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -369,10 +369,9 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     marker = ''
     readable_message = f'Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
-    if page > 1:
-        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_shares_request,
-                                             params={"prefix": prefix})
-
+    if page > 1:  # type: ignore
+        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
+                                             client_request=client.list_shares_request, params={"prefix": prefix})
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
@@ -398,7 +397,7 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             for attribute in share_property:
                 properties[attribute.tag] = attribute.text
 
-        data['Properties'] = properties
+        data['Properties'] = properties  # type: ignore
         raw_response.append(data)
 
     readable_output = tableToMarkdown(
@@ -438,8 +437,8 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     marker = ''
     readable_message = f'Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
-    if page > 1:
-        marker = get_pagination_next_element(limit=limit, page=page,
+    if page > 1:  # type: ignore
+        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
                                              client_request=client.list_directories_and_files_request,
                                              params={"prefix": prefix, "share_name": share_name,
                                                      "directory_path": directory_path})
@@ -458,7 +457,7 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     root = tree.getroot()
 
     xml_path = ['Directory', 'File']
-    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}
+    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}  # type: ignore
 
     for path in xml_path:
         for element in root.iter(path):
@@ -469,9 +468,9 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
             for share_property in element.findall('Properties'):
                 for attribute in share_property:
                     properties[attribute.tag] = attribute.text
-            data['Properties'] = properties
+            data['Properties'] = properties  # type: ignore
 
-            raw_response[path].append(data)
+            raw_response[path].append(data)  # type: ignore
 
     response_copy = copy.deepcopy(raw_response)
     outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response['DirectoryId']}}
@@ -479,16 +478,17 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     time_headers = ['CreationTime', 'LastAccessTime', 'LastWriteTime', 'ChangeTime']
 
     for path in xml_path:
-        for element in response_copy.get(path):
+        for element in response_copy.get(path):  # type: ignore
             for header in time_headers:
-                str_time = element['Properties'].get(header)
+                str_time = element['Properties'].get(header)  # type: ignore
                 str_time = str_time[:-2] + 'Z'
-                element['Properties'][header] = FormatIso8601(datetime.strptime(str_time, GENERAL_DATE_FORMAT))
+                element['Properties'][header] = FormatIso8601(
+                    datetime.strptime(str_time, GENERAL_DATE_FORMAT))  # type: ignore
 
             element['Properties']['Last-Modified'] = FormatIso8601(
-                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))
+                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))  # type: ignore
 
-            element['Property'] = element.pop('Properties')
+            element['Property'] = element.pop('Properties')  # type: ignore
 
     outputs["Content"].update(response_copy)
 
@@ -561,7 +561,7 @@ def delete_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
     directory_name = args['directory_name']
     directory_path = args.get('directory_path')
 
-    client.delete_directory_request(share_name, directory_name, directory_path)
+    client.delete_directory_request(share_name, directory_name, directory_path)  # type: ignore
     command_results = CommandResults(
         readable_output=f'{directory_name} Directory successfully deleted from {share_name}.'
     )
@@ -584,8 +584,8 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     directory_path = args.get('directory_path')
     file_name = args.get('file_name')
 
-    client.create_file_request(share_name, file_entry_id, file_name, directory_path)
-    client.put_file_range_request(share_name, file_entry_id, file_name, directory_path)
+    client.create_file_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
+    client.put_file_range_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
 
     command_results = CommandResults(
         readable_output=f'File successfully created in {share_name}.'
@@ -594,7 +594,7 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def get_file_command(client: Client, args: Dict[str, Any]) -> fileResult:
+def get_file_command(client: Client, args: Dict[str, Any]) -> fileResult:  # type: ignore
     """
     Get file from Share.
     Args:

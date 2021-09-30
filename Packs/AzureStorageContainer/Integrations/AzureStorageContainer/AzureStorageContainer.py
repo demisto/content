@@ -283,7 +283,7 @@ def get_pagination_next_element(limit: str, page: int, client_request: Callable,
     tree = ET.ElementTree(ET.fromstring(response))
     root = tree.getroot()
 
-    return root.findtext('NextMarker')
+    return root.findtext('NextMarker')  # type: ignore
 
 
 def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -305,9 +305,9 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
     marker = ''
     readable_message = f'Containers List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
-    if page > 1:
-        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_containers_request,
-                                             params={"prefix": prefix})
+    if page > 1:  # type: ignore
+        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
+                                             client_request=client.list_containers_request, params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
@@ -392,7 +392,7 @@ def convert_dict_time_format(data: dict, keys: list):
     """
     for key in keys:
         if data.get(key):
-            time_value = datetime.strptime(data.get(key), DATE_FORMAT)
+            time_value = datetime.strptime(data.get(key), DATE_FORMAT)  # type: ignore
             iso_time = FormatIso8601(time_value)
             data[key] = iso_time
 
@@ -484,9 +484,11 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     marker = ''
     readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
-    if page > 1:
-        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_blobs_request,
-                                             params={"container_name": container_name, "prefix": prefix})
+    if page > 1:  # type: ignore
+        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
+                                             client_request=client.list_blobs_request,
+                                             params={"container_name": container_name,
+                                                     "prefix": prefix})  # type: ignore
 
         if not marker:
             return CommandResults(
@@ -512,7 +514,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             for attribute in blob_property:
                 properties[attribute.tag] = attribute.text
 
-        data['Property'] = properties
+        data['Property'] = properties  # type: ignore
         raw_response.append(data)
 
     outputs = {"name": container_name, "Blob": blobs}
@@ -585,7 +587,7 @@ def update_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def get_blob_command(client: Client, args: Dict[str, Any]) -> fileResult:
+def get_blob_command(client: Client, args: Dict[str, Any]) -> fileResult:  # type: ignore
     """
     Retrieve Blob from Container.
 
@@ -781,7 +783,7 @@ def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
 
     readable_output = tableToMarkdown(
         f'Blob {blob_name} Properties:',
-        outputs.get('Blob').get('Property'),
+        outputs.get('Blob').get('Property'),  # type: ignore
         headers=['creation_time', 'last_modified', 'content_length', 'content_type', 'etag'],
         headerTransform=string_to_table_header
     )

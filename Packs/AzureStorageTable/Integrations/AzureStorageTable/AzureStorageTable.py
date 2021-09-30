@@ -276,8 +276,8 @@ def query_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     readable_message = f'Tables List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
-    if page > 1:
-        offset = int(limit) * (page - 1)
+    if page > 1:  # type: ignore
+        offset = int(limit) * (page - 1)  # type: ignore
         response = client.query_tables_request(str(offset), query_filter)
 
         response_headers = response.headers
@@ -323,7 +323,7 @@ def convert_dict_time_format(data: dict, keys: list):
     """
     for key in keys:
         if data.get(key):
-            str_time = data.get(key)[:-2] + 'Z'
+            str_time = data.get(key)[:-2] + 'Z'  # type: ignore
             iso_time = FormatIso8601(datetime.strptime(str_time, DATE_FORMAT))
             data[key] = iso_time
 
@@ -357,7 +357,7 @@ def insert_entity_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     outputs = {"name": table_name, "Entity": [copy.deepcopy(response)]}
 
-    convert_dict_time_format(outputs.get('Entity')[0], ['Timestamp'])
+    convert_dict_time_format(outputs.get('Entity')[0], ['Timestamp'])  # type: ignore
 
     readable_output = tableToMarkdown(
         f'Entity Fields for {table_name} Table:',
@@ -455,12 +455,12 @@ def create_query_entity_output(table_name: str, raw_response: dict, is_entity_qu
     response_copy = copy.deepcopy(raw_response)
 
     if is_entity_query:
-        outputs["Entity"] = [response_copy]
+        outputs["Entity"] = [response_copy]  # type: ignore
     else:
-        outputs["Entity"] = response_copy.get('value')
+        outputs["Entity"] = response_copy.get('value')  # type: ignore
 
-    for entity in outputs.get("Entity"):
-        convert_dict_time_format(entity, ['Timestamp'])
+    for entity in outputs.get("Entity"):  # type: ignore
+        convert_dict_time_format(entity, ['Timestamp'])  # type: ignore
 
     return outputs
 
@@ -494,7 +494,7 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
                        f'Showing page {page or 1} out others that may exist'
 
     if page and page > 1:
-        offset = int(limit) * (page - 1)
+        offset = int(limit) * (page - 1)  # type: ignore
         response = client.query_entity_request(table_name, partition_key, row_key, query_filter, select, str(offset))
 
         response_headers = response.headers

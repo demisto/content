@@ -114,7 +114,7 @@ class Client:
 
         return response
 
-    def peek_messages_request(self, limit: str, queue_name: str) -> Response:
+    def peek_messages_request(self, limit: str, queue_name: str) -> str:
         """
         Retrieves messages from the front of the queue.
 
@@ -123,7 +123,7 @@ class Client:
             queue_name (str): Queue name.
 
         Returns:
-            Response: API response from Azure.
+            str: API response from Azure.
 
         """
         params = assign_params(numofmessages=limit, peekonly="true")
@@ -307,7 +307,7 @@ def get_pagination_next_element(limit: str, page: int, client_request: Callable,
     tree = ET.ElementTree(ET.fromstring(response))
     root = tree.getroot()
 
-    return root.findtext('NextMarker')
+    return root.findtext('NextMarker')  # type: ignore
 
 
 def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -328,9 +328,9 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     marker = ''
     readable_message = f'Queues List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
-    if page > 1:
-        marker = get_pagination_next_element(limit=limit, page=page, client_request=client.list_queues_request,
-                                             params={"prefix": prefix})
+    if page > 1:  # type: ignore
+        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
+                                             client_request=client.list_queues_request, params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
@@ -427,7 +427,7 @@ def convert_dict_time_format(data: dict, keys: list):
     """
     for key in keys:
         if data.get(key):
-            time_value = datetime.strptime(data.get(key), DATE_FORMAT)
+            time_value = datetime.strptime(data.get(key), DATE_FORMAT)  # type: ignore
             iso_time = FormatIso8601(time_value)
             data[key] = iso_time
 
@@ -504,7 +504,7 @@ def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if int(limit) <= 0 or int(limit) > 32:
         raise Exception('Invalid limit value. Minimum value is 1, maximum value is 32')
 
-    response = client.get_messages_request(queue_name, limit, visibility_time_out)
+    response = client.get_messages_request(queue_name, limit, visibility_time_out)  # type: ignore
 
     raw_response = parse_xml_response(xml_string_response=response, tag_path="QueueMessage")
 
@@ -714,7 +714,7 @@ def parse_incident(message: dict) -> dict:
 
     message['MessageText'] = decode_message(message['MessageText'])
     for header in time_headers:
-        time_value = datetime.strptime(message.get(header), DATE_FORMAT)
+        time_value = datetime.strptime(message.get(header), DATE_FORMAT)  # type: ignore
         iso_time = FormatIso8601(time_value) + 'Z'
         message[header] = iso_time
 
@@ -821,9 +821,9 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client, params.get('max_fetch'))
+            test_module(client, params.get('max_fetch'))  # type: ignore
         if command == 'fetch-incidents':
-            fetch_incidents(client, params.get('queue_name'), params.get('max_fetch'))
+            fetch_incidents(client, params.get('queue_name'), params.get('max_fetch'))  # type: ignore
         elif command in commands:
             return_results(commands[command](client, args))
         else:
