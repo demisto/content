@@ -1,5 +1,5 @@
 Nexthink helps IT teams deliver on the promise of the modern digital workplace. Nexthink is the only solution to provide enterprises with a way to visualize, act and engage across the entire IT ecosystem to lower IT cost and improve digital employee experience.
-This integration was integrated and tested with version 1.0 of Nexthink.
+This integration was integrated and tested with version xx of Nexthink
 
 ## Configure Nexthink on Cortex XSOAR
 
@@ -7,14 +7,14 @@ This integration was integrated and tested with version 1.0 of Nexthink.
 2. Search for Nexthink.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Engine Host (e.g. connector.nexthink.com) | True |
-    | Nexthink Connector Port| False |
-    | Username | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-     Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Engine Host (e.g. connector.nexthink.com) |  | True |
+    | Nexthink Engine Port (e.g. 1671) |  | False |
+    | Username |  | True |
+    | Password |  | True |
+    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+    | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -32,24 +32,24 @@ Verify antivirus/antispyware status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ipaddress | Endpoint IP Address. Default is None. | Required |
-| hostname | Endpoint Hostname. Default is None. | Required |
+| ipaddress | Endpoint IP Address. | Optional |
+| hostname | Endpoint Hostname. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexthink.Compliance.DeviceName | string | Endpoint Device Host Name |
-| Nexthink.Compliance.LastLoggedOnUser | string | Last Logged On User |
-| Nexthink.Compliance.IPAddress | string | Endpoint IP Address |
-| Nexthink.Compliance.MACAddress | string | Endpoint MAC Address |
-| Nexthink.Compliance.DeviceAntivirus | string | Endpoint Antivirus Name |
-| Nexthink.Compliance.DeviceAntivirusRTP | string | Endpoint Antivirus Real Time Protection Status |
-| Nexthink.Compliance.DeviceAntivirusUpdated | string | Endpoint Antivirus Update Status |
-| Nexthink.Compliance.DeviceAntispyware | string | Endpoint Antispyware Name |
-| Nexthink.Compliance.DeviceAntispywareRTP | string | Endpoint Antispyware Real Time Protection Status |
-| Nexthink.Compliance.DeviceAntispywareUpdated | string | Endpoint Antispyware Update Status |
+| Nexthink.Compliance.DeviceName | string | Endpoint device host name. |
+| Nexthink.Compliance.LastLoggedOnUser | string | Last logged on user. |
+| Nexthink.Compliance.IPAddress | string | Endpoint IP address. |
+| Nexthink.Compliance.MACAddress | string | Endpoint MAC address. |
+| Nexthink.Compliance.DeviceAntivirus | string | Endpoint antivirus name. |
+| Nexthink.Compliance.DeviceAntivirusRTP | string | Endpoint antivirus real time protection status. |
+| Nexthink.Compliance.DeviceAntivirusUpdated | string | Endpoint antivirus update status. |
+| Nexthink.Compliance.DeviceAntispyware | string | Endpoint Antispyware name. |
+| Nexthink.Compliance.DeviceAntispywareRTP | string | Endpoint Antispyware real time protection status. |
+| Nexthink.Compliance.DeviceAntispywareUpdated | string | Endpoint Antispyware update status. |
 
 
 #### Command Example
@@ -79,13 +79,13 @@ Query installed software in endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexthink.Package.PackageName | string | Package Name |
-| Nexthink.Package.PackagePublisher | string | Packaged Publisher |
-| Nexthink.Package.PackageVersion | string | Package Version |
-| Nexthink.Package.DeviceName | string | Endpoint Device Host Name |
-| Nexthink.Package.LastLoggedOnUser | string | Last Logged On User |
-| Nexthink.Package.IPAddress | string | Endpoint IP Address |
-| Nexthink.Package.MACAddress | string | Endpoint MAC Address |
+| Nexthink.Package.PackageName | string | Package name. |
+| Nexthink.Package.PackagePublisher | string | Packaged publisher. |
+| Nexthink.Package.PackageVersion | string | Package version. |
+| Nexthink.Package.DeviceName | string | Endpoint device host name. |
+| Nexthink.Package.LastLoggedOnUser | string | Last logged on user. |
+| Nexthink.Package.IPAddress | string | Endpoint IP address. |
+| Nexthink.Package.MACAddress | string | Endpoint MAC address. |
 
 
 #### Command Example
@@ -107,18 +107,18 @@ Get endpoint details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint Hostname. Default is None. | Required |
-| ipaddress | Endpoint IP Address. Default is None. | Required |
+| hostname | Endpoint hostname. | Optional |
+| ipaddress | Endpoint IP Address. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexthink.Endpoint.EndpointName | string | Endpoint Device Host Name |
-| Nexthink.Endpoint.LastLoggedOnUser | string | Last Logged On User |
-| Nexthink.Endpoint.IPAddress | string | Endpoint IP Address |
-| Nexthink.Endpoint.MACAddress | string | Endpoint MAC Address |
+| Nexthink.Endpoint.EndpointName | string | Endpoint device host name. |
+| Nexthink.Endpoint.LastLoggedOnUser | string | Last logged on user. |
+| Nexthink.Endpoint.IPAddress | string | Endpoint IP address. |
+| Nexthink.Endpoint.MACAddress | string | Endpoint MAC address. |
 
 
 #### Command Example
