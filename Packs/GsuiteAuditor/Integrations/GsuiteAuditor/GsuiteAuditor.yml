@@ -3,79 +3,23 @@ commonfields:
   id: GSuiteAuditor
   version: -1
 configuration:
-- name: user_service_account_json
+- additionalinfo: User's Service Account JSON key.
   display: User's Service Account JSON
+  name: user_service_account_json
   required: true
-  defaultvalue: ""
   type: 4
-  additionalinfo: "User's Service Account JSON key."
-- name: admin_email
-  display: Admin Email
+- display: Admin Email
+  name: admin_email
   required: false
-  defaultvalue: ""
   type: 0
-  additionalinfo: ""
-- name: applications
-  display: Fetch Application Names
-  required: false
-  defaultvalue: admin
-  type: 16
-  additionalinfo: ""
-  options:
-  - access_transparency
-  - admin
-  - calendar
-  - chat
-  - drive
-  - gcp
-  - gplus
-  - groups
-  - groups_enterprise
-  - jamboard
-  - login
-  - meet
-  - mobile
-  - rules
-  - saml
-  - token
-  - user_accounts
-  - context_aware_access
-  - chrome
-  - data_studio
-  - keep
-- name: max_fetch
-  display: Number of incidents for each fetch.
-  required: false
-  defaultvalue: "10"
-  type: 0
-  additionalinfo: ""
-- defaultvalue: Google Activity
-  display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- name: first_fetch
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  required: false
-  defaultvalue: 12 hours
-  type: 0
-  additionalinfo: ""
-- name: isFetch
-  display: Fetch incidents
+- display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
-- name: proxy
-  display: Use system proxy settings
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  defaultvalue: ""
   type: 8
-  additionalinfo: ""
-- name: insecure
-  display: Trust any certificate (not secure)
-  required: false
-  defaultvalue: ""
-  type: 8
-  additionalinfo: ""
 description: G Suite Auditor is an integration to receive Audit logs from  G Suite
   different applications - admin,drive,calender and more.
 display: G Suite Auditor
@@ -151,21 +95,23 @@ script:
       name: actor_ip_address
       required: false
       secret: false
-    - name: start_time
+    - default: false
       description: Sets the beginning of the range of time shown in the report. example
         - 2010-10-28T10:26:35.000Z
-      required: false
       isArray: false
-      defaultValue: ""
-    - name: end_time
+      name: start_time
+      required: false
+      secret: false
+    - default: false
       description: Sets the end of the range of time shown in the report. example
         - 2010-10-28T10:26:35.000Z
-      required: false
       isArray: false
-      defaultValue: ""
+      name: end_time
+      required: false
+      secret: false
     - default: false
-      defaultValue: "1000"
-      description: "Maximum number of results to return. "
+      defaultValue: '1000'
+      description: 'Maximum number of results to return. '
       isArray: false
       name: max_results
       required: false
@@ -237,13 +183,13 @@ script:
     - contextPath: GSuite.PageToken.ActivitySearch.nextPageToken
       description: Token to specify the next page in the list.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.23531
+  dockerimage: demisto/googleapi-python3:1.0.0.24037
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: "-"
+  script: '-'
   subtype: python3
   type: python
 tests:

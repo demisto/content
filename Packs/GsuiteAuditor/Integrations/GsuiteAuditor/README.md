@@ -1,4 +1,8 @@
-G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calender and more.
+G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calendar and more.
+
+##Google's lag time information
+This integration relies on Google's audit logs which are prone to some data delays. Please note that some results may be partial as data has yet to arrive due to lag times. Lag time changes depending on the used audit log (between near real-time up to 3 days).
+for more information - https://support.google.com/a/answer/7061566?hl=en
 
 ## Configure Service Account for G Suite Auditor
 
@@ -11,7 +15,7 @@ G Suite Auditor is an integration to receive Audit logs from  G Suite different 
 
 3. Enable the Admin SDK API:
     
-    1. Under the main menu, select **APIs & Services > Libary**:
+    1. Under the main menu, select **APIs & Services > Library**:
         ![Setup Account](./../../doc_files/google-api-menu.png)
     
     2. Enable *Admin SDK*:
@@ -63,12 +67,8 @@ G Suite Auditor is an integration to receive Audit logs from  G Suite different 
     | --- | --- |
     | User's Service Account JSON | True |
     | Admin Email | False |
-    | Fetch Application Names | False |
-    | Number of incidents for each fetch. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | Incident type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -141,7 +141,7 @@ Retrieves a list of activities for a specific customer's account and application
                         "parameters": [
                             {
                                 "name": "USER_EMAIL",
-                                "value": "xsoar11@demistodev.com"
+                                "value": "user@email.com"
                             },
                             {
                                 "name": "PRODUCT_NAME",
@@ -165,7 +165,7 @@ Retrieves a list of activities for a specific customer's account and application
             {
                 "actor": {
                     "callerType": "USER",
-                    "email": "admin@demistodev.com",
+                    "email": "admin@email.com",
                     "profileId": "103020731686044834269"
                 },
                 "events": [
@@ -174,7 +174,7 @@ Retrieves a list of activities for a specific customer's account and application
                         "parameters": [
                             {
                                 "name": "USER_EMAIL",
-                                "value": "xsoar11@demistodev.com"
+                                "value": "user@email.com"
                             }
                         ],
                         "type": "USER_SETTINGS"
@@ -202,8 +202,8 @@ Retrieves a list of activities for a specific customer's account and application
 
 >### Next Page Token: A:1627350460585000:-4797090398870165525:207535951991:C02f0zfqw
 >### Total Retrieved Activities: 2
->|time|applicationName|email|profileId|ipAddress|events|
+>|Time|Application Name|Email|ProfileId|IpAddress|Events|
 >|---|---|---|---|---|---|
->| 2021-07-27T02:47:20.894Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'xsoar11@demistodev.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |
->| 2021-07-27T01:47:40.585Z | admin | admin@demistodev.com | 103020731686044834269 | - | {'type': 'USER_SETTINGS', 'name': 'DELETE_USER', 'parameters': [{'name': 'USER_EMAIL', 'value': 'xsoar11@demistodev.com'}]} |
+>| 2021-07-27T02:47:20.894Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'user@email.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |
+>| 2021-07-27T01:47:40.585Z | admin | admin@email.com | 103020731686044834269 | - | {'type': 'USER_SETTINGS', 'name': 'DELETE_USER', 'parameters': [{'name': 'USER_EMAIL', 'value': 'user@email.com'}]} |
 
