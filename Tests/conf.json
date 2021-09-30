@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GSuiteAuditor",
+            "playbookID": "TestGSuiteAuditPlaybook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
