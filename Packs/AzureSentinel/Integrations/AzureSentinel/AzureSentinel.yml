@@ -371,7 +371,7 @@ script:
       description: A file entry with raw content that represents the watchlist items
         to create.
       isArray: false
-      name: raw_content
+      name: file_entry_id
       required: true
       secret: false
     - default: false

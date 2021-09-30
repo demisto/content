@@ -29,7 +29,7 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
                     'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
-                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated', 'Etag']
+                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -512,7 +512,7 @@ def create_update_watchlist_command(client, args):
     # prepare the request
     alias = args.get('watchlist_alias')
     raw_content = ''
-    path = args.get('raw_content')
+    path = args.get('file_entry_id')
     if path:
         path = demisto.getFilePath(path)
         with open(path['path'], 'rb') as file:
@@ -730,7 +730,7 @@ def get_entity_by_id_command(client, args):
     if not expand_entity_information:
         url_suffix = f'entities/{entity_id}'
 
-        result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
+        result = client.http_request('GET', url_suffix)
 
         flattened_result = result.get('properties', {})
         flattened_result['ID'] = result.get('name')
@@ -741,15 +741,14 @@ def get_entity_by_id_command(client, args):
                                           removeNull=True,
                                           headerTransform=pascalToSpace)
 
-        outputs = {
-            'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
-        }
-
-        return (
-            readable_output,
-            outputs,
-            result
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureSentinel.Entity',
+            outputs=flattened_result,
+            outputs_key_field='ID',
+            raw_response=result
         )
+
     else:
         # This expansion_id is written according to -
         # https://techcommunity.microsoft.com/t5/azure-sentinel/get-entities-for-a-sentinel-incidient-by-api/m-p/1422643
@@ -760,7 +759,7 @@ def get_entity_by_id_command(client, args):
             "expansionId": expansion_id
         }
 
-        result = client.http_request('POST', url_suffix, is_get_entity_cmd=True, data=data)
+        result = client.http_request('POST', url_suffix, data=data)
 
         result_value = result.get('value', {})
         result_entities = result_value.get('entities', [])
@@ -769,14 +768,12 @@ def get_entity_by_id_command(client, args):
                                           removeNull=True,
                                           headerTransform=pascalToSpace)
 
-        outputs = {
-            'AzureSentinel.Entity(val.id === obj.id)': result_entities
-        }
-
-        return (
-            readable_output,
-            outputs,
-            result
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureSentinel.Entity',
+            outputs=result_entities,
+            outputs_key_field='ID',
+            raw_response=result
         )
 
 
@@ -819,6 +816,8 @@ def list_entity_relations_command(client, args):
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
     return CommandResults(
+        outputs_prefix='AzureSentinel.EntityRelatedResource',
+        outputs_key_field=['ID', 'EntityID'],
         readable_output=readable_output,
         outputs=relations,
         raw_response=result
