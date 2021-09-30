@@ -873,7 +873,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     severity = params.get('severity')
     resolution_status = params.get('resolution_status')
-    fetch_delta_time = arg_to_number(params.get('fetch_delta_time')) or 0
+    fetch_delta_time = arg_to_number(params.get('fetch_delta_time') or 0)
 
     LOG(f'Command being called is {command}')
     try:
