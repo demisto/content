@@ -1,7 +1,5 @@
 id: QRadar Advanced Searching
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: QRadar Advanced Searching
 description: |-
   The Playbook queries QRadar SIEM using complex queries in case the provided search values require several conditions. Complex queries take into consideration several inputs and allow to include or exclude each of the values as well as perform a full or partial search. Each of the values can be searched across several fields.
@@ -15,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 60742575-4d10-4e7f-8982-ebcb9c1a8019
+    taskid: 58539ed8-2f4e-43cf-8465-d670bea68a9d
     type: start
     task:
-      id: 60742575-4d10-4e7f-8982-ebcb9c1a8019
+      id: 58539ed8-2f4e-43cf-8465-d670bea68a9d
       version: -1
       name: ""
       iscommand: false
@@ -44,10 +42,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 53898dd6-0038-405c-8d4b-331ad59113ee
+    taskid: 96914dd7-fda8-4963-8ce0-eabe6c1587b9
     type: title
     task:
-      id: 53898dd6-0038-405c-8d4b-331ad59113ee
+      id: 96914dd7-fda8-4963-8ce0-eabe6c1587b9
       version: -1
       name: First Input Search
       type: title
@@ -74,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 44983474-48ac-441d-8e98-f110bab978b2
+    taskid: c14b9cb1-23b3-423c-89ee-1e45a57b20f0
     type: condition
     task:
-      id: 44983474-48ac-441d-8e98-f110bab978b2
+      id: c14b9cb1-23b3-423c-89ee-1e45a57b20f0
       version: -1
       name: Were the first inputs provided properly?
       description: Is there an IP on which to search?
@@ -146,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 807ef13a-3637-4fd4-832f-11def93c4b16
+    taskid: d2048001-4792-4616-8aff-2d32d8b8182b
     type: condition
     task:
-      id: 807ef13a-3637-4fd4-832f-11def93c4b16
+      id: d2048001-4792-4616-8aff-2d32d8b8182b
       version: -1
       name: Are there fields for the first input?
       description: Is there a custom IP field?
@@ -187,10 +185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 9d5a7c2c-b014-4519-806d-933e1b918a96
+    taskid: b02b0018-bcb7-4a8d-85e6-ab71472ab750
     type: condition
     task:
-      id: 9d5a7c2c-b014-4519-806d-933e1b918a96
+      id: b02b0018-bcb7-4a8d-85e6-ab71472ab750
       version: -1
       name: Is Qradar enabled?
       description: Is Qradar enabled?
@@ -245,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: ae6e33ca-0ad7-4298-8e1e-e5cac7cfe384
+    taskid: 581100f1-c920-4646-8cb3-7ce525c52f54
     type: title
     task:
-      id: ae6e33ca-0ad7-4298-8e1e-e5cac7cfe384
+      id: 581100f1-c920-4646-8cb3-7ce525c52f54
       version: -1
       name: QRadar query with custom fields
       type: title
@@ -257,8 +255,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "168"
       - "169"
+      - "236"
     separatecontext: false
     view: |-
       {
@@ -276,10 +274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: a5ff9983-ca56-4293-8282-2db0c5b7134c
+    taskid: 5fe3a742-3b2a-4d5e-8350-bd553be239de
     type: title
     task:
-      id: a5ff9983-ca56-4293-8282-2db0c5b7134c
+      id: 5fe3a742-3b2a-4d5e-8350-bd553be239de
       version: -1
       name: QRadar query without custom fields
       type: title
@@ -307,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
+    taskid: 3c44cee4-6746-4a2a-8e8d-a9075b3b4364
     type: title
     task:
-      id: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
+      id: 3c44cee4-6746-4a2a-8e8d-a9075b3b4364
       version: -1
       name: Sort internal and external IP addresses
       type: title
@@ -324,8 +322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 5420
+          "x": 630,
+          "y": 6200
         }
       }
     note: false
@@ -337,10 +335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: b8f2ec71-559f-46ca-8a13-9eff306b9c52
+    taskid: 8ccce2b7-1b19-4bd2-8444-96ae87a034ed
     type: regular
     task:
-      id: b8f2ec71-559f-46ca-8a13-9eff306b9c52
+      id: 8ccce2b7-1b19-4bd2-8444-96ae87a034ed
       version: -1
       name: Set detected IP addresses as external
       description: Checks if the specified value exists in context. If the value exists,
@@ -376,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 6100
+          "x": 730,
+          "y": 6880
         }
       }
     note: false
@@ -389,10 +387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: 00e1d579-b406-4db4-8af2-27369eee70f3
+    taskid: 2c9fb8ea-e8f2-4f0d-8ebc-3d644e52e60b
     type: condition
     task:
-      id: 00e1d579-b406-4db4-8af2-27369eee70f3
+      id: 2c9fb8ea-e8f2-4f0d-8ebc-3d644e52e60b
       version: -1
       name: Are there detected IP addresses?
       type: condition
@@ -416,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 5550
+          "x": 630,
+          "y": 6330
         }
       }
     note: false
@@ -429,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: c11c8eda-919b-409e-805d-bac3d7625b98
+    taskid: dfd3df8d-3970-4527-8baf-017cb5600cff
     type: regular
     task:
-      id: c11c8eda-919b-409e-805d-bac3d7625b98
+      id: dfd3df8d-3970-4527-8baf-017cb5600cff
       version: -1
       name: Determine whether the IP address is internal or external
       description: Returns yes if the IP is in one of the ranges provided, returns
@@ -453,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 5800
+          "x": 730,
+          "y": 6550
         }
       }
     note: false
@@ -466,10 +464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: c6f7a18d-5499-46a0-8060-acb9a13d9e23
+    taskid: c5ad840d-fc96-4282-8dfd-67eb7ffb3da9
     type: regular
     task:
-      id: c6f7a18d-5499-46a0-8060-acb9a13d9e23
+      id: c5ad840d-fc96-4282-8dfd-67eb7ffb3da9
       version: -1
       name: Set detected IP addresses as internal
       description: Checks if the specified value exists in context. If the value exists,
@@ -505,8 +503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 5950
+          "x": 730,
+          "y": 6710
         }
       }
     note: false
@@ -518,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "160":
     id: "160"
-    taskid: b5c837ba-5e3d-4bfe-859a-a65e8999377d
+    taskid: 5676b03a-78bb-4b88-86f3-8b6277c4fdcb
     type: regular
     task:
-      id: b5c837ba-5e3d-4bfe-859a-a65e8999377d
+      id: 5676b03a-78bb-4b88-86f3-8b6277c4fdcb
       version: -1
       name: Set detected source and destination IP addresses
       description: Sets a value into the context with the given context key
@@ -556,8 +554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 4600
+          "x": 630,
+          "y": 5380
         }
       }
     note: false
@@ -569,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "161":
     id: "161"
-    taskid: 952ba242-20e8-4f24-8f95-35b33d35c0e6
+    taskid: e7ce21c3-cfcd-4468-8a2a-ffff8a33897e
     type: regular
     task:
-      id: 952ba242-20e8-4f24-8f95-35b33d35c0e6
+      id: e7ce21c3-cfcd-4468-8a2a-ffff8a33897e
       version: -1
       name: Set detected usernames
       description: Sets a value into the context with the given context key
@@ -607,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 4770
+          "x": 630,
+          "y": 5550
         }
       }
     note: false
@@ -620,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "162":
     id: "162"
-    taskid: be5ae3b8-84fa-4733-895d-d8f8fb424d39
+    taskid: 106608e6-f93a-4f1e-82d8-1f819b72f425
     type: regular
     task:
-      id: be5ae3b8-84fa-4733-895d-d8f8fb424d39
+      id: 106608e6-f93a-4f1e-82d8-1f819b72f425
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -658,8 +656,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 4970
+          "x": 630,
+          "y": 5750
         }
       }
     note: false
@@ -671,10 +669,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 1453c864-a986-4422-8f04-4678b69fa4b5
+    taskid: 8c80a293-ce03-4618-841d-a8f43bf9171c
     type: regular
     task:
-      id: 1453c864-a986-4422-8f04-4678b69fa4b5
+      id: 8c80a293-ce03-4618-841d-a8f43bf9171c
       version: -1
       name: Set detected hostnames from assets
       description: Sets a value into the context with the given context key
@@ -700,8 +698,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 5180
+          "x": 630,
+          "y": 5960
         }
       }
     note: false
@@ -713,10 +711,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 62f9be0a-4de9-4ead-89b7-4455030ea30d
+    taskid: 627999b4-7df9-4fd8-8fc2-617115e5a147
     type: condition
     task:
-      id: 62f9be0a-4de9-4ead-89b7-4455030ea30d
+      id: 627999b4-7df9-4fd8-8fc2-617115e5a147
       version: -1
       name: Have results been detected?
       description: Is domain or url detected by QRadar?
@@ -740,8 +738,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 4280
+          "x": 540,
+          "y": 4980
         }
       }
     note: false
@@ -753,10 +751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "165":
     id: "165"
-    taskid: 299c8685-8d43-4ef6-8a1c-0cfb2c00e518
+    taskid: 17fad474-433c-4bc6-86bd-acb3a0613907
     type: title
     task:
-      id: 299c8685-8d43-4ef6-8a1c-0cfb2c00e518
+      id: 17fad474-433c-4bc6-86bd-acb3a0613907
       version: -1
       name: Done
       type: title
@@ -767,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 6320
+          "x": 400,
+          "y": 7060
         }
       }
     note: false
@@ -780,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "166":
     id: "166"
-    taskid: c53ecc0c-38d3-4c8b-8103-ca8dd816672c
+    taskid: efd45309-ef61-4839-882d-d0e0156a977d
     type: title
     task:
-      id: c53ecc0c-38d3-4c8b-8103-ca8dd816672c
+      id: efd45309-ef61-4839-882d-d0e0156a977d
       version: -1
       name: Set detecetd Values
       type: title
@@ -797,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 4470
+          "x": 630,
+          "y": 5250
         }
       }
     note: false
@@ -810,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "167":
     id: "167"
-    taskid: bbceab59-bdb9-4f2e-808b-61d86d92a932
+    taskid: d9353993-37ac-4632-8595-5ae4b3a826ea
     type: playbook
     task:
-      id: bbceab59-bdb9-4f2e-808b-61d86d92a932
+      id: d9353993-37ac-4632-8595-5ae4b3a826ea
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -903,6 +901,42 @@ tasks:
                   simple: 'select '
               suffix:
                 iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -914,8 +948,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 395
+          "x": 1670,
+          "y": 585
         }
       }
     note: false
@@ -927,10 +961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "168":
     id: "168"
-    taskid: 041102ec-6904-4ba7-8d3b-706abfc31960
+    taskid: 2752b10a-e0e6-492b-8d7c-00edee60fcd2
     type: regular
     task:
-      id: 041102ec-6904-4ba7-8d3b-706abfc31960
+      id: 2752b10a-e0e6-492b-8d7c-00edee60fcd2
       version: -1
       name: Set state
       description: Set a value in context under the key you entered.
@@ -945,30 +979,13 @@ tasks:
       key:
         simple: State1
       value:
-        complex:
-          root: inputs.FirstFieldState
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition: {}
-              else:
-                value:
-                  simple: ' NOT '
-              equals:
-                value:
-                  simple: include
-              lhs: {}
-              options: {}
-              rhs: {}
-              then:
-                value:
-                  simple: ' '
+        simple: ' '
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1680,
-          "y": -795
+          "x": 1670,
+          "y": -615
         }
       }
     note: false
@@ -980,10 +997,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "169":
     id: "169"
-    taskid: 1c29cb94-2f80-48e8-8bed-e9c6d310af18
+    taskid: 31318080-bdfe-43f2-8ccc-ede62f1e1021
     type: regular
     task:
-      id: 1c29cb94-2f80-48e8-8bed-e9c6d310af18
+      id: 31318080-bdfe-43f2-8ccc-ede62f1e1021
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -1015,12 +1032,12 @@ tasks:
               rhs: {}
               then:
                 value:
-                  simple: ' = '
+                  simple: '= '
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2090,
+          "x": 2820,
           "y": -795
         }
       }
@@ -1033,10 +1050,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "170":
     id: "170"
-    taskid: 582ff579-521d-4843-88cf-bf8ad1eb1a02
+    taskid: f0c86abb-b44b-4b4d-81a3-3f142b929126
     type: regular
     task:
-      id: 582ff579-521d-4843-88cf-bf8ad1eb1a02
+      id: f0c86abb-b44b-4b4d-81a3-3f142b929126
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -1088,8 +1105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": -120
+          "x": 1670,
+          "y": 80
         }
       }
     note: false
@@ -1101,10 +1118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "171":
     id: "171"
-    taskid: 48e94a3b-9f90-4ac2-8d93-badb5cf35890
+    taskid: acdb42cc-97a0-45e7-8d73-63be0072b454
     type: condition
     task:
-      id: 48e94a3b-9f90-4ac2-8d93-badb5cf35890
+      id: acdb42cc-97a0-45e7-8d73-63be0072b454
       version: -1
       name: First match exact or partial?
       type: condition
@@ -1141,8 +1158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1680,
-          "y": -470
+          "x": 1670,
+          "y": -265
         }
       }
     note: false
@@ -1154,10 +1171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "172":
     id: "172"
-    taskid: 5981e6d7-dc1e-4580-8116-12fadc6b4cea
+    taskid: 8fc5dce1-8859-4d49-8cb5-236249c53d4a
     type: regular
     task:
-      id: 5981e6d7-dc1e-4580-8116-12fadc6b4cea
+      id: 8fc5dce1-8859-4d49-8cb5-236249c53d4a
       version: -1
       name: Set exact values
       description: Set a value in context under the key you entered.
@@ -1192,8 +1209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": -290
+          "x": 1470,
+          "y": -95
         }
       }
     note: false
@@ -1205,10 +1222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "173":
     id: "173"
-    taskid: 2da07f4d-260b-40ad-8ffd-d6bfef4f81c2
+    taskid: 396699c2-b56f-4eef-871f-a339ee5178c8
     type: regular
     task:
-      id: 2da07f4d-260b-40ad-8ffd-d6bfef4f81c2
+      id: 396699c2-b56f-4eef-871f-a339ee5178c8
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -1243,8 +1260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1890,
-          "y": -290
+          "x": 1880,
+          "y": -95
         }
       }
     note: false
@@ -1256,10 +1273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "174":
     id: "174"
-    taskid: 8fc29142-9c8a-43a8-8b79-a56d33bba36e
+    taskid: 31edc6ca-cf7b-47ab-8565-e038128d1348
     type: condition
     task:
-      id: 8fc29142-9c8a-43a8-8b79-a56d33bba36e
+      id: 31edc6ca-cf7b-47ab-8565-e038128d1348
       version: -1
       name: Are there second input values?
       type: condition
@@ -1283,8 +1300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 40
+          "x": 1670,
+          "y": 370
         }
       }
     note: false
@@ -1296,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "176":
     id: "176"
-    taskid: 29957d3a-550c-4fa2-8304-afe0ea5db91f
+    taskid: 1a0b999a-3d78-4469-8f65-dfaba9286f69
     type: regular
     task:
-      id: 29957d3a-550c-4fa2-8304-afe0ea5db91f
+      id: 1a0b999a-3d78-4469-8f65-dfaba9286f69
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -1322,20 +1339,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match1}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1680,
-          "y": -620
+          "x": 1670,
+          "y": -420
         }
       }
     note: false
@@ -1347,10 +1358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "177":
     id: "177"
-    taskid: f303c8c9-5be6-4767-8cae-198581e6c075
+    taskid: 8f7047aa-a162-432c-886b-deca7b49ff45
     type: regular
     task:
-      id: f303c8c9-5be6-4767-8cae-198581e6c075
+      id: 8f7047aa-a162-432c-886b-deca7b49ff45
       version: -1
       name: Set state
       description: Set a value in context under the key you entered.
@@ -1387,7 +1398,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
+          "x": 800,
           "y": -795
         }
       }
@@ -1400,10 +1411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "178":
     id: "178"
-    taskid: dba2047b-f522-4f56-8dc0-2ff4a1772709
+    taskid: b6a62b11-4e02-434a-8fe3-d95ca131ad5a
     type: regular
     task:
-      id: dba2047b-f522-4f56-8dc0-2ff4a1772709
+      id: b6a62b11-4e02-434a-8fe3-d95ca131ad5a
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -1423,7 +1434,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
+          "x": 1280,
           "y": -795
         }
       }
@@ -1436,10 +1447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "179":
     id: "179"
-    taskid: 31064a22-c25c-48e5-8a9f-dbc2c62e39eb
+    taskid: 27b1f472-365d-462c-86a5-38955c5aa5cc
     type: regular
     task:
-      id: 31064a22-c25c-48e5-8a9f-dbc2c62e39eb
+      id: 27b1f472-365d-462c-86a5-38955c5aa5cc
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -1462,20 +1473,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match1}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": -620
+          "x": 1020,
+          "y": -420
         }
       }
     note: false
@@ -1487,10 +1492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "182":
     id: "182"
-    taskid: 0f70d81d-a497-430f-8df4-8ec6b7e21786
+    taskid: 6a90173a-43ff-496b-8976-4973bf364dfe
     type: regular
     task:
-      id: 0f70d81d-a497-430f-8df4-8ec6b7e21786
+      id: 6a90173a-43ff-496b-8976-4973bf364dfe
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -1525,8 +1530,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": -450
+          "x": 1020,
+          "y": -265
         }
       }
     note: false
@@ -1538,10 +1543,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "183":
     id: "183"
-    taskid: 8890137c-7e71-44ca-8c9c-cde8e972b338
+    taskid: 57828335-ebf1-4ef9-8ad6-b0c297831908
     type: regular
     task:
-      id: 8890137c-7e71-44ca-8c9c-cde8e972b338
+      id: 57828335-ebf1-4ef9-8ad6-b0c297831908
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -1593,8 +1598,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": -120
+          "x": 1020,
+          "y": 225
         }
       }
     note: false
@@ -1606,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "184":
     id: "184"
-    taskid: 6bed7c35-8992-41dc-8063-d068324f06a6
+    taskid: 4f7a48de-b9c0-46e6-8c8a-4ae0fb250339
     type: regular
     task:
-      id: 6bed7c35-8992-41dc-8063-d068324f06a6
+      id: 4f7a48de-b9c0-46e6-8c8a-4ae0fb250339
       version: -1
       name: Set UTF8(payload)
       description: Set a value in context under the key you entered.
@@ -1629,8 +1634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": -290
+          "x": 1020,
+          "y": 80
         }
       }
     note: false
@@ -1642,10 +1647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "185":
     id: "185"
-    taskid: de41daeb-7008-4fc3-8b68-c5bc0cbc6723
+    taskid: dbb808e8-3b06-49cd-81e5-8f13abbdd5fe
     type: playbook
     task:
-      id: de41daeb-7008-4fc3-8b68-c5bc0cbc6723
+      id: dbb808e8-3b06-49cd-81e5-8f13abbdd5fe
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -1729,6 +1734,42 @@ tasks:
                 value:
                   simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -1740,8 +1781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 395
+          "x": 1020,
+          "y": 575
         }
       }
     note: false
@@ -1753,10 +1794,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "186":
     id: "186"
-    taskid: 4be83ca9-639e-457f-8353-f4e5700a727e
+    taskid: f3af727f-c9b2-4de4-8186-58c815e9563a
     type: condition
     task:
-      id: 4be83ca9-639e-457f-8353-f4e5700a727e
+      id: f3af727f-c9b2-4de4-8186-58c815e9563a
       version: -1
       name: Are there second input values?
       type: condition
@@ -1780,8 +1821,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 40
+          "x": 1020,
+          "y": 370
         }
       }
     note: false
@@ -1793,10 +1834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "187":
     id: "187"
-    taskid: 80fe5497-ad03-4b03-868a-5bdc4cd61e3b
+    taskid: a75ff0ac-bc19-4d4c-84d1-ddb03d2d9663
     type: title
     task:
-      id: 80fe5497-ad03-4b03-868a-5bdc4cd61e3b
+      id: a75ff0ac-bc19-4d4c-84d1-ddb03d2d9663
       version: -1
       name: Second Input Search
       type: title
@@ -1810,8 +1851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 395
+          "x": 2090,
+          "y": 575
         }
       }
     note: false
@@ -1823,10 +1864,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "188":
     id: "188"
-    taskid: 98998a76-f3f1-4a9a-8741-b790c0da170c
+    taskid: 0e5c8bd7-5d63-4614-810e-64bfd437ce3c
     type: condition
     task:
-      id: 98998a76-f3f1-4a9a-8741-b790c0da170c
+      id: 0e5c8bd7-5d63-4614-810e-64bfd437ce3c
       version: -1
       name: Were the second inputs provided properly?
       description: Is there an IP on which to search?
@@ -1882,8 +1923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 530
+          "x": 2090,
+          "y": 710
         }
       }
     note: false
@@ -1895,10 +1936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "189":
     id: "189"
-    taskid: 9e219da4-496d-494e-8d36-425e1bf34c30
+    taskid: c4173c1b-f47e-45e5-824d-f68644bbc64a
     type: condition
     task:
-      id: 9e219da4-496d-494e-8d36-425e1bf34c30
+      id: c4173c1b-f47e-45e5-824d-f68644bbc64a
       version: -1
       name: Are there fields for the second input?
       description: Is there a custom IP field?
@@ -1923,8 +1964,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 930
+          "x": 2090,
+          "y": 1110
         }
       }
     note: false
@@ -1936,10 +1977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "190":
     id: "190"
-    taskid: 6630d087-aee7-489c-8344-a50050117163
+    taskid: f2744719-d621-482e-85c1-fb32791a33c2
     type: title
     task:
-      id: 6630d087-aee7-489c-8344-a50050117163
+      id: f2744719-d621-482e-85c1-fb32791a33c2
       version: -1
       name: QRadar query with custom fields
       type: title
@@ -1948,14 +1989,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "193"
       - "194"
+      - "239"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 1100
+          "x": 2440,
+          "y": 1360
         }
       }
     note: false
@@ -1967,10 +2008,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "191":
     id: "191"
-    taskid: 83243c04-b11e-4ea8-8937-f360f4334bfa
+    taskid: b9486847-7769-48fe-893a-041420c70345
     type: title
     task:
-      id: 83243c04-b11e-4ea8-8937-f360f4334bfa
+      id: b9486847-7769-48fe-893a-041420c70345
       version: -1
       name: QRadar query without custom fields
       type: title
@@ -1985,8 +2026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": 1100
+          "x": 1740,
+          "y": 1360
         }
       }
     note: false
@@ -1998,10 +2039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "192":
     id: "192"
-    taskid: d86550ba-151d-448e-8960-297f358d48db
+    taskid: b90b840b-17d8-40ef-871e-e0acb20367bd
     type: playbook
     task:
-      id: d86550ba-151d-448e-8960-297f358d48db
+      id: b90b840b-17d8-40ef-871e-e0acb20367bd
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -2026,6 +2067,12 @@ tasks:
                 value:
                   simple: ' from events where '
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -2091,6 +2138,42 @@ tasks:
                   simple: 'select '
               suffix:
                 iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -2184,61 +2267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2310,
-          "y": 2435
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "193":
-    id: "193"
-    taskid: 6760839c-ebef-4f5d-8d0e-cfe80f9e97b5
-    type: regular
-    task:
-      id: 6760839c-ebef-4f5d-8d0e-cfe80f9e97b5
-      version: -1
-      name: Set state
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "200"
-    scriptarguments:
-      key:
-        simple: State2
-      value:
-        complex:
-          root: inputs.SecondFieldState
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition: {}
-              else:
-                value:
-                  simple: ' NOT '
-              equals:
-                value:
-                  simple: include
-              lhs: {}
-              options: {}
-              rhs: {}
-              then:
-                value:
-                  simple: ' '
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2450,
-          "y": 1245
+          "x": 2230,
+          "y": 2920
         }
       }
     note: false
@@ -2250,10 +2280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "194":
     id: "194"
-    taskid: 3372b283-1602-445c-8886-9f1fa7fceeae
+    taskid: 4b53dee6-8009-417b-83e9-6d099f5b51af
     type: regular
     task:
-      id: 3372b283-1602-445c-8886-9f1fa7fceeae
+      id: 4b53dee6-8009-417b-83e9-6d099f5b51af
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -2285,13 +2315,13 @@ tasks:
               rhs: {}
               then:
                 value:
-                  simple: ' = '
+                  simple: '= '
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2870,
-          "y": 1245
+          "x": 3600,
+          "y": 1505
         }
       }
     note: false
@@ -2303,10 +2333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "195":
     id: "195"
-    taskid: 3db2099b-fd9c-4366-8700-f0b5437ed5e4
+    taskid: 58810417-9b8c-4e7b-84db-41a8f6fff62c
     type: regular
     task:
-      id: 3db2099b-fd9c-4366-8700-f0b5437ed5e4
+      id: 58810417-9b8c-4e7b-84db-41a8f6fff62c
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -2371,8 +2401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2310,
-          "y": 1940
+          "x": 2230,
+          "y": 2495
         }
       }
     note: false
@@ -2384,10 +2414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "196":
     id: "196"
-    taskid: 8c06eb6f-4d77-4746-8b5d-7341e6c84c16
+    taskid: cb5bfd15-a315-415f-885c-6d783468d6fb
     type: condition
     task:
-      id: 8c06eb6f-4d77-4746-8b5d-7341e6c84c16
+      id: cb5bfd15-a315-415f-885c-6d783468d6fb
       version: -1
       name: First match exact or partial?
       type: condition
@@ -2424,8 +2454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2650,
-          "y": 1590
+          "x": 2360,
+          "y": 2040
         }
       }
     note: false
@@ -2437,10 +2467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "197":
     id: "197"
-    taskid: 0ca81e6f-58ba-4098-8ebe-940e274401ac
+    taskid: c35c9248-85c1-4c37-876b-bdb865b22edc
     type: regular
     task:
-      id: 0ca81e6f-58ba-4098-8ebe-940e274401ac
+      id: c35c9248-85c1-4c37-876b-bdb865b22edc
       version: -1
       name: Set exact values
       description: Set a value in context under the key you entered.
@@ -2475,8 +2505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2310,
-          "y": 1765
+          "x": 2230,
+          "y": 2280
         }
       }
     note: false
@@ -2488,10 +2518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "198":
     id: "198"
-    taskid: 2bc6b1c9-eda1-4db0-80df-c4655eda02de
+    taskid: b3a13d04-79bc-4c97-893b-d53155797e9a
     type: regular
     task:
-      id: 2bc6b1c9-eda1-4db0-80df-c4655eda02de
+      id: b3a13d04-79bc-4c97-893b-d53155797e9a
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -2526,8 +2556,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2720,
-          "y": 1765
+          "x": 2650,
+          "y": 2280
         }
       }
     note: false
@@ -2539,10 +2569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "199":
     id: "199"
-    taskid: 0107925d-4419-4f76-8019-cc43ab107449
+    taskid: 697b3385-c6a0-43da-89fb-4a45342212a5
     type: condition
     task:
-      id: 0107925d-4419-4f76-8019-cc43ab107449
+      id: 697b3385-c6a0-43da-89fb-4a45342212a5
       version: -1
       name: Are there third input values?
       type: condition
@@ -2566,8 +2596,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2310,
-          "y": 2115
+          "x": 2230,
+          "y": 2700
         }
       }
     note: false
@@ -2579,10 +2609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "200":
     id: "200"
-    taskid: 32f27649-4def-4d8a-8a93-480ef5a4eee1
+    taskid: 9ab80da6-1890-449e-8d14-971f2a5ac063
     type: regular
     task:
-      id: 32f27649-4def-4d8a-8a93-480ef5a4eee1
+      id: 9ab80da6-1890-449e-8d14-971f2a5ac063
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -2605,20 +2635,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match2}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2650,
-          "y": 1420
+          "x": 2360,
+          "y": 1880
         }
       }
     note: false
@@ -2630,10 +2654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "201":
     id: "201"
-    taskid: 3cb83b87-5f64-48c7-87c5-6894a0fc8003
+    taskid: f1a2391d-7cf9-4193-830a-e83c7dabd699
     type: regular
     task:
-      id: 3cb83b87-5f64-48c7-87c5-6894a0fc8003
+      id: f1a2391d-7cf9-4193-830a-e83c7dabd699
       version: -1
       name: Set state
       description: Set a value in context under the key you entered.
@@ -2670,8 +2694,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 1245
+          "x": 1540,
+          "y": 1505
         }
       }
     note: false
@@ -2683,10 +2707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "202":
     id: "202"
-    taskid: 3661874a-2545-48d7-8fec-b45ff86324cb
+    taskid: 946bc0b3-ab65-42d7-881b-fdf7a41e4a57
     type: regular
     task:
-      id: 3661874a-2545-48d7-8fec-b45ff86324cb
+      id: 946bc0b3-ab65-42d7-881b-fdf7a41e4a57
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -2706,8 +2730,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 1245
+          "x": 1980,
+          "y": 1505
         }
       }
     note: false
@@ -2719,10 +2743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "203":
     id: "203"
-    taskid: 5b53c244-0872-455a-8936-df798c72d48f
+    taskid: 683853aa-6b94-4be9-8468-33a47ed1a364
     type: regular
     task:
-      id: 5b53c244-0872-455a-8936-df798c72d48f
+      id: 683853aa-6b94-4be9-8468-33a47ed1a364
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -2745,20 +2769,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match2}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 1420
+          "x": 1750,
+          "y": 1880
         }
       }
     note: false
@@ -2770,10 +2788,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "204":
     id: "204"
-    taskid: 47a93aa7-fefb-4363-8f8f-3174736ea43d
+    taskid: b84e1d5f-04df-467e-8db1-c66590b8c5a2
     type: regular
     task:
-      id: 47a93aa7-fefb-4363-8f8f-3174736ea43d
+      id: b84e1d5f-04df-467e-8db1-c66590b8c5a2
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -2808,8 +2826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 1590
+          "x": 1750,
+          "y": 2040
         }
       }
     note: false
@@ -2821,10 +2839,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "205":
     id: "205"
-    taskid: 00e28e3c-5acb-4713-8539-e5d249382a98
+    taskid: 8eb60387-0d9d-4377-8348-d70d84003084
     type: regular
     task:
-      id: 00e28e3c-5acb-4713-8539-e5d249382a98
+      id: 8eb60387-0d9d-4377-8348-d70d84003084
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -2889,8 +2907,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 1940
+          "x": 1750,
+          "y": 2380
         }
       }
     note: false
@@ -2902,10 +2920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "206":
     id: "206"
-    taskid: 50f91788-a821-4f81-89b4-d8b0ccbbd0d2
+    taskid: daa96c8c-2a3c-4deb-85ba-531008f13192
     type: regular
     task:
-      id: 50f91788-a821-4f81-89b4-d8b0ccbbd0d2
+      id: daa96c8c-2a3c-4deb-85ba-531008f13192
       version: -1
       name: Set UTF8(payload)
       description: Set a value in context under the key you entered.
@@ -2925,8 +2943,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 1765
+          "x": 1750,
+          "y": 2205
         }
       }
     note: false
@@ -2938,10 +2956,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "207":
     id: "207"
-    taskid: 40169a3b-7026-4385-82af-59f3aa961592
+    taskid: 315e3159-e0fd-4cc8-8df3-6d8e31871864
     type: playbook
     task:
-      id: 40169a3b-7026-4385-82af-59f3aa961592
+      id: 315e3159-e0fd-4cc8-8df3-6d8e31871864
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -2966,6 +2984,12 @@ tasks:
                 value:
                   simple: ' from events where '
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -3031,6 +3055,42 @@ tasks:
                   simple: 'select '
               suffix:
                 iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -3118,8 +3178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 2425
+          "x": 1740,
+          "y": 2920
         }
       }
     note: false
@@ -3131,10 +3191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "208":
     id: "208"
-    taskid: 097b7b10-ca91-45ed-802a-9eb75b0569b2
+    taskid: deffd27d-4b3b-441f-83ea-3687642141e2
     type: condition
     task:
-      id: 097b7b10-ca91-45ed-802a-9eb75b0569b2
+      id: deffd27d-4b3b-441f-83ea-3687642141e2
       version: -1
       name: Are there third input values?
       type: condition
@@ -3158,8 +3218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 2115
+          "x": 1750,
+          "y": 2700
         }
       }
     note: false
@@ -3171,10 +3231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "209":
     id: "209"
-    taskid: a4d0344a-7f2f-4452-8803-d154e9d0944b
+    taskid: dda4cf61-d080-4a4b-8f26-b8f338151cbb
     type: title
     task:
-      id: a4d0344a-7f2f-4452-8803-d154e9d0944b
+      id: dda4cf61-d080-4a4b-8f26-b8f338151cbb
       version: -1
       name: Third Input Search
       type: title
@@ -3188,8 +3248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2940,
-          "y": 2370
+          "x": 2870,
+          "y": 2870
         }
       }
     note: false
@@ -3201,10 +3261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "210":
     id: "210"
-    taskid: 442b927e-4a1e-4cef-89ce-8e61131f2854
+    taskid: 5edf7c48-9e46-4b20-82a0-870db66739fc
     type: condition
     task:
-      id: 442b927e-4a1e-4cef-89ce-8e61131f2854
+      id: 5edf7c48-9e46-4b20-82a0-870db66739fc
       version: -1
       name: Were the third inputs provided properly?
       description: Is there an IP on which to search?
@@ -3260,8 +3320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2940,
-          "y": 2520
+          "x": 2870,
+          "y": 3015
         }
       }
     note: false
@@ -3273,10 +3333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "211":
     id: "211"
-    taskid: 6e614b52-4a36-4c10-88f1-370f3a106d39
+    taskid: 03658eb8-d4f0-49dd-82e2-3998bbf5f58c
     type: condition
     task:
-      id: 6e614b52-4a36-4c10-88f1-370f3a106d39
+      id: 03658eb8-d4f0-49dd-82e2-3998bbf5f58c
       version: -1
       name: Are there fields for the third input?
       description: Is there a custom IP field?
@@ -3301,8 +3361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2940,
-          "y": 2930
+          "x": 2870,
+          "y": 3360
         }
       }
     note: false
@@ -3314,10 +3374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "212":
     id: "212"
-    taskid: fdb23616-0e3a-48f9-81da-163b8aeab91d
+    taskid: fb100161-851b-4bb2-8b3a-0c5879cb499a
     type: title
     task:
-      id: fdb23616-0e3a-48f9-81da-163b8aeab91d
+      id: fb100161-851b-4bb2-8b3a-0c5879cb499a
       version: -1
       name: QRadar query with custom fields
       type: title
@@ -3326,14 +3386,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "215"
       - "216"
+      - "243"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3290,
-          "y": 3100
+          "x": 3390,
+          "y": 3570
         }
       }
     note: false
@@ -3345,10 +3405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "213":
     id: "213"
-    taskid: 5b020fde-71df-42c0-8751-2e40c319d04a
+    taskid: 3b95e17d-577b-43f1-8597-979e5b384192
     type: title
     task:
-      id: 5b020fde-71df-42c0-8751-2e40c319d04a
+      id: 3b95e17d-577b-43f1-8597-979e5b384192
       version: -1
       name: QRadar query without custom fields
       type: title
@@ -3363,8 +3423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2660,
-          "y": 3100
+          "x": 2640,
+          "y": 3570
         }
       }
     note: false
@@ -3376,10 +3436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "214":
     id: "214"
-    taskid: ab9be065-b686-4373-85c5-ca90ae5cdff1
+    taskid: 9f726b26-d956-4e8e-8474-36dde2f373f6
     type: playbook
     task:
-      id: ab9be065-b686-4373-85c5-ca90ae5cdff1
+      id: 9f726b26-d956-4e8e-8474-36dde2f373f6
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -3404,6 +3464,12 @@ tasks:
                 value:
                   simple: ' from events where '
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -3469,6 +3535,42 @@ tasks:
                   simple: 'select '
               suffix:
                 iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -3560,61 +3662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3150,
-          "y": 4105
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "215":
-    id: "215"
-    taskid: 70c0b1f6-6b6f-4867-89da-be52b16b32a0
-    type: regular
-    task:
-      id: 70c0b1f6-6b6f-4867-89da-be52b16b32a0
-      version: -1
-      name: Set state
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "222"
-    scriptarguments:
-      key:
-        simple: State3
-      value:
-        complex:
-          root: inputs.ThirdFieldState
-          transformers:
-          - operator: If-Then-Else
-            args:
-              condition: {}
-              else:
-                value:
-                  simple: ' NOT '
-              equals:
-                value:
-                  simple: include
-              lhs: {}
-              options: {}
-              rhs: {}
-              then:
-                value:
-                  simple: ' '
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3290,
-          "y": 3245
+          "x": 3410,
+          "y": 4805
         }
       }
     note: false
@@ -3626,10 +3675,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "216":
     id: "216"
-    taskid: 87ed104e-7f73-4312-87e0-cb4d7f0098cb
+    taskid: 669b96fd-2843-4500-84d9-54f912baa30e
     type: regular
     task:
-      id: 87ed104e-7f73-4312-87e0-cb4d7f0098cb
+      id: 669b96fd-2843-4500-84d9-54f912baa30e
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -3661,13 +3710,13 @@ tasks:
               rhs: {}
               then:
                 value:
-                  simple: ' = '
+                  simple: '= '
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3710,
-          "y": 3245
+          "x": 4410,
+          "y": 3740
         }
       }
     note: false
@@ -3679,10 +3728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "217":
     id: "217"
-    taskid: 05fa5668-b655-457e-81e7-2983e47501d8
+    taskid: e448c653-0988-4950-825d-f537b2a59fca
     type: regular
     task:
-      id: 05fa5668-b655-457e-81e7-2983e47501d8
+      id: e448c653-0988-4950-825d-f537b2a59fca
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -3747,8 +3796,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3150,
-          "y": 3940
+          "x": 3410,
+          "y": 4640
         }
       }
     note: false
@@ -3760,10 +3809,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "218":
     id: "218"
-    taskid: 8b34eccb-bc36-4f5a-8e5c-246a6f3f4238
+    taskid: 73e8d5fe-31a0-4b9e-8f7d-ac841182d7f8
     type: condition
     task:
-      id: 8b34eccb-bc36-4f5a-8e5c-246a6f3f4238
+      id: 73e8d5fe-31a0-4b9e-8f7d-ac841182d7f8
       version: -1
       name: First match exact or partial?
       type: condition
@@ -3800,8 +3849,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 3590
+          "x": 3410,
+          "y": 4250
         }
       }
     note: false
@@ -3813,10 +3862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "219":
     id: "219"
-    taskid: 7e6b6053-fd8f-4f18-8ccb-fbb1e01d8627
+    taskid: 66bc2892-1c60-4ac3-8b73-2e62cdd5ff69
     type: regular
     task:
-      id: 7e6b6053-fd8f-4f18-8ccb-fbb1e01d8627
+      id: 66bc2892-1c60-4ac3-8b73-2e62cdd5ff69
       version: -1
       name: Set exact values
       description: Set a value in context under the key you entered.
@@ -3851,8 +3900,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3150,
-          "y": 3765
+          "x": 3220,
+          "y": 4470
         }
       }
     note: false
@@ -3864,10 +3913,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "220":
     id: "220"
-    taskid: 72c2eadc-e726-4b99-8ba3-487a29b0cbb4
+    taskid: 5e14b8cd-6d0e-4ab9-8b98-8f94ba2d8b7a
     type: regular
     task:
-      id: 72c2eadc-e726-4b99-8ba3-487a29b0cbb4
+      id: 5e14b8cd-6d0e-4ab9-8b98-8f94ba2d8b7a
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -3902,8 +3951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3560,
-          "y": 3765
+          "x": 3630,
+          "y": 4470
         }
       }
     note: false
@@ -3915,10 +3964,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "222":
     id: "222"
-    taskid: 83570e53-8253-4697-8ffc-ff28908a5bbc
+    taskid: 52f6246c-16d8-4321-8d63-89e923082cc5
     type: regular
     task:
-      id: 83570e53-8253-4697-8ffc-ff28908a5bbc
+      id: 52f6246c-16d8-4321-8d63-89e923082cc5
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -3941,20 +3990,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match3}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 3420
+          "x": 3410,
+          "y": 4085
         }
       }
     note: false
@@ -3966,10 +4009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "223":
     id: "223"
-    taskid: fcd3c0ed-8a8d-4338-897a-94620bb8bf95
+    taskid: 7381e031-03d4-4ac5-8acf-6c909a777280
     type: regular
     task:
-      id: fcd3c0ed-8a8d-4338-897a-94620bb8bf95
+      id: 7381e031-03d4-4ac5-8acf-6c909a777280
       version: -1
       name: Set state
       description: Set a value in context under the key you entered.
@@ -4006,8 +4049,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 3245
+          "x": 2420,
+          "y": 3740
         }
       }
     note: false
@@ -4019,10 +4062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "224":
     id: "224"
-    taskid: c6030062-b668-4ccd-84d8-cb20eba30586
+    taskid: 87076354-e2c2-467c-8dd7-62d7409ae9e0
     type: regular
     task:
-      id: c6030062-b668-4ccd-84d8-cb20eba30586
+      id: 87076354-e2c2-467c-8dd7-62d7409ae9e0
       version: -1
       name: Set match
       description: Set a value in context under the key you entered.
@@ -4042,8 +4085,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2870,
-          "y": 3245
+          "x": 2840,
+          "y": 3740
         }
       }
     note: false
@@ -4055,10 +4098,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "225":
     id: "225"
-    taskid: 592a469e-3dbd-437c-880a-47e83aaa3c2a
+    taskid: c1672a40-ee90-44bd-8cf0-889266b61b75
     type: regular
     task:
-      id: 592a469e-3dbd-437c-880a-47e83aaa3c2a
+      id: c1672a40-ee90-44bd-8cf0-889266b61b75
       version: -1
       name: Set state and match
       description: Set a value in context under the key you entered.
@@ -4081,20 +4124,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
                   simple: ${Match3}
                 iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": 3420
+          "x": 2630,
+          "y": 3960
         }
       }
     note: false
@@ -4106,10 +4143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "226":
     id: "226"
-    taskid: 7ad6a5e1-5f0a-462b-8b91-ba425dbf7979
+    taskid: 8508e968-8a12-44b5-87c7-2ed0a592c367
     type: regular
     task:
-      id: 7ad6a5e1-5f0a-462b-8b91-ba425dbf7979
+      id: 8508e968-8a12-44b5-87c7-2ed0a592c367
       version: -1
       name: Set partial values
       description: Set a value in context under the key you entered.
@@ -4144,8 +4181,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": 3590
+          "x": 2630,
+          "y": 4190
         }
       }
     note: false
@@ -4157,10 +4194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "227":
     id: "227"
-    taskid: da637e6d-c90a-4a4f-8f6e-d12df03b147f
+    taskid: 272bf371-5258-4456-80c4-a168fd99483b
     type: regular
     task:
-      id: da637e6d-c90a-4a4f-8f6e-d12df03b147f
+      id: 272bf371-5258-4456-80c4-a168fd99483b
       version: -1
       name: Set values
       description: Set a value in context under the key you entered.
@@ -4225,8 +4262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": 3940
+          "x": 2630,
+          "y": 4580
         }
       }
     note: false
@@ -4238,10 +4275,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "228":
     id: "228"
-    taskid: 16a0e1c5-ad99-4bdf-84bd-1078de8d8faf
+    taskid: 593fa40b-0ca1-4359-89b6-9907fbd5d082
     type: regular
     task:
-      id: 16a0e1c5-ad99-4bdf-84bd-1078de8d8faf
+      id: 593fa40b-0ca1-4359-89b6-9907fbd5d082
       version: -1
       name: Set UTF8(payload)
       description: Set a value in context under the key you entered.
@@ -4261,8 +4298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": 3765
+          "x": 2630,
+          "y": 4385
         }
       }
     note: false
@@ -4274,10 +4311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "229":
     id: "229"
-    taskid: 4320d80d-7852-447d-8489-41e0e2eafca6
+    taskid: 129f2f9c-efc6-44f2-8b08-f2cbc6b61d47
     type: playbook
     task:
-      id: 4320d80d-7852-447d-8489-41e0e2eafca6
+      id: 129f2f9c-efc6-44f2-8b08-f2cbc6b61d47
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the
@@ -4302,6 +4339,12 @@ tasks:
                 value:
                   simple: ' from events where '
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -4367,6 +4410,42 @@ tasks:
                   simple: 'select '
               suffix:
                 iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ',,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: '  '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ' ,'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ', '
       timeout:
         simple: "600"
     separatecontext: true
@@ -4458,8 +4537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2670,
-          "y": 4105
+          "x": 2630,
+          "y": 4805
         }
       }
     note: false
@@ -4471,10 +4550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "231":
     id: "231"
-    taskid: 1a67d673-dc55-44e0-83f5-163bbe933fb4
+    taskid: c1ef3023-cded-45f9-8982-b7e30b535dd0
     type: condition
     task:
-      id: 1a67d673-dc55-44e0-83f5-163bbe933fb4
+      id: c1ef3023-cded-45f9-8982-b7e30b535dd0
       version: -1
       name: Was a first input provided?
       type: condition
@@ -4511,16 +4590,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "232":
     id: "232"
-    taskid: 2577bda1-1bb1-4900-8399-207226fb85df
+    taskid: 36474a6a-ba60-4f01-87c6-660d3a8bbaa9
     type: regular
     task:
-      id: 2577bda1-1bb1-4900-8399-207226fb85df
+      id: 36474a6a-ba60-4f01-87c6-660d3a8bbaa9
       version: -1
       name: Review and validate first inputs and rerun playbook
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "164"
@@ -4541,10 +4619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "234":
     id: "234"
-    taskid: 3323a248-c8e4-40e6-88e6-ca3a9ecbcdce
+    taskid: 2df24ec3-e9f8-48e4-89b2-4fa546a78fa9
     type: regular
     task:
-      id: 3323a248-c8e4-40e6-88e6-ca3a9ecbcdce
+      id: 2df24ec3-e9f8-48e4-89b2-4fa546a78fa9
       version: -1
       name: Review and validate second inputs and rerun playbook
       type: regular
@@ -4558,8 +4636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1690,
-          "y": 740
+          "x": 1760,
+          "y": 900
         }
       }
     note: false
@@ -4571,10 +4649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "235":
     id: "235"
-    taskid: 4758a6e1-b88a-4e88-8faf-c777ac3c46a3
+    taskid: debaa17b-52e6-4d60-8861-c76e17731bff
     type: regular
     task:
-      id: 4758a6e1-b88a-4e88-8faf-c777ac3c46a3
+      id: debaa17b-52e6-4d60-8861-c76e17731bff
       version: -1
       name: Review and validate third inputs and rerun playbook
       type: regular
@@ -4588,8 +4666,539 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2470,
-          "y": 2690
+          "x": 2580,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "236":
+    id: "236"
+    taskid: ffa6169d-53f4-4e06-8baf-84a06f64bdb7
+    type: condition
+    task:
+      id: ffa6169d-53f4-4e06-8baf-84a06f64bdb7
+      version: -1
+      name: Check state and match
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exclude exact:
+      - "238"
+      exclude partial:
+      - "237"
+      'include ':
+      - "168"
+    separatecontext: false
+    conditions:
+    - label: 'include '
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+    - label: exclude partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    - label: exclude exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.FirstFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "237":
+    id: "237"
+    taskid: 6cb12bcf-27af-49ff-886d-ef8c2731e398
+    type: regular
+    task:
+      id: 6cb12bcf-27af-49ff-886d-ef8c2731e398
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      key:
+        simple: State1
+      value:
+        simple: ' NOT '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": -615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "238":
+    id: "238"
+    taskid: 1c8d25ce-0812-4705-8493-9220533525fc
+    type: regular
+    task:
+      id: 1c8d25ce-0812-4705-8493-9220533525fc
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      key:
+        simple: State1
+      value:
+        simple: ' !'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": -615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "239":
+    id: "239"
+    taskid: cd0b24de-70ff-4266-83ec-5fd8aab942a0
+    type: condition
+    task:
+      id: cd0b24de-70ff-4266-83ec-5fd8aab942a0
+      version: -1
+      name: Check state and match
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exclude exact:
+      - "242"
+      exclude partial:
+      - "241"
+      'include ':
+      - "240"
+    separatecontext: false
+    conditions:
+    - label: 'include '
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+    - label: exclude partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    - label: exclude exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SecondFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "240":
+    id: "240"
+    taskid: 383f930e-f4d5-4397-8d40-b4a6caab116a
+    type: regular
+    task:
+      id: 383f930e-f4d5-4397-8d40-b4a6caab116a
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: State2
+      value:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2360,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "241":
+    id: "241"
+    taskid: 2d381272-4a6c-4653-85f0-4cd26ce3770c
+    type: regular
+    task:
+      id: 2d381272-4a6c-4653-85f0-4cd26ce3770c
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: State2
+      value:
+        simple: ' NOT '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "242":
+    id: "242"
+    taskid: e3f75d87-9fc2-4307-816e-b5ec34b697a3
+    type: regular
+    task:
+      id: e3f75d87-9fc2-4307-816e-b5ec34b697a3
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "200"
+    scriptarguments:
+      key:
+        simple: State2
+      value:
+        simple: ' !'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3200,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "243":
+    id: "243"
+    taskid: de01eafb-d403-46b2-886d-064f336d622d
+    type: condition
+    task:
+      id: de01eafb-d403-46b2-886d-064f336d622d
+      version: -1
+      name: Check state and match
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      exclude exact:
+      - "246"
+      exclude partial:
+      - "245"
+      'include ':
+      - "244"
+    separatecontext: false
+    conditions:
+    - label: 'include '
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldState
+            iscontext: true
+          right:
+            value:
+              simple: include
+    - label: exclude partial
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: partial
+    - label: exclude exact
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldState
+            iscontext: true
+          right:
+            value:
+              simple: exclude
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThirdFieldMatch
+            iscontext: true
+          right:
+            value:
+              simple: exact
+    view: |-
+      {
+        "position": {
+          "x": 3390,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "244":
+    id: "244"
+    taskid: 6406f1e0-87dd-4cdc-8ce1-f03e83ad9451
+    type: regular
+    task:
+      id: 6406f1e0-87dd-4cdc-8ce1-f03e83ad9451
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "222"
+    scriptarguments:
+      key:
+        simple: State3
+      value:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "245":
+    id: "245"
+    taskid: c7aebfb2-03cf-47df-8842-652ccbbb050b
+    type: regular
+    task:
+      id: c7aebfb2-03cf-47df-8842-652ccbbb050b
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "222"
+    scriptarguments:
+      key:
+        simple: State3
+      value:
+        simple: ' NOT '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3590,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "246":
+    id: "246"
+    taskid: f1a403e5-8219-4d8f-89d8-50857d6ef961
+    type: regular
+    task:
+      id: f1a403e5-8219-4d8f-89d8-50857d6ef961
+      version: -1
+      name: Set state
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "222"
+    scriptarguments:
+      key:
+        simple: State3
+      value:
+        simple: ' !'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3990,
+          "y": 3910
         }
       }
     note: false
@@ -4604,9 +5213,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8645,
-        "width": 3620,
-        "x": 470,
+        "height": 9385,
+        "width": 4390,
+        "x": 400,
         "y": -2260
       }
     }
@@ -4640,7 +5249,6 @@ inputs:
     use the = operator. When choosing partial the AQL query will ILIKE and add '%%'
     to the values.
   playbookInputQuery:
-
 - key: SecondFieldValue
   value: {}
   required: false
@@ -4661,7 +5269,7 @@ inputs:
   playbookInputQuery:
 - key: SecondFieldMatch
   value:
-    simple: partial
+    simple: exact
   required: false
   description: 'Are the values of the second field suppose to be exact match or partial
     match. Valid options are exact or partial. '
@@ -4702,7 +5310,7 @@ inputs:
   playbookInputQuery:
 - key: TimeFrame
   value:
-    simple: LAST 7 DAYS
+    simple: LAST 1 DAYS
   required: false
   description: |-
     Time frame as used in AQL
