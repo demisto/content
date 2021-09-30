@@ -23,20 +23,20 @@ XSOAR_TYPES_TO_CROWDSTRIKE = {
     'url': "url"
 }
 CROWDSTRIKE_TO_XSOAR_TYPES = {
-    'username': 'Account',
-    'domain': 'Domain',
-    'email_address': 'Email',
-    'hash_md5': 'File MD5',
-    'hash_sha256': 'File SHA-256',
-    'registry': 'Registry Key',
-    'url': 'URL',
-    "ip_address": 'IP'
+    'username': FeedIndicatorType.Account,
+    'domain': FeedIndicatorType.Domain,
+    'email_address': FeedIndicatorType.Email,
+    'hash_md5': FeedIndicatorType.File,
+    'hash_sha256': FeedIndicatorType.File,
+    'registry': FeedIndicatorType.Registry,
+    'url': FeedIndicatorType.URL,
+    "ip_address": FeedIndicatorType.IP
 }
 
 
 class Client(CrowdStrikeClient):
 
-    def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None,
+    def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
                  malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
                  first_fetch=None):
         params = assign_params(credentials=credentials,
@@ -51,6 +51,7 @@ class Client(CrowdStrikeClient):
         self.generic_phrase = generic_phrase
         self.include_deleted = include_deleted
         self.tlp_color = tlp_color
+        self.feed_tags = feed_tags
         self.limit = limit
         self.first_fetch = first_fetch
 
@@ -113,7 +114,7 @@ class Client(CrowdStrikeClient):
             demisto.setIntegrationContext({'last_modified_time': timestamp})
             demisto.info(f'set last_run: {timestamp}')
 
-        indicators = self.create_indicators_from_response(response, self.tlp_color)
+        indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags)
         return indicators
 
     @staticmethod
@@ -141,12 +142,13 @@ class Client(CrowdStrikeClient):
         return params
 
     @staticmethod
-    def create_indicators_from_response(raw_response, tlp_color=None) -> list:
+    def create_indicators_from_response(raw_response, tlp_color=None, feed_tags=None) -> list:
         """ Builds indicators from API raw response
 
             Args:
                 raw_response: response from crowdstrike API
                 tlp_color: tlp color chosen by customer
+                feed_tags: Feed tags to filter by
 
             Returns:
                 (list): list of indicators
@@ -177,6 +179,8 @@ class Client(CrowdStrikeClient):
             }
             if tlp_color:
                 indicator['fields']['trafficlightprotocol'] = tlp_color
+            if feed_tags:
+                indicator['fields']['tags'].extend(feed_tags)
             parsed_indicators.append(indicator)
 
         return parsed_indicators
@@ -286,7 +290,8 @@ def main() -> None:
     credentials = params.get('credentials')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
-    first_fetch_datetime = arg_to_datetime(params.get('first_fetch'))
+    first_fetch_param = params.get('first_fetch')
+    first_fetch_datetime = arg_to_datetime(first_fetch_param) if first_fetch_param else None
     first_fetch = first_fetch_datetime.timestamp() if first_fetch_datetime else None
 
     base_url = params.get('base_url')
@@ -298,6 +303,7 @@ def main() -> None:
     generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
     max_fetch = min(max_fetch, 10000)
+    feed_tags = argToList(params.get('feedTags'))
 
     args = demisto.args()
 
@@ -311,6 +317,7 @@ def main() -> None:
             insecure=insecure,
             proxy=proxy,
             tlp_color=tlp_color,
+            feed_tags=feed_tags,
             include_deleted=include_deleted,
             type=type,
             malicious_confidence=malicious_confidence,

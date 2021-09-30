@@ -295,7 +295,7 @@ def test_parse_question(requests_mock):
     requests_mock.post(BASE_URL + 'parse_question', json=parse_question_Folder_Contents_res)
     requests_mock.get(BASE_URL + 'sensors/by-name/Folder-Contents', json=sensor_res)
 
-    results = client.parse_question('Get Folder-Contents[c:\] from all machines', '')
+    results = client.parse_question(r'Get Folder-Contents[c:\] from all machines', '')
     assert results['selects'][0]['sensor']['name'] == 'Folder-Contents'
     assert results['selects'][0]['sensor']['parameters'][0]['key'] == '||folderPath||'
     assert results['selects'][0]['sensor']['parameters'][0]['value'] == 'c:\\'

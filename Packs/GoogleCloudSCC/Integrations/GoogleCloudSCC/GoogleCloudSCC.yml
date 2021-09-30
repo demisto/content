@@ -58,8 +58,6 @@ description: Security Command Center is a security and risk management platform 
   data attack surface by providing asset inventory and discovery, identifying vulnerabilities
   and threats, and helping you mitigate and remediate risks across an organization.
   This integration helps you to perform tasks related to findings and assets.
-defaultclassifier: GoogleCloudSCC
-defaultmapperin: GoogleCloudSCC-mapper
 display: Google Cloud SCC
 name: GoogleCloudSCC
 script:
@@ -184,7 +182,7 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Lists an organization's assets.
     execution: false
     name: google-cloud-scc-asset-list
@@ -571,7 +569,201 @@ script:
     - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.18052
+  - arguments:
+    - default: false
+      description: |-
+        Name of the organization or project the assets belong to. Organization Id provided in the Integration Configuration will be taken by default, if no value is provided to the parent.
+
+        Format: "organizations/[organization-number]" (such as "organizations/123"), "projects/[project-id]" (such as "projects/my-project-id"), or "projects/[project-number]" (such as "projects/12345").
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - default: false
+      description: "This parameter is used to filter assets by asset types by providing\
+        \ a single value or a comma-separated value of asset types.\nFor example:\
+        \ \"compute.googleapis.com/Disk\".\n\nRegular expression is also supported.\
+        \ \nFor example:\n1) \"compute.googleapis.com.*\" resources whose asset type\
+        \ starts with \"compute.googleapis.com\".\n2) \".*Instance\" resources whose\
+        \ asset type ends with \"Instance\".\n3) \".*Instance.*\" resources whose\
+        \ asset type contains \"Instance\"."
+      isArray: false
+      name: assetTypes
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return in a single response. The
+        minimum value is 1 and maximum value is 1000.
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
+    - default: false
+      description: The nextPageToken returned from the previous scc-asset-resource-list
+        command response, or unspecified for the first  scc-asset-resource-list command.
+        It is a continuation of a prior scc-asset-resource-list call, and the API
+        should return the next page of assets.
+      isArray: false
+      name: pageToken
+      required: false
+      secret: false
+    - default: false
+      description: "Time used as a reference point when filtering assets. This can\
+        \ only be set to a timestamp between the current time and the current time\
+        \ minus 35 days (inclusive). If not provided, it will take current time. \n\
+        \nFormat:\n(<number> <time unit>, e.g., \"12 hours ago\", \"7 days ago\",\
+        \ \"1 week\", \"1 month\") or (<date> <time>, e.g. \"yyyy-mm-ddTHH-MM-SS\"\
+        ) or ( \"YYYY-MM-ddTHH:mm:ss.sssZ\", e.g. 2020-07-22T07:10:02.782Z) or (<date>,\
+        \ e.g. \"2020-07-22\")."
+      isArray: false
+      name: readTime
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists cloud asset's resources.
+    execution: false
+    name: google-cloud-scc-asset-resource-list
+    outputs:
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.name
+      description: The full name of the asset.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.assetType
+      description: The type of the asset.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.updateTime
+      description: The last update timestamp of an asset. The updateTime is updated
+        when create/update/delete operation is performed.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.readTime
+      description: Time used for executing the list request.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.ancestors
+      description: The ancestry path of an asset in Google Cloud resource hierarchy,
+        represented as a list of relative resource names. An ancestry path starts
+        with the closest ancestor in the hierarchy and ends at root. If the asset
+        is a project, folder, or organization, the ancestry path starts from the asset
+        itself.
+      type: Unknown
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.version
+      description: The API version.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.discoveryDocumentUri
+      description: The URL of the discovery document containing the resource's JSON
+        schema. This value is unspecified for resources that do not have an API based
+        on a discovery document, such as Cloud Bigtable.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.discoveryName
+      description: The JSON schema name listed in the discovery document. This value
+        is unspecified for resources that do not have an API based on a discovery
+        document, such as Cloud Bigtable.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.resourceUrl
+      description: The REST URL for accessing the resource. An HTTP GET request using
+        this URL returns the resource itself.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.parent
+      description: The full name of the immediate parent of this resource. For third-party
+        assets, this field may be set differently.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.data
+      description: The content of the resource, in which some sensitive fields are
+        removed and may not be present.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.Resource.resource.location
+      description: The location of the resource in Google Cloud, such as its zone
+        and region.
+      type: String
+    - contextPath: GoogleCloudSCC.Token.name
+      description: Name of the command.
+      type: String
+    - contextPath: GoogleCloudSCC.Token.nextPageToken
+      description: Token to retrieve the next page of results, or empty if there are
+        no more results.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Name of the project. Supports comma separated values.
+
+        Format: "projects/[project-number]" or for multiple projects "projects/[first-project-number], projects/[second-project-number]"
+      isArray: false
+      name: projectName
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '2'
+      description: Number of iterations to search the owner information. Each iteration
+        retrieves 1000 records. The minimum value is 1 and maximum value is 10.
+      isArray: false
+      name: maxIteration
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the owner information for the provided projects.
+    execution: false
+    name: google-cloud-scc-asset-owner-get
+    outputs:
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.name
+      description: The full name of the asset.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.owners
+      description: List of owners of the asset.
+      type: Unknown
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.assetType
+      description: The type of the asset.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.updateTime
+      description: The last update timestamp of an asset. The updateTime is updated
+        when create/update/delete operation is performed.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.readTime
+      description: Time used for executing the list request.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.ancestors
+      description: The ancestry path of an asset in Google Cloud resource hierarchy,
+        represented as a list of relative resource names. An ancestry path starts
+        with the closest ancestor in the hierarchy and ends at root. If the asset
+        is a project, folder, or organization, the ancestry path starts from the asset
+        itself.
+      type: Unknown
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.version
+      description: Specifies the format of the policy.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.etag
+      description: 'The etag is used for optimistic concurrency control as a way to
+        help prevent simultaneous updates of a policy from overwriting each other.
+        It is strongly suggested that systems make use of the etag in the read-modify-write
+        cycle to perform policy updates in order to avoid race conditions: An etag
+        is returned in the response to getIamPolicy, and systems are expected to put
+        that etag in the request to setIamPolicy to ensure that their change will
+        be applied to the same version of the policy.'
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.bindings.role
+      description: A role is a named collection of permissions that provide the ability
+        to perform actions on Google Cloud resources.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.bindings.members
+      description: A member, also known as an identity or principal, which can be
+        a user account, service account, Google group, or domain.
+      type: Unknown
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.bindings.condition
+      description: A condition, which is an optional logic expression that further
+        constrains the role binding based on attributes about the request, such as
+        its origin, the target resource, and so on. Conditions are typically used
+        to control whether access is granted based on the context for a request.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.service
+      description: Specifies a service that will be enabled for audit logging.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.auditLogConfigs.logType
+      description: The log type that this config enables.
+      type: String
+    - contextPath: GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.auditLogConfigs.exemptedMembers
+      description: Specifies the identities that do not cause logging for this type
+        of permission.
+      type: String
+  dockerimage: demisto/google-api-py3:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
@@ -582,4 +774,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
+defaultmapperin: GoogleCloudSCC-mapper
+defaultclassifier: GoogleCloudSCC
 fromversion: 5.0.0

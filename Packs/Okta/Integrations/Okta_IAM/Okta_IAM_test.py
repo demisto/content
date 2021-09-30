@@ -1,3 +1,4 @@
+import pytest
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
@@ -148,7 +149,7 @@ def test_create_user_command__success(mocker):
     mocker.patch.object(client, 'activate_user', return_value=None)
 
     user_profile = create_user_command(client, args, 'mapper_out',
-                                       is_command_enabled=True, is_update_user_enabled=True)
+                                       is_command_enabled=True, is_update_user_enabled=True, is_enable_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -180,7 +181,7 @@ def test_update_user_command__allow_enable(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'activate_user', return_value=None)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -215,7 +216,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
     mocker.patch.object(client, 'activate_user', return_value=None)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=True, create_if_not_exists=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -246,7 +247,7 @@ def test_update_user_command__command_is_disabled(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=OKTA_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -280,7 +281,7 @@ def test_update_user_command__rate_limit_error(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
 
     entry_context = user_profile.to_entry()
@@ -324,7 +325,6 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     assert outputs.get('action') == IAMActions.DISABLE_USER
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
-    assert outputs.get('reason') == 'Action failed because the user is disabled.'
 
 
 def test_get_mapping_fields_command(mocker):
@@ -344,8 +344,8 @@ def test_get_mapping_fields_command(mocker):
     mapping_response = get_mapping_fields_command(client)
     mapping = mapping_response.extract_mapping()
 
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'description1'
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'description1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'description2'
 
 
 def test_get_app_user_assignment_command(mocker):
@@ -396,6 +396,7 @@ def test_fetch_incidents__two_logs_batches(mocker):
     """
     import json
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+    mocker.patch('Okta_IAM.get_all_user_profiles', return_value={})
     events, _ = fetch_incidents(
         client=mock_client(),
         last_run={},
@@ -422,6 +423,7 @@ def test_fetch_incidents__fetch_limit(mocker):
         - Ensure only two events are returned in incident the correct format.
     """
     mocker.patch.object(Client, 'get_logs_batch', side_effect=mock_get_logs_batch)
+    mocker.patch('Okta_IAM.get_all_user_profiles', return_value={})
     events, _ = fetch_incidents(
         client=mock_client(),
         last_run={},
@@ -433,7 +435,7 @@ def test_fetch_incidents__fetch_limit(mocker):
     assert len(events) == 2
 
 
-def test_fetch_incidents__last_run():
+def test_fetch_incidents__last_run(mocker):
     """
     Given:
         - An Okta IAM client object and fetch-relevant instance parameters
@@ -451,6 +453,7 @@ def test_fetch_incidents__last_run():
     last_run = {
         'incidents': [{'mock_log1': 'mock_value1'}, {'mock_log2': 'mock_value2'}, {'mock_log3': 'mock_value3'}]
     }
+    mocker.patch('Okta_IAM.get_all_user_profiles', return_value={})
 
     events, next_run = fetch_incidents(
         client=mock_client(),
@@ -481,3 +484,24 @@ def mock_get_logs_batch(url_suffix='', params=None, full_url=''):
 
     # third iteration - nothing is returned
     return None, None
+
+
+SHOULD_DROP_EVENT_ARGS = [
+    # no user email in log entry - do not drop event
+    ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {}, False),
+
+    # no user email in log entry - do not drop event
+    ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {'test@example.com': {'username': 'test'}}, False),
+
+    # user email in both log entry and in xsoar - do not drop event
+    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}}, False),
+
+    # user email in log entry but not in xsoar - drop event
+    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {}, True)
+]
+
+
+@pytest.mark.parametrize('log_entry, email_to_user_profile, expected', SHOULD_DROP_EVENT_ARGS)
+def test_should_drop_event(log_entry, email_to_user_profile, expected):
+    from Okta_IAM import should_drop_event
+    assert should_drop_event(log_entry, email_to_user_profile) == expected

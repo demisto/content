@@ -1764,5 +1764,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     value = xfilter.filter_value(value, optype, conds, path)
     value = value.value if value else None
     value = marshal(value)
+    value = value if value is not None else []
+    value = value if isinstance(value, list) else [value]
 
     demisto.results(value)

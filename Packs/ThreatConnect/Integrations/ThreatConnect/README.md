@@ -201,10 +201,6 @@
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png" alt="50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png"></p>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png" alt="50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_5f8f617c-5b41-4fc6-ba71-6bc198ce0240">2. Search for an indicator of type URL</h3>
 <hr>
 <p>Searches for an indicator of type URL.</p>
@@ -342,10 +338,6 @@
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png" alt="50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png"></p>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_859a0134-0b4c-40bb-a8aa-1243a27b5fa4">3. Search for an indicator of type file</h3>
 <hr>
 <p>Searches for an indicator of type file.</p>
@@ -506,10 +498,6 @@
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50275319-bd804500-0447-11e9-927f-3e272f74bb60.png" alt="50275319-bd804500-0447-11e9-927f-3e272f74bb60.png"></p>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png" alt="50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_3a6fb44d-fcba-47d2-a5ae-641e96a870af">4. Retrieves all owners for the current account</h3>
 <hr>
 <p>Retrieves all owners for the current account.</p>
@@ -545,10 +533,6 @@
 </table>
 <h5> </h5>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3>5. Retrieve a list of all indicators</h3>
 <hr>
 <p>Retrieves a list of all indicators.</p>
@@ -751,10 +735,6 @@
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281877-96327380-0459-11e9-8c94-a1136e0949a7.png" alt="50281877-96327380-0459-11e9-8c94-a1136e0949a7.png"></p>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_12844d43-9ff8-46e4-8550-ec028fbce8d3">6. Return a list of all ThreatConnect tags</h3>
 <hr>
 <p>Returns a list of all ThreatConnect tags.</p>
@@ -857,10 +837,6 @@
 <pre>!tc-tag-indicator indicator=7.77.7.7 tag=NewTagName</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png" alt="50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_342891d8-10d5-4baa-a495-9e86964eecb3">8. Retrieves information about an indicator</h3>
 <hr>
 <p>Retrieves information about an indicator.</p>
@@ -1066,10 +1042,6 @@
 <pre>!tc-get-indicator indicator=7.77.7.7</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_e47ad233-a892-44ff-b25e-bbcdca5a6f63">9. Fetch all indicators that have a tag</h3>
 <hr>
 <p>Fetches all indicators that have a tag.</p>
@@ -1270,10 +1242,6 @@
 <pre>!tc-get-indicators-by-tag tag=NewTagName</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png" alt="50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_649b49f2-29a7-4d31-b83b-b203bf9ad1cf">10. Add a new indicator to ThreatConnect</h3>
 <hr>
 <p>Adds a new indicator to ThreatConnect.</p>
@@ -1464,10 +1432,6 @@
 <pre>!tc-add-indicator indicator="9.9.4.4" rating="2" confidence="87"</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png" alt="50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_b0a86eb2-45a9-42a6-a5ce-a25d9a31d32d">11. Create a new incident group</h3>
 <hr>
 <p>Creates a new incident group.</p>
@@ -1562,10 +1526,6 @@
 <h5>Command Example</h5>
 <pre>!tc-create-incident incidentName="NewIncident" description="NewIncident" severity="Critical" category="Intrusion" company=Demisto tag=demisto</pre>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_4e0b7529-7cab-47fb-809a-ffaaa5800be5">12. Fetch incidents from ThreatConnect</h3>
 <hr>
 <p>Fetches incidents from ThreatConnect.</p>
@@ -1631,10 +1591,6 @@
 <pre>!tc-fetch-incidents incidentId=64862</pre>
 <p><!-- remove the following comments to manually add an image: --></p>
 <p> </p>
-<p><!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_eb3696f0-25b9-44a8-9cc5-fe565f9a2b2e">13. Associate an indicator with an existing incident</h3>
 <hr>
 <p>Associates an indicator with an existing incident. The indicator must exist before running this command. To add an indicator, run the tc-add-indicator command.</p>
@@ -1824,10 +1780,6 @@
 <h5>Command Example</h5>
 <pre>!tc-incident-associate-indicator indicator=46.148.22.18 incidentId=64862 indicatorType=ADDRESSES</pre>
 <h5>Human Readable Output</h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_df630abe-38a7-4284-b1e1-0c6d429e3441">14. Search for an indicator of type domain</h3>
 <hr>
 <p>Searches for an indicator of type domain.</p>
@@ -1968,10 +1920,6 @@
 <pre>!domain domain=com-mapsfinder.info</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png" alt="45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png"></p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_6af335c1-ae10-4995-a697-4171ef6b9c72">15. Return indicators related to a specific incident</h3>
 <hr>
 <p>Returns indicators that are related to a specific incident.</p>
@@ -2689,10 +2637,6 @@
 </table>
 <p> </p>
 <h5> </h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_8b47bb5b-0493-4b1b-95a4-d4d0470cf7d6">20. Create a group based on the Event type</h3>
 <hr>
 <p>Creates a group based on the "Event" type.</p>
@@ -2785,10 +2729,6 @@
 </table>
 <p> </p>
 <h5> </h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_ccc84238-6dc6-41b5-857d-da1acba22018">21. Create a group based on the Threats type</h3>
 <hr>
 <p>Creates a group based on the "Threats" type.</p>
@@ -2836,10 +2776,6 @@
 </table>
 <p> </p>
 <h5> </h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_2df64364-579d-4818-87fd-6b6f390b7ef8">22. Delete a group</h3>
 <hr>
 <p>Deletes a group.</p>
@@ -3512,10 +3448,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_194dd92c-4b86-4f93-b518-d4791dceda62">32. Retrieve the attribute of a group</h3>
 <hr>
 <p>Retrieves the attribute of a group.</p>
@@ -3680,10 +3612,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_1ea1f849-40aa-4ad5-ad6f-b5a719b0ea4a">33. Retrieve the security labels of a group</h3>
 <hr>
 <p>Retrieves the security labels of a group.</p>
@@ -3773,10 +3701,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_3e053624-ac89-4759-ace2-67f90f75cf0a">34. Retrieves the tags of a group</h3>
 <hr>
 <p>Retrieves the tags of a group.</p>
@@ -3850,10 +3774,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_ea226a75-dcb3-4b7c-a2cc-6c4772492481">35. Downloads the contents of a document</h3>
 <hr>
 <p>Downloads the contents of a document.</p>
@@ -4082,10 +4002,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_035ca80f-4cb4-4adf-b50d-86f9f67c427b">37. Returns indicators associated with a specific group</h3>
 <hr>
 <p>Returns indicators associated with a specified group.</p>
@@ -4190,10 +4106,6 @@
 </tbody>
 </table>
 <p> </p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_20deac42-acae-425b-bdce-b611b0469a79">38. Associates one group with another group</h3>
 <hr>
 <p>Associates one group with another group.</p>
@@ -4279,7 +4191,3 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p>The group 3594873 was associated successfully.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>

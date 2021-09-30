@@ -28,13 +28,30 @@ Duplication of rule detection incidents when fetched from Chronicle.
 - Please refer for information on Pre-Process rules:
   https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules.
 
-##### Problem #3
-Error 404, "Failed to execute fetch-incidents command" when trying to pull detections for a Rule ID that was no longer valid. The fetch incident gets paused and remaining rule ids are not processed for fetching the detections.
+## FAQ - Fetch Detections
 
-##### Solution #3
-- For 400, 404, 429 and 5xx errors, backoff rules are created. When user faces these errors they will not be visible on the UI and neither it will stop the fetch incidents process. 
-- These errors will be captured in logs and 60 retry attempts will be made for each rule to fetch the data untill the system is recovered. 
-- For 400 and 404 errors as well system will not stop the fetch incident process and proceed sub-sequent rules.
+##### Question #1
+If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
+
+###### Case #1: When HTTP 429 error resumes before 60 retry attempts:
+
+- System will re-attempt to fetch the detection after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2, 60 times.
+If 429 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
+
+###### Case #2: When HTTP 429 error does not resume for 60 retry attempts:
+
+- System will re-attempt after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2 60 times.
+If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.
+
+##### Question #2
+What if R1 is an invalid rule id? Would it be able to fetch R2 and R3 detections?
+
+- There will not be any retry attempts for invalid rule ids. The system will skip the invalid rule ids and move to the next rule id. So if R1 is invalid, the system will skip it without any retry attempts and move to R2.
+
+##### Question #3
+What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
+
+- There will not be any retry attempts for deleted rule ids. The system will skip the deleted rule ids and move to the next rule id. So if R1 is deleted, the system will skip it without any retry attempts and move to R2.
 
 ## Configure Chronicle on Cortex XSOAR
 ---
@@ -1785,7 +1802,6 @@ List the latest versions of all Rules.
 | GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. |
 | GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. |
 | GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. |
-| Metadata Information (GoogleChronicleBackstory.Rules.Metadata) |
 | GoogleChronicleBackstory.Rules.Metadata.severity | String | Severity for the rule. |
 | GoogleChronicleBackstory.Rules.Metadata.author | String | Name of author for the rule. |
 | GoogleChronicleBackstory.Rules.Metadata.description | String | Description of the rule. |

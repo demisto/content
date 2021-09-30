@@ -26,8 +26,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: The query to use when fetching incidents
-  additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
+- additionalinfo: Getting incidents with new style FIQL query is available only from
+    TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as
+    additional inline params as supported. More information is available in the TOPdesk
+    integration documentation.
+  display: The query to use when fetching incidents
   name: fetch_query
   required: false
   type: 0
@@ -43,6 +46,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: TOPdesk’s Enterprise Service Management software (ESM) lets your service
   teams join forces and process requests from a single platform.
 display: TOPdesk
@@ -50,12 +58,9 @@ name: TOPdesk
 script:
   commands:
   - arguments:
-    - description: The limit for the amount of subcategories to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of subcategories to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of subcategories.
     name: topdesk-subcategories-list
     outputs:
@@ -72,12 +77,9 @@ script:
       description: Category name of the subcategory.
       type: String
   - arguments:
-    - description: The limit for the amount of categories to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of categories to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of categories.
     name: topdesk-categories-list
     outputs:
@@ -88,12 +90,9 @@ script:
       description: Category name.
       type: String
   - arguments:
-    - description: The limit for the amount of entry types to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of entry types to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of entry types.
     name: topdesk-entry-types-list
     outputs:
@@ -104,14 +103,10 @@ script:
       description: EntryType name.
       type: String
   - arguments:
-    - description: The limit for the amount of call types to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of call types to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of call types.
-    execution: false
     name: topdesk-call-types-list
     outputs:
     - contextPath: TOPdesk.CallType.Id
@@ -121,12 +116,9 @@ script:
       description: CallType name.
       type: String
   - arguments:
-    - description: The limit for the amount of deescalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of deescalation reasons to store in the
+        Context Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of deescalation reasons.
     name: topdesk-deescalation-reasons-list
     outputs:
@@ -137,12 +129,9 @@ script:
       description: Deescalation reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of escalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of escalation reasons to store in the
+        Context Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of escalation reasons.
     name: topdesk-escalation-reasons-list
     outputs:
@@ -153,12 +142,9 @@ script:
       description: Escalation reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of archiving reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of archiving reasons to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of archiving reasons.
     name: topdesk-archiving-reasons-list
     outputs:
@@ -169,24 +155,15 @@ script:
       description: Archiving reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of attachments to store in the Context Data. To store all provide the value -1. Default value is 100.
-      isArray: false
+    - description: The limit for the amount of attachments to store in the Context
+        Data. To store all provide the value -1. Default value is 100.
       name: limit
-      required: false
-      secret: false
-    - description: The incident id. An id or a number must be set. If both are
-        set, the id will be used.
-      isArray: false
+    - description: The incident id. An id or a number must be set. If both are set,
+        the id will be used.
       name: incident_id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set, the id will be used.
-      isArray: false
       name: incident_number
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of attachments of a certain TOPdesk incident.
     name: topdesk-incident-attachments-list
     outputs:
@@ -223,24 +200,14 @@ script:
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
         or equal to 0, default is 0.
-      isArray: false
       name: start
-      required: false
-      secret: false
     - description: The amount of persons to be returned per request. Must be between
         1 and 100, default is 10.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
-        Available from Supporting-Files-API version 1.38.0.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
-      isArray: false
+        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
+        is documented in the TOPdesk tutorial.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of persons.
     name: topdesk-persons-list
     outputs:
@@ -604,24 +571,14 @@ script:
   - arguments:
     - description: The offset at which to start listing the operators at. Must be
         greater or equal to 0, default is 0.
-      isArray: false
       name: start
-      required: false
-      secret: false
     - description: The amount of operators to be returned per request. Must be between
         1 and 100, default is 10.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
-        Available from Supporting-Files-API version 1.38.0.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
-      isArray: false
+        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
+        is documented in the TOPdesk tutorial.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of operators.
     name: topdesk-operators-list
     outputs:
@@ -1012,24 +969,14 @@ script:
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
         or equal to 0, default is 0.
-      isArray: false
       name: start
-      required: false
-      secret: false
     - description: The amount of persons to be returned per request. Must be between
         1 and 100, default is 10.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - description: A FIQL search expression to filter the result. (e.g. address.country.name=NL)
-        Available from Supporting-Files-API version 1.38.0.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
-      isArray: false
+        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
+        is documented in the TOPdesk tutorial.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
@@ -1525,75 +1472,44 @@ script:
   - arguments:
     - description: The offset at which to start listing the operators at. Must be
         greater or equal to 0, default is 0.
-      isArray: false
       name: start
-      required: false
-      secret: false
     - description: The amount of operators to be returned per request. Must be between
         1 and 100, default is 10.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - description: A search expression to filter the result.
-        The FIQL query syntax will be used if 'Use new query option' in the settings is checked, otherwise old style query will be used.
-        The FIQL query syntax is documented in the in the TOPdesk tutorial.
-        TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g. (old style) status=firsLine).
-      isArray: false
+    - description: A search expression to filter the result. The FIQL query syntax
+        will be used if 'Use new query option' in the settings is checked, otherwise
+        old style query will be used. The FIQL query syntax is documented in the in
+        the TOPdesk tutorial. TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g.
+        (old style) status=firsLine).
       name: query
-      required: false
-      secret: false
     - description: The id of the incident to retrieve, overrides any other arguments.
-      isArray: false
       name: incident_id
-      required: false
-      secret: false
     - description: The number of the incident to retrieve, overrides any other argument
         but incidnet_id.
-      isArray: false
       name: incident_number
-      required: false
-      secret: false
-    - description: Retrive only the incidents of the given status. firstLine/secondLine/partial
-      isArray: false
+    - auto: PREDEFINED
+      description: Retrive only the incidents of the given status. firstLine/secondLine/partial
       name: status
-      required: false
-      secret: false
       predefined:
       - firstLine
       - secondLine
       - partial
     - description: Retrive only the incidents of the given caller id.
-      isArray: false
       name: caller_id
-      required: false
-      secret: false
     - description: Retrive only the incidents of the given branch id.
-      isArray: false
       name: branch_id
-      required: false
-      secret: false
-    - description: Retrive only the incidents of the given category. Supported only with new FIQL type queries.
-      isArray: false
+    - description: Retrive only the incidents of the given category. Supported only
+        with new FIQL type queries.
       name: category
-      required: false
-      secret: false
-    - description: Retrive only the incidents of the given subcategory. Supported only with new FIQL type queries.
-      isArray: false
+    - description: Retrive only the incidents of the given subcategory. Supported
+        only with new FIQL type queries.
       name: subcategory
-      required: false
-      secret: false
-    - description: Retrive only the incidents of the given call type. Supported only with new FIQL type queries.
-      isArray: false
+    - description: Retrive only the incidents of the given call type. Supported only
+        with new FIQL type queries.
       name: call_type
-      required: false
-      secret: false
-    - description: Retrive only the incidents of the given entry type. Supported only with new FIQL type queries.
-      isArray: false
+    - description: Retrive only the incidents of the given entry type. Supported only
+        with new FIQL type queries.
       name: entry_type
-      required: false
-      secret: false
-    deprecated: false
     description: Get list of incidents.
     name: topdesk-incidents-list
     outputs:
@@ -2181,79 +2097,47 @@ script:
       type: Date
   - arguments:
     - description: The caller id for this incident. For an unregistered caller provide
-        a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
-      isArray: false
+        a name. For a list of registered persons or operator ids run !topdesk-persons-list
+        or !topdesk-operators-list.
       name: caller
       required: true
-      secret: false
-    - description: Status of the incident. Can only be set by operators.
-      isArray: false
+    - auto: PREDEFINED
+      description: Status of the incident. Can only be set by operators.
       name: status
-      required: false
-      secret: false
       predefined:
       - firstLine
       - secondLine
       - partial
     - description: Brief description. maximum 80 characters.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: Initial request. Can be set by operators and persons.
-      isArray: false
       name: request
-      required: false
-      secret: false
     - description: Initial action. Can be set by operators and persons.
-      isArray: false
       name: action
-      required: false
-      secret: false
-    - description: Whether the initial action is invisible for persons. Can only be
+    - auto: PREDEFINED
+      description: Whether the initial action is invisible for persons. Can only be
         set by operators. Default value is false.
-      isArray: false
       name: action_invisible_for_caller
-      required: false
-      secret: false
       predefined:
       - 'true'
       - 'false'
-    - description: Entry type by name. Can only be set by operators. XSOAR is
-        set by default for mirroring. For a list of available entry types run !topdesk-entry-types-list.
-      isArray: false
+    - description: Entry type by name. Can only be set by operators. XSOAR is set
+        by default for mirroring. For a list of available entry types run !topdesk-entry-types-list.
       name: entry_type
-      required: false
-      secret: false
-    - description: Category by name. Can be set by operators. It is an error
-        to provide both an id and a name. For a list of available categories run !topdesk-categories-list.
-      isArray: false
+    - description: Category by name. Can be set by operators. It is an error to provide
+        both an id and a name. For a list of available categories run !topdesk-categories-list.
       name: category
-      required: false
-      secret: false
-    - description: Subcategory by name. Can be set by operators. It is an error
-        to provide both an id and a name. For a list of available subcategories run !topdesk-subcategories-list.
-      isArray: false
+    - description: Subcategory by name. Can be set by operators. It is an error to
+        provide both an id and a name. For a list of available subcategories run !topdesk-subcategories-list.
       name: subcategory
-      required: false
-      secret: false
     - description: External number. Can only be set by operators. Max 60 characters.
-      isArray: false
       name: external_number
-      required: false
-      secret: false
     - description: Main incident id or number, required for creating a partial incident.
         Can only be set by operators.
-      isArray: false
       name: main_incident
-      required: false
-      secret: false
-    - description: Additional parameters to pass when creating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
-      isArray: false
+    - description: Additional parameters to pass when creating an incident. (e.g.
+        {"optionalFields1":{"text1":"test"}})
       name: additional_params
-      required: false
-      secret: false
-    deprecated: false
     description: Create an incident in TOPdesk.
     name: topdesk-incident-create
     outputs:
@@ -2842,87 +2726,51 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
-    - description: Status of the incident. Can only be set by operators.
-      isArray: false
+    - auto: PREDEFINED
+      description: Status of the incident. Can only be set by operators.
       name: status
-      required: false
-      secret: false
       predefined:
       - firstLine
       - secondLine
       - partial
     - description: Brief description. maximum 80 characters.
-      isArray: false
       name: description
-      required: false
-      secret: false
     - description: Initial request. Can be set by operators and persons.
-      isArray: false
       name: request
-      required: false
-      secret: false
     - description: Initial action. Can be set by operators and persons.
-      isArray: false
       name: action
-      required: false
-      secret: false
     - description: The caller id for this incident. For an unregistered caller provide
-        a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
-      isArray: false
+        a name. For a list of registered persons or operator ids run !topdesk-persons-list
+        or !topdesk-operators-list.
       name: caller
-      required: false
-      secret: false
-    - description: Whether the initial action is invisible for persons. Can only be
+    - auto: PREDEFINED
+      description: Whether the initial action is invisible for persons. Can only be
         set by operators. Default value is false.
-      isArray: false
       name: action_invisible_for_caller
-      required: false
-      secret: false
       predefined:
       - 'true'
       - 'false'
-    - description: Entry type by name. Can only be set by operators. For a list of available entry types run !topdesk-entry-types-list.
-      isArray: false
+    - description: Entry type by name. Can only be set by operators. For a list of
+        available entry types run !topdesk-entry-types-list.
       name: entry_type
-      required: false
-      secret: false
-    - description: Category by name. Can be set by operators. For a list of available categories run !topdesk-categories-list.
-      isArray: false
+    - description: Category by name. Can be set by operators. For a list of available
+        categories run !topdesk-categories-list.
       name: category
-      required: false
-      secret: false
-    - description: Subcategory by name. Can be set by operators. For a list of available subcategories run !topdesk-subcategories-list.
-      isArray: false
+    - description: Subcategory by name. Can be set by operators. For a list of available
+        subcategories run !topdesk-subcategories-list.
       name: subcategory
-      required: false
-      secret: false
     - description: External number. Can only be set by operators. Max 60 characters.
-      isArray: false
       name: external_number
-      required: false
-      secret: false
     - description: Main incident id or number, required for creating a partial incident.
         Can only be set by operators.
-      isArray: false
       name: main_incident
-      required: false
-      secret: false
-    - description: Additional parameters to pass when updating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
-      isArray: false
+    - description: Additional parameters to pass when updating an incident. (e.g.
+        {"optionalFields1":{"text1":"test"}})
       name: additional_params
-      required: false
-      secret: false
-    deprecated: false
     description: Update an incident in TOPdesk.
     name: topdesk-incident-update
     outputs:
@@ -3511,22 +3359,13 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
     - description: The escalation reason id.
-      isArray: false
       name: escalate_reason_id
       required: true
-      secret: false
-    deprecated: false
     description: Escalate an incident in TOPdesk.
     name: topdesk-incident-escalate
     outputs:
@@ -4115,22 +3954,13 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
     - description: The deescalation reason id.
-      isArray: false
       name: deescalate_reason_id
       required: true
-      secret: false
-    deprecated: false
     description: Deescalate an incident in TOPdesk.
     name: topdesk-incident-deescalate
     outputs:
@@ -4719,22 +4549,13 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
     - description: The archiving reason id.
-      isArray: false
       name: archive_reason_id
       required: true
-      secret: false
-    deprecated: false
     description: Archive an incident in TOPdesk.
     name: topdesk-incident-archive
     outputs:
@@ -5323,17 +5144,10 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
-    deprecated: false
     description: Unarchive an incident in TOPdesk.
     name: topdesk-incident-unarchive
     outputs:
@@ -5922,41 +5736,25 @@ script:
   - arguments:
     - description: The incident id. An id or a number must be set. If both are set
         incident with relevant id will be updated.
-      isArray: false
       name: id
-      required: false
-      secret: false
     - description: The incident number. An id or a number must be set. If both are
         set incident with relevant id will be updated.
-      isArray: false
       name: number
-      required: false
-      secret: false
     - description: Entry id of the file to upload.
-      isArray: false
       name: file
       required: true
-      secret: false
-    - description: In case specified entry containes more than one file, the given file name will be used.
-         If not specified the first file in the entry will be used.
-      isArray: false
+    - description: In case specified entry containes more than one file, the given
+        file name will be used. If not specified the first file in the entry will
+        be used.
       name: file_name
-      required: false
-      secret: false
-    - description: Whether the uploaded file is invisible for the caller of the incident
-      isArray: false
+    - auto: PREDEFINED
+      description: Whether the uploaded file is invisible for the caller of the incident
       name: invisible_for_caller
-      required: false
-      secret: false
       predefined:
       - 'true'
       - 'false'
     - description: The description of the uploaded file.
-      isArray: false
       name: file_description
-      required: false
-      secret: false
-    deprecated: false
     description: Upload an attachment to an incident in TOPdesk.
     name: topdesk-incident-attachment-upload
     outputs:
@@ -5990,15 +5788,50 @@ script:
     - contextPath: TOPdesk.Attachment.Person
       description: Attachment's person
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.21272
+  - arguments:
+    - description: The limit for the amount of actions to store in the Context Data.
+        To store all provide the value -1. Default value is 100.
+      name: limit
+    - description: The incident id. An id or a number must be set. If both are set,
+        the id will be used.
+      name: incident_id
+    - description: The incident number. An id or a number must be set. If both are
+        set, the id will be used.
+      name: incident_number
+    description: Get list of actions of a certain TOPdesk incident.
+    name: topdesk-incident-actions-list
+    outputs:
+    - contextPath: TOPdesk.Action.Id
+      description: Action's ID
+      type: string
+    - contextPath: TOPdesk.Action.Memotext
+      description: Action's memotext (= comment)
+      type: string
+    - contextPath: TOPdesk.Action.Flag
+      description: Action's Flag
+      type: unknown
+    - contextPath: TOPdesk.Action.InvisibleForCaller
+      description: Action is visible for caller (= boolean). Standard value is set
+        to False.
+      type: boolean
+    - contextPath: TOPdesk.Action.EntryDate
+      description: Action's entry date
+      type: date
+    - contextPath: TOPdesk.Action.Operator.Id
+      description: Action's operator ID
+      type: string
+    - contextPath: TOPdesk.Action.Operator.Name
+      description: Action's operator name
+      type: string
+    - contextPath: TOPdesk.Action.Person
+      description: Action's person
+      type: string
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultmapperin: TOPdesk-incoming-mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

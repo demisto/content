@@ -77,6 +77,12 @@ RELOADED_DATA = [
         True,
     ),
 ]
+INTEGRATION_NAME = 'OpenPhish'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 @pytest.mark.parametrize("client,data,output", RELOADED_DATA)

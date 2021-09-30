@@ -26,7 +26,7 @@
       "readTime": "2021-02-01T12:27:24.419Z"
     }
   ],
-  "GoogleCloudSCC.Token(val.name == obj.name)": {
+  "GoogleCloudSCC.Token(val.name && val.name == obj.name)": {
     "name": "google-cloud-scc-asset-list",
     "nextPageToken": "pageToken"
   }

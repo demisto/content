@@ -1,0 +1,679 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SOCRadarThreatFusion
+  version: -1
+configuration:
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+defaultclassifier: 'null'
+description: Enrich indicators by obtaining enhanced information and reputation via
+  ThreatFusion of SOCRadar.
+display: SOCRadar ThreatFusion
+name: SOCRadarThreatFusion
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP entities to score. (IPv4 or IPv6)
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided IP entities' reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Risk Score
+      description: Reputation score of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Score Details
+      description: Risk score details of queried IP address.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        IP address in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.IP
+      description: Queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn
+      description: ASN field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_cidr
+      description: ASN CIDR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_country_code
+      description: ASN country code field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_date
+      description: ASN date field Whois information of queried IP address.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_description
+      description: ASN description field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_registry
+      description: ASN registry field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.address
+      description: Nets>address field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.cidr
+      description: Nets>CIDR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.city
+      description: Nets>city field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.country
+      description: Nets>country field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.created
+      description: Nets>created field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.description
+      description: Nets>description field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.emails
+      description: Nets>emails field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.handle
+      description: Nets>handle field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.name
+      description: Nets>name field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.postal_code
+      description: Nets>postal code field Whois information of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.range
+      description: Nets>range field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.state
+      description: Nets>state field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.updated
+      description: Nets>updated field Whois information of queried IP address.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nir
+      description: NIR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.query
+      description: Query field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.raw_referral
+      description: Raw referral field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.referral
+      description: Referral field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.DNS Details
+      description: DNS information of queried IP address.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.ASN
+      description: ASN field Geographical location information of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnCode
+      description: ASN code field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnName
+      description: ASN name field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Cidr
+      description: CIDR field Geographical location information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CityName
+      description: City name field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryCode
+      description: Country code field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryName
+      description: Country name field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Latitude
+      description: Latitude field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Longitude
+      description: Longitude field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.RegionName
+      description: Region name field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Timezone
+      description: Timezone field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.ZipCode
+      description: Zip code field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format:
+        latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain entities to score.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided domain entities' reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Risk Score
+      description: Reputation score of queried domain.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Score Details
+      description: Risk score details of queried domain.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        domain in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Domain
+      description: Queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.org
+      description: Org field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.city
+      description: City field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name
+      description: Name field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.state
+      description: State field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.dnssec
+      description: Dnssec field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.emails
+      description: Emails field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.status
+      description: Status field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.address
+      description: Address field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.country
+      description: Country field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.zipcode
+      description: Zip code field Whois information of queried domain.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.registrar
+      description: Registrar field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.domain_name
+      description: Domain name field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name_servers
+      description: Name servers field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.referral_url
+      description: Referral URL field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.updated_date
+      description: Updated date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.whois_server
+      description: Whois server field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.creation_date
+      description: Creation date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.expiration_date
+      description: Expiration date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.DNS Details
+      description: DNS information of queried domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: Unknown
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy"'
+      type: String
+    - contextPath: Domain.Geo.Country
+      description: The country in which the domain address is located.
+      type: String
+    - contextPath: Domain.Subdomains
+      description: (List<String>) Subdomains of the domain.
+      type: Unknown
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+  - arguments:
+    - default: true
+      description: Hash entities to score. (MD5 or SHA1)
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided hash entities' reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Risk Score
+      description: Reputation score of queried hash.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Score Details
+      description: Risk score details of queried hash.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        hash in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.File
+      description: Queried hash.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: IP entity to score. (IPv4 or IPv6)
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided IP entity's reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: socradar-score-ip
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Risk Score
+      description: Reputation score of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Score Details
+      description: Risk score details of queried IP address.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        IP address in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.IP
+      description: Queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn
+      description: ASN field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_cidr
+      description: ASN CIDR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_country_code
+      description: ASN country code field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_date
+      description: ASN date field Whois information of queried IP address.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_description
+      description: ASN description field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_registry
+      description: ASN registry field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.address
+      description: Nets>address field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.cidr
+      description: Nets>CIDR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.city
+      description: Nets>city field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.country
+      description: Nets>country field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.created
+      description: Nets>created field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.description
+      description: Nets>description field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.emails
+      description: Nets>emails field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.handle
+      description: Nets>handle field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.name
+      description: Nets>name field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.postal_code
+      description: Nets>postal code field Whois information of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.range
+      description: Nets>range field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.state
+      description: Nets>state field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.updated
+      description: Nets>updated field Whois information of queried IP address.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.nir
+      description: NIR field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.query
+      description: Query field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.raw_referral
+      description: Raw referral field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Whois Details.referral
+      description: Referral field Whois information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.DNS Details
+      description: DNS information of queried IP address.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.ASN
+      description: ASN field Geographical location information of queried IP address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnCode
+      description: ASN code field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnName
+      description: ASN name field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Cidr
+      description: CIDR field Geographical location information of queried IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CityName
+      description: City name field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryCode
+      description: Country code field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryName
+      description: Country name field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Latitude
+      description: Latitude field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Longitude
+      description: Longitude field Geographical location information of queried IP
+        address.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.RegionName
+      description: Region name field Geographical location information of queried
+        IP address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.Timezone
+      description: Timezone field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Geo Location.ZipCode
+      description: Zip code field Geographical location information of queried IP
+        address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+  - arguments:
+    - default: false
+      description: Domain entity to score.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided domain entity's reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: socradar-score-domain
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Risk Score
+      description: Reputation score of queried domain.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.IP.Score Details
+      description: Risk score details of queried domain.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        domain in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Domain
+      description: Queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.org
+      description: Org field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.city
+      description: City field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name
+      description: Name field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.state
+      description: State field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.dnssec
+      description: Dnssec field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.emails
+      description: Emails field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.status
+      description: Status field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.address
+      description: Address field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.country
+      description: Country field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.zipcode
+      description: Zip code field Whois information of queried domain.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.registrar
+      description: Registrar field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.domain_name
+      description: Domain name field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name_servers
+      description: Name servers field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.referral_url
+      description: Referral URL field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.updated_date
+      description: Updated date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.whois_server
+      description: Whois server field Whois information of queried domain.
+      type: String
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.creation_date
+      description: Creation date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.Whois Details.expiration_date
+      description: Expiration date field Whois information of queried domain.
+      type: Date
+    - contextPath: SOCRadarThreatFusion.Reputation.Domain.DNS Details
+      description: DNS information of queried domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+  - arguments:
+    - default: false
+      description: Hash entity to score. (MD5 or SHA1)
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Scores provided hash entity's reputation in SOCRadar ThreatFusion.
+    execution: false
+    name: socradar-score-hash
+    outputs:
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Risk Score
+      description: Reputation score of queried hash.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Score Details
+      description: Risk score details of queried hash.
+      type: JSON
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.Total Encounters
+      description: Number of times that SOCRadar has encountered with the queried
+        hash in its threat sources.
+      type: Number
+    - contextPath: SOCRadarThreatFusion.Reputation.Hash.File
+      description: Queried hash.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the indicator score.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- SOCRadarThreatFusion-Test
+fromversion: 6.0.0

@@ -10,10 +10,11 @@ from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
 from datetime import datetime, timedelta
+from typing import List, Dict, Optional, Tuple, Any
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file,\
+    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags
@@ -46,7 +47,7 @@ TEST_METADATA = {
 AGGREGATED_CHANGELOG = {
     "1.0.1": {
         "releaseNotes": "dummy release notes",
-        "displayName": "1.0.0",
+        "displayName": "1.0.0 - 264879",
         "released": "2020-05-05T13:39:33Z"
     },
     "1.0.3": {
@@ -86,13 +87,12 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
+            index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
         )
-        parsed_metadata = dummy_pack._parse_pack_metadata(
-            user_metadata=dummy_pack_metadata, build_number="dummy_build_number", commit_hash="dummy_commit"
-        )
+        parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'Test Pack Name'
@@ -126,9 +126,9 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -152,9 +152,9 @@ class TestMetadataParsing:
         """
 
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = {}
         dummy_pack._enhance_pack_attributes(
-            user_metadata={}, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -695,7 +695,7 @@ class TestChangelogCreation:
         modified_rn_file = 'modified dummy release notes'
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
-        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) ==\
+        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
                (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
@@ -709,7 +709,7 @@ class TestChangelogCreation:
         """
 
         release_notes_dir = 'Irrelevant/Test/Path'
-        changelog_latest_rn_version = LooseVersion('1.0.3')
+        changelog_latest_rn_versions = ['1.0.3']
         modified_rn_files = ['1_0_2.md']
         modified_rn_lines = 'dummy release notes\nmodified dummy release notes'
         modified_rn_file = 'modified dummy release notes'
@@ -721,8 +721,23 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.aggregate_release_notes_for_marketplace",
                      return_value=modified_rn_lines)
         modified_versions_dict = dummy_pack.get_modified_release_notes_lines(
-            release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
+            release_notes_dir, changelog_latest_rn_versions, AGGREGATED_CHANGELOG, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
+
+    def test_update_changelog_entry(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket, a version that is a key of an entry in the changelog and rn lines
+                to update the entry with.
+           When:
+               - Modifying an exiting rn.
+           Then:
+               - The entry will keep all the other data other than the modified part.
+        """
+        entry = dummy_pack._get_updated_changelog_entry(AGGREGATED_CHANGELOG, '1.0.1', 'updated_rn')
+        assert entry['releaseNotes'] == 'updated_rn'
+        assert entry['displayName'] == AGGREGATED_CHANGELOG['1.0.1']['displayName']
+        assert entry['released'] == AGGREGATED_CHANGELOG['1.0.1']['released']
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
@@ -1233,11 +1248,29 @@ class TestCopyAndUploadToStorage:
 
 
 class TestLoadUserMetadata:
-    @pytest.fixture(scope="class")
+    @pytest.fixture(scope="function")
     def dummy_pack(self):
         """ dummy pack fixture
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
+        """
+        Given:
+            - A pack with metadata containing pack data like eula link
+        When:
+            - Loading the file data into the pack object
+        Then:
+            - Ensure eula link appears in the pack object metadata
+        """
+        metadata_path = os.path.join(tmp_path, 'pack_metadata.json')
+        dummy_pack._pack_path = tmp_path
+        with open(metadata_path, 'w') as metadata_file:
+            metadata_file.write(json.dumps(dummy_pack_metadata))
+        dummy_pack.load_user_metadata()
+        loaded_metadata = dummy_pack.user_metadata
+
+        assert loaded_metadata['eulaLink'] == 'https://my.eula.com'
 
     def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
         """
@@ -1250,11 +1283,11 @@ class TestLoadUserMetadata:
        """
         mocker.patch("os.path.exists", return_value=False)
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
-        task_status, user_metadata = dummy_pack.load_user_metadata()
+        task_status = dummy_pack.load_user_metadata()
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert user_metadata == {}
+        assert not dummy_pack.user_metadata
 
 
 class TestSetDependencies:
@@ -1319,10 +1352,10 @@ class TestSetDependencies:
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_no_user_dependencies(self):
         """
@@ -1375,10 +1408,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+        assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
     def test_set_dependencies_no_generated_dependencies(self):
         """
@@ -1395,9 +1428,9 @@ class TestSetDependencies:
         metadata = self.get_pack_metadata()
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        p.set_pack_dependencies(metadata, {})
-
-        assert metadata['dependencies'] == dependencies
+        p._user_metadata = metadata
+        p.set_pack_dependencies({})
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -1431,12 +1464,13 @@ class TestSetDependencies:
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack_new_mandatory_dependency(self):
         """
@@ -1475,9 +1509,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(metadata, generated_dependencies)
+            p.set_pack_dependencies(generated_dependencies)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -1521,10 +1556,11 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(user_dependencies)
+        p._user_metadata = metadata
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:
@@ -1627,9 +1663,11 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
+        assert new_versions == ['1.1.0', '2.0.0']
 
     def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
         """
@@ -1647,9 +1685,11 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
+        assert new_versions == []
 
     def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
         """
@@ -1668,9 +1708,323 @@ class TestReleaseNotes:
         '''
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
+        assert new_versions == []
+
+    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(LooseVersion('0.0.0'), LooseVersion('1.0.0'), [], dict(), dict()),
+                                                  (
+                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
+                                                      [LooseVersion('1.0.1')], {'1.0.1': 'BC text'}, dict()),
+                                                  (
+                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
+                                                      [LooseVersion('1.0.0')], {'1.0.0': None},
+                                                      {'1.0.0': None}),
+                                                  (
+                                                      LooseVersion('2.3.1'), LooseVersion('2.4.0'),
+                                                      [LooseVersion('2.3.1')], {'2.3.1': 'BC text'},
+                                                      dict()),
+                                                  (LooseVersion('2.3.1'), LooseVersion('2.4.0'),
+                                                   [LooseVersion('2.3.1'), LooseVersion('2.3.2')],
+                                                   {'2.3.1': None, '2.3.2': 'BC Text 232'}, {'2.3.2': 'BC Text 232'})]
+
+    @pytest.mark.parametrize('predecessor_version, rn_version, bc_versions_list,bc_version_to_text, expected',
+                             CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS)
+    def test_changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion,
+                                                 bc_versions_list: List[LooseVersion], bc_version_to_text, expected):
+        """
+           Given:
+           - predecessor_version: Predecessor version of the changelog entry.
+           - rn_version: RN version of the current processed changelog entry
+            When:
+            - Checking whether current 'rn_version' contains a BC version.
+            Case a: Pack does not contain any BC versions.
+            Case b: Pack contains BC versions, but not between 'predecessor_version' to 'rn_version' range.
+            Case c: Pack contains BC versions, and it is the exact 'rn_version'.
+            Case d: Pack contains BC versions, and it is the exact 'predecessor_version'.
+            Case e: Pack contains BC versions, and it is the between 'predecessor_version' to 'rn_version' range.
+           Then:
+           Validate expected bool is returned.
+           Case a: Validate false is returned.
+           Case b: Validate false is returned.
+           Case c: Validate true is returned, because there is a BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (equals to 'rn_version').
+           Case d: Validate false is returned, because there is no BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (equals to 'predecessor_version' which is
+                   outside range).
+           Case e: Validate true is returned, because there is a BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (above 'predecessor_version',
+                   below 'rn_version').
+       """
+        assert Pack._changelog_entry_bc_versions(predecessor_version, rn_version, bc_versions_list,
+                                                 bc_version_to_text) == expected
+
+    def test_breaking_changes_versions_to_text(self, tmpdir):
+        """
+        Given:
+        - Release notes directory (class field)
+
+        When:
+        - Creating dict of BC version to mapping. Including all possibilities:
+        1) RN does not have corresponding config file.
+        2) RN has corresponding config file, breakingChanges is set to true, text does not exist.
+        3) RN has corresponding config file, breakingChanges is set to true, text exists.
+        4) RN has corresponding config file, breakingChanges is set to false, text does not exist.
+        5) RN has corresponding config file, breakingChanges is set to false, text exists.
+
+        Then:
+        - Ensure expected mapping is done.
+        case 2 contains only breakingChanges: True entry.
+        case 3 contains both breakingChanges: True and text entries.
+
+        """
+        rn_dir = f'{tmpdir}/ReleaseNotes'
+        os.mkdir(rn_dir)
+        create_rn_file(rn_dir, '1_0_1', 'some RN to see it is filtered by its extension')
+        create_rn_config_file(rn_dir, '1_0_2', {'breakingChanges': True})
+        create_rn_config_file(rn_dir, '1_0_3', {'breakingChanges': True, 'breakingChangesNotes': 'this is BC'})
+        create_rn_config_file(rn_dir, '1_0_4', {'breakingChanges': False})
+        create_rn_config_file(rn_dir, '1_0_5', {'breakingChanges': False, 'breakingChangesNotes': 'this is BC'})
+
+        expected: Dict[str, Optional[str]] = {'1.0.2': None, '1.0.3': 'this is BC'}
+
+        assert Pack._breaking_changes_versions_to_text(rn_dir) == expected
+
+    SPLIT_BC_VERSIONS_WITH_AND_WITHOUT_TEXT_INPUTS = [(dict(), ([], [])),
+                                                      ({'1.0.2': 'bc text 1'}, (['bc text 1'], [])),
+                                                      ({'1.0.2': None}, ([], ['1.0.2'])),
+                                                      ({'1.0.2': None, '1.0.4': None, '1.0.5': 'txt1', '1.0.6': 'txt2'},
+                                                       (['txt1', 'txt2'], ['1.0.2', '1.0.4'])),
+                                                      ]
+
+    @pytest.mark.parametrize('bc_versions, expected', SPLIT_BC_VERSIONS_WITH_AND_WITHOUT_TEXT_INPUTS)
+    def test_split_bc_versions_with_and_without_text(self, bc_versions: Dict[str, Optional[str]],
+                                                     expected: Tuple[List[str], List[str]]):
+        """
+        Given:
+        - 'bc_versions': Dict of BC versions to text.
+
+        When:
+        - Splitting 'bc_versions' to two lists of versions with/without text.
+
+        Then:
+        - Ensure expected results are returned.
+        """
+        assert Pack._split_bc_versions_with_and_without_text(bc_versions) == expected
+
+    def test_get_release_notes_concat_str_non_empty(self, tmpdir):
+        """
+        Given:
+        - 'bc_versions': Dict of BC versions to text.
+
+        When:
+        - Splitting 'bc_versions' to two lists of versions with/without text.
+
+        Then:
+        - Ensure expected results are returned.
+        """
+        rn_dir: str = f'{tmpdir}/ReleaseNotes'
+        os.mkdir(rn_dir)
+        create_rn_file(rn_dir, '1_0_1', 'txt1')
+        create_rn_file(rn_dir, '1_0_2', 'txt2')
+        assert Pack._get_release_notes_concat_str(rn_dir, ['1_0_1.md', '1_0_2.md']) == '\ntxt1\ntxt2'
+
+    def test_get_release_notes_concat_str_empty(self):
+        """
+        Given:
+        - 'bc_versions': Empty dict of BC versions to text.
+
+        When:
+        - Splitting 'bc_versions' to two lists of versions with/without text.
+
+        Then:
+        - Ensure empty results are returned.
+        """
+        assert Pack._get_release_notes_concat_str('', []) == ''
+
+    def test_handle_many_bc_versions_some_with_text(self, dummy_pack, tmpdir):
+        """
+        Given:
+        - 'text_of_bc_versions': Text of BC versions containing specific BC text.
+        - 'bc_versions_without_text': BC versions that do not contain specific BC text
+
+        When:
+        - Handling a case were one aggregated changelog entry contains both BCs with text and without text.
+
+        Then:
+        - Ensure expected test is returned
+        """
+        rn_dir: str = f'{tmpdir}/ReleaseNotes'
+        os.mkdir(rn_dir)
+        create_rn_file(rn_dir, '1_0_2', 'no bc1')
+        create_rn_file(rn_dir, '1_0_6', 'no bc2')
+        text_of_bc_versions: List[str] = ['txt1', 'txt2']
+        bc_versions_without_text: List[str] = ['1.0.2', '1.0.6']
+
+        expected_concat_str: str = 'txt1\ntxt2\nno bc1\nno bc2'
+        assert dummy_pack._handle_many_bc_versions_some_with_text(rn_dir, text_of_bc_versions,
+                                                                  bc_versions_without_text) == expected_concat_str
+
+    CALCULATE_BC_TEXT_NON_MIXED_CASES_INPUTS = [(dict(), None), ({'1.0.2': None}, None), ({'1.0.2': 'txt1'}, 'txt1'),
+                                                ({'1.0.2': 'txt1', '1.0.4': 'txt5'}, 'txt1\ntxt5')]
+
+    @pytest.mark.parametrize('bc_version_to_text, expected', CALCULATE_BC_TEXT_NON_MIXED_CASES_INPUTS)
+    def test_calculate_bc_text_non_mixed_cases(self, dummy_pack, bc_version_to_text: Dict[str, Optional[str]],
+                                               expected: Optional[str]):
+        """
+        Given:
+        - 'text_of_bc_versions': Text of BC versions containing specific BC text.
+
+        When:
+        - Calculating text for changelog entry
+        Case a: Only one BC in aggregated changelog entry:
+        Case b: More than one BC in aggregated entry, all of them containing text.
+
+        Then:
+        - Ensure expected text is returned.
+
+        """
+        assert dummy_pack._calculate_bc_text('', bc_version_to_text) == expected
+
+    def test_calculate_bc_text_mixed_case(self, dummy_pack, tmpdir):
+        """
+        Given:
+        - 'text_of_bc_versions': Text of BC versions containing specific BC text.
+
+        When:
+        - Handling a case were one aggregated changelog entry contains both BCs with text and without text.
+
+        Then:
+        - Ensure expected text is returned
+        """
+        rn_dir: str = f'{tmpdir}/ReleaseNotes'
+        os.mkdir(rn_dir)
+        create_rn_file(rn_dir, '1_0_2', 'bc notes without bc text')
+        create_rn_file(rn_dir, '1_0_6', 'RN for 1_0_6')
+        create_rn_config_file(rn_dir, '1_0_2', {'breakingChanges': True})
+        create_rn_config_file(rn_dir, '1_0_6', {'breakingChanges': True, 'breakingChangesNotes': 'bc txt2'})
+
+        expected_text: str = 'bc txt2\nbc notes without bc text'
+        assert dummy_pack._calculate_bc_text(rn_dir, {'1_0_2': None, '1_0_6': 'bc txt2'}) == expected_text
+
+    def test_add_bc_entries_if_needed(self, dummy_pack, tmpdir):
+        """
+       Given:
+       - changelog: Changelog file data represented as a dictionary.
+
+        When:
+        - Updating 'breakingChanges' entry for each changelog dict entry.
+
+       Then:
+        - Validate changelog 'breakingChanges' field for each entries are updated as expected. This test includes
+          all four types of possible changes:
+          a) Entry without breaking changes, changes to entry with breaking changes.
+          b) Entry without breaking changes, changes to entry with breaking changes containing BC text.
+          c) Entry without breaking changes, does not change.
+          d) Entry with breaking changes, changes to entry without breaking changes.
+          e) Entry with breaking changes, changes to entry with BC text.
+          f) Entry with breaking changes, changes to entry without BC text.
+       """
+        rn_dir = f'{tmpdir}/ReleaseNotes'
+        os.mkdir(rn_dir)
+        for i in range(17, 26):
+            create_rn_file(rn_dir, f'1.12.{i}', f'RN of 1.12.{i}')
+        create_rn_config_file(rn_dir, '1_12_20', {'breakingChanges': True})
+        create_rn_config_file(rn_dir, '1_12_22', {'breakingChanges': True})
+        create_rn_config_file(rn_dir, '1_12_24', {'breakingChanges': True, 'breakingChangesNotes': 'bc 24'})
+        create_rn_config_file(rn_dir, '1_12_25', {'breakingChanges': True, 'breakingChangesNotes': 'bc 25'})
+        changelog: Dict[str, Any] = {
+            '1.12.20': {
+                'releaseNotes': 'RN of 1.12.20',
+                'displayName': '1.12.18 - 392682',
+                'released': '2021-07-05T02:00:02Z',
+                'breakingChanges': True
+            },
+            '1.12.17': {
+                'releaseNotes': 'RN of 1.12.17',
+                'displayName': '1.12.17 - 392184',
+                'released': '2021-07-02T23:15:52Z',
+                'breakingChanges': True
+            },
+            '1.12.16': {
+                'releaseNotes': 'RN of 1.12.16',
+                'displayName': '1.12.16 - 391562',
+                'released': '2021-06-30T23:32:59Z'
+            },
+            '1.12.23': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z'
+            },
+            '1.12.24': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+                'breakingChanges': True
+            },
+            '1.12.25': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+            }
+        }
+        expected_changelog: Dict[str, Any] = {
+            '1.12.20': {
+                'releaseNotes': 'RN of 1.12.20',
+                'displayName': '1.12.18 - 392682',
+                'released': '2021-07-05T02:00:02Z',
+                'breakingChanges': True
+            },
+            '1.12.17': {
+                'releaseNotes': 'RN of 1.12.17',
+                'displayName': '1.12.17 - 392184',
+                'released': '2021-07-02T23:15:52Z'
+            },
+            '1.12.16': {
+                'releaseNotes': 'RN of 1.12.16',
+                'displayName': '1.12.16 - 391562',
+                'released': '2021-06-30T23:32:59Z'
+            },
+            '1.12.23': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+                'breakingChanges': True
+            },
+            '1.12.24': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+                'breakingChanges': True,
+                'breakingChangesNotes': 'bc 24'
+            },
+            '1.12.25': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+                'breakingChanges': True,
+                'breakingChangesNotes': 'bc 25'
+            }
+        }
+        dummy_pack.add_bc_entries_if_needed(rn_dir, changelog)
+        assert changelog == expected_changelog
+
+    def test_add_bc_entries_if_needed_rn_dir_does_not_exist(self, dummy_pack):
+        """
+       Given:
+       - Changelog
+
+        When:
+        - Updating changelog entries with BC entries. RN dir does not exist
+
+       Then:
+        - Ensure no modification is done to the changelog.
+       """
+        changelog: Dict = {'a': 1}
+        dummy_pack.add_bc_entries_if_needed('not_real_path', changelog)
+        assert changelog == {'a': 1}
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
@@ -2014,3 +2368,13 @@ class TestImageClassification:
                - Validate that the answer is False
        """
         assert dummy_pack.is_author_image(file_path) is result
+
+
+def create_rn_config_file(rn_dir: str, version: str, data: Dict):
+    with open(f'{rn_dir}/{version}.json', 'w') as f:
+        f.write(json.dumps(data))
+
+
+def create_rn_file(rn_dir: str, version: str, text: str):
+    with open(f'{rn_dir}/{version}.md', 'w') as f:
+        f.write(text)

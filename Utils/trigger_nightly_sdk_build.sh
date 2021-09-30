@@ -73,8 +73,8 @@ else
       "sdk_ref": "${_sdk_ref}"
     }
   }
-  EOF
-  )
+EOF
+)
 
   curl \
   --header "Accept: application/json" \

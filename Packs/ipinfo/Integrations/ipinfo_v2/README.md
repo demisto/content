@@ -92,7 +92,7 @@ Check IP reputation (when information is available, returns a JSON with details)
             "Reliability": "C - Fairly reliable",
             "Score": 0,
             "Type": "ip",
-            "Vendor": "IPinfo_v2"
+            "Vendor": "ipinfo_v2"
         }
     ],
     "IP": {

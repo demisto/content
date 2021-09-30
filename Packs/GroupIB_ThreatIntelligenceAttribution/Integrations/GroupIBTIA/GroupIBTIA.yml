@@ -36,6 +36,7 @@ configuration:
   options:
   - compromised/account
   - compromised/card
+  - compromised/breached
   - bp/phishing
   - bp/phishing_kit
   - osi/git_leak
@@ -158,6 +159,9 @@ script:
     - contextPath: GIBTIA.CompromisedAccount.id
       description: Group IB incident ID
       type: String
+    - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -233,6 +237,9 @@ script:
     - contextPath: GIBTIA.CompromisedCard.sourceType
       description: Information source
       type: String
+    - contextPath: GIBTIA.CompromisedCard.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -293,6 +300,9 @@ script:
       type: String
     - contextPath: GIBTIA.CompromisedMule.sourceType
       description: Information source
+      type: String
+    - contextPath: GIBTIA.CompromisedMule.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -358,10 +368,46 @@ script:
       description: Associated threat actor
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.threatActor.isAPT
-      description: ' Is threat actor APT group'
+      description: Is threat actor APT group
       type: Boolean
     - contextPath: GIBTIA.CompromisedIMEI.id
       description: Group IB incident ID
+      type: String
+    - contextPath: GIBTIA.CompromisedIMEI.evaluation.severity
+      description: Event severity
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        GIB event id.
+        e.g.: 6fd344f340f4bdc08548cb36ded62bdf
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/breached collection
+      with provided ID.
+    execution: false
+    name: gibtia-get-compromised-breached-info
+    outputs:
+    - contextPath: GIBTIA.DataBreach.email
+      description: List of breached emails
+      type: String
+    - contextPath: GIBTIA.DataBreach.leakName
+      description: Name of the leak
+      type: String
+    - contextPath: GIBTIA.DataBreach.password
+      description: List of breached passwords
+      type: String
+    - contextPath: GIBTIA.DataBreach.uploadTime
+      description: Date of breached data upload
+      type: Date
+    - contextPath: GIBTIA.DataBreach.id
+      description: Group IB incident ID
+      type: String
+    - contextPath: GIBTIA.DataBreach.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -407,6 +453,9 @@ script:
       type: Date
     - contextPath: GIBTIA.GitLeak.source
       description: Source(github/gitlab/etc.)
+      type: String
+    - contextPath: GIBTIA.GitLeak.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -455,6 +504,9 @@ script:
       type: String
     - contextPath: GIBTIA.PublicLeak.portalLink
       description: Group IB portal link
+      type: String
+    - contextPath: GIBTIA.PublicLeak.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -508,6 +560,9 @@ script:
     - contextPath: GIBTIA.OSIVulnerability.title
       description: Vulnerability title
       type: String
+    - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -558,6 +613,9 @@ script:
       type: String
     - contextPath: GIBTIA.PhishingKit.id
       description: GIB event ID
+      type: String
+    - contextPath: GIBTIA.PhishingKit.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -622,6 +680,9 @@ script:
     - contextPath: GIBTIA.Phishing.url
       description: Phishing URL
       type: String
+    - contextPath: GIBTIA.Phishing.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -685,6 +746,9 @@ script:
     - contextPath: GIBTIA.AttacksDDoS.id
       description: GIB incident ID
       type: String
+    - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -726,6 +790,9 @@ script:
       type: Boolean
     - contextPath: GIBTIA.AttacksDeface.url
       description: URL of compromised resource
+      type: String
+    - contextPath: GIBTIA.AttacksDeface.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -855,6 +922,9 @@ script:
     - contextPath: GIBTIA.Threat.sources
       description: Sources links
       type: String
+    - contextPath: GIBTIA.Threat.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -968,6 +1038,9 @@ script:
     - contextPath: GIBTIA.SuspiciousIPTorNode.id
       description: GIB id
       type: String
+    - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -1007,6 +1080,9 @@ script:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.id
       description: GIB event ID
       type: String
+    - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
+      description: Event severity
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -1036,6 +1112,9 @@ script:
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.id
       description: GIB ID
+      type: String
+    - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
+      description: Event severity
       type: String
   - arguments:
     - default: false
@@ -1100,6 +1179,9 @@ script:
     - contextPath: GIBTIA.TargetedMalware.threatActor.isAPT
       description: Is threat actor APT
       type: Boolean
+    - contextPath: GIBTIA.TargetedMalware.evaluation.severity
+      description: Event severity
+      type: String
   - deprecated: false
     description: Returns list of available collections.
     execution: false
@@ -1247,7 +1329,7 @@ script:
     - contextPath: additional_info
       description: Additional info about feed
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

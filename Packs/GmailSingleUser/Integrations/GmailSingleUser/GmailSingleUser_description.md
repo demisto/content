@@ -1,6 +1,6 @@
 ## Application Authorization Flow
 
-To allow Demisto to access Gmail, the user has to approve the Demisto app using an OAuth 2.0 authorization flow. Follow these steps to authorize the Demisto app in Gmail.
+To allow XSOAR to access Gmail, the user has to approve the Demisto app using an OAuth 2.0 authorization flow. Follow these steps to authorize the Demisto app in Gmail.
 
 1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
 2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account. 

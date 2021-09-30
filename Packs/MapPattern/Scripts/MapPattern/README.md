@@ -4,6 +4,7 @@ This transformer will take in a value and transform it based on multiple conditi
 
 For example:
 
+```
     {
         ".*match 1.*": "Dest Val1",
         ".*match 2.*": "Dest Val2",
@@ -13,6 +14,7 @@ For example:
             "output": "Dest Val4"
         }
     }
+```
 
 The transformer will return the value matched to a pattern following to the priority.
 When unmatched or the input value is structured (dict or list), it will simply return the input value.

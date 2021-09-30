@@ -99,8 +99,8 @@ script:
         available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Network
-      description: The IP range relevant for abuse inquiries provided for the IP. (Only
-        available in some IPinfo.io plans).
+      description: The IP range relevant for abuse inquiries provided for the IP.
+        (Only available in some IPinfo.io plans).
       type: String
 
     - contextPath: IP.Address
@@ -160,7 +160,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

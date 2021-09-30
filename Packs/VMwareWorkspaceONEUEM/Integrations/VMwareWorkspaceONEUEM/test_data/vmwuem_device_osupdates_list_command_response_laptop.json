@@ -1,0 +1,44 @@
+{
+  "OSUpdateList": [
+    {
+      "isPreview": false,
+      "downloadSize": 0.0,
+      "installSize": 0.0,
+      "isCritical": false,
+      "isConfigurationDataUpdate": false,
+      "isFirmwareUpdate": false,
+      "restartRequired": false,
+      "allowsInstallLater": false,
+      "appIdentifiersToClose": [],
+      "deviceUpdateName": "Windows",
+      "releaseDate": "2021-05-24T00:00:00",
+      "expiationDate": "2021-10-02T00:00:00",
+      "downloadPercentComplete": 0.0,
+      "status": "Downloading",
+      "sampleTime": "0001-01-01T00:00:00",
+      "statusTime": "0001-01-01T00:00:00",
+      "deviceUpdateVersion": "14.6",
+      "deviceUpdateUuid": "47ea3087-ca5e-4bc9-a65c-19cf45df2d3f"
+    },
+    {
+      "isPreview": false,
+      "downloadSize": 0.0,
+      "installSize": 0.0,
+      "isCritical": false,
+      "isConfigurationDataUpdate": false,
+      "isFirmwareUpdate": false,
+      "restartRequired": false,
+      "allowsInstallLater": false,
+      "appIdentifiersToClose": [],
+      "deviceUpdateName": "Windows",
+      "releaseDate": "2021-05-03T00:00:00",
+      "expiationDate": "2021-08-22T00:00:00",
+      "downloadPercentComplete": 0.0,
+      "status": "Downloading",
+      "sampleTime": "0001-01-01T00:00:00",
+      "statusTime": "0001-01-01T00:00:00",
+      "deviceUpdateVersion": "14.5.1",
+      "deviceUpdateUuid": "93278f92-7313-4882-bd4f-c6bfb3677f78"
+    }
+  ]
+}

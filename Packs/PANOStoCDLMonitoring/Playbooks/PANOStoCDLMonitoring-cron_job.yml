@@ -230,12 +230,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: Mail Sender (New)
+      brand: ""
       description: Send an email
       id: 2de824b8-113e-4715-8ade-7ab756295a7f
       iscommand: true
       name: Send notification to the registered email address
-      script: Mail Sender (New)|||send-mail
+      script: '|||send-mail'
       type: regular
       version: -1
     taskid: 2de824b8-113e-4715-8ade-7ab756295a7f

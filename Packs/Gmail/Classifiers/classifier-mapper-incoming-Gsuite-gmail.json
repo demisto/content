@@ -6,148 +6,156 @@
 	"version": -1,
 	"defaultIncidentType": "",
 	"mapping": {
-		"Phishing": {
-			"internalMapping": {
-				"Email HTML": {
-					"complex": null,
-					"simple": "Html"
-				},
-				"Attachment Count": {
-					"simple": "",
-					"complex": {
-						"root": "Attachments",
-						"filters": [],
-						"accessor": "",
-						"transformers": [
-							{
-								"operator": "count",
-								"args": {}
-							}
-						]
-					}
-				},
-				"Attachment Extension": {
-					"simple": "",
-					"complex": {
-						"root": "Attachment Names",
-						"filters": [],
-						"accessor": "",
-						"transformers": [
-							{
-								"operator": "splitAndTrim",
-								"args": {
-									"delimiter": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							},
-							{
-								"operator": "replaceMatch",
-								"args": {
-									"regex": {
-										"value": {
-											"simple": ".*\\.",
-											"complex": null
-										},
-										"isContext": false
-									},
-									"replaceWith": {
-										"value": null,
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Attachment Name": {
-					"simple": "",
-					"complex": {
-						"root": "Attachment Names",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email BCC": {
-					"simple": "",
-					"complex": {
-						"root": "Bcc",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email Body": {
-					"simple": "",
-					"complex": {
-						"root": "Body",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email Body Format": {
-					"simple": "",
-					"complex": {
-						"root": "Format",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email CC": {
-					"simple": "",
-					"complex": {
-						"root": "Cc",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email From": {
-					"simple": "",
-					"complex": {
-						"root": "From",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email Message ID": {
-					"simple": "",
-					"complex": {
-						"root": "ID",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email Subject": {
-					"simple": "",
-					"complex": {
-						"root": "Subject",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				},
-				"Email To": {
-					"simple": "",
-					"complex": {
-						"root": "To",
-						"filters": [],
-						"accessor": "",
-						"transformers": []
-					}
-				}
-			},
-			"dontMapEventToLabels": false
-		}
-	},
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Attachment Count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Attachments",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment Extension": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Attachment Names",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            },
+                            {
+                                "args": {
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ".*\\."
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "replaceMatch"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment ID": {
+                    "complex": null,
+                    "simple": "Attachments.ID"
+                },
+                "Attachment Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Attachment Names",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email BCC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Bcc",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Body": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Body",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Body Format": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Format",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email CC": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Cc",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email From": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "From",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email HTML": {
+                    "complex": null,
+                    "simple": "Html"
+                },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": "Headers"
+                },
+                "Email Message ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ID",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Subject",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email To": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "To",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
 	"fromVersion": "6.0.0"
 }

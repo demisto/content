@@ -1707,3 +1707,99 @@
 <pre>Cylance<br>{<br>  "Policy": {<br>  "ID": "7bcb0817-e9c9-444d-96e2-be9b59f429cb",<br>  "Name": "Test_Policy",<br>  "Timestamp": "2018-03-05T12:29:03.000000+00:00"<br>               }<br>}</pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png" alt="screen shot 2018-11-10 at 21 02 56" width="595" height="685"></a></p>
+
+### cylance-protect-get-device-by-hostname
+***
+Allows a caller to request a specific device resource belonging to a Tenant by hostname
+
+
+#### Base Command
+
+`cylance-protect-get-device-by-hostname`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | The hostname (DNS name). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CylanceProtect.Device.AgentVersion | String | The CylancePROTECT Agent version installed on the device. | 
+| CylanceProtect.Device.IPAddress | Unknown | The list of IP addresses for the device. | 
+| CylanceProtect.Device.MACAddress | Unknown | The list of MAC addresses for the device. | 
+| CylanceProtect.Device.Hostname | string | The hostname for the device. | 
+| CylanceProtect.Device.OSVersion | string | Device OS version. | 
+| CylanceProtect.Device.UpdateAvailable | boolean | If true, there is available update for the device. | 
+| CylanceProtect.Device.BackgroundDetection | boolean | If true, the Agent is currently running. | 
+| CylanceProtect.Device.DateFirstRegistered | date | The date and time \(in UTC\) when the device record was created. | 
+| CylanceProtect.Device.DateLastModified | date | The date and time \(in UTC\) when the device record was last modified. | 
+| CylanceProtect.Device.DateOffline | date | The date and time \(in UTC\) when the device last communicated with the Console. | 
+| CylanceProtect.Device.IsSafe | boolean | If true, there are no outstanding threats. | 
+| CylanceProtect.Device.LastLoggedInUser | string | Last logged in user. | 
+| CylanceProtect.Device.State | string | Machine state. | 
+| CylanceProtect.Device.ID | string | The unique identifier for the device. | 
+| CylanceProtect.Device.Name | string | Device name. | 
+| CylanceProtect.Device.UpdateType | string | Device update type. | 
+| CylanceProtect.Device.Policy.ID | string | Device policy ID. | 
+| CylanceProtect.Device.Policy.Name | string | Device policy name. | 
+| Endpoint.Hostname | string | Device hostname. | 
+| Endpoint.MACAddress | Unknown | The list of MAC addresses for the device. | 
+| Endpoint.IPAddress | Unknown | The list of IP addresses for the device. | 
+| Endpoint.OSVersion | string | Device OS version. | 
+
+
+#### Command Example
+```!cylance-protect-get-device-by-hostname hostname=WIN-5HMOGIEG6M5```
+
+#### Context Example
+```json
+{
+    "CylanceProtect": {
+        "Device": {
+            "AgentVersion": "1.2.1418",
+            "BackgroundDetection": false,
+            "DateFirstRegistered": "2017-12-29T04:07:56",
+            "DateLastModified": null,
+            "DateOffline": "2020-02-07T02:25:34.151",
+            "Hostname": "WIN-5HMOGIEG6M5",
+            "ID": "b4eceeb0-8699-4d42-b853-155513042d6e",
+            "IPAddress": [
+                "127.0.0.1"
+            ],
+            "IsSafe": true,
+            "LastLoggedInUser": "",
+            "MACAdress": [
+                "02-76-91-6B-0A-BB"
+            ],
+            "Name": "WIN-5HMOGIEG6M5",
+            "OSVersion": "Microsoft Windows Server 2012 R2 Standard",
+            "Policy": {
+                "ID": "32e4aacd-7698-4ef0-93e8-3e6f1f5c6857",
+                "Name": "Default"
+            },
+            "State": "Offline",
+            "UpdateAvailable": false
+        }
+    },
+    "Endpoint": {
+        "Hostname": "WIN-5HMOGIEG6M5",
+        "IPAddress": [
+            "127.0.0.1"
+        ],
+        "MACAdress": [
+            "02-76-91-6B-0A-BB"
+        ],
+        "OSVersion": "Microsoft Windows Server 2012 R2 Standard"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cylance Protect Device WIN-5HMOGIEG6M5
+>|AgentVersion|BackgroundDetection|DateFirstRegistered|DateOffline|DlcmStatus|HostName|Id|IpAddresses|IsSafe|MacAddresses|Name|OsKernelVersion|OsVersion|Policy|Products|State|UpdateAvailable|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |

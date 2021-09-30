@@ -1998,7 +1998,7 @@ script:
       secret: false
     - default: true
       description: Query sensors with specified IP address
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -2076,7 +2076,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

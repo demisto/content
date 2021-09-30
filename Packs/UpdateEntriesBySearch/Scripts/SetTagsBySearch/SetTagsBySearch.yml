@@ -1,6 +1,9 @@
 commonfields:
   id: SetTagsBySearch
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: SetTagsBySearch
 script: ''
 type: python
@@ -58,6 +61,12 @@ args:
   - NOTE
   - ERROR
   description: The list of entry type of source entries
+- name: filter_user_type
+  auto: PREDEFINED
+  predefined:
+  - dbot
+  - user
+  description: Filter entries by type of who created them
 - name: filter_options
   auto: PREDEFINED
   predefined:
@@ -111,7 +120,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

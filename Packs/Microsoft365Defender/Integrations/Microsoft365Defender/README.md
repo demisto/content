@@ -2,7 +2,7 @@ Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suit
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
 protection against sophisticated attacks.
 
-## Authentication
+## Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
 to link Microsoft 365 Defender with Cortex XSOAR.
 
@@ -14,39 +14,58 @@ To connect to the Microsoft 365 Defender:
 
 At the end of the process you'll see a message that you've logged in successfully.
 
-#### Cortex XSOAR App
+*Note: In case of a password change, the `microsoft-365-defender-auth-reset` command should be executed followed by the authentication process described above.*
+### Cortex XSOAR App
 
 In order to use the Cortex XSOAR application, use the default application ID.
 ```9093c354-630a-47f1-b087-6768eb9427e6```
 
-#### Self-Deployed Azure App
+### Self-Deployed Application - Device Code Flow
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. For more details, follow [Self Deployed Application - Device Code Flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
 
 #### Required Permissions
+The required API permissions are for the ***Microsoft Threat Protection*** app.
  * offline_access - Delegate
- * Incident.Read.All - Application
- * AdvancedHunting.Read.All - Application
+ * Incident.ReadWrite.All - Application
  * AdvancedHunting.Read.All - Application
 
-## Configure Microsoft365Defender on Cortex XSOAR
+## Self-Deployed Application - Client Credentials Flow
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. In the instance configuration, select the ***client-credentials*** checkbox.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+
+#### Required Permissions
+ * AdvancedHunting.Read.All - Application
+ * Incident.ReadWrite.All - Application
+
+## Configure Microsoft 365 Defender on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft365Defender.
+2. Search for Microsoft 365 Defender.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | APP ID | The API Key to use for connection | True |
-   | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-   | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-   | Number of incidents for each fetch. | Due to API limitations, the maximum is 100 | False |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Incident type |  | False |
-   | Fetch incidents |  | False |
-   
-4. Click **Test** to validate the URLs, token, and connection.
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Application ID | The API key to use to connect. | True |
+    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
+    | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
+    | Tenant ID (for Client Credentials mode) | Tenant ID | False |
+    | Client Secret (for Client Credentials mode) | Encryption key given by the admin | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+    | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+    | Incident type | | False |
+    | isFetch | Fetch incidents | False |
+    | insecure | Trust any certificate (not secure) | False |
+    | proxy | Use system proxy settings | False |
+
+4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
 ## Commands
 
@@ -56,7 +75,8 @@ successfully execute a command, a DBot message appears in the War Room with the 
 ### microsoft-365-defender-auth-start
 
 ***
-Run this command to start the authorization process and follow the instructions in the command results.
+Run this command to start the authorization process and follow the instructions in the command results. (for device-code mode)
+
 
 #### Base Command
 
@@ -86,8 +106,8 @@ There is no context output for this command.
 ### microsoft-365-defender-auth-complete
 
 ***
-Run this command to complete the authorization process. Should be used after running the
-microsoft-365-defender-auth-start command.
+Run this command to complete the authorization process. Should be used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+
 
 #### Base Command
 
@@ -111,9 +131,9 @@ There is no context output for this command.
 
 
 ### microsoft-365-defender-auth-reset
-
 ***
-Run this command if you need to rerun the authentication process.
+Run this command if you need to rerun the authentication process. (for device-code mode)
+
 
 #### Base Command
 
@@ -175,10 +195,12 @@ Get the most recent incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents (as Active,  Resolved or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
-| assigned_to | Owner of the incident.	. | Optional | 
-| limit | Number of incidents in the list (Max 100). Default is 100. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
+| offset | Number of entries to skip. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default value is 30. | Optional | 
+
 
 #### Context Output
 
@@ -271,7 +293,9 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Advanced hunting query. | Required | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+| limit | Number of entries.  Enter -1 for unlimited query. Default is 50. | Required | 
+| timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
+
 
 #### Context Output
 

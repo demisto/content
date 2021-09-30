@@ -9,7 +9,8 @@
     "ownerType": "User",
     "ownerName": "graadmin",
     "riskDate": "10/13/2020 00:00:00",
-    "status": "Open"
+    "status": "Open",
+    "anomalies": [{"anomalyName":"anomalyName1","resourceName":"resourceName1","assignee":"assignee1","assigneeType":"assigneeType1","riskAcceptedDate":null,"riskScore":92,"status":"Open"}]
   },
   {
     "entityId": 370,
@@ -21,6 +22,7 @@
     "ownerType": "User",
     "ownerName": "graadmin",
     "riskDate": "10/13/2020 00:00:00",
-    "status": "Open"
+    "status": "Open",
+    "anomalies": [{"anomalyName":"anomalyName2","resourceName":"resourceName2","assignee":"assignee2","assigneeType":"assigneeType2","riskAcceptedDate":null,"riskScore":92,"status":"Open"}]
   }
 ]

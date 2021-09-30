@@ -181,36 +181,29 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     """
     now = datetime.now()
     # poll indicators into list from demisto
-    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
-    iocs = sort_iocs(request_args, iocs)
-    out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-    # if in CSV format - the "indicator" header
-    if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
-        actual_indicator_amount = actual_indicator_amount - 1
-
-    # re-polling in case formatting or ip collapse caused a lack in results
-    while actual_indicator_amount < request_args.limit:
-        # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
-        new_limit = request_args.limit - actual_indicator_amount
-
-        # poll additional indicators into list from demisto
-        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
-
-        # in case no additional indicators exist - exit
-        if len(new_iocs) == 0:
+    iocs = []
+    out_dict: dict = {}
+    limit = request_args.offset + request_args.limit
+    indicator_searcher = IndicatorsSearcher(
+        query=request_args.query,
+        size=PAGE_SIZE
+    )
+    while True:
+        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
+        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+        if not new_iocs:
             break
-
-        # add the new results to the existing results
         iocs += new_iocs
         iocs = sort_iocs(request_args, iocs)
-
         # reformat the output
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-        if request_args.out_format == FORMAT_CSV:
+        if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
+        if actual_indicator_amount >= len(iocs) or (indicator_searcher.total and indicator_searcher.total <= limit):
+            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+            break
+        # advance search window with gap size
+        limit += (limit - actual_indicator_amount)
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -247,49 +240,18 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
             'sort_field': request_args.sort_field,
             'sort_order': request_args.sort_order,
         })
-    return out_dict[CTX_VALUES_KEY]
+    return out_dict[CTX_VALUES_KEY] if CTX_VALUES_KEY in out_dict else []
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    # calculate the starting page (each page holds 200 entries)
-    if offset:
-        next_page = int(offset / PAGE_SIZE)
-
-        # set the offset from the starting page
-        offset_in_page = offset - (PAGE_SIZE * next_page)
-
-    else:
-        next_page = 0
-        offset_in_page = 0
-
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
-
-    # if offset in page is bigger than the amount of results returned return empty list
-    if len(iocs) <= offset_in_page:
-        return []
-
-    return iocs[offset_in_page:limit + offset_in_page]
-
-
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                    last_found_len: int = PAGE_SIZE):
-    """
-    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
-    """
     iocs: List[dict] = []
-    if not last_found_len:
-        last_found_len = total_fetched
-    search_indicators = IndicatorsSearcher(page=next_page)
-
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+    for ioc_res in indicator_searcher:
+        fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
-    return iocs, search_indicators.page
+    return iocs
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -440,17 +402,18 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+            stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
             if indicator_proxysg_category is not None and \
                     (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
-                category_dict = add_indicator_to_category(indicator.get('value'), indicator_proxysg_category,
+                category_dict = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           category_dict)
 
             else:
                 # if ProxySG Category is not set or does not exist in the category_attribute list
-                category_dict = add_indicator_to_category(indicator.get('value'), category_default, category_dict)
+                category_dict = add_indicator_to_category(stripped_indicator, category_default, category_dict)
 
     for category, indicator_list in category_dict.items():
         sub_output_string = f"define category {category}\n"

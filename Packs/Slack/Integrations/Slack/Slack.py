@@ -1305,6 +1305,114 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     return conversation
 
 
+def filter_conversations(
+    name: str = '',
+    creator: str = '',
+    is_archived: Union[bool, None] = None,
+    is_general: Union[bool, None] = None,
+    is_private: Union[bool, None] = None
+) -> list:
+    """
+    Get a filtered list of slack conversations
+
+    Args:
+        name: The name of a channel or a regex pattern
+        creator: The member ID who created the channel
+        is_archived: True, False, or None to ignore
+        is_general: True, False, or None to ignore
+        is_private: True, False, or None to ignore
+
+    Returns:
+        A filtered list of slack conversations
+    """
+
+    integration_context = get_integration_context(SYNC_CONTEXT)
+
+    # Find conversation in the cache
+    conversations = integration_context.get('conversations')
+    if conversations:
+        conversations = json.loads(conversations)
+        conversation_filter = []
+        for c in conversations:
+            if name and not re.search(name, c.get('name'), re.IGNORECASE):
+                continue
+            if creator and not creator.upper() == c.get('creator'):
+                continue
+            if is_archived is not None and is_archived != c.get('is_archived'):
+                continue
+            if is_general is not None and is_general != c.get('is_general'):
+                continue
+            if is_private is not None and is_private != c.get('is_private'):
+                continue
+
+            conversation_filter.append(c)
+
+        if conversation_filter:
+            return conversation_filter
+
+    filters: Dict[str, Union[str, bool]] = {}
+    if name:
+        filters.update({'name': name})
+    if creator:
+        filters.update({'creator': creator})
+    if is_archived:
+        filters.update({'is_archived': is_archived})
+    if is_general:
+        filters.update({'is_general': is_general})
+    if is_private:
+        filters.update({'is_private': is_private})
+    filter_string = ', '.join([f'{k}={v}' for k, v in filters.items()])
+    demisto.debug(
+        f'could not find channels matching filters {filter_string} in integration context, searching via API'
+    )
+
+    # If not found in cache, search for it
+    body = {
+        'types': 'private_channel,public_channel',
+        'limit': PAGINATED_COUNT
+    }
+    response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
+    filtered_conversations: list = []
+    while True:
+        conversations = response['channels'] if response and response.get('channels') else []
+        cursor = response.get('response_metadata', {}).get('next_cursor')
+        conversation_filter = []
+        for c in conversations:
+            if name and not re.search(name, c.get('name'), re.IGNORECASE):
+                continue
+            if creator and not creator.upper() == c.get('creator'):
+                continue
+            if is_archived is not None and is_archived != c.get('is_archived'):
+                continue
+            if is_general is not None and is_general != c.get('is_general'):
+                continue
+            if is_private is not None and is_private != c.get('is_private'):
+                continue
+
+            conversation_filter.append(c)
+
+        if conversation_filter:
+            filtered_conversations.extend(conversation_filter)
+        if not cursor:
+            break
+
+        body = body.copy()  # strictly for unit-test purposes (test_filter_conversations_by_regex_paging)
+        body.update({'cursor': cursor})
+        response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', body=body)
+
+    # Save conversations to cache
+    if filtered_conversations:
+        conversations = integration_context.get('conversations')
+        if conversations:
+            conversations = json.loads(conversations)
+            conversations.extend(filtered_conversations)
+        else:
+            conversations = filtered_conversations
+        set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+    return filtered_conversations
+
+
 def slack_send():
     """
     Sends a message to slack
@@ -1986,6 +2094,58 @@ def slack_get_integration_context():
     return_results(fileResult('slack_integration_context', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
+def filter_channels_command():
+    """
+    Gets channels that match criteria
+    """
+    name = demisto.args().get('name', '')
+    creator = demisto.args().get('creator', '')
+    is_archived = demisto.args().get('is_archived')
+    is_general = demisto.args().get('is_general')
+    is_private = demisto.args().get('is_private')
+    limit = int(demisto.args().get('limit', '20'))
+
+    is_archived = bool(strtobool(is_archived)) if is_archived else None
+    is_general = bool(strtobool(is_general)) if is_general else None
+    is_private = bool(strtobool(is_private)) if is_private else None
+
+    command_results_list: List[Dict[str, Union[bool, str]]] = []
+    filtered_conversations = filter_conversations(
+        name=name,
+        creator=creator,
+        is_archived=is_archived,
+        is_general=is_general,
+        is_private=is_private
+    )
+    demisto.debug(f'found {len(filtered_conversations)} filtered conversations; limiting results to {limit}')
+    for conversation in filtered_conversations[:limit]:
+        result_conversation = {
+            'ID': conversation.get('id'),
+            'Name': conversation.get('name'),
+            'Created': conversation.get('created'),
+            'Creator': conversation.get('creator'),
+            'IsArchived': conversation.get('is_archived'),
+            'IsGeneral': conversation.get('is_general'),
+            'IsPrivate': conversation.get('is_private'),
+        }
+        command_results_list.append(result_conversation)
+
+    if command_results_list:
+        human_readable = tableToMarkdown('Channels: ', command_results_list,
+                                         headers=['ID', 'Name', 'Created', 'Creator', 'IsArchived', 'IsGeneral', 'IsPrivate'],
+                                         removeNull=True)
+
+    else:
+        human_readable = 'No channels found.'
+
+    return_results(CommandResults(
+        outputs_prefix='Slack.Channel',
+        outputs_key_field='ID',
+        outputs=command_results_list,
+        readable_output=human_readable
+    ))
+
+
 def main():
     """
     Main
@@ -2011,6 +2171,7 @@ def main():
         'slack-rename-channel': rename_channel,
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
+        'slack-filter-channels': filter_channels_command,
     }
 
     command_name = demisto.command()

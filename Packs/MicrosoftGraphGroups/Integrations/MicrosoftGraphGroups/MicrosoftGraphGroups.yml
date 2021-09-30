@@ -12,7 +12,8 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
@@ -32,14 +33,16 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
-display: Microsoft Graph Groups
+description: Microsoft Graph Groups enables you to create and manage different types
+  of groups and group functionality according to your requirements.
+display: Azure Active Directory Groups
 name: Microsoft Graph Groups
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Sorts groups in an organization by the field values. For example, displayName.'
+      description: 'Sorts groups in an organization by the field values. For example,
+        displayName.'
       isArray: false
       name: order_by
       required: false
@@ -58,7 +61,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filters group results. For example, startswith(displayName,''J''), groupTypes/any(c:c+eq+''Unified'').'
+      description: 'Filters group results. For example, startswith(displayName,''J''),
+        groupTypes/any(c:c+eq+''Unified'').'
       isArray: false
       name: filter
       required: false
@@ -69,7 +73,8 @@ script:
     name: msgraph-groups-list-groups
     outputs:
     - contextPath: MSGraphGroups.Classification
-      description: A classification for the group (such as low, medium or high business impact).
+      description: A classification for the group (such as low, medium or high business
+        impact).
       type: String
     - contextPath: MSGraphGroups.CreatedDateTime
       description: The timestamp when the group was created.
@@ -102,26 +107,34 @@ script:
       description: The mail alias for the group, which is unique in the organization.
       type: String
     - contextPath: MSGraphGroup.OnPremisesDomainName
-      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName,
+        which is synchronized from the on-premises directory.
       type: String
     - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
-      description: 'Indicates the last time at which the group was synced with the on-premises directory. The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
+      description: 'Indicates the last time at which the group was synced with the
+        on-premises directory. The Timestamp type represents date and time information
+        using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019
+        is ''2019-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.OnPremisesSyncEnabled
       description: |
         Whether this group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
-      description: 'Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      description: 'Email addresses for the group that directs to the same group mailbox.
+        For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
-      description: 'Timestamp of when the group was last renewed, which represents the time and date information using ISO 8601 format. Always in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
+      description: 'Timestamp of when the group was last renewed, which represents
+        the time and date information using ISO 8601 format. Always in UTC time. For
+        example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.SecurityEnabled
       description: Specifies whether the group is a security group.
       type: Boolean
     - contextPath: MSGraphGroup.Visibility
-      description: 'Specifies the visibility of an Office 365 group. Can be: "Private", "Public", or "Hiddenmembership". Blank values are treated as public.'
+      description: 'Specifies the visibility of an Office 365 group. Can be: "Private",
+        "Public", or "Hiddenmembership". Blank values are treated as public.'
       type: String
     - contextPath: MSGraphGroup.NextLink
       description: The URL of the next results page.
@@ -139,7 +152,8 @@ script:
     name: msgraph-groups-get-group
     outputs:
     - contextPath: MSGraphGroups.Classification
-      description: A classification for the group (such as low, medium or high business impact).
+      description: A classification for the group (such as low, medium or high business
+        impact).
       type: String
     - contextPath: MSGraphGroups.CreatedDateTime
       description: The timestamp when the group was created.
@@ -172,26 +186,35 @@ script:
       description: The mail alias for the group, unique in the organization.
       type: String
     - contextPath: MSGraphGroup.OnPremisesDomainName
-      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName,
+        which is synchronized from the on-premises directory.
       type: String
     - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
-      description: 'Indicates the last time at which the group was synced with the on-premises directory.The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
+      description: 'Indicates the last time at which the group was synced with the
+        on-premises directory.The Timestamp type represents date and time information
+        using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019
+        is ''2019-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.OnPremisesSyncEnabled
       description: |
         Whether the group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
-      description: 'Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      description: 'Email addresses for the group that directs to the same group mailbox.
+        For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
-      description: 'The timestamp of when the group was last renewed. This cannot be modified directly and is only updated via the renew service action. The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
+      description: 'The timestamp of when the group was last renewed. This cannot
+        be modified directly and is only updated via the renew service action. The
+        Timestamp type represents date and time information using ISO 8601 format
+        in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.SecurityEnabled
       description: Specifies whether the group is a security group.
       type: Boolean
     - contextPath: MSGraphGroup.Visibility
-      description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
+      description: 'Specifies the visibility of an Office 365 group. Possible values
+        are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
       type: String
   - arguments:
     - default: false
@@ -202,7 +225,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true for mail-enabled groups. False for groups without an email.
+      description: Set to true for mail-enabled groups. False for groups without an
+        email.
       isArray: false
       name: mail_enabled
       predefined:
@@ -218,7 +242,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true for security groups. False for non security groups (regular groups).
+      description: Set to true for security groups. False for non security groups
+        (regular groups).
       isArray: false
       name: security_enabled
       predefined:
@@ -232,7 +257,8 @@ script:
     name: msgraph-groups-create-group
     outputs:
     - contextPath: MSGraphGroups.Classification
-      description: A classification for the group (such as low, medium or high business impact).
+      description: A classification for the group (such as low, medium or high business
+        impact).
       type: String
     - contextPath: MSGraphGroups.CreatedDateTime
       description: The timestamp when the group was created.
@@ -265,26 +291,35 @@ script:
       description: The mail alias for the group, unique in the organization.
       type: String
     - contextPath: MSGraphGroup.OnPremisesDomainName
-      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName,
+        which is synchronized from the on-premises directory.
       type: String
     - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
-      description: 'Indicates the last time at which the group was synced with the on-premises directory.The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
+      description: 'Indicates the last time at which the group was synced with the
+        on-premises directory.The Timestamp type represents date and time information
+        using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019
+        is ''2019-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.OnPremisesSyncEnabled
       description: |
         Whether this group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
-      description: 'Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      description: 'Email addresses for the group that directs to the same group mailbox.
+        For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
-      description: 'Timestamp of when the group was last renewed. This cannot be modified directly and is only updated via the renew service action. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
+      description: 'Timestamp of when the group was last renewed. This cannot be modified
+        directly and is only updated via the renew service action. The Timestamp type
+        represents date and time information using ISO 8601 format and is always in
+        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphGroup.SecurityEnabled
       description: Specifies whether the group is a security group.
       type: Boolean
     - contextPath: MSGraphGroup.Visibility
-      description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership; blank values are treated as public.'
+      description: 'Specifies the visibility of an Office 365 group. Possible values
+        are: Private, Public, or Hiddenmembership; blank values are treated as public.'
       type: String
   - arguments:
     - default: false
@@ -363,7 +398,8 @@ script:
       description: The SMTP address for the user. For example, "jeff@contoso.onmicrosoft.com".
       type: String
     - contextPath: MSGraphGroups.Members.PreferredLanguage
-      description: The preferred language for the user. Should follow ISO 639-1 Code. For example, "en-US".
+      description: The preferred language for the user. Should follow ISO 639-1 Code.
+        For example, "en-US".
       type: String
     - contextPath: MSGraphGroups.Members.Surname
       description: The user's surname (family name or last name).
@@ -408,7 +444,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.19032
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false

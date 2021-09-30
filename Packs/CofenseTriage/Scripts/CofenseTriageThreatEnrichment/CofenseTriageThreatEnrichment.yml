@@ -1,0 +1,28 @@
+commonfields:
+  id: CofenseTriageThreatEnrichment
+  version: -1
+name: CofenseTriageThreatEnrichment
+script: '-'
+type: python
+tags:
+- enhancement
+comment: Enhancement automation for type indicator, to enrich the value from Cofense
+  Triage.
+enabled: true
+args:
+- name: threat_value
+  required: true
+  default: true
+  description: Value to look up - Supports Email, Domain, URL, Hash, Hostname, SHA1,
+    SHA256, MD5.
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||cofense-threat-indicator-list'
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

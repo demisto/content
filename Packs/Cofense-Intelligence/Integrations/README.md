@@ -96,7 +96,7 @@ Checks the reputation of a file hash.
 | --- | --- | --- |
 | File.MD5 | unknown | File MD5 | 
 | File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
-| File.Malicious.Description | unknown | For malicious files, the reason that the vendor made the decision. | 
+| File.Malicious.Description | unknown | For malicious files, the reason that the vendor made the decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 

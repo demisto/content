@@ -18,7 +18,7 @@ Update Grid Table from items or key value pairs.
 | overwrite | True if to overwrite Grid Data, False otherwise. |
 | columns | Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln). |
 | keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. If you want to leave an empty column, please provide a place holder name that should not be in the context data such as "PLACE_HOLDER" |
-| sort_by | Column name to sort the rows by. |
+| sort_by | Columns names by which to sort the rows. |
 
 ## Command Example
 Assume the following:

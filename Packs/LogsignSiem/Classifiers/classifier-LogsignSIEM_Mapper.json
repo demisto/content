@@ -1,0 +1,196 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "LogsignSIEM Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Agent ID": {
+                    "complex": {
+                        "accessor": "TriggerEventID",
+                        "filters": [],
+                        "root": "Alert",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "AlertUID",
+                        "filters": [],
+                        "root": "Alert",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "Info",
+                        "filters": [],
+                        "root": "Alert",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Destination Hostname": {
+                    "complex": {
+                        "accessor": "HostName",
+                        "filters": [],
+                        "root": "Destination",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Destination IP": {
+                    "complex": {
+                        "accessor": "IP",
+                        "filters": [],
+                        "root": "Destination",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Destination Port": {
+                    "complex": {
+                        "accessor": "Port",
+                        "filters": [],
+                        "root": "Destination",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Event ID": {
+                    "complex": null,
+                    "simple": "Event.VendorID"
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "Event.Type"
+                },
+                "File Hash": {
+                    "complex": {
+                        "accessor": "Hash",
+                        "filters": [],
+                        "root": "Object",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "File Name": {
+                    "complex": null,
+                    "simple": "Object.ObjectValueName"
+                },
+                "File Path": {
+                    "complex": null,
+                    "simple": "Object.Name"
+                },
+                "Log Source": {
+                    "complex": null,
+                    "simple": "EventSource.HostName"
+                },
+                "MAC Address": {
+                    "complex": {
+                        "accessor": "MAC",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "MD5": {
+                    "complex": {
+                        "accessor": "MD5",
+                        "filters": [],
+                        "root": "Object",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "OS": {
+                    "complex": null,
+                    "simple": "EventSource.Product"
+                },
+                "OS Version": {
+                    "complex": null,
+                    "simple": "EventSource.Version"
+                },
+                "SHA1": {
+                    "complex": {
+                        "accessor": "SHA1",
+                        "filters": [],
+                        "root": "Object",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "SHA256": {
+                    "complex": {
+                        "accessor": "SHA256",
+                        "filters": [],
+                        "root": "Object",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Source Hostname": {
+                    "complex": null,
+                    "simple": "Source.HostName"
+                },
+                "Source IP": {
+                    "complex": {
+                        "accessor": "IP",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Source Network": {
+                    "complex": {
+                        "accessor": "Location",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Source Port": {
+                    "complex": {
+                        "accessor": "Port",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Source Username": {
+                    "complex": {
+                        "accessor": "UserName",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "Alert.Info"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "Name",
+                        "filters": [],
+                        "root": "Severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "LogsignSIEM Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

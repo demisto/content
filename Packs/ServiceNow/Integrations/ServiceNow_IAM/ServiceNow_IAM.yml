@@ -24,17 +24,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-create-user Command Enabled
+  display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-update-user Command Enabled
+  display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-disable-user Command Enabled
+  display: Allow enabling users
+  name: enable_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
@@ -256,7 +261,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -93,7 +93,7 @@ def extract_domain(address):
 
 
 def get_text_from_html(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features="html.parser")
     # kill all script and style elements
     for script in soup(["script", "style"]):
         script.extract()  # rip it out

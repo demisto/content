@@ -33,7 +33,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Content Update Check](Insert the link to your image here)

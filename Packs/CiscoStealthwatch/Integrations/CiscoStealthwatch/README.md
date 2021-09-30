@@ -1777,7 +1777,7 @@ Initializes the list of security events for a domain (called tenant on the API).
 | --- | --- | --- |
 | CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
 | CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The status of the search job for the security event. | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete  | str | The percent of the security event that is completed. | 
+| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. | 
 
 
 #### Command Example

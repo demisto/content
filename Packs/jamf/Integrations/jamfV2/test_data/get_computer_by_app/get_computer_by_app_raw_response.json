@@ -1,0 +1,41 @@
+{
+  "computer_applications": {
+    "versions": [
+      {
+        "number": "14.0.3",
+        "computers": [
+          {
+            "id": 138,
+            "name": "itadmin’s MacBook Pro",
+            "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+            "serial_number": "C02X94LZJHD3",
+            "mac_address": "F0:18:98:3F:DB:8E"
+          },
+          {
+            "id": 139,
+            "name": "Tomer’s Mac",
+            "udid": "564D266C-CEDC-88B4-630F-E35FB9291C99",
+            "serial_number": "C02F71FNMD8R",
+            "mac_address": "00:0C:29:29:1C:99"
+          }
+        ]
+      }
+    ],
+    "unique_computers": [
+      {
+        "id": 138,
+        "name": "test1",
+        "udid": "12EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+        "serial_number": "A02X94LZJHD3",
+        "mac_address": "00:18:98:3F:DB:8E"
+      },
+      {
+        "id": 139,
+        "name": "test2",
+        "udid": "124D266C-CEDC-88B4-630F-E35FB9291C99",
+        "serial_number": "A02F71FNMD8R",
+        "mac_address": "00:0C:29:29:1C:99"
+      }
+    ]
+  }
+}

@@ -2,4 +2,4 @@
 ignore=RM104
 
 [file:playbook-IP_Whitelist_-_GCP_Firewall.yml]
-ignore=PB113,PB114
+ignore=PB114,PB115

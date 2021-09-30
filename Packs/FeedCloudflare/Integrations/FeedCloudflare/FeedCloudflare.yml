@@ -114,7 +114,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: cloudflare-get-indicators
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

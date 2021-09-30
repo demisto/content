@@ -1,0 +1,1 @@
+!ironport-report report_type=mail_authentication_summary time_range=1d

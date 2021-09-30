@@ -9,7 +9,7 @@ ignore=IF100
 ignore=IF100
 
 [file:incidentfields_Armis_Alert_Status.json]
-ignore=IF100
+ignore=IF100,BA113
 
 [file:incidentfields_Armis_Alert_Type.json]
 ignore=IF100

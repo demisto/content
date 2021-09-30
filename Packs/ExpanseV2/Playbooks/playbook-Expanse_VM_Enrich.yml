@@ -9,15 +9,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0d79a661-de79-4ad8-8ffc-a268cc436817
+    taskid: d3e8fa75-ecdc-4527-8700-392cf485f91b
     type: start
     task:
-      id: 0d79a661-de79-4ad8-8ffc-a268cc436817
+      id: d3e8fa75-ecdc-4527-8700-392cf485f91b
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -37,10 +37,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 9133c6ea-48d6-449f-813b-69b63e7d1f86
+    taskid: 1ae5e795-beca-47c5-8a8f-9a4339aedd93
     type: condition
     task:
-      id: 9133c6ea-48d6-449f-813b-69b63e7d1f86
+      id: 1ae5e795-beca-47c5-8a8f-9a4339aedd93
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -74,15 +74,15 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 58b47252-564a-425c-8917-8df673ff1e37
+    taskid: f70dfa1b-b7f2-41fa-8a46-293dfce6cf6d
     type: regular
     task:
-      id: 58b47252-564a-425c-8917-8df673ff1e37
+      id: f70dfa1b-b7f2-41fa-8a46-293dfce6cf6d
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset.
-      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      script: "|||tenable-io-get-vulnerabilities-by-asset"
       type: regular
       iscommand: true
       brand: Tenable.io
@@ -111,15 +111,15 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a8032d72-4f01-46ec-8261-a76949f7768b
+    taskid: 1ff0cea7-6bbd-4791-8c11-3640e448da77
     type: regular
     task:
-      id: a8032d72-4f01-46ec-8261-a76949f7768b
+      id: 1ff0cea7-6bbd-4791-8c11-3640e448da77
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset.
-      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+      script: "|||tenable-io-get-vulnerabilities-by-asset"
       type: regular
       iscommand: true
       brand: Tenable.io
@@ -148,10 +148,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 0b85102c-cfeb-421c-8517-f479476cb960
+    taskid: 4169e587-c5ce-4551-8507-ca2efed3694c
     type: condition
     task:
-      id: 0b85102c-cfeb-421c-8517-f479476cb960
+      id: 4169e587-c5ce-4551-8507-ca2efed3694c
       version: -1
       name: Domain Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -194,16 +194,16 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 74431eac-b953-4713-83ce-7ba527911266
+    taskid: 612b3278-a80b-4075-87bd-5018f070eaef
     type: title
     task:
-      id: 74431eac-b953-4713-83ce-7ba527911266
+      id: 612b3278-a80b-4075-87bd-5018f070eaef
       version: -1
-      description: ""
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -219,10 +219,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e6c59760-078a-4ed7-8b7e-aef2da39d804
+    taskid: fdb06f60-7209-4e21-84e5-7b18cdeca09f
     type: condition
     task:
-      id: e6c59760-078a-4ed7-8b7e-aef2da39d804
+      id: fdb06f60-7209-4e21-84e5-7b18cdeca09f
       version: -1
       name: Do Vulnerability Findings Exist for Asset
       description: Check if a given value exists in the context. Will return 'no'
@@ -261,10 +261,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: b7a1a454-e3ff-4a12-87e8-45b28615b264
+    taskid: 3a8a9de4-0def-4dad-8ee6-3a611ff6a123
     type: regular
     task:
-      id: b7a1a454-e3ff-4a12-87e8-45b28615b264
+      id: 3a8a9de4-0def-4dad-8ee6-3a611ff6a123
       version: -1
       name: Print Vulnerability Summary
       description: Convert an array to a nice table display. Usually, from the context.
@@ -301,23 +301,27 @@ tasks:
           "y": 1040
         }
       }
-    note: true
+    note: false
+    evidencedata:
+      description:
+        simple: Vulnerability Details from Tenable.io
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
   "9":
     id: "9"
-    taskid: ef17a8e6-5f7a-4a59-8465-97e7c6e55453
+    taskid: 3bf4e8c3-7c9e-4247-81dc-44428729449c
     type: regular
     task:
-      id: ef17a8e6-5f7a-4a59-8465-97e7c6e55453
+      id: 3bf4e8c3-7c9e-4247-81dc-44428729449c
       version: -1
-      description: ""
       name: Manual VM Scan
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -336,16 +340,16 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4639b8d8-efe7-4c50-8246-a202b062ae5f
+    taskid: 925f09bc-240b-4d26-835e-806660bd74ef
     type: condition
     task:
-      id: 4639b8d8-efe7-4c50-8246-a202b062ae5f
+      id: 925f09bc-240b-4d26-835e-806660bd74ef
       version: -1
       name: Is Tenable.io Enabled?
       type: condition
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -393,16 +397,16 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 14ad8d2f-6468-457b-8428-0a3e784a2a81
+    taskid: 3b91595d-7c58-47c2-829b-c9d206ac101b
     type: title
     task:
-      id: 14ad8d2f-6468-457b-8428-0a3e784a2a81
+      id: 3b91595d-7c58-47c2-829b-c9d206ac101b
       version: -1
       name: Tenable.io
       type: title
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -421,16 +425,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: c7e165c6-ffb7-468d-8119-b033092883fa
+    taskid: a57ef9ff-bb6f-461a-85f3-5634faee3825
     type: title
     task:
-      id: c7e165c6-ffb7-468d-8119-b033092883fa
+      id: a57ef9ff-bb6f-461a-85f3-5634faee3825
       version: -1
       name: Rapid7 Nexpose
       type: title
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -449,16 +453,16 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 696942f6-d499-42a8-83d7-af4ca9b6dd1e
+    taskid: d2ba263b-e38a-4186-8436-c450ff0a5179
     type: condition
     task:
-      id: 696942f6-d499-42a8-83d7-af4ca9b6dd1e
+      id: d2ba263b-e38a-4186-8436-c450ff0a5179
       version: -1
       name: Is Nexpose Enabled?
       type: condition
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -506,10 +510,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: a03ba4af-b852-49a9-8e4a-3f8543268651
+    taskid: 1e087b03-e0ad-42ab-8810-d06ff56808bb
     type: condition
     task:
-      id: a03ba4af-b852-49a9-8e4a-3f8543268651
+      id: 1e087b03-e0ad-42ab-8810-d06ff56808bb
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -543,10 +547,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 1a5f4153-dd59-46a0-8405-da62a450aa45
+    taskid: 227faf57-d35f-4535-89ea-128f99eb9240
     type: condition
     task:
-      id: 1a5f4153-dd59-46a0-8405-da62a450aa45
+      id: 227faf57-d35f-4535-89ea-128f99eb9240
       version: -1
       name: Domain Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -589,15 +593,15 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d7d31025-9714-42f4-8929-1975599c6b09
+    taskid: 50419856-f471-4b55-8d7a-b037f2109b24
     type: regular
     task:
-      id: d7d31025-9714-42f4-8929-1975599c6b09
+      id: 50419856-f471-4b55-8d7a-b037f2109b24
       version: -1
       name: Nexpose find Asset by IP
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: "|||nexpose-search-assets"
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose
@@ -632,15 +636,15 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 7d2eb709-9266-4ea8-8376-149743780475
+    taskid: ce06af07-7456-4c32-8e9b-7a243c792f81
     type: regular
     task:
-      id: 7d2eb709-9266-4ea8-8376-149743780475
+      id: ce06af07-7456-4c32-8e9b-7a243c792f81
       version: -1
       name: Nexpose find Asset by Domain
       description: Returns all assets for which you have access that match the given
         search criteria.
-      script: Rapid7 Nexpose|||nexpose-search-assets
+      script: "|||nexpose-search-assets"
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose
@@ -675,10 +679,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: a5c64667-aed2-4821-86fb-8b72135f9413
+    taskid: f3637637-4338-47bb-8933-243f9a0f8e1c
     type: condition
     task:
-      id: a5c64667-aed2-4821-86fb-8b72135f9413
+      id: f3637637-4338-47bb-8933-243f9a0f8e1c
       version: -1
       name: Has Asset been assessed?
       description: Check if a given value exists in the context. Will return 'no'
@@ -717,16 +721,16 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: b781a49e-5b72-4f06-87ca-1d7afeb1a723
+    taskid: b70cde15-4941-45f2-8d34-abd38e6c86a5
     type: regular
     task:
-      id: b781a49e-5b72-4f06-87ca-1d7afeb1a723
+      id: b70cde15-4941-45f2-8d34-abd38e6c86a5
       version: -1
       name: Manual VM Scan
       type: regular
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -745,10 +749,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: a8eedd9a-8777-4941-8dc5-d7516cb20758
+    taskid: 17f514e1-8059-480d-887d-61e5eefe5898
     type: regular
     task:
-      id: a8eedd9a-8777-4941-8dc5-d7516cb20758
+      id: 17f514e1-8059-480d-887d-61e5eefe5898
       version: -1
       name: Print Asset Summary
       description: Convert an array to a nice table display, usually from the context.
@@ -784,7 +788,11 @@ tasks:
           "y": 1040
         }
       }
-    note: true
+    note: false
+    evidencedata:
+      description:
+        simple: Asset Details from InsightVM
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false

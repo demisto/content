@@ -178,6 +178,24 @@ outputs:
   description: The values of the mututal indicators of the incidents involved in the
     campaign.
   type: Unknown
+- contextPath: EmailCampaign.fieldsToDisplay
+  description: List of fields to display in the linked list table.
+  type: Unknown
+- contextPath: EmailCampaign.firstIncidentDate
+  description: The occurrence date of the oldest incident in the campaign.
+  type: unknown
+- contextPath: incident.emailcampaignsummary
+  description: Markdown table with email campaign summary.
+  type: string
+- contextPath: incident.emailcampaignsnippets
+  description: Markdown table with email content summary.
+  type: string
+- contextPath: incident.emailcampaignmutualindicators
+  description: Markdown table with relevant indicators.
+  type: string
+- contextPath: incident.emailcampaigncanvas
+  description: Link to the campaign canvas.
+  type: string
 script: '-'
 subtype: python3
 system: false
@@ -186,7 +204,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.21733
+dockerimage: demisto/sklearn:1.0.0.23593
 tests:
 - No tests (auto formatted)
 runonce: true

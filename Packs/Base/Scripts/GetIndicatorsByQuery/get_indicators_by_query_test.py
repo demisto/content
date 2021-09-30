@@ -56,7 +56,7 @@ def get_args_with_unpopulate():
     return args
 
 
-def search_indicators(query, page, size, fromDate, toDate, value):
+def search_indicators(query=None, page=None, size=None, fromDate=None, toDate=None, value=None):
     return {'iocs': [ioc1, ioc2]}
 
 

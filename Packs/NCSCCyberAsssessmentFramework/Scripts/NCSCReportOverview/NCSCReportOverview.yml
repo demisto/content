@@ -1,10 +1,10 @@
 commonfields:
   id: NCSCReportOverview
   version: -1
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: NCSCReportOverview
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: ''
 scripttarget: 0

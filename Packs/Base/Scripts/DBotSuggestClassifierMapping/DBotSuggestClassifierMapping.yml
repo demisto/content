@@ -32,7 +32,7 @@ commonfields:
 enabled: false
 name: DBotSuggestClassifierMapping
 script: '-'
-subtype: python3
+subtype: python2
 system: false
 tags:
   - ml
@@ -42,3 +42,5 @@ deprecated: true
 tests:
   - No tests (auto formatted)
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
+

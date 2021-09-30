@@ -71,8 +71,14 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
-            if e.res.status_code == 404:
-                result = 404
+            if hasattr(e.res, 'status_code'):
+                if e.res.status_code == 404:
+                    result = 404
+                elif e.res.status_code == 400:
+                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    raise Exception(f'The command could not be execute: {argument} is invalid.')
+                else:
+                    raise
             else:
                 raise
         return result
@@ -169,6 +175,10 @@ def create_attack_pattern_relationships(client: Client, raw_response: dict, enti
     return relationships
 
 
+def lowercase_protocol_callback(pattern: re.Match) -> str:
+    return pattern.group(0).lower()
+
+
 ''' COMMANDS '''
 
 
@@ -212,7 +222,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
     for ip_ in ips_list:
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
-        if raw_response:
+        if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
                                                                 entity_a=ip_, entity_a_type=ip_version)
@@ -245,6 +255,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 raw_response=raw_response,
                 relationships=relationships
             ))
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'IP {ip_} could not be found.'))
 
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
@@ -269,7 +282,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
 
     for domain in domains_list:
         raw_response = client.query(section='domain', argument=domain)
-        if raw_response:
+        if raw_response and raw_response != 404:
             relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
                                                                 entity_a=domain, entity_a_type=FeedIndicatorType.Domain)
 
@@ -296,7 +309,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 raw_response=raw_response,
                 relationships=relationships
             ))
-
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'Domain {domain} could not be found.'))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -325,7 +340,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                                              sub_section='analysis')
         raw_response_general = client.query(section='file',
                                             argument=hash_)
-        if raw_response_analysis and raw_response_general:
+        if raw_response_analysis and raw_response_general and \
+                raw_response_general != 404 and raw_response_analysis != 404:
             relationships = create_attack_pattern_relationships(client, raw_response=raw_response_general,
                                                                 entity_a=hash_, entity_a_type=FeedIndicatorType.File)
 
@@ -363,7 +379,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 raw_response=raw_response_general,
                 relationships=relationships
             ))
-
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'File {hash_} could not be found.'))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -388,6 +406,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
     raws: list = []
 
     for url in urls_list:
+        url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
@@ -448,7 +467,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
         Outputs
     """
     raw_response = client.query(section='hostname', argument=hostname)
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
             'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
@@ -491,7 +510,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
     """
     raw_response = client.query(section='cve',
                                 argument=cve_id)
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
             outputPaths.get("cve"): {
@@ -533,7 +552,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='url_list')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
         context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
         context: dict = {
@@ -563,7 +582,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='malware')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
         context_entry: dict = {
             'AlienVaultOTX.File(val.File.Hash && val.File.Hash == obj.File.Hash)':
@@ -594,7 +613,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='passive_dns')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
         context_entry: dict = {
             'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
@@ -626,7 +645,7 @@ def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Di
     raw_response = client.query(section='search',
                                 sub_section='pulses',
                                 params={'page': page})
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - pulse page {page}'
         context_entry: dict = {
             'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
@@ -656,7 +675,7 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
     """
     raw_response = client.query(section='pulses',
                                 argument=pulse_id)
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - pulse id details'
         context_entry: dict = {
             'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)': {

@@ -389,8 +389,16 @@ def url_lookup(args):
     ec[outputPaths['url']] = []
     ec['DBotScore'] = []
     pre_table_data = []
+    urls_list = argToList(url)
     for data in raw_res:
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
+        res_url = data.get('url')
+        for url in urls_list:
+            # since zscaler expects to recieve a URL without the protocol, we omit it in `lookup_request`
+            # in the response, the URL is returned as it was sent, so we add back the protocol by replacing
+            # the URL retruned with the one we got as an argument
+            if 'http://' + res_url in url or 'https://' + res_url in url:
+                data['url'] = url
         ioc_context = {'Address': data['url'], 'Data': data['url']}
         score = 1
         if len(data['urlClassifications']) == 0:

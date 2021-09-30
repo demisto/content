@@ -1,0 +1,403 @@
+{
+    "additional_info": {
+        "BitDefender category": "computersandsoftware",
+        "Comodo Valkyrie Verdict category": "web applications",
+        "Dr.Web category": "social networks",
+        "Forcepoint ThreatSeeker category": "information technology",
+        "Response code": 200,
+        "Response content SHA-256": "0e1a3027e45f3971d9611b88be2b556a166b8e7dcbdbfd4b2de257fc22a86079",
+        "Response headers": {
+            "accept-ranges": "bytes",
+            "cache-control": "max-age=0, private, must-revalidate",
+            "content-type": "text/html; charset=utf-8",
+            "date": "Tue, 27 Jul 2021 14:58:50 GMT",
+            "etag": "W/\"cc5749d30e85e6e4bbb2a0c8f8b85bb7\"",
+            "expect-ct": "max-age=2592000, report-uri=\"https://api.github.com/_private/browser/errors\"",
+            "permissions-policy": "interest-cohort=()",
+            "referrer-policy": "origin-when-cross-origin, strict-origin-when-cross-origin",
+            "server": "GitHub.com",
+            "set-cookie": "_gh_sess=sD",
+            "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+            "transfer-encoding": "chunked",
+            "vary": "X-PJAX, Accept-Encoding, Accept, X-Requested-With",
+            "x-content-type-options": "nosniff",
+            "x-frame-options": "deny",
+            "x-github-request-id": "897E:5827:6536B6:93B410:61001F29",
+            "x-xss-protection": "0"
+        },
+        "rlength": 488875,
+        "sophos category": "information technology, storage and backup"
+    },
+    "filescan_id": null,
+    "first_seen": "2021-07-27 14:58:43",
+    "last_seen": "2021-07-27 14:58:43",
+    "permalink": "https://www.virustotal.com/gui/url/truncated",
+    "positives": 0,
+    "resource": "https://github.com/topics/spacevim",
+    "response_code": 1,
+    "scan_date": "2021-07-27 14:58:43",
+    "scan_id": "856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c-1627397923",
+    "scans": {
+        "0xSI_f33d": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "ADMINUSLabs": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "AICC (MONITORAPP)": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Abusix": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "AlienVault": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Antiy-AVL": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Armis": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Artists Against 419": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "AutoShun": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "Avira": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "BADWARE.INFO": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Baidu-International": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Bfore.Ai PreCrime": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "BitDefender": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "BlockList": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Blueliv": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "CINS Army": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "CMC Threat Intelligence": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "CRDF": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Certego": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Comodo Valkyrie Verdict": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "CyRadar": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Cyan": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "CyberCrime": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Cyren": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "DNS8": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Dr.Web": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "ESET": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "EmergingThreats": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Emsisoft": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "EonScope": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Feodo Tracker": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Forcepoint ThreatSeeker": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Fortinet": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "FraudScore": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "G-Data": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Google Safebrowsing": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "GreenSnow": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Hoplite Industries": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "IPsum": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "K7AntiVirus": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Kaspersky": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Lionic": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Lumu": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "MalBeacon": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "MalSilo": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "MalwareDomainList": {
+            "detail": "http://www.malwaredomainlist.com/mdl.php?search=github.com",
+            "detected": false,
+            "result": "clean site"
+        },
+        "MalwarePatrol": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Malwared": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Netcraft": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "NotMining": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "Nucleon": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "OpenPhish": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "PREBYTES": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "PhishLabs": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "Phishing Database": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Phishtank": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Quick Heal": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Quttera": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Rising": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "SCUMWARE.org": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "SafeToOpen": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "Sangfor": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Scantitan": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "SecureBrain": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Snort IP sample list": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Sophos": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Spam404": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Spamhaus": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "StopBadware": {
+            "detected": false,
+            "result": "unrated site"
+        },
+        "StopForumSpam": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Sucuri SiteCheck": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Tencent": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "ThreatHive": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Threatsourcing": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Trustwave": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "URLhaus": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "VX Vault": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Virusdie External Site Scan": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Web Security Guard": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Webroot": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "Yandex Safebrowsing": {
+            "detail": "http://yandex.com/infected?l10n=en\u0026url=https://github.com/topics/spacevim",
+            "detected": false,
+            "result": "clean site"
+        },
+        "ZeroCERT": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "alphaMountain.ai": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "benkow.cc": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "desenmascara.me": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "malwares.com URL checker": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "securolytics": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "zvelo": {
+            "detected": false,
+            "result": "clean site"
+        }
+    },
+    "total": 89,
+    "url": "https://github.com/topics/spacevim",
+    "verbose_msg": "Scan finished, scan information embedded in this object"
+}
