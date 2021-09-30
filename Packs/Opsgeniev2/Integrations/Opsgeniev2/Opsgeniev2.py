@@ -140,6 +140,16 @@ class Client(BaseClient):
 
         return data
 
+    def add_alert_note(self, command_args):
+        """Add a note to an existing alert."""
+        alert_id = command_args.get("alert-id")
+        data = self.send_and_poll(
+            method='POST',
+            url_suffix=f"{ALERTS_SUFFIX}/{alert_id}/notes",
+            json_data=command_args
+        )
+        return data
+
     def list_schedules(self, limit, sort):
         params = {
             "sort": sort
@@ -241,6 +251,17 @@ def close_alert(client, command_args):
     )
 
 
+def add_note_to_alert(client, command_args):
+    result = client.add_alert_note(command_args)
+    return CommandResults(
+        outputs_prefix="OpsGenieV2.AddAlertNote",
+        outputs=result,
+        readable_output=tableToMarkdown("OpsGenie Added Alert Note", result,
+                                        headers=["alertId", "isSuccess", "status"]),
+        raw_response=result
+    )
+
+
 def list_schedules(client, limit, sort):
     result = client.list_schedules(limit, sort)
     return CommandResults(
@@ -331,6 +352,8 @@ def main():
             return_results(create_alert(client, demisto.args()))
         elif demisto.command() == "opsgenie-ack-alert":
             return_results(ack_alert(client, demisto.args()))
+        elif demisto.command() == "opsgenie-add-alert-note":
+            return_results(add_note_to_alert(client, demisto.args()))
         elif demisto.command() == "opsgenie-close-alert":
             return_results(close_alert(client, demisto.args()))
         elif demisto.command() == "opsgenie-get-alert":
