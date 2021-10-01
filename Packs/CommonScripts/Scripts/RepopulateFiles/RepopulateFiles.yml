@@ -1,9 +1,6 @@
 commonfields:
   id: RepopulateFiles
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 name: RepopulateFiles
 script: ''
 type: python

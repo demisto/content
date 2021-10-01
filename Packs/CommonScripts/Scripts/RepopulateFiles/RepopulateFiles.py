@@ -80,7 +80,7 @@ def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any]) ->
 
         if is_error(ents[0]):
             if first_id == 1:
-                raise RuntimeError('Unable to retrieve entries')
+                return_error('Unable to retrieve entries')
             break
 
         for ent in ents:
@@ -99,52 +99,47 @@ def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any]) ->
 
 def main():
     args = demisto.args()
-    try:
-        file_fields = argToList(args.get('fields', 'attachment'))
-        file_infos = []
-        for file_field in file_fields:
-            files = demisto.incident().get(file_field)
-            if files is None:
-                files = demisto.get(demisto.incident(), f'CustomFields.{file_field}') or []
-            if files:
-                attachment_ents = [ent for ent in iterate_entries(None, {'categories': ['attachments']})]
-                for file in files:
-                    # Extract the File ID
-                    apath = file['path']
-                    m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', apath)
-                    if not m:
-                        raise RuntimeError(f'Failed to get file ID for {apath}')
+    file_fields = argToList(args.get('fields', 'attachment'))
+    file_infos = []
+    for file_field in file_fields:
+        files = demisto.incident().get(file_field)
+        if files is None:
+            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}', [])
+        if files:
+            attachment_ents = [ent for ent in iterate_entries(None, {'categories': ['attachments']})]
+            for file in files:
+                # Extract the File ID
+                apath = file['path']
+                m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', apath)
+                if not m:
+                    return_error(f'Failed to get file ID for {apath}')
 
-                    # Read the file contents
-                    fpath = demisto.getFilePath(m.group())
-                    with open(fpath['path'], 'rb') as f:
-                        data = f.read()
+                # Read the file contents
+                fpath = demisto.getFilePath(m.group())
+                with open(fpath['path'], 'rb') as f:
+                    data = f.read()
 
-                    # Find the attachment entry
-                    attachment_ent = find_attachment_entry(attachment_ents, data, file.get('name'))
-                    if not attachment_ent:
-                        raise RuntimeError('No attachment entry found in the war room')
+                # Find the attachment entry
+                attachment_ent = find_attachment_entry(attachment_ents, data, file.get('name'))
+                if not attachment_ent:
+                    return_error('No attachment entry found in the war room')
 
-                    file_infos.append({
-                        'Attachment': file,
-                        'AttachmentEntry': attachment_ent,
-                        'File': make_file_entry_context(attachment_ent, data)
-                    })
+                file_infos.append({
+                    'Attachment': file,
+                    'AttachmentEntry': attachment_ent,
+                    'File': make_file_entry_context(attachment_ent, data)
+                })
 
-        if not file_infos:
-            res = CommandResults(readable_output='No files were found.')
-        else:
-            res = CommandResults(
-                readable_output='Done',
-                outputs={
-                    outputPaths['file']: [a['File'] for a in file_infos],
-                    'AttachmentFile': [dict(a['File'], **{'Attachment': a['Attachment']}) for a in file_infos]
-                },
-                raw_response=file_infos)
-
-        return_results(res)
-    except Exception as e:
-        return_error(str(e))
+    if not file_infos:
+        return_outputs('No files were found.')
+    else:
+        return_outputs(
+            'Done',
+            {
+                outputPaths['file']: [a['File'] for a in file_infos],
+                'AttachmentFile': [dict(a['File'], **{'Attachment': a['Attachment']}) for a in file_infos]
+            },
+            file_infos)
 
 
 if __name__ in ('__builtin__', 'builtins'):
