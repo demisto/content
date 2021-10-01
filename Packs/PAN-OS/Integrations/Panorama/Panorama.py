@@ -1,8 +1,10 @@
-import json
 import shutil
+
+''' IMPORTS '''
+import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 
 import requests
 
@@ -302,23 +304,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-        + add_argument_target(target, 'target')
-        + add_argument_open(description, 'description', False)
-        + add_argument_list(source, 'source', True, True)
-        + add_argument_list(destination, 'destination', True, True)
-        + add_argument_list(application, 'application', True)
-        + add_argument_list(category, 'category', True)
-        + add_argument_open(source_user, 'source-user', True)
-        + add_argument_list(from_, 'from', True, True)  # default from will always be any
-        + add_argument_list(to, 'to', True, True)  # default to will always be any
-        + add_argument_list(service, 'service', True, True)
-        + add_argument_yes_no(negate_source, 'negate-source')
-        + add_argument_yes_no(negate_destination, 'negate-destination')
-        + add_argument_yes_no(disable, 'disabled')
-        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-        + add_argument(log_forwarding, 'log-setting', False)
-        + add_argument_list(tags, 'tag', True)
-        + add_argument_profile_setting(profile_setting, 'profile-setting')
+                   + add_argument_target(target, 'target')
+                   + add_argument_open(description, 'description', False)
+                   + add_argument_list(source, 'source', True, True)
+                   + add_argument_list(destination, 'destination', True, True)
+                   + add_argument_list(application, 'application', True)
+                   + add_argument_list(category, 'category', True)
+                   + add_argument_open(source_user, 'source-user', True)
+                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                   + add_argument_list(to, 'to', True, True)  # default to will always be any
+                   + add_argument_list(service, 'service', True, True)
+                   + add_argument_yes_no(negate_source, 'negate-source')
+                   + add_argument_yes_no(negate_destination, 'negate-destination')
+                   + add_argument_yes_no(disable, 'disabled')
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                   + add_argument(log_forwarding, 'log-setting', False)
+                   + add_argument_list(tags, 'tag', True)
+                   + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -470,6 +472,142 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
+def run_polling_command(args: dict = None, cmd: str = None, search_function: Callable = None,
+                        query_function: Callable = None, results_function: Callable = None,
+                        outputs_prefix: str = None, exit_string: str = None, job_id: str = None,
+                        additional_paths: dict = None, success_path: tuple = None,
+                        error_path: list = []) -> list:
+    polling_results = []
+
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    timeout = int(args.get('timeout', 600))
+
+    ScheduledCommand.raise_error_if_not_supported()
+
+    # Create a new job if there is no job_id
+    if not job_id:
+
+        result = search_function()
+
+        # If the job was started successfully
+        if 'result' in result.get('response', None) and result.get('response', {}).get('result', {}).get('job', None):
+
+            job_id = result.get('response', {}).get('result', {}).get('job', None)
+            output = {
+                'JobID': job_id,
+                'Status': 'Pending',
+                'Description': args.get('description')
+            }
+            if additional_paths:
+                for k, v in additional_paths.items():
+                    output[k] = v
+
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+            readable_output = f"Running {cmd} (Job ID: {job_id})"
+
+            polling_results.append(CommandResults(
+                outputs_prefix=outputs_prefix,
+                outputs_key_field='JobID',
+                outputs=output,
+                readable_output=readable_output,
+                scheduled_command=scheduled_command,
+                ignore_auto_extract=True
+            ))
+
+        # Otherwise return the error information
+        else:
+            if error_path:
+                error = result
+                for key in error_path:
+                    error = error.get(key, {})
+            else:
+                error = 'Unknown'
+            polling_results.append(f"{exit_string} - {error}")
+
+    # Check existing job
+    else:
+
+        result = query_function()
+
+        # Reschedule job if it's not complete
+        if result['response']['result']['job']['status'] != 'FIN':
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+            polling_results.append(
+                CommandResults(
+                    scheduled_command=scheduled_command
+                )
+            )
+
+        # Check the status of a completed job
+        else:
+            status_output = {'JobID': job_id}
+            if additional_paths:
+                for k, v in additional_paths.items():
+                    status_output[k] = v
+
+            status = result
+            for key in success_path[0]:
+                status = status.get(key, {})
+
+            # If the job is successful
+            if status == success_path[1]:
+
+                results = results_function()
+
+            # Otherwise return an error in the results
+            else:
+                if error_path:
+                    details = result
+                    for key in error_path:
+                        details = details.get(key, {})
+                else:
+                    details = None
+                status_output['Status'] = 'Failed'
+                status_output['Message'] = details
+
+                status_warnings = []
+                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', None):
+                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings',
+                                                                                                      {}).get(
+                        'line',
+                        [])
+                ignored_error = ['configured with no certificate profile']
+                status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+
+                polling_results.append(
+                    CommandResults(
+                        outputs_prefix=outputs_prefix,
+                        outputs_key_field='JobID',
+                        outputs=status_output,
+                        ignore_auto_extract=True
+                    )
+                )
+
+    return polling_results
+
+
 @logger
 def panorama_command(args: dict):
     """
@@ -527,101 +665,19 @@ def panorama_commit_command(args: dict):
     cmd = 'panorama-commit'
 
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
 
-        # Create a new commit job
-        if not job_id:
-            result = panorama_commit(args)
-
-            if 'result' in result['response']:
-                # commit has been given a jobid
-                job_id = result['response']['result']['job']
-                commit_output = {
-                    'JobID': job_id,
-                    'Status': 'Pending',
-                    'Description': args.get('description')
-                }
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-
-                readable_output = f"Committing any pending changes (Job ID: {job_id})"
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.Commit',
-                    outputs_key_field='JobID',
-                    outputs=commit_output,
-                    readable_output=readable_output,
-                    scheduled_command=scheduled_command,
-                    ignore_auto_extract=True
-                ))
-
-            else:
-                script_results.append("There are no pending changes to commit.")
-
-        # Check existing job
-        else:
-            result = panorama_commit_status(args)
-
-            if result['response']['result']['job']['type'] != 'Commit':
-                raise Exception('JobID given is not of a commit.')
-
-            # Reschedule job if it's not complete
-            if result['response']['result']['job']['status'] != 'FIN':
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-
-            # Check the status of a completed job
-            else:
-                commit_status_output = {'JobID': result['response']['result']['job']['id']}
-                if result['response']['result']['job']['result'] == 'OK':
-                    commit_status_output['Status'] = 'Completed'
-                else:
-                    commit_status_output['Status'] = 'Failed'
-                commit_status_output['Details'] = result['response']['result']['job']['details']['line']
-
-                status_warnings = []
-                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}):
-                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
-                        'line',
-                        [])
-                ignored_error = 'configured with no certificate profile'
-                commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
-                readable_output = tableToMarkdown(
-                    'Commit status:',
-                    commit_status_output,
-                    ['JobID', 'Status', 'Details', 'Warnings'],
-                    removeNull=True
-                )
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.Commit',
-                    outputs_key_field='JobID',
-                    outputs=commit_status_output,
-                    readable_output=readable_output,
-                    ignore_auto_extract=True
-                ))
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_commit(args),
+            query_function=lambda: panorama_commit_status(args),
+            results_function=lambda: panorama_commit_status_command(args),
+            outputs_prefix='Panorama.Commit',
+            exit_string='There are no pending changes to commit.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job', 'details', 'line'],
+            job_id=job_id
+        )
 
     else:
         result = panorama_commit(args)
@@ -2575,9 +2631,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-        add_argument_list(override_allow_list, 'allow-list', True) + \
-        add_argument_list(override_block_list, 'block-list', True) + \
-        add_argument(description, 'description', False)
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -2694,7 +2750,8 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     allow_name, block_name = set_edit_url_filter_xpaths(major_version)
 
     if element_to_change == 'description':
-        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
+        params[
+            'xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -4444,6 +4501,7 @@ def panorama_query_logs_command(args: dict):
     if url and url[-1] != '/':
         url += '/'
     polling = args.get('polling', use_polling)
+    polling_results = dict()
     script_results = []
 
     if query and (address_src or address_dst or zone_src or zone_dst
@@ -4451,109 +4509,23 @@ def panorama_query_logs_command(args: dict):
         raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
-        if not job_id:
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
+                                                        zone_src, zone_dst, time_generated, action,
+                                                        port_dst, rule, url, filedigest),
+            query_function=lambda: panorama_get_traffic_logs(job_id),
+            results_function=lambda: panorama_get_logs_command(args),
+            additional_paths={'LogType': log_type},
+            outputs_prefix='Panorama.Monitor',
+            exit_string='Query logs failed.',
+            job_id=job_id,
+            result_path=['response', 'result', 'log', 'logs'],
+            success_path=(['response', '@status'], 'success'),
+            error_path=[]
+        )
 
-            # create new search
-            result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                         zone_src, zone_dst, time_generated, action,
-                                         port_dst, rule, url, filedigest)
-
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Query logs failed' + message)
-                else:
-                    raise Exception('Query logs failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            job_id = result['response']['result']['job']
-
-            polling_args = {
-                'job_id': job_id,
-                'polling': True,
-                **args
-            }
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_seconds,
-                args=polling_args,
-                timeout_in_seconds=timeout
-            )
-            readable_output = f"Querying Panorama logs (Job ID: {job_id})"
-            script_results.append(CommandResults(
-                readable_output=readable_output,
-                scheduled_command=scheduled_command
-            ))
-
-        else:
-            result = panorama_get_traffic_logs(job_id)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Query logs failed' + message)
-                else:
-                    raise Exception('Query logs failed.')
-
-            if result['response']['result']['job']['status'] != "FIN":
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-            else:
-                result = panorama_get_traffic_logs(job_id)
-
-                if result['response']['@status'] == 'error':
-                    if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                        message = '. Reason is: ' + result['response']['msg']['line']
-                        raise Exception('Query logs failed' + message)
-                    else:
-                        raise Exception('Query logs failed.')
-
-                query_logs_output = {
-                    'JobID': job_id,
-                    'Status': 'Pending'
-                }
-
-                if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-                        or 'status' not in result['response']['result']['job']:
-                    raise Exception('Missing JobID status in response.')
-
-                query_logs_output['Status'] = 'Completed'
-                if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
-                    'result'] \
-                        or 'logs' not in result['response']['result']['log']:
-                    raise Exception('Missing logs in response.')
-
-                logs = result['response']['result']['log']['logs']
-                if logs['@count'] == '0':
-                    human_readable = f'No {log_type} logs matched the query.'
-                else:
-                    pretty_logs = prettify_logs(logs['entry'])
-                    query_logs_output['Logs'] = pretty_logs
-                    human_readable = tableToMarkdown(f'Query {log_type} Logs:', query_logs_output['Logs'],
-                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True)
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.Monitor',
-                    outputs_key_field='JobID',
-                    outputs=result,
-                    readable_output=human_readable,
-                    ignore_auto_extract=True))
 
     else:
 
@@ -4586,6 +4558,7 @@ def panorama_query_logs_command(args: dict):
             'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
             'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
         })
+
     return_results(script_results)
 
 
@@ -4775,7 +4748,7 @@ def panorama_get_logs_command(args: dict):
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                human_readable = tableToMarkdown(f'Query {log_type} Logs:', query_logs_output['Logs'],
                                                  ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True)
             return_results({
@@ -5320,95 +5293,19 @@ def panorama_download_latest_content_update_command(args: dict = {}):
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
 
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
 
-        # Create new job if this is not an existing polling job
-        if not job_id:
-
-            # Create a new download schedule
-            result = panorama_download_latest_content_update_content(target)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            job_id = result['response']['result']['job']
-
-            polling_args = {
-                "job_id": job_id,
-                "polling": True,
-                **args
-            }
-
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_seconds,
-                args=polling_args,
-                timeout_in_seconds=timeout
-            )
-
-            readable_output = f"Downloading latest content update (Job ID: {job_id})"
-            script_results.append(CommandResults(
-                readable_output=readable_output,
-                scheduled_command=scheduled_command))
-
-        # Check the existing job
-        else:
-            result = panorama_content_update_download_status(target, job_id)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            # re-schedule the check if the job is not finished
-            if result['response']['result']['job']['status'] != "FIN":
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-
-            # Output the result if the job has finished
-            else:
-                content_download_status = {
-                    'JobID': result['response']['result']['job']['id']
-                }
-                if result['response']['result']['job']['result'] == 'OK':
-                    content_download_status['Status'] = 'Completed'
-                else:
-                    content_download_status['Status'] = 'Failed'
-                content_download_status['Details'] = result['response']['result']['job']
-                readable_output = tableToMarkdown('Content download status:', content_download_status,
-                                                  ['JobID', 'Status', 'Details'], removeNull=True)
-
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.Content.Download',
-                    outputs_key_field='JobID',
-                    outputs=content_download_status,
-                    readable_output=readable_output,
-                    ignore_auto_extract=True
-                ))
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_download_latest_content_update_content(target),
+            query_function=lambda: panorama_content_update_download_status(target, job_id),
+            results_function=lambda: panorama_content_update_download_status_command(args),
+            outputs_prefix='Panorama.Content.Download',
+            exit_string='Content failed to download.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
 
     else:
         result = panorama_download_latest_content_update_content(target)
@@ -5512,7 +5409,6 @@ def panorama_install_latest_content_update(target: str):
 
 
 def panorama_install_latest_content_update_command(args: dict = {}):
-
     target = args.get('target')
     use_polling = args.get('use_polling', 'false') == 'true'
     polling = args.get('polling', use_polling)
@@ -5524,96 +5420,19 @@ def panorama_install_latest_content_update_command(args: dict = {}):
 
     # Is polling requested
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
 
-        # Create new job if this is not an existing polling job
-        if not job_id:
-
-            # Create a new installation schedule
-            result = panorama_install_latest_content_update(target)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            job_id = result['response']['result']['job']
-
-            polling_args = {
-                "job_id": job_id,
-                "polling": True,
-                **args
-            }
-
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_seconds,
-                args=polling_args,
-                timeout_in_seconds=timeout
-            )
-
-            readable_output = f"Installing latest content update (Job ID: {job_id})"
-            script_results.append(CommandResults(
-                readable_output=readable_output,
-                scheduled_command=scheduled_command))
-
-        # Check the existing job
-        else:
-            result = panorama_content_update_install_status(target, job_id)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            # re-schedule the check if the job is not finished
-            if result['response']['result']['job']['status'] != "FIN":
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-
-            # Output the result if the job has finished
-            else:
-                content_install_status = {
-                    'JobID': result['response']['result']['job']['id']
-                }
-                if result['response']['result']['job']['result'] == 'OK':
-                    content_install_status['Status'] = 'Completed'
-                else:
-                    content_install_status['Status'] = 'Failed'
-                content_install_status['Details'] = result['response']['result']['job']
-
-                readable_output = tableToMarkdown('Content install status:', content_install_status,
-                                                  ['JobID', 'Status', 'Details'], removeNull=True)
-
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.Content.Install',
-                    outputs_key_field='JobID',
-                    outputs=content_install_status,
-                    readable_output=readable_output,
-                    ignore_auto_extract=True
-                ))
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_install_latest_content_update(target),
+            query_function=lambda: panorama_content_update_install_status(target, job_id),
+            results_function=lambda: panorama_content_update_install_status_command(args),
+            outputs_prefix='Panorama.Content.Install',
+            exit_string='Failed to install content update.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['details', 'result', 'job'],
+            job_id=job_id
+        )
 
     else:
         """
@@ -5749,92 +5568,19 @@ def panorama_download_panos_version_command(args: dict):
     script_results = []
 
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
 
-        # create new download
-        if not job_id:
-            result = panorama_download_panos_version(target, target_version)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-                raise Exception('Missing JobID in response.')
-
-            job_id = result['response']['result']['job']
-
-            polling_args = {
-                'job_id': job_id,
-                'polling': True,
-                **args
-            }
-
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_seconds,
-                args=polling_args,
-                timeout_in_seconds=timeout
-            )
-
-            readable_output = f"Downloading PANOS version {target_version} (Job ID: {job_id})"
-            script_results.append(CommandResults(
-                readable_output=readable_output,
-                scheduled_command=scheduled_command
-            ))
-
-        # Check the existing job
-        else:
-            result = panorama_download_panos_status(target, job_id)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Download failed' + message)
-                else:
-                    raise Exception('Download failed.')
-
-            # If the job has not yet completed, re-schedule it
-            if result['response']['result']['job']['status'] != "FIN":
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-
-            # If the job has finished
-            else:
-                panos_download_status = {
-                    'JobID': result['response']['result']['job']['id']
-                }
-
-                if result['response']['result']['job']['result'] == 'OK':
-                    panos_download_status['Status'] = 'Completed'
-                else:
-                    panos_download_status['Status'] = 'Failed'
-                panos_download_status['Details'] = result['response']['result']['job']
-
-                readable_output = tableToMarkdown('PAN-OS download status:', panos_download_status,
-                                                  ['JobID', 'Status', 'Details'], removeNull=True)
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.PANOS.Download',
-                    outputs_key_field='JobID',
-                    outputs=panos_download_status,
-                    readable_output=readable_output,
-                    ignore_auto_extract=True
-                ))
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_download_panos_version(target, target_version),
+            query_function=lambda: panorama_download_panos_status(target, job_id),
+            results_function=lambda: panorama_download_panos_status_command(args),
+            outputs_prefix='Panorama.PANOS.Download',
+            exit_string=f'Panorama version {target_version} download failed',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
 
     else:
         result = panorama_download_panos_version(target, target_version)
@@ -5947,99 +5693,19 @@ def panorama_install_panos_version_command(args: dict):
     script_results = []
 
     if polling:
-        ScheduledCommand.raise_error_if_not_supported()
 
-        # create new download
-        if not job_id:
-            result = panorama_install_panos_version(target, target_version)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Update content failed' + message)
-                else:
-                    raise Exception('Update content failed.')
-
-            if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response'][
-                    'result']:
-                raise Exception('Missing JobID in response.')
-
-            job_id = result['response']['result']['job']
-
-            polling_args = {
-                'job_id': job_id,
-                'polling': True,
-                **args
-            }
-
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_seconds,
-                args=polling_args,
-                timeout_in_seconds=timeout
-            )
-
-            readable_output = f"Installing PANOS version {target_version} (Job ID: {job_id})"
-            script_results.append(CommandResults(
-                readable_output=readable_output,
-                scheduled_command=scheduled_command
-            ))
-
-            # Check the existing job
-
-        # Check the existing job
-        else:
-            result = panorama_install_panos_status(target, job_id)
-            if result['response']['@status'] == 'error':
-                if 'msg' in result['response'] and 'line' in result['response']['msg']:
-                    message = '. Reason is: ' + result['response']['msg']['line']
-                    raise Exception('Download failed' + message)
-                else:
-                    raise Exception('Download failed.')
-
-            # If the job has not yet completed, re-schedule it
-            if result['response']['result']['job']['status'] != "FIN":
-
-                polling_args = {
-                    'job_id': job_id,
-                    'polling': True,
-                    **args
-                }
-
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_seconds,
-                    args=polling_args,
-                    timeout_in_seconds=timeout
-                )
-                script_results.append(CommandResults(
-                    scheduled_command=scheduled_command
-                ))
-
-            # If the job has finished
-            else:
-                panos_install_status = {
-                    'JobID': result['response']['result']['job']['id']
-                }
-                if result['response']['result']['job']['status'] == 'FIN':
-                    if result['response']['result']['job']['result'] == 'OK':
-                        panos_install_status['Status'] = 'Completed'
-                    else:
-                        # result['response']['job']['result'] == 'FAIL'
-                        panos_install_status['Status'] = 'Failed'
-                    panos_install_status['Details'] = result['response']['result']['job']
-
-                readable_output = tableToMarkdown(
-                    'PAN-OS installation status:',
-                    panos_install_status,
-                    ['JobID', 'Status', 'Details'],
-                    removeNull=True
-                )
-                script_results.append(CommandResults(
-                    outputs_prefix='Panorama.PANOS.Install',
-                    outputs_key_field='JobID',
-                    outputs=panos_install_status,
-                    readable_output=readable_output
-                ))
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_install_panos_version(target, target_version),
+            query_function=lambda: panorama_install_panos_status(target, job_id),
+            results_function=lambda: panorama_install_panos_status_command(args),
+            outputs_prefix='Panorama.PANOS.Install',
+            exit_string=f'Failed to install PAN-OS version {target_version}',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
 
     else:
         result = panorama_install_panos_version(target, target_version)
@@ -6050,7 +5716,8 @@ def panorama_install_panos_version_command(args: dict):
                 'JobID': result['response']['result']['job']
             }
 
-            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'],
+                                              removeNull=True)
             script_results.append(CommandResults(
                 outputs_prefix='Panorama.PANOS.Install',
                 outputs_key_field='JobID',
