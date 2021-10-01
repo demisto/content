@@ -75,18 +75,19 @@ def get_create_pp_ticket_payload():
 
 
 class Client(BaseClient):
-    def authenticate_user(self):
-        username = demisto.params().get('credentials').get('identifier')
-        password = demisto.params().get('credentials').get('password')
+    def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._username = username
+        self._password = password
 
+    def authenticate_user(self):
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-
         api_response = self._http_request(method='POST',
                                           url_suffix=AUTH_URL,
-                                          json_data={'username': username, 'password': password},
+                                          json_data={'username': self._username, 'password': self._password},
                                           headers=headers
                                           )
         return api_response
@@ -336,6 +337,8 @@ def pca_command(client, args):
 
 
 def main():
+    username = demisto.params().get('credentials').get('identifier')
+    password = demisto.params().get('credentials').get('password')
     verify_certificate = not demisto.params().get('insecure', False)
     base_url = urljoin(demisto.params()['url'])
     proxy = demisto.params().get('proxy', False)
@@ -343,7 +346,9 @@ def main():
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            username=username,
+            password=password)
         if demisto.command() == 'test-module':
             result = test_module(client)
             demisto.results(result)

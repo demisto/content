@@ -1,14 +1,13 @@
-id: 958512cf-49f7-4978-8a0d-c8d4b5cecd66
-version: 9
+id: FireMon Pre Change Assessment
+version: -1
 name: FireMon Pre Change Assessment
 description: Validates and Return Pre Changes Assessment on Rules added as Requirement.
-fromversion: 5.0.0
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
     taskid: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
-    description: Initiates the playbook
     type: start
     task:
       id: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -35,7 +35,6 @@ tasks:
   "2":
     id: "2"
     taskid: fd4a6a7b-6c45-4ab5-891b-4be842775762
-    description: Close the playbook
     type: title
     task:
       id: fd4a6a7b-6c45-4ab5-891b-4be842775762
@@ -44,6 +43,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -65,9 +65,9 @@ tasks:
       id: 98c76313-95f4-4891-8be9-17276d9d01fa
       version: -1
       name: pca
-      description: "PCA- Pre-Change Assessment is process of showing impact of created
-        devices changes in early stages before implementing changes to devices. \nWe
-        can check the PCA table in Review stage of Policy planner ticket."
+      description: "PCA- Pre-Change Assessment is process of showing impact of created\
+        \ devices changes in early stages before implementing changes to devices.\
+        \ \nWe can check the PCA table in Review stage of Policy planner ticket."
       script: FireMonSecurityManager|||pca
       type: regular
       iscommand: true
@@ -115,3 +115,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

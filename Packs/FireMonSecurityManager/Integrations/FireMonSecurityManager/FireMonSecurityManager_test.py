@@ -16,10 +16,13 @@ def test_authenticate_user(requests_mock):
     client = Client(
         base_url='https://example.test.com',
         verify=False,
-        proxy=False)
+        proxy=False,
+        username="test",
+        password="test")
 
     response = authenticate_command(client)
     assert response is not None
+    assert response.raw_response['authorized'] is True
 
 
 def test_create_pp_ticket_command(requests_mock):
@@ -39,7 +42,9 @@ def test_create_pp_ticket_command(requests_mock):
     client = Client(
         base_url='https://example.test.com',
         verify=False,
-        proxy=False)
+        proxy=False,
+        username="test",
+        password="test")
     args = {'domain_id': 1,
             'workflow_name': 'Access Req WF',
             'requirement': [{"action": "ACCEPT",
@@ -48,8 +53,9 @@ def test_create_pp_ticket_command(requests_mock):
                              "sources": "1.1.1.1"}],
             'priority': 'Low',
             'due_date': '2021-08-26T03:50:17-04:00'}
-    response = create_pp_ticket_command(client, args)
+    response = create_pp_ticket_command(client, args=args)
     assert response is not None
+    assert response.outputs_prefix == 'FireMonSecurityManager.CreatePPTicket'
 
 
 def test_pca_new_command(requests_mock):
@@ -67,7 +73,10 @@ def test_pca_new_command(requests_mock):
     client = Client(
         base_url='https://example.test.com',
         verify=False,
-        proxy=False)
+        proxy=False,
+        username="test",
+        password="test")
+
     args = {'sources': '10.1.1.1',
             'destinations': '1.1.1.1',
             'services': 'tcp/8080',
@@ -75,5 +84,6 @@ def test_pca_new_command(requests_mock):
             'domain_id': 1,
             'device_group_id': 1}
 
-    response = pca_command(client, args)
+    response = pca_command(client, args=args)
     assert response is not None
+    assert response.outputs_prefix == 'FireMonSecurityManager.PCA'
