@@ -1,0 +1,18 @@
+{
+    "name": "Advanced Indicator Management",
+	"description": "Advanced Indicator Management is a content pack that enables the selective enrichment of indicators in order to manage the enrichment subscriptions used.",
+	"support": "internalContribution",
+    "currentVersion": "1.0.0",
+	"author": "James T. Kirk",
+    "url": "",
+    "email": "kirk@nlv01d.net",
+    "created": "2020-03-11T12:58:02Z",
+    "categories": [
+        "Platform Managment"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Advanced"
+    ]
+}

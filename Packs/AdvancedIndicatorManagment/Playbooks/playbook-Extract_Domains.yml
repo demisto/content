@@ -1,0 +1,209 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9926f571-5f7a-470e-8d65-8c6e1fca2f35
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 0c8d1009-a649-4e33-8b4b-06e679d28e35
+inputs:
+- description: ""
+  key: Indicator
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: 'Extract Domains '
+outputs:
+- contextPath: CreatedIndicator
+  description: commands.local.cmd.new.indicator.output.indicator
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 30c542db-2d04-473e-8fba-b309910adbc7
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 30c542db-2d04-473e-8fba-b309910adbc7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 95551cc8-8dcb-4c06-85c9-54978991e362
+      iscommand: false
+      name: Found in list - done
+      type: title
+      version: -1
+    taskid: 95551cc8-8dcb-4c06-85c9-54978991e362
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 855
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: Domain
+      value:
+        simple: ${inputs.Indicator}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: 14b814c3-c7a1-4385-829e-65a0331c5013
+      iscommand: true
+      name: Create Indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: 14b814c3-c7a1-4385-829e-65a0331c5013
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 460
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: ExtractedIndicators
+                transformers:
+                - operator: Stringify
+          operator: containsString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.Indicator
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1e45a0a4-e3c8-4ffa-8763-fcd3c4ffa951
+      iscommand: false
+      name: Was indicator extracted ?
+      type: condition
+      version: -1
+    taskid: 1e45a0a4-e3c8-4ffa-8763-fcd3c4ffa951
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ${ExtractedIndicators.Domain}
+      value:
+        simple: ${inputs.Indicator}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: afa4cf6a-a283-4ae1-800d-ce77a4b54d8f
+      iscommand: false
+      name: Set Add to Extracted Indicators
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: afa4cf6a-a283-4ae1-800d-ce77a4b54d8f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 620
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 660,
+        "x": -230,
+        "y": 65
+      }
+    }
+  }

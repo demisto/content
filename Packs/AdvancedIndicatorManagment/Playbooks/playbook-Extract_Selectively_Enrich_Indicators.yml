@@ -1,0 +1,1060 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9926f571-5f7a-470e-8d65-8c6e1fca2f35
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 4bd33dfd-0b0f-44e6-8a87-b649689eba44
+inputs: []
+name: Extract_Selectively_Enrich_Indicators
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4c55c58f-d4da-4bd8-8f6d-256c341aee75
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 4c55c58f-d4da-4bd8-8f6d-256c341aee75
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -580
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 35ff06c2-660d-4f80-8ed2-5ead888b956d
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 35ff06c2-660d-4f80-8ed2-5ead888b956d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -465
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      investigationID:
+        simple: ${incident.id}
+      text:
+        simple: ${incident}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: ab07a536-dc4a-416a-8f89-bfdd65b5bbd7
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: ab07a536-dc4a-416a-8f89-bfdd65b5bbd7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -80
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+      - "39"
+      - "47"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: We extracted them. ${ExtractedIndicators} -- ${CreatedIndicator}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 66835efc-1324-45c8-80bb-df6d9c449111
+      iscommand: false
+      name: Print Extracted Indicators
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 66835efc-1324-45c8-80bb-df6d9c449111
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.URL
+          operator: isExists
+      label: URL exists
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "33"
+      URL exists:
+      - "28"
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bbbcedfc-0c3f-4aa9-8322-0b5092124326
+      iscommand: false
+      name: Do the URLs exist?
+      type: condition
+      version: -1
+    taskid: bbbcedfc-0c3f-4aa9-8322-0b5092124326
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: URL
+      value:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: 56a673dd-84b7-4fd4-88e3-7caa315fe070
+      iscommand: true
+      name: Add URLs to DB
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: 56a673dd-84b7-4fd4-88e3-7caa315fe070
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts the contents of a URL to an image file or a PDF file.
+      id: a8bda296-d221-46be-855b-f57a1e756442
+      iscommand: true
+      name: Rasterize the URL Screenshot
+      script: '|||rasterize'
+      type: regular
+      version: -1
+    taskid: a8bda296-d221-46be-855b-f57a1e756442
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      id: 36357a94-77a5-441f-8fd1-5045f7f3ae1a
+      iscommand: false
+      name: Check Average DBOT score
+      type: title
+      version: -1
+    taskid: 36357a94-77a5-441f-8fd1-5045f7f3ae1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      URL:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f6b4f98d-f4f8-4593-81c0-5a7513eb82a9
+      iscommand: false
+      name: Enrich URLs - SLR
+      playbookId: f51f18eb-3c1c-4df7-8710-cf36f09d222e
+      type: playbook
+      version: -1
+    taskid: f6b4f98d-f4f8-4593-81c0-5a7513eb82a9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0e0cb337-c8fb-487a-8fee-b3dbee21ae52
+      iscommand: false
+      name: URLs
+      type: title
+      version: -1
+    taskid: 0e0cb337-c8fb-487a-8fee-b3dbee21ae52
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No URLs
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 2d27977c-d54f-423f-884e-267e80c8043f
+      iscommand: false
+      name: Print No URLs
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 2d27977c-d54f-423f-884e-267e80c8043f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.Domain
+          operator: isExists
+      label: Domain Exists
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "40"
+      Domain Exists:
+      - "36"
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32ac1ee7-58b4-4ac5-80ee-eb68498e8514
+      iscommand: false
+      name: Do the Domains exist?
+      type: condition
+      version: -1
+    taskid: 32ac1ee7-58b4-4ac5-80ee-eb68498e8514
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 865
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: Domain
+      value:
+        simple: ${ExtractedIndicators.Domain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: db20cde6-1ec9-49df-8aa2-066bdac5660a
+      iscommand: true
+      name: Add Domains to DB
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: db20cde6-1ec9-49df-8aa2-066bdac5660a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1040
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.Domain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts the contents of a URL to an image file or a PDF file.
+      id: 4dbf69ad-82a0-402a-8200-5288421cdf26
+      iscommand: true
+      name: Rasterize the Domain Screenshot
+      script: '|||rasterize'
+      type: regular
+      version: -1
+    taskid: 4dbf69ad-82a0-402a-8200-5288421cdf26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1040
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      id: 30e3851c-b83f-446c-8e79-061f4d2b4e84
+      iscommand: false
+      name: Check Average DBOT score
+      type: title
+      version: -1
+    taskid: 30e3851c-b83f-446c-8e79-061f4d2b4e84
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1215
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 867ece5c-2888-482c-8607-2373126e02fe
+      iscommand: false
+      name: Domains
+      type: title
+      version: -1
+    taskid: 867ece5c-2888-482c-8607-2373126e02fe
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No Domains
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 3b738882-eff2-4042-876e-1d29dcdc10e6
+      iscommand: false
+      name: Print No Domains
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 3b738882-eff2-4042-876e-1d29dcdc10e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1040
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Domain:
+        simple: ${ExtractedIndicators.Domain}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91319de6-00bc-4e61-89f0-dc7b23e108f3
+      iscommand: false
+      name: Enrich Domains - SLR
+      playbookId: 26614693-d6bf-4c4f-80f9-e4d584d1768e
+      type: playbook
+      version: -1
+    taskid: 91319de6-00bc-4e61-89f0-dc7b23e108f3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1360
+        }
+      }
+  "42":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.IP
+          operator: isExists
+      label: IP Exists
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "48"
+      IP Exists:
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a9cad2e2-5639-4f2d-8f73-546062bea949
+      iscommand: false
+      name: Do the IPs exist?
+      type: condition
+      version: -1
+    taskid: a9cad2e2-5639-4f2d-8f73-546062bea949
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2845,
+          "y": 865
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      type:
+        simple: IP
+      value:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: c51728b4-8802-4811-8e8c-7d7804ff5421
+      iscommand: true
+      name: Add IPs to DB
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: c51728b4-8802-4811-8e8c-7d7804ff5421
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1040
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      id: a7a89a50-1410-48a7-82c3-302d4ffcbd5a
+      iscommand: false
+      name: Check Average DBOT score
+      type: title
+      version: -1
+    taskid: a7a89a50-1410-48a7-82c3-302d4ffcbd5a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1215
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2021bcb9-2346-44d9-87db-320c98c9f700
+      iscommand: false
+      name: IPs
+      type: title
+      version: -1
+    taskid: 2021bcb9-2346-44d9-87db-320c98c9f700
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2845,
+          "y": 720
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No IPs
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: c433b1ce-3d1e-4f17-89a1-f7927108a85e
+      iscommand: false
+      name: Print No IPs
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: c433b1ce-3d1e-4f17-89a1-f7927108a85e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 1040
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IP:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78750dbd-6bca-4671-81c4-82e51bf04d3a
+      iscommand: false
+      name: Enrich IPs - SLR
+      playbookId: 1bf49fcc-49de-47a2-8a4f-64f81f9341bf
+      type: playbook
+      version: -1
+    taskid: 78750dbd-6bca-4671-81c4-82e51bf04d3a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1360
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Indicator:
+        complex:
+          accessor: details
+          root: incident
+          transformers:
+          - args:
+              regex:
+                value:
+                  simple: \s
+              replaceWith:
+                value:
+                  simple: ;
+            operator: replaceMatch
+          - args:
+              delimiter:
+                value:
+                  simple: ;
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c762957a-efa2-4733-8775-cf02c60054a2
+      iscommand: false
+      name: 'Extract Domains '
+      playbookId: 0c8d1009-a649-4e33-8b4b-06e679d28e35
+      type: playbook
+      version: -1
+    taskid: c762957a-efa2-4733-8775-cf02c60054a2
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 200
+        }
+      }
+  "58":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.attachment.path}
+          operator: isExists
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: ${incident.attachment.type}
+          operator: isEqualString
+          right:
+            value:
+              simple: text/plain
+      label: "yes"
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "61"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a7016d0b-8e67-4b35-8577-3faf17b215fb
+      iscommand: false
+      name: Plain Text File Attachments?
+      type: condition
+      version: -1
+    taskid: a7016d0b-8e67-4b35-8577-3faf17b215fb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -310
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Indicator:
+        complex:
+          root: FileData
+          transformers:
+          - args:
+              regex:
+                value:
+                  simple: \s
+              replaceWith:
+                value:
+                  simple: ;
+            operator: replaceMatch
+          - args:
+              delimiter:
+                value:
+                  simple: ;
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 64e630d0-7233-4f34-8b2e-82a68b572eb7
+      iscommand: false
+      name: 'Extract Domains '
+      playbookId: 0c8d1009-a649-4e33-8b4b-06e679d28e35
+      type: playbook
+      version: -1
+    taskid: 64e630d0-7233-4f34-8b2e-82a68b572eb7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 295
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: da1105fe-b100-461b-800f-3d0f24cdf910
+      iscommand: true
+      name: erxtract from file
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: da1105fe-b100-461b-800f-3d0f24cdf910
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": -90
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the contents of a file into context.
+      id: 41cf2e59-cc20-4b1d-8705-fcc6e10d7892
+      iscommand: false
+      name: Read File
+      scriptName: ReadFile
+      type: regular
+      version: -1
+    taskid: 41cf2e59-cc20-4b1d-8705-fcc6e10d7892
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 110
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2035,
+        "width": 3390,
+        "x": 50,
+        "y": -580
+      }
+    }
+  }

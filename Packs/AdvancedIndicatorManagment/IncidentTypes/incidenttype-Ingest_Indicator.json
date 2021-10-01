@@ -1,0 +1,36 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#295AFF",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "All"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Ingest Indicator",
+	"itemVersion": "",
+	"layout": "dc2d0dcd-3fc4-4e4c-8cd7-2368e73ea436",
+	"locked": false,
+	"name": "Ingest Indicator",
+	"onChangeRepAlg": 0,
+	"packID": "9926f571-5f7a-470e-8d65-8c6e1fca2f35",
+	"playbookId": "4bd33dfd-0b0f-44e6-8a87-b649689eba44",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

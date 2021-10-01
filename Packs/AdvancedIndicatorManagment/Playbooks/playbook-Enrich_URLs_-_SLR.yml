@@ -1,0 +1,575 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9926f571-5f7a-470e-8d65-8c6e1fca2f35
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: f51f18eb-3c1c-4df7-8710-cf36f09d222e
+inputs:
+- description: ""
+  key: URL
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Enrich URLs - SLR
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e9a0bd6-ce6e-4897-8741-73540e564b68
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9e9a0bd6-ce6e-4897-8741-73540e564b68
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -260
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        simple: ${inputs.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      id: 5147e6c5-4279-49f1-8633-d33ec0e1f229
+      iscommand: false
+      name: Get Existing DBOT Average Score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 5147e6c5-4279-49f1-8633-d33ec0e1f229
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      label: No verdict
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      No verdict:
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec86536f-8d77-4e79-88b3-f68d07bf6af9
+      iscommand: false
+      name: If there is no verdict
+      type: condition
+      version: -1
+    taskid: ec86536f-8d77-4e79-88b3-f68d07bf6af9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 240
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df3e6aa1-46df-48fd-8310-33e683037f40
+      iscommand: false
+      name: There is a verdict
+      type: title
+      version: -1
+    taskid: df3e6aa1-46df-48fd-8310-33e683037f40
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 660
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "8"
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 59d8e8ac-943e-45b7-8acd-d286a6c07433
+      iscommand: false
+      name: Call Enrichment w/ first tier
+      type: title
+      version: -1
+    taskid: 59d8e8ac-943e-45b7-8acd-d286a6c07433
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 660
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: urlscan.io
+      description: Submits a URL to scan.
+      id: 1c780a74-a59e-4166-8179-01b7b1881b58
+      iscommand: true
+      name: Lookup URLs with urlScan
+      script: urlscan.io|||url
+      type: regular
+      version: -1
+    taskid: 1c780a74-a59e-4166-8179-01b7b1881b58
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 950
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+      using:
+        simple: Recorded Future v2_instance_1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the reputation of the given URL.
+      id: 62f69bda-5911-4262-8fb2-cc33f3f9fe8a
+      iscommand: true
+      name: Lookup URLs with RecordedFuture
+      script: '|||url'
+      type: regular
+      version: -1
+    taskid: 62f69bda-5911-4262-8fb2-cc33f3f9fe8a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 950
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicatorsValues:
+        simple: ${inputs.URL}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.enrich.indicators
+      id: f481a67b-e6fa-4e1f-88b7-4350e2de846d
+      iscommand: true
+      name: Enrich
+      script: Builtin|||enrichIndicators
+      type: regular
+      version: -1
+    taskid: f481a67b-e6fa-4e1f-88b7-4350e2de846d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1790
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: b1815717-0fdd-4362-857f-1bc3b6c912bc
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: b1815717-0fdd-4362-857f-1bc3b6c912bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": -140
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                root: DBotScore
+                transformers:
+                - operator: SumList
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "0"
+      label: unknown
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      unknown:
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4eb94cc3-2b71-4d5e-8861-dc1e5c1f3a5d
+      iscommand: false
+      name: Is it Unknown?
+      type: condition
+      version: -1
+    taskid: 4eb94cc3-2b71-4d5e-8861-dc1e5c1f3a5d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1280
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "80"
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal (API v3)
+      description: Checks the reputation of a URL.
+      id: f8b0f334-fa7e-4130-8abd-bbdd09942052
+      iscommand: true
+      name: Lookup URLs with VirusTOtal
+      script: VirusTotal (API v3)|||url
+      type: regular
+      version: -1
+    taskid: f8b0f334-fa7e-4130-8abd-bbdd09942052
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1530
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AutoFocus V2
+      description: Checks the reputation of a URL in AutoFocus.
+      id: cba6e604-95ec-4881-8a57-f51254910117
+      iscommand: true
+      name: Lookup URLs with AutoFocus
+      script: AutoFocus V2|||url
+      type: regular
+      version: -1
+    taskid: cba6e604-95ec-4881-8a57-f51254910117
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 950
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No Need to Enrich - We have Verdict Already
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 56b811d5-035a-4329-8fc7-47a410d42b4f
+      iscommand: false
+      name: No Need to Enrich - We have Verdict Already
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 56b811d5-035a-4329-8fc7-47a410d42b4f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1215
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c5e217ab-a54d-4f03-8112-c5ba9bb62ced
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: c5e217ab-a54d-4f03-8112-c5ba9bb62ced
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1455
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f65c12fe-c317-4aef-8908-65f422d860b1
+      iscommand: false
+      name: END
+      type: title
+      version: -1
+    taskid: f65c12fe-c317-4aef-8908-65f422d860b1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1970
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Our time conditional here
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Need to type:URL value:"http://www.okajsdfoijjhasdiujahsdihu.com"
+        modified:>="within past 7 days"
+      id: cdb43245-f1f7-4548-8f43-540df62a0b9d
+      iscommand: false
+      name: Our time conditional here
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: cdb43245-f1f7-4548-8f43-540df62a0b9d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 990
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2295,
+        "width": 2420,
+        "x": -750,
+        "y": -260
+      }
+    }
+  }
