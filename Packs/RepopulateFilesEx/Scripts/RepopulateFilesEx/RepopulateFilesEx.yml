@@ -1,0 +1,81 @@
+args:
+- defaultValue: attachment
+  description: List of field name which to extract attachment files from.
+  name: fields
+comment: After running DeleteContext, this script can repopulate all the file entries
+  in the ${File} context key
+commonfields:
+  id: 52861938-f274-465e-856d-8121e672a2fa
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 25e5f0ed-33c6-40f9-89b3-4a11a93e6a75
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+name: RepopulateFilesEx
+outputs:
+- contextPath: File.Name
+  description: Filename
+- contextPath: File.Type
+  description: File type
+- contextPath: File.Size
+  description: File size
+- contextPath: File.MD5
+  description: MD5 hash of the file
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+- contextPath: File.EntryID
+  description: EntryID of the file
+- contextPath: File.Info
+  description: File information
+- contextPath: File.Extension
+  description: File extension
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file
+- contextPath: AttachmentFile.Name
+  description: Filename
+- contextPath: AttachmentFile.Type
+  description: File type
+- contextPath: AttachmentFile.Size
+  description: File size
+- contextPath: AttachmentFile.MD5
+  description: MD5 hash of the file
+- contextPath: AttachmentFile.SHA1
+  description: SHA1 hash of the file
+- contextPath: AttachmentFile.SHA256
+  description: SHA256 hash of the file
+- contextPath: AttachmentFile.EntryID
+  description: EntryID of the file
+- contextPath: AttachmentFile.Info
+  description: File information
+- contextPath: AttachmentFile.Extension
+  description: File extension
+- contextPath: AttachmentFile.SSDeep
+  description: SSDeep hash of the file
+- contextPath: AttachmentFile.Attachment.description
+  description: File description
+- contextPath: AttachmentFile.Attachment.name
+  description: File name
+- contextPath: AttachmentFile.Attachment.path
+  description: File path
+- contextPath: AttachmentFile.Attachment.showMediaFile
+  description: showMediaFile
+- contextPath: AttachmentFile.Attachment.type
+  description: File content type
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
