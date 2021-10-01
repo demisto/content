@@ -1,81 +1,99 @@
-args:
-- defaultValue: attachment
-  description: List of field name which to extract attachment files from.
-  name: fields
+commonfields:
+  id: RepopulateFilesEx
+  version: -1
+name: RepopulateFilesEx
+script: ''
+type: python
+tags:
+- Utility
 comment: After running DeleteContext, this script can repopulate all the file entries
   in the ${File} context key
-commonfields:
-  id: 52861938-f274-465e-856d-8121e672a2fa
-  version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 25e5f0ed-33c6-40f9-89b3-4a11a93e6a75
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-engineinfo: {}
-name: RepopulateFilesEx
+args:
+- name: fields
+  description: List of field name which to extract attachment files from.
+  defaultValue: attachment
 outputs:
 - contextPath: File.Name
   description: Filename
+  type: string
 - contextPath: File.Type
   description: File type
+  type: string
 - contextPath: File.Size
   description: File size
+  type: number
 - contextPath: File.MD5
   description: MD5 hash of the file
+  type: string
 - contextPath: File.SHA1
   description: SHA1 hash of the file
+  type: string
 - contextPath: File.SHA256
   description: SHA256 hash of the file
+  type: string
 - contextPath: File.EntryID
   description: EntryID of the file
+  type: string
 - contextPath: File.Info
   description: File information
+  type: string
 - contextPath: File.Extension
   description: File extension
+  type: string
 - contextPath: File.SSDeep
   description: SSDeep hash of the file
+  type: string
 - contextPath: AttachmentFile.Name
   description: Filename
+  type: string
 - contextPath: AttachmentFile.Type
   description: File type
+  type: string
 - contextPath: AttachmentFile.Size
   description: File size
+  type: number
 - contextPath: AttachmentFile.MD5
   description: MD5 hash of the file
+  type: string
 - contextPath: AttachmentFile.SHA1
   description: SHA1 hash of the file
+  type: string
 - contextPath: AttachmentFile.SHA256
   description: SHA256 hash of the file
+  type: string
 - contextPath: AttachmentFile.EntryID
   description: EntryID of the file
+  type: string
 - contextPath: AttachmentFile.Info
   description: File information
+  type: string
 - contextPath: AttachmentFile.Extension
   description: File extension
+  type: string
 - contextPath: AttachmentFile.SSDeep
   description: SSDeep hash of the file
+  type: string
 - contextPath: AttachmentFile.Attachment.description
   description: File description
+  type: string
 - contextPath: AttachmentFile.Attachment.name
   description: File name
+  type: string
 - contextPath: AttachmentFile.Attachment.path
   description: File path
+  type: string
 - contextPath: AttachmentFile.Attachment.showMediaFile
   description: showMediaFile
+  type: boolean
 - contextPath: AttachmentFile.Attachment.type
   description: File content type
-pswd: ""
-runas: DBotWeakRole
-runonce: false
-script: ''
+  type: string
 scripttarget: 0
 subtype: python3
-tags:
-- Utility
-type: python
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
