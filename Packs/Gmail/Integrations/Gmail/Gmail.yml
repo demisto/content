@@ -21,7 +21,7 @@ configuration:
   name: queryUserKey
   required: false
   type: 0
-  additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the admin instance.
+  additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
 - display: Fetch incidents
   name: isFetch
   required: false
