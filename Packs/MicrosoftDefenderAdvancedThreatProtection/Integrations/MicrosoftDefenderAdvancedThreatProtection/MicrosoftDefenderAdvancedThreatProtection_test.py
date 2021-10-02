@@ -672,7 +672,7 @@ SINGLE_MACHINE_RESPONSE_API = {
     "isAadJoined": False,
     "lastExternalIpAddress": "2.2.2.2",
     "lastIpAddress": "192.0.2.12",
-    "lastSeen": "2021-09-12T14:46:04.2448709Z",
+    "lastSeen": "2021-09-12T14:46:04.2458709Z",
     "machineTags": [],
     "managedBy": "Unknown",
     "onboardingStatus": "Onboarded",
