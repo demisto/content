@@ -8,7 +8,7 @@
     "closeForm": false,
     "content": true,
     "editForm": true,
-    "fieldCalcScript": "345fe646-a9fe-437b-89c3-fd7d0c02cd68",
+    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_ironscalesresolveremailaddress",
