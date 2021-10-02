@@ -1817,6 +1817,7 @@ def get_machine_data(machine):
         'AADDeviceID': machine.get('aadDeviceId'),
         'IsAADJoined': machine.get('isAadJoined'),
         'MachineTags': machine.get('machineTags'),
+        'IPAddresses': machine.get('ipAddresses'),
     })
     return machine_data
 
