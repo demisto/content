@@ -621,52 +621,52 @@ SINGLE_MACHINE_RESPONSE_API = {
     "id": "abcd1234abcd1234abcd1234abcd1234abcd1234",
     "ipAddresses": [
         {
-        "ipAddress": "192.0.2.135",
-        "macAddress": "001122334418",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "192.0.2.135",
+            "macAddress": "001122334418",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "fe80::2413:e4aa:a3f4:d5bf",
-        "macAddress": "001122334418",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "fe80::2413:e4aa:a3f4:d5bf",
+            "macAddress": "001122334418",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "192.0.2.10",
-        "macAddress": "001122334436",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "192.0.2.10",
+            "macAddress": "001122334436",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "fe80::55b9:7f5a:6e9c:30ed",
-        "macAddress": "001122334436",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "fe80::55b9:7f5a:6e9c:30ed",
+            "macAddress": "001122334436",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "192.0.2.11",
-        "macAddress": "001122334422",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "192.0.2.11",
+            "macAddress": "001122334422",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "fe80::c3:b878:f6fd:ae4b",
-        "macAddress": "001122334422",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "fe80::c3:b878:f6fd:ae4b",
+            "macAddress": "001122334422",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "192.0.2.12",
-        "macAddress": "00112233442C",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "192.0.2.12",
+            "macAddress": "00112233442C",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         },
         {
-        "ipAddress": "fe80::65a8:d227:e97b:8220",
-        "macAddress": "00112233442C",
-        "operationalStatus": "Up",
-        "type": "Ethernet"
+            "ipAddress": "fe80::65a8:d227:e97b:8220",
+            "macAddress": "00112233442C",
+            "operationalStatus": "Up",
+            "type": "Ethernet"
         }
     ],
     "isAadJoined": False,

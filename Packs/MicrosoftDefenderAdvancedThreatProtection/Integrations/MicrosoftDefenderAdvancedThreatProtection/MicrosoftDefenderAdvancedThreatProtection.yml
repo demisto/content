@@ -139,8 +139,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -194,8 +194,8 @@ script:
       description: The fileIdentifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -212,7 +212,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The machine risk score. Possible values: "Low", "Medium", and "High".'
+      description: 'The machine risk score. Possible values: "Low", "Medium", and
+        "High".'
       isArray: false
       name: risk_score
       predefined:
@@ -500,13 +501,14 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Alert severity. Possible values: "High", "Medium", "Low", and "Informational".'
+      description: 'Alert severity. Possible values: "High", "Medium", "Low", and
+        "Informational".'
       isArray: false
       name: severity
       predefined:
@@ -624,7 +626,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Alert status to update. Possible values: "New", "InProgress", and "Resolved".'
+      description: 'Alert status to update. Possible values: "New", "InProgress",
+        and "Resolved".'
       isArray: false
       name: status
       predefined:
@@ -641,7 +644,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specifies the specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive".'
+      description: 'Specifies the specification of the alert. Possible values: "Unknown",
+        "FalsePositive", "TruePositive".'
       isArray: false
       name: classification
       predefined:
@@ -652,7 +656,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specifies the determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware, and "Other".'
+      description: 'Specifies the determination of the alert. Possible values: "NotAvailable",
+        "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware,
+        and "Other".'
       isArray: false
       name: determination
       predefined:
@@ -761,8 +767,8 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: The amount of time (in seconds) that a request waits for the
-        query response before a timeout occurs.
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
       isArray: false
       name: timeout
       required: false
@@ -1152,7 +1158,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The machine action status. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled".'
+      description: 'The machine action status. Possible values: "Pending", "InProgress",
+        "Succeeded", "Failed", "TimeOut", "Cancelled".'
       isArray: false
       name: status
       predefined:
@@ -1173,7 +1180,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The machine action type. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution".'
+      description: 'The machine action type. Possible values: "RunAntiVirusScan",
+        "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile",
+        "RestrictCodeExecution", and "UnrestrictCodeExecution".'
       isArray: false
       name: type
       predefined:
@@ -1234,8 +1243,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -1289,8 +1298,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -1360,8 +1369,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -1415,8 +1424,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -1476,8 +1485,8 @@ script:
       description: The file identifier.
       type: String
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-      description: 'The type of the file identifier. Possible values: "SHA1"
-        ,"SHA256", and "MD5".'
+      description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
+        and "MD5".'
       type: String
   - arguments:
     - default: false
@@ -1551,8 +1560,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The amount of time (in seconds) that a request waits for the
-        query response before a timeout occurs.
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
       isArray: false
       name: timeout
       required: false
@@ -2291,11 +2300,13 @@ script:
     name: microsoft-atp-indicator-list
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
-      description: Generated GUID/unique identifier. Created by the system when the indicator is ingested. 
+      description: Generated GUID/unique identifier. Created by the system when the
+        indicator is ingested.
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.additionalInformation
       description: A catchall area into which extra data from the indicator not covered
@@ -2317,7 +2328,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.diamondModel
       description: 'The area of the Diamond Model in which this indicator exists.
-        Possible values: "unknown", "adversary", "capability", "infrastructure", and "victim".'
+        Possible values: "unknown", "adversary", "capability", "infrastructure", and
+        "victim".'
       type: String
     - contextPath: MicrosoftATP.Indicators.domainName
       description: Domain name associated with this indicator. Should be in the format
@@ -2345,8 +2357,8 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
-      description: 'The type of hash stored in fileHashValue. Possible values:
-        "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
+      description: 'The type of hash stored in fileHashValue. Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
       type: String
     - contextPath: MicrosoftATP.Indicators.fileHashValue
       description: The file hash value.
@@ -2375,8 +2387,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
       description: 'Timestamp when the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
-        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks
-        like: ''2014-01-01T00:00:00Z'''
+        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
+        ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any
@@ -2444,16 +2456,16 @@ script:
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
-        to an end-user. When set to ‘true,’ security tools do not notify the end
-        user that a ‘hit’ has occurred. This is most often treated as audit or silent
-        mode by security products where they simply log that a match occurred
-        but do not perform the action. Default value is false.
+        to an end-user. When set to ‘true,’ security tools do not notify the end user
+        that a ‘hit’ has occurred. This is most often treated as audit or silent mode
+        by security products where they simply log that a match occurred but do not
+        perform the action. Default value is false.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Possible values: "Informational", "Low",
-        "MediumLow", "MediumHigh", and "High", where High is the most severe and Informational
-        is not severe at all.'
+        identified by the data within the indicator. Possible values: "Informational",
+        "Low", "MediumLow", "MediumHigh", and "High", where High is the most severe
+        and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.targetProduct
       description: A string value representing a single security product to which
@@ -2461,12 +2473,12 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.threatType
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
       description: 'Traffic Light Protocol value for the indicator. Possible values:
-         "unknown", "white", "green", "amber", and "red".'
+        "unknown", "white", "green", "amber", and "red".'
       type: String
     - contextPath: MicrosoftATP.Indicators.url
       description: Uniform Resource Locator. This URL complies with RFC 1738.
@@ -2530,7 +2542,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.additionalInformation
       description: A catchall area into which extra data from the indicator not covered
@@ -2543,8 +2556,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
-        the indicator accurately identifies malicious behavior. Possible values are 0 – 100,
-        with 100 being the highest.
+        the indicator accurately identifies malicious behavior. Possible values are
+        0 – 100, with 100 being the highest.
       type: Number
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -2552,7 +2565,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.diamondModel
       description: 'The area of the Diamond Model in which this indicator exists.
-        Possible values: "unknown", "adversary", "capability", "infrastructure", and "victim".'
+        Possible values: "unknown", "adversary", "capability", "infrastructure", and
+        "victim".'
       type: String
     - contextPath: MicrosoftATP.Indicators.domainName
       description: Domain name associated with this indicator. Should be in the format
@@ -2580,8 +2594,8 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
-      description: 'The type of hash stored in fileHashValue. Possible values:
-        "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
+      description: 'The type of hash stored in fileHashValue. Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
       type: String
     - contextPath: MicrosoftATP.Indicators.fileHashValue
       description: The file hash value.
@@ -2610,8 +2624,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
       description: 'Timestamp when the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
-        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks
-        like: ''2014-01-01T00:00:00Z'''
+        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
+        ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any
@@ -2679,16 +2693,16 @@ script:
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
-        to an end-user. When set to ‘true,’ security tools do not notify the end
-        user that a ‘hit’ has occurred. This is most often treated as audit or silent
-        mode by security products where they simply log that a match occurred
-        but do not perform the action. Default value is false.
+        to an end-user. When set to ‘true,’ security tools do not notify the end user
+        that a ‘hit’ has occurred. This is most often treated as audit or silent mode
+        by security products where they simply log that a match occurred but do not
+        perform the action. Default value is false.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Possible values: "Informational", "Low",
-        "MediumLow", "MediumHigh", and "High", where High is the most severe and Informational
-        is not severe at all.'
+        identified by the data within the indicator. Possible values: "Informational",
+        "Low", "MediumLow", "MediumHigh", and "High", where High is the most severe
+        and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.targetProduct
       description: A string value representing a single security product to which
@@ -2696,8 +2710,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.threatType
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
       description: 'Traffic Light Protocol value for the indicator. Possible values:
@@ -2750,8 +2764,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and 
-        "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       isArray: false
       name: action
       predefined:
@@ -2778,8 +2792,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: ' Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "Cryptomining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList". '
+        values: "Botnet", "C2", "Cryptomining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList". '
       isArray: false
       name: threat_type
       predefined:
@@ -2820,9 +2834,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: MediumHigh
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "MediumLow", "MediumHigh",
-        and "High", where High is the most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "MediumLow",
+        "MediumHigh", and "High", where High is the most severe and Informational
+        is not severe at all.'
       isArray: false
       name: severity
       predefined:
@@ -2857,8 +2872,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of hash stored in fileHashValue.  Possible values:
-        "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph."'
+      description: 'The type of hash stored in fileHashValue.  Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph."'
       isArray: false
       name: file_hash_type
       predefined:
@@ -2928,7 +2943,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.additionalInformation
       description: A catchall area into which extra data from the indicator not covered
@@ -2941,8 +2957,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
-        the indicator accurately identifies malicious behavior. Possible values are 0 – 100,
-        with 100 being the highest.
+        the indicator accurately identifies malicious behavior. Possible values are
+        0 – 100, with 100 being the highest.
       type: Number
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -2950,7 +2966,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.diamondModel
       description: 'The area of the Diamond Model in which this indicator exists.
-        Possible values: "unknown", "adversary", "capability", "infrastructure", and "victim".'
+        Possible values: "unknown", "adversary", "capability", "infrastructure", and
+        "victim".'
       type: String
     - contextPath: MicrosoftATP.Indicators.domainName
       description: Domain name associated with this indicator. Should be in the format
@@ -2961,7 +2978,7 @@ script:
         stale indicators persisting in the system, all indicators must have an expiration
         date. The timestamp type represents date and time information in ISO 8601
         format and is always in UTC time. For example, midnight UTC on Jan 1, 2014
-         looks like: ''2014-01-01T00:00:00Z'''
+        looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.externalId
       description: An identification number that ties the indicator back to the indicator
@@ -2978,8 +2995,8 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
-      description: 'The type of hash stored in fileHashValue. Possible values:
-        "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
+      description: 'The type of hash stored in fileHashValue. Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
       type: String
     - contextPath: MicrosoftATP.Indicators.fileHashValue
       description: The file hash value.
@@ -3008,8 +3025,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
       description: 'Timestamp when the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
-        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks
-        like: ''2014-01-01T00:00:00Z'''
+        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
+        ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any
@@ -3077,16 +3094,16 @@ script:
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
-        to an end-user. When set to ‘true,’ security tools do not notify the end
-        user that a ‘hit’ has occurred. This is most often treated as audit or silent
-        mode by security products where they simply log that a match occurred
-        but do not perform the action. Default value is false.
+        to an end-user. When set to ‘true,’ security tools do not notify the end user
+        that a ‘hit’ has occurred. This is most often treated as audit or silent mode
+        by security products where they simply log that a match occurred but do not
+        perform the action. Default value is false.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Possible values: "Informational", "Low", 
-        "MediumLow", "MediumHigh", and "High", where High is the most severe and Informational
-        is not severe at all.'
+        identified by the data within the indicator. Possible values: "Informational",
+        "Low", "MediumLow", "MediumHigh", and "High", where High is the most severe
+        and Informational is not severe at all.'
       type: Number
     - contextPath: MicrosoftATP.Indicators.targetProduct
       description: A string value representing a single security product to which
@@ -3094,12 +3111,12 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.threatType
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
       description: 'Traffic Light Protocol value for the indicator. Possible values:
-      "unknown", "white", "green", "amber", and "red".'
+        "unknown", "white", "green", "amber", and "red".'
       type: String
     - contextPath: MicrosoftATP.Indicators.url
       description: Uniform Resource Locator. This URL complies with RFC 1738.
@@ -3139,8 +3156,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and
-        "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       isArray: false
       name: action
       predefined:
@@ -3167,8 +3184,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "Cryptomining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "Cryptomining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       isArray: false
       name: threat_type
       predefined:
@@ -3188,7 +3205,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Traffic Light Protocol value for the indicator. Possible values:
-         "unknown", "white", "green", and "amber".'
+        "unknown", "white", "green", and "amber".'
       isArray: false
       name: tlp_level
       predefined:
@@ -3209,9 +3226,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: MediumHigh
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "MediumLow", "MediumHigh",
-        and "High", where High is the most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "MediumLow",
+        "MediumHigh", and "High", where High is the most severe and Informational
+        is not severe at all.'
       isArray: false
       name: severity
       predefined:
@@ -3357,7 +3375,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.additionalInformation
       description: A catchall area into which extra data from the indicator not covered
@@ -3370,8 +3389,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
-        the indicator accurately identifies malicious behavior. Possible values are 0 – 100,
-        with 100 being the highest.
+        the indicator accurately identifies malicious behavior. Possible values are
+        0 – 100, with 100 being the highest.
       type: Number
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -3379,7 +3398,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.diamondModel
       description: 'The area of the Diamond Model in which this indicator exists.
-        Possible values: "unknown", "adversary", "capability", "infrastructure", and "victim".'
+        Possible values: "unknown", "adversary", "capability", "infrastructure", and
+        "victim".'
       type: String
     - contextPath: MicrosoftATP.Indicators.domainName
       description: Domain name associated with this indicator. Should be in the format
@@ -3407,8 +3427,8 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
-      description: 'The type of hash stored in fileHashValue. Possible values:
-        "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
+      description: 'The type of hash stored in fileHashValue. Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
       type: String
     - contextPath: MicrosoftATP.Indicators.fileHashValue
       description: The file hash value.
@@ -3437,8 +3457,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
       description: 'Timestamp when the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
-        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks
-        like: ''2014-01-01T00:00:00Z'''
+        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
+        ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any
@@ -3506,16 +3526,16 @@ script:
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
-        to an end-user. When set to ‘true,’ security tools do not notify the end
-        user that a ‘hit’ has occurred. This is most often treated as audit or silent
-        mode by security products where they simply log that a match occurred
-        but do not perform the action. Default value is false.
+        to an end-user. When set to ‘true,’ security tools do not notify the end user
+        that a ‘hit’ has occurred. This is most often treated as audit or silent mode
+        by security products where they simply log that a match occurred but do not
+        perform the action. Default value is false.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Possible values: "Informational", "Low",
-        "MediumLow", "MediumHigh", and "High", where High is the most severe and Informational
-        is not severe at all.' 
+        identified by the data within the indicator. Possible values: "Informational",
+        "Low", "MediumLow", "MediumHigh", and "High", where High is the most severe
+        and Informational is not severe at all.'
       type: Number
     - contextPath: MicrosoftATP.Indicators.targetProduct
       description: A string value representing a single security product to which
@@ -3523,12 +3543,12 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.threatType
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
       description: 'Traffic Light Protocol value for the indicator. Possible values:
-         "unknown", "white", "green", "amber", and "red".'
+        "unknown", "white", "green", "amber", and "red".'
       type: String
     - contextPath: MicrosoftATP.Indicators.url
       description: Uniform Resource Locator. This URL complies with RFC 1738.
@@ -3560,9 +3580,10 @@ script:
       secret: false
     - default: false
       defaultValue: MediumHigh
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "MediumLow", "MediumHigh", and 
-        "High", where High is the most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "MediumLow",
+        "MediumHigh", and "High", where High is the most severe and Informational
+        is not severe at all.'
       isArray: false
       auto: PREDEFINED
       name: severity
@@ -3600,7 +3621,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.additionalInformation
       description: A catchall area into which extra data from the indicator not covered
@@ -3613,8 +3635,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.confidence
       description: An integer representing the confidence with which the data within
-        the indicator accurately identifies malicious behavior. Possible values are 0 – 100,
-        with 100 being the highest.
+        the indicator accurately identifies malicious behavior. Possible values are
+        0 – 100, with 100 being the highest.
       type: Number
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -3622,7 +3644,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.diamondModel
       description: 'The area of the Diamond Model in which this indicator exists.
-        Possible values: "unknown", "adversary", "capability", "infrastructure", and "victim".'
+        Possible values: "unknown", "adversary", "capability", "infrastructure", and
+        "victim".'
       type: String
     - contextPath: MicrosoftATP.Indicators.domainName
       description: Domain name associated with this indicator. Should be in the format
@@ -3650,8 +3673,8 @@ script:
         example, midnight UTC on Jan 1, 2014 looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.fileHashType
-      description: 'The type of hash stored in fileHashValue. Possible values: "unknown", "sha1", "sha256", "md5", 
-      "authenticodeHash256", "lsHash", and "ctph".'
+      description: 'The type of hash stored in fileHashValue. Possible values: "unknown",
+        "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph".'
       type: String
     - contextPath: MicrosoftATP.Indicators.fileHashValue
       description: The file hash value.
@@ -3680,8 +3703,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.ingestedDateTime
       description: 'Timestamp when the indicator was ingested into the system. The
         Timestamp type represents date and time information in ISO 8601 format and
-        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks
-        like: ''2014-01-01T00:00:00Z'''
+        is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like:
+        ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.isActive
       description: Used to deactivate indicators within the system. By default, any
@@ -3749,16 +3772,16 @@ script:
       type: Number
     - contextPath: MicrosoftATP.Indicators.passiveOnly
       description: Determines if the indicator should trigger an event that is visible
-        to an end-user. When set to ‘true,’ security tools do not notify the end
-        user that a ‘hit’ has occurred. This is most often treated as audit or silent
-        mode by security products where they simply log that a match occurred
-        but do not perform the action. Default value is false.
+        to an end-user. When set to ‘true,’ security tools do not notify the end user
+        that a ‘hit’ has occurred. This is most often treated as audit or silent mode
+        by security products where they simply log that a match occurred but do not
+        perform the action. Default value is false.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.severity
       description: 'An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Possible values: "Informational", "Low",
-        "MediumLow", "MediumHigh", and "High", where High is the most severe and Informational
-        is not severe at all.'
+        identified by the data within the indicator. Possible values: "Informational",
+        "Low", "MediumLow", "MediumHigh", and "High", where High is the most severe
+        and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.targetProduct
       description: A string value representing a single security product to which
@@ -3766,11 +3789,12 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.threatType
       description: 'Each indicator must have a valid Indicator Threat Type. Possible
-        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl", "Malware",
-        "Phishing", "Proxy", "PUA", and "WatchList".'
+        values: "Botnet", "C2", "CryptoMining", "Darknet", "DDoS", "MaliciousUrl",
+        "Malware", "Phishing", "Proxy", "PUA", and "WatchList".'
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
-      description: 'Traffic Light Protocol value for the indicator. Possible values: "unknown", "white", "green", "amber", and "red".'
+      description: 'Traffic Light Protocol value for the indicator. Possible values:
+        "unknown", "white", "green", "amber", and "red".'
       type: String
     - contextPath: MicrosoftATP.Indicators.url
       description: Uniform Resource Locator. This URL complies with RFC 1738.
@@ -3836,7 +3860,8 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName", and "Url".' 
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+        "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
       required: true
@@ -3848,8 +3873,8 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: 'The action taken if the indicator is discovered
-        in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed".'
+      description: 'The action taken if the indicator is discovered in the organization.
+        Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
       required: true
@@ -3859,9 +3884,9 @@ script:
       - Allowed
     - default: false
       auto: PREDEFINED
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium", and "High", where
-        High is the most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium", and
+        "High", where High is the most severe and Informational is not severe at all.'
       isArray: false
       name: severity
       predefined:
@@ -3905,8 +3930,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of RBAC group names the indicator is
-        applied to.
+      description: Comma-separated list of RBAC group names the indicator is applied
+        to.
       isArray: true
       name: rbac_group_names
       required: false
@@ -3922,7 +3947,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -3936,9 +3962,9 @@ script:
         looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the
-        most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium", and
+        "High", where High is the most severe and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the indicator.
@@ -4029,8 +4055,8 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256", 
-      "IpAddress", "DomainName", and "Url".'
+      description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
+        "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
       required: true
@@ -4042,8 +4068,8 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: 'The action taken if the indicator is discovered
-        in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed".'
+      description: 'The action taken if the indicator is discovered in the organization.
+        Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
       required: true
@@ -4053,9 +4079,9 @@ script:
       - Allowed
     - default: false
       auto: PREDEFINED
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium", and "High", where
-        High is the most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium", and
+        "High", where High is the most severe and Informational is not severe at all.'
       isArray: false
       name: severity
       predefined:
@@ -4099,8 +4125,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of RBAC group names the indicator is
-        applied to.
+      description: Comma-separated list of RBAC group names the indicator is applied
+        to.
       isArray: true
       name: rbac_group_names
       required: false
@@ -4116,7 +4142,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -4130,9 +4157,9 @@ script:
         looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the
-        most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium", and
+        "High", where High is the most severe and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the indicator.
@@ -4245,7 +4272,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -4259,9 +4287,9 @@ script:
         looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the
-        most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium", and
+        "High", where High is the most severe and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the indicator.
@@ -4362,7 +4390,8 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.action
       description: 'The action to apply if the indicator is matched from within the
-        targetProduct security tool. Possible values: "unknown", "allow", "block", and "alert".'
+        targetProduct security tool. Possible values: "unknown", "allow", "block",
+        and "alert".'
       type: String
     - contextPath: MicrosoftATP.Indicators.description
       description: Brief description (100 characters or less) of the threat represented
@@ -4376,9 +4405,9 @@ script:
         looks like: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: 'The severity of the malicious behavior identified by the data within
-        the indicator. Possible values: "Informational", "Low", "Medium" and "High", where High is the
-        most severe and Informational is not severe at all.'
+      description: 'The severity of the malicious behavior identified by the data
+        within the indicator. Possible values: "Informational", "Low", "Medium" and
+        "High", where High is the most severe and Informational is not severe at all.'
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the indicator.
@@ -4470,3 +4499,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

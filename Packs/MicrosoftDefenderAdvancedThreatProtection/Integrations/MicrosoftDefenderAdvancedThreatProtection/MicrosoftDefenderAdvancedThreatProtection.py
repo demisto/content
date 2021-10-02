@@ -1091,17 +1091,22 @@ def get_machine_details_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel']
+               'RiskScore', 'ExposureLevel', 'IPAddresses']
     machine_id = args.get('machine_id')
     machine_response = client.get_machine_details(machine_id)
     machine_data = get_machine_data(machine_response)
 
-    entry_context = {
-        'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
-    }
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machine {machine_id} details:', machine_data,
                                      headers=headers, removeNull=True)
-    return human_readable, entry_context, machine_response
+    results = CommandResults(
+        outputs_prefix='MicrosoftATP.Machine',
+        outputs_key_field='ID',
+        outputs=machine_data,
+        readable_output=human_readable,
+        raw_response=machine_response
+    )
+
+    return results
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
@@ -2543,7 +2548,7 @@ def main():
             return_outputs(*get_file_related_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-machine-details':
-            return_outputs(*get_machine_details_command(client, args))
+            return_results(get_machine_details_command(client, args))
 
         elif command == 'microsoft-atp-run-antivirus-scan':
             return_outputs(*run_antivirus_scan_command(client, args))
