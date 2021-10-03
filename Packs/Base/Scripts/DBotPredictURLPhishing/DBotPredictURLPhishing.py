@@ -312,18 +312,18 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     explain = {
         KEY_CONTENT_DOMAIN: domain,
         KEY_CONTENT_URL: url,
-        KEY_CONTENT_LOGO: str(pred_json.get(MODEL_KEY_LOGO_FOUND, None)),
-        KEY_CONTENT_LOGIN: str(pred_json.get(MODEL_KEY_LOGIN_FORM, None)),
+        KEY_CONTENT_LOGO: str(pred_json.get(MODEL_KEY_LOGO_FOUND, BENIGN_VERDICT_WHITELIST)),
+        KEY_CONTENT_LOGIN: str(pred_json.get(MODEL_KEY_LOGIN_FORM, BENIGN_VERDICT_WHITELIST)),
         KEY_CONTENT_URL_SCORE: url_score,
-        KEY_CONTENT_SEO: str(pred_json.get(MODEL_KEY_SEO, None)),
+        KEY_CONTENT_SEO: str(pred_json.get(MODEL_KEY_SEO, BENIGN_VERDICT_WHITELIST)),
     }
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
     explain_hr = {
         KEY_HR_DOMAIN: domain,
-        KEY_HR_SEO: str(pred_json_colored.get(MODEL_KEY_SEO, None)),
-        KEY_HR_LOGIN: str(pred_json_colored.get(MODEL_KEY_LOGIN_FORM, None)),
-        KEY_HR_LOGO: str(pred_json_colored.get(MODEL_KEY_LOGO_FOUND, None)),
+        KEY_HR_SEO: str(pred_json_colored.get(MODEL_KEY_SEO, BENIGN_VERDICT_WHITELIST)),
+        KEY_HR_LOGIN: str(pred_json_colored.get(MODEL_KEY_LOGIN_FORM, BENIGN_VERDICT_WHITELIST)),
+        KEY_HR_LOGO: str(pred_json_colored.get(MODEL_KEY_LOGO_FOUND, BENIGN_VERDICT_WHITELIST)),
         KEY_HR_URL_SCORE: url_score_colored
     }
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
@@ -459,9 +459,6 @@ def get_prediction_single_url(model, url, force_model):
 
     # Check domain age from WHOIS command
     domain = extract_domainv2(url)
-    res = demisto.executeCommand('whois', {'query': domain,
-                                           })
-    is_new_domain = extract_created_date(res)
 
     # Check is domain in white list -  If yes we don't run the model
     if in_white_list(model, url):
@@ -469,6 +466,9 @@ def get_prediction_single_url(model, url, force_model):
             return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
+    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 6
+                                           })
+    is_new_domain = extract_created_date(res)
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
@@ -523,6 +523,8 @@ def return_detailed_summary(results, number_entries_to_return):
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
     for i in range(min(number_entries_to_return, len(results))):
         index = indice_descending_severity[i]
+        if results[index].get('score') == SCORE_INVALID_URL:
+            continue
         pred_json = results[index].get('pred_json')
         url = results[index].get('url')
         is_white_listed = results[index].get('is_white_listed')
