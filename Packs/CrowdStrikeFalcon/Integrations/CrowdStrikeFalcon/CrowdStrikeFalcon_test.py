@@ -2240,8 +2240,9 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
-                                                                     '2020-09-04T09:16:10Z', 'detection_offset': 2})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                          'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
