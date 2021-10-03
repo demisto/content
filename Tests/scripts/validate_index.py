@@ -134,8 +134,7 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
         (Dict: content of the index.json, Str: path to index.json)
     """
     logging.info('Downloading and extracting index.zip from the cloud')
-    # if storage_base_path:
-    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path TODO: remove
+
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(production_bucket_name)
     index_folder_path, _, _ = download_and_extract_index(production_bucket, extract_path, storage_base_path)

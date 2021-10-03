@@ -11,8 +11,7 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
-  [-sbp, --storage-base-path] a path to copy from and upload to in this current upload.
-
+  [-sbp, --storage-base-path] a path to copy from in this current upload, and to be used as a target destination.
   "
   exit 1
 fi

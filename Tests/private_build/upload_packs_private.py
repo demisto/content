@@ -501,9 +501,6 @@ def main():
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
 
-    # if storage_base_path:
-    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path TODO: remove
-
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)

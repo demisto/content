@@ -926,9 +926,6 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    # if storage_base_path:
-    #     GCPConfig.STORAGE_BASE_PATH = storage_base_path
-
     # Relevant when triggering test upload flow
     if storage_bucket_name:
         GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
