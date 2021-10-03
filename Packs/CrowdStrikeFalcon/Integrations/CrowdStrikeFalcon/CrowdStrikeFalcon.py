@@ -1701,7 +1701,7 @@ def generate_status_fields(endpoint_status):
     status = ''
     is_isolated = ''
 
-    if endpoint_status == 'Normal':
+    if endpoint_status.lower() == 'normal':
         status = 'Online'
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
