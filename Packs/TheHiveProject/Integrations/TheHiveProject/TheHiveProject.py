@@ -26,15 +26,16 @@ class Client(BaseClient):
         instance = demisto.integrationInstance()
         cases = list()
         res = self._http_request('GET', 'case')
-        if limit and type(res) == list:
-            if len(res) > limit:
-                return res[0:limit]
+
         for case in res:
             case['tasks'] = self.get_tasks(case['id'])
             case['observables'] = self.list_observables(case['id'])
             case['instance'] = instance
             case['mirroring'] = self.mirroring
             cases.append(case)
+        if limit and type(cases) == list:
+            if len(cases) > limit:
+                return cases[0:limit]
         return cases
 
     def get_case(self, case_id):
@@ -418,8 +419,11 @@ def list_cases_command(client: Client, args: dict):
     if res:
         for case in res:
             case_date_dt = dateparser.parse(str(case['createdAt']))
+            case_update_dt = dateparser.parse(str(case['updatedAt']))
             if case_date_dt:
                 case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+            if case_update_dt:
+                case['updatedAt'] = case_update_dt.strftime(DATE_FORMAT)
         read = tableToMarkdown('TheHive Cases:', res, ['id', 'title', 'description', 'createdAt'])
     else:
         read = "No cases to be displayed."
@@ -437,8 +441,11 @@ def get_case_command(client: Client, args: dict):
     case = client.get_case(case_id)
     if case:
         case_date_dt = dateparser.parse(str(case['createdAt']))
+        case_update_dt = dateparser.parse(str(case['updatedAt']))
         if case_date_dt:
             case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+        if case_update_dt:
+            case['updatedAt'] = case_update_dt.strftime(DATE_FORMAT)
 
         headers = ['id', 'title', 'description', 'createdAt']
         read = tableToMarkdown(f'TheHive Case ID {case_id}:', case, headers)
@@ -495,8 +502,11 @@ def update_case_command(client: Client, args: dict):
     if type(case) == tuple:
         raise DemistoException(f'Error updating case ({case[0]}) - {case[1]}')
     case_date_dt = dateparser.parse(str(case['createdAt']))
+    case_update_dt = dateparser.parse(str(case['updatedAt']))
     if case_date_dt:
         case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+    if case_update_dt:
+        case['updatedAt'] = case_update_dt.strftime(DATE_FORMAT)
     read = tableToMarkdown(f'TheHive Update Case ID {case_id}:', case, ['id', 'title', 'description', 'createdAt'])
 
     return CommandResults(
@@ -513,8 +523,11 @@ def create_case_command(client: Client, args: dict):
         raise DemistoException(f'Error creating case ({case[0]}) - {case[1]}')
 
     case_date_dt = dateparser.parse(str(case['createdAt']))
+    case_update_dt = dateparser.parse(str(case['updatedAt']))
     if case_date_dt:
         case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+    if case_update_dt:
+        case['updatedAt'] = case_update_dt.strftime(DATE_FORMAT)
     read = tableToMarkdown('TheHive newly Created Case:', case, ['id', 'title', 'description', 'createdAt'])
 
     return CommandResults(
@@ -979,7 +992,7 @@ def main() -> None:
         'thehive-search-cases': search_cases_command,  # deprecated
         'thehive-update-case': update_case_command,
         'thehive-create-case': create_case_command,
-        'thehive-get-linked-cases': get_linked_cases_command,  # should be deprecated
+        'thehive-get-linked-cases': get_linked_cases_command,  # deprecated
         'thehive-merge-cases': merge_cases_command,
         'thehive-get-case-tasks': get_case_tasks_command,
         'thehive-get-task': get_task_command,
