@@ -44,7 +44,7 @@ COLLAPSE_TO_RANGES = "To Ranges"
 
 '''Request Arguments Class'''
 
-
+# TODO: remove todo
 class RequestArguments:
     CTX_QUERY_KEY = 'last_query'
     CTX_LIMIT_KEY = 'last_limit'
