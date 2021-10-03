@@ -62,12 +62,18 @@ class Client(BaseClient):
 
     def restore_sid_from_context_or_login(self, username: str, password: str, session_timeout: int,
                                           domain_arg: str = None):
+
         if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
-            demisto.debug(f"restore sid: success, setting restored sid on Client (sid={sid_from_context})")
-            self.sid = sid_from_context
-        else:
-            demisto.debug("restore sid: failed to restore, logging in")
-            self.login(username, password, session_timeout, domain_arg)
+            demisto.debug(f"restore sid: found some session id ({sid_from_context}) in context ")
+            if self.test_connection() == 'ok':
+                demisto.debug(f"restore sid: success, setting restored session id ({sid_from_context}) on Client ")
+                self.sid = sid_from_context
+                return
+            else:
+                demisto.debug(f"restore sid: test-connection with session id ({sid_from_context}) failed")
+
+        demisto.debug("restore sid: failure, attempting login instead")
+        self.login(username, password, session_timeout, domain_arg)
 
     def test_connection(self):
         """

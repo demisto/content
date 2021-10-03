@@ -13,6 +13,7 @@ def util_load_json(path):
 
 SERVER_URL = "www.example.com"
 HTTPS_WWW_BASE_URL = f"https://{SERVER_URL}"
+DUMMY_SID = "sid"
 
 
 def test_checkpoint_login_and_get_session_id(requests_mock):
@@ -53,15 +54,18 @@ def test_checkpoint_login_and_get_session_id(requests_mock):
 
 
 INTEGRATION_CONTEXT_EMPTY = dict()
-INTEGRATION_CONTEXT_WITH_SID = {'cp_sid': 'sid'}
+INTEGRATION_CONTEXT_WITH_SID = {'cp_sid': DUMMY_SID}
 
 
-@pytest.mark.parametrize('session_id,integration_context,should_log_in', ((None, INTEGRATION_CONTEXT_EMPTY, True),
-                                                                          ('None', INTEGRATION_CONTEXT_EMPTY, True),
-                                                                          ('sid', INTEGRATION_CONTEXT_EMPTY, False),
-                                                                          (None, INTEGRATION_CONTEXT_WITH_SID, False),
-                                                                          ('None', INTEGRATION_CONTEXT_WITH_SID, False),
-                                                                          ('sid', INTEGRATION_CONTEXT_WITH_SID, False)))
+@pytest.mark.parametrize('session_id,integration_context,should_log_in',
+                         (
+                                 (None, INTEGRATION_CONTEXT_EMPTY, True),
+                                 ('None', INTEGRATION_CONTEXT_EMPTY, True),
+                                 (DUMMY_SID, INTEGRATION_CONTEXT_EMPTY, False),
+                                 (None, INTEGRATION_CONTEXT_WITH_SID, False),
+                                 ('None', INTEGRATION_CONTEXT_WITH_SID, False),
+                                 (DUMMY_SID, INTEGRATION_CONTEXT_WITH_SID, False))
+                         )
 def test_checkpoint_login_mechanism(mocker, session_id, integration_context, should_log_in):
     """
     Given
@@ -76,6 +80,7 @@ def test_checkpoint_login_mechanism(mocker, session_id, integration_context, sho
 
     mocker.patch.object(CheckPointFirewallV2.demisto, 'getIntegrationContext', return_value=integration_context)
     mocker.patch.object(CheckPointFirewallV2.demisto, 'command', return_value='checkpoint-host-add')
+    mocker.patch.object(CheckPointFirewallV2.Client, 'test_connection', return_value='ok')
     mocker.patch.object(CheckPointFirewallV2.demisto, 'args', return_value={'session_id': session_id,
                                                                             'name': 'george',
                                                                             'ip_address': '0.0.0.0',
@@ -101,6 +106,50 @@ def test_checkpoint_login_mechanism(mocker, session_id, integration_context, sho
         assert login_adapter.call_count == int(should_log_in)
         assert add_host_adapter.call_count == 1
         assert logout_adapter.call_count == int(should_log_in)
+
+
+def test_checkpoint_login_mechanism__invalid_restored_sid(mocker):
+    """
+    Given
+            An expired session id in context
+    When
+            Attempting to restore session ID
+    Then
+            Ensure when test_connection is called, and triggers login
+    """
+    from CheckPointFirewallV2 import main
+    port = 4434
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'getIntegrationContext',
+                        return_value=INTEGRATION_CONTEXT_WITH_SID)
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'command', return_value='checkpoint-host-add')
+    mocker.patch.object(CheckPointFirewallV2.Client, 'test_connection', return_value="failed")
+
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'args', return_value={'session_id': None,
+                                                                            'name': 'george',
+                                                                            'ip_address': '0.0.0.0',
+                                                                            'groups': [],
+                                                                            'ignore_warnings': 'true',
+                                                                            'ignore_errors': 'false'})
+
+    mocker.patch.object(CheckPointFirewallV2.demisto, 'params', return_value={'username': {'identifier': 'user',
+                                                                                           'password': 'pass'},
+                                                                              'session_timeout': 600,
+                                                                              'domain_arg': 'domain',
+                                                                              'server': SERVER_URL,
+                                                                              'port': port})
+    mocked_address = f'{HTTPS_WWW_BASE_URL}:{port}/web_api'
+
+    import requests_mock
+    with requests_mock.Mocker() as request_mocker:
+        login_adapter = request_mocker.post(f'{mocked_address}/login', json={'sid': DUMMY_SID})
+        add_host_adapter = request_mocker.post(f'{mocked_address}/add-host', json={})
+        logout_adapter = request_mocker.post(f'{mocked_address}/logout', json={})
+
+        main()
+
+        assert login_adapter.call_count == 1  # the important part
+        assert add_host_adapter.call_count == 1  # ensure no exception prevented add_host from being called
+        assert logout_adapter.call_count == 1  # ensure everything else worked smoothly
 
 
 @pytest.mark.parametrize('response_code', [418, 500])
