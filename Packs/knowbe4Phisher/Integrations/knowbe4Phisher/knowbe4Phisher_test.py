@@ -1,13 +1,12 @@
 import knowbe4Phisher as phisher
 import pytest
 from test_data.mock_tests import *
-import io
 import json
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+    with open(path, mode='r', encoding='utf-8') as f:
+        return json.load(f)
 
 
 client = phisher.Client(base_url='https://eu.test.com/graphql', verify=False,

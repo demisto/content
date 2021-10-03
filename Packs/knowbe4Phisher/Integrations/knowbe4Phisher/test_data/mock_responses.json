@@ -9,7 +9,7 @@
             "category": "THREAT",
             "comments": [
               {
-                "body": "edi cool",
+                "body": "cool",
                 "createdAt": "2021-07-19T09:55:27Z"
               }
             ],
@@ -41,7 +41,7 @@
                 "triggerer": "None"
               },
               {
-                "causer": "Edi Katsenelson",
+                "causer": "E K",
                 "createdAt": "2021-07-12T08:48:53Z",
                 "eventType": "OTHER",
                 "events": {
@@ -102,7 +102,7 @@
             "reportedBy": "xxxx",
             "rules": [],
             "severity": "HIGH",
-            "subject": "Fwd: ציונים חדשים שניתקבלו - לכצנלסון אדי",
+            "subject": "Fwd: Test",
             "tags": []
           }
         ],

@@ -5,6 +5,8 @@ import json
 import urllib3
 import traceback
 from typing import Tuple
+from urllib.parse import urljoin
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -342,10 +344,9 @@ def create_gql_request(readable_request: str) -> str:
     """
     format_desc = readable_request.splitlines()
     final = ""
-    for i in format_desc:
-        final = final + i + '\\n'
-    final = final[:-2]
-    return final
+    for line in format_desc:
+        final += line + '\\n'
+    return final[:-2]
 
 
 def calculate_number_of_events(client: Client, query: str) -> str:
@@ -713,7 +714,7 @@ def fetch_incidents_command(client: Client) -> None:
 
 def main(params: dict, args: dict, command: str) -> None:
     # get the service API url
-    url = params.get('url') + 'graphql'  # type: ignore
+    url = urljoin(params.get('url'), 'graphql')  # type: ignore
     if not params.get('apikey') or not (key := params.get('apikey', {}).get('password')):
         raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
     insecure = not params.get('insecure', False)
