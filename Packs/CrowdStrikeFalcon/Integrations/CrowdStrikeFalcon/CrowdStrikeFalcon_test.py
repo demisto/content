@@ -2954,11 +2954,29 @@ def test_list_host_group_members(requests_mock):
                           ('lift_containment_pending', '', 'Pending unisolation'),
                           ])
 def test_generate_status_field(endpoint_status, status, is_isolated):
+    """
+    Test valid call for generate status field
+    Given
+     - valid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Return status and is_isolated
+     """
     from CrowdStrikeFalcon import generate_status_fields
     assert (status, is_isolated) == generate_status_fields(endpoint_status)
 
 
 def test_generate_status_field_invalid():
+    """
+    Test invalid call for generate status field
+    Given
+     - invalid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Raise an exception
+     """
     from CrowdStrikeFalcon import generate_status_fields
     with pytest.raises(DemistoException):
         generate_status_fields('unknown status')
