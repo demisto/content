@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents Weyland-Yutani
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
