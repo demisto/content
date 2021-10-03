@@ -87,6 +87,9 @@ def convert_incident_to_hr(incident):
         if key == 'severity':
             converted_incident[key] = SEVERITIES.get(converted_incident.get(key), '')
 
+        if key == 'similarity':
+            converted_incident[key] = str(converted_incident[key])[:4]
+
         converted_incident[key] = converted_incident.get(key.replace('_', ''))
 
     return converted_incident
