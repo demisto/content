@@ -92,7 +92,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit response to alerts having a name that this value is contained in.
+      description: Limit response to alerts having a name that this value is contained
+        in.
       isArray: false
       name: name
       required: false
@@ -117,7 +118,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Value that is contained in dashboard's name by which to filter the results.
+      description: Value that is contained in dashboard's name by which to filter
+        the results.
       isArray: false
       name: dashboard_name
       required: false
@@ -334,7 +336,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: User login (username). If login is not specified, email must be specified.
+      description: User login (username). If login is not specified, email must be
+        specified.
       isArray: false
       name: login
       required: false
@@ -357,8 +360,8 @@ script:
       secret: false
     deprecated: false
     description: Login or email is mandatory. Pay attantion that if you change your
-      own login information, you won't be able to continue quering as your username (login)
-      will change. Login and email should be unique.
+      own login information, you won't be able to continue quering as your username
+      (login) will change. Login and email should be unique.
     execution: true
     name: grafana-user-update
   - arguments:
@@ -375,19 +378,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time
+      description: Start time, should be in ISO8601 format (e.g. '%Y-%m-%dT%H:%M:%SZ'),
+        or epoch numbers in millisecond resolution.
       isArray: false
       name: time
       required: false
       secret: false
     - default: false
-      description: End time
+      description: End time, should be in ISO8601 format (e.g. '%Y-%m-%dT%H:%M:%SZ'),
+        or epoch numbers in millisecond resolution.
       isArray: false
       name: time_end
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of tags by which to filter the dashboards to add the annotation to.
+      description: A comma-separated list of tags by which to filter the dashboards
+        to add the annotation to.
       isArray: true
       name: tags
       required: false
@@ -406,9 +412,9 @@ script:
     execution: false
     name: grafana-annotation-create
     outputs:
-      - contextPath: Grafana.Annotation.id
-        description: Annotation id
-        type: Number
+    - contextPath: Grafana.Annotation.id
+      description: Annotation id
+      type: Number
   - arguments:
     - default: false
       description: Number of results wanted in one page.

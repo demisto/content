@@ -82,7 +82,7 @@ class Client(BaseClient):
 
         return response
 
-    def annotation_create_request(self, text: str, dashboard_id: str = None, panel_id: str = None,
+    def annotation_create_request(self, text: str, dashboard_id: int = None, panel_id: int = None,
                                   time_start: str = None, time_end: str = None, tags: List[str] = None):
         data = {"dashboardId": dashboard_id, "panelId": panel_id,
                 "tags": tags, "text": text, "time": time_start, "timeEnd": time_end}
@@ -196,15 +196,15 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def set_time_for_annotation(time_start: Optional[str] = None, time_end: Optional[str] = None):
+def set_time_for_annotation(time_to_set: Optional[str] = None):
     """
-    For annotation creation, sets the start and end time to epoch numbers in millisecond resolution - if they were filled.
+    For annotation creation, sets the time to epoch numbers in millisecond resolution - if it was filled.
     """
-    if time_start:
-        time_start = str(date_to_timestamp(time_start, DATE_FORMAT))
-    if time_end:
-        time_end = str(date_to_timestamp(time_end, DATE_FORMAT))
-    return time_start, time_end
+    if time_to_set:
+        if isinstance(time_to_set, int) or time_to_set.isdigit():
+            return int(time_to_set)
+        else:
+            return date_to_timestamp(time_to_set, DATE_FORMAT)
 
 
 def change_key(response: dict, prev_key: str, new_key: str):
@@ -498,7 +498,8 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     dashboard_id = arg_to_number(args.get('dashboard_id'))
     panel_id = arg_to_number(args.get('panel_id'))
 
-    time_start, time_end = set_time_for_annotation(args.get('time'), args.get('time_end'))
+    time_start = set_time_for_annotation(args.get('time'))
+    time_end = set_time_for_annotation(args.get('time_end'))
 
     tags = argToList(args.get('tags', ''))
     text = str(args.get('text'))
