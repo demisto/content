@@ -1,0 +1,111 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "546cfc19-cfff-4498-881c-7f5a07f594bf",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Tanium TR Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Last Update Time": {
+					"complex": null,
+					"simple": "updatedAt"
+				},
+				"Tanium Threat Response Priority": {
+					"complex": null,
+					"simple": "priority"
+				},
+				"Source Hostname": {
+					"complex": null,
+					"simple": "computerName"
+				},
+				"Source IP": {
+					"complex": null,
+					"simple": "computerIpAddress"
+				},
+				"Start Time": {
+					"complex": null,
+					"simple": "createdAt"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Tanium Threat Response Event Id": {
+					"complex": null,
+					"simple": "eid"
+				},
+				"Tanium GUID": {
+					"complex": null,
+					"simple": "guid"
+				},
+				"Tanium Intel Doc Id": {
+					"complex": null,
+					"simple": "intelDocId"
+				},
+				"Tanium Intel Doc Revision Id": {
+					"complex": null,
+					"simple": "intelDocRevisionId"
+				},
+				"Tanium Scan Config Id": {
+					"complex": null,
+					"simple": "scanConfigId"
+				},
+				"Tanium Scan Config Revision Id": {
+					"complex": null,
+					"simple": "scanConfigRevisionId"
+				},
+				"Tanium Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"details": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "details",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"occurred": {
+					"complex": null,
+					"simple": "alertedAt"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "severity"
+				}
+			}
+		}
+	},
+	"name": "Tanium Threat Response Mapper",
+	"nameRaw": "Tanium Threat Response Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

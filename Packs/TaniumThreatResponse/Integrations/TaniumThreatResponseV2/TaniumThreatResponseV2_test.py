@@ -1121,7 +1121,7 @@ def test_fetch_all_incidents(requests_mock):
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client gets all 3 relevant incidents
+            validate fetch incidents command using the Client gets all 2 relevant incidents
     """
 
     test_incidents = util_load_json('test_files/fetch_incidents.json')
@@ -1132,7 +1132,7 @@ def test_fetch_all_incidents(requests_mock):
 
     alerts_states_to_retrieve = 'unresolved'
     last_run = {}
-    fetch_time = '3 days'
+    fetch_time = '10 years'
     max_fetch = 2
 
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
@@ -1159,7 +1159,7 @@ def test_fetch_new_incidents(requests_mock):
         When
             mock the Client's http_request.
         Then
-            validate fetch incidents command using the Client gets all 3 relevant incidents
+            validate fetch incidents command using the Client gets new 2 relevant incidents
     """
 
     test_incidents = util_load_json('test_files/fetch_incidents_new.json')

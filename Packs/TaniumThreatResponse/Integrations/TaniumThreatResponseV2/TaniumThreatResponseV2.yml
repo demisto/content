@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 8
 description: Use the Tanium Threat Response integration to manage endpoints processes,
-  evidence, alerts, files, snapshots, and connections.
+  evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
 script:
@@ -718,7 +718,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the actual content of a downloaded file by file ID.
+    description: "Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`."
     execution: false
     name: tanium-tr-get-downloaded-file
     outputs:

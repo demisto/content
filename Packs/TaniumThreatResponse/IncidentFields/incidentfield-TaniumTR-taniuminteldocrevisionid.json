@@ -1,10 +1,10 @@
 {
-    "id": "incident_taniuminteldocrevisionid",
+    "id": "incident_taniumthreatresponseinteldocrevisionid",
     "version": -1,
     "modified": "2021-09-26T14:47:49.570505+03:00",
-    "name": "Tanium Threat Response Tanium Intel Doc Revision Id",
+    "name": "Tanium Threat Response Intel Doc Revision Id",
     "ownerOnly": false,
-    "cliName": "taniumthreatresponsetaniuminteldocrevisionid",
+    "cliName": "taniumthreatresponseinteldocrevisionid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
