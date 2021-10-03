@@ -4596,7 +4596,6 @@
         "CuckooTest": "Issue 25601",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
@@ -4626,7 +4625,6 @@
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -4654,7 +4652,11 @@
         "HybridAnalysis-Test": "Issue 26599",
         "Infoblox Test": "Issue 25651",
         "Carbon Black Edr - Test": "Issue 40132",
-        "Phishing v2 - Test - Actual Incident": "Issue 41322"
+        "Phishing v2 - Test - Actual Incident": "Issue 41322",
+        "AutoFocus V2 test": "Issue 26464",
+        "Kaspersky Security Center - Test": "Issue 36487",
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
         
