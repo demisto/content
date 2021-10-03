@@ -335,7 +335,8 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=responses,
         raw_response=responses,
-        readable_output=tableToMarkdown('Alerts', responses, headers=headers, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Existing Alerts:', responses, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['url'])
     )
 
     return command_results
@@ -344,19 +345,15 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def alert_pause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = str(args.get('alert_id'))
 
-    # response will be shown to the user
     response = client.alert_pause_request(alert_id, True)
-
-    # output will be added to context data without the message (will only change alert's state)
-    output = change_key(dict(response), 'alertId', 'id')
-    output.pop('message', None)
+    response = change_key(response, 'alertId', 'id')
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
         outputs_key_field='id',
-        outputs=output,
+        outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Paused Alert {alert_id}', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Paused Alert {alert_id}:', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -365,19 +362,15 @@ def alert_pause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def alert_unpause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = str(args.get('alert_id'))
 
-    # response will be shown to the user
     response = client.alert_pause_request(alert_id, False)
-
-    # output will be added to context data without the message (will only change alert's state)
-    output = change_key(dict(response), 'alertId', 'id')
-    output.pop('message', None)
+    response = change_key(response, 'alertId', 'id')
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
         outputs_key_field='id',
-        outputs=output,
+        outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Un-paused Alert {alert_id}', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Un-paused Alert {alert_id}:', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -389,14 +382,16 @@ def alert_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResu
     response = client.alert_get_by_id_request(alert_id)
     # output returns keys capitalized rather then with first lower case letter (as stated and should be)
     response = keys_to_lowercase(response)
-    output = {key: response[key] for key in response.keys() - {'settings'}}
 
+    headers = ['id', 'version', 'orgId', 'dashboardId', 'panelId', 'name', 'message', 'severity', 'state', 'newStateDate',
+               'stateChanges', 'handler', 'silenced', 'frequency', 'for', 'created', 'updated']
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Alert {alert_id} Results', output, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Alert {alert_id} Results:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -406,16 +401,19 @@ def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    if query:
-        query = url_encode(query)
+    # if query:
+    #     query = url_encode(query)
 
     response = client.users_search_request(perpage, page, query)
+    headers = ['id', 'email', 'name', 'login', 'isAdmin', 'isDisabled', 'avatarUrl', 'lastSeenAt', 'lastSeenAtAge', 'authLabels']
+
     command_results = CommandResults(
         outputs_prefix='Grafana.User',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Users', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Existing Users:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -425,12 +423,16 @@ def user_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResul
     user_id = str(args.get('user_id'))
 
     response = client.user_get_by_id_request(user_id)
+    headers = ['id', 'email', 'name', 'login', 'theme', 'orgId', 'isGrafanaAdmin', 'isDisabled', 'isExternal', 'updatedAt',
+               'createdAt', 'avatarUrl', 'authLabels']
+
     command_results = CommandResults(
         outputs_prefix='Grafana.User',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'User {user_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'User {user_id} Results:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -441,13 +443,15 @@ def users_teams_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.users_teams_request(user_id)
     output = {'id': user_id, 'teams': response}
+    headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
 
     command_results = CommandResults(
         outputs_prefix='Grafana.User',
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Teams For User {user_id}', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Teams For User {user_id}:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -464,7 +468,7 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organizations For User {user_id}', response, removeNull=True,
+        readable_output=tableToMarkdown(f'Organizations For User {user_id}:', response, removeNull=True,
                                         headerTransform=pascalToSpace)
     )
 
@@ -480,19 +484,19 @@ def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     # login\email is required
     if not login and not email:
-        raise DemistoException("Login or email must be filled.")
+        raise DemistoException("Login or email must be specified.")
 
     response = client.user_update_request(user_id, email, name, login, theme)
     command_results = CommandResults(
-        readable_output=response['message']
-    )
+        readable_output=tableToMarkdown(f'Successfully Updated User {user_id}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace))
 
     return command_results
 
 
 def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    dashboard_id = args.get('dashboard_id')
-    panel_id = args.get('panel_id')
+    dashboard_id = arg_to_number(args.get('dashboard_id'))
+    panel_id = arg_to_number(args.get('panel_id'))
 
     time_start, time_end = set_time_for_annotation(args.get('time'), args.get('time_end'))
 
@@ -502,7 +506,12 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.annotation_create_request(text, dashboard_id, panel_id, time_start, time_end, tags)
 
     command_results = CommandResults(
-        readable_output=f'Annotation {response["id"]} Added'
+        outputs_prefix='Grafana.Annotation',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown(f'Successfully Created Annotation {response["id"]}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -512,8 +521,8 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    if query:
-        query = url_encode(query)
+    # if query:
+    #     query = url_encode(query)
     name = args.get('name')
 
     response = client.teams_search_request(perpage, page, query, name)
@@ -525,7 +534,7 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
-                                        headerTransform=pascalToSpace)
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -535,12 +544,14 @@ def team_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResul
     team_id = str(args.get('team_id'))
 
     response = client.team_get_by_id_request(team_id)
+    headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
     command_results = CommandResults(
         outputs_prefix='Grafana.Team',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Team {team_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Team {team_id} Results:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -550,6 +561,7 @@ def team_members_command(client: Client, args: Dict[str, Any]) -> CommandResults
     team_id = str(args.get('team_id'))
 
     response = client.team_members_request(team_id)
+    headers = ['orgId', 'teamId', 'userId', 'auth_module', 'email', 'name', 'login', 'avatarUrl', 'labels', 'permission']
     output = {'id': team_id, 'members': response}
 
     command_results = CommandResults(
@@ -557,7 +569,8 @@ def team_members_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Team {team_id} Members', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Team {team_id} Members:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['avatarUrl'])
     )
 
     return command_results
@@ -569,7 +582,8 @@ def user_add_to_team_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.user_add_to_team_request(team_id, user_id)
     command_results = CommandResults(
-        readable_output=response['message']
+        readable_output=tableToMarkdown(f'Successfully Added User {user_id} to Team {team_id}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -581,8 +595,8 @@ def user_remove_from_team_command(client: Client, args: Dict[str, Any]) -> Comma
 
     response = client.user_remove_from_team_request(team_id, user_id)
     command_results = CommandResults(
-        readable_output=response['message']
-    )
+        readable_output=tableToMarkdown(f'Successfully Removed User {user_id} from Team {team_id}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace))
 
     return command_results
 
@@ -600,7 +614,8 @@ def team_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Added Team', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Successfully Created Team {response["teamId"]}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -611,7 +626,8 @@ def team_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.team_delete_request(team_id)
     command_results = CommandResults(
-        readable_output=response['message']
+        readable_output=tableToMarkdown(f'Successfully Deleted Team {team_id}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -628,7 +644,8 @@ def org_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Added Organization', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Successfully Created Organization {response["orgId"]}:', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -644,7 +661,7 @@ def org_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Organizations', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Existing Organizations:', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -654,12 +671,14 @@ def org_get_by_name_command(client: Client, args: Dict[str, Any]) -> CommandResu
     name = str(args.get('name'))
 
     response = client.org_get_by_name_request(name)
+    headers = ['name', 'id', 'address']
     command_results = CommandResults(
         outputs_prefix='Grafana.Organization',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organization {name} Results', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization "{name}" Results:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -669,12 +688,13 @@ def org_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResult
     org_id = args.get('org_id')
 
     response = client.org_get_by_id_request(org_id)
+    headers = ['id', 'name', 'address']
     command_results = CommandResults(
         outputs_prefix='Grafana.Organization',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organization {org_id} Results', response, removeNull=True,
+        readable_output=tableToMarkdown(f'Organization {org_id} Results:', response, headers=headers, removeNull=True,
                                         headerTransform=pascalToSpace)
     )
 
@@ -692,12 +712,14 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
     page = args.get('page')
 
     response = client.dashboards_search_request(query, tag, type_, dashboard_ids, folder_ids, starred, limit, page)
+    headers = ['id', 'uid', 'title', 'isStarred', 'tags', 'uri', 'url', 'slug', 'type', 'sortMeta']
     command_results = CommandResults(
         outputs_prefix='Grafana.Dashboard',
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Dashboards', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Existing Dashboards:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace, url_keys=['url'])
     )
 
     return command_results

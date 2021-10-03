@@ -37,7 +37,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A comma-separated list, can be found by running the "grafana-dashboards-search" command.
+- additionalinfo: A comma-separated list, can be found by running the "grafana-dashboards-search"
+    command.
   display: Dashboard IDs to fetch
   hidden: false
   name: dashboard_id
@@ -91,7 +92,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit response to alerts having a name like this value.
+      description: Limit response to alerts having a name that this value is contained in.
       isArray: false
       name: name
       required: false
@@ -116,7 +117,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Dashboard's name by which to filter the results.
+      description: Value that is contained in dashboard's name by which to filter the results.
       isArray: false
       name: dashboard_name
       required: false
@@ -256,6 +257,9 @@ script:
     - contextPath: Grafana.User.lastSeenAtAge
       description: User last seen at age
       type: String
+    - contextPath: Grafana.User.authLabels
+      description: User authentication labels
+      type: Unknown
   - arguments:
     - default: false
       description: User id to get teams for.
@@ -318,19 +322,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User email
+      description: User email. If email is not specified, login must be specified.
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: User name
+      description: User's name.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: username
+      description: User login (username). If login is not specified, email must be specified.
       isArray: false
       name: login
       required: false
@@ -353,7 +357,7 @@ script:
       secret: false
     deprecated: false
     description: Login or email is mandatory. Pay attantion that if you change your
-      own login information, you won't be able to continue quering as your username
+      own login information, you won't be able to continue quering as your username (login)
       will change. Login and email should be unique.
     execution: true
     name: grafana-user-update
@@ -383,7 +387,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of tags by which to filter the results.
+      description: A comma-separated list of tags by which to filter the dashboards to add the annotation to.
       isArray: true
       name: tags
       required: false
@@ -395,9 +399,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates annotation.
+    description: Creates an annotation in the Grafana database. The dashboard_id and
+      panel_id fields are optional. If they are not specified then a global annotation
+      is created and can be queried in any dashboard that adds the Grafana annotations
+      data source. When creating a region annotation include the time_end property.
     execution: false
     name: grafana-annotation-create
+    outputs:
+      - contextPath: Grafana.Annotation.id
+        description: Annotation id
+        type: Number
   - arguments:
     - default: false
       description: Number of results wanted in one page.
@@ -418,7 +429,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the team
+      description: The exact name of the team.
       isArray: false
       name: name
       required: false
@@ -526,23 +537,23 @@ script:
       secret: false
     deprecated: false
     description: Removes a user from a team.
-    execution: false
+    execution: true
     name: grafana-user-remove-from-team
   - arguments:
     - default: false
-      description: Name
+      description: The team name, needs to be unique.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: Email
+      description: Email.
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: Organization id
+      description: Organization id.
       isArray: false
       name: org_id
       required: false
@@ -571,7 +582,7 @@ script:
       description: Name
       isArray: false
       name: name
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Creats an organization.
@@ -722,6 +733,9 @@ script:
     - contextPath: Grafana.User.avatarUrl
       description: User avatar url
       type: String
+    - contextPath: Grafana.User.authLabels
+      description: User authentication labels
+      type: Unknown
   - arguments:
     - default: false
       description: Team id
@@ -853,7 +867,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name
+      description: The exact name of the organization wanted.
       isArray: false
       name: name
       required: true
