@@ -1,5 +1,7 @@
 The ArcusTeam API allows the user to inspect connected devices' attack surface. By feeding device identifiers and the software it runs: DeviceTotal will return a map of the device’s attack surface. DeviceTotal was built from the ground up in order to provide complete visibility into connected devices and mitigate 3rd party risk. DeviceTotal can continuously identify & predict such that the connected device security posture is being assessed, prioritized and mitigated effectively.
 This integration was integrated and tested with version 6.11.0 of ArcusTeam
+## Get Your API Key
+Please visit our [dedicated page](https://arcusteam.com/pa-partnership/) to obtain your API key.
 
 ## Configure ArcusTeam on Cortex XSOAR
 
