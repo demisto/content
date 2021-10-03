@@ -154,8 +154,9 @@ script:
     } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
     function createRequest() {
+        var resourceName = args.resourceName;
         var newRequest = {
-            [params.resourcename]: {
+            [resourceName]: {
                 Category: args.category,
                 Purpose: [
                     args.purpose
