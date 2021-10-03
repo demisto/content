@@ -1,5 +1,5 @@
 Manages F5 LTM
-This integration was integrated and tested with version xx of F5LTM
+This integration was integrated and tested with version 16.1.0 of F5LTM
 
 ## Configure F5 LTM on Cortex XSOAR
 
