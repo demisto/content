@@ -2,7 +2,7 @@ commonfields:
   id: Service Manager
   version: -1
 name: Service Manager
-display: Service Manager
+display: Micro Focus Service Manager
 category: Case Management
 description: Service Manager By Micro Focus (Formerly HPE Software).
 configuration:
