@@ -4480,7 +4480,8 @@
             "integrations": [
                 "XsoarPowershellTesting",
                 "Create-Mock-Feed-Relationships"
-            ]
+            ],
+            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
