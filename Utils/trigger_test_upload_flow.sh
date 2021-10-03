@@ -57,11 +57,11 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -g|--gitlab) _gitlab=true
+  -sbp|--storage-base-path) _storage_base_path="$2"
     shift
     shift;;
 
-  -sbp|--storage-base-path) _storage_base_path="$2"
+  -g|--gitlab) _gitlab=true
     shift
     shift;;
 
