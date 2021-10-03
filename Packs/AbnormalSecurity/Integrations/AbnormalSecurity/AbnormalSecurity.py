@@ -490,11 +490,6 @@ def test_module(client):
 
 
 def main():
-    """
-
-    CHANGE IN INTEGRATION - USED FOR TESTING THE UPLOAD FLOW
-
-    """
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
