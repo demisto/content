@@ -1006,6 +1006,29 @@ def test_only_parts_of_object_email_saved(mocker):
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
 
 
+def test_eml_with_line_break_in_from(mocker):
+    """
+
+    Fixes: https://github.com/demisto/etc/issues/41583
+    Given:
+        an eml file that the from contains a line break (`=\r\n`) which caused the duplication of email address.
+    Then:
+        remove the line break (`=\r\n`).
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('eml_with_line_break_in_from.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '22@test.com'
+
+
 def test_pkcs7_mime(mocker):
     """
     Given: An email file smime2.p7m of type application/pkcs7-mime and info -
