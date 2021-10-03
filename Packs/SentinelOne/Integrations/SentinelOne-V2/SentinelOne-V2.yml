@@ -50,7 +50,8 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: 'Site IDs: comma-separated list of Site IDs to fetch incidents for. (leave blank to fetch all sites)'
+- display: Site IDs
+  additionalinfo: Comma-separated list of Site IDs to fetch incidents for. Leave blank to fetch all sites.
   name: fetch_site_ids
   type: 0
   required: false
