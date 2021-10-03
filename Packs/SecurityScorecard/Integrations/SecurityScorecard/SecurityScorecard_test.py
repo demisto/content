@@ -185,42 +185,86 @@ def test_portfolios_list(mocker, args):
 
 
 companies_list_test_inputs = [
-    (PORTFOLIO_ID),
-    ("1"),
-    ("x")
+    (
+        {
+            "portfolio_id": PORTFOLIO_ID,
+            "grade": None,
+            "industry": None,
+            "vulnerability": None,
+            "issue_type": None,
+            "had_breach_within_last_days": None
+        }
+    ),
+    (
+        {
+            "portfolio_id": PORTFOLIO_ID,
+            "grade": "A",
+            "industry": None,
+            "vulnerability": None,
+            "issue_type": None,
+            "had_breach_within_last_days": None
+        }
+    ),
+    (
+        {
+            "portfolio_id": PORTFOLIO_ID,
+            "grade": "A",
+            "industry": "food",
+            "vulnerability": None,
+            "issue_type": None,
+            "had_breach_within_last_days": None
+        }
+    ),
+    (
+        {
+            "portfolio_id": PORTFOLIO_ID,
+            "grade": None,
+            "industry": None,
+            "vulnerability": None,
+            "issue_type": None,
+            "had_breach_within_last_days": "7"
+        }
+    )
 ]
 
 
-@pytest.mark.parametrize("portfolio_id", companies_list_test_inputs)
-def test_portfolio_list_companies(mocker, portfolio_id):
+@pytest.mark.parametrize("args", companies_list_test_inputs)
+def test_portfolio_list_companies(mocker, args: Dict[str, Any]):
 
     """
     Given:
         - A portfolio ID
-
+        - 3 portfolios in test data
     When:
-        - Portfolio exists
-
+        - Case A: no filters supplied
+        - Case B: grade filter supplied
+        - Case C: grade filter and an industry filter supplied
+        - Case D: invalid had breach within last days filter supplied
     Then:
-        - 10 companies retrieved
+        - Case A: All 3 portfolios returned
+        - Case B: 2 portfolios returned
+        - Case C: 1 portfolio returned
+        - Case D: All 3 portfolios returned
     """
 
-    companies_mock = test_data.get("companies")
+    if args.get("grade"):
+        if args.get("industry"):
+            companies_mock: Dict[str, str] = test_data.get("companies_A_grade_food_industry")
+        else:
+            companies_mock: Dict[str, str] = test_data.get("companies_A_grade")
+
+    else:
+        companies_mock: Dict[str, str] = test_data.get("companies")
+
+    companies_entries: List[Dict[str, Any]] = companies_mock.get("entries")
+
     mocker.patch.object(client, "get_companies_in_portfolio", return_value=companies_mock)
 
-    companies_cmd_res: CommandResults = portfolio_list_companies_command(
-        client=client,
-        portfolio_id=portfolio_id,
-        grade=None,
-        industry_arg=None,
-        vulnerability=None,
-        issue_type=None,
-        had_breach_within_last_days=None
-    )
+    companies_cmd_res: CommandResults = portfolio_list_companies_command(client=client, args=args)
 
     companies = companies_cmd_res.outputs
 
-    assert len(companies) == companies_mock.get("total")
+    assert companies == companies_entries
 
 
 def test_portfolio_list_companies_portfolio_not_found(mocker):

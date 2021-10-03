@@ -470,12 +470,7 @@ def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, str
 
 def portfolio_list_companies_command(
     client: SecurityScorecardClient,
-    portfolio_id: str,
-    grade: Optional[str],
-    industry_arg: Optional[str],
-    vulnerability: Optional[str],
-    issue_type: Optional[str],
-    had_breach_within_last_days: Optional[str]
+    args: Dict[str, Any]
 ) -> CommandResults:
     """Retrieve all companies in portfolio.
 
@@ -483,21 +478,28 @@ def portfolio_list_companies_command(
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``portfolio_id`` (``str``): The portfolio ID for which to retrieve the companies
-        ``grade`` (``str``): Grade filter
-        ``industry`` (``str``): Industry filter
-        ``vulnerability`` (``str``): vulnerability filter
-        ``issue_type`` (``str``): Issue type filter
-        ``had_breach_within_last_days`` (``Optional[str])``): Filter breach days back
+        ``args`` (``Dict[str, Any]``): Includes
+            - portfolio ID
+            - Grade filter
+            - Industry filter
+            - Vulnerability filter
+            - Issue type filter
+            - Filter breach days back
     Returns:
         ``CommandResults``: The results of the command.
     """
+
+    portfolio_id = args.get("portfolio_id")  # type: ignore
+    grade = args.get("grade")
+    industry_arg = args.get("industry")
+    vulnerability = args.get("vulnerability")
+    issue_type = args.get("issue_type")
 
     # We need to capitalize the industry to conform to API
     industry = str.upper(industry_arg) if industry_arg else None  # type: ignore
 
     had_breach_within_last_days = arg_to_number(  # type: ignore
-        arg=had_breach_within_last_days,
+        arg=args.get("had_breach_within_last_days"),
         arg_name='had_breach_within_last_days',
         required=False
     )
@@ -515,7 +517,7 @@ def portfolio_list_companies_command(
     total_portfolios = int(response.get('total'))  # type: ignore
     if not total_portfolios > 0:
         return CommandResults(
-            readable_output=f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry.",
+            readable_output=f"No companies found in Portfolio '{portfolio_id}'. Please add a company to it and retry.",
             raw_response=response,
             outputs_key_field=None
         )
@@ -1127,15 +1129,7 @@ def main() -> None:
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(portfolios_list_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
-            return_results(portfolio_list_companies_command(
-                client=client,
-                portfolio_id=args.get("portfolio_id"),  # type: ignore
-                grade=args.get("grade"),
-                industry_arg=args.get("industry"),
-                vulnerability=args.get("vulnerability"),
-                issue_type=args.get("issue_type"),
-                had_breach_within_last_days=args.get("had_breach_within_last_days")
-            ))
+            return_results(portfolio_list_companies_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-score-get':
             return_results(company_score_get_command(client=client, domain=args.get("domain")))  # type: ignore
         elif demisto.command() == 'securityscorecard-company-factor-score-get':

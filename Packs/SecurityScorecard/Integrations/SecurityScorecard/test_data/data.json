@@ -236,75 +236,54 @@
 		}, {
 			"domain": "company4.com",
 			"name": "company4",
-			"score": 87,
-			"grade": "B",
+			"score": 90,
+			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
 			"last30days_score_change": 3,
 			"industry": "government",
 			"size": "size_more_than_10000",
 			"is_custom_vendor": false
-		}, {
-			"domain": "company5.com",
-			"name": "company5",
-			"score": 83,
-			"grade": "B",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
-			"last30days_score_change": 0,
-			"industry": "financial_services",
-			"size": "size_11_to_50",
-			"is_custom_vendor": false
-		}, {
-			"domain": "company6.com",
-			"name": "company6",
-			"score": 71,
-			"grade": "C",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_c.svg",
-			"last30days_score_change": -1,
-			"industry": "financial_services",
-			"size": "size_more_than_10000",
-			"is_custom_vendor": false
-		}, {
-			"domain": "company7.com",
-			"name": "company7",
-			"score": 92,
+		}],
+		"total": 3
+	},
+	"companies_A_grade": {
+		"entries": [{
+			"domain": "company1.com",
+			"name": "company1",
+			"score": 93,
 			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
-			"last30days_score_change": 3,
-			"industry": "financial_services",
+			"last30days_score_change": 0,
+			"industry": "food",
 			"size": "size_more_than_10000",
 			"is_custom_vendor": false
-		}, {
-			"domain": "company8.com",
-			"name": "company8",
-			"score": 80,
-			"grade": "B",
+		}, 
+		{
+			"domain": "company4.com",
+			"name": "company4",
+			"score": 90,
+			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
-			"last30days_score_change": -1,
-			"industry": "technology",
-			"size": "size_51_to_200",
-			"is_custom_vendor": false
-		}, {
-			"domain": "company9.com",
-			"name": "company9",
-			"score": 83,
-			"grade": "B",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
-			"last30days_score_change": 0,
-			"industry": "technology",
-			"size": "size_1001_to_5000",
-			"is_custom_vendor": false
-		}, {
-			"domain": "company10.com",
-			"name": "company10",
-			"score": 81,
-			"grade": "B",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
-			"last30days_score_change": -6,
-			"industry": "retail",
-			"size": "unknown",
+			"last30days_score_change": 3,
+			"industry": "government",
+			"size": "size_more_than_10000",
 			"is_custom_vendor": false
 		}],
-		"total": 10
+		"total": 2
+	},
+	"companies_A_grade_food_industry": {
+		"entries": [{
+			"domain": "company1.com",
+			"name": "company1",
+			"score": 93,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"last30days_score_change": 0,
+			"industry": "food",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}],
+		"total": 1
 	},
 	"portfolio_not_exist": {
 		"error": {
