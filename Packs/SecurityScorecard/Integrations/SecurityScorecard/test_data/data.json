@@ -693,6 +693,57 @@
 			}
 		]
 	},
+	"historical_score_daily": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-01T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-02T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-04T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_scores_weekly": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-10T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-17T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-24T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-31T00:00:00.000Z"
+			}
+		]
+	},
 	"historical_factor_score": {
 		"entries": [{
 			"domain": "domain1.com",
@@ -967,6 +1018,57 @@
 			}],
 			"date": "2021-07-08T00:00:00.000Z"
 		}]
+	},
+	"historical_factor_score_daily": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-01T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-02T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-04T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_factor_scores_weekly": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-10T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-17T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-24T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-31T00:00:00.000Z"
+			}
+		]
 	},
 	"create_score_alert": {
 		"id": "1"
