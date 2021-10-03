@@ -57,15 +57,13 @@ INTEGRATION_CONTEXT_EMPTY = dict()
 INTEGRATION_CONTEXT_WITH_SID = {'cp_sid': DUMMY_SID}
 
 
-@pytest.mark.parametrize('session_id,integration_context,should_log_in',
-                         (
-                                 (None, INTEGRATION_CONTEXT_EMPTY, True),
-                                 ('None', INTEGRATION_CONTEXT_EMPTY, True),
-                                 (DUMMY_SID, INTEGRATION_CONTEXT_EMPTY, False),
-                                 (None, INTEGRATION_CONTEXT_WITH_SID, False),
-                                 ('None', INTEGRATION_CONTEXT_WITH_SID, False),
-                                 (DUMMY_SID, INTEGRATION_CONTEXT_WITH_SID, False))
-                         )
+@pytest.mark.parametrize('session_id,integration_context,should_log_in', ((None, INTEGRATION_CONTEXT_EMPTY, True),
+                                                                          ('None', INTEGRATION_CONTEXT_EMPTY, True),
+                                                                          (DUMMY_SID, INTEGRATION_CONTEXT_EMPTY, False),
+                                                                          (None, INTEGRATION_CONTEXT_WITH_SID, False),
+                                                                          ('None', INTEGRATION_CONTEXT_WITH_SID, False),
+                                                                          (DUMMY_SID, INTEGRATION_CONTEXT_WITH_SID,
+                                                                           False)))
 def test_checkpoint_login_mechanism(mocker, session_id, integration_context, should_log_in):
     """
     Given
