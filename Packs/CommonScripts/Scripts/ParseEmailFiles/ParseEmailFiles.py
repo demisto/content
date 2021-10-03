@@ -3287,6 +3287,15 @@ def get_email_address(eml, entry):
     if addresses:
         res = [item[1] for item in addresses]
         res = ', '.join(res)
+        if not re.search(REGEX_EMAIL, res) or len(addresses) > 1 and entry == 'from':
+            # this condition refers only to ['from'] header that does not have a valid email or have more then 1
+            # fixed an issue where email['From'] had '\r\n'.
+            # in order to solve, used replace_header() on email object,
+            # and did again get_all() on the new format of ['from']
+            original_value = eml['from']
+            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
+            res = get_email_address(eml, entry)
+            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return res
     return ''
 
@@ -3303,15 +3312,6 @@ def extract_address_eml(eml, entry):
     """
     email_address = get_email_address(eml, entry)
     if email_address:
-        if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
-            # this condition refers only to ['from'] header that does not have a valid email
-            # fixed an issue where email['From'] had '\r\n'.
-            # in order to solve, used replace_header() on email object,
-            # and did again get_all() on the new format of ['from']
-            original_value = eml['from']
-            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
-            email_address = get_email_address(eml, entry)
-            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return email_address
     else:
         return ''
