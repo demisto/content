@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointisfresh",
+    "version": -1,
+    "modified": "2021-07-17T08:48:55.449739319+05:30",
+    "name": "Flashpoint Is Fresh",
+    "description": "This will be \"true\" if the credential has not been seen before, and it hasn't been marked \"not fresh\" by an analyst.",
+    "ownerOnly": false,
+    "cliName": "flashpointisfresh",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

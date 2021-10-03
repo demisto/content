@@ -1074,11 +1074,13 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Element to change. Can be "override_allow_list", or "override_block_list"
+      description: Element to change.
       name: element_to_change
       predefined:
       - override_allow_list
       - override_block_list
+      - allow_categories
+      - block_categories
       - description
       required: true
     - description: Element value. Limited to one value.
