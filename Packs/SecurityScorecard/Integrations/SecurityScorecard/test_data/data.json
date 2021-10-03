@@ -183,8 +183,7 @@
 				"factor": "network_security",
 				"score_impact": -2
 			}]
-		}
-	],
+		}],
 	"portfolios": {
 		"entries": [{
 			"id": "1",

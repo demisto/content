@@ -409,21 +409,21 @@ def test_module(
 # ---------------
 
 
-def portfolios_list_command(client: SecurityScorecardClient, limit: Optional[str]) -> CommandResults:
+def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``limit`` (``Optional[str]``): Limit the number of portfolios
+        ``args`` (``Dict[str, str]``): Portfolio fetch limit
 
     Returns:
         ``CommandResults``: The results of the command.
     """
 
     limit = arg_to_number(  # type: ignore
-        arg=limit,
+        arg=args.get("limit", "50"),
         arg_name="limit",
         required=False
     )
@@ -1125,7 +1125,7 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client=client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
-            return_results(portfolios_list_command(client=client, limit=args.get("limit", "50")))
+            return_results(portfolios_list_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
             return_results(portfolio_list_companies_command(
                 client=client,
