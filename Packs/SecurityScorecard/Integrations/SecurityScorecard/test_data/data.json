@@ -58,131 +58,6 @@
 				"factor": "network_security",
 				"score_impact": -2
 			}]
-		},
-		{
-			"id": "25",
-			"username": "user@domain.com",
-			"change_type": "score_change",
-			"domain": "domain3.com",
-			"company_name": "Domain3",
-			"portfolios": [{
-				"id": "b",
-				"name": "test_portfolio3"
-			}],
-			"my_scorecard": false,
-			"created_at": "2021-07-25T00:00:00.000Z",
-			"change_data": [{
-				"score": 78,
-				"factor": "network_security",
-				"direction": "drops",
-				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
-				"score_impact": -2
-			}]
-		},
-		{
-			"id": "24",
-			"username": "user@domain.com",
-			"change_type": "score_change",
-			"domain": "domain4.com",
-			"company_name": "Domain4",
-			"portfolios": [{
-				"id": "b",
-				"name": "test_portfolio3"
-			}],
-			"my_scorecard": false,
-			"created_at": "2021-07-24T00:00:00.000Z",
-			"change_data": [{
-				"score": 78,
-				"factor": "network_security",
-				"direction": "drops",
-				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
-				"score_impact": -2
-			}]
-		},
-		{
-			"id": "23",
-			"username": "user@domain.com",
-			"change_type": "score_change",
-			"domain": "domain4.com",
-			"company_name": "Domain4",
-			"portfolios": [{
-				"id": "b",
-				"name": "test_portfolio3"
-			}],
-			"my_scorecard": false,
-			"created_at": "2021-07-23T00:00:00.000Z",
-			"change_data": [{
-				"score": 78,
-				"factor": "network_security",
-				"direction": "drops",
-				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
-				"score_impact": -2
-			}]
-		},
-		{
-			"id": "22",
-			"username": "user@domain.com",
-			"change_type": "score_change",
-			"domain": "domain4.com",
-			"company_name": "Domain4",
-			"portfolios": [{
-				"id": "b",
-				"name": "test_portfolio3"
-			}],
-			"my_scorecard": false,
-			"created_at": "2021-07-22T00:00:00.000Z",
-			"change_data": [{
-				"score": 78,
-				"factor": "network_security",
-				"direction": "drops",
-				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
-				"score_impact": -2
-			}]
-		},
-		{
-			"id": "21",
-			"username": "user@domain.com",
-			"change_type": "score_change",
-			"domain": "domain4.com",
-			"company_name": "Domain4",
-			"portfolios": [{
-				"id": "b",
-				"name": "test_portfolio3"
-			}],
-			"my_scorecard": false,
-			"created_at": "2021-07-21T00:00:00.000Z",
-			"change_data": [{
-				"score": 78,
-				"factor": "network_security",
-				"direction": "drops",
-				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
-				"score_impact": -2
-			}]
 		}],
 	"portfolios": {
 		"entries": [{
@@ -473,182 +348,93 @@
 			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
 			"issue_summary": []
-		}, {
-			"name": "endpoint_security",
-			"score": 88,
-			"grade": "B",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+		}],
+		"total": 3
+	},
+	"factor_score_severity_positive": {
+		"entries": [{
+			"name": "application_security",
+			"score": 58,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
 			"issue_summary": [{
-				"type": "outdated_browser",
-				"count": 2,
-				"severity": "high",
-				"total_score_impact": 1.6023389172370628,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/outdated_browser/"
+				"type": "waf_detected",
+				"count": 3,
+				"severity": "positive",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/waf_detected/"
 			}]
 		}, {
-			"name": "hacker_chatter",
+			"name": "cubit_score",
 			"score": 100,
 			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
 			"issue_summary": []
 		}, {
-			"name": "ip_reputation",
+			"name": "dns_health",
 			"score": 100,
 			"grade": "A",
 			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
-			"issue_summary": [{
-				"type": "exploited_product",
-				"count": 1,
-				"severity": "info",
-				"total_score_impact": 0,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/exploited_product/"
-			}]
-		}, {
-			"name": "leaked_information",
-			"score": 100,
-			"grade": "A",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
-			"issue_summary": [{
-				"type": "leaked_credentials_info",
-				"count": 1,
-				"severity": "info",
-				"total_score_impact": 0,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/leaked_credentials_info/"
-			}]
-		}, {
-			"name": "network_security",
-			"score": 69,
-			"grade": "D",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_d.svg",
-			"issue_summary": [{
-				"type": "cdn_hosting",
-				"count": 339,
-				"severity": "info",
-				"total_score_impact": 0,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/cdn_hosting/"
-			}, {
-				"type": "ssh_weak_cipher",
-				"count": 4,
-				"severity": "medium",
-				"total_score_impact": 0.4989955346215851,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/ssh_weak_cipher/"
-			}, {
-				"type": "tls_weak_protocol",
-				"count": 1,
-				"severity": "high",
-				"total_score_impact": 0.7558649792404424,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tls_weak_protocol/"
-			}, {
-				"type": "tls_weak_cipher",
-				"count": 21,
-				"severity": "medium",
-				"total_score_impact": 0.9750675057308626,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tls_weak_cipher/"
-			}, {
-				"type": "service_rdp",
-				"count": 1,
-				"severity": "medium",
-				"total_score_impact": 0.31228623146857615,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/service_rdp/"
-			}, {
-				"type": "tlscert_weak_signature",
-				"count": 4,
-				"severity": "medium",
-				"total_score_impact": 0.5758885673333936,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tlscert_weak_signature/"
-			}, {
-				"type": "tlscert_expired",
-				"count": 20,
-				"severity": "medium",
-				"total_score_impact": 0.9400676730191577,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tlscert_expired/"
-			}, {
-				"type": "ssh_weak_mac",
-				"count": 9,
-				"severity": "medium",
-				"total_score_impact": 0.5891540203222405,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/ssh_weak_mac/"
-			}, {
-				"type": "service_cloud_provider",
-				"count": 8,
-				"severity": "info",
-				"total_score_impact": 0,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/service_cloud_provider/"
-			}, {
-				"type": "tlscert_self_signed",
-				"count": 8,
-				"severity": "medium",
-				"total_score_impact": 0.7061112303767487,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tlscert_self_signed/"
-			}, {
-				"type": "tlscert_no_revocation",
-				"count": 12,
-				"severity": "low",
-				"total_score_impact": 0.2666921614485034,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tlscert_no_revocation/"
-			}, {
-				"type": "tlscert_excessive_expiration",
-				"count": 23,
-				"severity": "low",
-				"total_score_impact": 0.2920384823016633,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/tlscert_excessive_expiration/"
-			}]
-		}, {
-			"name": "patching_cadence",
-			"score": 86,
-			"grade": "B",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
-			"issue_summary": [{
-				"type": "service_vuln_host_high",
-				"count": 4,
-				"severity": "high",
-				"total_score_impact": 0.11059635062105144,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/service_vuln_host_high/"
-			}, {
-				"type": "patching_cadence_high",
-				"count": 4,
-				"severity": "high",
-				"total_score_impact": 0.12377764264233804,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/patching_cadence_high/"
-			}, {
-				"type": "service_vuln_host_low",
-				"count": 3,
-				"severity": "low",
-				"total_score_impact": 0.03065210419889297,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/service_vuln_host_low/"
-			}, {
-				"type": "patching_cadence_medium",
-				"count": 28,
-				"severity": "medium",
-				"total_score_impact": 0.09652163116572865,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/patching_cadence_medium/"
-			}, {
-				"type": "patching_cadence_low",
-				"count": 3,
-				"severity": "low",
-				"total_score_impact": 0.02972604573196236,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/patching_cadence_low/"
-			}, {
-				"type": "service_vuln_host_medium",
-				"count": 28,
-				"severity": "medium",
-				"total_score_impact": 0.1000383895313064,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/service_vuln_host_medium/"
-			}]
-		}, {
-			"name": "social_engineering",
-			"score": 100,
-			"grade": "A",
-			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
-			"issue_summary": [{
-				"type": "exposed_personal_information_info",
-				"count": 15,
-				"severity": "info",
-				"total_score_impact": 0,
-				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/exposed_personal_information_info/"
-			}]
+			"issue_summary": []
 		}],
-		"total": 10
+		"total": 3
+	},
+	"factor_score_severity_low_high": {
+		"entries": [{
+			"name": "application_security",
+			"score": 58,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
+			"issue_summary": [
+				{
+					"type": "domain_missing_https",
+					"count": 1,
+					"severity": "high",
+					"total_score_impact": 1.9752854719369566,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/domain_missing_https/"
+				},
+				{
+					"type": "cookie_missing_http_only",
+					"count": 1,
+					"severity": "low",
+					"total_score_impact": 0.23445749731544652,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/cookie_missing_http_only/"
+				},
+				{
+					"type": "x_frame_options_incorrect",
+					"count": 11,
+					"severity": "low",
+					"total_score_impact": 1.072526376230627,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_frame_options_incorrect/"
+				},
+				{
+					"type": "x_content_type_options_incorrect",
+					"count": 3,
+					"severity": "low",
+					"total_score_impact": 0.5163662619700204,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_content_type_options_incorrect/"
+				}
+			]
+		}, {
+			"name": "cubit_score",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": [{
+				"type": "typosquat",
+				"count": 8,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/typosquat/"
+			}]
+		}, {
+			"name": "dns_health",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": []
+		}],
+		"total": 3
 	},
 	"historical_score": {
 		"entries": [{

@@ -357,7 +357,7 @@ def test_get_company_score_not_found(mocker):
 
 factor_score_test_inputs = [
     ({"domain": DOMAIN, "severity": None}),
-    ({"domain": DOMAIN, "severity": "high"}),
+    ({"domain": DOMAIN, "severity": "positive"}),
     ({"domain": DOMAIN, "severity": "high,low"})
 ]
 
@@ -371,20 +371,25 @@ def test_get_company_factor_score(mocker, args):
         - A severity filter
     When:
         - Case A: Domain is valid, severity unspecified
-        - Case B: Domain is valid, severity is high
-        - Case C: Domain is valid, severity is low
+        - Case B: Domain is valid, severity is positive
+        - Case C: Domain is valid, severity is low and high
     Then:
         - Case A: Results in all severity factor scores for domain
-        - Case B: Results only in high severity factor scores for domain
+        - Case B: Results only in positive severity factor scores for domain
         - Case C: Results in high and low severity factor scores for domain
     """
 
-    factor_score_mock = test_data.get("factor_score")
+    if args.get("severity") == "positive":
+        factor_score_mock = test_data.get("factor_score_severity_positive")
+    elif args.get("severity") == "high,low":
+        factor_score_mock = test_data.get("factor_score_severity_low_high")
+    else:
+        factor_score_mock = test_data.get("factor_score")
+
     mocker.patch.object(client, "get_company_factor_score", return_value=factor_score_mock)
 
     response: CommandResults = company_factor_score_get_command(client=client, args=args)
 
-    assert len(response.outputs) == factor_score_mock.get("total")
     assert response.outputs == factor_score_mock.get("entries")
 
 
