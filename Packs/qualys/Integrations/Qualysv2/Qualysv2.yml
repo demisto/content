@@ -2338,7 +2338,7 @@ script:
       predefined:
       - "0"
       - "1"
-      description: Enable or disable the restricted IPs list. set enable=1 to enable
+      description:  or disable the restricted IPs list. set enable=1 to enable
         the list; set enable=0 to clear any IPs in the list and disable the feature.
     - name: ips
       description: The hosts you want to add to, remove from or replace in the restricted
