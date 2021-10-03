@@ -5,7 +5,6 @@ import json
 import urllib3
 import traceback
 from typing import Tuple
-from urllib.parse import urljoin
 
 
 # Disable insecure warnings
