@@ -1,12 +1,16 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 ALL_OPTION = 'All'
 NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}\n' \
                     'Error details: {error}'
 ACTION_ON_CAMPAIGN_FIELD_NAME = 'actionsoncampaignincidents'
+ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = 'actionsonlowsimilarityincidents'
+
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = 'selectcampaignincidents'
+SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = 'selectlowsimilarityincidents'
 
 COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
@@ -17,7 +21,7 @@ def get_custom_field(filed_name):
     return custom_fields.get(filed_name)
 
 
-def get_campaign_incident_ids():
+def get_campaign_incident_ids(context_path):
     """
         Collect the campaign incidents ids form the context
 
@@ -29,7 +33,7 @@ def get_campaign_incident_ids():
     if isError(res):
         return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
 
-    incidents = demisto.get(res[0], 'Contents.context.EmailCampaign.incidents')
+    incidents = demisto.get(res[0], context_path)
     if incidents:
         ids = [str(incident.get('id')) for incident in incidents]
         ids.sort(key=lambda val: int(val))
@@ -120,10 +124,20 @@ ACTIONS_MAPPER = {
 
 def main():
     try:
-        action = get_custom_field(ACTION_ON_CAMPAIGN_FIELD_NAME).lower()
-        ids = get_custom_field(SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME)
+        similarity = demisto.args().get('similarity', 'High')
+
+        action_field_name = ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME if similarity.lower() == 'low' \
+            else ACTION_ON_CAMPAIGN_FIELD_NAME
+        select_field_name = SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME if similarity.lower() == 'low' \
+            else SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME
+
+        action = get_custom_field(action_field_name).lower()
+        ids = get_custom_field(select_field_name)
+
         if ALL_OPTION in ids:
-            ids = get_campaign_incident_ids()
+            context_path = 'Contents.context.EmailCampaign.LowerSimilarityIncidents' if similarity.lower() == 'low' \
+                else 'Contents.context.EmailCampaign.incidents'
+            ids = get_campaign_incident_ids(context_path)
 
         res = ACTIONS_MAPPER[action](ids, action) if ids else NO_CAMPAIGN_INCIDENTS_MSG
         return_results(res)
