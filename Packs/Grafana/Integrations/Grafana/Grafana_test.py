@@ -284,7 +284,7 @@ def test_concatenate_url(base_url, dict_input, expected_result):
 
     """
     client = create_client(url=base_url)
-    assert client._concatenate_url(dict_input) == expected_result
+    assert client._concatenate_urls(dict_input) == expected_result
 
 
 with open("TestData/alerts_to_filter_by_time.json") as alerts_to_filter_by_time_file:

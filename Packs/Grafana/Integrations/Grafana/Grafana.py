@@ -34,7 +34,7 @@ class Client(BaseClient):
         params = assign_params(dashboardId=dashboard_id, panelId=panel_id, query=query, state=state, limit=limit,
                                folderId=folder_id, dashboardQuery=dashboard_query, dashboardTag=dashboard_tag)
         response = self._http_request('GET', 'api/alerts', params=params, headers=self._headers)
-        response = self._concatenate_url(response)
+        response = self._concatenate_urls(response)
         return response
 
     def alert_pause_request(self, alert_id: str, paused: bool):
@@ -53,16 +53,19 @@ class Client(BaseClient):
         params = assign_params(perpage=perpage, page=page, query=query)
 
         response = self._http_request('GET', 'api/users', params=params, headers=self._headers)
+        response = self._concatenate_urls(response, 'avatarUrl')
 
         return response
 
     def user_get_by_id_request(self, user_id: str):
         response = self._http_request('GET', f'api/users/{user_id}', headers=self._headers)
+        response = self._concatenate_url(response, 'avatarUrl')
 
         return response
 
     def users_teams_request(self, user_id: str):
         response = self._http_request('GET', f'api/users/{user_id}/teams', headers=self._headers)
+        response = self._concatenate_urls(response, 'avatarUrl')
 
         return response
 
@@ -92,16 +95,19 @@ class Client(BaseClient):
         params = assign_params(perpage=perpage, page=page, query=query, name=name)
 
         response = self._http_request('GET', 'api/teams/search', params=params, headers=self._headers)
+        response = self._concatenate_urls(response['teams'], 'avatarUrl')
 
         return response
 
     def team_get_by_id_request(self, team_id: str):
         response = self._http_request('GET', f'api/teams/{team_id}', headers=self._headers)
+        response = self._concatenate_url(response, 'avatarUrl')
 
         return response
 
     def team_members_request(self, team_id: str):
         response = self._http_request('GET', f'api/teams/{team_id}/members', headers=self._headers)
+        response = self._concatenate_urls(response, 'avatarUrl')
 
         return response
 
@@ -162,21 +168,29 @@ class Client(BaseClient):
                                folderIds=folder_ids, starred=starred, limit=limit, page=page)
 
         response = self._http_request('GET', 'api/search', params=params, headers=self._headers)
-        response = self._concatenate_url(response)
+        response = self._concatenate_urls(response)
 
         return response
 
-    def _concatenate_url(self, responses: List[Dict[str, Any]]):
+    def _concatenate_urls(self, responses: List[Dict[str, Any]], url_field: str = 'url'):
+        """
+        Concatenates a url suffix with the base url for the places where only a suffix is returned.
+        Updates the list of dicts given, and returns it.
+        """
+        for response in responses:
+            self._concatenate_url(response, url_field)
+        return responses
+
+    def _concatenate_url(self, response: Dict[str, Any], url_field: str = 'url'):
         """
         Concatenates a url suffix with the base url for the places where only a suffix is returned, so urls we display will be
         clickable and lead to a real place.
         Updates the dict given, and returns it.
         """
-        for response in responses:
-            if 'url' in response:
-                url = urljoin(self._base_url, response['url'])
-                response['url'] = url
-        return responses
+        if url_field in response:
+            url = urljoin(self._base_url, response[url_field])
+            response[url_field] = url
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -503,13 +517,15 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     name = args.get('name')
 
     response = client.teams_search_request(perpage, page, query, name)
+    headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Team',
         outputs_key_field='id',
-        outputs=response['teams'],
-        raw_response=response['teams'],
-        readable_output=tableToMarkdown('Teams Search Results', response['teams'], removeNull=True, headerTransform=pascalToSpace)
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown('Teams Search Results:', response, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
