@@ -6,7 +6,8 @@ BELOW_THRESHOLD_ITEMS_CONTEXT_PATH = 'LowerSimilarityIncidents'
 ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = 'incidents'
 
 
-def save_to_context(items: list, context_path: str, delete_existing: bool = False, is_sub_playbook: str = 'auto'):
+def save_to_context(items: list, context_path: str, delete_existing: bool = False, is_sub_playbook: str = 'auto',
+                    table_header='Incidents Result'):
     if delete_existing:
         res = demisto.executeCommand('DeleteContext', {"key": context_path, "subplaybook": is_sub_playbook})
         if is_error(res):
@@ -14,14 +15,18 @@ def save_to_context(items: list, context_path: str, delete_existing: bool = Fals
 
     return CommandResults(
         outputs_prefix=context_path,
-        outputs=items)
+        outputs=items,
+        readable_output=tableToMarkdown(table_header, items))
 
 
-def _get_incident_campaign(id: int):
-    res = demisto.executeCommand('GetByIncidentId', {'incident_id': id, 'get_key': 'partofcampaign'})
+def _get_incident_campaign(_id: int):
+    res = demisto.executeCommand('getIncidents', {'id': _id})
+
     if is_error(res):
         return
-    return res
+
+    res_custom_fields = res[0]['Contents']['data'][0]['CustomFields']
+    return res_custom_fields['partofcampaign'] if 'partofcampaign' in res_custom_fields else None
 
 
 def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
@@ -60,8 +65,10 @@ def main():
         return
     only_lower_values, only_higher_values = filter_by_threshold(context, threshold)
     result = []
-    result.append(save_to_context(only_lower_values, below_threshold_context_path))
-    result.append(save_to_context(only_higher_values, above_threshold_context_path, True))
+    result.append(save_to_context(only_lower_values, below_threshold_context_path,
+                                  table_header='Low Similarity Incidents Result'))
+    result.append(save_to_context(only_higher_values, above_threshold_context_path, True,
+                                  table_header='High Similarity Incidents Result'))
     return_results(result)
 
 
