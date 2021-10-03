@@ -1,7 +1,6 @@
 {
-    "id": "indicatorfield_developertoolsparam1",
+    "id": "indicator_developertoolsparam1",
     "version": -1,
-    "modified": "2021-08-05T12:23:23.741648+03:00",
     "name": "Developer Tools param1",
     "ownerOnly": false,
     "cliName": "developertoolsparam1",
