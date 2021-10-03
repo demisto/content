@@ -47,11 +47,7 @@ def build_query_in_reepect_to_phishing_labels(args):
     return args
 
 
-def main():
-    d_args = dict(demisto.args())
-    for arg in ['tagField', 'emailbody', 'emailbodyhtml', 'emailsubject', 'timeField']:
-        d_args[arg] = preprocess_incidents_field(d_args.get(arg, ''))
-
+def get_incidents(d_args):
     get_incidents_by_query_args = copy.deepcopy(d_args)
     get_incidents_by_query_args['NonEmptyFields'] = d_args['tagField']
     fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
@@ -63,9 +59,10 @@ def main():
     if is_error(res):
         return_error(get_error(res))
     incidents = res[-1]['Contents']
-    del res
-    gc.collect()
+    return incidents
 
+
+def preprocess_incidents(incidents, d_args):
     text_pre_process_args = copy.deepcopy(d_args)
     text_pre_process_args['inputType'] = 'json_b64_string'
     text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8')).decode('ascii')
@@ -80,15 +77,30 @@ def main():
         return_error(get_error(res))
     processed_text_data = res[0]['Contents']
     demisto.results(res)
-    del res
-    gc.collect()
+    return processed_text_data
 
+
+def train_model(processed_text_data, d_args):
     train_model_args = copy.deepcopy(d_args)
     train_model_args['inputType'] = 'json_b64_string'
     train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8')).decode('ascii')
     train_model_args['overrideExistingModel'] = 'true'
     res = demisto.executeCommand("DBotTrainTextClassifierV2", train_model_args)
     demisto.results(res)
+
+
+def main():
+    d_args = dict(demisto.args())
+    for arg in ['tagField', 'emailbody', 'emailbodyhtml', 'emailsubject', 'timeField']:
+        d_args[arg] = preprocess_incidents_field(d_args.get(arg, ''))
+
+    incidents = get_incidents(d_args)
+    gc.collect()
+
+    processed_text_data = preprocess_incidents(incidents, d_args)
+    gc.collect()
+
+    train_model(processed_text_data, d_args)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
