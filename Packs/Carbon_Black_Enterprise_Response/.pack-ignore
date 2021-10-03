@@ -18,3 +18,6 @@ ignore=RM102,RM104
 
 [file:CBLiveGetFile_V2.yml]
 ignore=BA108,BA109
+
+[file:CarbonBlackResponseV2.yml]
+ignore=IN144
