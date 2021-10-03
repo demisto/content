@@ -1712,13 +1712,6 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'select '
-              suffix:
-                iscontext: true
-          - operator: concat
-            args:
-              prefix:
-                value:
                   simple: inputs.AdditionalSelectFields
                 iscontext: true
               suffix: {}
@@ -1734,6 +1727,13 @@ tasks:
                 value:
                   simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                iscontext: true
           - operator: replace
             args:
               limit: {}
