@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT"],
-    "useCases": ["IT Services", "Asset Management"],
-    "keywords": ["Ubuntu", "Debian", "CentOS", "Red Hat", "FreeBSD"]
+    "useCases": [],
+    "keywords": ["Ubuntu", "Debian", "CentOS", "Red Hat", "FreeBSD", "Asset Management"]
 }

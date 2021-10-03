@@ -850,7 +850,7 @@ view: |-
     }
   }
 inputs:
-- key: sourceBrand
+- key: sourcebrand
   value: {}
   required: false
   description: Id of Integration that we want to test.
@@ -858,7 +858,7 @@ inputs:
 - key: searchfield
   value: {}
   required: false
-  description: Comma separated list of fields to confirm that exists in al indicators.
+  description: Comma separated list of fields to confirm that exists in all incidents.
   playbookInputQuery: null
 outputs: []
 fromversion: 6.0.0

@@ -10,6 +10,6 @@
         "IT Services"
     ],
     "tags": ["IT"],
-    "useCases": ["IT Services", "Asset Management"],
-    "keywords": ["HCloud"]
+    "useCases": [],
+    "keywords": ["HCloud", "Asset Management"]
 }

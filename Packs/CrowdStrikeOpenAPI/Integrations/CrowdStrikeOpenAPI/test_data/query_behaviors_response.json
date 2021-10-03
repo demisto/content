@@ -1,0 +1,16 @@
+{
+	"errors": [],
+	"meta": {
+		"pagination": {
+			"limit": 1,
+			"offset": 0,
+			"total": 25911
+		},
+		"powered_by": "incident-api",
+		"query_time": 0.004702694,
+		"trace_id": "8862b914-845f-44fe-85a4-b985c1705827"
+	},
+	"resources": [
+		"ind:32dbb9d8f06b45fe9f61eb46K829d986:225219242032-10197-31124736"
+	]
+}
