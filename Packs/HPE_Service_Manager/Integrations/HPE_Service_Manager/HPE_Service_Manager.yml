@@ -179,12 +179,7 @@ script:
              newRequest[params.resourcename]['Purpose'] = args.purpose;
         }
 
-        if (args.callbackcontactname == args.contactname) {
-            requested_for = args.contactname;
-        } else {
-            requested_for = args.callbackcontactname;
-        }
-        newRequest[params.resourcename]['cartItems'] = [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': requested_for }];
+        newRequest[params.resourcename]['cartItems'] = [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': args.callbackcontactname }];
 
         //throw JSON.stringify(newRequest)
         var res = doPost('/'+params.resourcename, newRequest);
