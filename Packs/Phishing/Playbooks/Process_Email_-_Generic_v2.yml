@@ -1224,7 +1224,7 @@ tasks:
       context_path:
         simple: headers
       grid_id:
-        simple: emailheaders
+        simple: phishingemailthreadheaders
       overwrite:
         simple: "true"
       sort_by:
