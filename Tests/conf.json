@@ -4480,7 +4480,8 @@
             "integrations": [
                 "XsoarPowershellTesting",
                 "Create-Mock-Feed-Relationships"
-            ]
+            ],
+            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
@@ -4624,7 +4625,6 @@
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
