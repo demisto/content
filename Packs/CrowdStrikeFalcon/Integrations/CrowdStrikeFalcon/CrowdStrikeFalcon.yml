@@ -2142,7 +2142,354 @@ script:
     - contextPath: Endpoint.OSVersion
       description: The endpoint's operation system version.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  - arguments:
+    - default: false
+      description: The name of the host.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type of the group. Can be 'static' or 'dynamic'.
+      isArray: false
+      name: group_type
+      predefined:
+        - static
+        - dynamic
+      required: true
+      secret: false
+    - default: false
+      description: The description of the host.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The assignment rule.
+      isArray: false
+      name: assignment_rule
+      required: false
+      secret: false
+      deprecated: false
+    description: Create a host group.
+    execution: false
+    name: cs-falcon-create-host-group
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+  - arguments:
+    - default: false
+      description: The query by which to filter the devices that belong to the host group.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Page offset.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 50
+      description: Maximum number of results on a page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    description: List the available host groups.
+    execution: false
+    name: cs-falcon-list-host-groups
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+  - arguments:
+    - default: false
+      description: A comma-separated list of the IDs of the host groups to be deleted.
+      isArray: true
+      name: host_group_id
+      required: true
+      secret: false
+    description: Delete the requested host groups.
+    execution: false
+    name: cs-falcon-delete-host-groups
+  - arguments:
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: The name of the host group.
+        isArray: false
+        name: name
+        required: false
+        secret: false
+      - default: false
+        description: The description of the host group.
+        isArray: false
+        name: description
+        required: false
+        secret: false
+      - default: false
+        description: The assignment rule.
+        isArray: false
+        name: assignment_rule
+        required: false
+        secret: false
+    deprecated: false
+    description: Update a host group.
+    execution: false
+    name: cs-falcon-update-host-group
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+  - arguments:
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: false
+        secret: false
+      - default: false
+        description: The query by which to filter the devices that belong to the host group.
+        isArray: false
+        name: filter
+        required: false
+        secret: false
+      - default: false
+        description: Page offset.
+        isArray: false
+        name: offset
+        required: false
+        secret: false
+      - default: true
+        defaultValue: 50
+        description: Maximum number of results on a page.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+    deprecated: false
+    description: Get the list of host group members.
+    execution: false
+    name: cs-falcon-list-host-group-members
+    outputs:
+    - contextPath: CrowdStrike.Device.ID
+      description: The ID of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LocalIP
+      description: The local IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.ExternalIP
+      description: The external IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.Hostname
+      description: The host name of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.OS
+      description: The operating system of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.MacAddress
+      description: The MAC address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.FirstSeen
+      description: The first time the device was seen.
+      type: String
+    - contextPath: CrowdStrike.Device.LastSeen
+      description: The last time the device was seen.
+      type: String
+    - contextPath: CrowdStrike.Device.Status
+      description: The device status.
+      type: String
+  - arguments:
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of host agent IDs to run commands. (The
+                  list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
+    deprecated: false
+    description: Add host group members.
+    execution: false
+    name: cs-falcon-add-host-group-members
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+  - arguments:
+      - default: false
+        description: The ID of the host group.
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: A comma-separated list of host agent IDs to run commands. (The
+                      list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
+    deprecated: false
+    description: Remove host group members.
+    execution: false
+    name: cs-falcon-remove-host-group-members
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The ID of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The client that created the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.'
+        type: Date
+  - arguments:
+      - default: false
+        description: A comma-separated list of incident IDs.
+        isArray: true
+        name: ids
+        required: true
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed".
+        isArray: false
+        name: status
+        predefined:
+          - New
+          - In Progress
+          - Reopened
+          - Closed
+        required: true
+        secret: false
+    deprecated: false
+    description: Resolve incidents.
+    execution: false
+    name: cs-falcon-resolve-incident
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

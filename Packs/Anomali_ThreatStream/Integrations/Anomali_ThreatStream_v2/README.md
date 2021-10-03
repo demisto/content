@@ -22,6 +22,7 @@ Use Anomali ThreatStream to query and submit threats.
 | username | Username | True |
 | apikey | API Key | True |
 | default_threshold | Threshold of the indicator. | True |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is B - Usually reliable. | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 

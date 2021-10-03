@@ -1,4 +1,5 @@
 # pylint: disable=no-member
+import gc
 
 import pandas as pd
 from typing import List, Dict
@@ -427,7 +428,8 @@ def main():
                                                              context_field='DBotPhishingClassifier')
     actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
-        phishing_model = None
+        del phishing_model
+        gc.collect()
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])

@@ -5,6 +5,7 @@ import io
 import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.errors import SlackApiError
 
 from unittest.mock import MagicMock
 
@@ -224,27 +225,27 @@ async def test_get_slack_name_user(mocker):
 
     #
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'users_info', side_effect=users_info)
-    mocker.patch.object(socket_client.web_client, 'conversations_info', side_effect=conversations_info)
+    mocker.patch.object(socket_client, 'users_info', side_effect=users_info)
+    mocker.patch.object(socket_client, 'conversations_info', side_effect=conversations_info)
     # Assert 6516
 
     # User in integration context
     user_id = 'U012A3CDE'
     name = await get_slack_name(user_id, socket_client)
     assert name == 'spengler'
-    assert socket_client.web_client.call_count == 0
+    assert socket_client.call_count == 0
 
     # User not in integration context
     unknown_user = 'USASSON'
     name = await get_slack_name(unknown_user, socket_client)
     assert name == 'spengler'
-    assert socket_client.web_client.users_info.call_count == 1
+    assert socket_client.users_info.call_count == 1
 
     # User does not exist
     nonexisting_user = 'alexios'
     name = await get_slack_name(nonexisting_user, socket_client)
     assert name == ''
-    assert socket_client.web_client.users_info.call_count == 1
+    assert socket_client.users_info.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -265,8 +266,8 @@ async def test_get_slack_name_channel(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(socket_client.web_client, 'users_info', side_effect=users_info)
-    mocker.patch.object(socket_client.web_client, 'conversations_info',
+    mocker.patch.object(socket_client, 'users_info', side_effect=users_info)
+    mocker.patch.object(socket_client, 'conversations_info',
                         side_effect=conversations_info)
 
     # Assert
@@ -275,19 +276,19 @@ async def test_get_slack_name_channel(mocker):
     channel_id = 'C012AB3CD'
     name = await get_slack_name(channel_id, socket_client)
     assert name == 'general'
-    assert socket_client.web_client.api_call.call_count == 0
+    assert socket_client.api_call.call_count == 0
 
     # Channel not in integration context
     unknown_channel = 'CSASSON'
     name = await get_slack_name(unknown_channel, socket_client)
     assert name == 'general'
-    assert socket_client.web_client.conversations_info.call_count == 1
+    assert socket_client.conversations_info.call_count == 1
 
     # Channel doesn't exist
     nonexisting_channel = 'lulz'
     name = await get_slack_name(nonexisting_channel, socket_client)
     assert name == ''
-    assert socket_client.web_client.conversations_info.call_count == 1
+    assert socket_client.conversations_info.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -1386,7 +1387,7 @@ async def test_handle_dm_create_demisto_user(mocker):
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
 
     user = js.loads(USERS)[0]
 
@@ -1433,7 +1434,7 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
@@ -1468,7 +1469,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=fake_translate)
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
@@ -1499,7 +1500,7 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(demisto, 'directMessage', return_value=None)
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
@@ -1539,13 +1540,13 @@ async def test_handle_dm_empty_message(mocker):
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(demisto, 'directMessage', return_value=None)
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
     user = js.loads(USERS)[0]
 
     # Arrange
     await handle_dm(user, 'wazup', socket_client)
 
-    calls = socket_client.web_client.api_call.call_args_list
+    calls = socket_client.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
 
@@ -1570,7 +1571,7 @@ async def test_handle_dm_create_with_error(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'translate_create', side_effect=InterruptedError('omg'))
 
     user = js.loads(USERS)[0]
@@ -1583,7 +1584,7 @@ async def test_handle_dm_create_with_error(mocker):
 
     demisto_user = SlackV3.translate_create.call_args[0][3]
     incident_string = SlackV3.translate_create.call_args[0][0]
-    calls = socket_client.web_client.api_call.call_args_list
+    calls = socket_client.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
 
@@ -1787,7 +1788,7 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
     socket_client = AsyncMock()
-    mocker.patch.object(socket_client.web_client, 'api_call', side_effect=api_call)
+    mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
 
     user_id = 'XXXXXXX'
 
@@ -1796,7 +1797,7 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
 
     # Assert
 
-    assert socket_client.web_client.api_call.call_count == 1
+    assert socket_client.api_call.call_count == 1
     assert demisto.setIntegrationContext.call_count == 1
     assert user['name'] == 'spengler'
 
@@ -2071,7 +2072,8 @@ def test_send_request_with_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High',
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2124,7 +2126,8 @@ def test_send_request_with_notification_channel(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2482,7 +2485,8 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2577,7 +2581,8 @@ def test_send_request_no_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -2622,7 +2627,8 @@ def test_send_request_zero_severity(mocker):
     import SlackV3
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
-                                                         'min_severity': 'High', 'notify_incidents': True})
+                                                         'min_severity': 'High', 'notify_incidents': True,
+                                                         'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
 
@@ -3492,7 +3498,7 @@ async def test_message_setting_name_and_icon_async(mocker):
 
     # Arrange
     await send_slack_request_async(socket_client, 'chat.postMessage', body={'channel': 'c', 'text': 't'})
-    send_args = socket_client.web_client.api_call.call_args[1]
+    send_args = socket_client.api_call.call_args[1]
 
     # Assert
     assert 'username' in send_args['json']
@@ -3516,7 +3522,7 @@ async def test_message_not_setting_name_and_icon_async(mocker):
 
     # Arrange
     await send_slack_request_async(socket_client, 'conversations.setTopic', body={'channel': 'c', 'topic': 't'})
-    send_args = socket_client.web_client.api_call.call_args[1]
+    send_args = socket_client.api_call.call_args[1]
 
     # Assert
     assert 'username' not in send_args['json']
@@ -3724,3 +3730,193 @@ def test_get_poll_minutes(sent, expected_minutes):
 
     # Assert
     assert minutes == expected_minutes
+
+
+def test_edit_message(mocker):
+    """
+    Given:
+        The text 'Boom', a threadID and known channel.
+
+    When:
+        Editing a message
+
+    Then:
+        Send a request to slack where the text includes the url footer, and valid channel ID.
+    """
+    import SlackV3
+    # Set
+
+    slack_response_mock = SlackResponse(
+        client=None,
+        http_verb='',
+        api_url='',
+        req_args={},
+        headers={},
+        status_code=200,
+        data={
+            'ok': True,
+            'channel': 'C061EG9T2',
+            'ts': '1629281551.001000',
+            'text': 'Boom\nView it on: <https://www.eizelulz.com:8443/#/WarRoom/727>',
+            'message': {
+                'type': 'message',
+                'subtype': 'bot_message',
+                'text': 'Boom\nView it on: <https://www.eizelulz.com:8443/#/WarRoom/727>',
+                'username': 'Cortex XSOAR',
+                'icons': {
+                    'image_48': 'https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-06-29/2227534346388_48.png'
+                },
+                'bot_id': 'B01UZHGMQ9G'
+            }
+        }
+    )
+
+    expected_body = {
+        'body': {
+            'channel': 'C061EG9T2',
+            'ts': '1629281551.001000',
+            'text': 'Boom\nView it on: https://www.eizelulz.com:8443/#/WarRoom/727'
+        }
+    }
+
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000", "message": "Boom"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
+
+    # Arrange
+    SlackV3.slack_edit_message()
+
+    args = SlackV3.send_slack_request_sync.call_args.kwargs
+
+    # Assert
+    assert SlackV3.send_slack_request_sync.call_count == 1
+
+    assert args == expected_body
+
+
+def test_edit_message_not_valid_thread_id(mocker):
+    """
+    Given:
+        The text 'Boom', an incorrect threadID and known channel.
+
+    When:
+        Editing a message
+
+    Then:
+        Send a request to slack where the text includes the url footer, and valid channel ID.
+    """
+    import SlackV3
+    # Set
+
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='POST',
+                                                req_args={},
+                                                data={'ok': False, 'error': 'message_not_found'},
+                                                status_code=429,
+                                                headers={})
+    api_call = SlackApiError('The request to the Slack API failed.', err_response)
+
+    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': "
+                     "False, 'error': 'message_not_found'}")
+
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "162928", "message": "Boom"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        SlackV3.slack_edit_message()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert err_msg == expected_body
+
+
+def test_pin_message(mocker):
+    """
+     Given:
+        The a valid threadID and known channel.
+
+    When:
+        Pinning a message
+
+    Then:
+        Send a request to slack where message is successfully pinned.
+    """
+    import SlackV3
+    # Set
+
+    slack_response_mock = {
+        'ok': True
+    }
+
+    expected_body = {
+        'body': {
+            'channel': 'C061EG9T2',
+            'timestamp': '1629281551.001000'
+        }
+    }
+
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
+
+    # Arrange
+    SlackV3.pin_message()
+
+    args = SlackV3.send_slack_request_sync.call_args.kwargs
+
+    # Assert
+    assert SlackV3.send_slack_request_sync.call_count == 1
+
+    assert args == expected_body
+
+
+def test_pin_message_invalid_thread_id(mocker):
+    """
+     Given:
+        The an invalid threadID and known channel.
+
+    When:
+        Pinning a message.
+
+    Then:
+        Send a request to slack where an error message is returned indicating the message could not
+        be found.
+    """
+    import SlackV3
+    # Set
+
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='POST',
+                                                req_args={},
+                                                data={'ok': False, 'error': 'message_not_found'},
+                                                status_code=429,
+                                                headers={})
+    api_call = SlackApiError('The request to the Slack API failed.', err_response)
+
+    expected_body = (
+        'The request to the Slack API failed.\n'"The server responded with: {'ok': False, "
+        "'error': 'message_not_found'}")
+
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        SlackV3.pin_message()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert err_msg == expected_body

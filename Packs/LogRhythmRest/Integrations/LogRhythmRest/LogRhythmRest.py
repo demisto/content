@@ -1630,7 +1630,7 @@ def lr_get_case_evidence(data_args):
 
 
 def lr_execute_search_query(data_args):
-    number_of_date = data_args.get('number_of_date')
+    number_of_days = data_args.get('number_of_days')
     source_type = data_args.get('source_type')
     host_name = data_args.get('host_name')
     username = data_args.get('username')
@@ -1693,7 +1693,7 @@ def lr_execute_search_query(data_args):
         "queryEventManager": False,
         "dateCriteria": {
             "useInsertedDate": False,
-            "lastIntervalValue": int(number_of_date),
+            "lastIntervalValue": int(number_of_days),
             "lastIntervalUnit": 4
         },
         "queryLogSources": [],

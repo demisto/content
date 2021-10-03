@@ -1,5 +1,5 @@
 from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main,\
-    fetch_indicators_command
+    fetch_indicators_command, get_no_update_value
 import requests_mock
 import demistomock as demisto
 
@@ -372,8 +372,8 @@ def test_get_indicators_with_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                              create_relationships=True)
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                                 create_relationships=True)
 
         assert indicators == expected_res
 
@@ -437,7 +437,47 @@ def test_get_indicators_without_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                              create_relationships=False)
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                                 create_relationships=False)
 
         assert indicators == expected_res
+
+
+def test_get_no_update_value_empty_context():
+    """
+    Given
+    - response with last_modified and etag headers.
+
+    When
+    - Running get_no_update_value method with empty integration context.
+
+    Then
+    - Ensure that the response is True.
+    """
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert no_update
+
+
+def test_get_no_update_value(mocker):
+    """
+    Given
+    - response with last_modified and etag headers with the same values like in the integration context.
+
+    When
+    - Running get_no_update_value method.
+
+    Then
+    - Ensure that the response is False
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
+
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert not no_update

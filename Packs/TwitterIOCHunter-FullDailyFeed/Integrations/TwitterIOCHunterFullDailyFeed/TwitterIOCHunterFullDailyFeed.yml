@@ -83,15 +83,31 @@ configuration:
   - WHITE
   required: false
   type: 15
+- additionalinfo: Select type of feed to get. Full for all, Username for filter by
+    username and Hashtag for filtered by the hashtag.
+  defaultvalue: Full
+  display: Type of Feed
+  name: typeoffeed
+  options:
+  - Full
+  - Username
+  - Hashtag
+  required: false
+  type: 15
+- additionalinfo: Input the Username or Hashtag you want to use as a filter
+  display: Filter to Use
+  name: filtertouse
+  required: false
+  type: 0
 description: Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
-display: TwitterIOCHunter - Full Daily Feed
+display: TwitterIOCHunter Feed
 name: TwitterIOCHunter - Full Daily Feed
 script:
   commands:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isFetchSamples: true
   runonce: false
