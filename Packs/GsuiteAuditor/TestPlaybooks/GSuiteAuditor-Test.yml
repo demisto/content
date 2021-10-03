@@ -1,6 +1,6 @@
-id: TestGSuiteAuditPlaybook
+id: GSuiteAuditor-Test
 version: -1
-name: TestGSuiteAuditPlaybook
+name: GSuiteAuditor-Test
 description: This playbook uses the G Suite Auditor integration and tests it's single
   command - 'gsuite-activity-search'
 starttaskid: "0"

@@ -194,5 +194,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultmapperin: GSuiteAuditor - Incoming Mapper
 fromversion: 5.5.0

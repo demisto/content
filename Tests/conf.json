@@ -46,7 +46,7 @@
         },
         {
             "integrations": "GSuiteAuditor",
-            "playbookID": "TestGSuiteAuditPlaybook",
+            "playbookID": "GSuiteAuditor-Test",
             "fromversion": "5.0.0"
         },
         {
