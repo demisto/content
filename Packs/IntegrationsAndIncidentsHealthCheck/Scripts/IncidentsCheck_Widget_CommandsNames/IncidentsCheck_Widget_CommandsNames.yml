@@ -3,7 +3,7 @@ comment: Data output script for populating the dashboard pie graph widget with t
 commonfields:
   id: IncidentsCheck-Widget-CommandsNames
   version: -1
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: IncidentsCheck-Widget-CommandsNames
 runas: DBotWeakRole
