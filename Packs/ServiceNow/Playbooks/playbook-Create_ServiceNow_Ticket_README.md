@@ -38,10 +38,10 @@ This playbook does not use any scripts.
 | PollingTimeout | Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) |  | Optional |
 | AdditionalPollingCommandName | In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. <br/>If so, please add "Using" to the value. <br/>The playbook will then take the instance name as the instance to use.  |  | Optional |
 | InstanceName | Set the ServiceNow Instance that will be used for mirroring/running polling commands.<br/> |  | Optional |
-| MirrorDirection | Set the mirror direction, should be one of the following: <br/>1. In<br/>2. Out<br/>3. Both | Both | Optional |
+| MirrorDirection | Set the mirror direction. It should be one of the following: <br/>1. In<br/>2. Out<br/>3. Both | Both | Optional |
 | MirrorCommentTags | Set tags for mirror comments and files to ServiceNow. | comments,work_notes,ForServiceNow | Optional |
-| FieldPolling | Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. | true | Optional |
-| TicketType | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
+| FieldPolling | Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. | true | Optional |
+| TicketType | Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". |  | Optional |
 
 ## Playbook Outputs
 ---
