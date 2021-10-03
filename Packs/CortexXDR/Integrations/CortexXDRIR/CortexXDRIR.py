@@ -64,7 +64,23 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
-ALERTS_GENERAL_FIELDS = {
+ALERT_GENERAL_FIELDS = {
+    'detection_modules',
+    'alert_full_description',
+    'matching_service_rule_id',
+    'variation_rule_id',
+    'content_version',
+    'detector_id',
+    'mitre_technique_id_and_name',
+    'silent',
+    'mitre_technique_ids',
+    'activity_first_seet_at',
+    '_type',
+    'dst_association_strength',
+    'alert_description',
+}
+
+ALERT_EVENT_GENERAL_FIELDS = {
     "_time",
     "vendor",
     "event_timestamp",
@@ -110,7 +126,7 @@ ALERTS_GENERAL_FIELDS = {
     "ingestion_time",
 }
 
-ALERTS_AWS_FIELDS = {
+ALERT_EVENT_AWS_FIELDS = {
     "eventVersion",
     "userIdentity",
     "eventTime",
@@ -132,7 +148,7 @@ ALERTS_AWS_FIELDS = {
     "resources",
 }
 
-ALERTS_GCP_FIELDS = {
+ALERT_EVENT_GCP_FIELDS = {
     "labels",
     "operation",
     "protoPayload",
@@ -141,7 +157,7 @@ ALERTS_GCP_FIELDS = {
     "timestamp",
 }
 
-ALERTS_AZURE_FIELDS = {
+ALERT_EVENT_AZURE_FIELDS = {
     "time",
     "resourceId",
     "category",
@@ -3367,15 +3383,20 @@ def decode_dict_values(dict_to_decode: dict):
 
 
 def filter_general_fields(alert: dict):
-    alert.pop('external_id', None)
-    alert.pop('_detection_method', None)
-    alert.pop('alert_source', None)
-    alert.pop('severity', None)
+    updated_alert = {}
+    updated_event = {}
+    for field in ALERT_GENERAL_FIELDS:
+        if field in alert:
+            updated_alert[field] = alert.get(field)
+
     event = alert.get('raw_abioc', {}).get('event', {})
     if event and isinstance(event, dict):
         for key in list(event):
-            if key not in ALERTS_GENERAL_FIELDS:
-                event.pop(key)
+            if key in ALERT_EVENT_GENERAL_FIELDS:
+                updated_event[key] = event.get(key)
+        if updated_event:
+            updated_alert['event'] = updated_event
+        return updated_alert
     else:
         return_warning('No XDR cloud analytics event.')
         sys.exit(0)
@@ -3383,9 +3404,9 @@ def filter_general_fields(alert: dict):
 
 def filter_vendor_fields(alert):
     vendor_mapper = {
-        'Amazon': ALERTS_AWS_FIELDS,
-        'Google': ALERTS_GCP_FIELDS,
-        'Microsoft': ALERTS_AZURE_FIELDS,
+        'Amazon': ALERT_EVENT_AWS_FIELDS,
+        'Google': ALERT_EVENT_GCP_FIELDS,
+        'Microsoft': ALERT_EVENT_AZURE_FIELDS,
     }
     event = alert.get('raw_abioc', {}).get('event', {})
     vendor = event.get('vendor')
@@ -3402,7 +3423,7 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
-    for alert in alerts:
+    for i, alert in enumerate(alerts):
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3413,8 +3434,9 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
             continue
         alert.update(
             alert.pop('original_alert_json', None))  # remove original_alert_json field and add its content to alert.
-        filter_general_fields(alert)
-        filter_vendor_fields(alert)
+        updated_alert = filter_general_fields(alert)
+        filter_vendor_fields(updated_alert)
+        alerts[i] = updated_alert
 
     return CommandResults(
         readable_output=tableToMarkdown('Original Alerts', alerts, headerTransform=string_to_table_header),
