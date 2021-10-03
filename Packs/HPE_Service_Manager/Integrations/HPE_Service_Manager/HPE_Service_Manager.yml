@@ -161,7 +161,6 @@ script:
                 Purpose: [
                     args.purpose
                 ],
-                Service: args.service,
                 Title: args.title,
             }
         };
