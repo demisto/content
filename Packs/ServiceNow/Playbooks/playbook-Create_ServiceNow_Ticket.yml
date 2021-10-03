@@ -396,7 +396,7 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n\
+  description: "Set the mirror direction. It should be one of the following: \n1. In\n\
     2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
@@ -410,14 +410,14 @@ inputs:
     simple: "true"
   required: false
   description: |-
-    Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.
+    Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
     It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.
     FieldPolling will run until the ticket state is either resolved or closed.
   playbookInputQuery:
 - key: TicketType
   value: {}
   required: false
-  description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+  description: Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request",
     "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 outputs: []
