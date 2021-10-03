@@ -2962,4 +2962,3 @@ def test_generate_status_field_invalid():
     from CrowdStrikeFalcon import generate_status_fields
     with pytest.raises(DemistoException):
         generate_status_fields('unknown status')
-
