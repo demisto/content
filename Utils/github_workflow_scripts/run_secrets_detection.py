@@ -34,8 +34,8 @@ def main():
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number}
     }
-    res = requests.post(secrets_instance_url, json=body, auth=(username, password))
-    print(res)
+    # post to Content Gold
+    requests.post(secrets_instance_url, json=body, auth=(username, password))
 
 
 if __name__ == "__main__":
