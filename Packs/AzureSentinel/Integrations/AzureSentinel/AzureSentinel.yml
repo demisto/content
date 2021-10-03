@@ -12,7 +12,7 @@ configuration:
 - display: Tenant ID
   name: tenant_id
   required: true
-  type: 4
+  type: 0
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
