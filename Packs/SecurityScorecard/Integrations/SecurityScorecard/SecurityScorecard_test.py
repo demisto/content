@@ -251,12 +251,12 @@ def test_portfolio_list_companies(mocker, args: Dict[str, Any]):
         if args.get("industry"):
             companies_mock: Dict[str, str] = test_data.get("companies_A_grade_food_industry")
         else:
-            companies_mock: Dict[str, str] = test_data.get("companies_A_grade")
+            companies_mock = test_data.get("companies_A_grade")
 
     else:
-        companies_mock: Dict[str, str] = test_data.get("companies")
+        companies_mock = test_data.get("companies")
 
-    companies_entries: List[Dict[str, Any]] = companies_mock.get("entries")
+    companies_entries: List[Dict[str, Any]] = companies_mock.get("entries")  # type: ignore
 
     mocker.patch.object(client, "get_companies_in_portfolio", return_value=companies_mock)
 
@@ -486,8 +486,6 @@ def test_get_company_historical_factor_scores(mocker, args):
 
 grade_alert_test_input = [
     ({"change_direction": "rises", "score_types": "overall", "target": None, "portfolios": PORTFOLIO_ID}),
-    ({"change_direction": "drops", "score_types": "overall,cubit_score", "target": None, "portfolios": PORTFOLIO_ID}),
-    ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolios": None}),
     ({"change_direction": "rises", "score_types": "application_security", "target": "my_scorecard", "portfolios": "1"}),
     ({"change_direction": "rises", "score_types": "application_security", "target": None, "portfolios": None})
 ]
@@ -502,14 +500,10 @@ def test_create_grade_change_alert(mocker, args):
         - Target or Portfolio(s)
     When:
         - Case A: rising grade, overall score type, to portfolio
-        - Case B: dropping grade, overall and cubit score score types, to portfolio
-        - Case C: rising grade, application security score type to my scorecard
-        - Case D: Both portfolio and target are specified
-        - Case E: Neither portfolio and target are specified
+        - Case B: Both portfolio and target are specified
+        - Case C: Neither portfolio and target are specified
     Then:
         - Case A: Alert created
-        - Case B: Alert created
-        - Case C: Alert created
         - Case D: DemistoException thrown
         - Case E: DemistoException thrown
     """
@@ -545,11 +539,10 @@ def test_create_grade_change_alert(mocker, args):
 
 score_alert_test_input = [
     ({"change_direction": "rises", "threshold": 90, "score_types": "overall", "target": None, "portfolios": PORTFOLIO_ID}),
-    ({"change_direction": "drops", "threshold": 90, "score_types": "overall,cubit_score", "target": None, "portfolios": "1"}),
-    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": "my_scorecard",
-        "portfolios": None}),
     ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": "my_scorecard",
         "portfolios": "1"}),
+    ({"change_direction": "rises", "threshold": 90, "score_types": "application_security", "target": None,
+        "portfolios": None}),
     ({"change_direction": "rises", "threshold": "A", "score_types": "application_security", "target": None, "portfolios": None}),
 ]
 
@@ -565,18 +558,14 @@ def test_create_score_change_alert(mocker, args):
         - Target or Portfolio(s)
     When:
         - Case A: Username is valid, rising grade, overall score type, to portfolio
-        - Case B: Username is valid, dropping grade, overall and cubit score score types, to portfolio
-        - Case C: Username is valid, rising grade, application security score type to my scorecard
-        - Case D: Both portfolio and target are specified
-        - Case E: Neither portfolio and target are specified
-        - Case E: Threshold supplied is not a number
+        - Case B: Both portfolio and target are specified
+        - Case C: Neither portfolio and target are specified
+        - Case D: Threshold supplied is not a number
     Then:
         - Case A: Alert created
-        - Case B: Alert created
-        - Case C: Alert created
-        - Case D: DemistoException thrown
-        - Case E: DemistoException thrown
-        - Case F: ValueError thrown
+        - Case B: DemistoException thrown
+        - Case C: DemistoException thrown
+        - Case D: ValueError thrown
     """
 
     create_score_alert_mock = test_data.get("create_score_alert")

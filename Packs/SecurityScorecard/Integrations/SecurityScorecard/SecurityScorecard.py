@@ -220,7 +220,7 @@ class SecurityScorecardClient(BaseClient):
         json_data: Optional[dict] = None,
         return_empty_response: Optional[bool] = False
     ):
-        """Wrapper for the http_request function
+        """Wrapper for the ``http_request`` function
 
         Args:
             ``self`` (``SecurityScorecardClient``).
@@ -314,9 +314,9 @@ def incidents_to_import(
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    last_run = get_last_run(last_run=last_run, first_fetch=first_fetch)  # type: ignore
+    last_run_timestamp = get_last_run(last_run=last_run, first_fetch=first_fetch)  # type: ignore
 
-    demisto.debug(f"Last run timestamp: {last_run}")
+    demisto.debug(f"Last run timestamp: {last_run_timestamp}")
 
     incidents_to_import: List[Dict[str, Any]] = []
 
@@ -356,13 +356,10 @@ def incidents_to_import(
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp
-    # So we'll use now as the last run timestamp
+    # So we'll use the last run timestamp (last alert fetch modified date)
     else:
-        now = int(datetime.utcnow().timestamp())
-        demisto.debug(f"No alerts retrieved, setting last_run to now ({now})")
-        demisto.setLastRun({
-            'last_run': now
-        })
+        demisto.debug(f"No alerts retrieved, setting last_run to last modified time ({last_run_timestamp})")
+        demisto.setLastRun(last_run_timestamp)
 
     return incidents_to_import
 
@@ -395,15 +392,9 @@ def test_module(
     if max_incidents > 50:
         return "Test failed. Max Fetch is larger than 50."
 
-    try:
-        client.fetch_alerts(page_size=1, page=1)
-        demisto.debug("Test module successful")
-        return('ok')
-    except DemistoException as e:
-        if 'Unauthorized' in str(e):
-            return('Authorization Error: make sure API Key is correctly set')
-        else:
-            raise e
+    client.fetch_alerts(page_size=1, page=1)
+    demisto.debug("Test module successful")
+    return('ok')
 
 # region Methods
 # ---------------
@@ -645,7 +636,7 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
 
     domain = args.get("domain")
     _from = args.get("from")
-    to = args.get("to") 
+    to = args.get("to")
     timing = args.get("timing")
 
     response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
