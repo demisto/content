@@ -76,7 +76,6 @@ def fetch_indicators_command(
         else None
     )
 
-    # filter_args = {"type": "indicator"}
     filter_args = {}
 
     if client.collection_to_fetch is None:
@@ -107,64 +106,6 @@ def fetch_indicators_command(
         )
     return indicators, last_run_ctx
 
-# def replace_fetch_command(
-#         client,
-#         initial_interval,
-#         limit,
-#         last_run_ctx,
-#         fetch_full_feed: bool = False,
-# ) -> Tuple[list, dict]:
-#     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-#                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
-#
-#     if initial_interval:
-#         initial_interval, _ = parse_date_range(
-#             initial_interval, date_format=TAXII_TIME_FORMAT
-#         )
-#
-#     last_fetch_time = (
-#         last_run_ctx.get(client.collection_to_fetch.id)
-#         if client.collection_to_fetch
-#         else None
-#     )
-#
-#     filter_args = {}
-#
-#     for obj_type in objects_types:
-#         stix_objects = []
-#         filter_args['type'] = obj_type
-#         if client.collection_to_fetch is None:  # fix this block of the func
-#             # fetch all collections
-#             if client.collections is None:
-#                 raise DemistoException(ERR_NO_COLL)
-#             indicators: list = []
-#
-#             for collection in client.collections:
-#
-#                 client.collection_to_fetch = collection
-#                 filter_args["added_after"] = get_added_after(
-#                     fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
-#                 )
-#                 fetched_iocs = client.build_iterator(limit, **filter_args)
-#                 indicators.extend(fetched_iocs)
-#                 if limit >= 0:
-#                     limit -= len(fetched_iocs)
-#                     if limit <= 0:
-#                         break
-#                 last_run_ctx[collection.id] = client.last_fetched_indicator__modified
-#         else:
-#             # fetch from a single collection
-#             filter_args["added_after"] = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-#             stix_objects = client.get_stix_objects(limit, **filter_args) # got list of objects from one type
-#             client.objects_data[obj_type] = stix_objects
-#             # indicators = client.build_iterator(limit, **filter_args)
-#             last_run_ctx[client.collection_to_fetch.id] = (
-#                 client.last_fetched_indicator__modified
-#                 if client.last_fetched_indicator__modified
-#                 else filter_args.get("added_after")
-#             )
-#
-
 
 def get_added_after(
     fetch_full_feed, initial_interval, last_fetch_time=None
@@ -194,10 +135,7 @@ def get_indicators_command(
     :return: indicators in cortex TIM format
     """
 
-    # add filter for indicator types by default
-    # filter_args = {"type": "indicator"}
-    filter_args = {"type": "attack-pattern"}
-
+    filter_args = {}
     limit = try_parse_integer(limit)
     if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
