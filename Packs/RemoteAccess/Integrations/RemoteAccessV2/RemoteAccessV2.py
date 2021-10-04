@@ -2,7 +2,8 @@ import traceback
 from typing import Dict, Any
 
 import requests
-from paramiko import SSHClient
+from paramiko import SSHClient, AutoAddPolicy
+# import paramiko
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -41,11 +42,12 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = SSHClient()
-        # TODO - what is it?
         client.load_system_host_keys()
-        client.connect(hostname=host_name, username=user, password=password)
+        client.set_missing_host_key_policy(AutoAddPolicy())
+        client.connect(hostname=host_name, username=user, password=password, port=22)
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
+            stdin, stdout, stderr = client.exec_command('ls')
+            return_results('ok')
             pass
         elif command == 'ssh':
             stdin, stdout, stderr = client.exec_command(args.get('command', ''))

@@ -14,7 +14,7 @@ configuration:
   required: false
 - display: Terminal Type
   defaultvalue: xterm
-  name: host
+  name: terminal_type
   required: true
   type: 0
 - additionalinfo: TODO
@@ -40,17 +40,15 @@ script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+      description: Command to run on remote machine.
       isArray: false
-      name: dummy
+      name: command
       required: true
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Run command on remote system with ssh
     execution: false
-    name: baseintegration-dummy
+    name: remote-access-ssh
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
@@ -60,7 +58,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/netmiko:1.0.0.15047
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
