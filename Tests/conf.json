@@ -116,6 +116,26 @@
             "timeout": 1000
         },
         {
+            "integrations": "Azure Storage Container",
+            "playbookID": "playbook-AzureStorageContainer-Test",
+            "fromversion": "6.0.1"
+        },
+        {
+            "integrations": "Azure Storage FileShare",
+            "playbookID": "playbook-AzureStorageFileShare-Test",
+            "fromversion": "6.0.1"
+        },
+        {
+            "integrations": "Azure Storage Queue",
+            "playbookID": "playbook-AzureStorageQueue-Test",
+            "fromversion": "6.0.1"
+        },
+        {
+            "integrations": "Azure Storage Table",
+            "playbookID": "playbook-AzureStorageTable-Test",
+            "fromversion": "6.0.1"
+        },
+        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
