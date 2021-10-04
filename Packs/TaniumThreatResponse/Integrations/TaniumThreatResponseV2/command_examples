@@ -6,7 +6,6 @@
 !tanium-tr-list-snapshots limit=2
 !tanium-tr-delete-local-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:
 !tanium-tr-list-connections
-!tanium-tr-create-connection client_id=9065264 ip=172.31.38.159 hostname=ec2amaz-kgmro60 platform=Windows
 !tanium-tr-create-connection client_id=123 ip=1.1.1.1 hostname=host1 platform=Windows
 !tanium-tr-close-connection connection_id=remote:host1:123:
 !tanium-tr-delete-connection connection_id=remote:host1:123:
