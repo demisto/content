@@ -47,9 +47,8 @@ def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
 def main():
     input_args = demisto.args()
     # If user did not provide a lower threshold then split is not needed.
-    threshold = input_args.get('LowerSimilarityThreshold')
-    if not threshold:
-        return
+    threshold = input_args.get('similarity_threshold')
+
     try:
         threshold = float(threshold)
     except ValueError as e:

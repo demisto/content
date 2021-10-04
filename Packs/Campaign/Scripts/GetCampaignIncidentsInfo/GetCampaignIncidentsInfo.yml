@@ -11,6 +11,7 @@ comment: Get the campaign incidents information as a MD table.
 scripttarget: 0
 subtype: python3
 tags:
+- field-display
 - dynamic-section
 type: python
 fromversion: 5.0.0

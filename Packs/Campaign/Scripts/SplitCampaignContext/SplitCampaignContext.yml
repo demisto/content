@@ -8,7 +8,8 @@ comment: Splits incident with similarity in context data to below and above thre
 tags: []
 enabled: true
 args:
-- name: SimilarityThresholdToSplitBy
+- name: similarity_threshold
+  required: true
   defaultValue: "0.8"
   description: The similarity value on which to split the context campaign data.
 outputs:

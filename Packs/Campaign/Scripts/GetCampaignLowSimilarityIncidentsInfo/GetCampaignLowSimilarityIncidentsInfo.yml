@@ -11,7 +11,6 @@ comment: Gets the campaign incidents with low similarity information as a markdo
 scripttarget: 0
 subtype: python3
 tags:
-- field-display
 - dynamic-section
 type: python
 fromversion: 5.5.0
