@@ -13,7 +13,7 @@ This integration was integrated and tested with the beta version of Azure Active
     | Subscription ID | The Azure Active Directory subscription ID. | True |
     | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
-    | Use system proxy settings | When selected, runs the integraion instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+    | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
 5. Run the **!azure-ad-auth-start** command to start the connection process.
 6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
 7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
