@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXII 2 Feed test
+  id: TAXII 2 Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -225,4 +225,3 @@ script:
 tests:
 - TAXII 2 Feed Test
 fromversion: 5.5.0
-autoUpdateDockerImage: false
