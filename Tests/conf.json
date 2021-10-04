@@ -4480,7 +4480,8 @@
             "integrations": [
                 "XsoarPowershellTesting",
                 "Create-Mock-Feed-Relationships"
-            ]
+            ],
+            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
@@ -4551,6 +4552,10 @@
             "playbookID": "playbook-CustomIndicatorDemo-test"
         },
         {
+            "integrations": "Azure Sentinel",
+            "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
@@ -4602,7 +4607,6 @@
         "CuckooTest": "Issue 25601",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
@@ -4632,7 +4636,6 @@
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -4781,7 +4784,8 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
+        "Azure Sentinel": "issue with the tenant_id parameter"
     },
     "nightly_integrations": [
         "Laline v2",

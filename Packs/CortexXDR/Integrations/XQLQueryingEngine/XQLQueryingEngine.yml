@@ -78,6 +78,7 @@ script:
     deprecated: false
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
     execution: false
     polling: true
     name: xdr-xql-generic-query
@@ -223,7 +224,8 @@ script:
       defaultValue: 20
     deprecated: false
     description: |-
-      Retrieve results of an executed XQL query API.
+      Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
     execution: false
     hidden: false
     polling: true
