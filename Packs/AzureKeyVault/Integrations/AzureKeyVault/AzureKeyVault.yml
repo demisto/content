@@ -350,7 +350,9 @@ script:
       secret: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the
-      Key Vault exists, the updated properties will overwrite the existing ones.
+      Key Vault exists, the updated properties will overwrite the existing ones. Please
+      use azure-key-vault-access-policy-update if you wish to update the access policy
+      of an existing Key Vault.
     execution: false
     name: azure-key-vault-create-update
     outputs:
@@ -735,7 +737,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the public part of a stored key.
+    description: Get the public part of a stored key. This operation requires the
+      keys/get permission.
     execution: false
     name: azure-key-vault-key-get
     outputs:
@@ -792,7 +795,8 @@ script:
       secret: false
     deprecated: false
     description: List keys in the specified vault. For a limit greater than 25, more
-      than one API call will be required and the command might take longer time.
+      than one API call will be required and the command might take longer time. This
+      operation requires the keys/list permission.
     execution: false
     name: azure-key-vault-key-list
     outputs:
@@ -832,7 +836,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a key of any type from storage in Azure Key vault.
+    description: Delete a key of any type from storage in Azure Key vault. This operation
+      requires the keys/delete permission.
     execution: true
     name: azure-key-vault-key-delete
     outputs:
@@ -943,6 +948,7 @@ script:
     deprecated: false
     description: List secrets in a specified key vault. For a limit greater than 25,
       more than one API call will be required and the command might take longer time.
+      This operation requires the secrets/list permission.
     execution: false
     name: azure-key-vault-secret-list
     outputs:
@@ -988,7 +994,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a secret from a specified key vault.
+    description: Delete a secret from a specified key vault. This operation requires
+      the secrets/delete permission.
     execution: true
     name: azure-key-vault-secret-delete
     outputs:
@@ -1039,9 +1046,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Get information about a certificate.
-      Gets information about a specific certificate. This operation requires the certificates/get permission.
+    description: Gets information about a specific certificate. This operation requires
+      the certificates/get permission.
     execution: false
     name: azure-key-vault-certificate-get
     outputs:
@@ -1104,7 +1110,7 @@ script:
     deprecated: false
     description: List certificates in a specified key vault. For a limit greater than
       25, more than one API call will be required and the command might take longer
-      time.
+      time. This operation requires the certificates/list permission.
     execution: false
     name: azure-key-vault-certificate-list
     outputs:
@@ -1137,7 +1143,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the policy of the specified certificate.
+    description: Get the policy of the specified certificate.This operation requires
+      the certificates/get permission.
     execution: false
     name: azure-key-vault-certificate-policy-get
     outputs:
