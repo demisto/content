@@ -29,6 +29,9 @@ with open('test_data/id_to_object_test.json', 'r') as f:
 with open('test_data/stix_objects_envelope.json', 'r') as f:
     objects_envelope = json.load(f)
 
+with open('test_data/parsed_stix_objects.json', 'r') as f:
+    parsed_objects = json.load(f)
+
 
 class MockCollection:
     def __init__(self, id_, title):
@@ -236,9 +239,9 @@ class TestInitServer:
         assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
 
 
-class TestExtractIndicatorsAndParse:
+class TestFetchingStixObjects:
     """
-    Scenario: Test extract_indicators_from_envelope_and_parse
+    Scenario: Test extract_stix_objects_from_envelope and parse_stix_objects
     """
     def test_21_empty(self):
         """
@@ -256,7 +259,8 @@ class TestExtractIndicatorsAndParse:
         """
         expected = []
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_NO_IOCS)
+        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_NO_IOCS)
+        actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 0
         assert expected == actual
@@ -277,7 +281,8 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
-        actual = mock_client.extract_indicators_from_envelope_and_parse(STIX_ENVELOPE_17_IOCS_19_OBJS)
+        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS)
+        actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 17
         assert expected == actual
@@ -299,8 +304,9 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
-        envelope = STIX_ENVELOPE_20_IOCS_19_OBJS
-        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope)
+
+        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
+        actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 20
         assert actual == expected
@@ -322,20 +328,27 @@ class TestExtractIndicatorsAndParse:
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True)
-        envelope = STIX_ENVELOPE_20_IOCS_19_OBJS
-        actual = mock_client.extract_indicators_from_envelope_and_parse(envelope)
+
+        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
+        actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 14
         assert actual == expected
 
-def test_extract_stix_objects_from_envelope():
-    expected_data = objects_data
-    expected_ids = id_to_object
+    def test_extract_stix_objects_from_envelope(self):
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        envelope = objects_envelope
 
-    mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-    envelope = objects_envelope
+        mock_client.extract_stix_objects_from_envelope(envelope, -1)
 
-    mock_client.extract_stix_objects_from_envelope(envelope, -1)
+        assert mock_client.objects_data == objects_data
+        assert mock_client.id_to_object == id_to_object
 
-    assert mock_client.objects_data == expected_data
+    def test_parse_stix_objects(self):
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+        mock_client.objects_data = objects_data
+        mock_client.id_to_object = id_to_object
 
+        result = mock_client.parse_stix_objects(-1)
+
+        assert result == parsed_objects

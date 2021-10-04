@@ -9,8 +9,9 @@
       "modified": "2018-04-23T17:01:01.248Z",
       "name": "windows-updates.com",
       "pattern": "[domain-name:value = 'windows-updates.com']",
-      "type": "indicator",
-      "valid_from": "2018-04-23T17:01:01.248Z"
+      "type": "Domain",
+      "valid_from": "2018-04-23T17:01:01.248Z",
+      "value": "windows-updates.com"
     },
     "fields": {
       "tags": ["malicious-activity"]
@@ -303,8 +304,8 @@
   },
   {
     "value": "VNC",
-    "type": "tool",
-    "score": "2",
+    "type": "Tool",
+    "score": 2,
     "rawJSON": {
       "type": "tool",
       "spec_version": "2.1",
@@ -330,8 +331,8 @@
   },
   {
     "value": "Evil Org",
-    "type": "threat-actor",
-    "score": "3",
+    "type": "Threat Actor",
+    "score": 3,
     "rawJSON": {
       "type": "threat-actor",
       "spec_version": "2.1",
@@ -354,7 +355,7 @@
       "stixid": "threat-actor--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
       "firstseen": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
-      "description": "",
+      "description": "The Evil Org threat actor group",
       "aliases": ["Syndicate 1", "Evil Syndicate 99"],
       "threat_actor_types":[ "crime-syndicate"],
       "roles": ["director"],
@@ -362,15 +363,15 @@
       "sophistication": "advanced",
       "resource_level": "team",
       "primary_motivation": "organizational-gain",
-      "secondary_motivations": "",
+      "secondary_motivations": [],
       "reportedby": "Unit42",
       "tags": []
     }
   },
   {
     "value": "Poison Ivy C2",
-    "type": "infrastructure",
-    "score": "2",
+    "type": "Infrastructure",
+    "score": 2,
     "rawJSON": {
       "type":"infrastructure",
       "spec_version": "2.1",
@@ -414,9 +415,9 @@
         "name": "indicated-by",
         "reverseName": "indicator-of",
         "type": "IndicatorToIndicator",
-        "entityA": "ljcpqw.browge.com/1/",
+        "entityA": "windows-updates.com",
         "entityAFamily": "Indicator",
-        "entityAType": "URL",
+        "entityAType": "Domain",
         "entityB": "IQY Attachment E-mails",
         "entityBFamily": "Indicator",
         "entityBType": "Campaign",

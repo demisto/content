@@ -103,6 +103,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE
 }
 
+
 class Taxii2FeedClient:
     def __init__(
             self,
@@ -175,8 +176,8 @@ class Taxii2FeedClient:
             re.compile(CIDR_ISSUBSET_VAL_PATTERN),
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
-        self.id_to_object = {}
-        self.objects_data = {}
+        self.id_to_object: Dict[str, Any] = {}
+        self.objects_data: Dict[str, Any] = {}
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -300,7 +301,7 @@ class Taxii2FeedClient:
         return ind_id, value
 
     @staticmethod
-    def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
+    def handle_multiple_dates_in_one_field(field_name: str, field_value: Any):
         """Parses datetime fields to handle one value or more
 
         Args:
@@ -444,7 +445,7 @@ class Taxii2FeedClient:
 
         return [attack_pattern]
 
-    def parse_report(self, report_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def parse_report(self, report_obj):
         """
         Parses a single report object
         :param report_obj: report object
@@ -455,22 +456,22 @@ class Taxii2FeedClient:
 
         report = {
             "type": ThreatIntel.ObjectsNames.REPORT,
-            "value": {report_obj.get('name')},
+            "value": report_obj.get('name'),
             "score": ThreatIntel.ObjectsScore.REPORT,
-            "rawJSON": report_obj,
-            "fields": {
-                'stixid': report_obj.get('id'),
-                'firstseen': report_obj.get('created'),
-                'published': report_obj.get('published'),
-                'description': report_obj.get('description', ''),
-                "report_types": report_obj.get('report_types', []),
-                "reportedby": 'Unit42',
-                "tags": list((set(report_obj.get('labels'))).union(set(self.tags))),
-            }
-
+            "rawJSON": report_obj
+        }
+        fields = {
+            'stixid': report_obj.get('id'),
+            'firstseen': report_obj.get('created'),
+            'published': report_obj.get('published'),
+            'description': report_obj.get('description', ''),
+            "report_types": report_obj.get('report_types', []),
+            "reportedby": 'Unit42',
+            "tags": list((set(report_obj.get('labels'))).union(set(self.tags))),
         }
         if self.tlp_color:
-            report['fields']['trafficlightprotocol'] = self.tlp_color
+            fields['trafficlightprotocol'] = self.tlp_color
+        report["fields"] = fields
 
         return [report]
 
@@ -480,34 +481,36 @@ class Taxii2FeedClient:
         :param threat_actor_obj: report object
         :return: threat actor extracted from the threat actor object in cortex format
         """
+
         threat_actor = {
             "value": threat_actor_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.THREAT_ACTOR,
             "score": ThreatIntel.ObjectsScore.THREAT_ACTOR,
-            "rawJSON": threat_actor_obj,
-            "fields": {
-                'stixid': threat_actor_obj.get('id'),
-                "firstseen": self.handle_multiple_dates_in_one_field('created', threat_actor_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', threat_actor_obj.get('modified')),
-                'description': threat_actor_obj.get('description', ''),
-                'aliases': threat_actor_obj.get("aliases", []),
-                "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
-                'roles': threat_actor_obj.get("roles", []),
-                'goals': threat_actor_obj.get("goals", []),
-                'sophistication': threat_actor_obj.get("sophistication", ''),
-                "resource_level": threat_actor_obj.get('resource_level', ''),
-                "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
-                "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
-                "reportedby": 'Unit42',
-                "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
-            }
+            "rawJSON": threat_actor_obj
+        }
+        fields = {
+            'stixid': threat_actor_obj.get('id'),
+            "firstseen": self.handle_multiple_dates_in_one_field('created', threat_actor_obj.get('created')),
+            "modified": self.handle_multiple_dates_in_one_field('modified', threat_actor_obj.get('modified')),
+            'description': threat_actor_obj.get('description', ''),
+            'aliases': threat_actor_obj.get("aliases", []),
+            "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
+            'roles': threat_actor_obj.get("roles", []),
+            'goals': threat_actor_obj.get("goals", []),
+            'sophistication': threat_actor_obj.get("sophistication", ''),
+            "resource_level": threat_actor_obj.get('resource_level', ''),
+            "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
+            "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
+            "reportedby": 'Unit42',
+            "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         }
         if self.tlp_color:
-            threat_actor['fields']['trafficlightprotocol'] = self.tlp_color
+            fields['trafficlightprotocol'] = self.tlp_color
+        threat_actor["fields"] = fields
 
         return [threat_actor]
 
-    def parse_infrastructure(self, infrastructure_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def parse_infrastructure(self, infrastructure_obj):
         """
         Parses a single infrastructure object
         :param infrastructure_obj: infrastructure object
@@ -520,23 +523,23 @@ class Taxii2FeedClient:
             "value": infrastructure_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
             "score": ThreatIntel.ObjectsScore.INFRASTRUCTURE,
-            "rawJSON": infrastructure_obj,
-            "fields": {
-                "stixid": infrastructure_obj.get('id'),
-                "description": infrastructure_obj.get('description', ''),
-                "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
-                "aliases": infrastructure_obj.get('aliases', []),
-                "kill_chain_phases": kill_chain_phases,
-                "firstseen": self.handle_multiple_dates_in_one_field('created', infrastructure_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', infrastructure_obj.get('modified')),
-                "reportedby": 'Unit42',
-                "tags": list(set(self.tags))
-            }
+            "rawJSON": infrastructure_obj
+
         }
-
+        fields = {
+            "stixid": infrastructure_obj.get('id'),
+            "description": infrastructure_obj.get('description', ''),
+            "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
+            "aliases": infrastructure_obj.get('aliases', []),
+            "kill_chain_phases": kill_chain_phases,
+            "firstseen": self.handle_multiple_dates_in_one_field('created', infrastructure_obj.get('created')),
+            "modified": self.handle_multiple_dates_in_one_field('modified', infrastructure_obj.get('modified')),
+            "reportedby": 'Unit42',
+            "tags": list(set(self.tags))
+        }
         if self.tlp_color:
-            infrastructure['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        infrastructure["fields"] = fields
         return [infrastructure]
 
     def parse_malware(self, malware_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -553,28 +556,27 @@ class Taxii2FeedClient:
             "value": malware_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.MALWARE,
             "score": ThreatIntel.ObjectsScore.MALWARE,
-            "rawJSON": malware_obj,
-            "fields": {
-                'stixid': malware_obj.get('id'),
-                "firstseen": malware_obj.get('created'),
-                "modified": malware_obj.get('modified'),
-                "description": malware_obj.get('description', ''),
-                "malware_types": malware_obj.get('malware_types', []),
-                "is_family": malware_obj.get('is_family', False),
-                "aliases": malware_obj.get('aliases', []),
-                "kill_chain_phases": kill_chain_phases,
-                "os_execution_envs": malware_obj.get('os_execution_envs', []),
-                "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
-                "capabilities": malware_obj.get('capabilities', []),
-                "sample_refs": malware_obj.get('sample_refs', []),
-                "reportedby": 'Unit42',
-                "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
-            }
+            "rawJSON": malware_obj
         }
-
+        fields = {
+            'stixid': malware_obj.get('id'),
+            "firstseen": malware_obj.get('created'),
+            "modified": malware_obj.get('modified'),
+            "description": malware_obj.get('description', ''),
+            "malware_types": malware_obj.get('malware_types', []),
+            "is_family": malware_obj.get('is_family', False),
+            "aliases": malware_obj.get('aliases', []),
+            "kill_chain_phases": kill_chain_phases,
+            "os_execution_envs": malware_obj.get('os_execution_envs', []),
+            "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
+            "capabilities": malware_obj.get('capabilities', []),
+            "sample_refs": malware_obj.get('sample_refs', []),
+            "reportedby": 'Unit42',
+            "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
+        }
         if self.tlp_color:
-            malware['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        malware["fields"] = fields
         return [malware]
 
     def parse_tool(self, tool_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -590,24 +592,23 @@ class Taxii2FeedClient:
             "value": tool_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.TOOL,
             "score": ThreatIntel.ObjectsScore.TOOL,
-            "rawJSON": tool_obj,
-            "fields": {
-                'stixid': tool_obj.get('id'),
-                "killchainphases": kill_chain_phases,
-                "firstseen": self.handle_multiple_dates_in_one_field('created', tool_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', tool_obj.get('modified')),
-                "tool_types": tool_obj.get("tool_types", []),
-                "description": tool_obj.get('description', ''),
-                "aliases": tool_obj.get('aliases', []),
-                "tool_version": tool_obj.get('tool_version', ''),
-                "reportedby": 'Unit42',
-                "tags": list(set(self.tags))
-            }
+            "rawJSON": tool_obj
         }
-
+        fields = {
+            'stixid': tool_obj.get('id'),
+            "killchainphases": kill_chain_phases,
+            "firstseen": self.handle_multiple_dates_in_one_field('created', tool_obj.get('created')),
+            "modified": self.handle_multiple_dates_in_one_field('modified', tool_obj.get('modified')),
+            "tool_types": tool_obj.get("tool_types", []),
+            "description": tool_obj.get('description', ''),
+            "aliases": tool_obj.get('aliases', []),
+            "tool_version": tool_obj.get('tool_version', ''),
+            "reportedby": 'Unit42',
+            "tags": list(set(self.tags))
+        }
         if self.tlp_color:
-            tool['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        tool["fields"] = fields
         return [tool]
 
     def parse_course_of_action(self, coa_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -623,20 +624,20 @@ class Taxii2FeedClient:
             "type": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
             "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "rawJSON": coa_obj,
-            "fields": {
-                'stixid': coa_obj.get('id'),
-                "firstseen": self.handle_multiple_dates_in_one_field('created', coa_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', coa_obj.get('modified')),
-                'description': coa_obj.get('description', ''),
-                "action_type": coa_obj.get('action_type', ''),
-                "publications": publications,
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in self.tags]
-            }
+        }
+        fields = {
+            'stixid': coa_obj.get('id'),
+            "firstseen": self.handle_multiple_dates_in_one_field('created', coa_obj.get('created')),
+            "modified": self.handle_multiple_dates_in_one_field('modified', coa_obj.get('modified')),
+            'description': coa_obj.get('description', ''),
+            "action_type": coa_obj.get('action_type', ''),
+            "publications": publications,
+            "reportedby": 'Unit42',
+            "tags": [tag for tag in self.tags]
         }
         if self.tlp_color:
-            course_of_action['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        course_of_action["fields"] = fields
         return [course_of_action]
 
     def parse_campaign(self, campaign_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -649,22 +650,21 @@ class Taxii2FeedClient:
             "value": campaign_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.CAMPAIGN,
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
-            "rawJSON": campaign_obj,
-            "fields": {
-                'stixid': campaign_obj.get('id'),
-                "firstseen": campaign_obj.get('created'),
-                "modified": campaign_obj.get('modified'),
-                'description': campaign_obj.get('description', ''),
-                "aliases": campaign_obj.get('aliases', []),
-                "objective": campaign_obj.get('objective', ''),
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in self.tags],
-            }
+            "rawJSON": campaign_obj
         }
-
+        fields = {
+            'stixid': campaign_obj.get('id'),
+            "firstseen": campaign_obj.get('created'),
+            "modified": campaign_obj.get('modified'),
+            'description': campaign_obj.get('description', ''),
+            "aliases": campaign_obj.get('aliases', []),
+            "objective": campaign_obj.get('objective', ''),
+            "reportedby": 'Unit42',
+            "tags": [tag for tag in self.tags],
+        }
         if self.tlp_color:
-            campaign['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        campaign["fields"] = fields
         return [campaign]
 
     def parse_intrusion_set(self, intrusion_set_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -679,25 +679,25 @@ class Taxii2FeedClient:
             "value": intrusion_set_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.INTRUSION_SET,
             "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
-            "rawJSON": intrusion_set_obj,
-            "fields": {
-                'stixid': intrusion_set_obj.get('id'),
-                "firstseen": self.handle_multiple_dates_in_one_field('created', intrusion_set_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', intrusion_set_obj.get('modified')),
-                'description': intrusion_set_obj.get('description', ''),
-                "aliases": intrusion_set_obj.get('aliases', []),
-                "goals": intrusion_set_obj.get('goals', []),
-                "resource_level": intrusion_set_obj.get('resource_level', ''),
-                "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
-                "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
-                "publications": publications,
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in self.tags],
-            }
+            "rawJSON": intrusion_set_obj
+        }
+        fields = {
+            'stixid': intrusion_set_obj.get('id'),
+            "firstseen": self.handle_multiple_dates_in_one_field('created', intrusion_set_obj.get('created')),
+            "modified": self.handle_multiple_dates_in_one_field('modified', intrusion_set_obj.get('modified')),
+            'description': intrusion_set_obj.get('description', ''),
+            "aliases": intrusion_set_obj.get('aliases', []),
+            "goals": intrusion_set_obj.get('goals', []),
+            "resource_level": intrusion_set_obj.get('resource_level', ''),
+            "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
+            "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
+            "publications": publications,
+            "reportedby": 'Unit42',
+            "tags": [tag for tag in self.tags],
         }
         if self.tlp_color:
-            intrusion_set['fields']['trafficlightprotocol'] = self.tlp_color
-
+            fields['trafficlightprotocol'] = self.tlp_color
+        intrusion_set["fields"] = fields
         return [intrusion_set]
 
     def parse_relationships(self):
@@ -828,7 +828,7 @@ class Taxii2FeedClient:
             "campaign": self.parse_campaign,
             "intrusion-set": self.parse_intrusion_set,
             "tool": self.parse_tool,
-            "Threat-actor": self.parse_threat_actor,
+            "threat-actor": self.parse_threat_actor,
             "infrastructure": self.parse_infrastructure
         }
         indicators = []
@@ -853,8 +853,6 @@ class Taxii2FeedClient:
                         if indicator_created_datetime > last_datetime:
                             self.last_fetched_indicator__modified = indicator_modified_str
 
-
-        # handle relationship ====================
         if self.objects_data.get('relationship'):
             relationship_lst = self.parse_relationships()
 
@@ -867,92 +865,6 @@ class Taxii2FeedClient:
                 indicators.append(dummy_indicator)
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators"
-        )
-        if limit > -1:
-            return indicators[:limit]
-        return indicators
-
-    def extract_indicators_from_envelope_and_parse(
-            self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
-    ) -> List[Dict[str, str]]:
-        """
-        Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
-        and parses them as cortex indicators
-        :param envelope: envelope containing stix objects
-        :param limit: max amount of indicators to fetch
-        :return: Cortex indicators list
-        """
-        indicators = []
-        relationships = []
-        obj_cnt = 0
-        # TAXII 2.0
-        if isinstance(envelope, types.GeneratorType):
-            for sub_envelope in envelope:
-                stix_objects = sub_envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    break
-                obj_cnt += len(stix_objects)
-                if stix_objects[0].get('type') == 'relationship':
-                    relationships.extend(stix_objects)
-                    continue
-                # indicators.extend(
-                #     self.parse_indicators_list(
-                #         self.extract_indicators_from_stix_objects(stix_objects)
-                #     )
-                indicators.extend(self.parse_indicators_list(stix_objects))  # instead of taking only indicator types take all
-
-                if 0 < limit <= len(indicators):
-                    break
-        # TAXII 2.1
-        elif isinstance(envelope, Dict):
-            cur_limit = limit
-            stix_objects = envelope.get("objects")
-            obj_cnt += len(stix_objects)
-            if stix_objects[0].get('type') == 'relationship':
-                relationships.extend(stix_objects)
-            else:
-                # indicators_list = self.extract_indicators_from_stix_objects(stix_objects)
-                indicators = self.parse_indicators_list(stix_objects)
-            while envelope.get("more", False):
-                page_size = self.get_page_size(limit, cur_limit)
-                envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", "")
-                )
-                if isinstance(envelope, Dict):
-                    stix_objects = envelope.get("objects")
-                    obj_cnt += len(stix_objects)
-                    if stix_objects[0].get('type') == 'relationship':
-                        relationships.extend(stix_objects)
-                        continue
-                    # extracted_iocs = self.extract_indicators_from_stix_objects(
-                    #     stix_objects
-                    # )
-                    parsed_iocs = self.parse_indicators_list(stix_objects)
-                    indicators.extend(parsed_iocs)
-
-                    if limit > -1:
-                        cur_limit -= len(envelope)  # type: ignore
-                        if cur_limit < 0:
-                            break
-                else:
-                    raise DemistoException(
-                        "Error: TAXII 2 client received the following response while requesting "
-                        f"indicators: {str(envelope)}\n\nExpected output is json"
-                    )
-        # handle relationship ====================
-        if relationships:
-            relationship_lst = self.parse_relatioships(relationships)
-
-            dummy_indicator = {
-                "value": "$$DummyIndicator$$",
-                "relationships": relationship_lst
-            }
-
-            if dummy_indicator:
-                indicators.append(dummy_indicator)
-        demisto.debug(
-            f"TAXII 2 Feed has extracted {len(indicators)} indicators / {obj_cnt} stix objects"
         )
         if limit > -1:
             return indicators[:limit]
@@ -999,93 +911,6 @@ class Taxii2FeedClient:
         ]  # retrieve only required type
 
         return indicators_objs
-
-    def parse_indicators_list(
-            self, indicators_objs: List[Dict[str, str]]
-    ) -> List[Dict[str, str]]:
-        """
-        Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
-        :param indicators_objs: indicator objects
-        :return: Parsed list of indicators
-        """
-
-        parse_stix_2_objects = {
-            "indicator": self.parse_indicator,
-            "attack-pattern": self.parse_attack_pattern,
-            "malware": self.parse_malware,
-            "report": self.parse_report,
-            "course-of-action": self.parse_course_of_action,
-            "campaign": self.parse_campaign,
-            "intrusion-set": self.parse_intrusion_set,
-            "tool": self.parse_tool,
-            "Threat-actor": self.parse_threat_actor,
-            "infrastructure": self.parse_infrastructure,
-            # "relationship": self.create_relationships,
-        }
-        indicators = []
-        if indicators_objs:
-            for indicator_obj in indicators_objs:
-                self.id_to_object[indicator_obj.get('id')] = indicator_obj
-                # indicators.extend(self.parse_single_indicator(indicator_obj)) # TODO : build dict type: func to parse it
-                result = parse_stix_2_objects[indicator_obj.get('type')](indicator_obj)
-                if not result:
-                    continue
-                indicators.append(result)
-                indicator_modified_str = indicator_obj.get("modified")
-                if self.last_fetched_indicator__modified is None:
-                    self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
-                else:
-                    last_datetime = self.stix_time_to_datetime(
-                        self.last_fetched_indicator__modified
-                    )
-                    indicator_created_datetime = self.stix_time_to_datetime(
-                        indicator_modified_str
-                    )
-                    if indicator_created_datetime > last_datetime:
-                        self.last_fetched_indicator__modified = indicator_modified_str
-        return indicators
-
-    def parse_single_indicator(
-            self, indicator_obj: Dict[str, str]
-    ) -> List[Dict[str, str]]:
-        """
-        Parses a single indicator object
-        :param indicator_obj: indicator object
-        :return: list of indicators extracted from the object in cortex format
-        """
-        field_map = self.field_map if self.field_map else {}
-        pattern = indicator_obj.get("pattern")
-        indicators = []
-        if pattern:
-            # this is done in case the server doesn't properly space the operator,
-            # supported indicators have no spaces, so this action shouldn't affect extracted values
-            trimmed_pattern = pattern.replace(" ", "")
-
-            indicator_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.indicator_regexes
-            )
-            indicators.extend(
-                self.get_indicators_from_indicator_groups(
-                    indicator_groups,
-                    indicator_obj,
-                    STIX_2_TYPES_TO_CORTEX_TYPES,
-                    field_map,
-                )
-            )
-
-            cidr_groups = self.extract_indicator_groups_from_pattern(
-                trimmed_pattern, self.cidr_regexes
-            )
-            indicators.extend(
-                self.get_indicators_from_indicator_groups(
-                    cidr_groups,
-                    indicator_obj,
-                    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES,
-                    field_map,
-                )
-            )
-
-        return indicators
 
     def get_indicators_from_indicator_groups(
             self,
@@ -1197,26 +1022,26 @@ class Taxii2FeedClient:
         except ValueError:
             return datetime.strptime(s_time, TAXII_TIME_FORMAT_NO_MS)
 
-    @staticmethod
-    def get_ioc_type(indicator, id_to_object):
-        """
-        Get IOC type by extracting it from the pattern field.
-
-        Args:
-            indicator: the indicator to get information on.
-            id_to_object: a dict in the form of - id: stix_object.
-
-        Returns:
-            str. the IOC type.
-        """
-        ioc_type = ''
-        indicator_obj = id_to_object.get(indicator, {})
-        pattern = indicator_obj.get('pattern', '')
-        for unit42_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f'[{unit42_type}'):
-                ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(unit42_type)  # type: ignore
-                break
-        return ioc_type
+    # @staticmethod
+    # def get_ioc_type(indicator, id_to_object):
+    #     """
+    #     Get IOC type by extracting it from the pattern field.
+    #
+    #     Args:
+    #         indicator: the indicator to get information on.
+    #         id_to_object: a dict in the form of - id: stix_object.
+    #
+    #     Returns:
+    #         str. the IOC type.
+    #     """
+    #     ioc_type = ''
+    #     indicator_obj = id_to_object.get(indicator, {})
+    #     pattern = indicator_obj.get('pattern', '')
+    #     for unit42_type in STIX_2_TYPES_TO_CORTEX_TYPES:
+    #         if pattern.startswith(f'[{unit42_type}'):
+    #             ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(unit42_type)  # type: ignore
+    #             break
+    #     return ioc_type
 
     @staticmethod
     def get_ioc_value(ioc, id_to_obj):
@@ -1249,10 +1074,11 @@ class Taxii2FeedClient:
         Extract SHA-256 from string:
         ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
-        ioc_value = ioc_obj.get('name')
+        ioc_value = ioc_obj.get('name', '')
         try:
-            ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(
-                0)  # type:ignore # guardrails-disable-line
+            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
+            if ioc_value_groups:
+                ioc_value = ioc_value_groups.group(0)
         except AttributeError:
             ioc_value = None
         return ioc_value
