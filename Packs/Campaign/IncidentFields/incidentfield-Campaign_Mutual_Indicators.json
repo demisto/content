@@ -9,7 +9,7 @@
     "closeForm": false,
     "editForm": true,
     "required": false,
-    "fieldCalcScript": "832b7fa4-a31b-48b0-85b8-2c56c7ca593e",
+    "fieldCalcScript": "GetCampaignIndicatorsByIncidentId",
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "useAsKpi": false,
