@@ -22,6 +22,13 @@ with open('test_data/cortex_parsed_indicators_complex_20-19.json', 'r') as f:
 with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json', 'r') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
 
+with open('test_data/objects_data_test.json', 'r') as f:
+    objects_data = json.load(f)
+with open('test_data/id_to_object_test.json', 'r') as f:
+    id_to_object = json.load(f)
+with open('test_data/stix_objects_envelope.json', 'r') as f:
+    objects_envelope = json.load(f)
+
 
 class MockCollection:
     def __init__(self, id_, title):
@@ -320,3 +327,15 @@ class TestExtractIndicatorsAndParse:
 
         assert len(actual) == 14
         assert actual == expected
+
+def test_extract_stix_objects_from_envelope():
+    expected_data = objects_data
+    expected_ids = id_to_object
+
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
+    envelope = objects_envelope
+
+    mock_client.extract_stix_objects_from_envelope(envelope, -1)
+
+    assert mock_client.objects_data == expected_data
+
