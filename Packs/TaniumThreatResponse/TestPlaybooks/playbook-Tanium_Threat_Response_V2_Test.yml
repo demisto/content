@@ -2373,16 +2373,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.ProcessParent.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessParent.endTimeRaw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.ProcessParent.fileEventsCount
             iscontext: true
       - - operator: isNotEmpty
