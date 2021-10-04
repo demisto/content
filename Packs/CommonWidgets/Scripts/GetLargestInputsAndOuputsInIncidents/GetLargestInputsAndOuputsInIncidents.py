@@ -72,9 +72,11 @@ def get_extra_data_from_investigations(investigations: list) -> list:
 
 def main():
     try:
+        if not is_demisto_version_ge("6.2.0"):
+            raise DemistoException("This script has been deprecated. Please checkout the System Diagnostic page for an "
+                                   "alternative.")
         args = demisto.args()
         is_table_result = argToBoolean(args.get('table_result', False))
-
         raw_output = demisto.executeCommand('GetLargestInvestigations',
                                             args={
                                                 'from': args.get('from'),
