@@ -99,7 +99,7 @@ script:
       secret: false
     - default: false
       description: The path to the parent directory of the directories and files to
-        retrieve. If the parent directory path is omitted, the directory will be referred
+        retrieve. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred
         to the first level of the specified share.
       isArray: false
       name: directory_path
@@ -186,8 +186,8 @@ script:
       secret: false
     - default: false
       description: The path to the parent directory where the new directory will be
-        created. If the parent directory path is omitted, the directory will be created
-        within the specified share.
+        created. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the parent directory path is omitted, the directory will be referred
+        to the first level of the specified share.
       isArray: false
       name: directory_path
       required: false
@@ -210,7 +210,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The path to the parent directory of the directory to delete. If
+      description: The path to the parent directory of the directory to delete. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If
         the parent directory path is omitted, the directory will be referred to the
         first level of the specified share.
       isArray: false
@@ -237,9 +237,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The path to the parent directory where the new file will be created.
+      description: The path to the parent directory where the new file will be created. A path name is composed of one or more directory name components separated by the forward-slash (/) character.
         If the parent directory path is omitted, the directory will be created within
-        the specified share.
+        first level of the specified share.
       isArray: false
       name: directory_path
       required: false
@@ -268,7 +268,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The path to the parent directory of the file to retrieve. If the
+      description: The path to the parent directory of the file to retrieve. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the
         parent directory path is omitted, the directory will be referred to the first
         level of the specified share.
       isArray: false
@@ -324,7 +324,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The path to the parent directory of the file to delete. If the
+      description: The path to the parent directory of the file to delete. A path name is composed of one or more directory name components separated by the forward-slash (/) character. If the
         parent directory path is omitted, the directory will be referred to the first
         level of the specified share.
       isArray: false
