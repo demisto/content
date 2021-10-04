@@ -19,11 +19,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Fetch incidents
-  hidden: false
-  name: isFetch
-  required: false
-  type: 8
 - additionalinfo: Default is 10. Maximum is 32.
   defaultvalue: '10'
   display: Maximum incidents for one fetch.
@@ -40,6 +35,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 description: Create and Manage Azure Storage Queues and Messages.
 display: Azure Storage Queue
 name: Azure Storage Queue

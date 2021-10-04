@@ -1,6 +1,6 @@
 import copy
 import shutil
-from collections import Callable
+from typing import Callable
 
 from requests import Response
 
