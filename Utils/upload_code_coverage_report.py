@@ -46,31 +46,32 @@ def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool
     return True, str_from_datetime
 
 
-def upload_file_to_google_cloud_storage(service_account: str,
-                                        bucket_name: str,
-                                        minimal_file_name: str,
-                                        destination_blob_dir: str,
-                                        last_updated: str,
-                                        ):
-    """Uploads a file to the bucket."""
-    json_dest = f'{destination_blob_dir}/coverage-min.json'
+def upload_files_to_google_cloud_storage(service_account: str,
+                                         bucket_name: str,
+                                         source_file_name: str,
+                                         minimal_file_name: str,
+                                         destination_blob_dir: str,
+                                         last_updated: str,
+                                         ):
+    """Upload files to the bucket."""
+
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
     updated_date = updated.strftime(DATE_FORMAT)
-    historic_data_dest = f'{destination_blob_dir}/history/coverage-min/{updated_date}.json'
 
-    upload_list = [json_dest, historic_data_dest]
+    files_to_upload = [
+        (f'{destination_blob_dir}/coverage.json', source_file_name),
+        (f'{destination_blob_dir}/history/coverage/{updated_date}.json', source_file_name),
+        (f'{destination_blob_dir}/coverage-min.json', minimal_file_name),
+        (f'{destination_blob_dir}/history/coverage-min/{updated_date}.json', minimal_file_name),
+    ]
+
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     bucket = storage_client.bucket(bucket_name)
 
-    for file_to_upload in upload_list:
-        upload_file_to_bucket(bucket, file_to_upload, minimal_file_name)
-
-    print(
-        "File {} uploaded to {}.".format(
-            minimal_file_name, ', '.join(upload_list)
-        )
-    )
+    for path_in_bucket, local_path in files_to_upload:
+        upload_file_to_bucket(bucket_obj=bucket, path_in_bucket=path_in_bucket, local_path=local_path)
+        print("File {} uploaded to {}.".format(local_path, path_in_bucket))
 
 
 def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path):
@@ -146,12 +147,13 @@ def main():
                                                   )
 
     if success:
-        upload_file_to_google_cloud_storage(service_account=options.service_account,
-                                            bucket_name=options.bucket_name,
-                                            minimal_file_name=options.minimal_file_name,
-                                            destination_blob_dir=options.destination_blob_dir,
-                                            last_updated=last_updated
-                                            )
+        upload_files_to_google_cloud_storage(service_account=options.service_account,
+                                             bucket_name=options.bucket_name,
+                                             source_file_name=options.source_file_name,
+                                             minimal_file_name=options.minimal_file_name,
+                                             destination_blob_dir=options.destination_blob_dir,
+                                             last_updated=last_updated
+                                             )
 
 
 if __name__ == '__main__':

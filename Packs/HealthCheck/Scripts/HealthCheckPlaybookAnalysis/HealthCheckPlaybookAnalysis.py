@@ -53,42 +53,42 @@ builtinPlaybooks = demisto.executeCommand(
 
 builtinPlaybooksNames = []
 res = []
+if customPlaybooks is not None:
+    for builtinPlaybook in builtinPlaybooks:
+        builtinPlaybooksNames.append(builtinPlaybook["name"])
 
-for builtinPlaybook in builtinPlaybooks:
-    builtinPlaybooksNames.append(builtinPlaybook["name"])
+    for customPlaybook in customPlaybooks:
 
-for customPlaybook in customPlaybooks:
+        for builtinPlaybooksName in builtinPlaybooksNames:
+            if builtinPlaybooksName in customPlaybook["name"]:
+                res.append({"category": "Playbooks", "severity": "Low",
+                            "description": f"{DESCRIPTION[0]}".format(customPlaybook["name"]),
+                            "resolution": f"{RESOLUTION[0]}"
+                            })
 
-    for builtinPlaybooksName in builtinPlaybooksNames:
-        if builtinPlaybooksName in customPlaybook["name"]:
+        if "Sleep" in customPlaybook["scriptIds"]:
             res.append({"category": "Playbooks", "severity": "Low",
-                        "description": f"{DESCRIPTION[0]}".format(customPlaybook["name"]),
-                        "resolution": f"{RESOLUTION[0]}"
+                        "description": f"{DESCRIPTION[1]}".format(customPlaybook["name"]),
+                        "resolution": f"{RESOLUTION[1]}"
                         })
 
-    if "Sleep" in customPlaybook["scriptIds"]:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[1]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[1]}"
-                    })
+        if str(customPlaybook).count("Builtin|||setIncident") >= thresholds['CustomPlaybookSetIncidentCount']:
+            res.append({"category": "Playbooks", "severity": "Low",
+                        "description": f"{DESCRIPTION[2]}".format(customPlaybook["name"]),
+                        "resolution": f"{RESOLUTION[2]}"
+                        })
 
-    if str(customPlaybook).count("Builtin|||setIncident") >= thresholds['CustomPlaybookSetIncidentCount']:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[2]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[2]}"
-                    })
+        if "EmailAskUser" in customPlaybook["scriptIds"]:
+            res.append({"category": "Playbooks", "severity": "Low",
+                        "description": f"{DESCRIPTION[3]}".format(customPlaybook["name"]),
+                        "resolution": f"{RESOLUTION[3]}"
+                        })
 
-    if "EmailAskUser" in customPlaybook["scriptIds"]:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[3]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[3]}"
-                    })
-
-    if len(customPlaybook["tasks"]) > thresholds['CustomPlaybookLength']:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[4]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[4]}"
-                    })
+        if len(customPlaybook["tasks"]) > thresholds['CustomPlaybookLength']:
+            res.append({"category": "Playbooks", "severity": "Low",
+                        "description": f"{DESCRIPTION[4]}".format(customPlaybook["name"]),
+                        "resolution": f"{RESOLUTION[4]}"
+                        })
 
 results = CommandResults(
     readable_output="HealthCheckPlaybookAnalysis Done",

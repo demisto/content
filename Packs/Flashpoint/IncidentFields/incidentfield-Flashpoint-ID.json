@@ -1,0 +1,32 @@
+{
+    "id": "incident_flashpointid",
+    "version": -1,
+    "modified": "2021-09-23T10:45:39.005301333+05:30",
+    "name": "Flashpoint ID",
+    "ownerOnly": false,
+    "description": "The Flashpoint ID of the alert.",
+    "cliName": "flashpointid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts",
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

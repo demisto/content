@@ -444,7 +444,7 @@ script:
     description: Removes a member from a group.
     execution: false
     name: msgraph-groups-remove-member
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false
