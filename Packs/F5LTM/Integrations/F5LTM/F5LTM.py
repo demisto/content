@@ -267,7 +267,7 @@ def ltm_get_node_stats_command(client, args) -> CommandResults:
     )
 
 
-def ltm_get_node_by_address_command(client, args) -> Optional[CommandResults, None]:
+def ltm_get_node_by_address_command(client, args):
     ip_address = args.get('ip_address')
     results = client.get_nodes()
     for item in results:
