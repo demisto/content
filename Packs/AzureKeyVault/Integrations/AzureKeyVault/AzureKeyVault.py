@@ -555,7 +555,11 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
                                   'managecontacts', 'manageissuers', 'getissuers', 'listissuers',
                                   'setissuers', 'deleteissuers']))
 
-    storage_accounts = argToList(args.get('storage', []))
+    storage_accounts_permissions = argToList(
+        args.get('storage', ['get', 'list', 'delete', 'set',
+                             'update', 'regeneratekey',
+                             'getsas', 'listsas']))
+
     enabled_for_deployment = argToBoolean(
         args.get('enabled_for_deployment', True))
     enabled_for_disk_encryption = argToBoolean(
@@ -573,7 +577,7 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
 
     response = client.create_or_update_key_vault_request(vault_name, object_id, location, sku_name, keys_permissions,
                                                          secrets_permissions, certificates_permissions,
-                                                         storage_accounts, enabled_for_deployment,
+                                                         storage_accounts_permissions, enabled_for_deployment,
                                                          enabled_for_disk_encryption, enabled_for_template_deployment,
                                                          default_action, bypass, vnet_subnet_id,
                                                          ignore_missing_vnet_service_endpoint, ip_rules)

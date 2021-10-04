@@ -232,7 +232,31 @@ script:
       - listissuers
       - setissuers
       - deleteissuers
-      - purge.
+      - purge
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Permissions to storage accounts. If the Key Vault exists, you must
+        supply the previous storage's permissions in order to keep them unchanged.
+        Access policy property. Default value is [get,list,set,delete,backup,restore,recover].
+      isArray: true
+      name: storage
+      predefined:
+      - get
+      - list
+      - delete
+      - set
+      - update
+      - regeneratekey
+      - getsas
+      - listsas
+      - deletesas
+      - setsas
+      - recover
+      - backup
+      - restore
+      - purge
       required: false
       secret: false
     - auto: PREDEFINED
@@ -330,29 +354,11 @@ script:
       name: ip_rules
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Permissions to storage accounts. If the Key Vault exists, you must
-        supply the previous storage's permissions in order to keep them unchanged.
-        Access policy property. Default value is [get,list,set,delete,backup,restore,recover].
-      isArray: true
-      name: storage
-      predefined:
-      - get
-      - list
-      - set
-      - delete
-      - backup
-      - restore
-      - recover
-      - purge
-      required: false
-      secret: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the
       Key Vault exists, the updated properties will overwrite the existing ones. Please
-      use azure-key-vault-access-policy-update if you wish to update the access policy
-      of an existing Key Vault.
+      use azure-key-vault-access-policy-update command if you wish to update the access
+      policy of an existing Key Vault.
     execution: false
     name: azure-key-vault-create-update
     outputs:
@@ -679,10 +685,26 @@ script:
       - purge
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Permissions to storage accounts.
       isArray: true
       name: storage
+      predefined:
+      - get
+      - list
+      - delete
+      - set
+      - update
+      - regeneratekey
+      - getsas
+      - listsas
+      - deletesas
+      - setsas
+      - recover
+      - backup
+      - restore
+      - purge
       required: false
       secret: false
     deprecated: false
