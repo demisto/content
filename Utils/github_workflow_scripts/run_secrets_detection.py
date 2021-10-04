@@ -38,9 +38,8 @@ def main():
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
     res_json = res.json()[0]
-    print(type(res_json))
     if res_json:
-        investigation_id = "5"
+        investigation_id = res_json.get("id")
         return investigation_id
     else:
         print("Secrets detection playbook was failed")
