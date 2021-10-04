@@ -1,6 +1,6 @@
 {
-    "name": "Threat Intel",
-    "description": "Threat Intel",
+    "name": "Threat Intel Report",
+    "description": "Threat Intel Report Test Pack",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "serverMinVersion": "6.5.0",
