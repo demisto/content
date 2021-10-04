@@ -71,7 +71,9 @@ def format_results(indicators: list, incident_ids) -> str:
     indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
 
-    return tableToMarkdown('', indicators_df.to_dict(orient='records'), headers=indicators_headers)
+    table_result = tableToMarkdown('', indicators_df.to_dict(orient='records'), headers=indicators_headers)
+    demisto.executeCommand('setIncident', {'campaignmutualindicators': table_result})
+    return table_result
 
 
 def main():
@@ -80,8 +82,7 @@ def main():
     try:
         incident_ids = get_incidents_ids_from_context()
         indicators = get_indicatos_from_incidents(incident_ids)
-        results = format_results(indicators, incident_ids)
-        return_outputs(results)
+        format_results(indicators, incident_ids)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')

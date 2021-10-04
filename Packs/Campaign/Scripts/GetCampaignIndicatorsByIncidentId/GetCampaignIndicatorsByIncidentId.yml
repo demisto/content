@@ -6,7 +6,7 @@ script: ''
 type: python
 comment: Gets the campaign indicators by the campaign incident ids as a MD table.
 tags:
-- dynamic-section
+- field-display
 enabled: true
 scripttarget: 0
 subtype: python3
