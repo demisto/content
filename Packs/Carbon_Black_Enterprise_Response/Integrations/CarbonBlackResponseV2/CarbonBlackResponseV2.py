@@ -804,7 +804,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
     current_page: int = last_run.get('current_page', 0)
     next_page_for_fetch: int = current_page
-    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}, page to fetch from: {current_page}')
 
     # Handle first fetch time
     if last_fetch is None:
@@ -828,11 +828,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time)
     demisto.debug(f'Fetched {len(alerts)} alerts. Saving {len(incidents)} as incidents.')
     if len(incidents) < len(alerts):
+        demisto.debug(f'Did not fetch enough alerts, fetching more alerts.')
         incident_gap = len(alerts) - len(incidents)
         current_page += 1
         alerts = _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query)
         more_incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time,
                                                                             max_incidents_to_create=incident_gap)
+        demisto.debug(f'Fetched more {len(alerts)}, created {len(more_incidents)} incidents.')
         incidents.extend(more_incidents)
         latest_created_time_str = datetime.fromtimestamp(latest_created_time).strftime("%Y-%m-%dT%H:%M:%S")
         # Means we are fetching in the same second, save the next page to retrieve results from
@@ -850,6 +852,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time,
                 'current_page': next_page_for_fetch}
+    demisto.debug(f'Finished fetching incidents. Next fetch time: {latest_created_time}, next page: {current_page}')
     return next_run, incidents
 
 
