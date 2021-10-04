@@ -523,7 +523,7 @@ def create_update_watchlist_command(client, args):
             'displayName': args.get('watchlist_display_name'),
             'description': args.get('description', ''),
             'provider': args.get('provider', 'XSOAR'),
-            'source': args.get('source'),
+            'source': 'Local file',
             'labels': argToList(args.get('labels', ''), ','),
             'numberOfLinesToSkip': arg_to_number(args.get('lines_to_skip', '0')),
             'rawContent': raw_content,
