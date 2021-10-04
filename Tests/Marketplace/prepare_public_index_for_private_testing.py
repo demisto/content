@@ -11,7 +11,6 @@ from datetime import datetime
 from Tests.private_build.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client
-from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600

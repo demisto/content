@@ -107,7 +107,7 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
-                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path:str):
+                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
