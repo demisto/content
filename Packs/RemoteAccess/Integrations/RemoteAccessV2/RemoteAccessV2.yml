@@ -3,16 +3,27 @@ commonfields:
   id: RemoteAccessV2
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
+- display: Default Hostname Or IP Address
+  name: host
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
-  name: apikey
+- display: User
+  additionalinfo: For example, "root".
+  name: credentials
+  type: 9
+  required: false
+- display: Terminal Type
+  defaultvalue: xterm
+  name: host
   required: true
-  type: 4
+  type: 0
+- additionalinfo: TODO
+  defaultvalue: 'false'
+  display: Interactive Terminal Mode
+  hidden: false
+  name: interactive_terminal_mode
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
