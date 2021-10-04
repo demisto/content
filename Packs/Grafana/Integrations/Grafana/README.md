@@ -1,5 +1,5 @@
 Grafana alerting service
-This integration was integrated and tested with version 8.0.0 of Grafana
+This integration was integrated and tested with version xx of Grafana
 
 ## Configure Grafana on Cortex XSOAR
 
@@ -10,17 +10,17 @@ This integration was integrated and tested with version 8.0.0 of Grafana
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
     | Username |  | True |
     | Password |  | True |
-    | Maximum number of incidents to fetch | maximum is limited to 200 | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Maximum number of incidents to fetch | maximum is limited to 200. | False |
     | Fetch incidents |  | False |
-    | First Fetch Time of Alerts |  | False |
-    | Dashboard Id to fetch |  | False |
-    | Panel Id to fetch |  | False |
+    | First fetch time interval |  | False |
+    | Dashboard IDs to fetch | A comma-separated list, can be found by running the "grafana-dashboards-search" command. | False |
+    | Panel ID to fetch | See "help". | False |
     | Alert name to fetch |  | False |
-    | State to fetch |  | False |
+    | States to fetch |  | False |
     | Incident type |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -41,11 +41,11 @@ Gets alerts.
 | --- | --- | --- |
 | dashboard_id | A comma-separated list of dashboard ids by which to filter the results. | Optional | 
 | panel_id | Panel id by which to filter the results. | Optional | 
-| query | Limit response to alerts having a name like this value. | Optional | 
-| state | A comma-separated list of states by which to filter the results. The options are: all, no_data, paused, alerting, ok, pending. | Optional | 
+| name | Limit response to alerts having a name that this value is contained in. | Optional | 
+| state | A comma-separated list of states by which to filter the results. The options are: all, no_data, paused, alerting, ok, pending, unknown. | Optional | 
 | limit | The maximum number of alerts to return. | Optional | 
 | folder_id | A comma-separated list of folder ids by which to filter the results. | Optional | 
-| dashboard_query | Dashboard's name by which to filter the results. | Optional | 
+| dashboard_name | Value that is contained in dashboard's name by which to filter the results. | Optional | 
 | dashboard_tag | A comma-separated list of dashboard tags by which to filter the results. | Optional | 
 
 
@@ -82,11 +82,11 @@ Gets alerts.
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "01-01-01T::Z",
+                "evalDate": "0001-01-01T00:00:00Z",
                 "executionError": "",
                 "id": 2,
                 "name": "Adi's Alert",
-                "newStateDate": "2021-07-27T15:27:33.326964015Z",
+                "newStateDate": "2021-09-30T15:43:20Z",
                 "panelId": 5,
                 "state": "unknown",
                 "url": "https://www.url/d/yzDQUOR7z/streaming2"
@@ -98,7 +98,7 @@ Gets alerts.
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "01-01-01T::Z",
+                "evalDate": "0001-01-01T00:00:00Z",
                 "executionError": "",
                 "id": 1,
                 "name": "Arseny's Alert",
@@ -114,11 +114,11 @@ Gets alerts.
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "01-01-01T::Z",
+                "evalDate": "0001-01-01T00:00:00Z",
                 "executionError": "",
                 "id": 3,
                 "name": "TryAlert",
-                "newStateDate": "2021-07-08T12:08:40Z",
+                "newStateDate": "2021-08-11T13:30:40Z",
                 "panelId": 6,
                 "state": "alerting",
                 "url": "https://www.url/d/yzDQUOR7z/streaming2"
@@ -130,12 +130,12 @@ Gets alerts.
 
 #### Human Readable Output
 
->### Alerts
->|Dashboard Id|Dashboard Slug|Dashboard Uid|Eval Data|Eval Date|Id|Name|New State Date|Panel Id|State|Url|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 2 | streaming2 | yzDQUOR7z | noData: true | 01-01-01T::Z | 2 | Adi's Alert | 2021-07-27T15:27:33.326964015Z | 5 | unknown | https://www.url/d/yzDQUOR7z/streaming2 |
->| 1 | streaming | TXSTREZ | noData: true | 01-01-01T::Z | 1 | Arseny's Alert | 2021-06-09T15:20:01Z | 4 | no_data | https://www.url/d/TXSTREZ/streaming |
->| 2 | streaming2 | yzDQUOR7z | noData: true | 01-01-01T::Z | 3 | TryAlert | 2021-07-08T12:08:40Z | 6 | alerting | https://www.url/d/yzDQUOR7z/streaming2 |
+>### Existing Alerts:
+>|Id|Name|State|New State Date|Panel Id|Dashboard Id|Dashboard Uid|Dashboard Name|Url|
+>|---|---|---|---|---|---|---|---|---|
+>| 2 | Adi's Alert | no_data | 2021-09-30T15:43:20Z | 5 | 2 | yzDQUOR7z | streaming2 | [https:<span>//</span>www.url/d/yzDQUOR7z/streaming2](https:<span>//</span>www.url/d/yzDQUOR7z/streaming2) |
+>| 1 | Arseny's Alert | no_data | 2021-06-09T15:20:01Z | 4 | 1 | TXSTREZ | streaming | [https:<span>//</span>www.url/d/TXSTREZ/streaming](https:<span>//</span>www.url/d/TXSTREZ/streaming) |
+>| 3 | TryAlert | alerting | 2021-08-11T13:30:40Z | 6 | 2 | yzDQUOR7z | streaming2 | [https:<span>//</span>www.url/d/yzDQUOR7z/streaming2](https:<span>//</span>www.url/d/yzDQUOR7z/streaming2) |
 
 
 ### grafana-alert-pause
@@ -170,6 +170,7 @@ Pauses an alert by id.
     "Grafana": {
         "Alert": {
             "id": 2,
+            "message": "Alert paused",
             "state": "paused"
         }
     }
@@ -178,8 +179,8 @@ Pauses an alert by id.
 
 #### Human Readable Output
 
->### Paused Alert
->|Alert Id|Message|State|
+>### Paused Alert 2:
+>|Id|Message|State|
 >|---|---|---|
 >| 2 | Alert paused | paused |
 
@@ -216,6 +217,7 @@ Unpauses an alert by id.
     "Grafana": {
         "Alert": {
             "id": 2,
+            "message": "Alert un-paused",
             "state": "unknown"
         }
     }
@@ -224,8 +226,8 @@ Unpauses an alert by id.
 
 #### Human Readable Output
 
->### Un-paused Alerts
->|Alert Id|Message|State|
+>### Un-paused Alert 2:
+>|Id|Message|State|
 >|---|---|---|
 >| 2 | Alert un-paused | unknown |
 
@@ -260,6 +262,7 @@ Gets users.
 | Grafana.User.isDisabled | Boolean | Is user disabled? | 
 | Grafana.User.lastSeenAt | Date | User last seen at | 
 | Grafana.User.lastSeenAtAge | String | User last seen at age | 
+| Grafana.User.authLabels | Unknown | User authentication labels | 
 
 
 #### Command Example
@@ -272,37 +275,25 @@ Gets users.
         "User": [
             {
                 "authLabels": [],
-                "avatarUrl": "/avatar/5d9c68c6c50ed3d02a2fcf54f63993b",
-                "email": "User",
-                "id": 3,
-                "isAdmin": false,
-                "isDisabled": false,
-                "lastSeenAt": "2011-07-27T15:10:37Z",
-                "lastSeenAtAge": "1y",
-                "login": "User",
-                "name": "User"
-            },
-            {
-                "authLabels": [],
-                "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
-                "email": "admin",
+                "avatarUrl": "https://www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b",
+                "email": "User@mail",
                 "id": 1,
                 "isAdmin": true,
                 "isDisabled": false,
-                "lastSeenAt": "2021-07-27T15:27:29Z",
-                "lastSeenAtAge": "3m",
+                "lastSeenAt": "2021-10-04T15:25:40Z",
+                "lastSeenAtAge": "4m",
                 "login": "admin",
                 "name": "admin"
             },
             {
                 "authLabels": [],
-                "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2c",
+                "avatarUrl": "https://www.url/avatar/04501192ea3453723d1336c6520ce2c",
                 "email": "xadmin",
                 "id": 2,
                 "isAdmin": false,
                 "isDisabled": false,
-                "lastSeenAt": "2021-06-27T08:43:02Z",
-                "lastSeenAtAge": "30d",
+                "lastSeenAt": "2021-09-29T12:47:23Z",
+                "lastSeenAtAge": "5d",
                 "login": "xadmin",
                 "name": "xadmin"
             }
@@ -313,12 +304,12 @@ Gets users.
 
 #### Human Readable Output
 
->### Users
->|Avatar Url|Email|Id|Is Admin|Is Disabled|Last Seen At|Last Seen At Age|Login|Name|
+>### Existing Users:
+>|Id|Email|Name|Login|Is Admin|Is Disabled|Avatar Url|Last Seen At|Last Seen At Age|
 >|---|---|---|---|---|---|---|---|---|
->| /avatar/5d9c68c6c50ed3d02a2fcf54f63993b | User | 3 | false | false | 2011-07-27T15:10:37Z | 1y | User | User |
->| /avatar/46d229b033af06a191ff2267bca9ae5 | admin | 1 | true | false | 2021-07-27T15:27:29Z | 3m | admin | admin |
->| /avatar/04501192ea3453723d1336c6520ce2c | xadmin | 2 | false | false | 2021-06-27T08:43:02Z | 30d | xadmin | xadmin |
+>| 1 | User@mail | admin | admin | true | false | [https:<span>//</span>www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https:<span>//</span>www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 2021-10-04T15:25:40Z | 4m |
+>| 2 | xadmin | xadmin | xadmin | false | false | [https:<span>//</span>www.url/avatar/04501192ea3453723d1336c6520ce2c](https:<span>//</span>www.url/avatar/04501192ea3453723d1336c6520ce2c) | 2021-09-29T12:47:23Z | 5d |
+>| 3 | test@test | User3 | User | false | false | [https:<span>//</span>www.url/avatar/46d229b033af06a191ff2267bca9ae5](https:<span>//</span>www.url/avatar/46d229b033af06a191ff2267bca9ae5) | 2011-07-27T15:10:37Z | 10y |
 
 
 ### grafana-user-teams-get
@@ -361,11 +352,20 @@ Gets the user's teams by user id.
             "id": "1",
             "teams": [
                 {
-                    "avatarUrl": "/avatar/1d3226029ef0424011bf63ffde2f",
-                    "email": "",
-                    "id": 2,
+                    "avatarUrl": "https://www.url/avatar/f1f97cfa3c828a7352da671a",
+                    "email": "team@test.com",
+                    "id": 15,
+                    "memberCount": 1,
+                    "name": "Test Team",
+                    "orgId": 1,
+                    "permission": 0
+                },
+                {
+                    "avatarUrl": "https://www.url/avatar/1d3226029e424011bffde2f",
+                    "email": "test2@test.com",
+                    "id": 16,
                     "memberCount": 2,
-                    "name": "MyTestTeam2",
+                    "name": "TestTeam2",
                     "orgId": 1,
                     "permission": 0
                 }
@@ -377,10 +377,11 @@ Gets the user's teams by user id.
 
 #### Human Readable Output
 
->### Teams For User
->|Avatar Url|Id|Member Count|Name|Org Id|Permission|
->|---|---|---|---|---|---|
->| /avatar/1d3226029ef0424011bf63ffde2f | 2 | 2 | MyTestTeam2 | 1 | 0 |
+>### Teams For User 1:
+>|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
+>|---|---|---|---|---|---|---|
+>| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
+>| 16 | 1 | TestTeam2 | test2@test.com | [https:<span>//</span>www.url/avatar/1d3226029e424011bffde2f](https:<span>//</span>www.url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
 
 
 ### grafana-user-orgs-get
@@ -427,11 +428,6 @@ Gets user's organizations by user id.
                     "name": "New Org.",
                     "orgId": 2,
                     "role": "Admin"
-                },
-                {
-                    "name": "New Org.1",
-                    "orgId": 3,
-                    "role": "Admin"
                 }
             ]
         }
@@ -441,17 +437,16 @@ Gets user's organizations by user id.
 
 #### Human Readable Output
 
->### Organization For User
+>### Organizations For User 1:
 >|Name|Org Id|Role|
 >|---|---|---|
 >| Main Org. | 1 | Admin |
 >| New Org. | 2 | Admin |
->| New Org.1 | 3 | Admin |
 
 
 ### grafana-user-update
 ***
-Login or name is mandatory. Pay attantion that if you change your own login information, you won't be able to continue quering.
+Login or email is mandatory. Pay attantion that if you change your own login information, you won't be able to continue quering as your username (login) will change. Login and email should be unique.
 
 
 #### Base Command
@@ -461,10 +456,10 @@ Login or name is mandatory. Pay attantion that if you change your own login info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | User email. | Optional | 
-| name | User name. | Optional | 
-| login | username. | Optional | 
-| theme | User theme. Possible values are: light, dark. | Optional | 
+| email | User email. If email is not specified, login must be specified. | Optional | 
+| name | User's name. | Optional | 
+| login | User login (username). If login is not specified, email must be specified. | Optional | 
+| theme | User theme when using Grafana's interface, either light or dark. Possible values are: light, dark. | Optional | 
 | user_id | User id. | Required | 
 
 
@@ -473,15 +468,19 @@ Login or name is mandatory. Pay attantion that if you change your own login info
 There is no context output for this command.
 
 #### Command Example
-```!grafana-user-update user_id=3 email=User login=User name=User```
+```!grafana-user-update user_id=3 email=TestUser login=TestUser name=TestUser```
 
 #### Human Readable Output
 
->User updated
+>### Successfully Updated User 3:
+>|Message|
+>|---|
+>| User updated |
+
 
 ### grafana-annotation-create
 ***
-Creates annotation.
+Creates an annotation in the Grafana database. The dashboard_id and panel_id fields are optional. If they are not specified then a global annotation is created and can be queried in any dashboard that adds the Grafana annotations data source. When creating a region annotation include the time_end property.
 
 
 #### Base Command
@@ -493,22 +492,41 @@ Creates annotation.
 | --- | --- | --- |
 | dashboard_id | Dashboard id. | Optional | 
 | panel_id | Panel id. | Optional | 
-| time | Time. | Optional | 
+| time | Start time. | Optional | 
 | time_end | End time. | Optional | 
-| tags | A comma-separated list of tags by which to filter the results. | Optional | 
+| tags | A comma-separated list of tags by which to filter the dashboards to add the annotation to. | Optional | 
 | text | Text. | Required | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Grafana.Annotation.id | Number | Annotation id | 
+
 
 #### Command Example
 ```!grafana-annotation-create text="annotate"```
 
+#### Context Example
+```json
+{
+    "Grafana": {
+        "Annotation": {
+            "id": 266,
+            "message": "Annotation added"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->Annotation 33 Added
+>### Successfully Created Annotation 266:
+>|Id|Message|
+>|---|---|
+>| 266 | Annotation added |
+
 
 ### grafana-teams-search
 ***
@@ -524,8 +542,8 @@ Gets teams.
 | --- | --- | --- |
 | perpage | Number of results wanted in one page. | Optional | 
 | page | Index of page of results wanted. | Optional | 
-| query | Contained in the name of a team. | Optional | 
-| name | The name of the team. | Optional | 
+| query | Value is contained in the name of a team. | Optional | 
+| name | The exact name of the team. | Optional | 
 
 
 #### Context Output
@@ -538,7 +556,7 @@ Gets teams.
 | Grafana.Team.email | String | Team email | 
 | Grafana.Team.avatarUrl | String | Team avatar url | 
 | Grafana.Team.memberCount | Number | Team member count | 
-| Grafana.Team.permission | Number | Number of team permissions | 
+| Grafana.Team.permission | Number | Number of team permissions. | 
 
 
 #### Command Example
@@ -550,38 +568,29 @@ Gets teams.
     "Grafana": {
         "Team": [
             {
-                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
-                "email": "email@test.com",
-                "id": 1,
-                "memberCount": 0,
-                "name": "MyTestTeam",
-                "orgId": 1,
-                "permission": 0
-            },
-            {
-                "avatarUrl": "/avatar/1d3226029ef0424011bf63ffde2f",
-                "email": "",
-                "id": 2,
-                "memberCount": 2,
-                "name": "MyTestTeam2",
-                "orgId": 1,
-                "permission": 0
-            },
-            {
-                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
-                "email": "email@test.com",
-                "id": 5,
+                "avatarUrl": "https://www.url/avatar/f1f97cfa3c828a7352da671a",
+                "email": "team@test.com",
+                "id": 15,
                 "memberCount": 1,
-                "name": "MyTestTeam4",
+                "name": "Test Team",
                 "orgId": 1,
                 "permission": 0
             },
             {
-                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
+                "avatarUrl": "https://www.url/avatar/1d3226029e424011bffde2f",
+                "email": "test2@test.com",
+                "id": 16,
+                "memberCount": 2,
+                "name": "TestTeam2",
+                "orgId": 1,
+                "permission": 0
+            },
+            {
+                "avatarUrl": "https://www.url/avatar/71cc610bc4841e3444235f09d9c",
                 "email": "email@test.com",
-                "id": 7,
+                "id": 144,
                 "memberCount": 0,
-                "name": "MyTestTeam6",
+                "name": "Elia",
                 "orgId": 1,
                 "permission": 0
             }
@@ -592,13 +601,12 @@ Gets teams.
 
 #### Human Readable Output
 
->### Teams
->|Avatar Url|Email|Id|Member Count|Name|Org Id|Permission|
+>### Teams Search Results:
+>|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
->| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
->| /avatar/1d3226029ef0424011bf63ffde2f |  | 2 | 2 | MyTestTeam2 | 1 | 0 |
->| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 5 | 1 | MyTestTeam4 | 1 | 0 |
->| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 7 | 0 | MyTestTeam6 | 1 | 0 |
+>| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
+>| 16 | 1 | TestTeam2 | test2@test.com | [https:<span>//</span>www.url/avatar/1d3226029e424011bffde2f](https:<span>//</span>www.url/avatar/1d3226029e424011bffde2f) | 2 | 0 |
+>| 144 | 1 | Elia | email@test.com | [https:<span>//</span>www.url/avatar/71cc610bc4841e3444235f09d9c](https:<span>//</span>www.url/avatar/71cc610bc4841e3444235f09d9c) | 0 | 0 |
 
 
 ### grafana-team-members-list
@@ -634,38 +642,26 @@ Gets a list of all team members by team id.
 
 
 #### Command Example
-```!grafana-team-members-list team_id=2```
+```!grafana-team-members-list team_id=15```
 
 #### Context Example
 ```json
 {
     "Grafana": {
         "Team": {
-            "id": "2",
+            "id": "15",
             "members": [
                 {
                     "auth_module": "",
-                    "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
-                    "email": "admin",
+                    "avatarUrl": "https://www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b",
+                    "email": "User@mail",
                     "labels": [],
                     "login": "admin",
                     "name": "admin",
                     "orgId": 1,
                     "permission": 0,
-                    "teamId": 2,
+                    "teamId": 15,
                     "userId": 1
-                },
-                {
-                    "auth_module": "",
-                    "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2c",
-                    "email": "xadmin",
-                    "labels": [],
-                    "login": "xadmin",
-                    "name": "xadmin",
-                    "orgId": 1,
-                    "permission": 0,
-                    "teamId": 2,
-                    "userId": 2
                 }
             ]
         }
@@ -675,11 +671,10 @@ Gets a list of all team members by team id.
 
 #### Human Readable Output
 
->### Team Members
->|Avatar Url|Email|Login|Name|Org Id|Permission|Team Id|User Id|
+>### Team 15 Members:
+>|Org Id|Team Id|User Id|Email|Name|Login|Avatar Url|Permission|
 >|---|---|---|---|---|---|---|---|
->| /avatar/46d229b033af06a191ff2267bca9ae5 | admin | admin | admin | 1 | 0 | 2 | 1 |
->| /avatar/04501192ea3453723d1336c6520ce2c | xadmin | xadmin | xadmin | 1 | 0 | 2 | 2 |
+>| 1 | 15 | 1 | User@mail | admin | admin | [https:<span>//</span>www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https:<span>//</span>www.url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 0 |
 
 
 ### grafana-user-add-to-team
@@ -703,11 +698,15 @@ Adds a user to a team.
 There is no context output for this command.
 
 #### Command Example
-```!grafana-user-add-to-team team_id=1 user_id=1```
+```!grafana-user-add-to-team team_id=15 user_id=3```
 
 #### Human Readable Output
 
->Member added to Team
+>### Successfully Added User 3 to Team 15:
+>|Message|
+>|---|
+>| Member added to Team |
+
 
 ### grafana-user-remove-from-team
 ***
@@ -730,11 +729,15 @@ Removes a user from a team.
 There is no context output for this command.
 
 #### Command Example
-```!grafana-user-remove-from-team team_id=1 user_id=1```
+```!grafana-user-remove-from-team team_id=15 user_id=3```
 
 #### Human Readable Output
 
->Team Member removed
+>### Successfully Removed User 3 from Team 15:
+>|Message|
+>|---|
+>| Team Member removed |
+
 
 ### grafana-team-add
 ***
@@ -748,7 +751,7 @@ Creates a new team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name. | Required | 
+| name | The team name, needs to be unique. | Required | 
 | email | Email. | Optional | 
 | org_id | Organization id. | Optional | 
 
@@ -761,14 +764,14 @@ Creates a new team.
 
 
 #### Command Example
-```!grafana-team-add name="TestTeam2"```
+```!grafana-team-add name="TestTeam4"```
 
 #### Context Example
 ```json
 {
     "Grafana": {
         "Team": {
-            "id": 10,
+            "id": 153,
             "message": "Team created"
         }
     }
@@ -777,10 +780,10 @@ Creates a new team.
 
 #### Human Readable Output
 
->### Added Team
+>### Successfully Created Team 153:
 >|Message|Team Id|
 >|---|---|
->| Team created | 10 |
+>| Team created | 153 |
 
 
 ### grafana-team-delete
@@ -803,11 +806,15 @@ Deletes a team.
 There is no context output for this command.
 
 #### Command Example
-```!grafana-team-delete team_id=7```
+```!grafana-team-delete team_id=152```
 
 #### Human Readable Output
 
->Team deleted
+>### Successfully Deleted Team 152:
+>|Message|
+>|---|
+>| Team deleted |
+
 
 ### grafana-org-create
 ***
@@ -821,7 +828,7 @@ Creats an organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name. | Optional | 
+| name | Name. | Required | 
 
 
 #### Context Output
@@ -832,14 +839,14 @@ Creats an organization.
 
 
 #### Command Example
-```!grafana-org-create```
+```!grafana-org-create name="Organization"```
 
 #### Context Example
 ```json
 {
     "Grafana": {
         "Organization": {
-            "id": 5,
+            "id": 12,
             "message": "Organization created"
         }
     }
@@ -848,10 +855,10 @@ Creats an organization.
 
 #### Human Readable Output
 
->### Added Organization
+>### Successfully Created Organization 12:
 >|Message|Org Id|
 >|---|---|
->| Organization created | 5 |
+>| Organization created | 12 |
 
 
 ### grafana-dashboards-search
@@ -866,7 +873,7 @@ Searchs dashboards.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query. | Optional | 
+| query | Value is contained in the name of the dashboard. | Optional | 
 | tag | A comma-separated list of tags by which to filter the results. | Optional | 
 | type | Type. Possible values are: dash-folder, dash-db. | Optional | 
 | dashboard_ids | A comma-separated list of dashboard IDs by which to filter the results. | Optional | 
@@ -917,7 +924,9 @@ Searchs dashboards.
                 "isStarred": false,
                 "slug": "",
                 "sortMeta": 0,
-                "tags": [],
+                "tags": [
+                    "tag1"
+                ],
                 "title": "Streaming Simple",
                 "type": "dash-db",
                 "uid": "yzDQUOR7z",
@@ -931,11 +940,11 @@ Searchs dashboards.
 
 #### Human Readable Output
 
->### Dashboard
->|Id|Is Starred|Sort Meta|Title|Type|Uid|Uri|Url|
->|---|---|---|---|---|---|---|---|
->| 1 | true | 0 | Streaming | dash-db | TXSTREZ | db/streaming | https://www.url/d/TXSTREZ/streaming |
->| 2 | false | 0 | Streaming Simple | dash-db | yzDQUOR7z | db/streaming2 | https://www.url/d/yzDQUOR7z/streaming2 |
+>### Existing Dashboards:
+>|Id|Uid|Title|Is Starred|Tags|Uri|Url|Type|Sort Meta|
+>|---|---|---|---|---|---|---|---|---|
+>| 1 | TXSTREZ | Streaming | true |  | db/streaming | [https:<span>//</span>www.url/d/TXSTREZ/streaming](https:<span>//</span>www.url/d/TXSTREZ/streaming) | dash-db | 0 |
+>| 2 | yzDQUOR7z | Streaming Simple | false | tag1 | db/streaming2 | [https:<span>//</span>www.url/d/yzDQUOR7z/streaming2](https:<span>//</span>www.url/d/yzDQUOR7z/streaming2) | dash-db | 0 |
 
 
 ### grafana-user-get-by-id
@@ -969,6 +978,7 @@ Gets a user by id.
 | Grafana.User.updatedAt | Date | User updated at | 
 | Grafana.User.createdAt | Date | User created at | 
 | Grafana.User.avatarUrl | String | User avatar url | 
+| Grafana.User.authLabels | Unknown | User authentication labels | 
 
 
 #### Command Example
@@ -982,7 +992,7 @@ Gets a user by id.
             "authLabels": [],
             "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
             "createdAt": "2021-06-08T10:57:39Z",
-            "email": "admin",
+            "email": "User@mail",
             "id": 1,
             "isDisabled": false,
             "isExternal": false,
@@ -990,8 +1000,8 @@ Gets a user by id.
             "login": "admin",
             "name": "admin",
             "orgId": 1,
-            "theme": "dark",
-            "updatedAt": "2021-07-08T11:13:45Z"
+            "theme": "light",
+            "updatedAt": "2021-09-30T14:46:22Z"
         }
     }
 }
@@ -999,10 +1009,10 @@ Gets a user by id.
 
 #### Human Readable Output
 
->### User
->|Avatar Url|Created At|Email|Id|Is D Is abled|Is External|Is Grafana Admin|Login|Name|Org Id|Theme|Updated At|
+>### User 1 Results:
+>|Id|Email|Name|Login|Theme|Org Id|Is Grafana Admin|Is D Is abled|Is External|Updated At|Created At|Avatar Url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| /avatar/46d229b033af06a191ff2267bca9ae5 | 2021-06-08T10:57:39Z | admin | 1 | false | false | true | admin | admin | 1 | dark | 2021-07-08T11:13:45Z |
+>| 1 | User@mail | admin | admin | light | 1 | true | false | false | 2021-09-30T14:46:22Z | 2021-06-08T10:57:39Z | [https:<span>//</span>www.url/avatar/46d229b033af06a191ff2267bca9ae5](https:<span>//</span>www.url/avatar/46d229b033af06a191ff2267bca9ae5) |
 
 
 ### grafana-team-get-by-id
@@ -1030,22 +1040,22 @@ Gets a team by id.
 | Grafana.Team.email | String | Team email | 
 | Grafana.Team.avatarUrl | String | Team avatar url | 
 | Grafana.Team.memberCount | Number | Team member count | 
-| Grafana.Team.permission | Number | Number of team permissions | 
+| Grafana.Team.permission | Number | Number of team permissions. | 
 
 
 #### Command Example
-```!grafana-team-get-by-id team_id=1```
+```!grafana-team-get-by-id team_id=15```
 
 #### Context Example
 ```json
 {
     "Grafana": {
         "Team": {
-            "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
-            "email": "email@test.com",
-            "id": 1,
-            "memberCount": 0,
-            "name": "MyTestTeam",
+            "avatarUrl": "https://www.url/avatar/f1f97cfa3c828a7352da671a",
+            "email": "team@test.com",
+            "id": 15,
+            "memberCount": 1,
+            "name": "Test Team",
             "orgId": 1,
             "permission": 0
         }
@@ -1055,10 +1065,10 @@ Gets a team by id.
 
 #### Human Readable Output
 
->### Team
->|Avatar Url|Email|Id|Member Count|Name|Org Id|Permission|
+>### Team 15 Results:
+>|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
->| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
+>| 15 | 1 | Test Team | team@test.com | [https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a](https:<span>//</span>www.url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
 
 
 ### grafana-alert-get-by-id
@@ -1116,8 +1126,8 @@ Gets an alert by id.
                 "noData": true
             },
             "executionError": " ",
-            "for": 6,
-            "frequency": 6,
+            "for": 60000000000,
+            "frequency": 600,
             "handler": 1,
             "id": 1,
             "message": "man down!",
@@ -1147,7 +1157,7 @@ Gets an alert by id.
                                 "scenarioId": "streaming_client",
                                 "stream": {
                                     "noise": 2.2,
-                                    "speed": 1,
+                                    "speed": 100,
                                     "spread": 3.5,
                                     "type": "signal"
                                 },
@@ -1188,10 +1198,10 @@ Gets an alert by id.
 
 #### Human Readable Output
 
->### Alert
->|Created|Dashboard Id|Eval Data|Execution Error|For|Frequency|Handler|Id|Message|Name|New State Date|Org Id|Panel Id|Settings|Silenced|State|State Changes|Updated|Version|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-06-09T15:13:45Z | 1 | noData: true |   | 6 | 6 | 1 | 1 | man down! | Arseny's Alert | 2021-06-09T15:20:01Z | 1 | 4 | alertRuleTags: {"moshe": "2"}<br/>conditions: {'evaluator': {'params': [10], 'type': 'gt'}, 'operator': {'type': 'and'}, 'query': {'datasourceId': 1, 'model': {'refId': 'A', 'scenarioId': 'streaming_client', 'stream': {'noise': 2.2, 'speed': 1, 'spread': 3.5, 'type': 'signal'}, 'stringInput': ''}, 'params': ['A', '5m', 'now']}, 'reducer': {'params': [], 'type': 'avg'}, 'type': 'query'}<br/>executionErrorState: alerting<br/>for: 1m<br/>frequency: 10m<br/>handler: 1<br/>message: man down!<br/>name: Arseny's Alert<br/>noDataState: no_data<br/>notifications:  | false | no_data | 1 | 2021-06-09T15:14:51Z | 0 |
+>### Alert 1 Results:
+>|Id|Version|Org Id|Dashboard Id|Panel Id|Name|Message|State|New State Date|State Changes|Handler|Silenced|Frequency|For|Created|Updated|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | 0 | 1 | 1 | 4 | Arseny's Alert | man down! | no_data | 2021-06-09T15:20:01Z | 1 | 1 | false | 600 | 60000000000 | 2021-06-09T15:13:45Z | 2021-06-09T15:14:51Z |
 
 
 ### grafana-org-list
@@ -1235,12 +1245,8 @@ Gets organizations.
                 "name": "New Org."
             },
             {
-                "id": 3,
-                "name": "New Org.1"
-            },
-            {
-                "id": 5,
-                "name": "None"
+                "id": 12,
+                "name": "Organization"
             }
         ]
     }
@@ -1249,13 +1255,12 @@ Gets organizations.
 
 #### Human Readable Output
 
->### Organization
+>### Existing Organizations:
 >|Id|Name|
 >|---|---|
 >| 1 | Main Org. |
 >| 2 | New Org. |
->| 3 | New Org.1 |
->| 5 | None |
+>| 12 | Organization |
 
 
 ### grafana-org-get-by-name
@@ -1270,7 +1275,7 @@ Gets an organization by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name. | Required | 
+| name | The exact name of the organization wanted. | Required | 
 
 
 #### Context Output
@@ -1307,10 +1312,10 @@ Gets an organization by name.
 
 #### Human Readable Output
 
->### Organization
->|Address|Id|Name|
+>### Organization "Main Org." Results:
+>|Name|Id|Address|
 >|---|---|---|
->| address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  | 1 | Main Org. |
+>| Main Org. | 1 | address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  |
 
 
 ### grafana-org-get-by-id
@@ -1362,8 +1367,8 @@ Gets an organization by id.
 
 #### Human Readable Output
 
->### Organization
->|Address|Id|Name|
+>### Organization 1 Results:
+>|Id|Name|Address|
 >|---|---|---|
->| address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  | 1 | Main Org. |
+>| 1 | Main Org. | address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  |
 
