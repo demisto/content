@@ -87,7 +87,6 @@ class Client(BaseClient):
             return res.status_code
 
     def get_linked_cases(self, case_id: str = None):
-        # TODO: the method does not work, after merging the case is deleted
         res = self._http_request('GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)

@@ -1848,9 +1848,48 @@ Merges 2 cases
 
 
 #### Command Example
-``` ```
+```!thehive-merge-cases firstCaseID= "~413824" secondCaseID= "~364624" ```
 
+#### Context Example
+```json
+{
+        "_id": "~41443480",
+        "id": "~41443480",
+        "createdBy": "adrugobitski@paloaltonetworks.com",
+        "updatedBy": null,
+        "createdAt": 1633374980441,
+        "updatedAt": null,
+        "_type": "case",
+        "caseId": 27,
+        "title": "new created case / new created case",
+        "description": "description for new case\n\ndescription for new case",
+        "severity": 2,
+        "startDate": 1632305365797,
+        "endDate": null,
+        "impactStatus": null,
+        "resolutionStatus": null,
+        "tags": [],
+        "flag": false,
+        "tlp": 2,
+        "pap": 2,
+        "status": "Open",
+        "summary": null,
+        "owner": "adrugobitski@paloaltonetworks.com",
+        "customFields": {},
+        "stats": {},
+        "permissions": [
+            "manageShare", "manageAnalyse", "manageTask",
+            "manageCaseTemplate", "manageCase", "manageUser",
+            "manageProcedure", "managePage", "manageObservable",
+            "manageTag", "manageConfig", "manageAlert",
+            "accessTheHiveFS", "manageAction"
+        ]}
+```
 #### Human Readable Output
+>### TheHive Linked Cases of ~413824:
+>|id|title|description|createdAt|
+>|---|---|---|---|
+>| ~41443480 | new created case / new created case | description for new case<br><br>description for new case | 2021-10-04T22:16:20Z |
 
 
 
@@ -2110,7 +2149,10 @@ Get a specific task.
 
 
 #### Command Example
-``` ```
+```!thehive-get-task id="~34592" ```
+
+#### Context Example
+```No task found with id: ~34592.```
 
 #### Human Readable Output
 

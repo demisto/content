@@ -9,7 +9,6 @@
 !thehive-list-users
 !thehive-get-version
 !thehive-create-observable id="~41324616" data="datas for test 3" dataType="domain"  message="datas for test 3"
-!thehive-get-linked-cases
 
 
 
