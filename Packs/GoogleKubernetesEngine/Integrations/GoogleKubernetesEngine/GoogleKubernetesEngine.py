@@ -7,7 +7,7 @@ from typing import Dict, Callable, Tuple, Any, Optional, List
 from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
-from google.cloud.container_v1 import enums
+from google.cloud.container_v1 import types
 from google.oauth2 import service_account
 # Local packages
 import demistomock as demisto
@@ -277,7 +277,7 @@ def test_module_command(client: ClusterManagerClient, project: str, zone: str):
                              zone=zone,
                              timeout=API_TIMEOUT)
     except Exception:
-        raise DemistoException('Unsuccessfull integration test - check configuration...')
+        raise DemistoException('Unsuccessful integration test - check configuration...')
 
     return 'ok', {}, {}
 
@@ -369,7 +369,7 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
     upadte = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    raw_response_msg: Message = client.set_master_auth(action=enums.SetMasterAuthRequest.Action.SET_USERNAME,
+    raw_response_msg: Message = client.set_master_auth(action=types.SetMasterAuthRequest.Action.SET_USERNAME,
                                                        project_id=project,
                                                        zone=zone,
                                                        cluster_id=cluster,
