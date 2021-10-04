@@ -13,3 +13,5 @@ Checks the reputation with impact ratings (Major, Moderate, Minor, None) of:
   - Email addresses
 Searches for strings associated with phishing attacks
 Links to human-readable reports for an explanation as to why indicators are a risk to business
+
+https://cofense.com/product-services/phishing-intelligence/ 
