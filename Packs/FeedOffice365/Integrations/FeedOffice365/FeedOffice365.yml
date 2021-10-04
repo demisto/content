@@ -8,10 +8,11 @@ configuration:
   defaultvalue: 'true'
   required: false
   type: 8
-- defaultvalue: Worldwide
+- defaultvalue: All
   display: Regions
   name: regions
   options:
+  - All
   - China
   - Germany
   - USGovDoD

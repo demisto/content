@@ -9,21 +9,15 @@ This integration was integrated and tested with the beta version of Azure Active
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
-    | Subscription ID |  | True |
-    | Azure Active Directory endpoint | Azure Active Directory endpoint associated with a national cloud. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Call the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
-## Commands
-You can execute these commands from the Cortex XSOAR command line interface, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### azure-ad-auth-test
-***
-Tests the connectivity to Azure.
-
-
+    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` (used to update user status, for example by calling the `!azure-ad-identity-protection-risky-user-confirm-compromised` command). <br> Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. </li></ul> | True |
+    | Subscription ID | The Azure Active Directory subscription ID. | True |
+    | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
+    | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
+    | Use system proxy settings | When selected, runs the integraion instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+5. Run the **!azure-ad-auth-start** command to start the connection process.
+6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
+7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
+    
 #### Base Command
 
 `azure-ad-auth-test`
@@ -131,7 +125,7 @@ Retrieve the properties of a collection of riskDetection objects.
 | id | Unique ID of the risk detection. | Optional | 
 | user_id | Unique ID of the user. | Optional | 
 | user_principal_name | The user principal name (UPN) of the user. | Optional | 
-| country | Country or region of the activity. For example, `US` or `UK`. For futher details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
+| country | The country or region of the activity. For example, `US` or `UK`. For further details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
 | filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
 | limit | Number of results to provide. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
@@ -142,14 +136,14 @@ Retrieve the properties of a collection of riskDetection objects.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AADIdentityProtection.Risks.id | string | Unique ID of the risk detection. | 
-| AADIdentityProtection.Risks.requestId | string | Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
+| AADIdentityProtection.Risks.requestId | string | The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
 | AADIdentityProtection.Risks.correlationId | string | Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
 | AADIdentityProtection.Risks.riskEventType | string | The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.riskType | string | Deprecated. Use riskEventType instead. List of risk event types. | 
 | AADIdentityProtection.Risks.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
-| AADIdentityProtection.Risks.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and  unknownFutureValue. | 
+| AADIdentityProtection.Risks.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
-| AADIdentityProtection.Risks.source | string | Source of the risk detection. For example, activeDirectory. | 
+| AADIdentityProtection.Risks.source | string | Source of the risk detection. For example, `activeDirectory`. | 
 | AADIdentityProtection.Risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.tokenIssuerType | string | Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue. | 
@@ -348,12 +342,12 @@ Gets the risk history of a riskyUser resource.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AADIdentityProtection.RiskyUserHistory.id | string | Unique ID of the risky user. | 
-| AADIdentityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted | 
+| AADIdentityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted. | 
 | AADIdentityProtection.RiskyUserHistory.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
 | AADIdentityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
 | AADIdentityProtection.RiskyUserHistory.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
 | AADIdentityProtection.RiskyUserHistory.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
-| AADIdentityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The  possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| AADIdentityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
 | AADIdentityProtection.RiskyUserHistory.userDisplayName | string | Risky user display name. | 
 | AADIdentityProtection.RiskyUserHistory.userPrincipalName | string | Risky user principal name. | 
 
