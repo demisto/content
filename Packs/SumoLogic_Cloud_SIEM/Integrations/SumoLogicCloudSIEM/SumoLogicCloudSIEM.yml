@@ -811,7 +811,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3
