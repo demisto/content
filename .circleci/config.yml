@@ -1256,7 +1256,7 @@ jobs:
                 command: |
                   if [[ -z $STORAGE_BASE_PATH ]]; then
                     if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
-                     STORAGE_BASE_PATH="content"
+                      STORAGE_BASE_PATH="content"
                     else
                       STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
                     fi
