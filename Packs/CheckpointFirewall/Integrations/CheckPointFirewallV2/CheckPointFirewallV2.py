@@ -64,9 +64,9 @@ class Client(BaseClient):
                                           domain_arg: str = None):
 
         if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
-            demisto.debug(f"restore sid: found some session id ({sid_from_context}) in context ")
+            demisto.debug(f"restore sid: found some session id ({sid_from_context}) in context")
             if self.test_connection() == 'ok':
-                demisto.debug(f"restore sid: success, setting restored session id ({sid_from_context}) on Client ")
+                demisto.debug(f"restore sid: success, setting restored session id ({sid_from_context}) on Client")
                 self.sid = sid_from_context
                 return
             else:
