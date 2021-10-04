@@ -1,5 +1,5 @@
 description: 'Processes Cyren Incidents, sets resolutions, and applies remediations
-  to end-user mailboxes.'
+  to end-user mailboxes. '
 id: Cyren Inbox Security Default
 inputs: []
 name: Cyren Inbox Security Default
@@ -11,7 +11,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - "26"
     note: false
     quietmode: 0
     separatecontext: false
@@ -19,18 +19,18 @@ tasks:
     task:
       brand: ""
       description: Start of Playbook
-      id: 2eca6599-ee0e-4d88-8fc5-284980f3a8b6
+      id: 9082edc2-d441-4815-84c4-ae9108b0d5f8
       iscommand: false
       name: ""
       version: -1
-    taskid: 2eca6599-ee0e-4d88-8fc5-284980f3a8b6
+    taskid: 9082edc2-d441-4815-84c4-ae9108b0d5f8
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 180
+          "x": 670,
+          "y": 40
         }
       }
   "1":
@@ -59,12 +59,12 @@ tasks:
     task:
       brand: ""
       description: Determines if this incident has already been remediated.
-      id: e5b761a9-651a-4e1a-83a0-3b52f683a1f5
+      id: b13dbfd3-c09c-4498-85c7-11e2f1093d2d
       iscommand: false
       name: Is Not Remediated
       type: condition
       version: -1
-    taskid: e5b761a9-651a-4e1a-83a0-3b52f683a1f5
+    taskid: b13dbfd3-c09c-4498-85c7-11e2f1093d2d
     timertriggers: []
     type: condition
     view: |-
@@ -91,12 +91,12 @@ tasks:
       description: Based on your analysis, should this incident be resolved with a
         definitive "Phishing" or "Clean" designation, and optionally remediate end-user
         mailboxes?
-      id: cf4f2bc9-0024-4ef5-83cb-7d3ec4f24f14
+      id: dad5596f-471d-4ff7-8561-76ec29d8349a
       iscommand: false
       name: Resolve and remediate?
       type: condition
       version: -1
-    taskid: cf4f2bc9-0024-4ef5-83cb-7d3ec4f24f14
+    taskid: dad5596f-471d-4ff7-8561-76ec29d8349a
     timertriggers: []
     type: condition
     view: |-
@@ -139,13 +139,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 3ad33d83-2879-41ff-8fcc-d18fccb84415
+      id: 1391dc0c-32d0-444f-864d-92be69b77563
       iscommand: true
       name: Close an Unknnown
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 3ad33d83-2879-41ff-8fcc-d18fccb84415
+    taskid: 1391dc0c-32d0-444f-864d-92be69b77563
     timertriggers: []
     type: regular
     view: |-
@@ -188,13 +188,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 69fc38eb-91b7-4f17-83bd-fff0155d1de0
+      id: b30fa683-d71e-49b8-8b4f-d0cc788ea21c
       iscommand: true
       name: Close as Phishing
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 69fc38eb-91b7-4f17-83bd-fff0155d1de0
+    taskid: b30fa683-d71e-49b8-8b4f-d0cc788ea21c
     timertriggers: []
     type: regular
     view: |-
@@ -219,12 +219,12 @@ tasks:
     task:
       brand: ""
       description: Resolve this incident as phishing or clean
-      id: c1486ab7-ffd5-4278-833f-95cde8d7d585
+      id: 47081bfa-783b-44a3-8e5d-11231c5470c2
       iscommand: false
       name: Resolve as?
       type: condition
       version: -1
-    taskid: c1486ab7-ffd5-4278-833f-95cde8d7d585
+    taskid: 47081bfa-783b-44a3-8e5d-11231c5470c2
     timertriggers: []
     type: condition
     view: |-
@@ -267,13 +267,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 90ff9cfa-c441-45dd-88dc-eaed2b41e154
+      id: 6b19c8c9-fe4b-44ff-8132-f02cc23d2e53
       iscommand: true
       name: Close an Unknnown
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 90ff9cfa-c441-45dd-88dc-eaed2b41e154
+    taskid: 6b19c8c9-fe4b-44ff-8132-f02cc23d2e53
     timertriggers: []
     type: regular
     view: |-
@@ -299,12 +299,12 @@ tasks:
       brand: ""
       description: Should remediation rules be applied to user mailboxes for this
         phishing incident?
-      id: 1a2e197f-f0e6-4c3c-8915-97037b623a31
+      id: 20181207-1050-4be4-83f0-e3a3943e459c
       iscommand: false
       name: Phishing with actions?
       type: condition
       version: -1
-    taskid: 1a2e197f-f0e6-4c3c-8915-97037b623a31
+    taskid: 20181207-1050-4be4-83f0-e3a3943e459c
     timertriggers: []
     type: condition
     view: |-
@@ -330,12 +330,12 @@ tasks:
       brand: ""
       description: Should remediation rules be applied to user mailboxes for this
         clean incident?
-      id: 3c95c324-0584-4d89-8d6e-aa2dcdc3572d
+      id: 04bbe63a-4109-4a8a-88d1-de0f5ed50806
       iscommand: false
       name: Clean with actions?
       type: condition
       version: -1
-    taskid: 3c95c324-0584-4d89-8d6e-aa2dcdc3572d
+    taskid: 04bbe63a-4109-4a8a-88d1-de0f5ed50806
     timertriggers: []
     type: condition
     view: |-
@@ -371,13 +371,13 @@ tasks:
     task:
       brand: ""
       description: resolving case and remediate incidents
-      id: a77bf62b-baed-4993-8e09-2622a2035a46
+      id: 29b81650-e8f0-4ec9-870d-712296a8c070
       iscommand: true
       name: Resolve as phishing with actions
       script: '|||cyren-resolve-and-remediate'
       type: regular
       version: -1
-    taskid: a77bf62b-baed-4993-8e09-2622a2035a46
+    taskid: 29b81650-e8f0-4ec9-870d-712296a8c070
     timertriggers: []
     type: regular
     view: |-
@@ -412,13 +412,13 @@ tasks:
     task:
       brand: ""
       description: resolving case and remediate incidents
-      id: 43119801-fe0e-4fec-8624-9c39eee40811
+      id: 2a1573cb-f47a-410e-8317-be9978817bb9
       iscommand: true
       name: Resolve as phishing without actions
       script: '|||cyren-resolve-and-remediate'
       type: regular
       version: -1
-    taskid: 43119801-fe0e-4fec-8624-9c39eee40811
+    taskid: 2a1573cb-f47a-410e-8317-be9978817bb9
     timertriggers: []
     type: regular
     view: |-
@@ -461,13 +461,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: a4746604-efe3-48dd-81dd-94619d0d1d26
+      id: dd5e4868-f21d-415f-8786-4c214b0555a6
       iscommand: true
       name: Close as Phishing
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: a4746604-efe3-48dd-81dd-94619d0d1d26
+    taskid: dd5e4868-f21d-415f-8786-4c214b0555a6
     timertriggers: []
     type: regular
     view: |-
@@ -502,13 +502,13 @@ tasks:
     task:
       brand: ""
       description: resolving case and remediate incidents
-      id: 04c13a3f-0f3a-4203-8f72-216881d636a9
+      id: a225a298-b734-434c-885f-8d90df19ffa8
       iscommand: true
       name: Resolve as clean with actions
       script: '|||cyren-resolve-and-remediate'
       type: regular
       version: -1
-    taskid: 04c13a3f-0f3a-4203-8f72-216881d636a9
+    taskid: a225a298-b734-434c-885f-8d90df19ffa8
     timertriggers: []
     type: regular
     view: |-
@@ -543,13 +543,13 @@ tasks:
     task:
       brand: ""
       description: resolving case and remediate incidents
-      id: cf9ef862-d083-4a54-8921-70521d10a25e
+      id: 262f3576-606e-43d7-846b-8d1fda2793bc
       iscommand: true
       name: Resolve as clean without actions
       script: '|||cyren-resolve-and-remediate'
       type: regular
       version: -1
-    taskid: cf9ef862-d083-4a54-8921-70521d10a25e
+    taskid: 262f3576-606e-43d7-846b-8d1fda2793bc
     timertriggers: []
     type: regular
     view: |-
@@ -592,13 +592,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 810c46b8-90ab-47e7-880b-9eba4cd270aa
+      id: 4616558e-65b4-493d-8057-8c5100f5e707
       iscommand: true
       name: Close as Clean
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 810c46b8-90ab-47e7-880b-9eba4cd270aa
+    taskid: 4616558e-65b4-493d-8057-8c5100f5e707
     timertriggers: []
     type: regular
     view: |-
@@ -641,13 +641,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 947c7937-2102-4376-84e4-aa858e7df26b
+      id: a8d9495a-14a7-47a6-8795-51384473dc78
       iscommand: true
       name: Close as Clean
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 947c7937-2102-4376-84e4-aa858e7df26b
+    taskid: a8d9495a-14a7-47a6-8795-51384473dc78
     timertriggers: []
     type: regular
     view: |-
@@ -667,12 +667,12 @@ tasks:
     task:
       brand: ""
       description: End of playbook
-      id: 2a3fa6bb-f039-479d-8a3a-84a0143fda84
+      id: 8d0625f6-9360-42f6-8d0e-132e374c64f4
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 2a3fa6bb-f039-479d-8a3a-84a0143fda84
+    taskid: 8d0625f6-9360-42f6-8d0e-132e374c64f4
     timertriggers: []
     type: title
     view: |-
@@ -695,12 +695,12 @@ tasks:
     task:
       brand: ""
       description: Analyst decision to close
-      id: 927075b8-525f-4305-8e4a-14c96cd76244
+      id: 98431915-2da3-4ebf-871b-d09cf5a057cd
       iscommand: false
       name: Analyst determined remediation
       type: title
       version: -1
-    taskid: 927075b8-525f-4305-8e4a-14c96cd76244
+    taskid: 98431915-2da3-4ebf-871b-d09cf5a057cd
     timertriggers: []
     type: title
     view: |-
@@ -723,12 +723,12 @@ tasks:
     task:
       brand: ""
       description: Already remediated, system close
-      id: f55a0614-35d2-4859-8cda-44d7e8afb22a
+      id: 0e417e41-d41b-41c1-8820-5649887c879e
       iscommand: false
       name: System Remediated
       type: title
       version: -1
-    taskid: f55a0614-35d2-4859-8cda-44d7e8afb22a
+    taskid: 0e417e41-d41b-41c1-8820-5649887c879e
     timertriggers: []
     type: title
     view: |-
@@ -738,20 +738,56 @@ tasks:
           "y": 1375
         }
       }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cyren Inbox Security
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      id: 123e5ee4-c3b7-46b7-851e-e92b95627a31
+      iscommand: false
+      name: Is Integration Available
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 123e5ee4-c3b7-46b7-851e-e92b95627a31
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 230
+        }
+      }
 version: -1
-fromversion: 6.0.0
 view: |-
   {
     "linkLabelsPosition": {
       "1_2_#default#": 0.48,
-      "1_3_Remediated": 0.36
+      "1_3_Remediated": 0.36,
+      "26_23_#default#": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 1655,
+        "height": 1795,
         "width": 2910,
         "x": -790,
-        "y": 180
+        "y": 40
       }
     }
   }
+fromversion: 6.0.0

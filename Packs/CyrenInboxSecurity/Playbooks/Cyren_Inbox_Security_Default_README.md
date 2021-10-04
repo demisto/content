@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 * CyrenInboxSecurity
 
 ### Scripts
-This playbook does not use any scripts.
+* IsIntegrationAvailable
 
 ### Commands
-* closeInvestigation
 * cyren-resolve-and-remediate
+* closeInvestigation
 
 ## Playbook Inputs
 ---
