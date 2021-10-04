@@ -1,0 +1,508 @@
+id: Create Jira Issue
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Create Jira Issue
+description: "Create Jira issue allows you to open new tickets as a task from a parent\
+  \ playbook.\nWhen creating the ticket, you can decide to update based on on the\
+  \ ticket's state, which will wait for the ticket to resolve or close with StatePolling.\
+  \ \nAlternatively, you can select to mirror the Jira issue and incident fields.\
+  \  To apply either of these options, set the SyncTicket value in the playbook inputs\
+  \ to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank\
+  \ to use none."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 18c305f6-5fbf-4423-8b6c-ae7a02d8f74a
+    type: start
+    task:
+      id: 18c305f6-5fbf-4423-8b6c-ae7a02d8f74a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 16c86c60-a3b6-43fb-8a2b-7e2e59269006
+    type: regular
+    task:
+      id: 16c86c60-a3b6-43fb-8a2b-7e2e59269006
+      version: -1
+      name: Create Jira ticket
+      description: Creates a new issue in Jira.
+      script: '|||jira-create-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description:
+        complex:
+          root: inputs.Description
+      issueTypeName:
+        complex:
+          root: inputs.IssueTypeName
+      projectKey:
+        complex:
+          root: inputs.ProjectKey
+      summary:
+        complex:
+          root: inputs.Summary
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a05e6684-ad69-49c6-8e65-e4cdd3eee5cd
+    type: title
+    task:
+      id: a05e6684-ad69-49c6-8e65-e4cdd3eee5cd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 27e18f12-3b11-4f21-835e-1bc20fa1a158
+    type: condition
+    task:
+      id: 27e18f12-3b11-4f21-835e-1bc20fa1a158
+      version: -1
+      name: Mirror or State Polling?
+      description: Check for a playbook input to indicate which sync mode was selected.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Mirror:
+      - "13"
+      State Polling:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: Mirror
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SyncTicket
+            iscontext: true
+          right:
+            value:
+              simple: Mirror
+    - label: State Polling
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SyncTicket
+            iscontext: true
+          right:
+            value:
+              simple: StatePolling
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9c3980ab-19ba-41bb-8d5f-6ef9c9b00ec1
+    type: playbook
+    task:
+      id: 9c3980ab-19ba-41bb-8d5f-6ef9c9b00ec1
+      version: -1
+      name: Mirror Jira Ticket
+      description: |-
+        Mirror Jira Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with Jira.
+        It enables you to manage Jira tickets in Cortex xSOAR while data is continuously synced between Jira and Cortex xSOAR, including Jira schema, fields, comments, work notes, and attachments.
+        To enable OOTB mirroring, use the Jira Create ticket  - common mappers for incoming and outgoing mirroring.
+        FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(Jira Status field) of the Jira ticket until it marks as either resolved or closed.
+        In Addition to the playbook, we recommend that you use the included layout for Jira Ticket, which helps visualize Jira ticket information in Cortex xSOAR.
+        You can add the new layout as a tab to existing layouts using the Edit Layout page.
+      playbookName: Mirror Jira Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      'FieldPolling ':
+        complex:
+          root: inputs.FieldPolling
+      FieldPollingInterval:
+        complex:
+          root: inputs.PollingInterval
+      FieldPollingTimeout:
+        complex:
+          root: inputs.PollingTimeout
+      MirrorCommentTags:
+        simple: comment
+      MirrorDirection:
+        complex:
+          root: inputs.MirrorDirection
+      MirrorInstanceName:
+        complex:
+          root: inputs.InstanceName
+      TicketId:
+        complex:
+          root: Ticket
+          accessor: Id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 44cc852b-4da9-4339-8979-47c0969b75e2
+    type: playbook
+    task:
+      id: 44cc852b-4da9-4339-8979-47c0969b75e2
+      version: -1
+      name: Jira Ticket State Polling
+      description: |-
+        Use Jira Incident State Polling as a sub-playbook when required to pause the execution of a master playbook until the Jira ticket state is either resolved or closed.
+        This playbook implements polling by continuously running the jira-get-issue command until the state is either resolved or closed.
+      playbookName: Jira Ticket State Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandName:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      InstanceName:
+        complex:
+          root: inputs.InstanceName
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      TicketId:
+        complex:
+          root: Ticket
+          accessor: Id
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: bd672c46-0ca1-456b-8c9a-790cb8006f44
+    type: regular
+    task:
+      id: bd672c46-0ca1-456b-8c9a-790cb8006f44
+      version: -1
+      name: Initial Update Incident with Jira Information
+      description: Fetches an issue from Jira.
+      script: '|||jira-get-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      issueId:
+        complex:
+          root: Ticket
+          accessor: Id
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Jira Status
+      output:
+        simple: ${Ticket.[0].Status}
+    - incidentfield: Jira Summary
+      output:
+        simple: ${Ticket.[0].Summary}
+    - incidentfield: Jira Reporter Name
+      output:
+        complex:
+          root: Ticket
+          accessor: Creator
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: (
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    - incidentfield: Jira Reporter Email
+      output:
+        complex:
+          root: Ticket
+          accessor: Creator
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: (
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: )
+    - incidentfield: Jira ID
+      output:
+        complex:
+          root: Ticket
+          accessor: Id
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 4fa77bc3-1562-406d-83aa-7976d06e82ec
+    type: condition
+    task:
+      id: 4fa77bc3-1562-406d-83aa-7976d06e82ec
+      version: -1
+      name: Is Jira integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: jira-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_3_yes": 0.52,
+      "9_14_State Polling": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1485,
+        "width": 1520,
+        "x": 50,
+        "y": -250
+      }
+    }
+  }
+inputs:
+- key: Summary
+  value: {}
+  required: true
+  description: Set a short description of the ticket.
+  playbookInputQuery:
+- key: Description
+  value: {}
+  required: false
+  description: Set the impact for the new ticket. Leave empty for Jira default impact.
+  playbookInputQuery:
+- key: Attachment
+  value: {}
+  required: false
+  description: Set the urgency of the new ticket. Leave empty for Jira default urgency.
+  playbookInputQuery:
+- key: ProjectKey
+  value: {}
+  required: true
+  description: Jira Project Key
+  playbookInputQuery:
+- key: IssueTypeName
+  value: {}
+  required: true
+  description: TaskName
+  playbookInputQuery:
+- key: SyncTicket
+  value: {}
+  required: false
+  description: "Set the value of the desired sync method with Jira Issue. you can\
+    \ choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none\
+    \ \n\nGenericPolling polls for the state of the ticket and runs until the ticket\
+    \ state is either resolved or closed. \n\nMirror - You can use the Mirror option\
+    \ to perform a full sync with the Jira Ticket. The ticket data is synced automatically\
+    \ between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option\
+    \ is selected, FieldPolling is true by default. "
+  playbookInputQuery:
+- key: PollingInterval
+  value: {}
+  required: false
+  description: |-
+    Set interval time for the polling to run
+    (In minutes)
+  playbookInputQuery:
+- key: PollingTimeout
+  value: {}
+  required: false
+  description: |-
+    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
+    (In minutes)
+  playbookInputQuery:
+- key: AdditionalPollingCommandName
+  value: {}
+  required: false
+  description: "In this use case, Additional polling commands are relevant when using\
+    \ StatePolling, and there is more than one Jira instance. It will specify the\
+    \ polling command to use a specific instance to run on. \nIf so, please add \"\
+    Using\" to the value. \nThe playbook will then take the instance name as the instance\
+    \ to use. "
+  playbookInputQuery:
+- key: InstanceName
+  value: {}
+  required: false
+  description: |
+    Set the Jira Instance that will be used for mirroring/running polling commands.
+  playbookInputQuery:
+- key: MirrorDirection
+  value: {}
+  required: false
+  description: "Set the mirror direction, should be one of the following: \n1. In\n\
+    2. Out\n3. Both"
+  playbookInputQuery:
+- key: MirrorCommentTags
+  value: {}
+  required: false
+  description: Set tags for mirror comments and files to Jira.
+  playbookInputQuery:
+- key: FieldPolling
+  value: {}
+  required: false
+  description: |-
+    Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.
+    It is useful when it is needed to wait for the Jira ticket to be resolved and continue the parent playbook.
+    FieldPolling will run until the ticket state is either resolved or closed.
+  playbookInputQuery:
+outputs: []
+tests:
+- Jira-v2-Test
+fromversion: 6.0.0
