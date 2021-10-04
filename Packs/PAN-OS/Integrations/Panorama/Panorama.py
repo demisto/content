@@ -1,5 +1,8 @@
 import shutil
 
+
+
+
 ''' IMPORTS '''
 import json
 import uuid
@@ -7,12 +10,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 
 import requests
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-''' IMPORTS '''
-
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -304,23 +301,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -472,11 +469,12 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
-def run_polling_command(args: dict = None, cmd: str = None, search_function: Callable = None,
-                        query_function: Callable = None, results_function: Callable = None,
-                        outputs_prefix: str = None, exit_string: str = None, job_id: str = None,
-                        additional_paths: dict = None, success_path: tuple = None,
-                        error_path: list = []) -> list:
+def run_polling_command(args: dict=None, cmd: str=None, search_function: Callable=None,
+                        query_function: Callable=None, results_function: Callable=None,
+                        outputs_prefix: str=None, exit_string: str=None, job_id: str=None,
+                        additional_paths: dict=None, success_path: tuple=None,
+                        error_path: list=[])-> list:
+
     polling_results = []
 
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
@@ -589,8 +587,7 @@ def run_polling_command(args: dict = None, cmd: str = None, search_function: Cal
 
                 status_warnings = []
                 if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', None):
-                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings',
-                                                                                                      {}).get(
+                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
                         'line',
                         [])
                 ignored_error = ['configured with no certificate profile']
@@ -606,6 +603,7 @@ def run_polling_command(args: dict = None, cmd: str = None, search_function: Cal
                 )
 
     return polling_results
+
 
 
 @logger
@@ -2631,9 +2629,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
+        add_argument_list(override_allow_list, 'allow-list', True) + \
+        add_argument_list(override_block_list, 'block-list', True) + \
+        add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -2750,8 +2748,7 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     allow_name, block_name = set_edit_url_filter_xpaths(major_version)
 
     if element_to_change == 'description':
-        params[
-            'xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -4513,15 +4510,14 @@ def panorama_query_logs_command(args: dict):
             args=args,
             cmd=cmd,
             search_function=lambda: panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                                        zone_src, zone_dst, time_generated, action,
-                                                        port_dst, rule, url, filedigest),
+                                         zone_src, zone_dst, time_generated, action,
+                                         port_dst, rule, url, filedigest),
             query_function=lambda: panorama_get_traffic_logs(job_id),
             results_function=lambda: panorama_get_logs_command(args),
             additional_paths={'LogType': log_type},
             outputs_prefix='Panorama.Monitor',
             exit_string='Query logs failed.',
             job_id=job_id,
-            result_path=['response', 'result', 'log', 'logs'],
             success_path=(['response', '@status'], 'success'),
             error_path=[]
         )
@@ -5409,6 +5405,7 @@ def panorama_install_latest_content_update(target: str):
 
 
 def panorama_install_latest_content_update_command(args: dict = {}):
+
     target = args.get('target')
     use_polling = args.get('use_polling', 'false') == 'true'
     polling = args.get('polling', use_polling)
@@ -5716,8 +5713,7 @@ def panorama_install_panos_version_command(args: dict):
                 'JobID': result['response']['result']['job']
             }
 
-            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'],
-                                              removeNull=True)
+            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
             script_results.append(CommandResults(
                 outputs_prefix='Panorama.PANOS.Install',
                 outputs_key_field='JobID',
