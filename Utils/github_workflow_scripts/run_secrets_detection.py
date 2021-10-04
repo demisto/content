@@ -39,6 +39,7 @@ def main():
     exit_status = 0
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
     if res and res.text:
+        print(res.text)
         were_secrets_detected = res.text[0].get('CustomFields', {}).get('secretsdetectionresult')
         if were_secrets_detected:
             print(f'Secrets were found in your PR, please check in: ')
