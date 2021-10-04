@@ -48,7 +48,7 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: true
+      required: false
     - description: MD5 hash to check.
       isArray: true
       name: md5
