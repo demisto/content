@@ -192,6 +192,10 @@ def __create_integration_instance(server, username, password, integration_name, 
     logging_manager.info(
         f'Configuring instance for {integration_name} (instance name: {instance_name}, validate "Test": {validate_test})'
     )
+
+    logging_manager.info(
+        f'Module config are: {module_configuration}'
+    )
     # define module instance
     module_instance = {
         'brand': configuration['name'],

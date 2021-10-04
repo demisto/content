@@ -1339,13 +1339,23 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         documentation_changes_only: If the build is for documentations changes only - no need to create instances.
 
     """
+    # envs_to_test = {
+    #     'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
+    #     'Server Master': True,
+    #     'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
+    #     'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
+    #     'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
+    #     'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
+    #
+    # }
+
     envs_to_test = {
-        'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
+        'Server 5.5': False,
         'Server Master': True,
-        'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
-        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
-        'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
-        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
+        'Server 5.0': False,
+        'Server 6.0': False,
+        'Server 6.1': False,
+        'Server 6.2': False,
 
     }
 
