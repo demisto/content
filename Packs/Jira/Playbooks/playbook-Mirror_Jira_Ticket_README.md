@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Mirror Jira Ticket](Insert the link to your image here)
+![Mirror Jira Ticket](../doc_files/Mirror_Jira_Ticket.png)

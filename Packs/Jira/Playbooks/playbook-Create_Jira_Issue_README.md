@@ -47,4 +47,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Create Jira Issue](Insert the link to your image here)
+![Create Jira Issue](../doc_files/Create_Jira_Issue.png)

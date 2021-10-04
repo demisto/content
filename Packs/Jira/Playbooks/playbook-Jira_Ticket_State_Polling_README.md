@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Jira Ticket State Polling](Insert the link to your image here)
+![Jira Ticket State Polling](../doc_files/Jira_Ticket_State_Polling.png)
