@@ -323,8 +323,16 @@ def configure_integration_instance(integration, client, placeholders_map):
     if not validate_test:
         logging.debug(f'Skipping configuration for integration: {integration_name} (it has test_validate set to false)')
         return None
+
+    logging.info(
+        f'Module config are: {integration_configuration}'
+    )
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi, client)
+
+    logging.info(
+        f'Module instance are: {module_instance}'
+    )
     return module_instance
 
 
