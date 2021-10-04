@@ -36,7 +36,8 @@ def main():
     }
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
-    print(res)
+    print(res.text)
+    print(res.content)
 
 
 if __name__ == "__main__":
