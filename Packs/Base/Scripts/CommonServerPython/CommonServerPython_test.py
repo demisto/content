@@ -689,13 +689,14 @@ class TestTableToMarkdown:
             }
         ]
 
-        table = tableToMarkdown('tableToMarkdown test', data, headers=list(data[0].keys()), date_fields=['create_time'])
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
 
         expected_md_table = '''### tableToMarkdown test
 |docker_image|create_time|
 |---|---|
-| demisto/python3 | 2021-09-13 11:21:53 |
-| demisto/python2 | 2021-09-13 11:25:21 |
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
 '''
         assert table == expected_md_table
 

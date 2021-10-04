@@ -1873,7 +1873,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
             if date_fields:
                 for field in date_fields:
                     try:
-                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field]) / 1000).strftime('%Y-%m-%d %H:%M:%S')
                     except Exception:
                         pass
 
