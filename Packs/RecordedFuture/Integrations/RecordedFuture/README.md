@@ -1686,7 +1686,8 @@ Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
 
 
 ## Fetch Incidents
-You can fetch Recorded Future Alerts and work with them as XSOAR Incidents. There are three parameters that you can specify.
+You can fetch Recorded Future Alerts and work with them as XSOAR Incidents. When pulling the alert we set it status to pending and we only pull alerts with status no-acction("New" in UI). There are three parameters that you can specify.
+
 
 | **Argument Name** | **Format** | **Description** | **Required** | **Default value** |
 | --- | --- | --- | --- | --- |
