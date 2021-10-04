@@ -22,7 +22,7 @@ Evasive phishing, BEC and fraud attacks are getting past existing email defenses
 
 
 
-![Cyren Inbox Security](https://www.cyren.com/tl_files/cyren_v4_theme/images/CIS_Icons_Lockup_20200422@2x.png)
+![Cyren Inbox Security](CIS_Icons_Lockup_20200422@2x.png)
 
 
 
@@ -68,7 +68,7 @@ Our seamless mailbox plugin lets users scan and report suspicious emails at will
 
 
 
-![Cyren Inbox Security](https://www.cyren.com/tl_files/cyren_v4_theme/images/CIS_Hero_Diagram_20190524_@2x.png)
+![Cyren Inbox Security](CIS_Hero_Diagram_20190524_@2x.png)
 
 
 
