@@ -4,7 +4,8 @@ commonfields:
 name: SplitCampaignContext
 script: ''
 type: python
-comment: Splits incidents in the context data to below and above a similarity threshold.
+comment: Splits incidents in the context data to below and above a similarity threshold. If a low similarity
+  incident was already added to the campaign, then it will also be considered in the higher similarity incidents list.
 tags: []
 enabled: true
 args:
