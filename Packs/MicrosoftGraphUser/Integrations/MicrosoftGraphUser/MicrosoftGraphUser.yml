@@ -59,8 +59,9 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Terminates a user's session from all Office 365 applications, and prevents sign in.
-      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
