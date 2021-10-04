@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 MESSAGES: Dict[str, str] = {
-    'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.Weyland-Yutani',
+    'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
     'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
     'INTEGER_ERROR': 'The argument {} must be a positive integer.',
     'REQUIRED_ARGS_CUSTOM_SCHEMA': 'Argument field_raw_json or field_json_entry_id is required.',
