@@ -1801,6 +1801,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type url_keys: ``list``
        :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
 
+       :type date_fields: ``list``
+       :param date_fields: A list of date fields to format the value to human-readable output.
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
@@ -2145,9 +2148,8 @@ def isCommandAvailable(cmd):
     return False
 
 
-def epochToTimestamp(epoch, utc=True):
-    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S") if utc \
-        else datetime.fromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+def epochToTimestamp(epoch):
+    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def formatTimeColumns(data, timeColumnNames):
