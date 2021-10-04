@@ -43,11 +43,6 @@ configuration:
   name: secrets
   required: false
   type: 0
-- display: Credentials
-  hidden: false
-  name: credentials
-  required: false
-  type: 9
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure

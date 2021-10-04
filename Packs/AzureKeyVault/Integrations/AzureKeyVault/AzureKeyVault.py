@@ -1148,24 +1148,23 @@ def test_module(client: KeyVaultClient, key_vaults_to_fetch_from, secrets_to_fet
 
 def fetch_credentials(client: KeyVaultClient,
                       key_vaults_to_fetch_from: List[str],
-                      secrets_to_fetch: List[str], credentials_name) -> None:
+                      secrets_to_fetch: List[str], credentials_name: str) -> None:
     """
      Fetch credentials from secrets which reside in the specified Key Vaults list.
-
+     This command supports two scenarios:
+     1. Fetch a specific set of credentials: assuming that the credentials name is written
+        in the format of: KEY_VAULT_NAME/SECRET_NAME
+     2. Fetch credentials based on instance parameters: key_vaults list and secret list.
      Args:
          client (KeyVaultClient):  Azure Key Vault API client.
          key_vaults_to_fetch_from (List[str]): List of Key Vaults to fetch secrets from.
-         secrets_to_fetch List[str]): List of secrets to fetch.
+         secrets_to_fetch (List[str]): List of secrets to fetch.
+         credentials_name (str): Name of a specific set of credentials to fetch.
 
      Returns:
          None
      """
     credentials = []
-
-    if len(key_vaults_to_fetch_from) == 0:
-        return_results('No key vaults to fetch secrets from were specified.')
-    if len(secrets_to_fetch) == 0:
-        return_results('No secrets were specified.')
 
     if credentials_name:
         return_results(credentials_name)
@@ -1173,7 +1172,12 @@ def fetch_credentials(client: KeyVaultClient,
         key_vault = credentials_name_arr[0]
         secret = credentials_name_arr[1]
         credentials = [client.get_secret_credentials(key_vault, secret)]
+
     else:
+        if len(key_vaults_to_fetch_from) == 0:
+            return_results('No key vaults to fetch secrets from were specified.')
+        if len(secrets_to_fetch) == 0:
+            return_results('No secrets were specified.')
         for key_vault in key_vaults_to_fetch_from:
             for secret in secrets_to_fetch:
                 secret_cred = client.get_secret_credentials(key_vault, secret)
@@ -1277,8 +1281,7 @@ def main() -> None:
     self_deployed = params.get('self_deployed', False)
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    credentials = params.get('credentials', {})
-    identifier = credentials.get('identifier')
+    identifier = args.get('identifier')
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
