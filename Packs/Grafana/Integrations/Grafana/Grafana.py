@@ -83,7 +83,7 @@ class Client(BaseClient):
         return response
 
     def annotation_create_request(self, text: str, dashboard_id: int = None, panel_id: int = None,
-                                  time_start: str = None, time_end: str = None, tags: List[str] = None):
+                                  time_start: int = None, time_end: int = None, tags: List[str] = None):
         data = {"dashboardId": dashboard_id, "panelId": panel_id,
                 "tags": tags, "text": text, "time": time_start, "timeEnd": time_end}
 
@@ -196,15 +196,12 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def set_time_for_annotation(time_to_set: Optional[str] = None):
+def set_time_to_epoch_millisecond(time_to_set: Optional[str] = None):
     """
     For annotation creation, sets the time to epoch numbers in millisecond resolution - if it was filled.
     """
     if time_to_set:
-        if isinstance(time_to_set, int) or time_to_set.isdigit():
-            return int(time_to_set)
-        else:
-            return date_to_timestamp(time_to_set, DATE_FORMAT)
+        return int(dateparser.parse(time_to_set).timestamp()) * 1000
 
 
 def change_key(response: dict, prev_key: str, new_key: str):
@@ -233,13 +230,6 @@ def decapitalize(s: str):
         return s
     demisto.debug(f'de-capitalizing key: {s}')
     return s[0].lower() + s[1:]
-
-
-def url_encode(query: str):
-    """
-    Query values with spaces need to be URL encoded e.g. query=Jane%20Doe.
-    """
-    return query.replace(' ', '%20')
 
 
 def set_state(states: str = ''):
@@ -401,8 +391,6 @@ def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    # if query:
-    #     query = url_encode(query)
 
     response = client.users_search_request(perpage, page, query)
     headers = ['id', 'email', 'name', 'login', 'isAdmin', 'isDisabled', 'avatarUrl', 'lastSeenAt', 'lastSeenAtAge', 'authLabels']
@@ -498,8 +486,8 @@ def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     dashboard_id = arg_to_number(args.get('dashboard_id'))
     panel_id = arg_to_number(args.get('panel_id'))
 
-    time_start = set_time_for_annotation(args.get('time'))
-    time_end = set_time_for_annotation(args.get('time_end'))
+    time_start = set_time_to_epoch_millisecond(args.get('time'))
+    time_end = set_time_to_epoch_millisecond(args.get('time_end'))
 
     tags = argToList(args.get('tags', ''))
     text = str(args.get('text'))
@@ -522,8 +510,6 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    # if query:
-    #     query = url_encode(query)
     name = args.get('name')
 
     response = client.teams_search_request(perpage, page, query, name)

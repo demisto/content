@@ -378,15 +378,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Start time, should be in ISO8601 format (e.g. '%Y-%m-%dT%H:%M:%SZ'),
-        or epoch numbers in millisecond resolution.
+      description: Start time
       isArray: false
       name: time
       required: false
       secret: false
     - default: false
-      description: End time, should be in ISO8601 format (e.g. '%Y-%m-%dT%H:%M:%SZ'),
-        or epoch numbers in millisecond resolution.
+      description: End time
       isArray: false
       name: time_end
       required: false

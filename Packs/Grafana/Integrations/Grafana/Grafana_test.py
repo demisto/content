@@ -3,8 +3,8 @@ import pytest
 import json
 from pytz import utc
 
-from Grafana import Client, change_key, keys_to_lowercase, decapitalize, url_encode, calculate_fetch_start_time, \
-    parse_alerts, alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state
+from Grafana import Client, change_key, keys_to_lowercase, decapitalize, calculate_fetch_start_time, parse_alerts, \
+    alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state, set_time_to_epoch_millisecond
 from freezegun import freeze_time
 from CommonServerPython import urljoin
 
@@ -81,29 +81,6 @@ def test_decapitalize(str_input, expected_output):
 
     """
     assert decapitalize(str_input) == expected_output
-
-
-one_space = ('Jane Doe', 'Jane%20Doe')
-two_linked_spaces = ('Try  Alert', 'Try%20%20Alert')
-many_spaces_separated = ('Many Spaces Between Words', 'Many%20Spaces%20Between%20Words')
-URL_ENCODE_VALUES = [one_space, two_linked_spaces, many_spaces_separated]
-
-
-@pytest.mark.parametrize('query, encoded_query', URL_ENCODE_VALUES)
-def test_url_encode(query, encoded_query):
-    """
-
-    Given:
-        - A query that needs to be url encoded
-
-    When:
-        - Searching users or teams and providing a query
-
-    Then:
-        - Returns the query url encoded
-
-    """
-    assert url_encode(query) == encoded_query
 
 
 first_fetch_hour_ago = (None,
@@ -423,3 +400,24 @@ def test_set_state(state_input, state_output):
 
     """
     assert set_state(state_input) == state_output
+
+
+TIME_TO_EPOCH = ((None, None), ('now', 1596020400000), ('2021-10-04T15:21:57Z', 1633360917000))
+
+
+@freeze_time("2020-07-29 11:00:00 UTC")
+@pytest.mark.parametrize('time_input, time_output', TIME_TO_EPOCH)
+def test_set_time_for_annotation(time_input, time_output):
+    """
+
+    Given:
+        - annotation-create command is executed
+
+    When:
+        - 'time' and 'time_end' arguments are or aren't given
+
+    Then:
+        - Returns the right epoch time in millisecond resolution
+
+    """
+    assert set_time_to_epoch_millisecond(time_input) == time_output
