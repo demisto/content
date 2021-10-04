@@ -212,7 +212,7 @@
 				"name": "Threat Intel Reports",
 				"prevName": "Threat Intel Reports",
 				"dataType": "generics",
-                "definitionId": "ThreatIntelReport",
+				"definitionId": "ThreatIntelReport",
 				"widgetType": "table",
 				"query": "",
 				"sort": null,
