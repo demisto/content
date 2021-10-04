@@ -9,7 +9,14 @@
 !thehive-list-users
 !thehive-get-version
 !thehive-create-observable id="~41324616" data="datas for test 3" dataType="domain"  message="datas for test 3"
-
+!thehive-merge-cases firstCaseID=~413944 secondCaseID=~418040
+!thehive-remove-case id="~352336"
+!thehive-update-observable id=~442400 message=updated_message
+!thehive-create-local-user login=demisto name=dem password=1234
+!thehive-get-user id=~41402520
+!thehive-block-user id=~41402520
+!thehive-get-task id=~41357336
+!thehive-update-task id=~41324616 title=updated_title"
 
 
 
