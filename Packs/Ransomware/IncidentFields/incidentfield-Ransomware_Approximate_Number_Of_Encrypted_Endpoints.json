@@ -8,7 +8,7 @@
     "closeForm": false,
     "content": true,
     "editForm": true,
-    "fieldCalcScript": "Approximate number of encrypted endpoints by rasnomware",
+    "fieldCalcScript": "RansomwareHostWidget",
     "group": 0,
     "hidden": false,
     "id": "incident_ransomwareapproximatenumberofencryptedendpoints",

@@ -305,7 +305,6 @@ def fetch_indicators(client: Client,
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
-        indicators.extend(galaxy_indicators)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)

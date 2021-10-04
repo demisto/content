@@ -8,3 +8,5 @@ How to configure your fetch indicators query
 
 - You can enter a list of types and tags. All indicators that are of those tags and types will be returned.
 - You can enter a JSON query that will be used as the search query.
+
+JSON query docs can be found at 'https://**Your_MISP_URL**/servers/openapi#operation/restSearchAttributes'.

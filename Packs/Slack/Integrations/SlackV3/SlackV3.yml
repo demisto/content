@@ -20,11 +20,6 @@ configuration:
   name: incidentNotificationChannel
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Send notifications about incidents to the dedicated channel
-  name: notify_incidents
-  required: false
-  type: 8
 - defaultvalue: Low
   display: Minimum incident severity to send messages to slack by
   name: min_severity
@@ -36,6 +31,18 @@ configuration:
   - Critical
   required: false
   type: 15
+- display: Types of Notifications to Send.
+  name: permitted_notifications
+  type: 16
+  required: false
+  options:
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType

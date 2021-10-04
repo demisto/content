@@ -2450,7 +2450,8 @@ class Common(object):
             self.indicator_type = indicator_type
             # For integrations - The class will automatically determine the integration name.
             if demisto.callingContext.get('integration'):
-                self.integration_name = get_integration_name()
+                context_integration_name = get_integration_name()
+                self.integration_name = context_integration_name if context_integration_name else integration_name
             else:
                 self.integration_name = integration_name
             self.score = score
@@ -6951,8 +6952,10 @@ if 'requests' in sys.modules:
 
         def __del__(self):
             try:
-                if hasattr(self, '_session'):
-                    self._session.close()
+                self._session.close()
+            except AttributeError:
+                # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
+                pass
             except Exception:  # noqa
                 demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
