@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 
 import requests
 import urllib3
@@ -35,8 +36,20 @@ def main():
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number}
     }
     # post to Content Gold
+    exit_status = 0
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
-    print(res.text)
+    if res and res.text:
+        were_secrets_detected = res.text[0].get('CustomFields', {}).get('secretsdetectionresult')
+        if were_secrets_detected:
+            print(f'Secrets were found in your PR, please check in: ')
+            exit_status = 1
+        else:
+            print(f'Secrets were NOT found in your PR.')
+    else:
+        print('Secrets detection run was not successful.')
+        exit_status = 1
+
+    sys.exit(exit_status)
 
 
 if __name__ == "__main__":
