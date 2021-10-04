@@ -679,7 +679,7 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    headers = ['ID', 'Name', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt']
+    headers = ['ID', 'Name', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt', 'LabelIds']
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
@@ -742,7 +742,9 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
+    headers = ['ID', 'Name', 'Type', 'Description', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
+               'LabelIds']
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 

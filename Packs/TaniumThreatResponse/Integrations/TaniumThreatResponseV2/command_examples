@@ -40,3 +40,4 @@
 !tanium-tr-get-system-status
 !tanium-tr-intel-doc-create entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=yara
 !tanium-tr-intel-deploy-status
+!tanium-tr-intel-doc-update entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c intel_doc_id=438 file_extension=yara
