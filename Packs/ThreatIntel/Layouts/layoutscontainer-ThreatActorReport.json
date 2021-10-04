@@ -3,7 +3,6 @@
     "group": "incident",
     "id": "Threat Actor Report",
     "detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"hidden": false,

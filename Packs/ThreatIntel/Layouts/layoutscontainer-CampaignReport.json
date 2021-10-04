@@ -3,7 +3,6 @@
     "group": "incident",
     "id": "Campaign Report",
     "detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"hidden": false,
