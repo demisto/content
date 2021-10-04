@@ -2,9 +2,12 @@
 
 # exit on errors
 set -e
-
+echo $CI_BUILD_ID
+echo $CI_PIPELINE_ID
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
+echo $CI_BUILD_ID
+
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 EXTRACT_FOLDER=$(mktemp -d)
 
