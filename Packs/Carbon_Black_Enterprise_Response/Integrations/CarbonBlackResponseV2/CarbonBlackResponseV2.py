@@ -739,37 +739,61 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
 
 
-def _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query):
-    alerts = []
+def _get_alerts_for_fetch(client: Client, query_params: Dict, status: Optional[str], max_results: int, offset: int,
+                          query: Optional[str]) -> List[Dict]:
+    """
+    Performs API calls to Carbon Black services to retrieve alerts.
+    Args:
+        client (Client): Client to perform requests to Carbon Black services.
+        query_params (Dict): Query parameters to be sent to Carbon Black.
+        status (Optional[str]): If given, list of comma separated statuses of alerts to be retrieved.
+        max_results (int): Maximum number of alerts to fetch.
+        offset (int): Offset to start fetching alerts from by given created time.
+        query (Optional[str]): Advanced query to Carbon Black services.
+
+    Returns:
+        (List[Dict]): List of alerts.
+    """
+    alerts: List[Dict] = []
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             query_params['status'] = current_status
             # we create a new query containing params since we do not allow both query and params.
             res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort='created_time',
-                                    start=f'{current_page}')
+                                    start=f'{offset}')
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
         query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(query=query, limit=max_results, sort='created_time', start=f'{current_page}')
+        res = client.get_alerts(query=query, limit=max_results, sort='created_time', start=f'{offset}')
         alerts += res.get('results', [])
     return alerts
 
 
-def _create_incidents_from_alerts(alerts, last_fetch, latest_created_time, max_incidents_to_create=None):
+def _create_incidents_from_alerts(alerts: List[Dict], minimum_fetch_timestamp: float) -> Tuple[List[Dict], float]:
+    """
+    Creates incidents in Cortex XSOAR from given alerts by Carbon Black. Filters alerts whom created timestamp
+    is lower than the `minimum_fetch_timestamp` argument.
+    Args:
+        alerts (List[Dict]): List of alerts to create incidents from.
+        minimum_fetch_timestamp (float): Minimum timestamp.
+
+    Returns:
+        (Tuple[List[Dict], float): (incidents list, new highest timestamp).
+    """
     incidents: List[Dict[str, Any]] = []
+    latest_created_time = minimum_fetch_timestamp
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time_ms <= last_fetch.timestamp():
-                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
-                              f' Skipping.')
-                continue
+        if incident_created_time_ms <= minimum_fetch_timestamp:
+            demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
+                          f' Skipping.')
+            continue
 
         alert_id = alert.get('unique_id', '')
         alert_name = alert.get('process_name', '')
@@ -787,8 +811,6 @@ def _create_incidents_from_alerts(alerts, last_fetch, latest_created_time, max_i
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time_ms > latest_created_time:
             latest_created_time = incident_created_time_ms
-        if max_incidents_to_create and max_incidents_to_create == len(incidents):
-            break
     return incidents, latest_created_time
 
 
@@ -802,9 +824,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = dateparser.parse(first_fetch_time)
     last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
-    current_page: int = last_run.get('current_page', 0)
-    next_page_for_fetch: int = current_page
-    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}, page to fetch from: {current_page}')
+    offset: int = last_run.get('current_offset', 0)
+    next_offset_for_fetch: int = offset
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}, offset to fetch from: {offset}')
 
     # Handle first fetch time
     if last_fetch is None:
@@ -812,7 +834,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     else:
         last_fetch = datetime.fromtimestamp(last_fetch)
 
-    latest_created_time = last_fetch.timestamp()
+    last_fetch_timestamp = last_fetch.timestamp()
     last_fetch_date_str = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
 
     date_range = f'[{last_fetch_date_str} TO *]'
@@ -823,36 +845,32 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     if feedname:
         query_params['feedname'] = feedname
 
-    alerts = _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query)
+    alerts = _get_alerts_for_fetch(client, query_params, status, max_results, offset, query)
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
-    incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time)
+    incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch_timestamp)
     demisto.debug(f'Fetched {len(alerts)} alerts. Saving {len(incidents)} as incidents.')
     if len(incidents) < len(alerts):
         demisto.debug(f'Did not fetch enough alerts, fetching more alerts.')
         incident_gap = len(alerts) - len(incidents)
-        current_page += 1
-        alerts = _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query)
-        more_incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time,
-                                                                            max_incidents_to_create=incident_gap)
+        offset += len(alerts)
+        alerts = _get_alerts_for_fetch(client, query_params, status, max_results, offset, query)
+        more_incidents, latest_created_time = _create_incidents_from_alerts(alerts[:incident_gap], latest_created_time)
         demisto.debug(f'Fetched more {len(alerts)}, created {len(more_incidents)} incidents.')
         incidents.extend(more_incidents)
         latest_created_time_str = datetime.fromtimestamp(latest_created_time).strftime("%Y-%m-%dT%H:%M:%S")
         # Means we are fetching in the same second, save the next page to retrieve results from
         if last_fetch_date_str == latest_created_time_str:
             # we have fetched a full page of alerts. So we will start from the next page in the next fetch
-            if incident_gap == len(alerts):
-                next_page_for_fetch = current_page + 1
-            # We still have some alerts in the current page to retrieve alerts from
-            else:
-                next_page_for_fetch = current_page
-        # The second of the latest alert does not match the second saved by last fetch. Start from page 0 again.
+            next_offset_for_fetch = offset + len(incidents)
+        # Starting from a new second, we will start from offset 0 again.
         else:
-            next_page_for_fetch = 0
+            next_offset_for_fetch = 0
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time,
-                'current_page': next_page_for_fetch}
-    demisto.debug(f'Finished fetching incidents. Next fetch time: {latest_created_time}, next page: {current_page}')
+                'current_offset': next_offset_for_fetch}
+    demisto.debug(f'Finished fetching incidents. Next fetch time: {latest_created_time}, '
+                  f'next offset: {next_offset_for_fetch}')
     return next_run, incidents
 
 
