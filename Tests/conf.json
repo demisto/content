@@ -4480,7 +4480,8 @@
             "integrations": [
                 "XsoarPowershellTesting",
                 "Create-Mock-Feed-Relationships"
-            ]
+            ],
+            "memory_threshold": 160
         },
         {
             "playbookID": "Analyst1 Integration Demonstration - Test",
@@ -4549,6 +4550,10 @@
         {
             "integrations": "CustomIndicatorDemo",
             "playbookID": "playbook-CustomIndicatorDemo-test"
+        },
+        {
+            "integrations": "Azure Sentinel",
+            "playbookID": "TestAzureSentinelPlaybookV2"
         }
     ],
     "skipped_tests": {
@@ -4773,7 +4778,8 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
+        "Azure Sentinel": "issue with the tenant_id parameter"
     },
     "nightly_integrations": [
         "Laline v2",
