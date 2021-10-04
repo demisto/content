@@ -88,8 +88,16 @@ def convert_incident_to_hr(incident):
             converted_incident[key] = SEVERITIES.get(converted_incident.get(key), '')
 
         if key == 'similarity':
-            converted_incident[key] = str(converted_incident[key])[:4] if str(converted_incident[key])[0] != '1' \
-                else '1'
+            if str(converted_incident[key])[0] == '1':
+                converted_incident[key] = '1'
+
+            elif len(str(converted_incident[key])) > 4:
+                converted_incident[key] = str(round(converted_incident[key], 3))
+                converted_incident[key] = converted_incident[key][:-1] if len(converted_incident[key]) > 4 \
+                    else converted_incident[key]
+
+            else:
+                converted_incident[key] = str(converted_incident[key])
 
         converted_incident[key] = converted_incident.get(key.replace('_', ''))
 
