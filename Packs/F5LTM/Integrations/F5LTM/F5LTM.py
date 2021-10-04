@@ -1,13 +1,10 @@
-
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import requests
 import traceback
 
-
 requests.packages.urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -97,7 +94,11 @@ class Client(BaseClient):
                                       headers=self.headers, params={})
         member_stats = response.get('entries')[f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/'
                                                f'~{self.partition}~{member}/~{self.partition}~{pool}/'
-                                               f'stats']['nestedStats']['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}~{pool}/members/stats']['nestedStats']['entries'][f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}~{pool}/members/~{self.partition}~{member}/stats']['nestedStats']['entries']
+                                               f'stats']['nestedStats']['entries'][
+            f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}'
+            f'~{pool}/members/stats']['nestedStats']['entries'][
+            f'https://localhost/mgmt/tm/ltm/pool/{pool}/members/~{self.partition}~{member}/~{self.partition}'
+            f''f'~{pool}/members/~{self.partition}~{member}/stats']['nestedStats']['entries']
 
         for key, value in response.get('entries').items():
             raw_stats = value.get('nestedStats')['entries']
@@ -125,7 +126,6 @@ class Client(BaseClient):
 
 
 def login(server: str, port: str, username: str, password: str, verify_certificate: bool):
-
     response = requests.post(f'https://{server}:{port}/mgmt/shared/authn/login',
                              verify=verify_certificate,
                              json={'username': username, 'password': password,
@@ -267,7 +267,7 @@ def ltm_get_node_stats_command(client, args) -> CommandResults:
     )
 
 
-def ltm_get_node_by_address_command(client, args) -> CommandResults:
+def ltm_get_node_by_address_command(client, args) -> Optional[CommandResults, None]:
     ip_address = args.get('ip_address')
     results = client.get_nodes()
     for item in results:
@@ -279,6 +279,7 @@ def ltm_get_node_by_address_command(client, args) -> CommandResults:
                 outputs=node,
             )
     return_error(f'No nodes found matching the address: {ip_address}')
+    return
 
 
 def ltm_get_pools_by_node_command(client, args) -> CommandResults:
@@ -374,7 +375,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
