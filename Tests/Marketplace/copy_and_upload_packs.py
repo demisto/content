@@ -107,7 +107,8 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
                              build_bucket: Bucket):
-    """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
+    """Uploads corepacks.json file configuration to bucket. Corepacks file includes the core packs and upgradeCorePacks
+        determines which core packs should be upgraded on XSAOR upgrade.
 
      Args:
         production_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
