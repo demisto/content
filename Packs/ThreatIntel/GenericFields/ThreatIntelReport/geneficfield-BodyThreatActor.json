@@ -1,12 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "tags",
-    "id": "generic_ThreatIntelReport_tags",
-    "name": "Tags",
+    "cliName": "bodyvulnerability",
+    "id": "generic_ThreatIntelReport_bodyvulnerability",
+    "name": "Body Vulnerability",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -22,7 +19,8 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "tagsSelect",
+    "type": "markdown",
+    "template": "**Overview**\n\n\n**Code Sample**\n\n\n**Severity**\n\n\n**Affects**\n\n\n**Appendix**\n\n",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

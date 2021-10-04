@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "tags",
-    "id": "generic_ThreatIntelReport_tags",
-    "name": "Tags",
+    "cliName": "cve",
+    "id": "generic_ThreatIntelReport_cve",
+    "name": "CVE",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -22,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "tagsSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

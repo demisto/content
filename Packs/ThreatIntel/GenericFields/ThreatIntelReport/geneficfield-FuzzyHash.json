@@ -1,12 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "actor",
-    "id": "generic_ThreatIntelReport_actor",
-    "name": "Actor",
+    "cliName": "fuzzyhash",
+    "id": "generic_ThreatIntelReport_fuzzyhash",
+    "name": "Fuzzy Hash",
     "closeForm": false,
     "content": true,
     "editForm": true,

@@ -1,12 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "tags",
-    "id": "generic_ThreatIntelReport_tags",
-    "name": "Tags",
+    "cliName": "body",
+    "id": "generic_ThreatIntelReport_body",
+    "name": "Body",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -22,7 +19,8 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "tagsSelect",
+    "type": "markdown",
+    "template": "**Overview**\n\n**Threat Type**\n\n**Origin**\n\n**Targets**\n\n**Previous Attacks**",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

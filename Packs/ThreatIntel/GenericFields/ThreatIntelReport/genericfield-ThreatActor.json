@@ -1,12 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "tags",
-    "id": "generic_ThreatIntelReport_tags",
-    "name": "Tags",
+    "cliName": "threatactor",
+    "id": "generic_ThreatIntelReport_threatactor",
+    "name": "Threat Actor",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -22,7 +19,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "tagsSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
