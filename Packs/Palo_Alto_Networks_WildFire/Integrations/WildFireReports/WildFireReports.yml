@@ -24,7 +24,7 @@ configuration:
 description: Generates a Palo Alto Networks WildFire PDF report.
 display: Palo Alto Networks WildFire Reports.
 name: WildFire-Reports
-autoconfiginstance: true
+defaultEnabled: true
 script:
   commands:
   - arguments:
