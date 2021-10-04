@@ -1871,7 +1871,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 for field in date_fields:
                     try:
                         entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field])/1000).strftime('%Y-%m-%d %H:%M:%S')
-                    except BaseException:
+                    except Exception:
                         pass
 
             vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
