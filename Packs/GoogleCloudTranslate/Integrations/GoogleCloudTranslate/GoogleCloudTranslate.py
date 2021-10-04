@@ -44,7 +44,7 @@ class Client:
                 support_target is a bool indicating if the language is
                 a supported target for the translation.
         """
-        parent = self.client.location_path(self.project_id, 'global')
+        parent = self.client.common_location_path(self.project_id, 'global')
         result = self.client.get_supported_languages(parent)
 
         return [
@@ -72,8 +72,8 @@ class Client:
                 code of the detected language or None if the source language
                 was specified.
         """
-        parent = self.client.location_path(self.project_id, 'global')
-        result = self.client.translate_text([text], target, parent, source_language_code=source)
+        parent = self.client.common_location_path(self.project_id, 'global')
+        result = self.client.translate_text([text], target_language_code=target, parent=parent, source_language_code=source)
 
         return {
             'detected_language_code': result.translations[0].detected_language_code,
@@ -94,7 +94,7 @@ class Client:
         with open(credentials_file_path, 'w') as creds_file:
             json.dump(self.service_account, creds_file)
 
-        return translate_v3.TranslationServiceClient.from_service_account_json(credentials_file_path)
+        return translate_v3.TranslationServiceClient.from_service_account_file(credentials_file_path)
 
 
 def test_module(client):
