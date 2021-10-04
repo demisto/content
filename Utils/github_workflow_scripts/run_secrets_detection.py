@@ -35,7 +35,8 @@ def main():
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number}
     }
     # post to Content Gold
-    requests.post(secrets_instance_url, json=body, auth=(username, password))
+    res = requests.post(secrets_instance_url, json=body, auth=(username, password))
+    print(res)
 
 
 if __name__ == "__main__":
