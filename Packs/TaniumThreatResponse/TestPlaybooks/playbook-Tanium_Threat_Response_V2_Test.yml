@@ -4121,7 +4121,7 @@ tasks:
       - "79"
     scriptarguments:
       searchfield:
-        simple: name
+        simple: CustomFields.alertid
       sourcebrand:
         simple: Tanium Threat Response v2
     separatecontext: true
@@ -4156,6 +4156,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "79"
       "yes":
       - "55"
       - "31"
