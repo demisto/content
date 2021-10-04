@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: VMware Carbon Black EDR v2
+  id: VMware Carbon Black EDR v2 Stop-Fetch-Fix
   version: -1
 configuration:
 - display: Server URL
@@ -61,8 +61,8 @@ configuration:
   required: false
   type: 8
 description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
-display: VMware Carbon Black EDR v2
-name: VMware Carbon Black EDR v2
+display: VMware Carbon Black EDR v2 Stop-Fetch-Fix
+name: VMware Carbon Black EDR v2 Stop-Fetch-Fix
 script:
   commands:
   - arguments:
