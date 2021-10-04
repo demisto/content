@@ -44,7 +44,7 @@ function Get-InfocyteTaskStatus {
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
 }
 
-function Get-InfocyteAlerts {
+function Get-InfocyteAlerts { # noqa
     if (-NOT $max_fetch) {
         $max_fetch = 10
     }
