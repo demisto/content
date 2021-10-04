@@ -38,6 +38,7 @@ def main():
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
     if res and res.text:
+        print(res.text[0])
         investigation_id = res.text[0].get('id')
         return investigation_id
     else:
