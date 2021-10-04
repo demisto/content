@@ -739,53 +739,27 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
-                    feedname: str = None, query: str = ''):
-    if (status or feedname) and query:
-        raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
-
-    max_results = arg_to_number(arg=max_results, arg_name='max_fetch', required=False) if max_results else 50
-
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(first_fetch_time)
-    last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
-    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
-
-    # Handle first fetch time
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = datetime.fromtimestamp(last_fetch)
-
-    latest_created_time = last_fetch.timestamp()
-
-    date_range = f'[{last_fetch.strftime("%Y-%m-%dT%H:%M:%S")} TO *]'
-
-    incidents: List[Dict[str, Any]] = []
-
+def _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query):
     alerts = []
-
-    # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
-    # Otherwise will run without status.
-    query_params = {'created_time': date_range}
-    if feedname:
-        query_params['feedname'] = feedname
-
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             query_params['status'] = current_status
             # we create a new query containing params since we do not allow both query and params.
-            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort='created_time')
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results, sort='created_time',
+                                    start=f'{current_page}')
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
         query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(query=query, limit=max_results, sort='created_time')
+        res = client.get_alerts(query=query, limit=max_results, sort='created_time', start=f'{current_page}')
         alerts += res.get('results', [])
+    return alerts
 
-    demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
+
+def _create_incidents_from_alerts(alerts, last_fetch, latest_created_time, max_incidents_to_create=None):
+    incidents: List[Dict[str, Any]] = []
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
         incident_created_time_ms = incident_created_time.timestamp()
@@ -813,10 +787,69 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time_ms > latest_created_time:
             latest_created_time = incident_created_time_ms
+        if max_incidents_to_create and max_incidents_to_create == len(incidents):
+            break
+    return incidents, latest_created_time
 
+
+def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
+                    feedname: str = None, query: str = ''):
+    if (status or feedname) and query:
+        raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
+
+    max_results = arg_to_number(arg=max_results, arg_name='max_fetch', required=False) if max_results else 50
+
+    # How much time before the first fetch to retrieve incidents
+    first_fetch_time = dateparser.parse(first_fetch_time)
+    last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
+    current_page: int = last_run.get('current_page', 0)
+    next_page_for_fetch: int = current_page
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+
+    # Handle first fetch time
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = datetime.fromtimestamp(last_fetch)
+
+    latest_created_time = last_fetch.timestamp()
+    last_fetch_date_str = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
+
+    date_range = f'[{last_fetch_date_str} TO *]'
+
+    # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
+    # Otherwise will run without status.
+    query_params = {'created_time': date_range}
+    if feedname:
+        query_params['feedname'] = feedname
+
+    alerts = _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query)
+    demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
+    incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time)
     demisto.debug(f'Fetched {len(alerts)} alerts. Saving {len(incidents)} as incidents.')
+    if len(incidents) < len(alerts):
+        incident_gap = len(alerts) - len(incidents)
+        current_page += 1
+        alerts = _get_alerts_for_fetch(client, query_params, status, max_results, current_page, query)
+        more_incidents, latest_created_time = _create_incidents_from_alerts(alerts, last_fetch, latest_created_time,
+                                                                            max_incidents_to_create=incident_gap)
+        incidents.extend(more_incidents)
+        latest_created_time_str = datetime.fromtimestamp(latest_created_time).strftime("%Y-%m-%dT%H:%M:%S")
+        # Means we are fetching in the same second, save the next page to retrieve results from
+        if last_fetch_date_str == latest_created_time_str:
+            # we have fetched a full page of alerts. So we will start from the next page in the next fetch
+            if incident_gap == len(alerts):
+                next_page_for_fetch = current_page + 1
+            # We still have some alerts in the current page to retrieve alerts from
+            else:
+                next_page_for_fetch = current_page
+        # The second of the latest alert does not match the second saved by last fetch. Start from page 0 again.
+        else:
+            next_page_for_fetch = 0
+
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
+    next_run = {'last_fetch': latest_created_time,
+                'current_page': next_page_for_fetch}
     return next_run, incidents
 
 
