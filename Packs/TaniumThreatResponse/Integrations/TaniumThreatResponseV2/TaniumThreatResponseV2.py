@@ -32,7 +32,6 @@ COMMANDS_DEPEND_ON_CONNECTIVITY = [
     'tanium-tr-get-events-by-process',
     'tanium-tr-get-process-children',
     'tanium-tr-get-parent-process',
-    'tanium-tr-get-parent-process-tree',
     'tanium-tr-get-process-tree',
     'tanium-tr-create-evidence',
     'tanium-tr-request-file-download',
@@ -1574,10 +1573,6 @@ def get_parent_process(client, data_args) -> Tuple[str, dict, Union[list, dict]]
     return human_readable, outputs, raw_response
 
 
-def get_parent_process_tree(client, data_args):
-    pass
-
-
 def get_process_tree(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get all proccess related data - process tree
 
@@ -1893,7 +1888,6 @@ def main():
         'tanium-tr-get-process-info': get_process_info,
         'tanium-tr-get-process-children': get_process_children,
         'tanium-tr-get-parent-process': get_parent_process,
-        'tanium-tr-get-parent-process-tree': get_parent_process_tree,
         'tanium-tr-get-process-tree': get_process_tree,
 
         'tanium-tr-event-evidence-list': list_evidence,

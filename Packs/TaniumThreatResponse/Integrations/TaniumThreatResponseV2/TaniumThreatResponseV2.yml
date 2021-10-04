@@ -2190,6 +2190,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Tanium Threat Response
 tests:
 - Tanium Threat Response V2 Test
 fromversion: 6.0.0
