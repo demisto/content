@@ -1941,6 +1941,7 @@ def insert_cef_alerts_command(client, args):
 
 def isolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
     incident_id = arg_to_number(args.get('incident_id'))
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
@@ -1964,7 +1965,13 @@ def isolate_endpoint_command(client, args):
     if endpoint_status == 'UNINSTALLED':
         raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
+        if disconnected_should_return_error:
+            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
+        else:
+            return (
+                f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+                None)
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1984,6 +1991,7 @@ def unisolate_endpoint_command(client, args):
     endpoint_id = args.get('endpoint_id')
     incident_id = arg_to_number(args.get('incident_id'))
 
+    disconnected_should_return_error = not argToBoolean(args.get('suppress_disconnected_endpoint_error', False))
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
         raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
@@ -2006,7 +2014,14 @@ def unisolate_endpoint_command(client, args):
     if endpoint_status == 'UNINSTALLED':
         raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
     if endpoint_status == 'DISCONNECTED':
-        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
+        if disconnected_should_return_error:
+            raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
+        else:
+            return (
+                f'Warning: un-isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                {
+                    f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
+                    f'': endpoint_id}, None)
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
