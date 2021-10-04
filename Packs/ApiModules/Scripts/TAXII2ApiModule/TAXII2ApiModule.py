@@ -1022,27 +1022,6 @@ class Taxii2FeedClient:
         except ValueError:
             return datetime.strptime(s_time, TAXII_TIME_FORMAT_NO_MS)
 
-    # @staticmethod
-    # def get_ioc_type(indicator, id_to_object):
-    #     """
-    #     Get IOC type by extracting it from the pattern field.
-    #
-    #     Args:
-    #         indicator: the indicator to get information on.
-    #         id_to_object: a dict in the form of - id: stix_object.
-    #
-    #     Returns:
-    #         str. the IOC type.
-    #     """
-    #     ioc_type = ''
-    #     indicator_obj = id_to_object.get(indicator, {})
-    #     pattern = indicator_obj.get('pattern', '')
-    #     for unit42_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-    #         if pattern.startswith(f'[{unit42_type}'):
-    #             ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(unit42_type)  # type: ignore
-    #             break
-    #     return ioc_type
-
     @staticmethod
     def get_ioc_value(ioc, id_to_obj):
         """
