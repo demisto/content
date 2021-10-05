@@ -4555,7 +4555,7 @@
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
-	      {
+	{
             "integrations": "FireMonSecurityManager",
             "playbookID": "FireMon Create Policy Planner Ticket - Test",
             "fromversion": "5.0.0"
