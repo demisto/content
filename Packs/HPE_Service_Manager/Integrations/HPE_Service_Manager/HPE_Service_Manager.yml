@@ -157,7 +157,6 @@ script:
         var resourceName = args.resourceName;
         var newRequest = {
             [resourceName]: {
-                Category: args.category,
                 Purpose: [
                     args.purpose
                 ],
