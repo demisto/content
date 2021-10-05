@@ -157,6 +157,7 @@ class Taxii2FeedClient:
         self.auth = None
         self.auth_header = None
         self.auth_key = None
+        self.crt = None
         if username and password:
             # authentication methods:
             # 1. API Token
