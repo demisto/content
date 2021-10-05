@@ -1,9 +1,9 @@
 {
-    "id": "Threat Actor",
-    "layout": "Threat Actor Report",
+    "id": "Campaign",
+    "layout": "Campaign Report",
     "locked": false,
-    "name": "Threat Actor",
-    "color": "#8052f4",
+    "name": "Campaign",
+    "color": "#00FFFF",
     "definitionId": "ThreatIntelReport",
     "genericModuleId": "threatIntel",
     "system": false,
