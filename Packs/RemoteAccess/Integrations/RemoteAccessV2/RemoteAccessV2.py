@@ -20,8 +20,8 @@ def execute_shell_command(client: SSHClient, args: Dict[str, Any]) -> CommandRes
     # exec_command returns a tuple of stdin, stdout, stderr. No need to parse stdin because it does not contain data.
     _, stdout, std_err = client.exec_command(command)
     outputs: List[Dict] = [{
-        'Output': stdout.read().decode(),
-        'ErrorOutput': std_err.read().decode()
+        'stdout': stdout.read().decode(),
+        'std_error': std_err.read().decode()
     }]
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
@@ -44,17 +44,18 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
                                           'host.')
 
 
-def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResults:
-    entry_id: str = args.get('entry_id', '')
-    # if not (file_path := demisto.getFilePath(entry_id).get('path', '')):
-    #     raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
-    # TODO delete after checks
+def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> fileResult:
     file_path = args.get('file_path', '')
-    destination_path: str = args.get('destination_path', file_path)
+    file_name: str = args.get('file_name', '')
 
     with SCPClient(ssh_client.get_transport()) as scp_client:
-        scp_client.get(file_path)
-    return fileResult()
+        os.mkdir('tmp')
+        scp_client.get(file_path, f'tmp/{file_path}')
+        with open(f'tmp/{file_path}', 'r') as f:
+            remote_file_data = f.read()
+
+    file_name = file_name or os.path.basename(file_path)
+    return fileResult(file_name, remote_file_data)
 
 
 ''' MAIN FUNCTION '''
@@ -83,24 +84,28 @@ def main() -> None:
     # proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
+    client = None
     try:
         client = SSHClient()
         client.set_missing_host_key_policy(AutoAddPolicy())
-        client.connect(hostname='199.203.162.213', username=user, password=password, port=22)
+        client.connect(hostname=host_name, username=user, password=password, port=22)
         if demisto.command() == 'test-module':
             return_results('ok')
-        elif command == 'ssh':
+        elif command == 'remote-access-ssh':
             return_results(execute_shell_command(client, args))
-        elif command == 'copy-to':
+        elif command == 'remote-access-copy-to':
             return_results(copy_to_command(client, args))
-        elif command == 'copy-from':
+        elif command == 'remote-access-copy-from':
             return_results(copy_from_command(client, args))
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
+        client.close()
 
     # Log exceptions and return errors
     except Exception as e:
+        if client:
+            client.close()
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 

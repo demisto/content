@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Default Hostname Or IP Address
-  name: host
+  name: hostname
   required: true
   type: 0
 - display: User
@@ -50,9 +50,48 @@ script:
     execution: false
     name: remote-access-ssh
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: RemoteAccess.Command.stdout
+      description: STD output of the given command.
       type: String
+    - contextPath: RemoteAccess.Command.std_error
+      description: STD error output of the given command.
+      type: String
+  - arguments:
+    - default: false
+      description: Entry ID of the file to be copied from Cortex XSOAR to remote machine.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not given
+      isArray: false
+      name: destination_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Run command on remote system with ssh
+    execution: false
+    name: remote-access-copy-to
+    outputs: []
+  - arguments:
+    - default: false
+      description: Path of the file in remote machine to be copied to Cortex XSOAR.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: Name of the file to be saved in Cortex XSOAR. Defaults to the file name in `file_path` if not given. E.g, if `file_path` is "a/b/c.txt", the file name will be c.txt.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Run command on remote system with ssh
+    execution: false
+    name: remote-access-copy-from
+    outputs: []
   isfetch: false
   runonce: false
   script: '-'
