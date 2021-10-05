@@ -65,6 +65,14 @@
         "Azure-Storage": {
             "mandatory": false,
             "display_name": "Azure - Storage"
+        },
+        "GoogleKubernetesEngine": {
+            "mandatory": false,
+            "display_name": "Google Kubernetes Engine"
+        },
+        "AzureKubernetesServices": {
+            "mandatory": false,
+            "display_name": "Azure Kubernetes Services"
         }
     }
 }
