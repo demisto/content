@@ -10,6 +10,7 @@ import types
 import urllib3
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
+import tempfile
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -118,6 +119,8 @@ class Taxii2FeedClient:
             tags: Optional[list] = None,
             tlp_color: Optional[str] = None,
             limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
+            cert_text: str = None,
+            key_text: str = None
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -132,6 +135,8 @@ class Taxii2FeedClient:
         :param tags: custom tags to be added to the created indicator
         :param limit_per_request: Limit the objects requested per poll request
         :param tlp_color: Traffic Light Protocol color
+        :param cert_text: Certificate File as Text
+        :param key_text: Key File as Text
         """
         self._conn = None
         self.server = None
@@ -165,6 +170,25 @@ class Taxii2FeedClient:
             else:
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
+        if (cert_text and not key_text) or (not cert_text and key_text):
+            raise Exception('You can not configure either certificate text or key, both are required.')
+        if cert_text and key_text:
+
+            cert_text_list = cert_text.split('-----')
+            # replace spaces with newline characters
+            cert_text_fixed = '-----'.join(cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+            cf = tempfile.NamedTemporaryFile(delete=False)
+            cf.write(cert_text_fixed.encode())
+            cf.flush()
+
+            key_text_list = key_text.split('-----')
+            # replace spaces with newline characters
+            key_text_fixed = '-----'.join(key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
+            kf = tempfile.NamedTemporaryFile(delete=False)
+            kf.write(key_text_fixed.encode())
+            kf.flush()
+            self.crt = (cf.name, kf.name)
+
         self.field_map = field_map if field_map else {}
         self.tags = tags if tags else []
         self.tlp_color = tlp_color
@@ -186,7 +210,7 @@ class Taxii2FeedClient:
         """
         server_url = urljoin(self.base_url)
         self._conn = _HTTPConnection(
-            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth
+            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
         )
         if self.auth_header:
             # add auth_header to the session object

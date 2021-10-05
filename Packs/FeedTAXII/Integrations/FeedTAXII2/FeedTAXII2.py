@@ -226,6 +226,8 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
+    cert_text = params.get('cert_text', None)
+    key_text = params.get('key_text', None)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -241,7 +243,9 @@ def main():
             password=password,
             tags=feed_tags,
             limit_per_request=limit_per_request,
-            tlp_color=tlp_color
+            tlp_color=tlp_color,
+            cert_text=cert_text,
+            key_text=key_text
         )
         client.initialise()
         commands = {
