@@ -16,13 +16,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "24"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 50
+          "y": -390
         }
       }
     note: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 1e615377-76e4-4bf0-864d-fb26025f29d9
+    taskid: e67ebe31-7e70-47b8-897a-bc1e17226101
     type: regular
     task:
-      id: 1e615377-76e4-4bf0-864d-fb26025f29d9
+      id: e67ebe31-7e70-47b8-897a-bc1e17226101
       version: -1
       name: Check Domain Reputation
       description: Checks the reputation of the domain name.
@@ -48,7 +48,9 @@ tasks:
       - "3"
     scriptarguments:
       domain:
-        simple: y.gp
+        simple: szqylwjzq.biz
+      include_inactive:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -104,33 +106,37 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 532106ea-9f87-4221-84b3-12e1ac3519e4
+    taskid: 8da949ba-e939-4a9c-830e-fdff167f5c34
     type: regular
     task:
-      id: 532106ea-9f87-4221-84b3-12e1ac3519e4
+      id: 8da949ba-e939-4a9c-830e-fdff167f5c34
       version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: Import IOC to Threat Stream
+      description: Imports indicators (observables) into ThreatStream. Approval is
+        not required for the imported data. You must have the Approve Intel user permission
+        to import without approval using the API.
+      script: '|||threatstream-import-indicator-without-approval'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "1"
       - "7"
       - "5"
-      - "9"
       - "11"
+      - "9"
     scriptarguments:
-      all:
-        simple: "yes"
+      classification:
+        simple: private
+      file_id:
+        simple: ${File.EntryID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 195
+          "y": 120
         }
       }
     note: false
@@ -140,10 +146,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2db874db-37aa-45a8-8edc-962d87b6d362
+    taskid: bc96def5-01d7-42e9-80e7-ef22da8baf6a
     type: regular
     task:
-      id: 2db874db-37aa-45a8-8edc-962d87b6d362
+      id: bc96def5-01d7-42e9-80e7-ef22da8baf6a
       version: -1
       name: Check IP Reputation
       description: Checks the reputation of the given IP.
@@ -155,8 +161,10 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      include_inactive:
+        simple: "True"
       ip:
-        simple: 78.78.78.67
+        simple: 45.32.129.185
     separatecontext: false
     view: |-
       {
@@ -212,10 +220,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: defd38dd-3c6c-493e-89e3-77c19d3a23d3
+    taskid: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
     type: regular
     task:
-      id: defd38dd-3c6c-493e-89e3-77c19d3a23d3
+      id: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
       version: -1
       name: Check URL reputation
       description: Checks the reputation of the given URL.
@@ -227,6 +235,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      include_inactive:
+        simple: "True"
       url:
         simple: http://www.ujhy1.com/
     separatecontext: false
@@ -284,10 +294,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 555ff0c3-b6cd-4204-8af2-35b4e6c83bcd
+    taskid: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
     type: regular
     task:
-      id: 555ff0c3-b6cd-4204-8af2-35b4e6c83bcd
+      id: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
       version: -1
       name: Check email reputation
       description: Checks the reputation of the given email address.
@@ -300,7 +310,9 @@ tasks:
       - "10"
     scriptarguments:
       email:
-        simple: egov@ac.in
+        simple: email_test@domain.com
+      include_inactive:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -356,12 +368,12 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 90b5c6bc-7adf-4666-820b-d4c8d1e426ef
+    taskid: f05b5035-1746-44ff-83ae-9d47b52d022a
     type: regular
     task:
-      id: 90b5c6bc-7adf-4666-820b-d4c8d1e426ef
+      id: f05b5035-1746-44ff-83ae-9d47b52d022a
       version: -1
-      name: Check SHA256 reputation
+      name: Check file reputation
       description: Checks the reputation of the given SHA256 of the file.
       script: Anomali ThreatStream v3|||file
       type: regular
@@ -372,7 +384,9 @@ tasks:
       - "12"
     scriptarguments:
       file:
-        simple: 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1
+        simple: 1d37556b8aeb5cb5fbf08cd5b4790075
+      include_inactive:
+        simple: "True"
     separatecontext: false
     view: |-
       {
@@ -834,15 +848,134 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+    type: regular
+    task:
+      id: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+    type: regular
+    task:
+      id: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+      version: -1
+      name: Create IOC file data
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: |-
+          {
+              "objects": [
+                  {
+                      "email": "email_test@domain.com",
+                      "itype": "compromised_email",
+                      "confidence": 50
+                  },
+                  {
+                      "srcip": "45.32.129.185",
+                      "classification": "private",
+                      "itype": "bot_ip",
+                      "confidence": 50,
+                      "severity": "low"
+                  },
+                  {
+                      "domain": "szqylwjzq.biz",
+                      "classification": "private",
+                      "itype": "mal_domain",
+                      "confidence": 95,
+                      "severity": "very-high"
+                  },
+                  {
+                      "url": "http://www.ujhy1.com/",
+                      "classification": "private",
+                      "itype": "mal_url",
+                      "confidence": 80,
+                      "severity": "high"
+                  },
+                  {
+                      "md5": "1d37556b8aeb5cb5fbf08cd5b4790075",
+                      "classification": "private",
+                      "itype": "apt_md5",
+                      "confidence": 50,
+                      "severity": "medium"
+                  }
+              ],
+              "meta": {
+                  "confidence": 50,
+                  "classification": "Private",
+                  "allow_unresolved": true,
+                  "tags": [
+                      "test1",
+                      "test2"
+                  ]
+              }
+          }
+      filename:
+        simple: ioc_data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 2225,
         "width": 2100,
         "x": 50,
-        "y": 50
+        "y": -390
       }
     }
   }
