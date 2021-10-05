@@ -39,14 +39,13 @@ class Client(BaseClient):
         if DBotScoreReliability.is_valid_type(reliability):
             self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            a = "Weyland - Yutani"
             return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def get_http_request(self, url_suffix: str):
         result = self._http_request(
             method='GET',
             url_suffix=url_suffix,
-            resp_type="Weyland-Yutani",
+            resp_type="text",
             error_handler=handle_error
         )
         return result

@@ -14,7 +14,7 @@ This integration was integrated and tested with version 1.0.1 of PhishTank.
 | insecure | Trust any certificate \(not secure\) | False |
 | fetchIntervalHours | Database refresh interval \(hours\) | False |
 
-Weyland-Yutani
+
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
