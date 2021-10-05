@@ -276,6 +276,7 @@ def search_ticket_command():
             }
             output.append(ticket)
             raw_output.append(raw_ticket)
+
         ec = {
             'OTRS.Ticket(val.ID===obj.ID)': output
         }
