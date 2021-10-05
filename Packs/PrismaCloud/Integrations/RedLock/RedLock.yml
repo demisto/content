@@ -3,7 +3,7 @@ commonfields:
   id: RedLock
   version: -1
 configuration:
-- defaultvalue: https://api.redlock.io/
+- defaultvalue: https://api.prismacloud.io/
   display: Server URL
   name: url
   required: true
@@ -41,6 +41,11 @@ configuration:
     months, 1 year)
   name: fetch_time
   required: false
+  type: 0
+- defaultvalue: 50
+  display: Limit result in a single page
+  name: limit
+  required: true
   type: 0
 - display: Use system proxy settings
   name: proxy

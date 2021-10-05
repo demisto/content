@@ -527,15 +527,20 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run = demisto.getLastRun().get('time')
     if not last_run:  # first time fetch
-        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+        last_run = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
 
-    payload = {'timeRange': {
-        'type': 'absolute',
-        'value': {
-            'startTime': last_run,
-            'endTime': now
-        }
-    }, 'filters': [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]}
+    payload = {
+        'timeRange': {
+            'type': 'absolute',
+            'value': {
+                'startTime': last_run,
+                'endTime': now
+            }
+        },
+        'filters':
+            [{'name': 'alert.status', 'operator': '=', 'value': 'open'}],
+        'sortBy': ['alertTime:asc'],
+        'limit': demisto.params().get('limit')}
     if demisto.getParam('ruleName'):
         payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('ruleName')})
@@ -548,15 +553,16 @@ def fetch_incidents():
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
-    for alert in response:
+    alerts = response.get('items')
+    for alert in alerts:
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-
-    return incidents, now
+    last_seen_time = alerts[-1].get('alertTime') if alerts else now
+    return incidents, last_seen_time
 
 
 def main():
@@ -589,9 +595,9 @@ def main():
         elif command == 'redlock-search-config':
             redlock_search_config()
         elif command == 'fetch-incidents':
-            incidents, new_run = fetch_incidents()
+            incidents, last_seen_time = fetch_incidents()
             demisto.incidents(incidents)
-            demisto.setLastRun({'time': new_run})
+            demisto.setLastRun({'time': last_seen_time})
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
