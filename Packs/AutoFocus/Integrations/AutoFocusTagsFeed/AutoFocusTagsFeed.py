@@ -72,7 +72,7 @@ class Client(BaseClient):
                                      'Content-Type': 'application/json'
                                  },
                                  json_data=data,
-                                 timeout=30,
+                                 timeout=60,
                                  )
         return res
 
@@ -83,7 +83,7 @@ class Client(BaseClient):
                                      'apiKey': self.api_key,
                                      'Content-Type': 'application/json'
                                  },
-                                 timeout=30,
+                                 timeout=60,
                                  )
         return res
 
@@ -103,13 +103,13 @@ class Client(BaseClient):
             if not integration_context:
                 demisto.debug("if not integration context")
                 page_num = 0
-                time_of_first_fetch = datetime.now()
+                time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
                 demisto.debug(f"integration_context after set: {str(get_integration_context())}")
             else:
                 page_num = arg_to_number(integration_context.get('page_num', 0))
-
-        get_tags_response = self.get_tags({"pageNum": page_num,
+        #TODO change page num
+        get_tags_response = self.get_tags({"pageNum": 73,
                                            "pageSize": PAGE_SIZE,
                                            "sortBy": "created_at"})
         tags = get_tags_response.get('tags', [])
@@ -156,23 +156,30 @@ def only_updated_tags(client: Client) -> list:
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', []))
-    time_from_last_update = integration_context.get('time_of_first_fetch')
-    if time_from_last_update:
-        update_integration_context({'time_of_first_fetch': ''})
-    else:
-        time_from_last_update = integration_context.get('most_updated_tag')
-
+    # time_from_last_update = integration_context.get('time_of_first_fetch')
+    time_from_last_update = "2019-07-02 03:59:57"
+    time_from_last_update = datetime.strptime(time_from_last_update, AF_TAGS_DATE_FORMAT).strftime(
+        DATE_FORMAT) if time_from_last_update else None
+    time_from_last_update = date_to_timestamp(time_from_last_update, DATE_FORMAT)
     # if there are such tags, we first get all of them and upload to demisto
+    index_to_delete = 0
     for tag in list_of_all_updated_tags:
         if len(results) < PAGE_SIZE:
             results.append(client.get_tag_details(tag.get('public_tag_name')))
+            index_to_delete += 1
         else:
-            tag.get('updated_at')
-            update_integration_context({'time_of_first_fetch': ''})
+            context = get_integration_context()
+            context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+            context['tags_need_to_be_fetched'] = list_of_all_updated_tags[index_to_delete:]
+            demisto.debug("before set")
+            set_integration_context(context)
+            demisto.debug("after set should be here")
+            # TODO delete tags that did get details
             return results
 
     page_num = 0
-    while True:
+    flag = False
+    while not flag:
         response = client.get_tags({"pageNum": page_num,
                                     "pageSize": 200,
                                     "sortBy": "updated_at",
@@ -181,20 +188,20 @@ def only_updated_tags(client: Client) -> list:
         # most_updated_tag = get_update_time_most_updated_tag(tags)
         for tag in tags:
             update_time = tag.get('updated_at')
+            update_time = datetime.strptime(update_time, AF_TAGS_DATE_FORMAT).strftime(
+                DATE_FORMAT) if update_time else None
+            update_time = date_to_timestamp(update_time, DATE_FORMAT)
             if update_time >= time_from_last_update:
                 list_of_all_updated_tags.append(
                     {'public_tag_name': tag.get('public_tag_name'), 'updated_at': update_time})
             else:
+                flag = True
                 break
-        if len(tags) < len(list_of_all_updated_tags):
-            break
         page_num += 1
 
     # add only PAGE_SIZE get_tag_details to results, so we wont make to many calls to the api
-    # we want to get the tags from the least updated to the most,
-    # so next time we fetch we can take the tags that have been updated from that point
     list_index = 0
-    for tag in reversed(list_of_all_updated_tags):
+    for tag in list_of_all_updated_tags:
         if len(results) < PAGE_SIZE:
             public_tag_name = tag.get('public_tag_name')
             response = client.get_tag_details(public_tag_name)
@@ -203,13 +210,13 @@ def only_updated_tags(client: Client) -> list:
         else:
             break
     # delete from the list all tags that we will return this fetch
-    n = len(list_of_all_updated_tags)
-    list_of_all_updated_tags = list_of_all_updated_tags[:n-list_index]
+    list_of_all_updated_tags = list_of_all_updated_tags[list_index:]
     # update integration context if needed
     if list_of_all_updated_tags:
         context = get_integration_context()
         context['tags_need_to_be_fetched'] = list_of_all_updated_tags
-        context['time_of_first_fetch'] = datetime.now()
+        context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+
         set_integration_context(context)
     return results
 
