@@ -83,13 +83,13 @@ configuration:
     list, the indicator might still be added to the system.
 - display: MISP Attribute Tags
   additionalinfo: Attribute tags to get. You can enter a comma-separated list of tags, 
-    for example <tag1>,<tag2>,<tag3>.
+    for example <tag1>,<tag2>,<tag3>. The list of tags can be found in your MISP instance then 'Event Actions'>'List Tags'
   name: attribute_tags
   required: false
   type: 0
 - display: MISP Attribute Types
   additionalinfo: Attribute types to get. You can enter a comma-separated list of types, 
-    for example <type1>,<type2>,<type3>.
+    for example <type1>,<type2>,<type3>. The list of types can be found in your MISP instance then 'Event Actions'>'Search Attributes> Type dropdown list'
   name: attribute_types
   required: false
   type: 0
