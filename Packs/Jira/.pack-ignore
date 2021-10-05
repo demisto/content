@@ -12,3 +12,6 @@ ignore=BA110
 
 [file:classifier-mapper-outgoing-Jira.json]
 ignore=BA101
+
+[file:playbook-Create_Jira_Issue.yml]
+ignore=PB106
