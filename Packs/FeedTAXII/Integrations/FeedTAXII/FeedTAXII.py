@@ -14,7 +14,7 @@ import requests
 from lxml import etree
 import dateutil.parser
 from bs4 import BeautifulSoup
-from netaddr import IPAddress
+from netaddr import IPNetwork
 from six import string_types
 
 # TAXII11 import
@@ -46,7 +46,8 @@ class AddressObject(object):
         acategory = props.get('category', None)
         if acategory is None:
             try:
-                ip = IPAddress(indicator)
+                ip_include_cidr = IPNetwork(indicator)
+                ip = ip_include_cidr.ip
                 if ip.version == 4:
                     type_ = 'IP'
                 elif ip.version == 6:
@@ -347,6 +348,28 @@ class StixDecode(object):
                         r.update(pprops)
                         result.append(r)
 
+        indicators = package.find_all('Indicator')
+        for indicator in indicators:
+            indicator_info = indicator_extract_properties(indicator)
+
+            result.append(indicator_info)
+
+            # # then related objects
+            # related = next((c for c in obj if c.name == 'Related_Objects'), None)
+            # if related is not None:
+            #     for robj in related:
+            #         if robj.name != 'Related_Object':
+            #             continue
+            #
+            #         properties = next((c for c in robj if c.name == 'Properties'), None)
+            #         if properties is None:
+            #             continue
+            #
+            #         for r in StixDecode.object_extract_properties(properties, kwargs):
+            #             r.update(gprops)
+            #             r.update(pprops)
+            #             result.append(r)
+
         return timestamp, StixDecode._deduplicate(result)
 
 
@@ -523,10 +546,10 @@ class TAXIIClient(object):
         if (cert_text and not key_text) or (not cert_text and key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         if cert_text and key_text:
-
             cert_text_list = cert_text.split('-----')
             # replace spaces with newline characters
-            cert_text_fixed = '-----'.join(cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+            cert_text_fixed = '-----'.join(
+                cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
             cf = tempfile.NamedTemporaryFile(delete=False)
             cf.write(cert_text_fixed.encode())
             cf.flush()
@@ -933,6 +956,33 @@ def observable_extract_properties(observable):
     return result
 
 
+def indicator_extract_properties(indicator):
+    """Extracts properties from indicator"""
+    result = {}
+
+    idr = next((c for c in indicator if c.name == 'Observable'), None)
+    if idr:
+        idr = idr.get('idref')
+        result['indicator'] = idr
+
+    _type = next((c for c in indicator if c.name == 'Type'), None)
+    if _type is not None:
+        _type = _type.text
+        result['type'] = _type
+
+    title = next((c for c in indicator if c.name == 'Title'), None)
+    if title is not None:
+        title = title.text
+        result['stix_title'] = title
+
+    description = next((c for c in indicator if c.name == 'Description'), None)
+    if description is not None:
+        description = description.text
+        result['stix_description'] = description
+
+    return result
+
+
 def interval_in_sec(val):
     """Translates interval string to seconds int"""
     if val is None:
@@ -942,7 +992,8 @@ def interval_in_sec(val):
     else:
         range_split = val.split()
         if len(range_split) != 2:
-            raise ValueError('Interval must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day.')
+            raise ValueError(
+                'Interval must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day.')
         number = int(range_split[0])
         range_unit = range_split[1].lower()
         if range_unit not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days']:
@@ -1034,5 +1085,5 @@ def main():
         raise Exception(err_msg)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
