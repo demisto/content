@@ -17,10 +17,12 @@ args:
   name: max_depth
 - required: false
   name: forced_encoding
-  description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'. Relevant to msg files only.
+  description: Use only the force encoding when parsing the message, e.g 'iso-2022-jp'.
+    Relevant to msg files only.
 - required: false
   name: default_encoding
-  description: Use only the default encoding when parsing the message with the detected encoding fails, e.g 'utf-8'. Relevant to msg files only.
+  description: Use only the default encoding when parsing the message with the detected
+    encoding fails, e.g 'utf-8'. Relevant to msg files only.
 comment: Parse an email from an eml or msg file and populate all relevant context
   data to investigate the email. Also extracts inner attachments and returns them
   to the war room. The incident labels themselves are preserved and not modified -
@@ -111,4 +113,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python:2.7.18.22912
+dockerimage: demisto/python:2.7.18.24066

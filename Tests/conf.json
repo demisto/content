@@ -4555,11 +4555,11 @@
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
-	 {
+	      {
             "integrations": "FireMonSecurityManager",
             "playbookID": "FireMon Create Policy Planner Ticket - Test",
             "fromversion": "5.0.0"
-	 }
+        }
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",

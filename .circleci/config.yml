@@ -499,12 +499,11 @@ references:
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
-  update_tests_step: &update_tests_step
+  copy_tests_to_circle_artifact: &copy_tests_to_circle_artifact
     run:
-      name: Update Tests step
+      name: Copy Tests To Artifact Folder
       when: always
       command: |
-        python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
 
   get_contribution_pack: &get_contribution_pack
@@ -745,7 +744,7 @@ jobs:
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *validate_files_and_yaml
       - run:
           name: Spell Checks
@@ -827,7 +826,7 @@ jobs:
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *download_configuration
       - when:
           # If this is an ami run - No need to download server artifacts
@@ -1309,7 +1308,7 @@ jobs:
       - *restore_cache
       - *prepare_environment
       - *secrets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *create_id_set
       - *merge_public_and_private_id_sets
       - *validate_files_and_yaml
