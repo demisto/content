@@ -13,7 +13,18 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' HELPER FUNCTIONS '''
 
 ''' COMMAND FUNCTIONS '''
-
+def execute_shell_command(client: SSHClient, args: Dict[str, Any]) -> CommandResults:
+    command: str = args.get('command', '')
+    _, stdout, std_err = client.exec_command(command)
+    outputs: List[Dict] = [{
+        'Output': stdout,
+        'ErrorOutput': std_err
+    }]
+    return CommandResults(
+        outputs_prefix='RemoteAccess.Command',
+        outputs=outputs,
+        readable_output=tableToMarkdown(f'Command {command} Outputs', outputs)
+    )
 ''' MAIN FUNCTION '''
 
 
@@ -42,15 +53,13 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = SSHClient()
-        client.load_system_host_keys()
         client.set_missing_host_key_policy(AutoAddPolicy())
-        client.connect(hostname=host_name, username=user, password=password, port=22)
+        client.connect(hostname='199.203.162.213', username=user, password=password, port=22)
         if demisto.command() == 'test-module':
-            stdin, stdout, stderr = client.exec_command('ls')
             return_results('ok')
-            pass
         elif command == 'ssh':
             stdin, stdout, stderr = client.exec_command(args.get('command', ''))
+            return_results(CommandResults(outputs=stdout.read().decode()))
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
