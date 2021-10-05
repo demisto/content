@@ -1,8 +1,6 @@
-from typing import Tuple, Dict, Union, Optional
+from typing import Tuple
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
@@ -108,8 +106,8 @@ def main():
     password = params.get('credentials').get('password')
     server = urljoin(params.get('url'), '/api/v2.0/')
     # Should we use SSL
-    use_ssl = not params.get('insecure') == 'true'
-    use_proxy = params.get('proxy') == 'true'
+    use_ssl = not params.get('insecure')
+    use_proxy = params.get('proxy')
     # Headers to be sent in requests
     headers = {
         'Content-Type': 'application/json',

@@ -1,6 +1,5 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
 import demistomock as demisto
+from CommonServerPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, Optional, List, Union
@@ -342,7 +341,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     base_url = urljoin(params.get('url'), '/api/v2')
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy') == 'true'
+    proxy = params.get('proxy')
     threshold = int(params.get('threshold', DEFAULT_THRESHOLD))
     client = Client(
         base_url,

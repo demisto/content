@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, List, AnyStr, Union
@@ -421,7 +419,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     base_url = f"{params.get('url', '').rstrip('/')}'/api/v1'"
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy') == 'true'
+    proxy = params.get('proxy')
     client = Client(base_url, verify=verify, proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
