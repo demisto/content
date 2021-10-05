@@ -799,6 +799,18 @@ script:
       name: endpoint_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to isolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Isolates the specified endpoint.
     execution: true
@@ -820,6 +832,18 @@ script:
       isArray: false
       name: endpoint_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to unisolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Reverses the isolation of an endpoint.
