@@ -1,35 +1,38 @@
  ### Authorize Cortex XSOAR for Azure Key Vault (self-deployed configuration)
-Follow these steps for a self-deployed configuration.
-
+#### Follow these steps for a self-deployed configuration.
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Azure app registration article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
 
-2. You must grant to YOUR-REGISTERED-APP permissions, for your Azure Key vault. 
+2. Make sure the following permissions are granted for the app registration:
+   Azure Service Management - permission user_impersonation of type Delegated,
+   Azure Key Vault - permission user_impersonation of type Delegated.
 
 
-3. To get the client id and the tenant id, navigate in the Azure Portal to App registrations > YOUR-REGISTERED-APP > click on "overview".
+#### Get client ID and tenant ID values 
+
+1. In the Azure portal, select Azure Active Directory.
+2. From App registrations in Azure AD, select your application.
+3. Copy the Directory (tenant) ID and enter it in the Tenant ID parameter.
+4. Copy the Application ID and store it in the Client ID parameter.
    
+#### Get client secret value
 
-4. To get the client secret,in YOUR-REGISTERED-APP click on "Certificates & secrets" > and go to "Client secrets". 
+1. In the Azure portal, select Azure Active Directory.
+2. From App registrations in Azure AD, select your application.
+3. Select Certificates & secrets.
+4. Select Client secrets -> New client secret.
+5. Provide a description of the secret, and a duration. When done, select Add.
+6. After saving the client secret, the value of the client secret is displayed. 
+7. Copy this value and enter it in the Client Secret parameter.
 
+#### Get Subscription ID and the Resource Group values
 
-5. To get the Subscription ID and the Resource Group parameters, navigate in the Azure Portal to Resource groups > YOUR-RESOURCE-GROUP-NAME > click on overview.
+1. In the Azure portal, select Resource groups.
+2. Select your resource group name.
+3. Copy the Subscription ID and enter it in the Subscription ID parameter.
+4. Copy your resource group name and enter it in the Resource Group Name parameter.
 
-
-6. Enter your client ID in the Client ID parameter.
-
-
-7. Enter your client secret in the Client Secret parameter.
-
-
-8. Enter your tenant ID in the Tenant ID parameter.
-
-
-9. Enter your subscription ID in the Subscription ID parameter.
-
-
-10. Enter your resource group name in the Resource Group Name parameter.
 
  ### Fetch credentials from Azure Key Vault
 In order to fetch credentials to the Cortex XSOAR credentials store,you should follow the next steps:
