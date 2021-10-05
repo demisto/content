@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 import requests
 from paramiko import SSHClient, AutoAddPolicy
-# import paramiko
+from scp import SCPClient
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -11,20 +11,52 @@ from CommonServerUserPython import *  # noqa
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' HELPER FUNCTIONS '''
-
 ''' COMMAND FUNCTIONS '''
+
+
+# TODO make sure support all kind of terminals
 def execute_shell_command(client: SSHClient, args: Dict[str, Any]) -> CommandResults:
     command: str = args.get('command', '')
+    # exec_command returns a tuple of stdin, stdout, stderr. No need to parse stdin because it does not contain data.
     _, stdout, std_err = client.exec_command(command)
     outputs: List[Dict] = [{
-        'Output': stdout,
-        'ErrorOutput': std_err
+        'Output': stdout.read().decode(),
+        'ErrorOutput': std_err.read().decode()
     }]
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
         outputs=outputs,
         readable_output=tableToMarkdown(f'Command {command} Outputs', outputs)
     )
+
+
+def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResults:
+    entry_id: str = args.get('entry_id', '')
+    # if not (file_path := demisto.getFilePath(entry_id).get('path', '')):
+    #     raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
+    # TODO delete after checks
+    file_path = args.get('file_path', '')
+    destination_path: str = args.get('destination_path', file_path)
+
+    with SCPClient(ssh_client.get_transport()) as scp_client:
+        scp_client.put(file_path, destination_path)
+    return CommandResults(readable_output=f'### The file corresponding to entry ID: {entry_id} was copied to remote'
+                                          'host.')
+
+
+def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResults:
+    entry_id: str = args.get('entry_id', '')
+    # if not (file_path := demisto.getFilePath(entry_id).get('path', '')):
+    #     raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
+    # TODO delete after checks
+    file_path = args.get('file_path', '')
+    destination_path: str = args.get('destination_path', file_path)
+
+    with SCPClient(ssh_client.get_transport()) as scp_client:
+        scp_client.get(file_path)
+    return fileResult()
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -47,8 +79,8 @@ def main() -> None:
     ciphers: List[str] = argToList(params.get('ciphers'))
 
     interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    # verify_certificate = not demisto.params().get('insecure', False)
+    # proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -58,8 +90,11 @@ def main() -> None:
         if demisto.command() == 'test-module':
             return_results('ok')
         elif command == 'ssh':
-            stdin, stdout, stderr = client.exec_command(args.get('command', ''))
-            return_results(CommandResults(outputs=stdout.read().decode()))
+            return_results(execute_shell_command(client, args))
+        elif command == 'copy-to':
+            return_results(copy_to_command(client, args))
+        elif command == 'copy-from':
+            return_results(copy_from_command(client, args))
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
