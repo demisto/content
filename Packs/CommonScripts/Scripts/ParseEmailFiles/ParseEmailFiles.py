@@ -3287,7 +3287,10 @@ def get_email_address(eml, entry):
     if addresses:
         res = [item[1] for item in addresses]
         res = ', '.join(res)
-        if not re.search(REGEX_EMAIL, res) or len(addresses) > 1 and entry == 'from':
+        if not re.search(REGEX_EMAIL, res) or len(addresses) > 1 and\
+                entry == 'from' and\
+                '\r\n' in gel_all_values_from_email_by_entry:
+
             # this condition refers only to ['from'] header that does not have a valid email or have more then 1
             # fixed an issue where email['From'] had '\r\n'.
             # in order to solve, used replace_header() on email object,
