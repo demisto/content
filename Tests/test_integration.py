@@ -72,8 +72,6 @@ def __test_integration_instance(client, module_instance, logging_module=logging)
     integration_of_instance = module_instance.get('brand', '')
     instance_name = module_instance.get('name', '')
     logging_module.info(
-        f'Module instance are: {module_instance}')
-    logging_module.info(
         f'Running "test-module" for instance "{instance_name}" of integration "{integration_of_instance}".')
     for i in range(connection_retries):
         try:
@@ -193,10 +191,6 @@ def __create_integration_instance(server, username, password, integration_name, 
 
     logging_manager.info(
         f'Configuring instance for {integration_name} (instance name: {instance_name}, validate "Test": {validate_test})'
-    )
-
-    logging_manager.info(
-        f'Module config are: {module_configuration}'
     )
     # define module instance
     module_instance = {

@@ -323,16 +323,8 @@ def configure_integration_instance(integration, client, placeholders_map):
     if not validate_test:
         logging.debug(f'Skipping configuration for integration: {integration_name} (it has test_validate set to false)')
         return None
-
-    logging.info(
-        f'Module config are: {integration_configuration}'
-    )
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi, client)
-
-    logging.info(
-        f'Module instance are: {module_instance}'
-    )
     return module_instance
 
 
@@ -1154,6 +1146,8 @@ def instance_testing(build: Build,
         if integration_of_instance not in build.unmockable_integrations and use_mock:
             success = test_integration_with_mock(build, instance, pre_update)
         else:
+            if not pre_update:
+                logging.info(f"Module instance config after update are: {instance.get('configuration')}")
             testing_client = build.servers[0].reconnect_client()
             success, _ = __test_integration_instance(testing_client, instance)
         if not success:
