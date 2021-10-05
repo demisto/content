@@ -105,6 +105,8 @@ def main():
             # change result to MD
             result = tableToMarkdown('Largest Incidents by Storage Size', result.get("data"),
                                      headers=["IncidentID", "Size(MB)", "AmountOfEntries", "Date"])
+        if not result:
+            result = "No incidents found. Note: only incidents larger than 1MB are scanned."
         demisto.results(result)
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
