@@ -194,10 +194,10 @@ script:
         var lstHPSM = [];
 
         srHPSM['ID'] = request[1];
-        srHPSM['CallbackContactName'] = parsedRes[params.resourcename]['CallbackContactName'];
-        srHPSM['Title'] = parsedRes[params.resourcename]['Title'];
-        srHPSM['Purpose'] = parsedRes[params.resourcename]['Purpose'][0];
-        srHPSM['ContactName'] = parsedRes[params.resourcename]['ContactName'];
+        srHPSM['CallbackContactName'] = parsedRes[resourceName]['CallbackContactName'];
+        srHPSM['Title'] = parsedRes[resourceName]['Title'];
+        srHPSM['Purpose'] = parsedRes[resourceName]['Purpose'][0];
+        srHPSM['ContactName'] = parsedRes[resourceName]['ContactName'];
 
         lstHPSM.push(srHPSM);
 
