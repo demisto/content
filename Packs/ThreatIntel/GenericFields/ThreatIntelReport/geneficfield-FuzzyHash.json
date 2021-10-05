@@ -1,9 +1,12 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Malware"
+    ],
     "caseInsensitive": true,
-    "cliName": "modified",
-    "id": "generic_ThreatIntelReport_modified",
-    "name": "Modified",
+    "cliName": "fuzzyhash",
+    "id": "generic_ThreatIntelReport_fuzzyhash",
+    "name": "Fuzzy Hash",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -19,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "date",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
