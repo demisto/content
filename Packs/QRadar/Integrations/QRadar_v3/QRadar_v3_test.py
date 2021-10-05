@@ -1121,16 +1121,16 @@ class MockResults:
                             'with_events': [{'id': '1', 'last_persisted_time': 2,
                                              'events': [{'event_id': '2'}]}]},
                            {'before_offenses_ids': {LAST_FETCH_KEY: 0},
-                            'with_offenses_ids': {'samples': [], 'last_mirror_update': 2,
+                            'with_offenses_ids': {'samples': [], 'last_mirror_update': '2',
                                                   LAST_FETCH_KEY: 0,
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
-                            'with_events': {'samples': [], 'last_mirror_update': 2, LAST_FETCH_KEY: 0,
+                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                  'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'}]}],
                                             MIRRORED_OFFENSES_CTX_KEY: []},
-                            'with_updated_removed': [{'samples': [], 'last_mirror_update': 2,
+                            'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                      MIRRORED_OFFENSES_CTX_KEY: []}]}),
@@ -1141,17 +1141,17 @@ class MockResults:
                             'with_events': [{'id': '1', 'last_persisted_time': 2,
                                              'events': [{'event_id': '2'}, {'event_id': '3'}]}]},
                            {'before_offenses_ids': {LAST_FETCH_KEY: 0},
-                            'with_offenses_ids': {'samples': [], 'last_mirror_update': 2,
+                            'with_offenses_ids': {'samples': [], 'last_mirror_update': '2',
                                                   LAST_FETCH_KEY: 0,
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
-                            'with_events': {'samples': [], 'last_mirror_update': 2, LAST_FETCH_KEY: 0,
+                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                  'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'},
                                                                                             {'event_id': '3'}]}],
                                             MIRRORED_OFFENSES_CTX_KEY: []},
-                            'with_updated_removed': [{'samples': [], 'last_mirror_update': 2,
+                            'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                      MIRRORED_OFFENSES_CTX_KEY: []}]}),
@@ -1167,13 +1167,13 @@ class MockResults:
                                             {'id': '11', 'last_persisted_time': 3,
                                              'events': [{'event_id': '22'}, {'event_id': '33'}]}]},
                            {'before_offenses_ids': {LAST_FETCH_KEY: 0},
-                            'with_offenses_ids': {'samples': [], 'last_mirror_update': 3,
+                            'with_offenses_ids': {'samples': [], 'last_mirror_update': '3',
                                                   LAST_FETCH_KEY: 0,
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2},
                                                                               {'id': '11',
                                                                                'last_persisted_time': 3}]},
-                            'with_events': {'samples': [], 'last_mirror_update': 2, LAST_FETCH_KEY: 0,
+                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1', 'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'},
                                                                                             {'event_id': '3'}]},
@@ -1181,7 +1181,7 @@ class MockResults:
                                                                                  'events': [{'event_id': '22'},
                                                                                             {'event_id': '33'}]}],
                                             MIRRORED_OFFENSES_CTX_KEY: []},
-                            'with_updated_removed': [{'samples': [], 'last_mirror_update': 2,
+                            'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
                                                                                           'last_persisted_time': 3,
@@ -1189,7 +1189,7 @@ class MockResults:
                                                                                                      {'event_id': '33'}]
                                                                                           }],
                                                      MIRRORED_OFFENSES_CTX_KEY: []},
-                                                     {'samples': [], 'last_mirror_update': 2,
+                                                     {'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                      MIRRORED_OFFENSES_CTX_KEY: []}]})
@@ -1211,9 +1211,9 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     # Get a list of offenses to update their events
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('ids'))
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('before_offenses_ids'))
-    mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
-    QRadar_v3.set_integration_context.assert_called_once_with(context_data.get('with_offenses_ids'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('with_offenses_ids'))
 
     # Transfer that list to the long running docker and update the events.
     mocker.patch.object(concurrent.futures.ThreadPoolExecutor, 'submit', side_effect=offenses.get('as_results'))
@@ -1230,12 +1230,12 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
         mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('with_events'))
         mocker.patch.object(client, 'offenses_list', return_value=offense)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=offense)
-        mocker.patch.object(QRadar_v3, 'set_integration_context')
+        mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
         result = get_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
                                          {'id': offense.get('id'), 'lastUpdate': 1})
 
         # Make sure the final offense has it's updated events
-        QRadar_v3.set_integration_context.assert_called_once_with(
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
             context_data.get('with_updated_removed')[offense_index])
         assert result.mirrored_object.get('events', '')
 
@@ -1253,7 +1253,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                         'events': [{'event_id': '2'},
                                                                                                    {'event_id': '3'}]}],
                                                    MIRRORED_OFFENSES_CTX_KEY: []},
-                            'get_modified_output': {'samples': [], 'last_mirror_update': None,
+                            'get_modified_output': {'samples': [], 'last_mirror_update': '0',
                                                     LAST_FETCH_KEY: 0,
                                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                          'last_persisted_time': 2,
@@ -1261,7 +1261,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                                     {'event_id': '3'}]}],
                                                     MIRRORED_OFFENSES_CTX_KEY: [],
                                                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1']},
-                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': None,
+                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': '0',
                                                       LAST_FETCH_KEY: 0,
                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                       MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1279,7 +1279,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                                    {'event_id': '33'}]}
                                                                                        ],
                                                    MIRRORED_OFFENSES_CTX_KEY: []},
-                           'get_modified_output': {'samples': [], 'last_mirror_update': None,
+                           'get_modified_output': {'samples': [], 'last_mirror_update': '0',
                                                    LAST_FETCH_KEY: 0,
                                                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                         'last_persisted_time': 2,
@@ -1292,7 +1292,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                        ],
                                                    MIRRORED_OFFENSES_CTX_KEY: [],
                                                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
-                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': None,
+                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': '0',
                                                       LAST_FETCH_KEY: 0,
                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
                                                                                            'last_persisted_time': 3,
@@ -1301,7 +1301,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                                {'event_id': '33'}]}],
                                                       MIRRORED_OFFENSES_CTX_KEY: [],
                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
-                                                      {'samples': [], 'last_mirror_update': None,
+                                                      {'samples': [], 'last_mirror_update': '0',
                                                        LAST_FETCH_KEY: 0,
                                                        UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                        MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1322,7 +1322,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                                                                    {'event_id': '33'}]}
                                                                                        ],
                                                    MIRRORED_OFFENSES_CTX_KEY: []},
-                           'get_modified_output': {'samples': [], 'last_mirror_update': 3,
+                           'get_modified_output': {'samples': [], 'last_mirror_update': '3',
                                                    LAST_FETCH_KEY: 0,
                                                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                         'last_persisted_time': 2,
@@ -1336,7 +1336,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                    MIRRORED_OFFENSES_CTX_KEY: [{'id': '100', 'last_persisted_time': 2},
                                                                                {'id': '200', 'last_persisted_time': 3}],
                                                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
-                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': 3,
+                            'after_get_remote_data': [{'samples': [], 'last_mirror_update': '3',
                                                       LAST_FETCH_KEY: 0,
                                                       UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
                                                                                            'last_persisted_time': 3,
@@ -1347,7 +1347,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                            {'id': '100', 'last_persisted_time': 2},
                                                            {'id': '200', 'last_persisted_time': 3}],
                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['11']},
-                                                      {'samples': [], 'last_mirror_update': 3,
+                                                      {'samples': [], 'last_mirror_update': '3',
                                                        LAST_FETCH_KEY: 0,
                                                        UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                                        MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1371,12 +1371,12 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
     """
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('new_offenses'))
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_input'))
-    mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_integration_context.assert_called_once_with(context_data.get('get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('get_modified_output'))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
@@ -1388,12 +1388,12 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
         mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_input_for_get_remote_data)
         mocker.patch.object(client, 'offenses_list', return_value=offense)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=offense)
-        mocker.patch.object(QRadar_v3, 'set_integration_context')
+        mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
         get_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
                                 {'id': offense.get('id'), 'lastUpdate': 1})
 
         # Make sure the final offense has it's updated events
-        QRadar_v3.set_integration_context.assert_called_once_with(
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
             context_data.get('after_get_remote_data')[offense_index])
 
         context_input_for_get_remote_data = context_data.get('after_get_remote_data')[offense_index]
@@ -1411,7 +1411,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                                                                   'events': [{'event_id': '2'},
                                                                              {'event_id': '3'}]}],
                              MIRRORED_OFFENSES_CTX_KEY: []},
-      'get_modified_output': {'samples': [], 'last_mirror_update': None,
+      'get_modified_output': {'samples': [], 'last_mirror_update': '0',
                               LAST_FETCH_KEY: 0,
                               UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                    'last_persisted_time': 2,
@@ -1419,7 +1419,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                                                                               {'event_id': '3'}]}],
                               MIRRORED_OFFENSES_CTX_KEY: [],
                               RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1']},
-      'clean_get_modified_output': {'samples': [], 'last_mirror_update': None,
+      'clean_get_modified_output': {'samples': [], 'last_mirror_update': '0',
                                     LAST_FETCH_KEY: 0,
                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                     MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1440,7 +1440,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                                                                              {'event_id': '33'}]}
                                                                  ],
                              MIRRORED_OFFENSES_CTX_KEY: []},
-      'get_modified_output': {'samples': [], 'last_mirror_update': None,
+      'get_modified_output': {'samples': [], 'last_mirror_update': '0',
                               LAST_FETCH_KEY: 0,
                               UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                    'last_persisted_time': 2,
@@ -1452,7 +1452,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                                                                               {'event_id': '33'}]}],
                               MIRRORED_OFFENSES_CTX_KEY: [],
                               RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
-      'clean_get_modified_output': {'samples': [], 'last_mirror_update': None,
+      'clean_get_modified_output': {'samples': [], 'last_mirror_update': '0',
                                     LAST_FETCH_KEY: 0,
                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                     MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1474,7 +1474,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                                                                   'events': [{'event_id': '22'},
                                                                              {'event_id': '33'}]}],
                              MIRRORED_OFFENSES_CTX_KEY: []},
-      'get_modified_output': {'samples': [], 'last_mirror_update': 3,
+      'get_modified_output': {'samples': [], 'last_mirror_update': '3',
                               LAST_FETCH_KEY: 0,
                               UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                    'last_persisted_time': 2,
@@ -1487,7 +1487,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
                               MIRRORED_OFFENSES_CTX_KEY: [{'id': '100', 'last_persisted_time': 2},
                                                           {'id': '200', 'last_persisted_time': 3}],
                               RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']},
-      'clean_get_modified_output': {'samples': [], 'last_mirror_update': 5,
+      'clean_get_modified_output': {'samples': [], 'last_mirror_update': '5',
                                     LAST_FETCH_KEY: 0,
                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
                                     MIRRORED_OFFENSES_CTX_KEY: [{'id': '100', 'last_persisted_time': 2},
@@ -1510,22 +1510,22 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
     """
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('new_offenses'))
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_input'))
-    mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_integration_context.assert_called_once_with(context_data.get('get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('get_modified_output'))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('newer_offenses'))
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_output'))
-    mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_integration_context.assert_called_once_with(context_data.get('clean_get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('clean_get_modified_output'))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('clean_to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('clean_to_update'))

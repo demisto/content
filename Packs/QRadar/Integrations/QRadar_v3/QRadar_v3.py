@@ -3042,7 +3042,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = json.loads(ctx.get(LAST_FETCH_KEY, '0'))
+    highest_fetched_id = ctx.get(LAST_FETCH_KEY, '0')
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
     last_update_time = json.loads(ctx.get('last_mirror_update', '""'))
@@ -3059,7 +3059,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     new_context_data = ctx.copy()
     print_debug_msg(f'Saving New Highest ID: {ctx.get(LAST_FETCH_KEY, 0)}')
     new_context_data.update({'samples': ctx.get('samples', []), 'last_mirror_update': json.dumps(current_last_update),
-                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
+                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, '0')})
 
     if params.get('mirror_options') == MIRROR_OFFENSE_AND_EVENTS:
         print_mirror_events_stats(new_context_data, "Get Modified Remote Data - Before update")
