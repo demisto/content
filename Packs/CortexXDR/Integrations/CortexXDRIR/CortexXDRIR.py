@@ -1434,16 +1434,6 @@ class Client(BaseClient):
         )
         return res.get('reply', {})
 
-    def generic_api_execution(self, api_endpoint, method, data):
-        return_warning(api_endpoint)
-        return_warning(data)
-
-        return self._http_request(
-            method=method,
-            url_suffix=api_endpoint,
-            json_data=data,
-        )
-
 
 def get_incidents_command(client, args):
     """
@@ -1982,29 +1972,6 @@ def endpoint_command(client, args):
             raw_response=endpoints,
         ))
     return command_results
-
-
-def generic_api_execution_command(client, args):
-    method = args.get('method')
-    if not method:
-        raise DemistoException('Please provide an API call method argument.')
-    api_endpoint = args.get('api_endpoint')
-    request_data = safe_load_json(args.get('request_data', {}))
-    if not api_endpoint:
-        raise DemistoException('Please provide an api_endpoint argument.')
-    data = {
-        'request_data': {
-        }
-    }
-    data['request_data'].update(request_data)
-    raw_response = client.generic_api_execution(api_endpoint, method, data)
-    return CommandResults(
-        readable_output=tableToMarkdown('Generic API Execution Results', {'results': raw_response},
-                                        headerTransform=string_to_table_header),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.GenericExecution',
-        outputs=raw_response,
-        raw_response=raw_response,
-    )
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -3384,20 +3351,34 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
 
 
 def decode_dict_values(dict_to_decode: dict):
-    for key in dict_to_decode.keys():
-        # if value if a dictionary, we want to recursively decode it's values
-        if isinstance(dict_to_decode[key], dict):
-            decode_dict_values(dict_to_decode[key])
-        # if value if a string, we want to try to decode it, if it cannot be decoded, we will move on.
-        elif isinstance(dict_to_decode[key], str):
+    """Decode JSON str values of a given dict.
+
+    Args:
+      dict_to_decode (dict): The dict to decode.
+
+    """
+    for key, value in dict_to_decode.items():
+        # if value is a dictionary, we want to recursively decode it's values
+        if isinstance(value, dict):
+            decode_dict_values(value)
+        # if value is a string, we want to try to decode it, if it cannot be decoded, we will move on.
+        elif isinstance(value, str):
             try:
-                dict_to_decode[key] = json.loads(dict_to_decode[key])
-            except Exception:
+                dict_to_decode[key] = json.loads(value)
+            except ValueError:
                 continue
-    return
 
 
-def filter_general_fields(alert: dict):
+def filter_general_fields(alert: dict) -> dict:
+    """filter only relevant general fields from a given alert.
+
+    Args:
+      alert (dict): The alert to filter
+
+    Returns:
+      dict: The filtered alert
+    """
+
     updated_alert = {}
     updated_event = {}
     for field in ALERT_GENERAL_FIELDS:
@@ -3405,25 +3386,33 @@ def filter_general_fields(alert: dict):
             updated_alert[field] = alert.get(field)
 
     event = alert.get('raw_abioc', {}).get('event', {})
-    if event and isinstance(event, dict):
-        for key in list(event):
-            if key in ALERT_EVENT_GENERAL_FIELDS:
-                updated_event[key] = event.get(key)
-        if updated_event:
-            updated_alert['event'] = updated_event
-        return updated_alert
-    else:
+    if not event:
         return_warning('No XDR cloud analytics event.')
         sys.exit(0)
 
+    for field in ALERT_EVENT_GENERAL_FIELDS:
+        if field in event:
+            updated_event[field] = event.get(field)
 
-def filter_vendor_fields(alert):
+    updated_alert['event'] = updated_event
+    return updated_alert
+
+
+def filter_vendor_fields(alert: dict):
+    """Remove non relevant fields from the alert event (filter by vendor: Amazon/google/Microsoft)
+
+    Args:
+      alert (dict): The alert to filter
+
+    Returns:
+      dict: The filtered alert
+    """
     vendor_mapper = {
         'Amazon': ALERT_EVENT_AWS_FIELDS,
         'Google': ALERT_EVENT_GCP_FIELDS,
-        'Microsoft': ALERT_EVENT_AZURE_FIELDS,
+        'MSFT': ALERT_EVENT_AZURE_FIELDS,
     }
-    event = alert.get('raw_abioc', {}).get('event', {})
+    event = alert.get('event', {})
     vendor = event.get('vendor')
     if vendor and vendor in vendor_mapper:
         raw_log = event.get('raw_log', {})
@@ -3447,14 +3436,14 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
             decode_dict_values(alert)
         except Exception:
             continue
+        # remove original_alert_json field and add its content to alert.
         alert.update(
-            alert.pop('original_alert_json', None))  # remove original_alert_json field and add its content to alert.
+            alert.pop('original_alert_json', None))
         updated_alert = filter_general_fields(alert)
         filter_vendor_fields(updated_alert)
         alerts[i] = updated_alert
 
     return CommandResults(
-        readable_output=tableToMarkdown('Original Alerts', alerts, headerTransform=string_to_table_header),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
         outputs_key_field='internal_id',
         outputs=alerts,
@@ -3569,6 +3558,7 @@ def main():
     Executes an integration command
     """
     LOG(f'Command being called is {demisto.command()}')
+
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
     first_fetch_time = demisto.params().get('fetch_time', '3 days')
@@ -3763,9 +3753,6 @@ def main():
 
         elif demisto.command() == 'xdr-get-endpoints-by-status':
             return_results(get_endpoints_by_status_command(client, args))
-
-        elif demisto.command() == 'xdr-generic-api-execution':
-            return_results(generic_api_execution_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

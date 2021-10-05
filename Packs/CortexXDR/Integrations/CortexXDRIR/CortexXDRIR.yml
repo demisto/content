@@ -2986,713 +2986,132 @@ script:
     execution: false
     name: xdr-get-cloud-original-alerts
     outputs:
-    - contextPath: PaloAltoNetworksXDR.alerts.internal_id
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event._time
+      description: The timestamp of the occurence of the event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.vendor
+      description: Vendor name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_timestamp
+      description: Event timestamp.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.uuid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.recordType
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.customerId
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.severity
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_type
+      description: Event type (static 500).
       type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.generatedTime
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.originalAgentTime
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.serverTime
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.isEndpoint
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider
+      description: One of GCP/AZURE/AWS.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.project
+      description: The project in which the event has occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider_event_id
+      description: The ID that was given to the event by the cloud provider if exists
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_correlation_id
+      description: An ID that the cloud provider is using to aggregate events that are part of the same general event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name_orig
+      description: The name of the operation occurred as supplied by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name
+      description: The normalized name of the operation done by the event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+      description: This field contain the original identity related fields as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_name
+      description: The name of the identity that has initiate the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_uuid
+      description: Same as identity_name but contains the UUID of the identity of exists.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_type
+      description: An enum that represents the type of the identity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_sub_type
+      description: An enum to represent the sub type of the identity, respectively to its identity_type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_name
+      description: The name of the identity that have invoked the action, as appears on the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_uuid
+      description: The UUID of the identity that have invoked the action, as appears on the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_type
+      description: An enum that represent the type of the identity that has invoked the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_sub_type
+      description: An enum that represent the respective sub_type to the identity_type of the identity that has invoked the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status
+      description: Whether the operation has succeed or failed (if provided).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig
+      description: The operation status code as appeared on the log, with lookup from code number to code name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig_code
+      description: The operation status code as appeared on the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_reason_provided
+      description: Description of the error, If the log record indicate an error and the cloud provider supplied the reason.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type
+      description: The normalized type of the service that has emitted the log row.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig
+      description: The type of the service that has omitted the log, as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type
+      description: The sub-type respective to the resource_type field, normalized across all cloud providers.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type_orig
+      description: The sub type of the service that has emitted this log row as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.region
+      description: The cloud region of the resource that has emitted the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.zone
+      description: The availability zone of the resource that has emitted the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource
+      description: The cloud resources that was referenced in the audit log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource_name
+      description: Same as referenced_resource but only with substring that represents the resource name instead of full asset id.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resources_count
+      description: The number of extracted resources that was referenced in this audit log.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.agentId
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.user_agent
+      description: The user agent provided in the call to the API of the cloud provider.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.osVersion
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip
+      description: The IP of the caller that has done the action in the log.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentIp
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_geolocation
+      description: The geolocation associated with the caller_ip's value.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.deviceName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentVersion
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.contentVersion
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.policyTag
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.securityStatus
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn
+      description: The ASN of the caller_ip's value.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.protectionStatus
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.dataCollectionStatus
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.isolationStatus
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentIpList
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_project
+      description: The project of the caller entity.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.addresses.ip
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.raw_log
+      description: The raw log that is being normalized.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.log_name
+      description: The name of the log that contains the log row.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.addresses.mac
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn_org
+      description: The organization associated with the ASN of the caller_ip's value.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.liveTerminalEnabled
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.scriptExecutionEnabled
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.fileRetrievalEnabled
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentLocation
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.fileSearchEnabled
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.deviceDomain
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_base_id
+      description: Event base ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.userName
-      description: ''
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
+      description: Ingestion time.
       type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.userSid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.osType
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.is64
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.isVdi
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.agentTime
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.endPointHeader.tzOffset
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.eventCategory
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.moduleId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.moduleStatusId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.preventionKey
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.pid
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.parentId
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.exeFileIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.userIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.commandLine
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.instanceId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.terminated
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.processes.terminationReportId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.rawFullPath
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.fileName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.sha256
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.fileSize
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.companyName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.files.signers
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.users.userName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.users.domainUser
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.postDetected
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.causalityId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.factName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.timestamp
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.eventId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_allocation_base_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.actor_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.page_base_shellcode_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_heavens_gate
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_impersonated
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.reparse_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.modification_time
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.dirty_reason
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.stack_trace
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.access_time
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_injected
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.pid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.thread_context_eip_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.actor_thread_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.montepi_err
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.call_region_shellcode_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_size
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.should_obfuscate
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.create_time
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.allocation_base_shellcode_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.rpc_interface_uuid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_page_base_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_extension
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.rpc_interface_minor_version
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.telem
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.canonized_file_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_path_hash
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.thread_context_eip
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.attributes
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_path_md5
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.sec_desc
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.reparse_count
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.rpc_function_opnum
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.remote_causality_actor_ip
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_remote_file
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_call_region_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_allocation_base_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.old_file_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_stack_pivot
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.sub_type
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.causality_actor_type
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.timestamp
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.cid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.actor_type
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.chisq_prob
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.rpc_interface_major_version
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.dse_internal
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.old_file_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.actor_tid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.entropy
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.call_region_base_address
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_call_region_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.canonized_old_file_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_page_base_buffer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.sync_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.event_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.rpc_protocol
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.shellcode_address
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.tid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_type
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.sync_action
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.actor_pid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.processIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.instanceId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.integrity_level
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_info_description
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.parent_tid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.process_image_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.parent_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.image_base
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.effective_user_sid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.requested_parent_pid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.user_presence
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.parent_pid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_sign
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_remote_session
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.peb
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.process_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.command_line
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.os_sig_status
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_info_legal_copyright
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.user_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.os_parent_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_info_internal_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.image_path_sha256
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_info_company_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_info_original_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.file_obj_flags
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.signer_name
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.original_command_line
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_trusted_signer
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.requested_parent_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_cgo
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.parent_cid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.enabled_privileges
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.peb32
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_embedded_sign
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.parent_thread_instance_id
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.canonized_process_image_path
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.entry_point_rva
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.os_parent_pid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.image_path_md5
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.is_in_transaction
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.prio
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.internals.attributes.build_timestamp
-      description: ''
-      type: Date
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.potentialPreventionActionOverride
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.isBiocRule
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.biocId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.additionalData
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.biocRuleName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.reachedMaxActivationsPerRule
-      description: ''
-      type: Boolean
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.syncActionStatus
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.spawnerImagePath
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.spawnerCmdline
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.spawnerSigner
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.osSpawnerImagePath
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.osSpawnerCmdline
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.dynamicAnalysis.osSpawnerSigner
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.techniqueId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.tacticId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.actorType
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.pipeName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.hostname
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.endpointIp
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.endpointPort
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.endpointDomain
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.cid
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.localHostIp
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.localHostPort
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.remoteActorDetails.localHostDomain
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.severity
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.edr.events
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.edr.actors
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.edr.osActors
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.edr.causalityActors
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.terminate
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.block
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcessIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.fileIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.canUpload
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.ruleId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.ruleName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.ipBlocked
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.preventionMode
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.trapsSeverity
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.profile
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.description
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.cystatusDescription
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.user.userName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.user.domainUser
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.pid
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.parentId
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.exeFileIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.userIdx
-      description: ''
-      type: Number
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.commandLine
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.instanceId
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.rawFullPath
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.fileName
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.sourceProcess.sha256
-      description: ''
-      type: String
-    - contextPath: PaloAltoNetworksXDR.alerts.original_alert_json.messageData.policyId
-      description: ''
-      type: String
-  - arguments:
-    - default: false
-      description: The API call method.
-      isArray: false
-      name: method
-      required: true
-      secret: false
-      predefined:
-      - GET
-      - POST
-      - PATCH
-      - DELETE
-      - PUT
-    - default: false
-      description: API Endpoint to execute.
-      isArray: false
-      name: api_endpoint
-      required: true
-      secret: false
-    - default: false
-      description: 'Data to pass to the given endpoint. Should be a json format of the arguments, For example: {"stream_id": "563c5e24", "is_gzip_compressed": true}'
-      isArray: false
-      name: request_data
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns results from the accessed endpoint.
-    execution: false
-    name: xdr-generic-api-execution
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
