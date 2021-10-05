@@ -103,7 +103,7 @@
         {
           "external_id": "CAPEC-570",
           "source_name": "capec",
-          "url": "https://capec.mitre.org/data/definitions/570.html"
+          "url": "https://example.example.com/data/definitions/570.html"
         },
         {
           "description": "Kafka, F. (2018, January). ESET's Guide to Deobfuscating and Devirtualizing FinFisher. Retrieved August 12, 2019.",
