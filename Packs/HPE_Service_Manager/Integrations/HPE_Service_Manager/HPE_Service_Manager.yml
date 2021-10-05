@@ -194,7 +194,6 @@ script:
         var lstHPSM = [];
 
         srHPSM['ID'] = request[1];
-        srHPSM['CallbackType'] = parsedRes[params.resourcename]['CallbackType'];
         srHPSM['CallbackContactName'] = parsedRes[params.resourcename]['CallbackContactName'];
         srHPSM['Title'] = parsedRes[params.resourcename]['Title'];
         srHPSM['Purpose'] = parsedRes[params.resourcename]['Purpose'][0];
@@ -1298,17 +1297,20 @@ script:
     description: Find and return a device by ID.
   - name: hpsm-create-request
     arguments:
-    - description: The title of the request.
-      name: title
+    - name: title
       required: true
-    - description: The description of the request.
-      name: description
+      description: The title of the request.
+    - name: purpose
       required: true
-    - description: Who created/opened the service request
-      name: callbackcontactname
-    - description: Incident contact details
-      name: contactname
+      description: The purpose of the request.
+    - name: callbackcontactname
+      description: Who created/opened the service request.
+    - name: contactname
       required: true
+      description: Incident contact details.
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
     outputs:
     - contextPath: HPSM.ServiceRequest.ContactName
       description: Who created/opened the service request
