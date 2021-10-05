@@ -613,10 +613,10 @@ script: >-
 
       var htmlResults = '';
       if (name) {
-          htmlResults = '<h3>' + name + '</h3><br/>';
+          htmlResults = '<h3>' + name + '</h3>';
       }
       if (t && t.length) {
-          htmlResults += '<table><tr>' + headers.reduce(function(acc, v) {return acc + '<th>' + v + '</th>';}, '') + '</tr>';
+          htmlResults += '<table border="1" cellspacing="0" cellpadding="3"><tr>' + headers.reduce(function(acc, v) {return acc + '<th>' + v + '</th>';}, '') + '</tr>';
           t.forEach(function(entry){
               var vals = [];
               headers.forEach(function(h){
