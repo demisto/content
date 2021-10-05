@@ -1,5 +1,9 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Threat Actor",
+        "Campaign"
+    ],
     "caseInsensitive": true,
     "cliName": "threatactor",
     "id": "generic_ThreatIntelReport_threatactor",

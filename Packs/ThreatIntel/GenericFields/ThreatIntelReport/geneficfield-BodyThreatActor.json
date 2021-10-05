@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Threat Actor"
+    ],
     "caseInsensitive": true,
     "cliName": "bodyvulnerability",
     "id": "generic_ThreatIntelReport_bodyvulnerability",

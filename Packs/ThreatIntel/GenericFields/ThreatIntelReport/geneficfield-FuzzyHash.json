@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Malware"
+    ],
     "caseInsensitive": true,
     "cliName": "fuzzyhash",
     "id": "generic_ThreatIntelReport_fuzzyhash",

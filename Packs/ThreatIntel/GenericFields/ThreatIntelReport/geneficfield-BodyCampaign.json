@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Campaign"
+    ],
     "caseInsensitive": true,
     "cliName": "bodycampaign",
     "id": "generic_ThreatIntelReport_bodycampaign",
