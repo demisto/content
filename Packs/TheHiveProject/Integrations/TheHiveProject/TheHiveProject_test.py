@@ -131,6 +131,7 @@ def test_create_case_command(requests_mock):
                      "caseId": "4",
                      "createdBy": "example@example.com",
                      "createdAt": "2021-07-22T09:15:09Z",
+                     "updatedAt":"2021-07-22T09:15:09Z",
                      "_type": "case",
                      "title": "added case title",
                      "description": "added case description",

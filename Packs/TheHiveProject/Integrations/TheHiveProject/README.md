@@ -1,5 +1,5 @@
 Integration with The Hive Project Security Incident Response Platform.
-This integration was integrated and tested with version xx of TheHive Project
+This integration was integrated and tested with version 4.1.4 of TheHive Project
 
 ## Configure TheHive Project on Cortex XSOAR
 
@@ -2251,8 +2251,8 @@ There is no context output for this command.
                 "hasKey": true,
                 "id": "adrugobitski@paloaltonetworks.com",
                 "login": "adrugobitski@paloaltonetworks.com",
-                "name": "Demisto API",
-                "organisation": "Demisto",
+                "name": "Demist API",
+                "organisation": "Demist",
                 "roles": [
                     "admin",
                     "write",
@@ -2270,7 +2270,7 @@ There is no context output for this command.
                 "id": "rrapoport@paloaltonetworks.com",
                 "login": "rrapoport@paloaltonetworks.com",
                 "name": "Roman Rapoport",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "admin",
                     "write",
@@ -2285,10 +2285,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T11:40:29Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "user@thehive.local",
-                "login": "user@thehive.local",
+                "id": "example@example.com",
+                "login": "example@example.com",
                 "name": "username",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2300,10 +2300,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T12:06:57Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "userr@thehive.local",
-                "login": "userr@thehive.local",
+                "id": "example@example.com",
+                "login": "example@example.com",
                 "name": "usernamee",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2315,10 +2315,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T12:16:53Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "new_user@thehive.local",
-                "login": "new_user@thehive.local",
+                "id": "example@example.com",
+                "login": "example@example.com",
                 "name": "user_name",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2330,10 +2330,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T12:17:35Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "new_user_2@thehive.local",
-                "login": "new_user_2@thehive.local",
+                "id": "example@example.com",
+                "login": "example@example.com",
                 "name": "user_name_2",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2348,7 +2348,7 @@ There is no context output for this command.
                 "id": "demisto_login@thehive.local",
                 "login": "demisto_login@thehive.local",
                 "name": "dem_test",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2360,10 +2360,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-21T09:21:38Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "meretmaayta@gmail.com",
-                "login": "meretmaayta@gmail.com",
+                "id": "example@example.com",
+                "login": "example@example.com",
                 "name": "merit",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2375,10 +2375,10 @@ There is no context output for this command.
                 "createdAt": "2021-09-22T10:32:01Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "test@thehive.local",
-                "login": "test@thehive.local",
+                "id": "example@example.example",
+                "login": "example@example.example",
                 "name": "testing",
-                "organisation": "Demisto",
+                "organisation": "Demist",
                 "roles": [
                     "read"
                 ],
@@ -2394,15 +2394,15 @@ There is no context output for this command.
 >### TheHive Users:
 >|id|name|roles|status|
 >|---|---|---|---|
->| adrugobitski@paloaltonetworks.com | Demisto API | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| adrugobitski@paloaltonetworks.com | Demist API | admin,<br/>write,<br/>read,<br/>alert | Ok |
 >| rrapoport@paloaltonetworks.com | Roman Rapoport | admin,<br/>write,<br/>read,<br/>alert | Ok |
->| user@thehive.local | username | read | Ok |
->| userr@thehive.local | usernamee | read | Ok |
->| new_user@thehive.local | user_name | read | Ok |
->| new_user_2@thehive.local | user_name_2 | read | Ok |
->| demisto_login@thehive.local | dem_test | read | Ok |
->| meretmaayta@gmail.com | merit | read | Ok |
->| test@thehive.local | testing | read | Ok |
+>| example@example.com | username | read | Ok |
+>| example@example.com | usernamee | read | Ok |
+>| example@example.com | user_name | read | Ok |
+>| example@example.com | user_name_2 | read | Ok |
+>| demist_login@thehive.local | dem_test | read | Ok |
+>| example@example.com | merit | read | Ok |
+>| example@example.com | testing | read | Ok |
 
 
 ### thehive-get-user
@@ -2720,8 +2720,8 @@ List observables for a case.
 >| datas for test 2 | domain | messages for test 2 |
 >| datas for test | domain | messages for test |
 >| google | domain | new observable |
->| demisto | domain | test observ |
->| demisto | domain | test observ |
+>| demist | domain | test observ |
+>| demist | domain | test observ |
 
 
 ### thehive-create-observable

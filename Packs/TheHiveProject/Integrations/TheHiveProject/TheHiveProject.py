@@ -204,7 +204,7 @@ class Client(BaseClient):
             return None
         if res.json():
             task = res.json()
-            task[0]['logs'] = self.get_task_logs(task_id)
+            task['logs'] = self.get_task_logs(task_id)
         else:
             task = None
         return task
@@ -643,7 +643,7 @@ def get_task_command(client: Client, args: dict):
     task_id = args.get('id')
     task = client.get_task(task_id)
     if task:
-        task = task[0]
+        # task = task[0]
         task_date_dt = dateparser.parse(str(task['_createdAt']))
         if task_date_dt:
             task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
