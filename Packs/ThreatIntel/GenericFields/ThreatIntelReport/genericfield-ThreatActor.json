@@ -1,12 +1,13 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Threat Actor",
+        "Campaign"
     ],
     "caseInsensitive": true,
-    "cliName": "reporttype",
-    "id": "generic_ThreatIntelReport_reporttype",
-    "name": "Report Type",
+    "cliName": "threatactor",
+    "id": "generic_ThreatIntelReport_threatactor",
+    "name": "Threat Actor",
     "closeForm": false,
     "content": true,
     "editForm": true,

@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "type",
-    "id": "generic_ThreatIntelReport_type",
-    "name": "Type",
+    "cliName": "cve",
+    "id": "generic_ThreatIntelReport_cve",
+    "name": "CVE",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -19,17 +19,10 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "selectValues": [
-        "Campaign",
-        "Threat Actor",
-        "Malware",
-        "Vulnerability",
-        "Brief"
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "singleSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
