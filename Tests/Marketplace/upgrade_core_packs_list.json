@@ -1,9 +1,11 @@
-[
-  "Base",
-  "CommonScripts",
-  "CommonPlaybooks",
-  "CommonTypes",
-  "CommonDashboards",
-  "CommonReports",
-  "CommonWidgets"
-]
+{
+  "update_core_packs_list": [
+    "Base",
+    "CommonScripts",
+    "CommonPlaybooks",
+    "CommonTypes",
+    "CommonDashboards",
+    "CommonReports",
+    "CommonWidgets"
+  ]
+}
