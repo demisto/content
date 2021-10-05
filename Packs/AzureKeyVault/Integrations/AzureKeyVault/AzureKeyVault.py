@@ -102,7 +102,7 @@ class KeyVaultClient:
             bypass (str): bypass network rules.Network acl property.Default is 'AzureServices'.
             vnet_subnet_id:(str): Full resource id of a vnet subnet.
             ignore_missing_vnet_service_endpoint (bool): NRP will ignore the check.
-            ip_rules List[str](optional) : The list of IP address rules.
+            ip_rules (List[str],optional) : The list of IP address rules.
 
         Returns:
             Dict[str, Any]: API response from Azure.
