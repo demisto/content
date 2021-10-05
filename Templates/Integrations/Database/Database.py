@@ -1,6 +1,8 @@
-from typing import Tuple
+from typing import Tuple, Dict, Union, Optional
 
+import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
