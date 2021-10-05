@@ -283,7 +283,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "generic_ThreatIntelReport_title",
+						"fieldId": "name",
 						"isVisible": true
 					},
 					{

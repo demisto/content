@@ -283,6 +283,10 @@
 				"description": "",
 				"fields": [
 					{
+						"fieldId": "name",
+						"isVisible": true
+					},
+					{
 						"fieldId": "generic_ThreatIntelReport_trafficlightprotocol",
 						"isVisible": true
 					}
