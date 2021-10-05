@@ -3,7 +3,7 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     get_key_vault_command, delete_key_vault_command, \
     update_access_policy_command, get_key_command, list_keys_command, delete_key_command, delete_secret_command, \
     get_secret_command, list_secrets_command, get_certificate_command, list_certificates_command, \
-    get_certificate_policy_command
+    get_certificate_policy_command, fetch_credentials
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -17,6 +17,7 @@ RESOURCE_GROUP_NAME = "group_name"
 VAULT_NAME = "myvault"
 KEY_NAME = "key_test"
 SECRET_NAME = "sec_test"
+SECRET_NAME_2 = "sec_test_2"
 CERTIFICATE_NAME = "selfSignedCert01"
 BASE_VAULT_URL = f'https://{VAULT_NAME}.vault.azure.net'
 BASE_MANAGEMENT_URL = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/' \
@@ -28,6 +29,7 @@ KEY_VAULT_PREFIX = "AzureKeyVault.KeyVault"
 KEY_PREFIX = "AzureKeyVault.Key"
 SECRET_PREFIX = "AzureKeyVault.Secret"
 CERTIFICATE_PREFIX = "AzureKeyVault.Certificate"
+OBJECT_ID = "00000000-0000-0000-0000-000000000000"
 
 
 def load_mock_response(file_name: str) -> str:
@@ -452,3 +454,137 @@ def test_azure_key_vault_certificate_policy_get_command(requests_mock):
     assert result.outputs_prefix == 'AzureKeyVault.CertificatePolicy'
     assert result.outputs.get('id') == "https://myvault.vault.azure.net/certificates/selfSignedCert01/policy"
     assert result.outputs.get('attributes').get('enabled') is True
+
+
+def test_fetch_credentials(requests_mock):
+    """
+     Scenario: Fetch credentials command.
+     Given:
+        - Case A: Fetching a specific set of credentials (when another integration
+                  using a set of credentials fetched by this integration.
+        - Case B: Fetching multiple credentials.
+     When:
+      - Running fetch-credentials command.
+     Then:
+    - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
+    - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2)]
+     """
+
+    client = mock_client()
+    credentials_name = f'{VAULT_NAME}/{SECRET_NAME_2}'
+    key_vaults = [VAULT_NAME]
+    secrets = [SECRET_NAME,SECRET_NAME_2]
+    expected_res = {
+
+    }
+    mock_response = json.loads(load_mock_response('get_secret.json'))
+    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME}{API_VAULT_VERSION_PARAM}'
+
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
+    requests_mock.get(url, json=mock_response)
+
+    mock_response = json.loads(load_mock_response('get_secret_2.json'))
+    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME_2}{API_VAULT_VERSION_PARAM}'
+
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
+    requests_mock.get(url, json=mock_response)
+
+    first_case_results = fetch_credentials(client,key_vaults,secrets,None)
+    second_case_results = fetch_credentials(client,key_vaults,secrets,credentials_name)
+    demisto.credentials.assert_called_with(expected_res)
+
+def test_config_vault_permission():
+    """
+     Scenario: configure Key Vault permission property.
+     Given:
+      - User has provided valid credentials.
+      - List of keys permissions.
+      - List of secrets permissions.
+      - List of storage permissions.
+     When:
+      - azure-key-vault-create-update cpmmand called.
+      - azure-key-vault-update-policy command called.
+     Then:
+      - Ensure number of items is correct.
+      - Ensure that each permissions list contains the right values.
+     """
+
+    client = mock_client()
+    keys = ['list', 'get', 'purge']
+    secrets = keys
+    certificates = []
+    storage = ['delete', 'set', 'update']
+
+    permissions = client.config_vault_permission(keys, secrets, certificates, storage)
+    assert len(permissions) == 3
+    assert permissions['keys'] == permissions['secrets']
+    assert permissions['secrets'] == ['list', 'get', 'purge']
+    assert permissions['storage'] == ['delete', 'set', 'update']
+
+
+def test_config_vault_network_acls():
+    """
+     Scenario: configure Key Vault network acls property.
+     Given:
+      - User has provided valid credentials.
+      - default action argument.
+      - bypass argument.
+      - virtual network subnet ID argument.
+      - ignore missing vnet Service endpoint argument.
+    When:
+      - azure-key-vault-create-update command called.
+
+     Then:
+      - Ensure number of items is correct.
+      - Ensure that each field contains the right values.
+     """
+
+    client = mock_client()
+    default_action = 'Allow'
+    bypass = 'None'
+    subnet_id = 'subnet'
+    ignore_missing_vnet = True
+    ip_rules = []
+    network_acl = client.config_vault_network_acls(default_action, bypass, subnet_id, ignore_missing_vnet, ip_rules)
+
+    assert len(network_acl) == 3
+    assert network_acl['defaultAction'] == default_action
+    assert network_acl['virtualNetworkRules']['id'] == subnet_id
+    assert network_acl['virtualNetworkRules']['ignoreMissingVnetServiceEndpoint'] == ignore_missing_vnet
+
+
+def test_config_vault_properties():
+    """
+     Scenario: configure Key Vault properties.
+     Given:
+      - User has provided valid credentials.
+      - Key Vault access policy.
+      - Key Vault network acl.
+    When:
+      - azure-key-vault-create-update command called.
+     Then:
+      - Ensure number of items is correct.
+      - Ensure that each field contains the right values.
+     """
+
+    client = mock_client()
+    permissions = {
+        'keys': ['list', 'get', 'purge'],
+        'secrets': ['list', 'get', 'purge']
+    }
+    network_acl = {
+        'defaultAction': 'Allow',
+        'bypass': 'AzureServices'
+    }
+
+    properties = client.config_vault_properties(
+        OBJECT_ID, TENANT_ID, True, True, True, 'standard',
+        permissions, network_acl
+    )
+
+    assert len(properties) == 7
+    assert properties['accessPolicies']['objectId'] == OBJECT_ID
+    assert properties['accessPolicies']['tenantId'] == TENANT_ID
+    assert properties['accessPolicies']['permissions'] == permissions
+    assert properties['sku']['name'] == 'standard'
+    assert properties['networkAcls'] == network_acl
