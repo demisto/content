@@ -7,10 +7,17 @@
     "url": "https://www.fileorbis.com/",
     "email": "info@fileorbis.com",
     "categories": [
-        "Network Security"
+        "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "IT",
+        "Security"
+    ],
+    "useCases": [
+        "Employee Offboarding",
+        "Identity and Access Management",
+        "IT Services"
+    ],
     "keywords": [],
     "githubUser": []
 }
