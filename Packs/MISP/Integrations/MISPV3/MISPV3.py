@@ -3,7 +3,7 @@ from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
 
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
 from pymisp.tools import GenericObjectGenerator
 import copy
 from pymisp.tools import FileObject
@@ -1363,6 +1363,54 @@ def is_tag_list_valid(tag_ids):
             raise DemistoException(f"Tag id has to be a positive integer, please change the given: '{tag}' id.")
 
 
+def create_updated_attribute_instance(demisto_args, attribute_uuid):
+    attribute_type = demisto_args.get('type')
+    distribution = demisto_args.get('distribution')
+    category = demisto_args.get('category')
+    comment = demisto_args.get('comment')
+    value = demisto_args.get('value')
+    first_seen = demisto_args.get('first_seen')
+    last_seen = demisto_args.get('last_seen')
+
+    attribute_instance = MISPAttribute()
+    attribute_instance.uuid = attribute_uuid
+    if attribute_type:
+        attribute_instance.type = attribute_type
+    if distribution:
+        attribute_instance.distribution = MISP_DISTRIBUTION_TO_IDS[distribution]
+    if category:
+        attribute_instance.category = category
+    if value:
+        attribute_instance.value = value
+    if comment:
+        attribute_instance.comment = comment
+    if first_seen:
+        attribute_instance.first_seen = first_seen
+    if last_seen:
+        attribute_instance.last_seen = last_seen
+    return attribute_instance
+
+
+def update_attribute_command(demisto_args: dict = {}):
+    attribute_uuid = demisto_args.get('attribute_uuid')
+    attribute_instance = create_updated_attribute_instance(demisto_args, attribute_uuid)
+    attribute_instance_response = PYMISP.update_attribute(attribute=attribute_instance, attribute_id=attribute_uuid)
+    if isinstance(attribute_instance_response, dict) and attribute_instance_response.get('errors'):
+        raise DemistoException(attribute_instance_response.get('errors'))
+
+    human_readable = f"## MISP update attribute\nAttribute: {attribute_uuid} was updated.\n"
+    attribute = attribute_instance_response.get('Attribute')
+    convert_timestamp_to_readable(attribute, None)
+    parsed_attribute_data = replace_keys_from_misp_to_context_data(attribute)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Attribute',
+        outputs_key_field='ID',
+        outputs=parsed_attribute_data
+    )
+
+
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get('malicious_tag_ids'))
@@ -1434,6 +1482,8 @@ def main():
             return_results(add_ip_object(args))
         elif command == 'misp-add-object':
             return_results(add_generic_object_command(args))
+        elif command == 'misp-update-attribute':
+            return_results(update_attribute_command(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
