@@ -1,0 +1,60 @@
+args:
+- default: false
+  description: Page url to scrap
+  isArray: false
+  name: page_url
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  description: Page html to scrap
+  isArray: false
+  name: page_html
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- default: false
+  description: Request parameters
+  isArray: false
+  name: params
+  required: false
+  secret: false
+- default: false
+  description: HTML Tag Navigator Tree
+  isArray: false
+  name: navigator_tree
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'False'
+  description: Ignore certificate validation errors
+  isArray: false
+  name: insecure
+  required: false
+  secret: false
+comment: An Automation Script to Web Scrap a URL or HTML Page
+commonfields:
+  id: WebScraper
+  version: -1
+enabled: false
+name: WebScraper
+outputs:
+- contextPath: WebScraper.Pages
+  description: Scraped Pages
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: aymanam/scraper:latest
+fromversion: '6.0'
