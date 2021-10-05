@@ -209,7 +209,7 @@ tasks:
       id: 25f6439f-778f-45a5-841a-53efe77d590c
       version: -1
       name: Was a matching email found?
-      description: Verify that an email object with a Message-Id that matches the InReplayTo ID of the forwarded email was found.
+      description: Verify that an email object with a Message-Id that matches the InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
