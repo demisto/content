@@ -3,7 +3,8 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     get_key_vault_command, delete_key_vault_command, \
     update_access_policy_command, get_key_command, list_keys_command, delete_key_command, delete_secret_command, \
     get_secret_command, list_secrets_command, get_certificate_command, list_certificates_command, \
-    get_certificate_policy_command, fetch_credentials
+    get_certificate_policy_command, fetch_credentials, convert_attributes_to_readable, convert_key_info_to_readable, \
+    convert_time_attributes_to_iso
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -456,43 +457,6 @@ def test_azure_key_vault_certificate_policy_get_command(requests_mock):
     assert result.outputs.get('attributes').get('enabled') is True
 
 
-def test_fetch_credentials(requests_mock):
-    """
-     Scenario: Fetch credentials command.
-     Given:
-        - Case A: Fetching a specific set of credentials (when another integration
-                  using a set of credentials fetched by this integration.
-        - Case B: Fetching multiple credentials.
-     When:
-      - Running fetch-credentials command.
-     Then:
-    - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
-    - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2)]
-     """
-
-    client = mock_client()
-    credentials_name = f'{VAULT_NAME}/{SECRET_NAME_2}'
-    key_vaults = [VAULT_NAME]
-    secrets = [SECRET_NAME,SECRET_NAME_2]
-    expected_res = {
-
-    }
-    mock_response = json.loads(load_mock_response('get_secret.json'))
-    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME}{API_VAULT_VERSION_PARAM}'
-
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
-    requests_mock.get(url, json=mock_response)
-
-    mock_response = json.loads(load_mock_response('get_secret_2.json'))
-    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME_2}{API_VAULT_VERSION_PARAM}'
-
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
-    requests_mock.get(url, json=mock_response)
-
-    first_case_results = fetch_credentials(client,key_vaults,secrets,None)
-    second_case_results = fetch_credentials(client,key_vaults,secrets,credentials_name)
-    demisto.credentials.assert_called_with(expected_res)
-
 def test_config_vault_permission():
     """
      Scenario: configure Key Vault permission property.
@@ -502,7 +466,7 @@ def test_config_vault_permission():
       - List of secrets permissions.
       - List of storage permissions.
      When:
-      - azure-key-vault-create-update cpmmand called.
+      - azure-key-vault-create-update command called.
       - azure-key-vault-update-policy command called.
      Then:
       - Ensure number of items is correct.
@@ -549,8 +513,8 @@ def test_config_vault_network_acls():
 
     assert len(network_acl) == 3
     assert network_acl['defaultAction'] == default_action
-    assert network_acl['virtualNetworkRules']['id'] == subnet_id
-    assert network_acl['virtualNetworkRules']['ignoreMissingVnetServiceEndpoint'] == ignore_missing_vnet
+    assert network_acl['virtualNetworkRules'][0]['id'] == subnet_id
+    assert network_acl['virtualNetworkRules'][0]['ignoreMissingVnetServiceEndpoint'] == ignore_missing_vnet
 
 
 def test_config_vault_properties():
@@ -583,8 +547,88 @@ def test_config_vault_properties():
     )
 
     assert len(properties) == 7
-    assert properties['accessPolicies']['objectId'] == OBJECT_ID
-    assert properties['accessPolicies']['tenantId'] == TENANT_ID
-    assert properties['accessPolicies']['permissions'] == permissions
+    assert properties['accessPolicies'][0]['objectId'] == OBJECT_ID
+    assert properties['accessPolicies'][0]['tenantId'] == TENANT_ID
+    assert properties['accessPolicies'][0]['permissions'] == permissions
     assert properties['sku']['name'] == 'standard'
     assert properties['networkAcls'] == network_acl
+
+
+def test_convert_attributes_to_readable():
+    """
+      Scenario: convert entity's attributes to readable.
+      Given:
+        - Key Vault entities' attributes.
+     When:
+       - Preparing the readable output for the users in the commands.
+      Then:
+       - Ensure number of items is correct.
+       - Ensure that each field contains the right values.
+      """
+
+    attributes = {
+        "nbf": 1493938410,
+        "exp": 1493938410,
+        "created": 1493938410,
+        "updated": 1493938410,
+        "recoveryLevel": "Recoverable+Purgeable"
+    }
+    readable_attributes = convert_attributes_to_readable(attributes)
+
+    assert len(attributes) == 5
+    assert 'should_not_be_retrieved_Before' in readable_attributes
+    assert 'expiry_time' in readable_attributes
+    assert 'create_time' in readable_attributes
+    assert 'update_time' in readable_attributes
+    assert 'recovery_level' in readable_attributes
+    assert readable_attributes['create_time'] == "2017-05-04T22:53:30"
+
+
+def test_convert_key_info_to_readable():
+    """
+      Scenario: convert key info to readable.
+      Given:
+        - Key Vault entities' attributes.
+     When:
+       - Preparing the readable output for the users in the commands.
+      Then:
+       - Ensure number of items is correct.
+       - Ensure that each field contains the right values.
+      """
+
+    key = {
+        "kid": "https://test.vault.azure.net/keys/test/78deebed173b48e48f55abf87ed4cf71",
+        "kty": "RSA",
+        "key_ops": [
+            "encrypt",
+            "decrypt",
+            "sign",
+            "verify",
+            "wrapKey",
+            "unwrapKey"
+        ],
+        "n": "xxx",
+        "e": "AQAB"
+    }
+    readable_key_info = convert_key_info_to_readable(key)
+    assert len(readable_key_info) == 5
+    assert 'key_id' in readable_key_info
+    assert 'json_web_key_type' in readable_key_info
+    assert 'key_operations' in readable_key_info
+    assert 'RSA_modulus' in readable_key_info
+    assert 'RSA_public_components' in readable_key_info
+
+
+def test_convert_time_attributes_to_iso():
+    attributes = {
+        "exp": 1493938410,
+        "created": 1493938410,
+        "updated": 1493938410,
+        "recoveryLevel": "Recoverable+Purgeable"
+    }
+    readable_time_attributes = convert_time_attributes_to_iso(attributes)
+
+    assert len(attributes) == 4
+    assert readable_time_attributes['exp'] == "2017-05-04T22:53:30"
+    assert readable_time_attributes['created'] == "2017-05-04T22:53:30"
+    assert readable_time_attributes['updated'] == "2017-05-04T22:53:30"
