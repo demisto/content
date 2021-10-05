@@ -24,10 +24,10 @@
     "threshold": 72,
     "type": "singleSelect",
     "selectValues": [
-        "Red",
-        "Amber",
-        "Green",
-        "White"
+        "RED",
+        "AMBER",
+        "GREEN",
+        "WHITE"
     ],
     "unmapped": false,
     "unsearchable": false,
