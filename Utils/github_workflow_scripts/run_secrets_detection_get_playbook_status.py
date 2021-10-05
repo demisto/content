@@ -83,24 +83,19 @@ def arguments_handler():
      """
     parser = argparse.ArgumentParser(description='Get playbook status.')
     parser.add_argument('-i', '--investigation_id', help='The investigation id of the secrets detection playbook.')
-    #parser.add_argument('-k', '--api_key', help='Gold Api key')
+    parser.add_argument('-k', '--api_key', help='Gold Api key')
     return parser.parse_args()
 
 
 def main():
     options = arguments_handler()
     investigation_id = options.investigation_id
-    # api_key = options.api_key
-    api_key = "10C1EF6CE6DD39E327CE5B327ECC5AE1"  # temp one
-    if investigation_id:
-        """
-            :param demisto_user: Username of the demisto user running the tests.
-            :param demisto_pass: Password of the demisto user running the tests.
-        """
+    api_key = options.api_key
+    if investigation_id and api_key:
         client = demisto_client.configure(base_url=GOLD_SERVER_URL, api_key=api_key, verify_ssl=False)
         check_integration(investigation_id, client)
     else:
-        print("Secrets detection playbook was failed to get investigation id")
+        print("Secrets detection playbook was failed to get investigation id or api key")
         sys.exit(1)
 
 
