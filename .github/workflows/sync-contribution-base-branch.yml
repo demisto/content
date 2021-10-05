@@ -1,8 +1,8 @@
 name: Sync contributor base branch
 on:
   schedule:
-    # runs at minute 0 of the 0th and 12th hour every day.
-    - cron:  '0 0,12 * * *'
+    # runs at minute 0 of the 0th hour every day.
+    - cron:  '0 0 * * *'
 
 jobs:
   sync_contributor_base_branch:
