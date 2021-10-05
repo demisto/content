@@ -1,8 +1,9 @@
 commonfields:
-  id: LogrhythmV2
+  id: Logrhythm v2
   version: -1
-name: LogrhythmV2
-display: Logrhythm V2
+name: Logrhythm v2
+display: Logrhythm v2
+fromversion: 5.5.0
 category: Utilities
 description: Generated description - REPLACE THIS
 configuration:
@@ -12,12 +13,12 @@ configuration:
   type: 0
   required: true
 - name: proxy
-  display: Use system proxy
+  display: Use system proxy settings
   defaultvalue: ''
   type: 8
   required: false
 - name: insecure
-  display: Trust any certificate
+  display: Trust any certificate (not secure)
   defaultvalue: ''
   type: 8
   required: false
@@ -35,6 +36,15 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -49,7 +59,7 @@ configuration:
   name: casesMaxFetch
   required: false
   type: 0
-- display: fetch incidents from type
+- display: Fetch incidents from type
   name: fetchType
   defaultvalue: Both
   type: 15
@@ -62,7 +72,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -766,22 +776,22 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
     - name: status
       description: ''
       required: false
       isArray: false
       auto: PREDEFINED
       predefined:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
     - name: owners
       description: ''
       required: false
@@ -918,11 +928,11 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
     - name: external_id
       description: ''
       required: false
@@ -1034,11 +1044,11 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
     - name: external_id
       description: ''
       required: false
@@ -2092,8 +2102,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs:
     - type: String
       contextPath: LogRhythm.List.listType
@@ -2200,24 +2210,24 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: use_patterns
       description: ''
       required: true
       isArray: false
       auto: PREDEFINED
       predefined:
-        - true
-        - false
+      - 'true'
+      - 'false'
     - name: replace_existing
       description: ''
       required: true
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: read_access
       description: ''
       required: true
@@ -2248,8 +2258,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: entity_name
       description: ''
       required: true
@@ -2260,16 +2270,16 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: does_expire
       description: ''
       required: true
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: owner
       description: ''
       required: false
@@ -3765,8 +3775,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: os-type
       description: ''
       required: false
@@ -3851,3 +3861,5 @@ script:
       description: 'The endpoint hostname.'
       required: false
       isArray: false
+tests:
+- LogrhythmV2-test
