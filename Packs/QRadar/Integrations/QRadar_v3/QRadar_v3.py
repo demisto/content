@@ -1173,7 +1173,7 @@ def reset_mirroring_events_variables(mirror_options: str):
         new_ctx[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = []
 
     print_mirror_events_stats(new_ctx, "New Long Running Container - After Mirroring Variables Reset")
-    set_integration_context(new_ctx)
+    set_to_integration_context_with_retries(new_ctx)
 
 
 def is_reset_triggered(handle_reset: bool = False):
@@ -3010,7 +3010,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
         context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
         print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense.get('id')}")
-        set_integration_context(context_data)
+        set_to_integration_context_with_retries(context_data)
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
@@ -3086,7 +3086,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
             new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: clean_updates_mirrored_offenses_ids})
 
     print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
-    set_integration_context(new_context_data)
+    set_to_integration_context_with_retries(new_context_data)
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
