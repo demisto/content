@@ -1,7 +1,5 @@
 """HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
 """
-import concurrent.futures
-import threading
 import time
 from concurrent.futures import wait
 from typing import Dict, List, Optional
@@ -15,6 +13,10 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+AF_TAGS_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
 
@@ -62,14 +64,15 @@ class Client(BaseClient):
         super().__init__(BASE_URL, verify, proxy)
         self.api_key = api_key
 
-    def get_tags(self, page_num: int=0):
+    def get_tags(self, data: Dict[str, Any], page_num: int = 0):
         res = self._http_request('POST',
                                  url_suffix='tags',
                                  headers={
                                      'apiKey': self.api_key,
                                      'Content-Type': 'application/json'
                                  },
-                                 json_data={"pageNum": page_num, "pageSize": PAGE_SIZE, "sortBy": "updated_at", "order": "desc"},
+                                 json_data=data,
+                                 timeout=30,
                                  )
         return res
 
@@ -80,6 +83,7 @@ class Client(BaseClient):
                                      'apiKey': self.api_key,
                                      'Content-Type': 'application/json'
                                  },
+                                 timeout=30,
                                  )
         return res
 
@@ -90,56 +94,124 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         results = []
-        integration_context = {}
         if is_get_command:
             page_num = 0
         else:
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context()
+            demisto.debug(f"integration_context: {str(integration_context)}")
+
             if not integration_context:
+                demisto.debug("if not integration context")
                 page_num = 0
-                time_of_first_fetch = time.time()
-                set_integration_context({'time_of_first_fetch': str(time_of_first_fetch)})
+                time_of_first_fetch = datetime.now()
+                set_integration_context({'time_of_first_fetch': time_of_first_fetch})
+                demisto.debug(f"integration_context after set: {str(get_integration_context())}")
             else:
-                page_num = int(integration_context.get('page_num'))
-        get_tags_response = self.get_tags(page_num=page_num)
+                page_num = arg_to_number(integration_context.get('page_num', 0))
+
+        get_tags_response = self.get_tags({"pageNum": page_num,
+                                           "pageSize": PAGE_SIZE,
+                                           "sortBy": "created_at"})
         tags = get_tags_response.get('tags', [])
-        # when finishing the first level fetch, calling the api with
-        # page num greater than the total pages return empty tags list.
+
+        # when finishing the "first level fetch" (getting all he tags from the feed), the next call to the api
+        # will be with a page num greater than the total pages, and the api should return an empty tags list.
         if not tags:
-            return only_updated_tags(integration_context, self)
+            return only_updated_tags(self)
+        # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
             public_tag_name = tag.get('public_tag_name', '')
-            demisto.debug(f"puvlic tag name is {public_tag_name}")
             tag_details_response = self.get_tag_details(public_tag_name)
             results.append(tag_details_response)
-            demisto.debug(f"public tag name is {public_tag_name}")
         if not is_get_command:
             page_num += 1
-            update_integration_context({'page_num': str(page_num),
-                                        'most_updated_tag': get_most_updated_tag_update_time(tags)})
+            demisto.debug("Im here before update")
+            context = get_integration_context()
+            context['page_num'] = page_num
+            # context['most_updated_tag'] = get_update_time_most_updated_tag(tags)
+            set_integration_context(context)
         return results
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_most_updated_tag_update_time(tags: list) -> str:
-    if len(tags)> 0:
-        return tags[0].get('updated_at', '').replae(' ', 'T')
+def get_update_time_most_updated_tag(tags: list) -> str:
+    # if the the order is desc than it is the first tag in the list
+    if len(tags) > 0:
+        return tags[0].get('updated_at', '').replace(' ', 'T')
     return ''
 
 
-def only_updated_tags(integration_context: Dict[str, str], client: Client) -> list:
-    response = client.get_tags()
-    tags = response.get('tags', [])
-    most_updated_tag = get_most_updated_tag_update_time(tags)
+def only_updated_tags(client: Client) -> list:
+    """
+
+    Args:
+        client:
+
+    Returns:
+    """
+
+    results = []
+    integration_context = get_integration_context()
+    # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
+    list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', []))
     time_from_last_update = integration_context.get('time_of_first_fetch')
     if time_from_last_update:
         update_integration_context({'time_of_first_fetch': ''})
     else:
         time_from_last_update = integration_context.get('most_updated_tag')
-    while most_updated_tag > time_from_last_update:
-        pass
+
+    # if there are such tags, we first get all of them and upload to demisto
+    for tag in list_of_all_updated_tags:
+        if len(results) < PAGE_SIZE:
+            results.append(client.get_tag_details(tag.get('public_tag_name')))
+        else:
+            tag.get('updated_at')
+            update_integration_context({'time_of_first_fetch': ''})
+            return results
+
+    page_num = 0
+    while True:
+        response = client.get_tags({"pageNum": page_num,
+                                    "pageSize": 200,
+                                    "sortBy": "updated_at",
+                                    "order": "desc"})
+        tags = response.get('tags', [])
+        # most_updated_tag = get_update_time_most_updated_tag(tags)
+        for tag in tags:
+            update_time = tag.get('updated_at')
+            if update_time >= time_from_last_update:
+                list_of_all_updated_tags.append(
+                    {'public_tag_name': tag.get('public_tag_name'), 'updated_at': update_time})
+            else:
+                break
+        if len(tags) < len(list_of_all_updated_tags):
+            break
+        page_num += 1
+
+    # add only PAGE_SIZE get_tag_details to results, so we wont make to many calls to the api
+    # we want to get the tags from the least updated to the most,
+    # so next time we fetch we can take the tags that have been updated from that point
+    list_index = 0
+    for tag in reversed(list_of_all_updated_tags):
+        if len(results) < PAGE_SIZE:
+            public_tag_name = tag.get('public_tag_name')
+            response = client.get_tag_details(public_tag_name)
+            results.append(response)
+            list_index += 1
+        else:
+            break
+    # delete from the list all tags that we will return this fetch
+    n = len(list_of_all_updated_tags)
+    list_of_all_updated_tags = list_of_all_updated_tags[:n-list_index]
+    # update integration context if needed
+    if list_of_all_updated_tags:
+        context = get_integration_context()
+        context['tags_need_to_be_fetched'] = list_of_all_updated_tags
+        context['time_of_first_fetch'] = datetime.now()
+        set_integration_context(context)
+    return results
 
 
 def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[str]:
@@ -182,8 +254,12 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
             fields['publications'].append({'link': url, 'title': title, 'source': source, 'timestamp': time_stamp})
     fields['aliases'] = tag_details.get('aliases')
     fields['description'] = tag.get('description')
-    fields['lastseenbysource'] = tag.get('lasthit', '')
-    fields['updateddate'] = tag.get('updated_at', '')
+    last_hit = tag.get('lasthit')
+    fields['lastseenbysource'] = datetime.strptime(last_hit, AF_TAGS_DATE_FORMAT).strftime(
+        DATE_FORMAT) if last_hit else None
+    updated_at = tag.get('updated_at')
+    fields['updateddate'] = datetime.strptime(updated_at, AF_TAGS_DATE_FORMAT).strftime(
+        DATE_FORMAT) if updated_at else None
     fields['reportedby'] = tag.get('source')
     remove_nulls_from_dictionary(fields)
     return fields
@@ -295,6 +371,7 @@ def fetch_indicators(client: Client,
             relationships = (create_relationships_for_tag(client, value_, type_, related_tags))
             if relationships:
                 indicator_obj['relationships'] = relationships
+        # TODO add group tags here
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
 
@@ -321,7 +398,8 @@ def get_indicators_command(client: Client,
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, True, tlp_color, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators,
-                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header, removeNull=True)
+                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
+                                     removeNull=True)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='',
@@ -381,6 +459,7 @@ def main():
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
             # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
             # that will be executed at the specified feed fetch interval.
+            demisto.debug("before fetch")
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
