@@ -181,7 +181,7 @@ script:
         newRequest[params.resourcename]['cartItems'] = [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': args.callbackcontactname }];
 
         //throw JSON.stringify(newRequest)
-        var res = doPost('/'+params.resourcename, newRequest);
+        var res = doPost('/'+ resourceName, newRequest);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
             throw 'Failed to create request. Error Response: ' + res.Messages;
