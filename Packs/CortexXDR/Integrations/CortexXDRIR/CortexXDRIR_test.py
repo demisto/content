@@ -428,7 +428,8 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     )
 
     args = {
-        "endpoint_id": "1111"
+        "endpoint_id": "1111",
+        "suppress_disconnected_endpoint_error": False
     }
     with pytest.raises(ValueError, match='Error: Endpoint 1111 is disconnected and therefore can not be isolated.'):
         isolate_endpoint_command(client, args)
@@ -463,6 +464,36 @@ def test_unisolate_endpoint(requests_mock):
     assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+
+
+def test_unisolate_endpoint_unconnected_machine(requests_mock):
+    from CortexXDRIR import unisolate_endpoint_command, Client
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
+        'reply': {
+            'endpoints': [
+                {
+                    'endpoint_id': '1111',
+                    "endpoint_status": "DISCONNECTED"
+                }
+            ]
+        }
+    })
+
+    unisolate_endpoint_response = load_test_data('./test_data/unisolate_endpoint.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/unisolate', json=unisolate_endpoint_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+
+    args = {
+        "endpoint_id": "1111",
+        "suppress_disconnected_endpoint_error": True
+    }
+
+    readable_output, _, _ = unisolate_endpoint_command(client, args)
+    assert readable_output == 'Warning: un-isolation action is pending for the following disconnected endpoint: 1111.'
 
 
 def test_unisolate_endpoint_pending_isolation(requests_mock):
