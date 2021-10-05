@@ -1,6 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 import copy
+
+"""
+This Script is a duplicate of Packs/Campaign/Scripts/GetCampaignIncidentsInfo with the only change of the context field
+the data is taken from. The reason is that dynamic section in layout cannot use arguments in the scripts they use.
+"""
 
 DEFAULT_HEADERS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 KEYS_FETCHED_BY_QUERY = ['status', 'severity']
@@ -28,7 +34,7 @@ SEVERITIES = {
 }
 
 
-def update_incident_with_required_keys(incidents: List, required_keys: List):
+def update_incident_with_required_keys(incidents, required_keys):
     """
         Update the given incident dict (from context) with values retrieved by GetIncidentsByQuery command
 
@@ -62,8 +68,11 @@ def convert_incident_to_hr(incident):
         :type incident: ``dict``
         :param incident: the incident to get the value from
 
-        :rtype: ``dict``
-        :return Converted incident
+        :type key: ``str``
+        :param key: the key in dict
+
+        :rtype: ``None``
+        :return None
     """
     converted_incident = copy.deepcopy(incident)
 
@@ -76,7 +85,7 @@ def convert_incident_to_hr(incident):
             converted_incident[key] = LINKABLE_ID_FORMAT.format(incident_id=converted_incident.get(key))
 
         if key == 'severity':
-            converted_incident[key] = SEVERITIES.get(converted_incident.get(key), 'None')
+            converted_incident[key] = SEVERITIES.get(converted_incident.get(key), '')
 
         if key == 'similarity':
             if str(converted_incident[key])[0] == '1':
@@ -96,10 +105,10 @@ def convert_incident_to_hr(incident):
 
 
 def get_campaign_incidents_from_context():
-    return demisto.get(demisto.context(), 'EmailCampaign.incidents')
+    return demisto.get(demisto.context(), 'EmailCampaign.LowerSimilarityIncidents')
 
 
-def get_incidents_info_md(incidents: List, fields_to_display: List = None):
+def get_incidents_info_md(incidents, fields_to_display=None):
     """
         Get the campaign incidents relevant info in MD table
 
