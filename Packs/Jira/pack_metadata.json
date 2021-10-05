@@ -13,6 +13,7 @@
     "tags": [
         "Incident Mirroring"
     ],
+    "itemPrefix": ["Jira"],
     "useCases": [],
     "keywords": []
 }
