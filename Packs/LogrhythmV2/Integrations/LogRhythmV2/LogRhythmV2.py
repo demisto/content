@@ -22,7 +22,7 @@ USER_HEADERS = ['id', 'fullName', 'userType', 'firstName', 'lastName', 'recordSt
                 'objectPermissions']
 
 LIST_HEADERS = ['guid', 'name', 'listType', 'status', 'shortDescription', 'id', 'entityName', 'dateCreated',
-                'writeAccess', 'readAccess']
+                'owner', 'writeAccess', 'readAccess']
 
 ALARM_STATUS = {0: 'New',
                 1: 'Opened',
@@ -1013,7 +1013,7 @@ class Client(BaseClient):
         if alarm_status:
             alarm_status = next((id for id, status in ALARM_STATUS.items() if status == alarm_status))
 
-        params = assign_params(alarmStatus=alarm_status, offset=offset, count=count, caseAssociation=case_association,
+        params = assign_params(alarmStatus=alarm_status, offset=offset, count=count, associatedCases=case_association,
                                alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
 
         response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
@@ -1091,11 +1091,10 @@ class Client(BaseClient):
 
     def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
                            owners=None, tags=None, text=None, evidence_type=None, reference_id=None, external_id=None,
-                           entity_number=None, offset=None, count=None):
+                           offset=None, count=None):
 
         params = assign_params(priority=priority, statusNumber=status, ownerNumber=owners, tagNumber=tags, text=text,
-                               evidenceType=evidence_type, referenceId=reference_id, externalId=external_id,
-                               entityNumber=entity_number)
+                               evidenceType=evidence_type, referenceId=reference_id, externalId=external_id)
         headers = self._headers
 
         headers['orderBy'] = 'dateCreated'
@@ -1113,9 +1112,9 @@ class Client(BaseClient):
             cases = next((case for case in cases if case.get('id') == case_id), None)
         return cases
 
-    def case_create_request(self, name, priority, external_id, due_date, summary, entity_id):
+    def case_create_request(self, name, priority, external_id, due_date, summary):
         data = {"name": name, "priority": int(priority), "externalId": external_id, "dueDate": due_date,
-                "summary": summary, "entityId": int(entity_id) if entity_id else None}
+                "summary": summary}
 
         # delete empty values
         data = {k: v for k, v in data.items() if v}
@@ -1335,9 +1334,11 @@ class Client(BaseClient):
 
         return response
 
-    def list_summary_create_update_request(self, listtype, name, enabled, usepatterns, replaceexisting, readaccess, writeaccess, restrictedread, entityname, needtonotify, doesexpire):
-        data = {"autoImportOption": {"enabled": enabled, "replaceExisting": replaceexisting, "usePatterns": usepatterns}, "doesExpire": doesexpire, "entityName": entityname,
-                "listType": listtype, "name": name, "needToNotify": needtonotify, "readAccess": readaccess, "restrictedRead": restrictedread, "writeAccess": writeaccess}
+    def list_summary_create_update_request(self, list_type, name, enabled, use_patterns, replace_existing, read_access,
+                                           write_access, restricted_read, entity_name, need_to_notify, does_expire, owner):
+        data = {"autoImportOption": {"enabled": enabled, "replaceExisting": replace_existing, "usePatterns": use_patterns},
+                "doesExpire": does_expire, "entityName": entity_name,"owner": int(owner),
+                "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access, "restrictedRead": restricted_read, "writeAccess": write_access}
         headers = self._headers
 
         response = self._http_request('POST', 'lr-admin-api/lists', json_data=data, headers=headers)
@@ -1345,12 +1346,14 @@ class Client(BaseClient):
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
-        params = assign_params(maxItemsThreshold=max_items)
         headers = self._headers
 
-        response = self._http_request('GET', f'lr-admin-api/lists/{list_id}', params=params, headers=headers)
-
-        return response
+        raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}', headers=headers)
+        response = raw_response.copy()
+        if max_items:
+            items = response.get('items')[:int(max_items)]
+            response['items'] = items
+        return response, raw_response
 
     def list_items_add_request(self, list_id, items):
         if type(items) is dict:
@@ -1675,12 +1678,11 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     evidence_type = args.get('evidence_type')
     reference_id = args.get('reference_id')
     external_id = args.get('external_id')
-    entity_number = args.get('entity_number')
     offset = args.get('offset')
     count = args.get('count')
 
     cases = client.cases_list_request(case_id, timestamp_filter_type, timestamp, priority, status, owners, tags,
-                                         text, evidence_type, reference_id, external_id, entity_number, offset, count)
+                                         text, evidence_type, reference_id, external_id, offset, count)
 
     if cases:
         hr = tableToMarkdown('Cases', cases, headerTransform=pascalToSpace)
@@ -1704,9 +1706,8 @@ def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     external_id = args.get('external_id')
     due_date = args.get('due_date')
     summary = args.get('summary')
-    entity_id = args.get('entity_id')
 
-    response = client.case_create_request(name, priority, external_id, due_date, summary, entity_id)
+    response = client.case_create_request(name, priority, external_id, due_date, summary)
 
     hr = tableToMarkdown('Case created successfully', response, headerTransform=pascalToSpace)
 
@@ -2095,23 +2096,29 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    listtype = args.get('listtype')
+    list_type = args.get('list_type')
     name = args.get('name')
-    enabled = args.get('enabled')
-    usepatterns = args.get('usepatterns')
-    replaceexisting = args.get('replaceexisting')
-    readaccess = args.get('readaccess')
-    writeaccess = args.get('writeaccess')
-    restrictedread = args.get('restrictedread')
-    entityname = args.get('entityname')
-    needtonotify = args.get('needtonotify')
-    doesexpire = args.get('doesexpire')
+    enabled = argToBoolean(args.get('enabled'))
+    use_patterns = argToBoolean(args.get('use_patterns'))
+    replace_existing = argToBoolean(args.get('replace_existing'))
+    read_access = args.get('read_access')
+    write_access = args.get('write_access')
+    restricted_read = argToBoolean(args.get('restricted_read'))
+    entity_name = args.get('entity_name')
+    need_to_notify = argToBoolean(args.get('need_to_notify'))
+    does_expire = argToBoolean(args.get('does_expire'))
+    owner = args.get('owner')
 
     response = client.list_summary_create_update_request(
-        listtype, name, enabled, usepatterns, replaceexisting, readaccess, writeaccess, restrictedread, entityname, needtonotify, doesexpire)
+        list_type, name, enabled, use_patterns, replace_existing, read_access, write_access, restricted_read, entity_name,
+        need_to_notify, does_expire, owner)
+
+    hr = tableToMarkdown(f'List created successfully', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+
     command_results = CommandResults(
-        outputs_prefix='LogrhythmV2.ListSummaryCreateUpdate',
-        outputs_key_field='',
+        readable_output=hr,
+        outputs_prefix='LogRhythm.List',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -2123,8 +2130,8 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
     list_id = args.get('list_id')
     max_items = args.get('max_items')
 
-    raw_response = client.list_details_and_items_get_request(list_id, max_items)
-    response = raw_response.copy()
+    response, raw_response = client.list_details_and_items_get_request(list_id, max_items)
+    response = response.copy()
     list_items = response.get('items')
     response.pop('items', None)
 

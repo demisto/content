@@ -813,10 +813,6 @@ script:
       description: ''
       required: false
       isArray: false
-    - name: entity_number
-      description: ''
-      required: false
-      isArray: false
     - name: offset
       defaultValue: "0"
       description: ''
@@ -936,10 +932,6 @@ script:
       required: false
       isArray: false
     - name: summary
-      description: ''
-      required: false
-      isArray: false
-    - name: entity_id
       description: ''
       required: false
       isArray: false
@@ -2175,50 +2167,171 @@ script:
   - name: lr-list-summary-create-update
     description: ''
     arguments:
-    - name: listtype
+    - name: list_type
       description: ''
-      required: false
+      required: true
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Application
+      - Classification
+      - CommonEvent
+      - Host
+      - Location
+      - MsgSource
+      - MsgSourceType
+      - MPERule
+      - Network
+      - User
+      - GeneralValue
+      - Entity
+      - RootEntity
+      - IP
+      - IPRange
+      - Identity
     - name: name
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: enabled
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: usepatterns
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: use_patterns
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+        - true
+        - false
+    - name: replace_existing
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: read_access
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Private
+      - PublicAll
+      - PublicGlobalAdmin
+      - PublicGlobalAnalystq
+      - PublicRestrictedAnalyst
+      - PublicRestrictedAdmin
+    - name: write_access
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Private
+      - PublicAll
+      - PublicGlobalAdmin
+      - PublicGlobalAnalystq
+      - PublicRestrictedAnalyst
+      - PublicRestrictedAdmin
+    - name: restricted_read
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: entity_name
+      description: ''
+      required: true
+      isArray: false
+    - name: need_to_notify
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: does_expire
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: owner
       description: ''
       required: false
       isArray: false
-    - name: replaceexisting
+    outputs:
+    - contextPath: LogRhythm.List.listType
       description: ''
-      required: false
-      isArray: false
-    - name: readaccess
+      type: String
+    - contextPath: LogRhythm.List.status
       description: ''
-      required: false
-      isArray: false
-    - name: writeaccess
+      type: String
+    - contextPath: LogRhythm.List.name
       description: ''
-      required: false
-      isArray: false
-    - name: restrictedread
+      type: String
+    - contextPath: LogRhythm.List.useContext
       description: ''
-      required: false
-      isArray: false
-    - name: entityname
+      type: String
+    - contextPath: LogRhythm.List.autoImportOption.enabled
       description: ''
-      required: false
-      isArray: false
-    - name: needtonotify
+      type: Boolean
+    - contextPath: LogRhythm.List.autoImportOption.usePatterns
       description: ''
-      required: false
-      isArray: false
-    - name: doesexpire
+      type: Boolean
+    - contextPath: LogRhythm.List.autoImportOption.replaceExisting
       description: ''
-      required: false
-      isArray: false
+      type: Boolean
+    - contextPath: LogRhythm.List.id
+      description: ''
+      type: Number
+    - contextPath: LogRhythm.List.guid
+      description: ''
+      type: String
+    - contextPath: LogRhythm.List.dateCreated
+      description: ''
+      type: Date
+    - contextPath: LogRhythm.List.dateUpdated
+      description: ''
+      type: Date
+    - contextPath: LogRhythm.List.readAccess
+      description: ''
+      type: String
+    - contextPath: LogRhythm.List.writeAccess
+      description: ''
+      type: String
+    - contextPath: LogRhythm.List.restrictedRead
+      description: ''
+      type: Boolean
+    - contextPath: LogRhythm.List.entityName
+      description: ''
+      type: String
+    - contextPath: LogRhythm.List.entryCount
+      description: ''
+      type: Number
+    - contextPath: LogRhythm.List.needToNotify
+      description: ''
+      type: Boolean
+    - contextPath: LogRhythm.List.doesExpire
+      description: ''
+      type: Boolean
+    - contextPath: LogRhythm.List.owner
+      description: ''
+      type: Number
   - name: lr-list-details-and-items-get
     description: ''
     arguments:
@@ -2227,6 +2340,7 @@ script:
       required: true
       isArray: false
     - name: max_items
+      defaultValue: "100"
       description: ''
       required: false
       isArray: false
