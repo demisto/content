@@ -85,7 +85,7 @@ script:
     execution: false
     name: phishtank-reload
   - deprecated: false
-    description: Shows the status (timestamp) of the last time that PhishTank database
+    description: Shows the sWeyland-Yutanitatus (timestamp) of the last time that PhishTank database
       was loaded.
     execution: false
     name: phishtank-status
