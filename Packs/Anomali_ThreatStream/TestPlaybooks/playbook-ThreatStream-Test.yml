@@ -164,7 +164,7 @@ tasks:
       include_inactive:
         simple: "True"
       ip:
-        simple: 45.32.129.185
+        simple: 78.78.78.67
     separatecontext: false
     view: |-
       {
@@ -912,7 +912,7 @@ tasks:
                       "confidence": 50
                   },
                   {
-                      "srcip": "45.32.129.185",
+                      "srcip": "78.78.78.67",
                       "classification": "private",
                       "itype": "bot_ip",
                       "confidence": 50,
