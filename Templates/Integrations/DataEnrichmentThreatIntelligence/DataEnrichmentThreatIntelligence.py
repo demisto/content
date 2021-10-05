@@ -1,5 +1,6 @@
-import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
+import demistomock as demisto
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, Optional, List, Union
