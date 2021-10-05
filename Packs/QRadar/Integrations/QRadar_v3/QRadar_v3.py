@@ -1224,7 +1224,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(get_integration_context().get(LAST_FETCH_KEY, '0')),
+                last_highest_id=int(json.loads(get_integration_context().get(LAST_FETCH_KEY, '0'))),
                 incident_type=params.get('incident_type'),
                 mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
