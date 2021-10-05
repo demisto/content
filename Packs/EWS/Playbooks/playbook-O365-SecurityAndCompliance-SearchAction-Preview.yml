@@ -12,7 +12,7 @@ inputs:
   playbookInputQuery: null
 - key: polling_interval
   value:
-    simple: "3"
+    simple: "1"
   required: false
   description: Search action polling interval.
   playbookInputQuery: null
