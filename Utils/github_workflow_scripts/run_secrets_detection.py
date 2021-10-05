@@ -40,7 +40,7 @@ def main():
     res_json = res.json()[0]
     if res_json:
         investigation_id = res_json.get("id")
-        print(f'HERE: {investigation_id}')
+        print(f'HERE: {investigation_id}\n')
         return investigation_id
     else:
         print("Secrets detection playbook was failed")
