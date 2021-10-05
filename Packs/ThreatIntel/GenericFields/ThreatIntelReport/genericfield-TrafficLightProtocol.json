@@ -22,7 +22,13 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "Red",
+        "Amber",
+        "Green",
+        "White"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

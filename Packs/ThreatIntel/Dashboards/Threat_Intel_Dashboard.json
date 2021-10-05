@@ -235,6 +235,12 @@
 						{
 							"displayed": true,
 							"isDefault": true,
+							"key": "name",
+							"width": 120
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
 							"key": "Status",
 							"width": 120
 						},
@@ -247,13 +253,7 @@
 						{
 							"displayed": true,
 							"isDefault": true,
-							"key": "Name",
-							"width": 120
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "Creation Date",
+							"key": "created",
 							"width": 275
 						}
 					]
