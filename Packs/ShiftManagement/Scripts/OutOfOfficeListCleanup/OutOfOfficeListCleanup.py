@@ -41,8 +41,8 @@ def main():
         set_list_res = demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(new_list_data)})
         if isError(set_list_res):
             return_error(f'Failed to update the list {list_name}: {str(get_error(set_list_res))}')
-        remove = '\n'.join(remove)
-        return_results(f'The following Users were removed from the Out of Office List {list_name}:\n{remove}')
+        removed_users = '\n'.join(remove)
+        return_results(f'The following Users were removed from the Out of Office List {list_name}:\n{removed_users}')
     else:
         return_results(f'No users removed from the list {list_name}')
 
