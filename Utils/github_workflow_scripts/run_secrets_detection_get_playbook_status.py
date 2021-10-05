@@ -19,15 +19,14 @@ DEFAULT_INTERVAL = 20
 GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
 
 
-# returns current investigation playbook state - 'inprogress'/'failed'/'completed'
-def __get_investigation_playbook_state(client, inv_id):
+def get_playbook_state(client, inv_id):
+    # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
     try:
         investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
                                                                          path='/inv-playbook/' + inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except ApiException:
-        logging.exception(
-            'Failed to get investigation playbook state, error trying to communicate with demisto server')
+        logging.exception('Failed to get investigation playbook state, error trying to communicate with demisto server')
         return PB_Status.FAILED
 
     try:
@@ -37,21 +36,18 @@ def __get_investigation_playbook_state(client, inv_id):
         return PB_Status.NOT_SUPPORTED_VERSION
 
 
-# wait for playbook to finish run
-# return playbook status
-def check_integration(investigation_id, client):
-    logging.info(f'Investigation URL: {GOLD_SERVER_URL}/#/WorkPlan/{investigation_id}')
+def wait_for_playbook_to_complete(investigation_id, client):
+    investigation_url = f'{GOLD_SERVER_URL}/#/WorkPlan/{investigation_id}'
+    logging.info(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT
-    i = 1
+
     # wait for playbook to finish run
     while True:
         # give playbook time to run
         time.sleep(1)
-
         try:
-            # fetch status
-            playbook_state = __get_investigation_playbook_state(client, investigation_id)
+            playbook_state = get_playbook_state(client, investigation_id)
         except demisto_client.demisto_api.rest.ApiException:
             playbook_state = 'Pending'
             client = demisto_client.configure(base_url=client.api_client.configuration.host,
@@ -61,17 +57,16 @@ def check_integration(investigation_id, client):
             break
 
         if playbook_state == PB_Status.FAILED:
-            print(f' Secrets playbook was failed as secrets were found. To investigate go to: <>')
+            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url} and'
+                  f'see SecretsDetection.FoundSecrets in the Context data.')
             sys.exit(1)
 
         if time.time() > timeout:
-            print(f' Secrets playbook timeout reached. To investigate go to: <>')
+            print(f'Secrets playbook timeout reached. To investigate go to: {investigation_url}')
             sys.exit(1)
 
-        i = i + 1
-
     if playbook_state == PB_Status.COMPLETED:
-        print("Secrets playbook finished successfully, no secrets were found. ")
+        print("Secrets playbook finished successfully, no secrets were found.")
 
 
 def arguments_handler():
@@ -93,7 +88,7 @@ def main():
     api_key = options.api_key
     if investigation_id and api_key:
         client = demisto_client.configure(base_url=GOLD_SERVER_URL, api_key=api_key, verify_ssl=False)
-        check_integration(investigation_id, client)
+        wait_for_playbook_to_complete(investigation_id, client)
     else:
         print("Secrets detection playbook was failed to get investigation id or api key")
         sys.exit(1)
