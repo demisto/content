@@ -47,7 +47,7 @@ class Client(BaseClient):
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
         if not isinstance(user_data["emails"], list):
             user_data["emails"] = [user_data["emails"]]
-        if not isinstance(user_data["phoneNumbers"], list):
+        if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
             user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
         res = self._http_request(
             method='POST',
