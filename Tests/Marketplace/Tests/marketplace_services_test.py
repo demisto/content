@@ -1060,9 +1060,11 @@ class TestImagesUpload:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_file = mocker.MagicMock()
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
+        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
+                                                           [dummy_file],
+                                                           True)
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1095,9 +1097,10 @@ class TestImagesUpload:
         dummy_storage_bucket = mocker.MagicMock()
         dummy_file = mocker.MagicMock()
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
+        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file], True)
+        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
+                                                           [dummy_file], True)
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1138,7 +1141,8 @@ class TestImagesUpload:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
         images_data = {"TestPack": {BucketUploadFlow.INTEGRATIONS: [os.path.basename(blob_name)]}}
-        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, images_data)
+        task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                         GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
     def test_copy_author_image(self, mocker, dummy_pack):
@@ -1156,7 +1160,8 @@ class TestImagesUpload:
         blob_name = "content/packs/TestPack/Author_image.png"
         images_data = {"TestPack": {BucketUploadFlow.AUTHOR: True}}
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket, images_data)
+        task_status = dummy_pack.copy_author_image(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                   GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
 
@@ -1196,7 +1201,8 @@ class TestCopyAndUploadToStorage:
         }
 
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
-            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict,
+            GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert not task_status
         assert not skipped_pack
@@ -1214,7 +1220,9 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {})
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {},
+                                                                          GCPConfig.CONTENT_PACKS_PATH,
+                                                                          GCPConfig.BUILD_BASE_PATH)
         assert task_status
         assert skipped_pack
 
@@ -1241,7 +1249,7 @@ class TestCopyAndUploadToStorage:
                     BucketUploadFlow.AGGREGATED: "False",
                     BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
                 }
-            }
+            }, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert task_status
         assert not skipped_pack
