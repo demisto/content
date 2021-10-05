@@ -4,7 +4,8 @@ import json
 from pytz import utc
 
 from Grafana import Client, change_key, keys_to_lowercase, decapitalize, calculate_fetch_start_time, parse_alerts, \
-    alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state, set_time_to_epoch_millisecond
+    alert_to_incident, filter_alerts_by_time, filter_alerts_by_id, reduce_incidents_to_limit, set_state, \
+    set_time_to_epoch_millisecond
 from freezegun import freeze_time
 from CommonServerPython import urljoin
 

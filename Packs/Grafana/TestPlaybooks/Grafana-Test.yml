@@ -130,7 +130,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Grafana.Alert.dashboardSlug
+              simple: Grafana.Alert.dashboardName
             iscontext: true
       - - operator: isNotEmpty
           left:
