@@ -23,10 +23,10 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, email):
+    def get_user(self, username):
         uri = '/Users'
         query_params = {
-            'filter': f'email eq {email}'
+            'filter': f'userName eq {username}'
         }
 
         res = self._http_request(
@@ -483,7 +483,7 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, attr='username')
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {
