@@ -10,6 +10,9 @@ import traceback
 from datetime import datetime, timedelta
 import os
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 ''' GLOBALS/PARAMS '''
 FETCHES_INCIDENTS = ''
 FETCH_TIME = ''
@@ -1043,9 +1046,6 @@ def main():
     global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, PASSWORD, SERVER, \
         SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
 
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
     params = demisto.params()
 
     FETCHES_INCIDENTS = params.get('isFetch')
@@ -1064,13 +1064,12 @@ def main():
     # Service base URL
     BASE_URL = SERVER + '/CherwellAPI/'
 
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-    LOG('Command being called is %s' % (demisto.command()))
-
     try:
         handle_proxy()
 
         command = demisto.command()
+        demisto.debug(f'Command being called is {command}')
+
         commands = {
             'cherwell-create-business-object': create_business_object_command,
             'cherwell-update-business-object': update_business_object_command,
@@ -1102,13 +1101,8 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        if demisto.command() == 'fetch-incidents':
-            raise Exception(e)
-        message = f'Unexpected error: {e}, traceback: {traceback.format_exc()}'
-        LOG(message)
-        LOG(str(e))
-        LOG.print_log()
-        return_error(message)
+        message = f'Unexpected error: {e}.'
+        return_error(message, error=traceback.format_exc())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
