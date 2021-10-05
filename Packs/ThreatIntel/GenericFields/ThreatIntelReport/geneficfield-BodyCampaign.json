@@ -1,9 +1,12 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Campaign"
+    ],
     "caseInsensitive": true,
-    "cliName": "modified",
-    "id": "generic_ThreatIntelReport_modified",
-    "name": "Modified",
+    "cliName": "bodycampaign",
+    "id": "generic_ThreatIntelReport_bodycampaign",
+    "name": "Body Campaign",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -19,7 +22,8 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "date",
+    "type": "markdown",
+    "template": "**Overview**\n\n\n**Threat Type**\n\n\n**Origin**\n\n\n**Targets**\n\n\n**Previous Attacks**\n\n",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

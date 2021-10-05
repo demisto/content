@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "comment",
-    "id": "generic_ThreatIntelReport_comment",
-    "name": "Comment",
+    "cliName": "cvss",
+    "id": "generic_ThreatIntelReport_cvss",
+    "name": "CVSS",
     "closeForm": false,
     "content": true,
     "editForm": true,
