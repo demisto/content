@@ -162,23 +162,11 @@ script:
                     args.purpose
                 ],
                 Title: args.title,
+                CallbackContactName: args.callbackcontactname,
+                ContactName: args.contactname,
+                cartItems: [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': args.callbackcontactname }]
             }
         };
-
-        if (args.callbackcontactname) {
-            newRequest[params.resourcename]['CallbackContactName'] = args.callbackcontactname;
-        }
-        if (args.contactname) {
-            newRequest[params.resourcename]['ContactName'] = args.contactname;
-        }
-        if (args.title) {
-            newRequest[params.resourcename]['Title'] = args.title;
-        }
-        if (args.purpose) {
-             newRequest[params.resourcename]['Purpose'] = args.purpose;
-        }
-
-        newRequest[params.resourcename]['cartItems'] = [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': args.callbackcontactname }];
 
         //throw JSON.stringify(newRequest)
         var res = doPost('/'+ resourceName, newRequest);
