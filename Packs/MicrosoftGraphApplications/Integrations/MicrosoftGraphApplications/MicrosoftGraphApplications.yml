@@ -29,9 +29,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Applications integration to manage authorized
+description: Use the Azure Active Directory Applications integration to manage authorized
   applications.
-display: Microsoft Graph Applications
+display: Azure Active Directory Applications
 name: MicrosoftGraphApplications
 script:
   commands:
@@ -260,7 +260,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.24037
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test

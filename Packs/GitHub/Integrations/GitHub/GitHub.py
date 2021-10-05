@@ -6,13 +6,14 @@ import copy
 import json
 from datetime import datetime
 from typing import Any, Union
-
+import codecs
 import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+BASE_URL: str
 USER: str
 TOKEN: str
 PRIVATE_KEY: str
@@ -30,8 +31,6 @@ PULLS_SUFFIX: str
 FILE_SUFFIX: str
 HEADERS: dict
 
-BASE_URL = 'https://api.github.com'
-
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
                  'Closed_by', 'Assignees', 'Labels']
@@ -42,6 +41,8 @@ FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
 PROJECTS_PREVIEW = 'application/vnd.github.inertia-preview+json'
 
+DEFAULT_PAGE_SIZE = 50
+DEFAULT_PAGE_NUMBER = 1
 ''' HELPER FUNCTIONS '''
 
 
@@ -1836,6 +1837,102 @@ def fetch_incidents_command_rec(start_time, last_time, page=1):
     return incidents, last_time
 
 
+def get_path_data():
+    """
+    Get path data from given relative file path, repository and organization corresponding to branch name if given.
+    Returns:
+        Outputs to XSOAR.
+    """
+    args = demisto.args()
+
+    relative_path: str = args.get('relative_path', '')
+    repo: str = args.get('repository') or REPOSITORY
+    organization: str = args.get('organization') or USER
+    branch_name: Optional[str] = args.get('branch_name')
+
+    url_suffix = f'/repos/{organization}/{repo}/contents/{relative_path}'
+    url_suffix = f'{url_suffix}?ref={branch_name}' if branch_name else url_suffix
+
+    headers = {
+        'Authorization': "Bearer " + TOKEN,
+        'Accept': 'application/vnd.github.VERSION.object',
+    }
+    try:
+        raw_response = http_request(method="GET", url_suffix=url_suffix, headers=headers)
+    except DemistoException as e:
+        if '[404]' in str(e):
+            err_msg = 'Could not find path.'
+            if branch_name:
+                err_msg += f' Make sure branch {branch_name} exists.'
+            err_msg += f' Make sure relative path {relative_path} is correct.'
+            raise DemistoException(err_msg)
+        raise e
+
+    # Content is given as str of base64, need to encode and decode in order to retrieve its human readable content.
+    file_data = copy.deepcopy(raw_response)
+    if 'content' in file_data:
+        file_data['content'] = codecs.decode(file_data.get('content', '').encode(), 'base64').decode('utf-8')
+    # Links are duplications of the Git/HTML/URL. Deleting duplicate data from context.
+    file_data.pop('_links', None)
+    for entry in file_data.get('entries', []):
+        entry.pop('_links', None)
+
+    results = CommandResults(
+        outputs_prefix='GitHub.PathData',
+        outputs_key_field='url',
+        outputs=file_data,
+        readable_output=tableToMarkdown(f'File Data For File {relative_path}', file_data, removeNull=True),
+        raw_response=raw_response,
+    )
+    return_results(results)
+
+
+def github_releases_list_command():
+    """
+    Gets releases data of given repository in given organization.
+    Returns:
+        CommandResults data.
+    """
+    args: Dict[str, Any] = demisto.args()
+
+    repo: str = args.get('repository') or REPOSITORY
+    organization: str = args.get('organization') or USER
+    page_number: Optional[int] = arg_to_number(args.get('page'))
+    page_size: Optional[int] = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+    if (page_number or page_size) and limit:
+        raise DemistoException('page_number and page_size arguments cannot be given with limit argument.\n'
+                               'If limit is given, please do not use page or page_size arguments.')
+
+    results: List[Dict] = []
+    if limit:
+        page_number = 1
+        page_size = 100
+        while len(results) < limit:
+            url_suffix: str = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
+            response = http_request(method='GET', url_suffix=url_suffix)
+            # No more releases to bring from GitHub services.
+            if not response:
+                break
+            results.extend(response)
+            page_number += 1
+
+        results = results[:limit]
+    else:
+        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
+        page_number = page_number if page_number else DEFAULT_PAGE_NUMBER
+        url_suffix = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
+        results = http_request(method='GET', url_suffix=url_suffix)
+
+    result: CommandResults = CommandResults(
+        outputs_prefix='GitHub.Release',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(f'Releases Data Of {repo}', results, removeNull=True)
+    )
+    return_results(result)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1891,10 +1988,13 @@ COMMANDS = {
     'GitHub-create-release': create_release_command,
     'Github-list-issue-events': get_issue_events_command,
     'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
+    'GitHub-get-path-data': get_path_data,
+    'GitHub-releases-list': github_releases_list_command,
 }
 
 
 def main():
+    global BASE_URL
     global USER
     global TOKEN
     global PRIVATE_KEY
@@ -1913,6 +2013,7 @@ def main():
     global HEADERS
 
     params = demisto.params()
+    BASE_URL = params.get('url', 'https://api.github.com')
     USER = params.get('user')
     TOKEN = params.get('token', '')
     creds: dict = params.get('credentials', {})

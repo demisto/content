@@ -938,6 +938,71 @@ def update_account_password_policy(args, aws_client):
         demisto.results("The Account Password Policy was updated")
 
 
+def list_role_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'RoleName': args.get('roleName')}
+    response = client.list_role_policies(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Roles(val.RoleName && val.RoleName === obj.RoleName).Policies':
+            response.get('PolicyNames')}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Role Policies for {}'.format(args.get('roleName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
+def get_role_policy(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'RoleName': args.get('roleName'),
+        'PolicyName': args.get('policyName')
+    }
+    response = client.get_role_policy(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Roles(val.RoleName && val.RoleName === obj.RoleName)':
+            response}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Role Policy for {}'.format(args.get('roleName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
+def get_policy(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'PolicyArn': args.get('policyArn')
+    }
+    response = client.get_policy(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Policy(val.PolicyName && val.PolicyName === obj.PolicyName)':
+            response.get('Policy')}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Policy for {}'.format(args.get('policyArn'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
 def test_function(aws_client):
     client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
@@ -1058,6 +1123,12 @@ def main():
             get_account_password_policy(args, aws_client)
         elif command == 'aws-iam-update-account-password-policy':
             update_account_password_policy(args, aws_client)
+        elif command == 'aws-iam-list-role-policies':
+            list_role_policies(args, aws_client)
+        elif command == 'aws-iam-get-role-policy':
+            get_role_policy(args, aws_client)
+        elif command == 'aws-iam-get-policy':
+            get_policy(args, aws_client)
 
     except Exception as e:
         LOG(str(e))

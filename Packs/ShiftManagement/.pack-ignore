@@ -1,3 +1,9 @@
 
 [file:incidentfield-Shift_open_incidents.json]
 ignore=IF100
+
+[file:dashboard-Shift_Management_.json]
+ignore=BA113,BA112
+
+[file:incidentfield-Shift_manager_briefing.json]
+ignore=BA113

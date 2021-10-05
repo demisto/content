@@ -1,0 +1,1744 @@
+category: IT Services
+commonfields:
+  id: AnsibleOpenSSL
+  version: -1
+configuration:
+- additionalinfo: The credentials to associate with the instance. SSH keys can be
+    configured using the credential manager.
+  display: Username
+  name: creds
+  required: true
+  type: 9
+- additionalinfo: The default port to use if one is not specified in the commands
+    `host` argument.
+  defaultvalue: 22
+  display: Default SSH Port
+  name: port
+  required: true
+  type: 0
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should
+    be interacted with concurrently.
+  defaultvalue: '4'
+  display: Concurrency Factor
+  name: concurrency
+  required: true
+  type: 0
+- display: Escalate Privileges
+  additionalinfo: |
+    Ansible allows you to ‘become’ another user, different from the user that
+    logged into the machine (remote user).
+  name: become
+  required: true
+  type: 15
+  options:
+  - "Yes"
+  - "No"
+  defaultvalue: 'Yes'
+- display: Privilege Escalation Method
+  additionalinfo: Which privilege escalation method should be used.
+  name: become_method
+  required: true
+  type: 15
+  options:
+  - "sudo"
+  - "su"
+  - "doas"
+  defaultvalue: 'sudo'
+- display: Privilege Escalation User
+  additionalinfo: Set the user you become through privilege escalation
+  name: become_user
+  required: false
+  type: 0
+  defaultvalue: 'root'
+- display: Privileges Escalation Password
+  additionalinfo: Set the privilege escalation password. If not set, will use the
+    same as SSH password.
+  name: become_password
+  required: false
+  type: 4
+description: Control OpenSSL on a remote Linux hosts
+display: Ansible OpenSSL
+fromversion: 6.0.0
+name: AnsibleOpenSSL
+script:
+  commands:
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the certificate should exist or not, taking action if the
+        state is different from what is stated.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Remote absolute path where the generated certificate file should
+        be created or is already located.
+      name: path
+      required: true
+    - auto: PREDEFINED
+      description: 'Name of the provider to use to generate/retrieve the OpenSSL certificate.
+        The `assertonly` provider will not generate files and fail if the certificate
+        file is missing. The `assertonly` provider has been deprecated in Ansible
+        2.9 and will be removed in Ansible 2.13. Please see the examples on how to
+        emulate it with `openssl_certificate_info`, `openssl_csr_info`, `openssl_privatekey_info`
+        and `assert`. The `entrust` provider was added for Ansible 2.9 and requires
+        credentials for the `https://www.entrustdatacard.com/products/categories/ssl-certificates,Entrust
+        Certificate Services` (ECS) API. Required if `state` is `present`.'
+      name: provider
+      predefined:
+      - acme
+      - assertonly
+      - entrust
+      - ownca
+      - selfsigned
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Generate the certificate, even if it already exists.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'Path to the Certificate Signing Request (CSR) used to generate
+        this certificate. This is not required in `assertonly` mode.'
+      name: csr_path
+    - description: Path to the private key to use when signing the certificate.
+      name: privatekey_path
+    - description: 'The passphrase for the `privatekey_path`. This is required if
+        the private key is password protected.'
+      name: privatekey_passphrase
+    - defaultValue: '3'
+      description: 'Version of the `selfsigned` certificate. Nowadays it should almost
+        always be `3`. This is only used by the `selfsigned` provider.'
+      name: selfsigned_version
+    - defaultValue: sha256
+      description: 'Digest algorithm to be used when self-signing the certificate.
+        This is only used by the `selfsigned` provider.'
+      name: selfsigned_digest
+    - defaultValue: +0s
+      description: 'The point in time the certificate is valid from. Time can be specified
+        either as relative time or as absolute timestamp. Time will always be interpreted
+        as UTC. Valid format is `[+-]timespec | ASN.1 TIME` where timespec can be
+        an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`. Note that if using relative
+        time this module is NOT idempotent. If this value is not specified, the certificate
+        will start being valid from now. This is only used by the `selfsigned` provider.'
+      name: selfsigned_not_before
+    - defaultValue: +3650d
+      description: 'The point in time at which the certificate stops being valid.
+        Time can be specified either as relative time or as absolute timestamp. Time
+        will always be interpreted as UTC. Valid format is `[+-]timespec | ASN.1 TIME`
+        where timespec can be an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`.
+        Note that if using relative time this module is NOT idempotent. If this value
+        is not specified, the certificate will stop being valid 10 years from now.
+        This is only used by the `selfsigned` provider.'
+      name: selfsigned_not_after
+    - auto: PREDEFINED
+      defaultValue: create_if_not_provided
+      description: 'Whether to create the Subject Key Identifier (SKI) from the public
+        key. A value of `create_if_not_provided` (default) only creates a SKI when
+        the CSR does not provide one. A value of `always_create` always creates a
+        SKI. If the CSR provides one, that one is ignored. A value of `never_create`
+        never creates a SKI. If the CSR provides one, that one is used. This is only
+        used by the `selfsigned` provider. Note that this is only supported if the
+        `cryptography` backend is used!'
+      name: selfsigned_create_subject_key_identifier
+      predefined:
+      - create_if_not_provided
+      - always_create
+      - never_create
+    - description: 'Remote absolute path of the CA (Certificate Authority) certificate.
+        This is only used by the `ownca` provider.'
+      name: ownca_path
+    - description: 'Path to the CA (Certificate Authority) private key to use when
+        signing the certificate. This is only used by the `ownca` provider.'
+      name: ownca_privatekey_path
+    - description: 'The passphrase for the `ownca_privatekey_path`. This is only used
+        by the `ownca` provider.'
+      name: ownca_privatekey_passphrase
+    - defaultValue: sha256
+      description: 'The digest algorithm to be used for the `ownca` certificate. This
+        is only used by the `ownca` provider.'
+      name: ownca_digest
+    - defaultValue: '3'
+      description: 'The version of the `ownca` certificate. Nowadays it should almost
+        always be `3`. This is only used by the `ownca` provider.'
+      name: ownca_version
+    - defaultValue: +0s
+      description: 'The point in time the certificate is valid from. Time can be specified
+        either as relative time or as absolute timestamp. Time will always be interpreted
+        as UTC. Valid format is `[+-]timespec | ASN.1 TIME` where timespec can be
+        an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`. Note that if using relative
+        time this module is NOT idempotent. If this value is not specified, the certificate
+        will start being valid from now. This is only used by the `ownca` provider.'
+      name: ownca_not_before
+    - defaultValue: +3650d
+      description: 'The point in time at which the certificate stops being valid.
+        Time can be specified either as relative time or as absolute timestamp. Time
+        will always be interpreted as UTC. Valid format is `[+-]timespec | ASN.1 TIME`
+        where timespec can be an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`.
+        Note that if using relative time this module is NOT idempotent. If this value
+        is not specified, the certificate will stop being valid 10 years from now.
+        This is only used by the `ownca` provider.'
+      name: ownca_not_after
+    - auto: PREDEFINED
+      defaultValue: create_if_not_provided
+      description: 'Whether to create the Subject Key Identifier (SKI) from the public
+        key. A value of `create_if_not_provided` (default) only creates a SKI when
+        the CSR does not provide one. A value of `always_create` always creates a
+        SKI. If the CSR provides one, that one is ignored. A value of `never_create`
+        never creates a SKI. If the CSR provides one, that one is used. This is only
+        used by the `ownca` provider. Note that this is only supported if the `cryptography`
+        backend is used!'
+      name: ownca_create_subject_key_identifier
+      predefined:
+      - create_if_not_provided
+      - always_create
+      - never_create
+    - auto: PREDEFINED
+      defaultValue: 'Yes'
+      description: 'Create a Authority Key Identifier from the CA''s certificate.
+        If the CSR provided a authority key identifier, it is ignored. The Authority
+        Key Identifier is generated from the CA certificate''s Subject Key Identifier,
+        if available. If it is not available, the CA certificate''s public key will
+        be used. This is only used by the `ownca` provider. Note that this is only
+        supported if the `cryptography` backend is used!'
+      name: ownca_create_authority_key_identifier
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The path to the accountkey for the `acme` provider. This is only
+        used by the `acme` provider.'
+      name: acme_accountkey_path
+    - description: 'The path to the ACME challenge directory that is served on `http://<HOST>:80/.well-known/acme-challenge/`
+        This is only used by the `acme` provider.'
+      name: acme_challenge_path
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Include the intermediate certificate to the generated certificate
+        This is only used by the `acme` provider. Note that this is only available
+        for older versions of `acme-tiny`. New versions include the chain automatically,
+        and setting `acme_chain` to `yes` results in an error.'
+      name: acme_chain
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'A list of algorithms that you would accept the certificate to
+        be signed with (e.g. [''sha256WithRSAEncryption'', ''sha512WithRSAEncryption'']).
+        This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: signature_algorithms
+    - description: 'The key/value pairs that must be present in the issuer name field
+        of the certificate. If you need to specify more than one value with the same
+        key, use a list as value. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: issuer
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'If set to `yes`, the `issuer` field must contain only these values.
+        This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: issuer_strict
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The key/value pairs that must be present in the subject name field
+        of the certificate. If you need to specify more than one value with the same
+        key, use a list as value. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: subject
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'If set to `yes`, the `subject` field must contain only these values.
+        This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: subject_strict
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Checks if the certificate is expired/not expired at the time the
+        module is executed. This is only used by the `assertonly` provider. This option
+        is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: has_expired
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The version of the certificate. Nowadays it should almost always
+        be 3. This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: version
+    - description: 'The certificate must be valid at this point in time. The timestamp
+        is formatted as an ASN.1 TIME. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: valid_at
+    - description: 'The certificate must be invalid at this point in time. The timestamp
+        is formatted as an ASN.1 TIME. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: invalid_at
+    - description: 'The certificate must start to become valid at this point in time.
+        The timestamp is formatted as an ASN.1 TIME. This is only used by the `assertonly`
+        provider. This option is deprecated since Ansible 2.9 and will be removed
+        with the `assertonly` provider in Ansible 2.13. For alternatives, see the
+        example on replacing `assertonly`.'
+      name: not_before
+    - description: 'The certificate must expire at this point in time. The timestamp
+        is formatted as an ASN.1 TIME. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: not_after
+    - description: 'The certificate must still be valid at this relative time offset
+        from now. Valid format is `[+-]timespec | number_of_seconds` where timespec
+        can be an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`. Note that if using
+        this parameter, this module is NOT idempotent. This is only used by the `assertonly`
+        provider. This option is deprecated since Ansible 2.9 and will be removed
+        with the `assertonly` provider in Ansible 2.13. For alternatives, see the
+        example on replacing `assertonly`.'
+      name: valid_in
+    - description: 'The `key_usage` extension field must contain all these values.
+        This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: key_usage
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'If set to `yes`, the `key_usage` extension field must contain
+        only these values. This is only used by the `assertonly` provider. This option
+        is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: key_usage_strict
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The `extended_key_usage` extension field must contain all these
+        values. This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: extended_key_usage
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'If set to `yes`, the `extended_key_usage` extension field must
+        contain only these values. This is only used by the `assertonly` provider.
+        This option is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: extended_key_usage_strict
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The `subject_alt_name` extension field must contain these values.
+        This is only used by the `assertonly` provider. This option is deprecated
+        since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      isArray: true
+      name: subject_alt_name
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'If set to `yes`, the `subject_alt_name` extension field must contain
+        only these values. This is only used by the `assertonly` provider. This option
+        is deprecated since Ansible 2.9 and will be removed with the `assertonly`
+        provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: subject_alt_name_strict
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Create a backup file including a timestamp so you can get the
+        original certificate back if you overwrote it with a new one by accident.
+        This is not used by the `assertonly` provider. This option is deprecated since
+        Ansible 2.9 and will be removed with the `assertonly` provider in Ansible
+        2.13. For alternatives, see the example on replacing `assertonly`.'
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: STANDARD_SSL
+      description: 'Specify the type of certificate requested. This is only used by
+        the `entrust` provider.'
+      name: entrust_cert_type
+      predefined:
+      - STANDARD_SSL
+      - ADVANTAGE_SSL
+      - UC_SSL
+      - EV_SSL
+      - WILDCARD_SSL
+      - PRIVATE_SSL
+      - PD_SSL
+      - CDS_ENT_LITE
+      - CDS_ENT_PRO
+      - SMIME_ENT
+    - description: 'The email of the requester of the certificate (for tracking purposes).
+        This is only used by the `entrust` provider. This is required if the provider
+        is `entrust`.'
+      name: entrust_requester_email
+    - description: 'The name of the requester of the certificate (for tracking purposes).
+        This is only used by the `entrust` provider. This is required if the provider
+        is `entrust`.'
+      name: entrust_requester_name
+    - description: 'The phone number of the requester of the certificate (for tracking
+        purposes). This is only used by the `entrust` provider. This is required if
+        the provider is `entrust`.'
+      name: entrust_requester_phone
+    - description: 'The username for authentication to the Entrust Certificate Services
+        (ECS) API. This is only used by the `entrust` provider. This is required if
+        the provider is `entrust`.'
+      name: entrust_api_user
+    - description: 'The key (password) for authentication to the Entrust Certificate
+        Services (ECS) API. This is only used by the `entrust` provider. This is required
+        if the provider is `entrust`.'
+      name: entrust_api_key
+    - description: 'The path to the client certificate used to authenticate to the
+        Entrust Certificate Services (ECS) API. This is only used by the `entrust`
+        provider. This is required if the provider is `entrust`.'
+      name: entrust_api_client_cert_path
+    - description: 'The path to the private key of the client certificate used to
+        authenticate to the Entrust Certificate Services (ECS) API. This is only used
+        by the `entrust` provider. This is required if the provider is `entrust`.'
+      name: entrust_api_client_cert_key_path
+    - defaultValue: +365d
+      description: 'The point in time at which the certificate stops being valid.
+        Time can be specified either as relative time or as an absolute timestamp.
+        A valid absolute time format is `ASN.1 TIME` such as `2019-06-18`. A valid
+        relative time format is `[+-]timespec` where timespec can be an integer +
+        `[w | d | h | m | s]`, such as `+365d` or `+32w1d2h`). Time will always be
+        interpreted as UTC. Note that only the date (day, month, year) is supported
+        for specifying the expiry date of the issued certificate. The full date-time
+        is adjusted to EST (GMT -5:00) before issuance, which may result in a certificate
+        with an expiration date one day earlier than expected if a relative time is
+        used. The minimum certificate lifetime is 90 days, and maximum is three years.
+        If this value is not specified, the certificate will stop being valid 365
+        days the date of issue. This is only used by the `entrust` provider.'
+      name: entrust_not_after
+    - defaultValue: https://cloud.entrust.net/EntrustCloud/documentation/cms-api-2.1.0.yaml
+      description: 'The path to the specification file defining the Entrust Certificate
+        Services (ECS) API configuration. You can use this to keep a local copy of
+        the specification to avoid downloading it every time the module is used. This
+        is only used by the `entrust` provider.'
+      name: entrust_api_specification_path
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate and/or check OpenSSL certificates\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_module.html"
+    name: openssl-certificate
+    outputs:
+    - contextPath: OpenSSL.OpensslCertificate.filename
+      description: Path to the generated Certificate
+      type: string
+    - contextPath: OpenSSL.OpensslCertificate.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Remote absolute path where the certificate file is loaded from.
+      name: path
+      required: true
+    - description: 'A dict of names mapping to time specifications. Every time specified
+        here will be checked whether the certificate is valid at this point. See the
+        `valid_at` return value for informations on the result. Time can be specified
+        either as relative time or as absolute timestamp. Time will always be interpreted
+        as UTC. Valid format is `[+-]timespec | ASN.1 TIME` where timespec can be
+        an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`, and ASN.1 TIME (i.e.
+        pattern `YYYYMMDDHHMMSSZ`). Note that all timestamps will be treated as being
+        in UTC.'
+      isArray: true
+      name: valid_at
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    description: "Provide information of OpenSSL X.509 certificates\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_info_module.html"
+    name: openssl-certificate-info
+    outputs:
+    - contextPath: OpenSSL.OpensslCertificateInfo.expired
+      description: Whether the certificate is expired (i.e. `notAfter` is in the past)
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.basic_constraints
+      description: Entries in the `basic_constraints` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.basic_constraints_critical
+      description: Whether the `basic_constraints` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.extended_key_usage
+      description: Entries in the `extended_key_usage` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.extended_key_usage_critical
+      description: Whether the `extended_key_usage` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.extensions_by_oid
+      description: Returns a dictionary for every extension OID
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.key_usage
+      description: Entries in the `key_usage` extension, or `none` if extension is
+        not present.
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.key_usage_critical
+      description: Whether the `key_usage` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.subject_alt_name
+      description: Entries in the `subject_alt_name` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.subject_alt_name_critical
+      description: Whether the `subject_alt_name` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_must_staple
+      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_must_staple_critical
+      description: Whether the `ocsp_must_staple` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCertificateInfo.issuer
+      description: 'The certificate''s issuer. Note that for repeated values, only
+        the last one will be returned.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.issuer_ordered
+      description: The certificate's issuer as an ordered list of tuples.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.subject
+      description: 'The certificate''s subject as a dictionary. Note that for repeated
+        values, only the last one will be returned.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.subject_ordered
+      description: The certificate's subject as an ordered list of tuples.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.not_after
+      description: '`notAfter` date as ASN.1 TIME'
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.not_before
+      description: '`notBefore` date as ASN.1 TIME'
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.public_key
+      description: Certificate's public key in PEM format
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.public_key_fingerprints
+      description: 'Fingerprints of certificate''s public key. For every hash algorithm
+        available, the fingerprint is computed.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.signature_algorithm
+      description: The signature algorithm used to sign the certificate.
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.serial_number
+      description: The certificate's serial number.
+      type: number
+    - contextPath: OpenSSL.OpensslCertificateInfo.version
+      description: The certificate version.
+      type: number
+    - contextPath: OpenSSL.OpensslCertificateInfo.valid_at
+      description: For every time stamp provided in the `valid_at` option, a boolean
+        whether the certificate is valid at that point in time or not.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.subject_key_identifier
+      description: 'The certificate''s subject key identifier. The identifier is returned
+        in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier`
+        extension is not present.'
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.authority_key_identifier
+      description: 'The certificate''s authority key identifier. The identifier is
+        returned in hexadecimal, with `:` used to separate bytes. Is `none` if the
+        `AuthorityKeyIdentifier` extension is not present.'
+      type: string
+    - contextPath: OpenSSL.OpensslCertificateInfo.authority_cert_issuer
+      description: 'The certificate''s authority cert issuer as a list of general
+        names. Is `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCertificateInfo.authority_cert_serial_number
+      description: 'The certificate''s authority cert serial number. Is `none` if
+        the `AuthorityKeyIdentifier` extension is not present.'
+      type: number
+    - contextPath: OpenSSL.OpensslCertificateInfo.ocsp_uri
+      description: The OCSP responder URI, if included in the certificate. Will be
+        `none` if no OCSP responder URI is included.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the certificate signing request should exist or not, taking
+        action if the state is different from what is stated.
+      name: state
+      predefined:
+      - absent
+      - present
+    - defaultValue: sha256
+      description: The digest used when signing the certificate signing request with
+        the private key.
+      name: digest
+    - description: 'The path to the private key to use when signing the certificate
+        signing request. Required if `state` is `present`.'
+      name: privatekey_path
+    - description: 'The passphrase for the private key. This is required if the private
+        key is password protected.'
+      name: privatekey_passphrase
+    - defaultValue: '1'
+      description: 'The version of the certificate signing request. The only allowed
+        value according to `RFC 2986,https://tools.ietf.org/html/rfc2986#section-4.1`
+        is 1.'
+      name: version
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Should the certificate signing request be forced regenerated by
+        this ansible module.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: The name of the file into which the generated OpenSSL certificate
+        signing request will be written.
+      name: path
+      required: true
+    - description: 'Key/value pairs that will be present in the subject name field
+        of the certificate signing request. If you need to specify more than one value
+        with the same key, use a list as value.'
+      isArray: true
+      name: subject
+    - description: The countryName field of the certificate signing request subject.
+      name: country_name
+    - description: The stateOrProvinceName field of the certificate signing request
+        subject.
+      name: state_or_province_name
+    - description: The localityName field of the certificate signing request subject.
+      name: locality_name
+    - description: The organizationName field of the certificate signing request subject.
+      name: organization_name
+    - description: The organizationalUnitName field of the certificate signing request
+        subject.
+      name: organizational_unit_name
+    - description: The commonName field of the certificate signing request subject.
+      name: common_name
+    - description: The emailAddress field of the certificate signing request subject.
+      name: email_address
+    - description: 'SAN extension to attach to the certificate signing request. This
+        can either be a ''comma separated string'' or a YAML list. Values must be
+        prefixed by their options. (i.e., `email`, `URI`, `DNS`, `RID`, `IP`, `dirName`,
+        `otherName` and the ones specific to your CA) Note that if no SAN is specified,
+        but a common name, the common name will be added as a SAN except if `useCommonNameForSAN`
+        is set to `false`. More at `https://tools.ietf.org/html/rfc5280#section-4.2.1.6`.'
+      isArray: true
+      name: subject_alt_name
+    - description: Should the subjectAltName extension be considered as critical.
+      name: subject_alt_name_critical
+    - auto: PREDEFINED
+      defaultValue: 'Yes'
+      description: If set to `yes`, the module will fill the common name in for `subject_alt_name`
+        with `DNS:` prefix if no SAN is specified.
+      name: use_common_name_for_san
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: This defines the purpose (e.g. encipherment, signature, certificate
+        signing) of the key contained in the certificate.
+      isArray: true
+      name: key_usage
+    - description: Should the keyUsage extension be considered as critical.
+      name: key_usage_critical
+    - description: Additional restrictions (e.g. client authentication, server authentication)
+        on the allowed purposes for which the public key may be used.
+      isArray: true
+      name: extended_key_usage
+    - description: Should the extkeyUsage extension be considered as critical.
+      name: extended_key_usage_critical
+    - description: Indicates basic constraints, such as if the certificate is a CA.
+      isArray: true
+      name: basic_constraints
+    - description: Should the basicConstraints extension be considered as critical.
+      name: basic_constraints_critical
+    - description: Indicates that the certificate should contain the OCSP Must Staple
+        extension (`https://tools.ietf.org/html/rfc7633`).
+      name: ocsp_must_staple
+    - description: 'Should the OCSP Must Staple extension be considered as critical
+        Note that according to the RFC, this extension should not be marked as critical,
+        as old clients not knowing about OCSP Must Staple are required to reject such
+        certificates (see `https://tools.ietf.org/html/rfc7633#section-4`).'
+      name: ocsp_must_staple_critical
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Create a backup file including a timestamp so you can get the original
+        CSR back if you overwrote it with a new one by accident.
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Create the Subject Key Identifier from the public key. Please
+        note that commercial CAs can ignore the value, respectively use a value of
+        their own choice instead. Specifying this option is mostly useful for self-signed
+        certificates or for own CAs. Note that this is only supported if the `cryptography`
+        backend is used!'
+      name: create_subject_key_identifier
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The subject key identifier as a hex string, where two bytes are
+        separated by colons. Example: `00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33`
+        Please note that commercial CAs ignore this value, respectively use a value
+        of their own choice. Specifying this option is mostly useful for self-signed
+        certificates or for own CAs. Note that this option can only be used if `create_subject_key_identifier`
+        is `no`. Note that this is only supported if the `cryptography` backend is
+        used!'
+      name: subject_key_identifier
+    - description: 'The authority key identifier as a hex string, where two bytes
+        are separated by colons. Example: `00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33`
+        If specified, `authority_cert_issuer` must also be specified. Please note
+        that commercial CAs ignore this value, respectively use a value of their own
+        choice. Specifying this option is mostly useful for self-signed certificates
+        or for own CAs. Note that this is only supported if the `cryptography` backend
+        is used! The `AuthorityKeyIdentifier` will only be added if at least one of
+        `authority_key_identifier`, `authority_cert_issuer` and `authority_cert_serial_number`
+        is specified.'
+      name: authority_key_identifier
+    - description: 'Names that will be present in the authority cert issuer field
+        of the certificate signing request. Values must be prefixed by their options.
+        (i.e., `email`, `URI`, `DNS`, `RID`, `IP`, `dirName`, `otherName` and the
+        ones specific to your CA) Example: `DNS:ca.example.org` If specified, `authority_key_identifier`
+        must also be specified. Please note that commercial CAs ignore this value,
+        respectively use a value of their own choice. Specifying this option is mostly
+        useful for self-signed certificates or for own CAs. Note that this is only
+        supported if the `cryptography` backend is used! The `AuthorityKeyIdentifier`
+        will only be added if at least one of `authority_key_identifier`, `authority_cert_issuer`
+        and `authority_cert_serial_number` is specified.'
+      isArray: true
+      name: authority_cert_issuer
+    - description: 'The authority cert serial number. Note that this is only supported
+        if the `cryptography` backend is used! Please note that commercial CAs ignore
+        this value, respectively use a value of their own choice. Specifying this
+        option is mostly useful for self-signed certificates or for own CAs. The `AuthorityKeyIdentifier`
+        will only be added if at least one of `authority_key_identifier`, `authority_cert_issuer`
+        and `authority_cert_serial_number` is specified.'
+      name: authority_cert_serial_number
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate OpenSSL Certificate Signing Request (CSR)\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_module.html"
+    name: openssl-csr
+    outputs:
+    - contextPath: OpenSSL.OpensslCsr.privatekey
+      description: Path to the TLS/SSL private key the CSR was generated for
+      type: string
+    - contextPath: OpenSSL.OpensslCsr.filename
+      description: Path to the generated Certificate Signing Request
+      type: string
+    - contextPath: OpenSSL.OpensslCsr.subject
+      description: A list of the subject tuples attached to the CSR
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsr.subjectAltName
+      description: The alternative names this CSR is valid for
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsr.keyUsage
+      description: Purpose for which the public key may be used
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsr.extendedKeyUsage
+      description: Additional restriction on the public key purposes
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsr.basicConstraints
+      description: Indicates if the certificate belongs to a CA
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsr.ocsp_must_staple
+      description: Indicates whether the certificate has the OCSP Must Staple feature
+        enabled
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsr.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Remote absolute path where the CSR file is loaded from.
+      name: path
+      required: true
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    description: "Provide information of OpenSSL Certificate Signing Requests (CSR)\n\
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_info_module.html"
+    name: openssl-csr-info
+    outputs:
+    - contextPath: OpenSSL.OpensslCsrInfo.signature_valid
+      description: 'Whether the CSR''s signature is valid. In case the check returns
+        `no`, the module will fail.'
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.basic_constraints
+      description: Entries in the `basic_constraints` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.basic_constraints_critical
+      description: Whether the `basic_constraints` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.extended_key_usage
+      description: Entries in the `extended_key_usage` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.extended_key_usage_critical
+      description: Whether the `extended_key_usage` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.extensions_by_oid
+      description: Returns a dictionary for every extension OID
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.key_usage
+      description: Entries in the `key_usage` extension, or `none` if extension is
+        not present.
+      type: string
+    - contextPath: OpenSSL.OpensslCsrInfo.key_usage_critical
+      description: Whether the `key_usage` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.subject_alt_name
+      description: Entries in the `subject_alt_name` extension, or `none` if extension
+        is not present.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.subject_alt_name_critical
+      description: Whether the `subject_alt_name` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.ocsp_must_staple
+      description: '`yes` if the OCSP Must Staple extension is present, `none` otherwise.'
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.ocsp_must_staple_critical
+      description: Whether the `ocsp_must_staple` extension is critical.
+      type: boolean
+    - contextPath: OpenSSL.OpensslCsrInfo.subject
+      description: 'The CSR''s subject as a dictionary. Note that for repeated values,
+        only the last one will be returned.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.subject_ordered
+      description: The CSR's subject as an ordered list of tuples.
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.public_key
+      description: CSR's public key in PEM format
+      type: string
+    - contextPath: OpenSSL.OpensslCsrInfo.public_key_fingerprints
+      description: 'Fingerprints of CSR''s public key. For every hash algorithm available,
+        the fingerprint is computed.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.subject_key_identifier
+      description: 'The CSR''s subject key identifier. The identifier is returned
+        in hexadecimal, with `:` used to separate bytes. Is `none` if the `SubjectKeyIdentifier`
+        extension is not present.'
+      type: string
+    - contextPath: OpenSSL.OpensslCsrInfo.authority_key_identifier
+      description: 'The CSR''s authority key identifier. The identifier is returned
+        in hexadecimal, with `:` used to separate bytes. Is `none` if the `AuthorityKeyIdentifier`
+        extension is not present.'
+      type: string
+    - contextPath: OpenSSL.OpensslCsrInfo.authority_cert_issuer
+      description: 'The CSR''s authority cert issuer as a list of general names. Is
+        `none` if the `AuthorityKeyIdentifier` extension is not present.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslCsrInfo.authority_cert_serial_number
+      description: 'The CSR''s authority cert serial number. Is `none` if the `AuthorityKeyIdentifier`
+        extension is not present.'
+      type: number
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the parameters should exist or not, taking action if the
+        state is different from what is stated.
+      name: state
+      predefined:
+      - absent
+      - present
+    - defaultValue: '4096'
+      description: Size (in bits) of the generated DH-params.
+      name: size
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Should the parameters be regenerated even it it already exists.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: Name of the file in which the generated parameters will be saved.
+      name: path
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Create a backup file including a timestamp so you can get the original
+        DH params back if you overwrote them with new ones by accident.
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate OpenSSL Diffie-Hellman Parameters\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_dhparam_module.html"
+    name: openssl-dhparam
+    outputs:
+    - contextPath: OpenSSL.OpensslDhparam.size
+      description: Size (in bits) of the Diffie-Hellman parameters.
+      type: number
+    - contextPath: OpenSSL.OpensslDhparam.filename
+      description: Path to the generated Diffie-Hellman parameters.
+      type: string
+    - contextPath: OpenSSL.OpensslDhparam.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: export
+      description: '`export` or `parse` a PKCS#12.'
+      name: action
+      predefined:
+      - export
+      - parse
+    - description: List of other certificates to include. Pre 2.8 this parameter was
+        called `ca_certificates`
+      isArray: true
+      name: other_certificates
+    - description: 'The path to read certificates and private keys from. Must be in
+        PEM format.'
+      name: certificate_path
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Should the file be regenerated even if it already exists.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: Specifies the friendly name for the certificate and private key.
+      name: friendly_name
+    - defaultValue: '2048'
+      description: Number of times to repeat the encryption step.
+      name: iter_size
+    - defaultValue: '1'
+      description: Number of times to repeat the MAC step.
+      name: maciter_size
+    - description: The PKCS#12 password.
+      name: passphrase
+    - description: Filename to write the PKCS#12 file to.
+      name: path
+      required: true
+    - description: Passphrase source to decrypt any input private keys with.
+      name: privatekey_passphrase
+    - description: File to read private key from.
+      name: privatekey_path
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the file should exist or not. All parameters except `path`
+        are ignored when state is `absent`.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: PKCS#12 file path to parse.
+      name: src
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Create a backup file including a timestamp so you can get the original
+        output file back if you overwrote it with a new one by accident.
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate OpenSSL PKCS#12 archive\n Further documentation available\
+      \ at https://docs.ansible.com/ansible/2.9/modules/openssl_pkcs12_module.html"
+    name: openssl-pkcs12
+    outputs:
+    - contextPath: OpenSSL.OpensslPkcs12.filename
+      description: Path to the generate PKCS#12 file.
+      type: string
+    - contextPath: OpenSSL.OpensslPkcs12.privatekey
+      description: Path to the TLS/SSL private key the public key was generated from.
+      type: string
+    - contextPath: OpenSSL.OpensslPkcs12.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the private key should exist or not, taking action if the
+        state is different from what is stated.
+      name: state
+      predefined:
+      - absent
+      - present
+    - defaultValue: '4096'
+      description: Size (in bits) of the TLS/SSL key to generate.
+      name: size
+    - auto: PREDEFINED
+      defaultValue: RSA
+      description: 'The algorithm used to generate the TLS/SSL private key. Note that
+        `ECC`, `X25519`, `X448`, `Ed25519` and `Ed448` require the `cryptography`
+        backend. `X25519` needs cryptography 2.5 or newer, while `X448`, `Ed25519`
+        and `Ed448` require cryptography 2.6 or newer. For `ECC`, the minimal cryptography
+        version required depends on the `curve` option.'
+      name: type
+      predefined:
+      - DSA
+      - ECC
+      - Ed25519
+      - Ed448
+      - RSA
+      - X25519
+      - X448
+    - auto: PREDEFINED
+      description: 'Note that not all curves are supported by all versions of `cryptography`.
+        For maximal interoperability, `secp384r1` or `secp256r1` should be used. We
+        use the curve names as defined in the `IANA registry for TLS,https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8`.'
+      name: curve
+      predefined:
+      - secp384r1
+      - secp521r1
+      - secp224r1
+      - secp192r1
+      - secp256r1
+      - secp256k1
+      - brainpoolP256r1
+      - brainpoolP384r1
+      - brainpoolP512r1
+      - sect571k1
+      - sect409k1
+      - sect283k1
+      - sect233k1
+      - sect163k1
+      - sect571r1
+      - sect409r1
+      - sect283r1
+      - sect233r1
+      - sect163r2
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Should the key be regenerated even if it already exists.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: Name of the file in which the generated TLS/SSL private key will
+        be written. It will have 0600 mode.
+      name: path
+      required: true
+    - description: The passphrase for the private key.
+      name: passphrase
+    - description: 'The cipher to encrypt the private key. (Valid values can be found
+        by running `openssl list -cipher-algorithms` or `openssl list-cipher-algorithms`,
+        depending on your OpenSSL version.) When using the `cryptography` backend,
+        use `auto`.'
+      name: cipher
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Create a backup file including a timestamp so you can get the original
+        private key back if you overwrote it with a new one by accident.
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate OpenSSL private keys\n Further documentation available\
+      \ at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_module.html"
+    name: openssl-privatekey
+    outputs:
+    - contextPath: OpenSSL.OpensslPrivatekey.size
+      description: Size (in bits) of the TLS/SSL private key.
+      type: number
+    - contextPath: OpenSSL.OpensslPrivatekey.type
+      description: Algorithm used to generate the TLS/SSL private key.
+      type: string
+    - contextPath: OpenSSL.OpensslPrivatekey.curve
+      description: Elliptic curve used to generate the TLS/SSL private key.
+      type: string
+    - contextPath: OpenSSL.OpensslPrivatekey.filename
+      description: Path to the generated TLS/SSL private key file.
+      type: string
+    - contextPath: OpenSSL.OpensslPrivatekey.fingerprint
+      description: 'The fingerprint of the public key. Fingerprint will be generated
+        for each `hashlib.algorithms` available. The PyOpenSSL backend requires PyOpenSSL
+        >= 16.0 for meaningful output.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslPrivatekey.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: Remote absolute path where the private key file is loaded from.
+      name: path
+      required: true
+    - description: The passphrase for the private key.
+      name: passphrase
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Whether to return private key data. Only set this to `yes` when
+        you want private information about this key to leave the remote machine. WARNING:
+        you have to make sure that private key data isn''t accidentally logged!'
+      name: return_private_key_data
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library. Please note that the `pyopenssl` backend has been deprecated in Ansible
+        2.9, and will be removed in Ansible 2.13. From that point on, only the `cryptography`
+        backend will be available.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    description: "Provide information for OpenSSL private keys\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_info_module.html"
+    name: openssl-privatekey-info
+    outputs:
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_load_key
+      description: Whether the module was able to load the private key from disk
+      type: boolean
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.can_parse_key
+      description: Whether the module was able to parse the private key
+      type: boolean
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.key_is_consistent
+      description: 'Whether the key is consistent. Can also return `none` next to
+        `yes` and `no`, to indicate that consistency couldn''t be checked. In case
+        the check returns `no`, the module will fail.'
+      type: boolean
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key
+      description: Private key's public key in PEM format
+      type: string
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_key_fingerprints
+      description: 'Fingerprints of private key''s public key. For every hash algorithm
+        available, the fingerprint is computed.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.type
+      description: 'The key''s type. One of `RSA`, `DSA`, `ECC`, `Ed25519`, `X25519`,
+        `Ed448`, or `X448`. Will start with `unknown` if the key type cannot be determined.'
+      type: string
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.public_data
+      description: Public key data. Depends on key type.
+      type: unknown
+    - contextPath: OpenSSL.OpensslPrivatekeyInfo.private_data
+      description: Private key data. Depends on key type.
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Whether the public key should exist or not, taking action if the
+        state is different from what is stated.
+      name: state
+      predefined:
+      - absent
+      - present
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Should the key be regenerated even it it already exists.
+      name: force
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: PEM
+      description: The format of the public key.
+      name: format
+      predefined:
+      - OpenSSH
+      - PEM
+    - description: Name of the file in which the generated TLS/SSL public key will
+        be written.
+      name: path
+      required: true
+    - description: 'Path to the TLS/SSL private key from which to generate the public
+        key. Required if `state` is `present`.'
+      name: privatekey_path
+    - description: The passphrase for the private key.
+      name: privatekey_passphrase
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Create a backup file including a timestamp so you can get the original
+        public key back if you overwrote it with a different one by accident.
+      name: backup
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    - description: 'The permissions the resulting file or directory should have. For
+        those used to `/usr/bin/chmod` remember that modes are actually octal numbers.
+        You must either add a leading zero so that Ansible''s YAML parser knows it
+        is an octal number (like `0644` or `01777`) or quote it (like `''644''` or
+        `''1777''`) so Ansible receives a string and can do its own conversion from
+        string into number. Giving Ansible a number without following one of these
+        rules will end up with a decimal number which will have unexpected results.
+        As of Ansible 1.8, the mode may be specified as a symbolic mode (for example,
+        `u+rwx` or `u=rw,g=r,o=r`).'
+      name: mode
+    - description: Name of the user that should own the file/directory, as would be
+        fed to `chown`.
+      name: owner
+    - description: Name of the group that should own the file/directory, as would
+        be fed to `chown`.
+      name: group
+    - description: 'The user part of the SELinux file context. By default it uses
+        the `system` policy, where applicable. When set to `_default`, it will use
+        the `user` portion of the policy if available.'
+      name: seuser
+    - description: 'The role part of the SELinux file context. When set to `_default`,
+        it will use the `role` portion of the policy if available.'
+      name: serole
+    - description: 'The type part of the SELinux file context. When set to `_default`,
+        it will use the `type` portion of the policy if available.'
+      name: setype
+    - defaultValue: s0
+      description: 'The level part of the SELinux file context. This is the MLS/MCS
+        attribute, sometimes known as the `range`. When set to `_default`, it will
+        use the `level` portion of the policy if available.'
+      name: selevel
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Influence when to use atomic operation to prevent data corruption
+        or inconsistent reads from the target file. By default this module uses atomic
+        operations to prevent data corruption or inconsistent reads from the target
+        files, but sometimes systems are configured or just broken in ways that prevent
+        this. One example is docker mounted files, which cannot be updated atomically
+        from inside the container and can only be written in an unsafe manner. This
+        option allows Ansible to fall back to unsafe methods of updating files when
+        atomic operations fail (however, it doesn''t force Ansible to perform unsafe
+        writes). IMPORTANT! Unsafe writes are subject to race conditions and can lead
+        to data corruption.'
+      name: unsafe_writes
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'The attributes the resulting file or directory should have. To
+        get supported flags look at the man page for `chattr` on the target system.
+        This string should contain the attributes in the same order as the one displayed
+        by `lsattr`. The `=` operator is assumed as default, otherwise `+` or `-`
+        operators need to be included in the string.'
+      name: attributes
+    description: "Generate an OpenSSL public key from its private key.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_publickey_module.html"
+    name: openssl-publickey
+    outputs:
+    - contextPath: OpenSSL.OpensslPublickey.privatekey
+      description: Path to the TLS/SSL private key the public key was generated from.
+      type: string
+    - contextPath: OpenSSL.OpensslPublickey.format
+      description: The format of the public key (PEM, OpenSSH, ...).
+      type: string
+    - contextPath: OpenSSL.OpensslPublickey.filename
+      description: Path to the generated TLS/SSL public key file.
+      type: string
+    - contextPath: OpenSSL.OpensslPublickey.fingerprint
+      description: 'The fingerprint of the public key. Fingerprint will be generated
+        for each hashlib.algorithms available. Requires PyOpenSSL >= 16.0 for meaningful
+        output.'
+      type: unknown
+    - contextPath: OpenSSL.OpensslPublickey.backup_file
+      description: Name of backup file created.
+      type: string
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: 'A concatenated set of certificates in PEM format forming a chain.
+        The module will try to complete this chain.'
+      name: input_chain
+      required: true
+    - description: 'A list of filenames or directories. A filename is assumed to point
+        to a file containing one or more certificates in PEM format. All certificates
+        in this file will be added to the set of root certificates. If a directory
+        name is given, all files in the directory and its subdirectories will be scanned
+        and tried to be parsed as concatenated certificates in PEM format. Symbolic
+        links will be followed.'
+      isArray: true
+      name: root_certificates
+      required: true
+    - description: 'A list of filenames or directories. A filename is assumed to point
+        to a file containing one or more certificates in PEM format. All certificates
+        in this file will be added to the set of root certificates. If a directory
+        name is given, all files in the directory and its subdirectories will be scanned
+        and tried to be parsed as concatenated certificates in PEM format. Symbolic
+        links will be followed.'
+      isArray: true
+      name: intermediate_certificates
+    description: "Complete certificate chain given a set of untrusted and root certificates\n\
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/certificate_complete_chain_module.html"
+    name: openssl-certificate-complete-chain
+    outputs:
+    - contextPath: OpenSSL.CertificateCompleteChain.root
+      description: The root certificate in PEM format.
+      type: string
+    - contextPath: OpenSSL.CertificateCompleteChain.chain
+      description: 'The chain added to the given input chain. Includes the root certificate.
+        Returned as a list of PEM certificates.'
+      type: unknown
+    - contextPath: OpenSSL.CertificateCompleteChain.complete_chain
+      description: 'The completed chain, including leaf, all intermediates, and root.
+        Returned as a list of PEM certificates.'
+      type: unknown
+  - arguments:
+    - description: Hostname or IP of target. Optionally the port can be specified
+        using :PORT. If multiple targets are specified using an array, the integration
+        will use the configured concurrency factor for high performance.
+      isArray: true
+      name: host
+      required: true
+    - description: The host to get the cert for (IP is fine)
+      name: ansible-module-host
+      required: true
+    - description: 'A PEM file containing one or more root certificates; if present,
+        the cert will be validated against these root certs. Note that this only validates
+        the certificate is signed by the chain; not that the cert is valid for the
+        host presenting it.'
+      name: ca_cert
+    - description: The port to connect to
+      name: port
+      required: true
+    - description: Proxy host used when get a certificate.
+      name: proxy_host
+    - defaultValue: '8080'
+      description: Proxy port used when get a certificate.
+      name: proxy_port
+    - defaultValue: '10'
+      description: The timeout in seconds
+      name: timeout
+    - auto: PREDEFINED
+      defaultValue: auto
+      description: 'Determines which crypto backend to use. The default choice is
+        `auto`, which tries to use `cryptography` if available, and falls back to
+        `pyopenssl`. If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/`
+        library. If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/`
+        library.'
+      name: select_crypto_backend
+      predefined:
+      - auto
+      - cryptography
+      - pyopenssl
+    description: "Get a certificate from a host:port\n Further documentation available\
+      \ at https://docs.ansible.com/ansible/2.9/modules/get_certificate_module.html"
+    name: openssl-get-certificate
+    outputs:
+    - contextPath: OpenSSL.GetCertificate.cert
+      description: The certificate retrieved from the port
+      type: string
+    - contextPath: OpenSSL.GetCertificate.expired
+      description: Boolean indicating if the cert is expired
+      type: boolean
+    - contextPath: OpenSSL.GetCertificate.extensions
+      description: Extensions applied to the cert
+      type: unknown
+    - contextPath: OpenSSL.GetCertificate.issuer
+      description: Information about the issuer of the cert
+      type: unknown
+    - contextPath: OpenSSL.GetCertificate.not_after
+      description: Expiration date of the cert
+      type: string
+    - contextPath: OpenSSL.GetCertificate.not_before
+      description: Issue date of the cert
+      type: string
+    - contextPath: OpenSSL.GetCertificate.serial_number
+      description: The serial number of the cert
+      type: string
+    - contextPath: OpenSSL.GetCertificate.signature_algorithm
+      description: The algorithm used to sign the cert
+      type: string
+    - contextPath: OpenSSL.GetCertificate.subject
+      description: Information about the subject of the cert (OU, CN, etc)
+      type: unknown
+    - contextPath: OpenSSL.GetCertificate.version
+      description: The version number of the certificate
+      type: string
+  dockerimage: demisto/ansible-runner:1.0.0.23806
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)

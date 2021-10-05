@@ -34,8 +34,8 @@ configuration:
   required: false
   type: 8
 description: Microsoft Intune is a Microsoft cloud-based management solution that
-  provides for mobile device and operating system management
-display: Microsoft Graph Device Management (Microsoft Intune)
+  provides for mobile device and operating system management.
+display: Microsoft Endpoint Manager (Intune)
 name: Microsoft Graph Device Management
 script:
   commands:
@@ -869,7 +869,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false

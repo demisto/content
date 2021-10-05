@@ -27,7 +27,7 @@ configuration:
     name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`),
     or a metadata discovery endpoint URL (required for Azure Stack).
   defaultvalue: AzureCloud
-  display: Azure Cloud Environment
+  display: Ansible Azure Cloud Environment (Deprecated)
   name: cloud_environment
   required: true
   type: 0
@@ -51,8 +51,8 @@ configuration:
   name: api_profile
   required: true
   type: 0
-description: Manage Azure Networking resources
-display: Azure Networking
+description: Manage Azure Networking resources. Deprecated. Use Ansible Azure (from the Ansible Azure pack) instead.
+display: Ansible Azure Networking (Deprecated)
 name: AzureNetworking
 script:
   commands:
@@ -1571,7 +1571,7 @@ script:
       type: number
     - contextPath: AzureNetworking.dnszones.name_servers
       description: '[''The name servers for this DNS zone.'']'
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -1579,3 +1579,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

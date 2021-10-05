@@ -30,13 +30,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: TDS Polygon is a Malware Detonation & Research platform designed for
-  deep dynamic analysis and enhanced indicators extraction. TDS Polygon analyzes submitted
+description: THF Polygon is a Malware Detonation & Research platform designed for
+  deep dynamic analysis and enhanced indicators extraction. THF Polygon analyzes submitted
   files and urls and extracts deep IOCs that appear when malicious code is triggered
   and executed. Polygon could be used either for application-level tasks (like smtp-based
   mail filtering) and analytical purposes (files/urls analysis for verdict, report
   and indicators).
-display: Group-IB TDS Polygon
+display: Group-IB THF Polygon
 name: Group-IB TDS Polygon
 script:
   commands:
@@ -49,7 +49,7 @@ script:
       description: Password for analyzed archive
     outputs:
     - contextPath: Polygon.Analysis.ID
-      description: Analysis ID in TDS
+      description: Analysis ID in THF
       type: string
     - contextPath: Polygon.Analysis.EntryID
       description: File id in Demisto
@@ -68,7 +68,7 @@ script:
       description: URL for analysis
     outputs:
     - contextPath: Polygon.Analysis.ID
-      description: Analysis ID in TDS
+      description: Analysis ID in THF
       type: string
     - contextPath: Polygon.Analysis.URL
       description: URL analyzed
@@ -81,7 +81,7 @@ script:
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in TDS. Comma separated values.
+      description: Analysis ID in THF. Comma separated values.
       isArray: true
     outputs:
     - contextPath: File.Name
@@ -160,7 +160,7 @@ script:
       description: Process end time
       type: date
     - contextPath: Polygon.Analysis.ID
-      description: TDS File ID
+      description: THF File ID
       type: string
     - contextPath: Polygon.Analysis.Name
       description: File Name
@@ -223,12 +223,12 @@ script:
         the analysis
     - contextPath: Polygon.Analysis.Process
       description: The information about processes started during the analysis
-    description: Get TDS Polygon analysis info
+    description: Get THF Polygon analysis info
   - name: polygon-export-report
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in TDS
+      description: Analysis ID in THF
     outputs:
     - contextPath: File.Name
       description: The report file name
@@ -245,12 +245,12 @@ script:
     - contextPath: File.Info
       description: The report file info
       type: string
-    description: Export an archive with TDS Polygon report to War Room
+    description: Export an archive with THF Polygon report to War Room
   - name: polygon-export-pcap
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in TDS
+      description: Analysis ID in THF
     outputs:
     - contextPath: File.Name
       description: The dump file name
@@ -272,7 +272,7 @@ script:
     arguments:
     - name: tds_analysis_id
       required: true
-      description: Analysis ID in TDS
+      description: Analysis ID in THF
     outputs:
     - contextPath: File.Name
       description: The video file name
@@ -348,7 +348,7 @@ script:
       description: Malware families
       type: string
     description: Check file reputation
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

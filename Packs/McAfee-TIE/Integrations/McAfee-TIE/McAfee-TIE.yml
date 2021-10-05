@@ -15,7 +15,9 @@ configuration:
   name: private_key
   required: true
   type: 14
-- display: 'A CSV list of broker URLs in the format:  [ssl://]<hostname>[:port]) Get the hostname and port from the `brokerlist.properties` file (in instructions). The broker should be reachable from Demisto server.'
+- display: 'A CSV list of broker URLs in the format:  [ssl://]<hostname>[:port]) Get
+    the hostname and port from the `brokerlist.properties` file (in instructions).
+    The broker should be reachable from Demisto server.'
   name: broker_urls
   required: true
   type: 0
@@ -27,12 +29,13 @@ script:
   - arguments:
     - default: true
       description: '  Hash of the file to query. Supports MD5 SHA1 & SHA256'
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the reputations for the specified hash. Can be "MD5", "SHA1", or "SHA256".
+    description: Retrieves the reputations for the specified hash. Can be "MD5", "SHA1",
+      or "SHA256".
     execution: false
     name: file
     outputs:
@@ -74,7 +77,8 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Hash of the file for which to set the reputation. Can be "MD5", "SHA1", or "SHA256".
+      description: Hash of the file for which to set the reputation. Can be "MD5",
+        "SHA1", or "SHA256".
       isArray: false
       name: file
       required: true
@@ -109,18 +113,22 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sets the “Enterprise” reputation (trust level) of a specified file. Permissions are required to invoke this method. See the 'How-to' in instance instruction.
+    description: Sets the “Enterprise” reputation (trust level) of a specified file.
+      Permissions are required to invoke this method. See the 'How-to' in instance
+      instruction.
     execution: false
     name: tie-set-file-reputation
   - arguments:
     - default: true
-      description: '  Hash of the file for which to search. Can be "MD5", "SHA1", or "SHA256".'
+      description: '  Hash of the file for which to search. Can be "MD5", "SHA1",
+        or "SHA256".'
       isArray: false
       name: file
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the set of systems which have referenced (typically executed) the specified file.
+    description: Retrieves the set of systems which have referenced (typically executed)
+      the specified file.
     execution: false
     name: tie-file-references
     outputs:
@@ -139,12 +147,15 @@ script:
     - contextPath: File.References.Date
       description: The time the system first referenced the file.
       type: Unknown
-  dockerimage: demisto/dxl2:1.0.0.6231
+  dockerimage: demisto/dxl2:1.0.0.24033
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - McAfee-TIE Test
 fromversion: 5.0.0

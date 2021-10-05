@@ -198,6 +198,13 @@ def ip_command():
             }
         }
 
+        dbot_score = {
+            'Indicator': ip,
+            'Type': 'ip',
+            'Vendor': 'Shodan_v2',
+            'Score': 0,
+        }
+
         shodan_ip_details = {
             'Tag': res.get('tags', []),
             'Latitude': res.get('latitude', 0.0),
@@ -214,6 +221,7 @@ def ip_command():
 
         ec = {
             outputPaths['ip']: ip_details,
+            'DBotScore': dbot_score,
             'Shodan': {
                 'IP': shodan_ip_details
             }

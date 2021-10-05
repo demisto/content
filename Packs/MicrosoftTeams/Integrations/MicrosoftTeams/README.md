@@ -32,9 +32,9 @@ In this configuration, we will use Cortex XSOAR functionality, which reroutes HT
 
 The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
 
-The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step.
+The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step.
 
-The port to be configured in [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step should be any available port that is not used by another service.
+The port to be configured in [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
 In addition, make sure ***Instance execute external*** is enabled. 
 
@@ -75,7 +75,7 @@ In this configuration, we will use [Cloudflare proxy](https://support.cloudflare
 
 The messaging endpoint should be the Cortex XSOAR URL, which need to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g. `https://mysite.com:8443`
 
-In the [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto) step, the following need to be configured:
+In the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step, the following need to be configured:
  - The port selected above.
  - A certificate and key for configuring HTTPS webserver. This certificate can be self-signed.
 
@@ -83,13 +83,20 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS webserver the integration spins up, and will then be processed.
 
+## Setup Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4
+</video>
+
 ## Prerequisites
 
 Before you can create an instance of the Microsoft Teams integration in Cortex XSOAR, you need to complete the following procedures.
 
 1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
 2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
-3. [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto)
+3. [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ### Create the Demisto Bot in Microsoft Teams
@@ -156,6 +163,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 | certificate | Certificate (Required for HTTPS) | False |
 | key | Private Key (Required for HTTPS) | False |
 | min_incident_severity | Minimum incident severity to send notifications to Teams by | False |
+| auto_notifications | Disable Automatic Notifications | False |
 | allow_external_incidents_creation | Allow external users to create incidents via direct message | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |

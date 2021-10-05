@@ -25,6 +25,7 @@ A mail listener can be one of the following integrations:
 These task have the following names:
   - Acknowledge incident was received (task #13)
   - Update the user that the reported email is safe (task #16)
+  - Update the user that the reported email is malicious (task #17)
   - Update the user that the reported email is malicious (task #17
 - Optional - Configure the `ExchangeLocation` input of the `Search And Delete Emails - Generic v2` playbook.
 - Optional - Personalize the inputs of the `Detect & Manage Phishing Campaigns` playbook.
@@ -48,6 +49,7 @@ These task have the following names:
 * Search And Delete Emails - Generic v2
 * Block Indicators - Generic v2
 * Detect & Manage Phishing Campaigns
+* Process Microsoft's Anti-Spam Headers
 
 ### Integrations
 This playbook does not use any integrations.
@@ -55,6 +57,7 @@ This playbook does not use any integrations.
 ### Scripts
 * DBotPredictPhishingWords
 * CheckEmailAuthenticity
+* FindEmailCampaign
 * Set
 * AssignAnalystToIncident
 
@@ -78,6 +81,7 @@ This playbook does not use any integrations.
 | O365ExchangeLocation | Used only when searching and deleting emails in O365. The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to search and delete the email only from the recipient's inbox, or specify "Manual" to decide manually for every incident. Note - searching all mailboxes may take a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration input is set to O365. | SingleMailbox | Optional |
 | O365AllowNotFoundSearchLocations | Used only when searching and deleting emails in O365. Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false". | true | Optional |
 | O365ExchangeLocationExclusion | Used only when searching and deleting emails in O365. Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input. |  | Optional |
+| CheckMicrosoftHeaders | Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
 
 ## Playbook Outputs
 ---

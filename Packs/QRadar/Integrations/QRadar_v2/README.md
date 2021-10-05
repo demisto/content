@@ -280,7 +280,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html") | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql ) | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 

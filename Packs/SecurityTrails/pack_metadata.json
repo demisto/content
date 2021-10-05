@@ -1,0 +1,17 @@
+{
+    "name": "SecurityTrails",
+    "description": "Integration for the SecurityTrails platform.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-05-24T14:15:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}
