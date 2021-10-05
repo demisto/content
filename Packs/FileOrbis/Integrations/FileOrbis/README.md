@@ -45,9 +45,9 @@ Changes user status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Success | Boolean | True if operation completed successfully | 
-| Status | Number | Result code of the operation | 
-| Message | String | User friendly result message of the operation | 
+| FileOrbis.Success | Boolean | True if operation completed successfully | 
+| FileOrbis.Status | Number | Result code of the operation | 
+| FileOrbis.Message | String | User friendly result message of the operation | 
 
 
 #### Command Example
