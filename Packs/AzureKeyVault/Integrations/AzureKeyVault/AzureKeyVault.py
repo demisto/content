@@ -83,7 +83,7 @@ class KeyVaultClient:
                                            ignore_missing_vnet_service_endpoint: bool,
                                            ip_rules: List[str]) -> Dict[str, Any]:
         """
-        Create or update a key vault in the specified subscription.
+        Create or update a key vault in the specified subscription..
 
         Args:
             vault_name (str): Key Vault name.
@@ -129,7 +129,7 @@ class KeyVaultClient:
 
     def delete_key_vault_request(self, vault_name: str) -> Dict[str, Any]:
         """
-        Delete the specified key vault.
+        Delete Key Vault by name.
 
         Args:
             vault_name (str): Key Vault name.
@@ -144,7 +144,7 @@ class KeyVaultClient:
 
     def get_key_vault_request(self, vault_name: str) -> Dict[str, Any]:
         """
-        Get the key vault by vault name argument.
+        Retrieve Key Vault by name.
 
         Args:
             vault_name (str): Key Vault name.
@@ -159,7 +159,7 @@ class KeyVaultClient:
 
     def list_key_vaults_request(self, limit: int, offset: int) -> List[dict]:
         """
-        List key Vaults.
+        List Key Vaults by limit and offset arguments from the specified resource group and subscription.
 
         Args:
             limit(int): limit the number of key vaults to return.Default is 50.
@@ -176,7 +176,7 @@ class KeyVaultClient:
                                      keys: List[str], secrets: List[str], certificates: List[str],
                                      storage: List[str]) -> Dict[str, Any]:
         """
-        Update access policy of a Key Vault."
+        Update access policy of an existing Key Vault.
 
         Args:
             vault_name (str): Key Vault name.
@@ -222,7 +222,7 @@ class KeyVaultClient:
         return response
 
     def list_keys_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
-        """ List keys in the specified vault.
+        """ List keys in the specified Key Vault.
 
         Args:
             vault_name(str): Key Vault name.
@@ -258,7 +258,7 @@ class KeyVaultClient:
 
     def get_secret_request(self, vault_name: str, secret_name: str, secret_version: str) -> Dict[str, Any]:
         """
-        Get a specified secret from a given key vault.
+        Retrieve secret by name from the specified key vault.
 
         Args:
             vault_name (str): Key vault's name.
@@ -277,7 +277,7 @@ class KeyVaultClient:
 
     def list_secrets_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
         """
-        List secrets in a specified key vault.
+        List secrets by limit and offset from the specified Key Vault.
 
         Args:
             vault_name (str): Key Vault name.
@@ -295,7 +295,7 @@ class KeyVaultClient:
 
     def delete_secret_request(self, vault_name: str, secret_name: str) -> Dict[str, Any]:
         """
-        Delete a secret from a specified key vault.
+        Delete a secret by name from the specified Key Vault.
 
         Args:
             vault_name (str): Key vault's name.
@@ -313,7 +313,7 @@ class KeyVaultClient:
                                 certificate_name: str,
                                 certificate_version: str) -> Dict[str, Any]:
         """
-        Get a specified secret from a given key vault.
+        Retrieve certificate from the specified Key Vault.
 
         Args:
             vault_name (str): key vault's name.
@@ -333,7 +333,7 @@ class KeyVaultClient:
 
     def list_certificates_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
         """
-        List certificates in a specified key vault.
+        List certificates from the specified Key Vault.
 
         Args:
             vault_name (str): Key Vault name of the certificate.
@@ -350,26 +350,9 @@ class KeyVaultClient:
 
         return self.get_entities_independent_of_pages(response, limit, offset, VAULT_RESOURCE)
 
-    def delete_certificate_request(self, vault_name: str, certificate_name: str) -> Dict[str, Any]:
-        """
-        List certificates in a specified key vault.
-
-        Args:
-            vault_name (str): key vault's name.
-            certificate_name (str): the name of the certificate to delete.
-
-        Returns:
-            Dict[str, Any]: API response from Azure.
-        """
-        url = f'https://{vault_name}.vault.azure.net/certificates/{certificate_name}'
-        response = self.http_request(
-            'DELETE', full_url=url, resource=VAULT_RESOURCE)
-
-        return response
-
     def get_certificate_policy_request(self, vault_name: str, certificate_name: str) -> Dict[str, Any]:
         """
-        List the policy for a certificate.
+        Retrieve policy of the specified certificate.
 
         Args:
             vault_name (str): Key Vault name.
@@ -415,7 +398,7 @@ class KeyVaultClient:
                                   ignore_missing_vnet_service_endpoint: bool,
                                   ip_rules: List[str]) -> Dict[str, Any]:
         """
-        Configures the network acl property of a Key Vault.
+        Configure the network acl property of a Key Vault.
 
         Args:
             default_action (str): Default action.
@@ -449,7 +432,7 @@ class KeyVaultClient:
                                 permissions: Dict[str, Any], network_acls: Dict[str, Any]):
 
         """
-        Configures the properties of a vault on create or update command.
+        Configure the properties of a vault on create or update command.
 
         Args:
             object_id (str): The object ID of a user, service principal or security group in the Azure Active Directory.
@@ -482,7 +465,7 @@ class KeyVaultClient:
         """
         List the entities according to the offset and limit arguments,
         following the first API call to the endpoint.
-        The objective is to be able to list the entities regardless the
+        The main purpose here is to list the entities regardless the
         restriction of the first API call - which returns only 25 entities at most.
         Used only for list commands.
 
@@ -528,7 +511,7 @@ class KeyVaultClient:
 
 def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Create or update key vault command.
+    Create or update Key Vault in the specified subscription.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
@@ -600,7 +583,7 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
 
 def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Delete the key vault by a specified name.
+    Delete Key Vault by name.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
@@ -626,7 +609,7 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Co
 
 def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Get the key vault by a specified name.
+    Retrieve Key Vault by name.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
@@ -654,7 +637,7 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
 
 
 def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
-    """ List the vaults associated with the subscription.
+    """ List Key Vaults associated with the subscription and within the specified resource group.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client
@@ -860,7 +843,7 @@ def delete_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandR
 
 def get_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Get a specified secret from a given key vault
+    Retrieve secret from the specified Key Vault
 
     Args:
         client (KeyVaultClient):  Azure Key Vault API client.
@@ -901,7 +884,7 @@ def get_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandR
 
 def list_secrets_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    List secrets in a specified key vault.
+    List secrets in the specified key vault.
 
     Args:
         client (KeyVaultClient): Azure Key Vault API client.
@@ -946,7 +929,8 @@ def list_secrets_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comman
 
 def delete_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Delete a secret from a specified key vault.
+    Delete secret from the specified Key Vault.
+
     Args:
         client (KeyVaultClient): Azure Key Vault API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
@@ -961,7 +945,7 @@ def delete_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
 
     response = client.delete_secret_request(vault_name, secret_name)
 
-    outputs = response.copy()
+    outputs = copy.deepcopy(response)
     outputs['deletedDate'] = convert_timestamp_to_readable_date(
         outputs['deletedDate'])
     outputs['scheduledPurgeDate'] = convert_timestamp_to_readable_date(
@@ -1034,7 +1018,7 @@ def get_certificate_command(client: KeyVaultClient, args: Dict[str, Any]) -> Com
 
 def list_certificates_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    List certificates in a specified key vault.
+    List certificates in the specified Key Vault.
 
     Args:
         client (KeyVaultClient): Azure Key Vault API client.
@@ -1082,7 +1066,7 @@ def list_certificates_command(client: KeyVaultClient, args: Dict[str, Any]) -> C
 
 def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
     """
-    List the policy for a certificate.
+    Retrieve policy of the specified certificate.
 
     Args:
         client (KeyVaultClient):  Azure Key Vault API client.
@@ -1115,7 +1099,7 @@ def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any])
     return command_results
 
 
-def test_module(client: KeyVaultClient, key_vaults_to_fetch_from, secrets_to_fetch, identifier) -> None:
+def test_module(client: KeyVaultClient) -> None:
     """
      Test instance parameters validity.
      Displays an appropriate message in case of invalid parameters.
@@ -1130,8 +1114,7 @@ def test_module(client: KeyVaultClient, key_vaults_to_fetch_from, secrets_to_fet
         client.ms_client.get_access_token(resource=MANAGEMENT_RESOURCE)
         client.ms_client.get_access_token(resource=VAULT_RESOURCE)
         client.list_key_vaults_request(1, 0)
-        # fetch_credentials(client,key_vaults_to_fetch_from, secrets_to_fetch,identifier)
-        # return_results(identifier)
+        # fetch_credentials(client,[''],[''],'xsoar-test-vault/test-sec-1')
         return_results('ok')
 
     except Exception as error:
@@ -1167,7 +1150,6 @@ def fetch_credentials(client: KeyVaultClient,
     credentials = []
 
     if credentials_name:
-        return_results(credentials_name)
         credentials_name_arr = credentials_name.split("/")
         key_vault = credentials_name_arr[0]
         secret = credentials_name_arr[1]
@@ -1318,7 +1300,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier)
+            test_module(client)
         elif demisto.command() == 'fetch-credentials':
             fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier)
         elif command in commands:
