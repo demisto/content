@@ -81,11 +81,9 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
 fi
 
 if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
-    echo "Force upload can not use a specific path as the target bucket - only the production bucket is allowed
-     (the default)."
+    echo "Can not force upload while using a storage base path."
     exit 1
 fi
-
 if [ -n "$_storage_base_path"] && [ "$_storage_base_path" != *content ]; then
   echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content"
   exit 1
