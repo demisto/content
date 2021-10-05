@@ -30,3 +30,18 @@ Follow these steps for a self-deployed configuration.
 
 
 10. Enter your resource group name in the Resource Group Name parameter.
+
+ ### Fetch credentials from Azure Key Vault
+In order to fetch credentials to the Cortex XSOAR credentials store,you should follow the next steps:
+1. Check Fetches credentials parameter.
+2. Fill Key Vault names to fetch secrets from.
+3. Fill secret names to fetch.
+
+After the Azure Key Vault integration instance is created, the credentials will be fetched
+to the Cortex XSOAR credentials store in the following format:
+
+Credential Name: KEY_VAULT_NAME/SECRET_NAME
+
+Username: SECRET_NAME
+
+Password: SECRET_VALUE

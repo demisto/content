@@ -65,7 +65,7 @@ class KeyVaultClient:
                                           )
         if res.text:
             res_json = res.json()
-        else:  # in case an empty response returned line in delete key vault command
+        else:  # in case an empty response returned in delete key vault command
             res_json = {'status_code': res.status_code}
 
         return res_json
@@ -1086,7 +1086,8 @@ def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any])
 
     readable_output = tableToMarkdown(f'{certificate_name} Policy Information',
                                       outputs,
-                                      ['id', 'key_props', 'secret_props', 'x509_props', 'issuer', 'attributes'],
+                                      ['id', 'key_props', 'secret_props',
+                                       'x509_props', 'issuer', 'attributes'],
                                       removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='AzureKeyVault.CertificatePolicy',
@@ -1123,8 +1124,9 @@ def test_module(client: KeyVaultClient) -> None:
         elif 'SubscriptionNotFound' in str(error):
             return_results('The given subscription ID could not be found.')
         elif 'perform action' in str(error):
-            return_results('The client does not have Key Vault permissions to the given resource group name'
-                           ' or the resource group name does not exist.')
+            return_results('The client does not have Key Vault permissions to the'
+                           ' given resource group name or the resource group name does not exist.'
+                           )
         else:
             return_results(str(error))
 
