@@ -1,4 +1,4 @@
-## Accelerate ransomware recovery with Druva Cloud Platform ##
+## Accelerate ransomware recovery with Druva Cloud Platform
 
 Ransomware is a growing threat; sophisticated new variants specifically target backup data for encryption and deletion. Plus, ransomware attacks are intentionally timed for events like national holidays when security and IT professionals are likely to be out of office. Just having a backup solution is no longer enough; you need to integrate your data protection and security technologies to combat this threat.
 
