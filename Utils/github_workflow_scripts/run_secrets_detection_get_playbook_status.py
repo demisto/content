@@ -61,7 +61,7 @@ def wait_for_playbook_to_complete(investigation_id, client):
 
         if time.time() > timeout:
             print(f'Secrets playbook timeout reached. To investigate go to: {investigation_url}')
-            sys.exit()
+            sys.exit(1)
 
 
 def arguments_handler():
