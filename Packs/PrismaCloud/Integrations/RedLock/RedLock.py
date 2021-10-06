@@ -545,13 +545,14 @@ def fetch_incidents():
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
-    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    now = int(time.mktime(datetime.now().timetuple()))
     last_run = demisto.getLastRun()
     last_seen_time = last_run.get('time')
     last_fetches = last_run.get('last_fetches', [])
     limit = demisto.getParam('limit')
     if not last_seen_time:  # first time fetch
-        last_seen_time = parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+        last_seen_time = dateparser.parse(demisto.params().get('fetch_time', '3 days').strip())
+        last_seen_time = int(time.mktime(last_seen_time.timetuple()))
 
     payload = {
         'timeRange': {

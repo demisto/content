@@ -40,4 +40,4 @@ def test_empty_incident(mocker):
     mocker.patch('RedLock.req', return_value=[])
     incidents, last_fetches, last_seen_time = fetch_incidents()
     assert len(incidents) == 0, 'There are no alerts in example response'
-    assert last_seen_time == 1625668454000
+    assert last_seen_time == 1625679254
