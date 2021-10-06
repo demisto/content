@@ -541,7 +541,7 @@ def get_incidents(alerts, last_fetches, last_seen_time):
     return incidents, last_fetches, last_seen_time
 
 
-def fetch_incidents():
+def fetch_incidents(limit: int):
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
@@ -549,7 +549,6 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     last_seen_time = last_run.get('time')
     last_fetches = last_run.get('last_fetches', [])
-    limit = demisto.getParam('limit')
     if not last_seen_time:  # first time fetch
         last_seen_time = dateparser.parse(demisto.params().get('fetch_time', '3 days').strip())
         last_seen_time = int(time.mktime(last_seen_time.timetuple()))
@@ -589,6 +588,10 @@ def main():
     global URL, VERIFY
     handle_proxy()
     params = demisto.params()
+    limit = params.get('limit')
+    limit = arg_to_number(limit)
+    if limit is None or not 0 < limit <= 50:
+        limit = 50
     URL = params.get('url')
     if URL[-1] != '/':
         URL += '/'
@@ -615,7 +618,7 @@ def main():
         elif command == 'redlock-search-config':
             redlock_search_config()
         elif command == 'fetch-incidents':
-            incidents, last_fetches, last_seen_time = fetch_incidents()
+            incidents, last_fetches, last_seen_time = fetch_incidents(limit)
             demisto.incidents(incidents)
             demisto.setLastRun({'time': last_seen_time, 'last_fetches': last_fetches})
         else:
