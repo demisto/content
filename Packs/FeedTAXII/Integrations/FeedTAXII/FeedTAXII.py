@@ -348,29 +348,28 @@ class StixDecode(object):
                         r.update(pprops)
                         result.append(r)
 
-        indicators = package.find_all('Indicator')
-        for indicator in indicators:
-            indicator_info = indicator_extract_properties(indicator)
-
-            result.append(indicator_info)
-
-            # # then related objects
-            # related = next((c for c in obj if c.name == 'Related_Objects'), None)
-            # if related is not None:
-            #     for robj in related:
-            #         if robj.name != 'Related_Object':
-            #             continue
-            #
-            #         properties = next((c for c in robj if c.name == 'Properties'), None)
-            #         if properties is None:
-            #             continue
-            #
-            #         for r in StixDecode.object_extract_properties(properties, kwargs):
-            #             r.update(gprops)
-            #             r.update(pprops)
-            #             result.append(r)
-
         return timestamp, StixDecode._deduplicate(result)
+
+    @staticmethod
+    def get_indicator_info(content: str) -> dict[str: dict]:
+        result: Dict[str, dict] = {}
+        indicator_info: Dict[str: str] = {}
+
+        package = BeautifulSoup(content, 'xml')
+        if package.contents[0].name == 'STIX_Package':
+            package = package.contents[0]
+
+            observable = package.find_all('Observable')
+            if observable:
+                indicator_ref = observable[0].get('idref')
+
+                indicators = package.find_all('Indicator')
+                for i in indicators:
+                    indicator_info = indicator_extract_properties(i)
+
+                result[indicator_ref] = indicator_info
+
+                return result
 
 
 class Taxii11(object):
@@ -759,6 +758,8 @@ class TAXIIClient(object):
             result_id = None
             more = None
             tag_stack = collections.deque()  # type: ignore
+            indicators: Dict[str, dict] = {}
+            observables = []
 
             try:
                 for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
@@ -791,10 +792,14 @@ class TAXIIClient(object):
                                     continue
 
                                 content = etree.tostring(c[0], encoding='unicode')
-                                timestamp, indicators = StixDecode.decode(content)
+                                timestamp, observable = StixDecode.decode(content)
+                                if observable:
+                                    observables.append(list(observable)[0])
+                                else:
+                                    indicator = StixDecode.get_indicator_info(content)
+                                    if indicator:
+                                        indicators.update(indicator)
 
-                                for indicator in indicators:
-                                    yield indicator
                                 if timestamp:
                                     if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
                                         self.last_stix_package_ts = timestamp
@@ -828,6 +833,14 @@ class TAXIIClient(object):
                 data=req,
                 stream=True
             )
+
+        for observable in observables:
+            id_ref = observable.get('id_ref')
+            if id_ref:
+                indicator_info = indicators.get(id_ref)
+                if indicator_info:
+                    observable.update(indicators.get(id_ref))
+            yield observable
 
     def _incremental_poll_collection(self, poll_service, begin, end):
         """Polls collection in increments of 10 days"""
@@ -941,7 +954,11 @@ def package_extract_properties(package):
 
 def observable_extract_properties(observable):
     """Extracts properties from observable"""
-    result = {}
+    result: Dict[str, str] = {}
+
+    id_ref = observable.get('id')
+    if id_ref:
+        result['id_ref'] = id_ref
 
     title = next((c for c in observable if c.name == 'Title'), None)
     if title is not None:
@@ -956,29 +973,19 @@ def observable_extract_properties(observable):
     return result
 
 
-def indicator_extract_properties(indicator):
+def indicator_extract_properties(indicator) -> dict[str: str]:
     """Extracts properties from indicator"""
-    result = {}
-
-    idr = next((c for c in indicator if c.name == 'Observable'), None)
-    if idr:
-        idr = idr.get('idref')
-        result['indicator'] = idr
-
-    _type = next((c for c in indicator if c.name == 'Type'), None)
-    if _type is not None:
-        _type = _type.text
-        result['type'] = _type
+    result: Dict[str, str] = {}
 
     title = next((c for c in indicator if c.name == 'Title'), None)
     if title is not None:
         title = title.text
-        result['stix_title'] = title
+        result['stix_indicator_name'] = title
 
     description = next((c for c in indicator if c.name == 'Description'), None)
     if description is not None:
         description = description.text
-        result['stix_description'] = description
+        result['stix_indicator_description'] = description
 
     return result
 
@@ -1079,6 +1086,7 @@ def main():
             demisto.setLastRun({'time': client.last_taxii_run})
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
+            demisto.info(f'aaaaaaaa {raw_response}')
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
