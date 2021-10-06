@@ -6518,7 +6518,7 @@ inputs:
 - key: device-group
   value: {}
   required: false
-  description: Device group for the Custom URL Category (Panorama instances) TEST.
+  description: Device group for the Custom URL Category (Panorama instances).
   playbookInputQuery:
 - key: categories
   value: {}
