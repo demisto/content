@@ -1,10 +1,12 @@
 import argparse
-import requests
-import os
-import sys
-from pathlib import Path
 import json
+import os
+from pathlib import Path
+from typing import Set
+
+import requests
 import sendgrid
+import sys
 from sendgrid.helpers.mail import *
 
 REPO_OWNER = "demisto"
@@ -161,7 +163,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                     user_exists = check_if_user_exists(github_user=github_user, github_token=github_token,
                                                        verify_ssl=verify_ssl)
 
-                    if user_exists and github_user != pr_author and github_user not in tagged_packs_reviewers:
+                    if user_exists and github_user != pr_author:
                         reviewers.add(github_user)
                         print(f"Found {github_user} default reviewer of pack {pack}")
 
@@ -169,7 +171,8 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                                                      version=pack_metadata.get('currentVersion'),
                                                      modified_files=modified_files, pack=pack, pr_number=pr_number,
                                                      github_token=github_token,
-                                                     verify_ssl=verify_ssl)
+                                                     verify_ssl=verify_ssl,
+                                                     tagged_packs_reviewers=tagged_packs_reviewers)
 
                 # Notify contributors by emailing them on support email:
                 if (reviewers_emails := pack_metadata.get(
@@ -191,7 +194,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
 
 def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files: list, pack: str,
-                    pr_number: str, github_token: str, verify_ssl: bool) -> bool:
+                    pr_number: str, github_token: str, verify_ssl: bool, tagged_packs_reviewers: Set[str]) -> bool:
     """ Tag user on pr and ask for review if there are reviewers, and this is not new pack.
 
     Args:
@@ -203,17 +206,23 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
         pr_number(str): pr number on github
         github_token(str): github token provided by the user
         verify_ssl(bool): verify ssl
+        tagged_packs_reviewers (Set[str]): Set of reviewers who were already tagged.
 
      Returns:
          true if notified contributors by github else false
 
     """
-    if reviewers:
+    untagged_reviewers = reviewers.difference(tagged_packs_reviewers)
+    for tagged_reviewer in reviewers.difference(untagged_reviewers):
+        print(f'User {tagged_reviewer} was already tagged. Skipping re-tagging.')
+    # Meaning at least one of the reviewers was already tagged.
+    notified_contributors = untagged_reviewers != reviewers
+    if untagged_reviewers:
         if pr_author != 'xsoar-bot' or version != '1.0.0':
             pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
                           and Path(file).parts[1] == pack}
             tag_user_on_pr(
-                reviewers=reviewers,
+                reviewers=untagged_reviewers,
                 pr_number=pr_number,
                 pack=pack,
                 pack_files=pack_files,
@@ -222,10 +231,11 @@ def check_reviewers(reviewers: set, pr_author: str, version: str, modified_files
             )
             return True
         else:
-            return False
+            return notified_contributors
     else:
-        print(f'{pack} pack no reviewers were found.')
-        return False
+        if not notified_contributors:
+            print(f'{pack} pack no reviewers were found.')
+        return notified_contributors
 
 
 def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: str,

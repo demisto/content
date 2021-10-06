@@ -1,0 +1,17 @@
+!hcloud-datacenter-info
+!hcloud-floating-ip-info
+!hcloud-image-info
+!hcloud-location-info
+!hcloud-network name="my-network" ip_range="123.123.123.123/8" state="present"
+!hcloud-network-info
+!hcloud-route network="my-network" destination="123.123.123.123/24" gateway="123.123.123.123" state="present"
+!hcloud-server name="my-server" server_type="cx11" image="ubuntu-18.04" state="present"
+!hcloud-server-type-info
+!hcloud-server-info
+!hcloud-rdns server="my-server" ip_address="123.123.123.123" dns_ptr="example.com" state="present"
+!hcloud-server-network network="my-network" server="my-server" state="present"
+!hcloud-ssh-key name="my-ssh_key" public_key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=" state="present"
+!hcloud-ssh-key-info
+!hcloud-subnetwork network="my-network" ip_range="123.123.123.123/16" network_zone="eu-central" type="server" state="present"
+!hcloud-volume name="my-volume" location="fsn1" size="100" state="present"
+!hcloud-volume-info

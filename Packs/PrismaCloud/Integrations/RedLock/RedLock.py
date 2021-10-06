@@ -1,26 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
-from datetime import datetime
-
-import requests
-import os
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-URL = demisto.getParam('url')
-if URL[-1] != '/':
-    URL += '/'
-
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-VERIFY = not demisto.params().get('unsecure', False)
-
+URL = ''
+VERIFY = False
 DEFAULT_LIMIT = 100
 
 # Standard headers
@@ -353,7 +337,8 @@ def dismiss_alerts():
         if ids:
             context['Redlock.DismissedAlert.ID'] = ids
 
-            md = '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1], demisto.getArg('dismissal-note'))
+            md = '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1],
+                                                                   demisto.getArg('dismissal-note'))
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -404,14 +389,13 @@ def translate_severity(alert):
     return 0
 
 
-def get_rql_response():
-
+def get_rql_response(args):
     """"
     Retrieve any RQL
     """
-    rql = demisto.getArg('rql').encode("utf-8")
+    rql = args.get('rql').encode("utf-8")
 
-    limit = demisto.args().get('limit', '1')
+    limit = str(args.get('limit', '1'))
     rql += " limit search records to {}".format(limit)
 
     payload = {"query": rql, "filter": {}}
@@ -517,22 +501,22 @@ def redlock_search_config():
     response = req('POST', 'search/config', payload, None)
 
     if (
-        not response
-        or 'data' not in response
-        or not isinstance(response['data'], dict)
-        or 'items' not in response['data']
-        or not isinstance(response['data']['items'], list)
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], dict)
+            or 'items' not in response['data']
+            or not isinstance(response['data']['items'], list)
     ):
         demisto.results('No results found')
     else:
         items = response['data']['items']
-        MD = tableToMarkdown("Configuration Details", items)
+        md = tableToMarkdown("Configuration Details", items)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': items,
             'EntryContext': {'Redlock.Asset(val.id == obj.id)': items},
-            'HumanReadable': MD
+            'HumanReadable': md
         })
 
 
@@ -541,10 +525,10 @@ def fetch_incidents():
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run_object = demisto.getLastRun()
-    last_run = last_run_object and last_run_object['time']
-    if not last_run:
-        last_run = now - 24 * 60 * 60 * 1000
+    last_run = demisto.getLastRun().get('time')
+    if not last_run:  # first time fetch
+        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -558,7 +542,9 @@ def fetch_incidents():
     if demisto.getParam('policySeverity'):
         payload['filters'].append({'name': 'policy.severity', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policySeverity')})
-
+    if demisto.getParam('policyName'):
+        payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
@@ -569,33 +555,49 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-    demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+
+    return incidents, now
 
 
-try:
-    if demisto.command() == 'test-module':
-        get_token()
-        demisto.results('ok')
-    elif demisto.command() == 'redlock-search-alerts':
-        search_alerts()
-    elif demisto.command() == 'redlock-list-alert-filters':
-        list_filters()
-    elif demisto.command() == 'redlock-get-alert-details':
-        get_alert_details()
-    elif demisto.command() == 'redlock-dismiss-alerts':
-        dismiss_alerts()
-    elif demisto.command() == 'redlock-reopen-alerts':
-        reopen_alerts()
-    elif demisto.command() == 'redlock-get-remediation-details':
-        get_remediation_details()
-    elif demisto.command() == 'redlock-get-rql-response':
-        get_rql_response()
-    elif demisto.command() == 'redlock-search-config':
-        redlock_search_config()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    else:
-        raise Exception('Unrecognized command: ' + demisto.command())
-except Exception as err:
-    return_error(str(err))
+def main():
+    global URL, VERIFY
+    handle_proxy()
+    params = demisto.params()
+    URL = params.get('url')
+    if URL[-1] != '/':
+        URL += '/'
+    VERIFY = not params.get('unsecure', False)
+    try:
+        command = demisto.command()
+        if command == 'test-module':
+            get_token()
+            return_results('ok')
+        elif command == 'redlock-search-alerts':
+            search_alerts()
+        elif command == 'redlock-list-alert-filters':
+            list_filters()
+        elif command == 'redlock-get-alert-details':
+            get_alert_details()
+        elif command == 'redlock-dismiss-alerts':
+            dismiss_alerts()
+        elif command == 'redlock-reopen-alerts':
+            reopen_alerts()
+        elif command == 'redlock-get-remediation-details':
+            get_remediation_details()
+        elif command == 'redlock-get-rql-response':
+            get_rql_response(demisto.args())
+        elif command == 'redlock-search-config':
+            redlock_search_config()
+        elif command == 'fetch-incidents':
+            incidents, new_run = fetch_incidents()
+            demisto.incidents(incidents)
+            demisto.setLastRun({'time': new_run})
+        else:
+            raise Exception('Unrecognized command: ' + command)
+    except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(str(err))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

@@ -140,7 +140,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

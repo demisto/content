@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-MAIL_STRING = b"""Delivered-To: to@test1.com
+MAIL_STRING = br"""Delivered-To: to@test1.com
 MIME-Version: 1.0
 From: John Smith <from@test1.com>
 Date: Mon, 10 Aug 2020 10:17:16 +0300

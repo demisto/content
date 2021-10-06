@@ -28,11 +28,15 @@ args:
   - ssdeep
   - accountRep
   - CIDR
-  - STIX Attack Pattern
-  - STIX Malware
-  - STIX Report
-  - STIX Threat Actor
-  - STIX Tool
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Intrusion Set
+  - Campaign
+  - Course of Action
+  - Infrastructure.
 - default: false
   description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
   isArray: true
@@ -197,7 +201,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.4.19537
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

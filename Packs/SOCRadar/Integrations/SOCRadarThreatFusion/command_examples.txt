@@ -1,0 +1,6 @@
+!ip ip="1.1.1.1"
+!domain domain="paloaltonetworks.com"
+!file file="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"
+!socradar-score-ip ip="1.1.1.1"
+!socradar-score-domain domain="paloaltonetworks.com"
+!socradar-score-hash hash="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"

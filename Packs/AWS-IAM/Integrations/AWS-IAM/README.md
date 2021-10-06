@@ -1156,7 +1156,7 @@ Creates a new managed policy for your AWS account.  This operation creates a pol
 | AWS.IAM.Policies.Path | string | The path to the policy. | 
 | AWS.IAM.Policies.DefaultVersionId | string | The identifier for the version of the policy that is set as the default version. | 
 | AWS.IAM.Policies.AttachmentCount | number | The number of entities \(users, groups, and roles\) that the policy is attached to. | 
-| AWS.IAM.Policies.PermissionsBoundaryUsageCount  | number | The number of entities \(users and roles\) for which the policy is used to set the permissions boundary. | 
+| AWS.IAM.Policies.PermissionsBoundaryUsageCount | number | The number of entities \(users and roles\) for which the policy is used to set the permissions boundary. | 
 | AWS.IAM.Policies.IsAttachable | boolean | Specifies whether the policy can be attached to an IAM user, group, or role. | 
 | AWS.IAM.Policies.Description | string | A friendly description of the policy. | 
 | AWS.IAM.Policies.CreateDate | date | The date and time, in ISO 8601 date-time format , when the policy was created. | 
@@ -1497,3 +1497,81 @@ Create/update password policy
 There is no context output for this command.
 
 
+### aws-iam-list-role-policies
+***
+Lists the names of the inline policies that are embedded in the specified IAM role.
+
+
+#### Base Command
+
+`aws-iam-list-role-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the role to list policies for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Roles.RoleName.Policies | Unknown | A list of policy names. | 
+
+#### Command Example
+``` !aws-iam-list-role-policies roleName=test-RoleARN```
+
+
+### aws-iam-get-role-policy
+***
+Retrieves the specified inline policy document that is embedded with the specified IAM role.
+
+
+#### Base Command
+
+`aws-iam-get-role-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the role associated with the policy. | Required | 
+| policyName | The name of the policy document to get. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Roles.PolicyDocument | string | The policy document. | 
+
+#### Command Example
+``` !aws-iam-get-role-policy roleName=test-RoleARN policyName=testPolicy```
+
+
+### aws-iam-get-policy
+***
+Retrieves information about the specified managed policy, including the policy's default version and the total number of
+ IAM users, groups, and roles to which the policy is attached.
+
+
+#### Base Command
+
+`aws-iam-get-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyName | The Amazon Resource Name (ARN) of the managed policy that you want information about. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Policy.PolicyName | string | The friendly name (not ARN) identifying the policy. | 
+| AWS.IAM.Policy.PolicyId | string | The stable and unique string identifying the policy. | 
+| AWS.IAM.Policy.Arn | string | The Amazon Resource Name (ARN). ARNs are unique identifiers for Amazon Web Services resources. | 
+| AWS.IAM.Policy.Path | string | The path to the policy. | 
+| AWS.IAM.Policy.Description | string | A friendly description of the policy. | 
+
+#### Command Example
+``` !aws-iam-get-policy policyName=testPolicy```

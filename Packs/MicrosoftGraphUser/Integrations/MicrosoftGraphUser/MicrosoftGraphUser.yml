@@ -4,8 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
-  display: Host URL (e.g., https://graph.microsoft.com) - see Detailed Instructions
-    (?)
+  display: Host URL (e.g., https://graph.microsoft.com)
   name: host
   required: true
   type: 0
@@ -47,7 +46,7 @@ configuration:
   type: 8
 description: Unified gateway to security insights - all from a unified Microsoft Graph
   User API.
-display: Microsoft Graph User
+display: Azure Active Directory Users
 name: Microsoft Graph User
 script:
   commands:
@@ -60,8 +59,9 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Terminates a user's session from all Office 365 applications, and prevents sign in.
-      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -457,7 +457,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the properties from the manager of a user.
+    description: "Retrieves the properties from the manager of a user."
     execution: false
     name: msgraph-user-get-manager
     outputs:
@@ -561,7 +561,7 @@ script:
     description: Tests connectivity to Microsoft Graph User.
     execution: false
     name: msgraph-user-test
-  dockerimage: demisto/crypto:1.0.0.16776
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

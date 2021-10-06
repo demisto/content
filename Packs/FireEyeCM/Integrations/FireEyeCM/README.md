@@ -1,22 +1,10 @@
 FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks
 This integration was integrated and tested with version 9.0.2 of FireEye Central Management
 
-## Configure FireEye Central Management on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye Central Management.
-3. Click **Add instance** to create and configure a new integration instance.
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Your server URL | True |
-    | Username | True |
-    | Fetch incidents | False |
-    | Max incidents to fetch | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-    | Incident type | False |
-    | Info level for fetched alerts | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-4. Click **Test** to validate the URLs, token, and connection.
+## API Key management
+This integration generates an API Key from the username and password given to be authenticated with FireEye.
+The API Key is valid for 15 minutes.
+The integration manages the storage of this key, and its re-generation when the key expires.
 
 ## Fetch FireEye EX Alert Emails
 To fetch a FireEye EX alert email, you will need the UUID.
@@ -26,8 +14,8 @@ To fetch a FireEye EX alert email, you will need the UUID.
    ***!fireeye-cm-get-artifacts-by-uuid uuid=243a2555-a915-47a1-a947-e71049f4971c***
 3. Download the email.
 
-## Access the FireEye NX Alert URL
-To display a proper link in the FireEye NX Alert URL field of the FireEye NX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
+## Access the FireEye Alert URL
+To display a proper link in the FireEye NX Alert URL field of the FireEye NX or EX Alert layout, you need to configure the hostname in the appliance settings of the FireEye application.
 1. Log in to your FireEye application.
 2. Navigate to **Appliance Settings > Network > Hostname**.
 3. In the Hostname field, enter your URL/server/ip address.
@@ -180,7 +168,8 @@ Searches and retrieves the details of a single alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID of the alert for which to retrieve its details. | Required | 
+| alert_id | The ID of the alert for which to retrieve its details. | Required |
+| timeout | Timeout to retrieve the artifacts. Default is 30 seconds. | Optional |
 
 
 #### Context Output
@@ -301,7 +290,7 @@ Downloads malware artifacts data for the specified UUID as a zip file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | The universally unique identifier (UUID) for the alert. | Required | 
-| timeout | Timeout to retrieve the artifacts. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the artifacts. Default is 120 seconds. | Optional | 
 
 
 #### Context Output
@@ -462,7 +451,7 @@ Searches and retrieves quarantined emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
+| start_time | Specifies the start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day. | Optional | 
 | end_time | Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. | Optional | 
 | from | The sender email. | Optional | 
 | subject | The email subject. Must be URL encoded. | Optional | 
@@ -667,7 +656,7 @@ Returns reports on selected alerts.
 | alert_id | Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport. | Optional | 
 | infection_id | Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument. | Optional | 
 | infection_type | Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument. Possible values are: malware-object, malware-callback, infection-match, domain-match, web-infection. | Optional | 
-| timeout | Timeout to retrieve the reports. Default is 120. | Optional | 
+| timeout | Timeout to retrieve the reports. Default is 120 seconds. | Optional | 
 
 
 #### Context Output

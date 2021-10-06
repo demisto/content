@@ -1,3 +1,4 @@
+Deprecated. Use CVE Enrichment - Generic v2 instead.
 Enriches CVE using one or more integrations.
 
 ## Dependencies

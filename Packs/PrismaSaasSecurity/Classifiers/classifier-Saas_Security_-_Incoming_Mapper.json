@@ -1,0 +1,80 @@
+{
+  "description": "Maps incoming Saas Security incidents fields.",
+  "feed": false,
+  "id": "Saas Security - Incoming Mapper",
+  "mapping": {
+    "Saas Security Incident": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "Policy URI": {
+          "complex": null,
+          "simple": "policy_page_uri"
+        },
+        "App": {
+          "complex": null,
+          "simple": "app_name"
+        },
+        "Close Time": {
+          "complex": null,
+          "simple": "resolution_date"
+        },
+        "Exposure Level": {
+          "complex": null,
+          "simple": "exposure_level"
+        },
+        "Item Owner": {
+          "complex": null,
+          "simple": "asset_owner_name"
+        },
+        "Item Owner Email": {
+          "complex": null,
+          "simple": "asset_owner_email"
+        },
+        "Last Update Time": {
+          "complex": null,
+          "simple": "updated_at"
+        },
+        "Policy Details": {
+          "complex": null,
+          "simple": "policy_name"
+        },
+        "Policy ID": {
+          "complex": null,
+          "simple": "policy_id"
+        },
+        "SHA256": {
+          "complex": null,
+          "simple": "asset_sha256"
+        },
+        "State": {
+          "complex": null,
+          "simple": "state"
+        },
+        "Tenant Name": {
+          "complex": null,
+          "simple": "tenant"
+        },
+        "category": {
+          "complex": null,
+          "simple": "category"
+        },
+        "name": {
+          "complex": null,
+          "simple": "asset_name"
+        },
+        "occurred": {
+          "complex": null,
+          "simple": "created_at"
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    }
+  },
+  "name": "Saas Security - Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

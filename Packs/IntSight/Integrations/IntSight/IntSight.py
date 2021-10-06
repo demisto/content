@@ -209,10 +209,20 @@ def hash_identifier(hash_val):
 
 def extract_tags(tags):
     pretty_tags = []
-    string_format = "ID: {0} - Name: {1}"
+    string_format = u"ID: {0} - Name: {1}"
     for tag in tags:
         pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
     return pretty_tags
+
+
+def unicode_to_str_recur(obj):
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
 
 
 def get_alerts():
@@ -227,7 +237,8 @@ def get_alerts():
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_context},
         'Contents': alerts_context,
-        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_human_readable, headers=headers, removeNull=False),
+        'HumanReadable': tableToMarkdown('IntSights Alerts', unicode_to_str_recur(alerts_human_readable),
+                                         headers=headers, removeNull=False),
         'ContentsFormat': formats['json']
     })
 

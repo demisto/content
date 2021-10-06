@@ -191,7 +191,8 @@ def get_modified_files_for_testing(git_diff: str) -> ModifiedFiles:
     # Metadata packs
     modified_metadata: Set[str] = set()
     for file_path in types_to_files.get(FileType.METADATA, set()):
-        modified_metadata.add(tools.get_pack_name(file_path))
+        if pack_name := tools.get_pack_name(file_path):
+            modified_metadata.add(pack_name)
 
     modified_tests: Set[str] = types_to_files.get(FileType.TEST_PLAYBOOK, set())  # Modified tests are test playbooks
 

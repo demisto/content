@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Base64Decode - Test"
+        },
+        {
             "playbookID": "SupportMultithreading - Test",
             "is_mockable": false
         },
@@ -48,6 +51,16 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": [
+                "Azure Active Directory Identity Protection",
+                "Demisto REST API"
+            ],
+            "playbookID": "AzureADTest",
+            "fromversion": "6.0.0",
+            "timeout": 3000,
+            "is_mockable": false
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -59,7 +72,9 @@
         },
         {
             "integrations": "FireEye Central Management",
-            "playbookID": "FireEye Central Management - Test"
+            "playbookID": "FireEye Central Management - Test",
+            "fromversion": "5.5.0",
+            "timeout": 500
         },
         {
             "integrations": "FireEyeNX",
@@ -94,18 +109,15 @@
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "memory_threshold": 300,
+            "timeout": 1000
         },
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
             "fromversion": "5.5.0",
+            "memory_threshold": 250,
             "timeout": 1000
-        },
-        {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
         },
         {
             "integrations": "EwsExtension",
@@ -410,7 +422,8 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod"
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Data Loss Prevention",
@@ -424,7 +437,8 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
+            "instance_names": "ms_azure_sc_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Azure Security Center v2",
@@ -461,7 +475,8 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
-            "instance_names": "ms_graph_mail_prod"
+            "instance_names": "ms_graph_mail_prod",
+            "is_mockable": false
         },
         {
             "integrations": "CloudShark",
@@ -519,6 +534,11 @@
             "timeout": 400
         },
         {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -542,7 +562,9 @@
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout": 60000,
-            "fromversion": "4.5.0"
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "ZeroFox",
@@ -564,6 +586,13 @@
             "timeout": 400,
             "pid_threshold": 5,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SlackV3",
+            "playbookID": "SlackV3 TestPB",
+            "timeout": 400,
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -598,10 +627,6 @@
         {
             "integrations": "Akamai WAF",
             "playbookID": "Akamai_WAF-Test"
-        },
-        {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
         },
         {
             "integrations": "abuse.ch SSL Blacklist Feed",
@@ -657,14 +682,6 @@
         },
         {
             "playbookID": "HighlightWords_Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan and Create Incidents - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
@@ -787,9 +804,10 @@
             "playbookID": "CirclIntegrationTest"
         },
         {
-            "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test",
-            "timeout": 300
+            "integrations": "MISP V3",
+            "playbookID": "MISP V3 Test",
+            "timeout": 300,
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -901,7 +919,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1500,
             "nightly": true
         },
@@ -909,39 +927,41 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "5.5.0",
-            "timeout": 1600
+            "fromversion": "6.1.0",
+            "timeout": 2400
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "5.5.0",
-            "timeout": 1600
+            "fromversion": "6.1.0",
+            "timeout": 2400
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
-            "playbookID": "PAN-OS URL Filtering enrichment - Test"
+            "playbookID": "PAN-OS URL Filtering enrichment - Test",
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
-            "playbookID": "Panorama Best Practise - Test"
+            "playbookID": "Panorama Best Practise - Test",
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Tenable.io",
@@ -1013,16 +1033,18 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
+            "instance_names": "edl_update",
             "fromversion": "5.5.0",
             "pid_threshold": 8
         },
         {
             "playbookID": "Test_export_indicators_service",
+            "instance_names": "eis_on_demand",
             "integrations": "ExportIndicators",
             "fromversion": "5.5.0"
         },
@@ -1030,19 +1052,19 @@
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
@@ -1193,7 +1215,16 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.0.0",
+            "toversion": "6.1.9"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Wildfire Test With Polling",
+            "is_mockable": false,
+            "fromversion": "6.2.0",
+            "timeout": 1100
         },
         {
             "integrations": "WildFire-v2",
@@ -1391,8 +1422,8 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM v2 - Test v10.3.0",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfee ESM v2 - Test v11.1.3",
             "fromversion": "5.0.0",
             "is_mockable": false
         },
@@ -1412,8 +1443,8 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM Watchlists - Test v10.3.0",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
             "fromversion": "5.0.0"
         },
         {
@@ -1526,13 +1557,13 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
             "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test",
+            "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
@@ -1543,37 +1574,40 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test",
+            "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
+            "playbookID": "SplunkPy_KV_commands_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_requests_handler",
             "memory_threshold": 500,
             "instance_names": "use_python_requests_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test",
+            "playbookID": "Splunk-Test_requests_handler",
             "memory_threshold": 500,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test",
+            "playbookID": "SplunkPySearch_Test_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
+            "playbookID": "SplunkPy_KV_commands_requests_handler",
             "memory_threshold": 200,
             "instance_names": "use_python_requests_handler"
         },
@@ -1745,7 +1779,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -1762,6 +1797,31 @@
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
             "instance_names": "microsoft_defender_atp_dev",
             "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
+            "instance_names": "microsoft_defender_atp_prod"
+        },
+        {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_device_code"
+        },
+        {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_client_cred"
         },
         {
             "integrations": "Tanium",
@@ -1783,7 +1843,8 @@
         {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
-            "instance_names": "ms_graph_security_prod"
+            "instance_names": "ms_graph_security_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph User",
@@ -1793,7 +1854,8 @@
         {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
-            "instance_names": "ms_graph_user_prod"
+            "instance_names": "ms_graph_user_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Groups",
@@ -1803,7 +1865,8 @@
         {
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test prod",
-            "instance_names": "ms_graph_groups_prod"
+            "instance_names": "ms_graph_groups_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft_Graph_Files",
@@ -1815,7 +1878,8 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -1825,7 +1889,8 @@
         {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test prod",
-            "instance_names": "ms_graph_calendar_prod"
+            "instance_names": "ms_graph_calendar_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1837,7 +1902,8 @@
             "integrations": "Microsoft Graph Device Management",
             "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Graph Device Management",
@@ -1866,12 +1932,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar",
-            "fromversion": "5.5.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
@@ -1889,6 +1949,12 @@
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "VMware Carbon Black EDR v2",
+            "playbookID": "Carbon Black Edr - Test",
+            "is_mockable": false,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -2006,10 +2072,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
@@ -2080,6 +2142,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "GetIndicatorDBotScoreFromCache-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
@@ -2127,6 +2193,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "AlexaV2 Test Playbook",
+            "integrations": "Alexa Rank Indicator v2",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
@@ -2136,7 +2207,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 115,
+            "memory_threshold": 150,
             "pid_threshold": 80
         },
         {
@@ -2149,7 +2220,7 @@
                 "Demisto REST API",
                 "Rasterize"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 160,
             "pid_threshold": 80
         },
         {
@@ -2237,6 +2308,7 @@
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
             "nightly": true,
+            "timeout": 500,
             "fromversion": "5.0.0"
         },
         {
@@ -2380,8 +2452,12 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
+            "integrations": [
+                "Image OCR",
+                "Rasterize"
+            ],
             "timeout": 350,
+            "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -2414,12 +2490,6 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1500
-        },
-        {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 1000
         },
         {
             "playbookID": "PAN-OS EDL Setup v3 Test",
@@ -2472,6 +2542,11 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
+        },
+        {
+            "integrations": "MITRE ATT&CK v2",
+            "playbookID": "FeedMitreAttackv2_test",
+            "memory_threshold": 150
         },
         {
             "integrations": "ANYRUN",
@@ -2613,13 +2688,19 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
             "integrations": "PerceptionPoint",
             "playbookID": "PerceptionPoint Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test-File",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "File Enrichment - VMRay - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -2687,6 +2768,11 @@
         {
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
@@ -2846,6 +2932,10 @@
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
         {
+            "integrations": "SaasSecurity",
+            "playbookID": "SaasSecurity-Test"
+        },
+        {
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
@@ -2883,7 +2973,8 @@
         {
             "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 190
         },
         {
             "integrations": "Carbon Black Enterprise EDR",
@@ -3038,7 +3129,9 @@
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
-            "fromversion": "4.5.0"
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "IBM Resilient Systems",
@@ -3063,7 +3156,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
-            "fromversion": "4.5.0"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "GCP Whitelist Feed",
@@ -3120,7 +3213,8 @@
         {
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 600
         },
         {
             "integrations": "WootCloud",
@@ -3268,7 +3362,8 @@
             "playbookID": "VirusTotalV3-test",
             "instance_names": [
                 "virus_total_v3"
-            ]
+            ],
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "HostIo",
@@ -3323,7 +3418,8 @@
         },
         {
             "integrations": "HPEArubaClearPass",
-            "playbookID": "HPEArubaClearPass_TestPlaybook"
+            "playbookID": "HPEArubaClearPass_TestPlaybook",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -3359,6 +3455,10 @@
             "nightly": true
         },
         {
+            "integrations": "Trend Micro Deep Security",
+            "playbookID": "Trend Micro Deep Security - Test"
+        },
+        {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
@@ -3385,27 +3485,1096 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "VMware Workspace ONE UEM (AirWatch MDM)",
+            "playbookID": "VMware Workspace ONE UEM (AirWatch MDM)-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "CarbonBlackLiveResponseCloud",
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
             "is_mockable": false
+        },
+        {
+            "playbookID": "EDL Performance Test",
+            "instance_names": "edl_auto",
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EDLHey"
+        },
+        {
+            "playbookID": "Export Indicators Performance Test",
+            "instance_names": "eis_auto",
+            "integrations": [
+                "ExportIndicators",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EISHey"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GuardiCore v2",
+            "playbookID": "GuardiCoreV2-Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
+            "timeout": 60000,
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
+        },
+        {
+            "integrations": [
+                "AutoFocus Daily Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
+            "integrations": "SOCRadarIncidents",
+            "playbookID": "SOCRadarIncidents-Test"
+        },
+        {
+            "integrations": "SOCRadarThreatFusion",
+            "playbookID": "SOCRadarThreatFusion-Test"
+        },
+        {
+            "integrations": [
+                "ServiceNow v2",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Incidents Test",
+            "instance_names": "snow_basic_auth",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
+            "playbookID": "SolarWinds-Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "SolarWinds"
+            ]
+        },
+        {
+            "playbookID": "BastilleNetworks-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Bastille Networks"
+            ]
+        },
+        {
+            "playbookID": "bc993d1a-98f5-4554-8075-68a38004c119",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Gamma"
+            ]
+        },
+        {
+            "playbookID": "Service Desk Plus (On-Premise) Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "ServiceDeskPlus (On-Premise)"
+            ]
+        },
+        {
+            "playbookID": "IronDefense Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "IronDefense"
+            ]
+        },
+        {
+            "playbookID": "AgariPhishingDefense-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Agari Phishing Defense"
+            ]
+        },
+        {
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "SecurityIntelligenceServicesFeed"
+            ]
+        },
+        {
+            "playbookID": "FeedTalosTestPlaybook",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "Talos Feed"
+            ]
+        },
+        {
+            "playbookID": "Netscout Arbor Sightline - Test Playbook",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "NetscoutArborSightline"
+            ]
+        },
+        {
+            "playbookID": "test_MsGraphFiles",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft_Graph_Files"
+            ]
+        },
+        {
+            "playbookID": "AlphaVantage Test Playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "AlphaVantage"
+            ]
+        },
+        {
+            "playbookID": "Azure SQL - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Azure SQL Management"
+            ]
+        },
+        {
+            "playbookID": "Sophos Central Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Sophos Central"
+            ]
+        },
+        {
+            "playbookID": "Microsoft Graph Groups - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Graph Groups"
+            ]
+        },
+        {
+            "playbookID": "Humio-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Humio"
+            ]
+        },
+        {
+            "playbookID": "Blueliv_ThreatContext_test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Blueliv ThreatContext"
+            ]
+        },
+        {
+            "playbookID": "Darktrace Test Playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Darktrace"
+            ]
+        },
+        {
+            "playbookID": "Recorded Future Test Playbook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Recorded Future v2"
+            ]
+        },
+        {
+            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Cylance Protect v2"
+            ]
+        },
+        {
+            "playbookID": "EDL Indicator Performance Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "EDL Performance Test - Concurrency",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Venafi - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Venafi"
+            ]
+        },
+        {
+            "playbookID": "3da36d51-3cdf-4120-882a-cee03b038b89",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "FortiManager"
+            ]
+        },
+        {
+            "playbookID": "X509Certificate Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "Pcysys-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Pentera"
+            ]
+        },
+        {
+            "playbookID": "Pentera Run Scan and Create Incidents - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Pentera"
+            ]
+        },
+        {
+            "playbookID": "Google Chronicle Backstory List Detections - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Chronicle Backstory"
+            ]
+        },
+        {
+            "playbookID": "Google Chronicle Backstory List Rules - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Chronicle Backstory"
+            ]
+        },
+        {
+            "playbookID": "McAfee ESM v2 - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "McAfee ESM v2"
+            ]
+        },
+        {
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "McAfee ESM v2"
+            ]
+        },
+        {
+            "playbookID": "Acalvio Sample Playbook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Acalvio ShadowPlex"
+            ]
+        },
+        {
+            "playbookID": "playbook-SophosXGFirewall-test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "sophos_firewall"
+            ]
+        },
+        {
+            "playbookID": "CircleCI-Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "CircleCI"
+            ]
+        },
+        {
+            "playbookID": "XMCyberIntegration-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "XMCyber"
+            ]
+        },
+        {
+            "playbookID": "a60ae34e-7a00-4a06-81ca-2ca6ea1d58ba",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "AnsibleAlibabaCloud"
+            ]
+        },
+        {
+            "playbookID": "Carbon Black Enterprise EDR Process Search Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Carbon Black Enterprise EDR"
+            ]
+        },
+        {
+            "playbookID": "Logzio - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Logz.io"
+            ]
+        },
+        {
+            "playbookID": "PAN-OS Create Or Edit Rule Test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Panorama"
+            ]
+        },
+        {
+            "playbookID": "GoogleCloudSCC-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "GoogleCloudSCC"
+            ]
+        },
+        {
+            "playbookID": "SailPointIdentityNow-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "SailPointIdentityNow"
+            ]
+        },
+        {
+            "playbookID": "playbook-Cyberint_Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "cyberint"
+            ]
+        },
+        {
+            "playbookID": "Druva-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Druva Ransomware Response"
+            ]
+        },
+        {
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 3",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "LogPoint SIEM Integration"
+            ]
+        },
+        {
+            "playbookID": "TestGraPlayBook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Gurucul-GRA"
+            ]
+        },
+        {
+            "playbookID": "TestGreatHornPlaybook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "GreatHorn"
+            ]
+        },
+        {
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Defender Advanced Threat Protection"
+            ]
+        },
+        {
+            "playbookID": "Polygon-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Group-IB TDS Polygon"
+            ]
+        },
+        {
+            "playbookID": "TrustwaveSEG-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "trustwave secure email gateway"
+            ]
+        },
+        {
+            "playbookID": "MicrosoftGraphMail-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "MicrosoftGraphMail"
+            ]
+        },
+        {
+            "playbookID": "PassiveTotal_v2-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "PassiveTotal v2",
+                "PassiveTotal"
+            ]
+        },
+        {
+            "playbookID": "02ea5cef-3169-4b17-8f4d-604b44e6348a",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Cognni"
+            ]
+        },
+        {
+            "playbookID": "playbook-InsightIDR-test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Rapid7 InsightIDR"
+            ]
+        },
+        {
+            "playbookID": "Cofense Intelligence v2 test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "CofenseIntelligenceV2"
+            ]
+        },
+        {
+            "playbookID": "opsgenie-test-playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Opsgeniev2"
+            ]
+        },
+        {
+            "playbookID": "FraudWatch-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "FraudWatch"
+            ]
+        },
+        {
+            "playbookID": "SepioPrimeAPI-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Sepio"
+            ]
+        },
+        {
+            "playbookID": "test playbook - QRadarCorrelations",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "QRadar_v2",
+                "QRadar v3",
+                "QRadar"
+            ]
+        },
+        {
+            "playbookID": "SX - PC - Test Playbook",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "PingCastle"
+            ]
+        },
+        {
+            "playbookID": "JARM-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "JARM"
+            ]
+        },
+        {
+            "playbookID": "Playbook-HYASInsight-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "HYAS Insight"
+            ]
+        },
+        {
+            "playbookID": "ConcentricAI Demo Playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "ConcentricAI"
+            ]
+        },
+        {
+            "playbookID": "Cyberpion-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Cyberpion"
+            ]
+        },
+        {
+            "playbookID": "CrowdStrike OpenAPI - Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "CrowdStrike OpenAPI"
+            ]
+        },
+        {
+            "playbookID": "Smokescreen IllusionBLACK-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Smokescreen IllusionBLACK"
+            ]
+        },
+        {
+            "playbookID": "TestCymptomPlaybook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Cymptom"
+            ]
+        },
+        {
+            "playbookID": "GitLab-test-playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "GitLab",
+                "LGTM",
+                "MinIO",
+                "Docker Engine API"
+            ]
+        },
+        {
+            "playbookID": "LGTM-test-playbook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "GitLab",
+                "LGTM",
+                "MinIO",
+                "Docker Engine API"
+            ]
+        },
+        {
+            "playbookID": "playbook-MinIO-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "GitLab",
+                "LGTM",
+                "MinIO",
+                "Docker Engine API"
+            ]
+        },
+        {
+            "playbookID": "MSGraph_DeviceManagement_Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Graph Device Management"
+            ]
+        },
+        {
+            "playbookID": "G Suite Security Alert Center-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "G Suite Security Alert Center"
+            ]
+        },
+        {
+            "playbookID": "VerifyOOBV2Predictions-Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "PAN OS EDL Management - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "palo_alto_networks_pan_os_edl_management"
+            ]
+        },
+        {
+            "playbookID": "Group-IB Threat Intelligence & Attribution-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Group-IB Threat Intelligence & Attribution Feed",
+                "Group-IB Threat Intelligence & Attribution"
+            ]
+        },
+        {
+            "playbookID": "CounterCraft - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CounterCraft Deception Director"
+            ]
+        },
+        {
+            "playbookID": "Microsoft Graph Security Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Graph"
+            ]
+        },
+        {
+            "playbookID": "Azure Kubernetes Services - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Azure Kubernetes Services"
+            ]
+        },
+        {
+            "playbookID": "Cortex XDR - IOC - Test without fetch",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "Cortex XDR - IR",
+                "Cortex XDR - IOC"
+            ]
+        },
+        {
+            "playbookID": "PaloAltoNetworks_IoT-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Palo Alto Networks IoT"
+            ]
+        },
+        {
+            "playbookID": "GreyNoise-Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "GreyNoise Community",
+                "GreyNoise"
+            ]
+        },
+        {
+            "playbookID": "xMatters-Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "xMatters"
+            ]
+        },
+        {
+            "playbookID": "TestCentrifyPlaybook",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Centrify Vault"
+            ]
+        },
+        {
+            "playbookID": "Infinipoint-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Infinipoint"
+            ]
+        },
+        {
+            "playbookID": "CyrenThreatInDepth-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "CyrenThreatInDepth"
+            ]
+        },
+        {
+            "playbookID": "CVSS Calculator Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "7d8ac1af-2d1e-4ed9-875c-d3257d2c6830",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "AnsibleHCloud"
+            ]
+        },
+        {
+            "playbookID": "Archer-Test-Playbook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "RSA Archer",
+                "RSA Archer v2"
+            ]
+        },
+        {
+            "playbookID": "SMB test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Server Message Block (SMB) v2",
+                "Server Message Block (SMB)"
+            ]
+        },
+        {
+            "playbookID": "Cymulate V1 Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "cymulate_v2",
+                "Cymulate"
+            ]
+        },
+        {
+            "playbookID": "TestUptycs",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Uptycs"
+            ]
+        },
+        {
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Graph Calendar"
+            ]
+        },
+        {
+            "playbookID": "VMRay-Test-URL",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "vmray"
+            ]
+        },
+        {
+            "playbookID": "Thycotic-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Thycotic"
+            ]
+        },
+        {
+            "playbookID": "Test Playbook TrendMicroDDA",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Trend Micro Deep Discovery Analyzer Beta"
+            ]
+        },
+        {
+            "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ]
+        },
+        {
+            "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CrowdStrike Falcon X"
+            ]
+        },
+        {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
+        },
+        {
+            "playbookID": "Phishing v2 - Test - Actual Incident",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "PCAP Search test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "PCAP File Carving Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Trello Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Trello"
+            ]
+        },
+        {
+            "playbookID": "Google Drive Permissions Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "GoogleDrive"
+            ]
+        },
+        {
+            "playbookID": "RiskIQDigitalFootprint-Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "RiskIQDigitalFootprint"
+            ]
+        },
+        {
+            "playbookID": "playbook-feodoteackerhash_test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "Feodo Tracker IP Blocklist Feed",
+                "Feodo Tracker Hashes Feed"
+            ]
+        },
+        {
+            "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "Feodo Tracker IP Blocklist Feed",
+                "Feodo Tracker Hashes Feed"
+            ]
+        },
+        {
+            "playbookID": "CyberTotal_TestPlaybook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "CyberTotal"
+            ]
+        },
+        {
+            "playbookID": "Deep_Instinct-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Deep Instinct"
+            ]
+        },
+        {
+            "playbookID": "Zabbix - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Zabbix"
+            ]
+        },
+        {
+            "playbookID": "GCS Object Policy (ACL) - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GCS Bucket Management - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GCS Bucket Policy (ACL) - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "GCS Object Operations - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Cloud Storage"
+            ]
+        },
+        {
+            "playbookID": "OpenLDAP - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "OpenLDAP"
+            ]
+        },
+        {
+            "playbookID": "Splunk-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "SplunkPy"
+            ]
+        },
+        {
+            "playbookID": "SplunkPySearch_Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "SplunkPy"
+            ]
+        },
+        {
+            "playbookID": "SplunkPy KV commands",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "SplunkPy"
+            ]
+        },
+        {
+            "playbookID": "SplunkPy-Test-V2",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "SplunkPy"
+            ]
+        },
+        {
+            "playbookID": "FireEye-Detection-on-Demand-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "FireEye Detection on Demand"
+            ]
+        },
+        {
+            "playbookID": "TestIPQualityScorePlaybook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "IPQualityScore"
+            ]
+        },
+        {
+            "playbookID": "Send Email To Recipients",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "EWS Mail Sender"
+            ]
+        },
+        {
+            "playbookID": "Endace-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Endace"
+            ]
+        },
+        {
+            "playbookID": "StringToArray_test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "URLSSLVerification_test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IsRFC1918-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Base64 File in List Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "DbotAverageScore-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "ExtractEmailV2-Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IsUrlPartOfDomain Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "URLEncode-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IsIPInRanges - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Delete Context Subplaybook Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "TruSTAR v2-Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "TruSTAR v2",
+                "TruSTAR"
+            ]
+        },
+        {
+            "playbookID": "Relationships scripts - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "Test-CreateDBotScore-With-Reliability",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "ValidateContent - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DeleteContext-auto-subplaybook-test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Process Email - Generic - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "XsoarPowershellTesting",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "memory_threshold": 160
+        },
+        {
+            "playbookID": "Analyst1 Integration Demonstration - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Analyst1",
+                "illuminate"
+            ]
+        },
+        {
+            "playbookID": "Analyst1 Integration Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Analyst1",
+                "illuminate"
+            ]
+        },
+        {
+            "playbookID": "Cofense Triage v3-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Cofense Triage v2",
+                "Cofense Triage v3",
+                "Cofense Triage"
+            ]
+        },
+        {
+            "playbookID": "SailPointIdentityIQ-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "SailPointIdentityIQ"
+            ]
+        },
+        {
+            "playbookID": "Test - ExtFilter",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Test - ExtFilter Main",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Microsoft Teams - Test",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Microsoft Teams Management",
+                "Microsoft Teams"
+            ]
+        },
+        {
+            "playbookID": "TestTOPdeskPlaybook",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "TOPdesk"
+            ]
+        },
+        {
+            "integrations": "Cortex XDR - XQL Query Engine",
+            "playbookID": "Cortex XDR - XQL Query - Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "playbookID": "ListUsedDockerImages - Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "integrations": "CustomIndicatorDemo",
+            "playbookID": "playbook-CustomIndicatorDemo-test"
+        },
+        {
+            "integrations": "Azure Sentinel",
+            "playbookID": "TestAzureSentinelPlaybookV2"
         }
     ],
     "skipped_tests": {
+        "MISP V2 Test": "The integration is deprecated as we released MISP V3",
+        "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
-        "Phishing Classifier V2 ML Test": "Issue 26066",
-        "RedLockTest": "Issue 24600",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
-        "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -3414,18 +4583,14 @@
         "ArcSight Logger test": "Issue 19117",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 37957",
         "Cherwell Example Scripts - test": "Issue 26780",
@@ -3441,56 +4606,86 @@
         "CuckooTest": "Issue 25601",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
-        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Cre - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
-        "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
-        "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",
-        "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
-        "Google-Vault-Generic-Test": "Issue 24347",
         "GmailTest": "Issue 27057",
-        "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "PAN-OS - Block IP - Static Address Group Test": "Issue 37021",
         "PAN-OS - Block IP - Custom Block Rule Test": "Issue 37023",
         "Centreon-Test-Playbook": "Issue 37022",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "TestEmailRepIOPlaybook": "Issue 33219",
         "get_original_email_-_ews-_test": "Issue 27571",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
-        "Git_Integration-Test": "Issue 37800",
+        "Trend Micro Deep Security - Test": "outsourced",
+        "Microsoft Teams - Test": "Issue 38263",
+        "QualysVulnerabilityManagement-Test": "Issue 38640",
+        "test playbook - QRadarCorrelations": "Issue 38639",
+        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
+        "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
+        "iDefense_v2_Test": "Issue 40126",
+        "EWS Mail Sender Test": "Issue 27944",
+        "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
+        "Feed iDefense Test": "Issue 34035",
         "FireEyeNX-Test": "Issue 33216",
-        "Microsoft Teams - Test": "Issue 38263"
+        "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
+        "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
+        "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
+        "Microsoft Teams Management - Test": "Issue 33410",
+        "RedLockTest": "Issue 24600",
+        "MicrosoftGraphMail-Test_prod": "Issue 40125",
+        "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
+        "Domain Enrichment - Generic v2 - Test": "Issue 40862",
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "TestIPQualityScorePlaybook": "Issue 40915",
+        "VerifyOOBV2Predictions-Test": "Issue 37947",
+        "HybridAnalysis-Test": "Issue 26599",
+        "Infoblox Test": "Issue 25651",
+        "Carbon Black Edr - Test": "Issue 40132",
+        "Phishing v2 - Test - Actual Incident": "Issue 41322",
+        "AutoFocus V2 test": "Issue 26464",
+        "Kaspersky Security Center - Test": "Issue 36487",
+        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Ipstack": "Usage limit reached (Issue 38063)",
+        "AnsibleAlibabaCloud": "No instance - issue 40447",
+        "AnsibleAzure": "No instance - issue 40447",
+        "AnsibleCiscoIOS": "No instance - issue 40447",
+        "AnsibleCiscoNXOS": "No instance - issue 40447",
+        "AnsibleHCloud": "No instance - issue 40447",
+        "AnsibleKubernetes": "No instance - issue 40447",
+        "AnsibleACME": "No instance - issue 40447",
+        "AnsibleDNS": "No instance - issue 40447",
+        "AnsibleLinux": "No instance - issue 40447",
+        "AnsibleOpenSSL": "No instance - issue 40447",
+        "AnsibleMicrosoftWindows": "No instance - issue 40447",
+        "AnsibleVMware": "No instance - issue 40447",
         "SolarWinds": "No instance - developed by Crest",
+        "SOCRadarIncidents": "No instance - developed by partner",
+        "SOCRadarThreatFusion": "No instance - developed by partner",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
+        "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3547,7 +4742,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
-        "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
@@ -3556,7 +4750,6 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
-        "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
         "SNDBOX": "Issue 28826",
@@ -3570,16 +4763,13 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        "Infoblox": "Unstable instance, issue 25651",
         
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         
         "_comment4": "~~~ OTHER ~~~",
-        "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Zoom": "Issue 19832",
@@ -3590,10 +4780,11 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
+        "Azure Sentinel": "issue with the tenant_id parameter"
     },
     "nightly_integrations": [
-        "Lastline v2",
+        "Laline v2",
         "TruSTAR",
         "VulnDB"
     ],
@@ -3624,9 +4815,9 @@
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
+        "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
@@ -3666,6 +4857,7 @@
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
+        "AWS - IAM": "Issue 24926",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3689,13 +4881,18 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
+        "MISP V3": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
-        "GitHub": "Cannot use proxy"
+        "GitHub": "Cannot use proxy",
+        "LogRhythm": "Cannot use proxy",
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
+        "RSA Archer v2": "cannot connect to proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",
         "Amazon DynamoDB",
         "AWS - ACM",
+        "AWS - Security Hub",
         "Cryptocurrency",
         "SNDBOX",
         "Whois",
@@ -3740,10 +4937,13 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "Mail Listener v2"
+        "Mail Listener v2",
+        "EDL",
+        "Create-Mock-Feed-Relationships"
     ],
     "private_tests": [
-        "HelloWorldPremium_Scan-Test"
+        "HelloWorldPremium_Scan-Test",
+        "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
         
@@ -3783,7 +4983,7 @@
                 "memory_threshold": 140
             },
             "demisto/powershell-ubuntu": {
-                "pid_threshold": 40,
+                "pid_threshold": 45,
                 "memory_threshold": 200
             },
             "demisto/boto3": {

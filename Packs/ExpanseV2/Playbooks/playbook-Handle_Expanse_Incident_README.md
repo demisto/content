@@ -28,6 +28,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS - Block Destination Service on Firewall
 * Expanse Load-Create List
 * Expanse Attribution
+* Expanse VM Enrich
+* Expanse Unmanaged Cloud
 
 ### Integrations
 ExpanseV2

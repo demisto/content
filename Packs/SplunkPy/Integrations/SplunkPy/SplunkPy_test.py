@@ -184,6 +184,8 @@ def test_raw_to_dict():
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
+    assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {'drilldown_search': 'key IN (test1,test2)'}
+
 
 data_test_replace_keys = [
     ({}, {}),
@@ -627,7 +629,7 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
 @pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
     ('field|s', {'field': '1'}, 'field', '1'),
     ('field', {'field': '1'}, 'field', '1'),
-    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1, value=2'}, 'field', '1'),
     ('x', {'y': '2'}, '', '')
 ])
 def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
@@ -681,8 +683,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
     ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
-    ({'_raw': '1233,user=u1'}, 'user', ['user'], 'user="u1"'),
-    ({'user': ['u1', 'u2'], '_raw': '1321,src_user=u3'}, 'user', ['user', 'src_user'],
+    ({'_raw': '1233, user=u1'}, 'user', ['user'], 'user="u1"'),
+    ({'user': ['u1', 'u2'], '_raw': '1321, src_user=u3'}, 'user', ['user', 'src_user'],
      '(user="u1" OR user="u2" OR user="u3")'),
     ({}, 'prefix', ['field'], '')
 ])
@@ -813,6 +815,40 @@ def test_get_modified_remote_data_command(mocker):
     results = demisto.results.call_args[0][0]['Contents']
     assert demisto.results.call_count == 1
     assert results == [updated_incidet_review['rule_id']]
+
+
+def test_edit_notable_event__failed_to_update(mocker, requests_mock):
+    """
+    Given
+    - notable event with id ID100
+
+    When
+    - updating the event with invalid owner 'dbot'
+    - the service should return error string message 'ValueError: Invalid owner value.'
+
+    Then
+    - ensure the error message parsed correctly and returned to the user
+    """
+    test_base_url = 'https://test.url.com:8089/'
+    test_token = 'token12345'
+    test_args = {
+        'eventIDs': 'ID100',
+        'owner': 'dbot'
+    }
+    mocker.patch.object(demisto, 'results')
+
+    requests_mock.post('{}services/notable_update'.format(test_base_url), json='ValueError: Invalid owner value.')
+
+    splunk.splunk_edit_notable_event_command(
+        base_url=test_base_url,
+        token=test_token,
+        auth_token=None,
+        args=test_args
+    )
+
+    assert demisto.results.call_count == 1
+    error_message = demisto.results.call_args[0][0]['Contents']
+    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
 
 
 @pytest.mark.parametrize('args, params, call_count, success', [

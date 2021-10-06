@@ -1,0 +1,17 @@
+{
+    "id": "5d407889-8659-46ab-86c5-4f227302df78",
+    "name": "Group\\Cactus",
+    "groups": {
+        "total": 0,
+        "itemsCount": 0,
+        "items": []
+    },
+    "tenant": {
+        "id": "31932ba7-0c2d-43c8-95b8-8f3d2e2fce86"
+    },
+    "source": {
+        "type": "custom"
+    },
+    "createdAt": "2018-07-21T18:09:12.789Z",
+    "updatedAt": "2021-07-03T04:14:31.396Z"
+} 

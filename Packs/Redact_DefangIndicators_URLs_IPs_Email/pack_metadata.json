@@ -1,0 +1,17 @@
+{
+    "name": "Redact/Defang Indicators (URLs, IPs, Email)",
+    "description": "Automation to redact (or defang/obfuscate) indicators before sharing. Works with IP, URLs and email addresses. Defining a searchkey lets you also replace words like company name or such with <REDACTET>",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2021-06-14T15:33:17Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ]
+}

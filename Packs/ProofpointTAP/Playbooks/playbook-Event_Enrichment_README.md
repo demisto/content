@@ -28,7 +28,3 @@ There are no inputs for this playbook.
 | --- | --- | --- |
 | Proofpoint.Report | Proofpoint Report. | unknown |
 | Proofpoint.Campaign | Proofpoint Campaign.  | unknown |
-
-## Playbook Image
----
-![Event Enrichment](Insert the link to your image here)

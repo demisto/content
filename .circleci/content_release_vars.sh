@@ -1,3 +1,3 @@
-export CONTENT_VERSION="21.6.1"
+export CONTENT_VERSION="21.9.1"
 export SERVER_VERSION="6.0.0"
-export GIT_SHA1="e1b74c2937dcb9966044dea2b45b391c16afa664" # guardrails-disable-line disable-secrets-detection
+export GIT_SHA1="a3f8f071020fd8b42523c6f7bf31c66f8769fc61" # guardrails-disable-line disable-secrets-detection

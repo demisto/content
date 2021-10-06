@@ -68,8 +68,8 @@ tags:
 - PhishLabs
 timeout: 3.6µs
 type: python
-runas: DBotWeakRole
-dockerimage: demisto/python3:3.7.3.221
+runas: DBotRole
+dockerimage: demisto/python3:3.9.7.24076
 subtype: python3
 runonce: false
 dependson:

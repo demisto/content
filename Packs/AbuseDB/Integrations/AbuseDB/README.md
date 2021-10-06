@@ -131,6 +131,16 @@
 <td style="width: 58px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
 </tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -236,6 +246,16 @@
 <td style="width: 271px;">AbuseIPDB.IP.Malicious.Detections</td>
 <td style="width: 55px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
 </tr>
 </tbody>
 </table>

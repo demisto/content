@@ -381,7 +381,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Comma-separated list of scan IDs. 
+      description: Comma-separated list of scan IDs.
       isArray: true
       name: scanId
       required: true
@@ -423,8 +423,9 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
+  subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.24066
 tests:
 - Tenable.io test
 fromversion: 5.0.0

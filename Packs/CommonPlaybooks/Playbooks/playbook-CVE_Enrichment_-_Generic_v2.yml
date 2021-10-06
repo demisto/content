@@ -279,6 +279,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
   '11':
     id: '11'
     taskid: 81a2e52a-0a2a-4791-8a55-e4249923b7b3

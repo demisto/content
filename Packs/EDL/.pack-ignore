@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:playbook-PAN-OS_EDL_Service_Configuration_README.md]
 ignore=RM106
+
+[file:playbook-PAN-OS_EDL_Service_Configuration.yml]
+ignore=PB116

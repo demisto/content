@@ -1,6 +1,6 @@
   
 default:
-  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18999
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.24117
   artifacts:
     expire_in: 30 days
     paths:
@@ -17,7 +17,8 @@ stages:
 
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
-  GCS_MARKET_BUCKET: "marketplace-dist-dev"
+  GCS_MARKET_BUCKET: "marketplace-dist"
+  STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-content-team"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
@@ -25,16 +26,14 @@ variables:
   PYTHONPATH: "/builds/xsoar/content"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   FEATURE_BRANCH_NAME: "v4.5.0"
-# Gitlab CI/CD uses shallow fetch with default depth of 50, these arguments are used to override it
-# See here for more about that https://docs.gitlab.com/ee/ci/pipelines/settings.html#git-shallow-clone  # disable-secrets-detection
-  GIT_STRATEGY: clone
-  GIT_DEPTH: 0
   IFRA_ENV_TYPE: "Content-Env"
-# Remove this when https://github.com/demisto/etc/issues/36775 is done.
-  SKIP_PRIVATE_BUILD: "true"
+  SKIP_PRIVATE_BUILD: "true"  # Remove this when https://github.com/demisto/etc/issues/36775 is done.
+  GIT_DEPTH: 0
+  GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
-  GCS_PRODUCTION_BUCKET: "marketplace-dist" # change to marketplace-dist this after testing period
+  GCS_PRODUCTION_BUCKET: "marketplace-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
+  SDK_REF: "master" # The default sdk branch to use
 
 
 include:
@@ -43,3 +42,4 @@ include:
   - local: .gitlab/ci/bucket-upload.yml
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
+  - local: .gitlab/ci/miscellaneous.yml

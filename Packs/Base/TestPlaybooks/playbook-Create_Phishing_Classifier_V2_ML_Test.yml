@@ -2,29 +2,27 @@ elasticcommonfields: {}
 id: Create Phishing Classifier V2 ML Test
 version: -1
 name: Create Phishing Classifier V2 ML Test
-fromversion: 5.0.0
 description: Test CreatePhishingClassifierML playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f25e4126-b09b-4927-8046-54e713eca4fc
+    taskid: 4aeda861-fb7f-490a-89ce-397ea2c1fbca
     type: start
     task:
-      elasticcommonfields: {}
-      id: f25e4126-b09b-4927-8046-54e713eca4fc
+      id: 4aeda861-fb7f-490a-89ce-397ea2c1fbca
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 50
         }
       }
@@ -35,11 +33,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: be7f8053-071f-40f0-86f5-61b4c6718015
+    taskid: 8bbf2fce-f2f1-49fc-8230-fe5b64b5a3c2
     type: regular
     task:
-      elasticcommonfields: {}
-      id: be7f8053-071f-40f0-86f5-61b4c6718015
+      id: 8bbf2fce-f2f1-49fc-8230-fe5b64b5a3c2
       version: -1
       name: Create incidents
       scriptName: TestCreateIncidentsForPhishingClassifier
@@ -58,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 695,
+          "y": 1010
         }
       }
     note: false
@@ -69,14 +66,14 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2a277a13-2077-4016-82ce-ba7bb2a38f83
+    taskid: 29dd84d6-efb8-4487-8003-141b98934662
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 2a277a13-2077-4016-82ce-ba7bb2a38f83
+      id: 29dd84d6-efb8-4487-8003-141b98934662
       version: -1
       name: Predict Tag1
-      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -85,10 +82,10 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      emailBody: {}
       emailSubject:
-        simple: closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
-      hashSeed: {}
+        simple: closed church squeamish squeamish moaning closed closed closed church
+          squeamish squeamish moaning closed closed closed church squeamish squeamish
+          moaning closed closed
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -97,14 +94,12 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
-      topWordsLimit: {}
-      wordThreshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1245
+          "x": 695,
+          "y": 1535
         }
       }
     note: false
@@ -114,11 +109,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 57a7f303-d296-4cb7-89e2-54adb14acdc9
+    taskid: f7a44f7e-0b35-4447-8424-b1d49db3235b
     type: title
     task:
-      elasticcommonfields: {}
-      id: 57a7f303-d296-4cb7-89e2-54adb14acdc9
+      id: f7a44f7e-0b35-4447-8424-b1d49db3235b
       version: -1
       name: Done
       type: title
@@ -128,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2645
+          "x": 695,
+          "y": 2935
         }
       }
     note: false
@@ -139,11 +133,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f1ef0648-c1a6-4fe4-8e15-4ff0ba492e00
+    taskid: 179f940e-7313-4fa5-8f5e-ba522c765669
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f1ef0648-c1a6-4fe4-8e15-4ff0ba492e00
+      id: 179f940e-7313-4fa5-8f5e-ba522c765669
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -152,21 +145,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
-      - "23"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": 695,
+          "y": 835
         }
       }
     note: false
@@ -176,11 +164,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7b25e71b-6f0a-439c-8c83-26cf2b995eff
+    taskid: 2d2c5687-3642-4fec-8a38-e0752ea4d398
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7b25e71b-6f0a-439c-8c83-26cf2b995eff
+      id: 2d2c5687-3642-4fec-8a38-e0752ea4d398
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -191,18 +178,14 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: DBotPredictPhishingWords
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1595
+          "x": 695,
+          "y": 1885
         }
       }
     note: false
@@ -212,14 +195,14 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 3e9344db-ef8e-429e-80a0-cec1f2e739a7
+    taskid: 5d168b90-65c6-4f98-8759-3a9fcddf28b9
     type: playbook
     task:
-      elasticcommonfields: {}
-      id: 3e9344db-ef8e-429e-80a0-cec1f2e739a7
+      id: 5d168b90-65c6-4f98-8759-3a9fcddf28b9
       version: -1
       name: DBot Create Phishing Classifier V2
-      description: Create a phishing classifier using machine learning technique, based on email content
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
       playbookName: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
@@ -236,7 +219,6 @@ tasks:
         simple: ${EmailTagKey}
       emailTextKey:
         simple: ${EmailBodyKey}
-      hashSeed: {}
       historicalDataFileListName:
         simple: test_phishing_historic_data
       incidentTypes:
@@ -262,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 695,
+          "y": 1185
         }
       }
     note: false
@@ -273,11 +255,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e432accb-1fa0-4e6a-8c66-0f4193bdae28
+    taskid: c786f22a-ce44-4021-84f6-1c74a3157049
     type: condition
     task:
-      elasticcommonfields: {}
-      id: e432accb-1fa0-4e6a-8c66-0f4193bdae28
+      id: c786f22a-ce44-4021-84f6-1c74a3157049
       version: -1
       name: Model evaluation exist
       type: condition
@@ -298,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
+          "x": 695,
+          "y": 1360
         }
       }
     note: false
@@ -309,11 +290,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: b36e8df0-e335-4df5-8641-ded1b2383bda
+    taskid: c607874c-eac1-404d-8c31-620e541c5b7c
     type: condition
     task:
-      elasticcommonfields: {}
-      id: b36e8df0-e335-4df5-8641-ded1b2383bda
+      id: c607874c-eac1-404d-8c31-620e541c5b7c
       version: -1
       name: 'Check the prediction label: Tag1'
       type: condition
@@ -337,8 +317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1420
+          "x": 695,
+          "y": 1710
         }
       }
     note: false
@@ -348,11 +328,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 71b7d37c-65cc-40ba-810f-d4e64a258ae9
+    taskid: e1de53ff-a890-4c38-863a-3171f8705bc8
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 71b7d37c-65cc-40ba-810f-d4e64a258ae9
+      id: e1de53ff-a890-4c38-863a-3171f8705bc8
       version: -1
       name: 'Check the prediction label: Tag2'
       type: condition
@@ -376,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1945
+          "x": 695,
+          "y": 2235
         }
       }
     note: false
@@ -387,14 +366,14 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 523d7c79-9890-46a7-803b-8ea9ba7afc3f
+    taskid: b783dbbf-bcbf-47be-8a5d-22dcc526df0e
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 523d7c79-9890-46a7-803b-8ea9ba7afc3f
+      id: b783dbbf-bcbf-47be-8a5d-22dcc526df0e
       version: -1
       name: Predict Tag2
-      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -403,10 +382,10 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      emailBody: {}
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
-      hashSeed: {}
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
+          faulty waves type boat argument ntidy boy substance faulty waves type boat
+          argument
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -415,14 +394,12 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
-      topWordsLimit: {}
-      wordThreshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1770
+          "x": 695,
+          "y": 2060
         }
       }
     note: false
@@ -432,14 +409,14 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: ef49e53d-c826-4e42-8bfa-a4efdb663b00
+    taskid: cb137c7c-1ba3-4fea-8356-f4ecd3bf6193
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ef49e53d-c826-4e42-8bfa-a4efdb663b00
+      id: cb137c7c-1ba3-4fea-8356-f4ecd3bf6193
       version: -1
       name: Predict Tag3
-      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -448,10 +425,10 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      emailBody: {}
       emailSubject:
-        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
-      hashSeed: {}
+        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend
+          trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal
+          thread succeed gray last fall fall
       labelProbabilityThreshold:
         simple: "0"
       minTextLength:
@@ -460,14 +437,12 @@ tasks:
         simple: test_phishing_model
       modelStoreType:
         simple: mlModel
-      topWordsLimit: {}
-      wordThreshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2295
+          "x": 695,
+          "y": 2585
         }
       }
     note: false
@@ -477,11 +452,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 40a1f79e-69b6-4d59-85a5-fc9e96613b5a
+    taskid: ed783755-907d-4097-8974-96034ab3b233
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 40a1f79e-69b6-4d59-85a5-fc9e96613b5a
+      id: ed783755-907d-4097-8974-96034ab3b233
       version: -1
       name: clear context
       scriptName: DeleteContext
@@ -492,18 +466,14 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: DBotPredictPhishingWords
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2120
+          "x": 695,
+          "y": 2410
         }
       }
     note: false
@@ -513,11 +483,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: bdfd5a5c-b71b-4aa8-8192-62fa8605c89b
+    taskid: 0e035d46-6829-41af-830c-6dfc7353dde1
     type: condition
     task:
-      elasticcommonfields: {}
-      id: bdfd5a5c-b71b-4aa8-8192-62fa8605c89b
+      id: 0e035d46-6829-41af-830c-6dfc7353dde1
       version: -1
       name: 'Check the prediction label: Tag3'
       type: condition
@@ -541,8 +510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2470
+          "x": 695,
+          "y": 2760
         }
       }
     note: false
@@ -550,47 +519,34 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: b7c0abfd-08d0-4473-851d-f599c9cd4cfc
+    
+  "24":
+    id: "24"
+    taskid: 69c9af85-903f-4d2a-8540-fd48adb0c89b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b7c0abfd-08d0-4473-851d-f599c9cd4cfc
+      id: 69c9af85-903f-4d2a-8540-fd48adb0c89b
       version: -1
-      name: Load WordTokenizerNLP Docker
-      description: Tokenize the words in a input text.
-      scriptName: WordTokenizerNLP
+      name: Load prediction docker
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "28"
     scriptarguments:
-      cleanHtml:
-        simple: "no"
-      encoding: {}
-      hashWordWithSeed: {}
-      isValueJson: {}
-      removeLineBreaks: {}
-      removeNonAlphaWords: {}
-      removeNonEnglishWords: {}
-      removePunctuation: {}
-      removeStopWords: {}
-      replaceEmails: {}
-      replaceNumbers: {}
-      replaceUrls: {}
-      useLemmatization: {}
-      value:
-        simple: hello
+      modelName:
+        simple: dummy
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 340
         }
       }
     note: false
@@ -598,32 +554,36 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: ceb8aa62-6cd9-4767-82b5-f1d025efc946
+    
+  "25":
+    id: "25"
+    taskid: ebf1c9ed-92a7-4633-8b37-42fb8570269f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ceb8aa62-6cd9-4767-82b5-f1d025efc946
+      id: ebf1c9ed-92a7-4633-8b37-42fb8570269f
       version: -1
-      name: Wait for docker download
-      description: Sleep for X seconds
-      scriptName: Sleep
+      name: Load evaluation docker
+      description: Finds a threshold for ML model, and performs an evaluation based
+        on it
+      scriptName: GetMLModelEvaluation
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "28"
     scriptarguments:
-      seconds:
-        simple: "60"
+      yPred:
+        simple: dummy
+      yTrue:
+        simple: dummy
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 480,
+          "y": 340
         }
       }
     note: false
@@ -631,13 +591,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: 7e50dfe8-bdc7-4218-83d1-a4d98df92cb2
+  "26":
+    id: "26"
+    taskid: bb61e790-fd72-49e8-842b-98933451305c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 7e50dfe8-bdc7-4218-83d1-a4d98df92cb2
+      id: bb61e790-fd72-49e8-842b-98933451305c
+      version: -1
+      name: Load training docker
+      description: Train a machine learning text classifier.
+      scriptName: DBotTrainTextClassifierV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      input:
+        simple: dummy_input
+      tagField:
+        simple: dummy
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    
+  "27":
+    id: "27"
+    taskid: 8e33ab3c-0c36-494a-8b2d-02a838b437a8
+    type: regular
+    task:
+      id: 8e33ab3c-0c36-494a-8b2d-02a838b437a8
       version: -1
       name: Load Preprocessing Docker
       description: Pre-process text data for the machine learning text classifier.
@@ -647,26 +642,106 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "28"
     scriptarguments:
-      cleanHTML: {}
-      dedupThreshold: {}
-      hashSeed: {}
       input:
         simple: dummy input
-      inputType: {}
-      outputFormat: {}
-      preProcessType: {}
-      removeShortTextThreshold: {}
-      textFields: {}
-      whitelistFields: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 285056a4-c36d-4fe3-836a-0635bbcb2902
+    type: regular
+    task:
+      id: 285056a4-c36d-4fe3-836a-0635bbcb2902
+      version: -1
+      name: Wait for docker download
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 36d855bc-d9a5-47f7-8f3e-5b72ab8fe194
+    type: title
+    task:
+      id: 36d855bc-d9a5-47f7-8f3e-5b72ab8fe194
+      version: -1
+      name: Begin tests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 26c99254-1dd9-4faa-8c80-0762360a7221
+    type: title
+    task:
+      id: 26c99254-1dd9-4faa-8c80-0762360a7221
+      version: -1
+      name: Load all dockers
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "26"
+      - "25"
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
         }
       }
     note: false
@@ -679,8 +754,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
-        "width": 810,
+        "height": 2950,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
@@ -688,3 +763,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.1.0

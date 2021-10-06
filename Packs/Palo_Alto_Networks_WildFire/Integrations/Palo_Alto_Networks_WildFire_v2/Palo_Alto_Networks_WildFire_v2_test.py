@@ -1,9 +1,13 @@
-from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
-    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
-    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command
+import json
+import io
+
+from requests import Response
 
 import demistomock as demisto
-from requests import Response
+from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
+    create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
+    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
+    wildfire_upload_url_command
 
 
 def test_will_return_ok():
@@ -35,9 +39,15 @@ def test_prettify_verdict():
 
 
 def test_create_dbot_score_from_verdict():
-    expected_dbot_score = [{
-        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
-        {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
+    expected_dbot_score = [
+        {
+            'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3,
+            'Reliability': 'B - Usually reliable'
+        },
+        {
+            'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3,
+            'Reliability': 'B - Usually reliable'
+        },
     ]
     dbot_score_dict = create_dbot_score_from_verdict({'SHA256': "sha256_hash", 'Verdict': "1"})
     assert expected_dbot_score == dbot_score_dict
@@ -52,12 +62,16 @@ def test_prettify_verdicts():
 
 
 def test_create_dbot_score_from_verdicts():
-    expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
-                            {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
-                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1},
-                            {'Indicator': "md5_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 1}]
+    expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "md5_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 1,
+                             'Reliability': 'B - Usually reliable'}]
     dbot_score_dict = create_dbot_score_from_verdicts(
-        [{'SHA256': "sha256_hash", 'Verdict': "1"}, {'MD5': "md5_hash", 'Verdict': "0"}])
+        [{'SHA256': "sha256_hash", 'Verdict': '1'}, {'MD5': "md5_hash", 'Verdict': '0'}])
     assert expected_dbot_scores == dbot_score_dict
 
 
@@ -155,24 +169,100 @@ def test_report_chunked_response(mocker):
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
     mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
-    wildfire_get_report_command()
-    result = {'Type': 1,
-              'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
-                            'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                            'md5': '4b41a3475132bd861b30a878e30aa56a', 'malware': 'no', 'summary': None}],
-              'ContentsFormat': 'json',
-              'HumanReadable': '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n'
-                               '| PDF | 4b41a3475132bd861b30a878e30aa56a | '
-                               '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 '
-                               '| Completed |\n',
-              'ReadableContentsFormat': 'markdown',
-              'EntryContext':
-                  {'WildFire.Report(val.SHA256 === obj.SHA256)': {
-                      'Status': 'Success',
-                      'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
-                   'DBotScore': [
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
-                        'Vendor': 'WildFire', 'Score': 1},
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
-                        'Vendor': 'WildFire', 'Score': 1}]}}
-    assert demisto.results.call_args[0][0] == result
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
+    hr = '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n|' \
+         ' PDF | 4b41a3475132bd861b30a878e30aa56a | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |' \
+         ' 3028 | Completed |\n'
+    context = {'Status': 'Success', 'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'}
+
+    assert command_results[0].outputs == context
+    assert command_results[0].readable_output == hr
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_running_polling_command_success(mocker):
+    """
+    Given:
+        An upload request of a url or a file using the polling flow, that was already initiated priorly and is now
+         complete.
+    When:
+        When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         already complete.
+    Then:
+        Return a command results object, without scheduling a new command.
+    """
+    args = {'url': 'www.google.com'}
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_success.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    expected_outputs = util_load_json('./tests_data/expected_outputs_upload_url_success.json')
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    assert command_results[0].outputs.get('detection_reasons') == expected_outputs.get('detection_reasons')
+    assert command_results[0].scheduled_command is None
+
+
+def test_running_polling_command_pending(mocker):
+    """
+    Given:
+         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = {'url': 'wwwdom'}
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    assert command_results[0].outputs is None
+    assert command_results[0].scheduled_command is not None
+
+
+def test_running_polling_command_new_search(mocker):
+    """
+    Given:
+         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = {'upload': 'https://www.demisto.com'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    expected_outputs = {'MD5': '67632f32e6af123aa8ffd1fe8765a783',
+                        'SHA256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                        'Status': 'Pending', 'URL': 'https://www.demisto.com'}
+    assert command_results[0].outputs == expected_outputs
+    assert command_results[0].scheduled_command is not None

@@ -1,0 +1,257 @@
+[
+  {
+    "ModuleName": "Cofense Triage v3_instance_1",
+    "Brand": "Cofense Triage v3",
+    "Category": "Data Enrichment & Threat Intelligence",
+    "ID": "",
+    "Version": 0,
+    "Type": 1,
+    "Contents": {
+      "data": [
+        {
+          "attributes": {
+            "created_at": "2020-10-26T10:47:09.675Z",
+            "threat_level": "Malicious",
+            "threat_source": "Test",
+            "threat_type": "SHA256",
+            "threat_value": "d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567",
+            "updated_at": "2021-07-08T11:13:23.340Z"
+          },
+          "id": "1",
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/threat_indicators/1"
+          },
+          "relationships": {
+            "comments": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/comments",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/comments"
+              }
+            },
+            "owner": {
+              "data": {
+                "id": "12",
+                "type": "api_applications"
+              },
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/owner",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/owner"
+              }
+            },
+            "reports": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/reports",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/reports"
+              }
+            }
+          },
+          "type": "threat_indicators"
+        },
+        {
+          "attributes": {
+            "created_at": "2021-06-11T06:39:47.376Z",
+            "threat_level": "Malicious",
+            "threat_source": "XSOAR-UI",
+            "threat_type": "SHA256",
+            "threat_value": "d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567",
+            "updated_at": "2021-06-11T06:39:47.382Z"
+          },
+          "id": "325",
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/threat_indicators/325"
+          },
+          "relationships": {
+            "comments": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/comments",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/comments"
+              }
+            },
+            "owner": {
+              "data": {
+                "id": "3",
+                "type": "api_applications"
+              },
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/owner",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/owner"
+              }
+            },
+            "reports": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/reports",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/reports"
+              }
+            }
+          },
+          "type": "threat_indicators"
+        }
+      ],
+      "links": {
+        "first": "https://triage.example.com/api/public/v2/threat_indicators?filter%5Bthreat_value%5D=d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567&page%5Bnumber%5D=1&page%5Bsize%5D=20",
+        "last": "https://triage.example.com/api/public/v2/threat_indicators?filter%5Bthreat_value%5D=d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567&page%5Bnumber%5D=1&page%5Bsize%5D=20"
+      },
+      "meta": {
+        "page_count": 1,
+        "record_count": 2
+      }
+    },
+    "HumanReadable": "### Threat Indicator(s)\n|Threat Indicator ID|Threat Level|Threat Type|Threat Value|Threat Source|Created At|Updated At|\n|---|---|---|---|---|---|---|\n| 1 | Malicious | SHA256 | d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567 | Test | 2020-10-26T10:47:09.675Z | 2021-07-08T11:13:23.340Z |\n| 325 | Malicious | SHA256 | d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567 | XSOAR-UI | 2021-06-11T06:39:47.376Z | 2021-06-11T06:39:47.382Z |\n",
+    "ImportantEntryContext": null,
+    "EntryContext": {
+      "Cofense.ThreatIndicator(val.id && val.id == obj.id)": [
+        {
+          "attributes": {
+            "created_at": "2020-10-26T10:47:09.675Z",
+            "threat_level": "Malicious",
+            "threat_source": "Test",
+            "threat_type": "SHA256",
+            "threat_value": "d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567",
+            "updated_at": "2021-07-08T11:13:23.340Z"
+          },
+          "id": "1",
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/threat_indicators/1"
+          },
+          "relationships": {
+            "comments": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/comments",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/comments"
+              }
+            },
+            "owner": {
+              "data": {
+                "id": "12",
+                "type": "api_applications"
+              },
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/owner",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/owner"
+              }
+            },
+            "reports": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/1/reports",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/1/relationships/reports"
+              }
+            }
+          },
+          "type": "threat_indicators"
+        },
+        {
+          "attributes": {
+            "created_at": "2021-06-11T06:39:47.376Z",
+            "threat_level": "Malicious",
+            "threat_source": "XSOAR-UI",
+            "threat_type": "SHA256",
+            "threat_value": "d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567",
+            "updated_at": "2021-06-11T06:39:47.382Z"
+          },
+          "id": "325",
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/threat_indicators/325"
+          },
+          "relationships": {
+            "comments": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/comments",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/comments"
+              }
+            },
+            "owner": {
+              "data": {
+                "id": "3",
+                "type": "api_applications"
+              },
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/owner",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/owner"
+              }
+            },
+            "reports": {
+              "links": {
+                "related": "https://triage.example.com/api/public/v2/threat_indicators/325/reports",
+                "self": "https://triage.example.com/api/public/v2/threat_indicators/325/relationships/reports"
+              }
+            }
+          },
+          "type": "threat_indicators"
+        }
+      ]
+    },
+    "IgnoreAutoExtract": false,
+    "ReadableContentsFormat": "",
+    "ContentsFormat": "json",
+    "File": "",
+    "FileID": "",
+    "FileMetadata": null,
+    "System": "",
+    "Note": false,
+    "Evidence": false,
+    "EvidenceID": "",
+    "Tags": null,
+    "Metadata": {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "roles": null,
+      "allRead": false,
+      "allReadWrite": false,
+      "previousRoles": null,
+      "previousAllRead": false,
+      "previousAllReadWrite": false,
+      "hasRole": false,
+      "dbotCreatedBy": "",
+      "ShardID": 0,
+      "type": 1,
+      "created": "2021-07-09T16:44:12.835202282+05:30",
+      "incidentCreationTime": "0001-01-01T00:00:00Z",
+      "retryTime": "0001-01-01T00:00:00Z",
+      "user": "",
+      "errorSource": "",
+      "contents": "",
+      "format": "json",
+      "investigationId": "e6740639-112c-4e94-87e1-4b247412e2bc",
+      "file": "",
+      "fileID": "",
+      "parentId": "300@e6740639-112c-4e94-87e1-4b247412e2bc",
+      "pinned": false,
+      "fileMetadata": null,
+      "parentContent": "!cofense-threat-indicator-list page_size=\"20\" page_number=\"1\" threat_value=\"d9cd2a7965b72b5a02247dc580b6a75280ef8309ef58dcdc14152234d1234567\"",
+      "parentEntryTruncated": false,
+      "system": "",
+      "reputations": null,
+      "category": "",
+      "note": false,
+      "isTodo": false,
+      "tags": null,
+      "tagsRaw": null,
+      "startDate": "0001-01-01T00:00:00Z",
+      "times": 0,
+      "recurrent": false,
+      "endingDate": "0001-01-01T00:00:00Z",
+      "timezoneOffset": 0,
+      "cronView": false,
+      "scheduled": false,
+      "entryTask": null,
+      "taskId": "",
+      "playbookId": "",
+      "reputationSize": 0,
+      "contentsSize": 0,
+      "brand": "Cofense Triage v3",
+      "instance": "Cofense Triage v3_instance_1",
+      "InstanceID": "dfbe4e35-b387-4a6a-84e5-5b9e5a987eed",
+      "IndicatorTimeline": [],
+      "Relationships": [],
+      "mirrored": false
+    },
+    "IndicatorTimeline": null,
+    "NextRun": "",
+    "Timeout": "",
+    "PollingCommand": "",
+    "PollingArgs": null,
+    "Relationships": null
+  }
+]

@@ -1,23 +1,15 @@
 .bucket-upload-rule:
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
 .bucket-upload-rule-always:
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
       when: always
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
@@ -27,7 +19,7 @@
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
       echo "recieved content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" )
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc -xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
         exit 1
@@ -44,11 +36,10 @@ run-validations-upload-flow:
     - .bucket-upload-rule
 
 
-# Uncomment when docker in docker will work
-# run-unittests-and-lint-upload-flow:
-#   extends:
-#     - .run-unittests-and-lint
-#     - .bucket-upload-rule
+run-unittests-and-lint-upload-flow:
+  extends:
+    - .run-unittests-and-lint
+    - .bucket-upload-rule
 
 
 create-instances-upload-flow:
@@ -56,10 +47,7 @@ create-instances-upload-flow:
     - create-instances
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
@@ -67,6 +55,8 @@ create-instances-upload-flow:
 
 
 .install_packs_in_server:
+  tags:
+    - gke
   needs: ["create-instances-upload-flow"]
   stage: run-instances
   artifacts:
@@ -103,6 +93,18 @@ create-instances-upload-flow:
     - exit "$EXIT_CODE"
 
 
+install-packs-in-server6_2:
+  extends: .install_packs_in_server
+  variables:
+    INSTANCE_ROLE: "Server 6.2"
+
+
+install-packs-in-server6_1:
+  extends: .install_packs_in_server
+  variables:
+    INSTANCE_ROLE: "Server 6.1"
+
+
 install-packs-in-server6_0:
   extends: .install_packs_in_server
   variables:
@@ -116,7 +118,9 @@ install-packs-in-server-master:
 
 
 upload-packs-to-marketplace:
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
+  tags:
+    - gke
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_2", "install-packs-in-server6_1", "install-packs-in-server6_0", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -142,12 +146,38 @@ upload-packs-to-marketplace:
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="marketplace-ci-build"
-        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+        if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+          STORAGE_BASE_PATH="content"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
+
+        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+        fi
+
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs"
       fi
     - section_end "Upload Packs To Marketplace Storage"
+    - section_start "Download packs from GCP"
+    - |
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
+      fi
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+
+      PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
+      ZIP_FOLDER=$(mktemp -d)
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
+      gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_end "Download packs from GCP"
+    - section_start "Zip Content Packs From GCS"
+    - |
+      python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+    - section_end "Zip Content Packs From GCS"
     - section_start "Validate Premium Packs"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
@@ -159,16 +189,14 @@ upload-packs-to-marketplace:
 
 
 force-pack-upload:
+  tags:
+    - gke
   stage: upload-to-marketplace
   needs: ["create-instances-upload-flow"]
   rules:
-    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
-      when: never # remove this after testing period
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
     - .default-job-settings
-  variables:
-    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)
@@ -177,13 +205,20 @@ force-pack-upload:
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |
-      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
       fi
-    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+       STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+
+    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
 
 
 fan-in-bucket-upload:
+  tags:
+    - gke
   stage: fan-in
   extends:
     - .bucket-upload-rule-always

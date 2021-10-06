@@ -1,0 +1,271 @@
+id: Get File Sample From Path - Generic V3
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Get File Sample From Path - Generic V3
+description: |
+  This playbook returns a file sample from a specified path and host that you input in the following playbooks:
+  1) PS Remote Get File Sample From Path.
+  2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d887731-fb71-4226-872c-a9e8dbddac42
+    type: start
+    task:
+      id: 5d887731-fb71-4226-872c-a9e8dbddac42
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f81d6908-8ce9-452b-8dde-689f44256933
+    type: title
+    task:
+      id: f81d6908-8ce9-452b-8dde-689f44256933
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 906138a1-e3ee-4711-889a-4ebcc8c2a1c6
+    type: title
+    task:
+      id: 906138a1-e3ee-4711-889a-4ebcc8c2a1c6
+      version: -1
+      name: Use VMware Carbon Black EDR (Live Response API)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6d73fcbe-5c0f-4dec-8fa4-9f0c1dd70a8d
+    type: playbook
+    task:
+      id: 6d73fcbe-5c0f-4dec-8fa4-9f0c1dd70a8d
+      version: -1
+      name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+      description: |-
+        This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
+        Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
+        API
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
+    type: playbook
+    task:
+      id: 9c4ed95f-7e7e-4dcc-8c09-29a421593849
+      version: -1
+      name: PS Remote Get File Sample From Path
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host to acquire a file as forensic evidence
+        for further analysis.
+      playbookName: PS Remote Get File Sample From Path
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AddHostNameToFile:
+        simple: "true"
+      FilePath:
+        simple: ${inputs.Path}
+      Host:
+        simple: ${inputs.Host}
+      ZipFile:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 4ae1d82e-3106-42b4-848e-67f64641dd08
+    type: title
+    task:
+      id: 4ae1d82e-3106-42b4-848e-67f64641dd08
+      version: -1
+      name: Use Powershell Remoting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Host
+  value: {}
+  required: false
+  description: Hostname of the machine on which the file is located, for PS remote it can also be an IP address.
+  playbookInputQuery:
+- key: Path
+  value: {}
+  required: false
+  description: |
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
+  playbookInputQuery:
+- key: Agent_ID
+  value: {}
+  required: false
+  description: The ID of the agent, or of the endpoint, in the relevant integration
+    (such as EDR).
+  playbookInputQuery:
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.EntryID
+  description: The file entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.SSDeep
+  description: File SSDeep.
+  type: string
+tests:
+- No tests.
+fromversion: 6.0.0

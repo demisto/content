@@ -1,19 +1,19 @@
 {
-  "name": "Aella Star Light",
-  "description": "Aella Star Light Integration",
-  "support": "community",
-  "currentVersion": "1.0.1",
-  "author": "Aella Star Light",
-  "url": "",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [],
-  "githubUser": [
-    "xwang95054"
-  ]
+    "name": "Aella Star Light",
+    "description": "Aella Star Light Integration",
+    "support": "community",
+    "currentVersion": "1.0.3",
+    "author": "Aella Star Light",
+    "url": "",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "xwang95054"
+    ]
 }

@@ -398,3 +398,41 @@ def test_create_relationships_list():
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityB') == expected_name_entity_b[i]
         assert relation.get('entityBType') == expected_entity_b_types[i]
+
+
+URLS_LIST = [
+    ("www.München.com", "www.Mxn--tdanchen.com"),
+    ("www.example.com", "www.example.com"),
+    ("www.Mününchen.com", "www.Mxn--tdanxn--tdanchen.com"),
+    ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
+    ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com"),
+    ("www.こんにちは.com", 'www.xn--28j2a3ar1p.com'),
+]
+
+
+@pytest.mark.parametrize("url, result", URLS_LIST)
+def test_convert_url_to_ascii_character(url, result):
+    from AutofocusV2 import convert_url_to_ascii_character
+    converted = convert_url_to_ascii_character(url)
+    assert converted == result
+
+
+def test_search_url_command(requests_mock):
+    from AutofocusV2 import search_url_command
+
+    mock_response = {
+        'indicator': {
+            'indicatorValue': 'www.こんにちは.com',
+            'indicatorType': 'URL',
+            'latestPanVerdicts': {'PAN_DB': 'BENIGN'}
+        },
+        'tags': []
+    }
+
+    requests_mock.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType=url&indicatorValue=www.xn'
+                      '--28j2a3ar1p.com&includeTags=true', json=mock_response)
+
+    result = search_url_command("www.こんにちは.com", 'B - Usually reliable', True)
+
+    assert result[0].indicator.url == "www.こんにちは.com"
+    assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]

@@ -14,7 +14,7 @@ if [ "$#" -lt "1" ]; then
   exit 1
 fi
 
-branch="$(git branch  --show-current)"
+_branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
@@ -32,12 +32,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -gb|--bucket)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
-  else
-    _bucket=$2
-  fi
+  -gb|--bucket) _bucket="$2"
     shift
     shift;;
 
@@ -69,8 +64,6 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-source Utils/gitlab_triggers/trigger_build_url.sh
-
 _variables="variables[BUCKET_UPLOAD]=true"
 if [ -n "$_force" ]; then
   _variables="variables[FORCE_BUCKET_UPLOAD]=true"
@@ -78,7 +71,7 @@ fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
 
-curl --request POST \
+curl -k -v --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
   --form "${_variables}" \

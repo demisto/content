@@ -25,7 +25,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -34,12 +34,12 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: "20160"
-  display: ""
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: "240"
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -54,19 +54,19 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
+  required: false
   type: 8
-  required: false
-- display: Indicator Reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
   name: feedReputation
-  type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+  type: 18
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -83,15 +83,31 @@ configuration:
   - WHITE
   required: false
   type: 15
+- additionalinfo: Select type of feed to get. Full for all, Username for filter by
+    username and Hashtag for filtered by the hashtag.
+  defaultvalue: Full
+  display: Type of Feed
+  name: typeoffeed
+  options:
+  - Full
+  - Username
+  - Hashtag
+  required: false
+  type: 15
+- additionalinfo: Input the Username or Hashtag you want to use as a filter
+  display: Filter to Use
+  name: filtertouse
+  required: false
+  type: 0
 description: Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
-display: TwitterIOCHunter - Full Daily Feed
+display: TwitterIOCHunter Feed
 name: TwitterIOCHunter - Full Daily Feed
 script:
   commands:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isFetchSamples: true
   runonce: false

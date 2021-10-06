@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![Expanse VM Enrich](./../doc_files/Expanse_VM_Enrich.png)
+![Expanse VM Enrich](https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Expanse_VM_Enrich.png)

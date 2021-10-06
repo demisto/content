@@ -175,6 +175,7 @@ script:
         PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
       isArray: false
       name: timeRange
+      defaultValue: CURRENT_DAY
       predefined:
       - LAST_3_DAYS
       - LAST_2_DAYS
@@ -218,7 +219,6 @@ script:
       name: assignedUser
       predefined:
       - ME
-      - ''
       required: false
       secret: false
     deprecated: false
@@ -946,7 +946,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

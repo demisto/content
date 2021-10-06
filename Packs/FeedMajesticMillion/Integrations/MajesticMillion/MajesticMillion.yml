@@ -88,6 +88,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use HTTPS connection
+  name: use_https
+  type: 8
+  required: false
 description: Free search and download of the top million websites.
 display: Majestic Million Feed
 name: Majestic Million
@@ -105,7 +109,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: majesticmillion-get-indicators
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

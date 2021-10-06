@@ -640,7 +640,7 @@ def validate_credentials(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate(*args, **kwargs):
         headers = request.headers
-
+        global SERVER
         if SERVER.auth:
             credentials: str = headers.get('Authorization', '')
             if not credentials or 'Basic ' not in credentials:

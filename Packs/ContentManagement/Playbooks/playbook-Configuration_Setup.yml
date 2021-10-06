@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Configuration Setup
-description: Playbook for configuration incident type
+description: Playbook for the configuration incident type.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       id: 70090998-8edf-4e41-8fe2-a07ea531cda6
       version: -1
       name: Configuration Setup with File
-      description: Configurtaion loader for the Content Management pack.
+      description: Configuration loader for the content management pack.
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false
@@ -50,10 +50,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      branch_name:
-        simple: ${inputs.branch_name}
-      config_data:
-        simple: ${GitHub.Config.Data}
       configuration_file_entry_id:
         complex:
           root: File
@@ -67,8 +63,6 @@ tasks:
                 value:
                   simple: xsoar_config.json
           accessor: EntryID
-      configuration_file_repo_path:
-        simple: ${inputs.config_file_path}
     separatecontext: false
     view: |-
       {
@@ -99,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 2205
+          "y": 2405
         }
       }
     note: false
@@ -115,7 +109,7 @@ tasks:
       id: b468ef52-00b3-45c2-8a03-8fc321a97f7a
       version: -1
       name: Set Custom Packs Installed field
-      description: Change the properties of an incident
+      description: Changes the properties of an incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -147,7 +141,7 @@ tasks:
       id: a6a6d0f2-5ee2-4df7-836a-55b2d0b64b1c
       version: -1
       name: Set Marketplace Packs Installed field
-      description: Change the properties of an incident
+      description: Changes the properties of an incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -179,7 +173,7 @@ tasks:
       id: b3e084ec-bcc9-4ebf-809f-b325f474a217
       version: -1
       name: Set Lists Created field
-      description: Change the properties of an incident
+      description: Changes the properties of an incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -211,14 +205,14 @@ tasks:
       id: ae17aef1-b139-4f96-8539-73cf2e27f008
       version: -1
       name: Set Jobs Created field
-      description: Change the properties of an incident
+      description: Changes the properties of an incident.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+      - "32"
     scriptarguments:
       jobscreated:
         simple: ${ConfigurationSetup.Jobs}
@@ -303,7 +297,7 @@ tasks:
       id: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
       version: -1
       name: Install Custom Packs
-      description: Custom Packs Installer for the Content Management pack.
+      description: Custom packs installer for the content management pack.
       scriptName: CustomPackInstaller
       type: regular
       iscommand: false
@@ -314,6 +308,8 @@ tasks:
     scriptarguments:
       pack_id:
         simple: ${ConfigurationSetup.CustomPacks.packid}
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -363,7 +359,7 @@ tasks:
       id: 52ddaccc-bef7-40a4-86da-0c313f6e8552
       version: -1
       name: Install Marketplace Packs
-      description: Marketplace Packs Installer for the Content Management pack.
+      description: Marketplace packs installer for the content management pack.
       scriptName: MarketplacePackInstaller
       type: regular
       iscommand: false
@@ -371,6 +367,13 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: ${ConfigurationSetup.MarketplacePacks}
     separatecontext: false
     view: |-
       {
@@ -448,7 +451,7 @@ tasks:
       id: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
       version: -1
       name: Create Jobs
-      description: Job Creator for the Content Management pack.
+      description: Job creator for the content management pack.
       scriptName: JobCreator
       type: regular
       iscommand: false
@@ -480,7 +483,7 @@ tasks:
       id: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
       version: -1
       name: Create Lists
-      description: List Creator for the Content Management pack.
+      description: List creator for the content management pack.
       scriptName: ListCreator
       type: regular
       iscommand: false
@@ -514,7 +517,7 @@ tasks:
       id: af67a5f0-6252-43be-8a8d-0fe14fa241d9
       version: -1
       name: Get Configuration File from GitHub
-      description: Gets the content of a file from GitHub.
+      description: Gets the file content from GitHub.
       script: '|||GitHub-get-file-content'
       type: regular
       iscommand: true
@@ -524,13 +527,11 @@ tasks:
       - "27"
     scriptarguments:
       branch_name:
-        simple: ${inputs.branch_name}
+        simple: ${incident.branchname}
       create_file_from_content:
         simple: "true"
       file_path:
-        simple: ${inputs.config_file_path}
-      path:
-        simple: ${inputs.config_file_path}
+        simple: ${incident.configfilepath}
     separatecontext: false
     view: |-
       {
@@ -552,7 +553,7 @@ tasks:
       id: a18b95d8-d767-411b-8239-4f686185c229
       version: -1
       name: What is the Source of the Configuration File?
-      description: Determines where to get the configuration file from.
+      description: Determines from where to get the configuration file.
       type: condition
       iscommand: false
       brand: ""
@@ -603,7 +604,7 @@ tasks:
       id: 8278de62-5015-4d59-8797-a2302fe7d8a5
       version: -1
       name: Configuration Setup with InfoFile
-      description: Configurtaion loader for the Content Management pack.
+      description: Configuration loader for the content management pack.
       scriptName: ConfigurationSetup
       type: regular
       iscommand: false
@@ -612,10 +613,6 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
-      branch_name:
-        simple: ${inputs.branch_name}
-      config_data:
-        simple: ${GitHub.Config.Data}
       configuration_file_entry_id:
         complex:
           root: InfoFile
@@ -629,8 +626,6 @@ tasks:
                 value:
                   simple: xsoar_config.json
           accessor: EntryID
-      configuration_file_repo_path:
-        simple: ${inputs.config_file_path}
     separatecontext: false
     view: |-
       {
@@ -682,7 +677,7 @@ tasks:
       id: 7884abcb-78cc-4ee5-8055-035ec88e531d
       version: -1
       name: What is the Source of the Custom Packs?
-      description: Determines where to get the custom packs files to install.
+      description: Determines where to get the custom pack files to install.
       type: condition
       iscommand: false
       brand: ""
@@ -747,7 +742,7 @@ tasks:
       id: 56b086df-0caf-401f-81df-6a00c2f7074e
       version: -1
       name: Download Custom Packs using an HTTP request
-      description: Sends http request. Returns the response as json.
+      description: Sends an HTTP request. Returns the response as a JSON file.
       scriptName: http
       type: regular
       iscommand: false
@@ -782,8 +777,9 @@ tasks:
     task:
       id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
       version: -1
-      name: No Source Provided, and no Custom Packs shoudld be Installed.
-      description: Checks whether there are custom packs to install when no source is provided.
+      name: If there is no Source Provided, then no Custom Packs should be Installed.
+      description: Checks whether there are custom packs to install when no source
+        is provided. In that case, the playbook will stop with an error.
       type: condition
       iscommand: false
       brand: ""
@@ -813,13 +809,41 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "32":
+    id: "32"
+    taskid: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
+    type: regular
+    task:
+      id: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2220,
+        "height": 2420,
         "width": 2130,
         "x": -390,
         "y": 50

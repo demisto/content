@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+from datetime import datetime
 from typing import Dict
 
 # Disable insecure warnings
@@ -136,6 +137,24 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
 
+def convert_timestamp_to_iso86(timestamp: str, timezone_letter: str = 'Z') -> str:
+    """ Convert timestamp from AlienVault to iso86 format
+
+    Args:
+        timestamp: The timestamp as received from AlienVault
+        timezone_letter: The timezone letter as received from AlienVault
+
+    Returns: The timestamp in iso86 format, similar to what AlienVault returns itself.
+
+    """
+    if not timestamp:
+        return ''
+    datetime_from_timestamp = dateparser.parse(timestamp, settings={"TO_TIMEZONE": timezone_letter,
+                                                                    "RETURN_AS_TIMEZONE_AWARE": True})
+    time_in_iso86 = datetime_from_timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    return time_in_iso86[:-3] + timezone_letter
+
+
 @logger
 def parse_alarms(alarms_data):
     if not isinstance(alarms_data, list):
@@ -149,17 +168,37 @@ def parse_alarms(alarms_data):
             if 'message' in event:
                 event = event['message']
 
+            event_occured_time = event.get('timestamp_occured_iso8601')
+            if not event_occured_time:
+                event_occured_time = convert_timestamp_to_iso86(event.get('timestamp_occured', ''),
+                                                                event.get("time_offset", 'Z'))
+
+            event_recieved_time = event.get('timestamp_received_iso8601')
+            if not event_recieved_time:
+                event_recieved_time = convert_timestamp_to_iso86(event.get('timestamp_received', ''),
+                                                                 event.get("time_offset", 'Z'))
+
             events.append({
-                'ID': event['uuid'],
-                'OccurredTime': event['timestamp_occured_iso8601'],
-                'ReceivedTime': event['timestamp_received_iso8601'],
+                'ID': event.get('uuid'),
+                'OccurredTime': event_occured_time,
+                'ReceivedTime': event_recieved_time,
             })
 
+        alarm_occured_time = alarm.get('timestamp_occured_iso8601', '')
+        if not alarm_occured_time:
+            alarm_occured_time = convert_timestamp_to_iso86(alarm.get('timestamp_occured', ''),
+                                                            alarm.get("time_offset", 'Z'))
+
+        alarm_recieved_time = alarm.get('timestamp_received_iso8601', '')
+        if not alarm_recieved_time:
+            alarm_recieved_time = convert_timestamp_to_iso86(alarm.get('timestamp_received', ''),
+                                                             alarm.get("time_offset", 'Z'))
+
         alarms.append({
-            'ID': alarm['uuid'],
-            'Priority': alarm['priority_label'],
-            'OccurredTime': alarm['timestamp_occured_iso8601'],
-            'ReceivedTime': alarm['timestamp_received_iso8601'],
+            'ID': alarm.get('uuid'),
+            'Priority': alarm.get('priority_label'),
+            'OccurredTime': alarm_occured_time,
+            'ReceivedTime': alarm_recieved_time,
 
             'RuleAttackID': alarm.get('rule_attack_id'),
             'RuleAttackTactic': alarm.get('rule_attack_tactic'),
@@ -237,10 +276,15 @@ def dict_value_to_int(target_dict: Dict, key: str):
 
 
 def item_to_incident(item):
+    if not (occurred := item.get('timestamp_occured_iso8601')):
+        occurred = convert_timestamp_to_iso86(
+            item.get('timestamp_occured', ''),
+            item.get("time_offset", 'Z')
+        )
     incident = {
         'Type': 'AlienVault USM',
         'name': 'Alarm: ' + item.get('uuid'),
-        'occurred': item.get('timestamp_occured_iso8601'),
+        'occurred': occurred,
         'rawJSON': json.dumps(item),
     }
 
