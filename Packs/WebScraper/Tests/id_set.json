@@ -1,0 +1,30 @@
+{
+    "scripts": [
+        {
+            "WebScraper": {
+                "name": "WebScraper",
+                "file_path": "Scripts/WebScraper/WebScraper.yml",
+                "fromversion": "6.0.0",
+                "docker_image": "aymanam/scraper:latest"
+            }
+        }
+    ],
+    "playbooks": [],
+    "integrations": [],
+    "TestPlaybooks": [],
+    "Classifiers": [],
+    "Dashboards": [],
+    "IncidentFields": [],
+    "IncidentTypes": [],
+    "IndicatorFields": [],
+    "IndicatorTypes": [],
+    "Layouts": [],
+    "Reports": [],
+    "Widgets": [],
+    "Mappers": [],
+    "Packs": {},
+    "GenericTypes": [],
+    "GenericFields": [],
+    "GenericModules": [],
+    "GenericDefinitions": []
+}

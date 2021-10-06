@@ -1,11 +1,11 @@
 {
     "name": "Web Scraper",
-    "description": "A Web Scraper tool built on beautiful soup",
+    "description": "Web Scrap websites and html pages matching a navigation tree.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Ayman Mahmoud",
-    "url": "amahmoud@paloaltonetworks.com",
-    "email": "",
+    "url": "",
+    "email": "amahmoud@paloaltonetworks.com",
     "categories": [
         "IT Services"
     ],

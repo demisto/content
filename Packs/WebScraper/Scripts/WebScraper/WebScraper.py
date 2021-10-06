@@ -11,9 +11,24 @@ import xmltodict
 ''' STANDALONE FUNCTION '''
 
 
+def nested_dict_pairs_iterator(dict_obj):
+    for key, value in dict_obj.items():
+        if isinstance(value, dict):
+            for pair in nested_dict_pairs_iterator(dict(value)):
+                yield pair
+
+        else:
+            yield {key: value}
+
+
 def webscrap_html(page_html: str, navigator_tree: str):
-    soup = BeautifulSoup(page_html, 'html.parser')
-    return attrgetter(navigator_tree)(soup)
+    scrap_xml = attrgetter(navigator_tree)(BeautifulSoup(page_html, 'html.parser'))
+
+    scrap_dict = dict(xmltodict.parse(scrap_xml.__str__()))
+    results = []
+    for pair in nested_dict_pairs_iterator(scrap_dict):
+        results.append(pair)
+    return results
 
 
 ''' STANDALONE FUNCTION '''
@@ -47,14 +62,17 @@ def webscraper_command(args: Dict[str, Any]) -> CommandResults:
     elif page_url:
         client = Client(page_url, verify=verify_certificate)
         results = client.webscrap_url(headers=headers, params=params, navigator_tree=navigator_tree)
-        print(xmltodict.parse(results))
     else:
         raise ValueError('Please use page_url or page_html arguments to start scraping')
 
+    content_outputs = {
+        "Tree": results
+    }
     return CommandResults(
-        outputs_prefix='WebScraper.Pages',
+        outputs_prefix='WebScraper',
         outputs_key_field='',
-        outputs=results
+        outputs=content_outputs,
+        readable_output="Scrapping completed!"
     )
 
 

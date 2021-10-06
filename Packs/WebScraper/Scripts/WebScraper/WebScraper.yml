@@ -8,7 +8,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Page html to scrap
+  description: HTML page to scrap
   isArray: false
   name: page_html
   predefined:
@@ -16,6 +16,7 @@ args:
   required: false
   secret: false
 - default: false
+  description: Request headers
   isArray: false
   name: headers
   required: false
@@ -27,7 +28,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: HTML Tag Navigator Tree
+  description: 'HTML tags navigation tree, example: "body.table"'
   isArray: false
   name: navigator_tree
   required: false
@@ -46,7 +47,7 @@ commonfields:
 enabled: false
 name: WebScraper
 outputs:
-- contextPath: WebScraper.Pages
+- contextPath: WebScraper.Tree
   description: Scraped Pages
   type: String
 script: '-'
@@ -57,4 +58,4 @@ tags:
 timeout: '0'
 type: python
 dockerimage: aymanam/scraper:latest
-fromversion: '6.0'
+fromversion: '6.0.0'
