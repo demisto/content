@@ -253,26 +253,51 @@
                                             {
                                                 "displayed": true,
                                                 "isDefault": true,
+                                                "key": "id",
+                                                "position": 0,
+                                                "width": 110
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
                                                 "key": "name",
+                                                "position": 1,
                                                 "width": 120
                                             },
                                             {
                                                 "displayed": true,
                                                 "isDefault": true,
-                                                "key": "Status",
+                                                "key": "Report Status",
+                                                "position": 2,
                                                 "width": 120
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Creator",
+                                                "position": 3,
+                                                "width": 300
                                             },
                                             {
                                                 "displayed": true,
                                                 "isDefault": true,
                                                 "key": "Traffic Light Protocol",
+                                                "position": 4,
                                                 "width": 300
                                             },
                                             {
                                                 "displayed": true,
                                                 "isDefault": true,
                                                 "key": "created",
-                                                "width": 275
+                                                "width": 275,
+                                                "position": 5
+                                            },
+                                            {
+                                                "displayed": true,
+                                                "isDefault": true,
+                                                "key": "Tags",
+                                                "width": 275,
+                                                "position": 6
                                             }
                                         ]
                                     },
