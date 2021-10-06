@@ -795,14 +795,14 @@ script:
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName
       description: 'The alarm summary impacted entity name.'
   - name: lr-cases-list
-    description: ''
+    description: 'Get cases details using filter criteria.'
     arguments:
     - name: case_id
-      description: ''
+      description: 'Filter by case ID.'
       required: false
       isArray: false
     - name: timestamp_filter_type
-      description: ''
+      description: 'Filter case results by date combined with the argument timestamp.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -812,11 +812,11 @@ script:
       - createdAfter
       - createdBefore
     - name: timestamp
-      description: ''
+      description: 'Filter case results by date combined with the argument timestamp_filter_type.'
       required: false
       isArray: false
     - name: priority
-      description: ''
+      description: 'Filter by priority.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -827,7 +827,7 @@ script:
       - '4'
       - '5'
     - name: status
-      description: ''
+      description: 'Filter by status.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -838,19 +838,19 @@ script:
       - '4'
       - '5'
     - name: owners
-      description: ''
+      description: 'Filter by person number, or a comma separated list of person numbers.'
       required: false
       isArray: false
     - name: tags
-      description: ''
+      description: 'Filter by tag number, or a comma separated list of tag numbers.'
       required: false
       isArray: false
     - name: text
-      description: ''
+      description: 'Filter results that have a case number or name that contains the specified value.'
       required: false
       isArray: false
     - name: evidence_type
-      description: ''
+      description: 'Filter results that have evidence of the specified type.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -861,114 +861,120 @@ script:
       - note
       - file
     - name: reference_id
-      description: ''
+      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm Id.'
       required: false
       isArray: false
     - name: external_id
-      description: ''
+      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm Id.'
       required: false
       isArray: false
     - name: offset
       defaultValue: "0"
-      description: ''
+      description: 'The number of cases to skip before starting to collect the result set.'
       required: false
       isArray: false
     - name: count
       defaultValue: "30"
-      description: ''
+      description: 'The numbers of cases to return.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: ''
+      description: 'The Case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: ''
+      description: 'The Case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: ''
+      description: 'The Case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
-      description: ''
+      description: 'The date the case was created.'
     - type: Date
       contextPath: LogRhythm.Case.dateUpdated
-      description: ''
+      description: 'The date the case was updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.dateClosed
-      description: ''
+      description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: ''
+      description: 'The case owner number.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: ''
+      description: 'The case owner name.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: ''
+      description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: ''
+      description: 'Last updated by user number. '
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: ''
+      description: 'Last updated by user name.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: ''
+      description: 'Whether the last updated user is disabled or not.'
     - type: String
       contextPath: LogRhythm.Case.name
-      description: ''
+      description: 'The case name.'
     - type: String
       contextPath: LogRhythm.Case.status.name
-      description: ''
+      description: 'The case status.'
     - type: Number
       contextPath: LogRhythm.Case.status.number
-      description: ''
+      description: 'The case status number.'
     - type: Number
       contextPath: LogRhythm.Case.priority
-      description: ''
+      description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: ''
+      description: 'The due date time of thee case.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
-      description: ''
+      description: 'The case resolution.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionDateUpdated
-      description: ''
+      description: 'The date the case resolution was last updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionLastUpdatedBy
-      description: ''
+      description: 'The user who last updated the case resolution.'
     - type: String
       contextPath: LogRhythm.Case.summary
-      description: ''
+      description: 'The case summary.'
     - type: Number
       contextPath: LogRhythm.Case.entity.number
-      description: ''
+      description: 'The case entity number.'
     - type: String
       contextPath: LogRhythm.Case.entity.name
-      description: ''
+      description: 'The case entity name.'
     - type: String
       contextPath: LogRhythm.Case.entity.fullName
-      description: ''
+      description: 'The case entity full name.'
     - type: Number
       contextPath: LogRhythm.Case.collaborators.number
-      description: ''
+      description: 'The case collaborator number.'
     - type: String
       contextPath: LogRhythm.Case.collaborators.name
-      description: ''
+      description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: ''
+      description: 'Whether the case collaborator is disabled or not.'
+    - type: String
+      contextPath: LogRhythm.Case.tags.text
+      description: 'The case tag name.'
+    - type: Number
+      contextPath: LogRhythm.Case.tags.number
+      description: 'The case tag number.'
   - name: lr-case-create
-    description: ''
+    description: 'Create a new case.'
     arguments:
     - name: name
-      description: ''
+      description: 'Name of the case.'
       required: true
       isArray: false
     - name: priority
-      description: ''
+      description: 'Priority of the case.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -979,112 +985,118 @@ script:
       - '4'
       - '5'
     - name: external_id
-      description: ''
+      description: 'Externally defined identifier for the case.'
       required: false
       isArray: false
     - name: due_date
-      description: ''
+      description: 'When the case is due, as an RFC 3339 formatted string. e.g. 2020-04-20T14:15:22Z'
       required: false
       isArray: false
     - name: summary
-      description: ''
+      description: 'Note summarizing the case.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: ''
+      description: 'The Case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: ''
+      description: 'The Case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: ''
+      description: 'The Case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
-      description: ''
+      description: 'The date the case was created.'
     - type: Date
       contextPath: LogRhythm.Case.dateUpdated
-      description: ''
+      description: 'The date the case was updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.dateClosed
-      description: ''
+      description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: ''
+      description: 'The case owner number.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: ''
+      description: 'The case owner name.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: ''
+      description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: ''
+      description: 'Last updated by user number. '
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: ''
+      description: 'Last updated by user name.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: ''
+      description: 'Whether the last updated user is disabled or not.'
     - type: String
       contextPath: LogRhythm.Case.name
-      description: ''
+      description: 'The case name.'
     - type: String
       contextPath: LogRhythm.Case.status.name
-      description: ''
+      description: 'The case status.'
     - type: Number
       contextPath: LogRhythm.Case.status.number
-      description: ''
+      description: 'The case status number.'
     - type: Number
       contextPath: LogRhythm.Case.priority
-      description: ''
+      description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: ''
+      description: 'The due date time of thee case.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
-      description: ''
+      description: 'The case resolution.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionDateUpdated
-      description: ''
+      description: 'The date the case resolution was last updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionLastUpdatedBy
-      description: ''
+      description: 'The user who last updated the case resolution.'
     - type: String
       contextPath: LogRhythm.Case.summary
-      description: ''
+      description: 'The case summary.'
     - type: Number
       contextPath: LogRhythm.Case.entity.number
-      description: ''
+      description: 'The case entity number.'
     - type: String
       contextPath: LogRhythm.Case.entity.name
-      description: ''
+      description: 'The case entity name.'
     - type: String
       contextPath: LogRhythm.Case.entity.fullName
-      description: ''
+      description: 'The case entity full name.'
     - type: Number
       contextPath: LogRhythm.Case.collaborators.number
-      description: ''
+      description: 'The case collaborator number.'
     - type: String
       contextPath: LogRhythm.Case.collaborators.name
-      description: ''
+      description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: ''
+      description: 'Whether the case collaborator is disabled or not.'
+    - type: String
+      contextPath: LogRhythm.Case.tags.text
+      description: 'The case tag name.'
+    - type: Number
+      contextPath: LogRhythm.Case.tags.number
+      description: 'The case tag number.'
   - name: lr-case-update
-    description: ''
+    description: 'Update case information. For example, the case name, priority, and due date.'
     arguments:
     - name: case_id
-      description: ''
+      description: 'Unique identifier for the case.'
       required: true
       isArray: false
     - name: name
-      description: ''
+      description: 'Name of the case.'
       required: false
       isArray: false
     - name: priority
-      description: ''
+      description: 'Priority of the case.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1095,116 +1107,122 @@ script:
       - '4'
       - '5'
     - name: external_id
-      description: ''
+      description: 'Entity to assign to the case.'
       required: false
       isArray: false
     - name: due_date
-      description: ''
+      description: 'When the case is due, as an RFC 3339 formatted string. e.g. 2020-04-20T14:15:22Z'
       required: false
       isArray: false
     - name: summary
-      description: ''
+      description: 'Note summarizing the case.'
       required: false
       isArray: false
     - name: entity_id
-      description: ''
+      description: 'Entity to assign to the case.'
       required: false
       isArray: false
     - name: resolution
-      description: ''
+      description: 'Description of how the case was resolved.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: ''
+      description: 'The Case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: ''
+      description: 'The Case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: ''
+      description: 'The Case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
-      description: ''
+      description: 'The date the case was created.'
     - type: Date
       contextPath: LogRhythm.Case.dateUpdated
-      description: ''
+      description: 'The date the case was updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.dateClosed
-      description: ''
+      description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: ''
+      description: 'The case owner number.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: ''
+      description: 'The case owner name.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: ''
+      description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: ''
+      description: 'Last updated by user number. '
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: ''
+      description: 'Last updated by user name.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: ''
+      description: 'Whether the last updated user is disabled or not.'
     - type: String
       contextPath: LogRhythm.Case.name
-      description: ''
+      description: 'The case name.'
     - type: String
       contextPath: LogRhythm.Case.status.name
-      description: ''
+      description: 'The case status.'
     - type: Number
       contextPath: LogRhythm.Case.status.number
-      description: ''
+      description: 'The case status number.'
     - type: Number
       contextPath: LogRhythm.Case.priority
-      description: ''
+      description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: ''
+      description: 'The due date time of thee case.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
-      description: ''
+      description: 'The case resolution.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionDateUpdated
-      description: ''
+      description: 'The date the case resolution was last updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionLastUpdatedBy
-      description: ''
+      description: 'The user who last updated the case resolution.'
     - type: String
       contextPath: LogRhythm.Case.summary
-      description: ''
+      description: 'The case summary.'
     - type: Number
       contextPath: LogRhythm.Case.entity.number
-      description: ''
+      description: 'The case entity number.'
     - type: String
       contextPath: LogRhythm.Case.entity.name
-      description: ''
+      description: 'The case entity name.'
     - type: String
       contextPath: LogRhythm.Case.entity.fullName
-      description: ''
+      description: 'The case entity full name.'
     - type: Number
       contextPath: LogRhythm.Case.collaborators.number
-      description: ''
+      description: 'The case collaborator number.'
     - type: String
       contextPath: LogRhythm.Case.collaborators.name
-      description: ''
+      description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: ''
+      description: 'Whether the case collaborator is disabled or not.'
+    - type: String
+      contextPath: LogRhythm.Case.tags.text
+      description: 'The case tag name.'
+    - type: Number
+      contextPath: LogRhythm.Case.tags.number
+      description: 'The case tag number.'
   - name: lr-case-status-change
-    description: ''
+    description: 'Update the status of a case.'
     arguments:
     - name: case_id
-      description: ''
+      description: 'Unique identifier for the case.'
       required: true
       isArray: false
     - name: status
-      description: ''
+      description: 'The case status.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -1217,85 +1235,91 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: ''
+      description: 'The Case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: ''
+      description: 'The Case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: ''
+      description: 'The Case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
-      description: ''
+      description: 'The date the case was created.'
     - type: Date
       contextPath: LogRhythm.Case.dateUpdated
-      description: ''
-    - type: Date
+      description: 'The date the case was updated.'
+    - type: Unknown
       contextPath: LogRhythm.Case.dateClosed
-      description: ''
+      description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: ''
+      description: 'The case owner number.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: ''
+      description: 'The case owner name.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: ''
+      description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: ''
+      description: 'Last updated by user number. '
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: ''
+      description: 'Last updated by user name.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: ''
+      description: 'Whether the last updated user is disabled or not.'
     - type: String
       contextPath: LogRhythm.Case.name
-      description: ''
+      description: 'The case name.'
     - type: String
       contextPath: LogRhythm.Case.status.name
-      description: ''
+      description: 'The case status.'
     - type: Number
       contextPath: LogRhythm.Case.status.number
-      description: ''
+      description: 'The case status number.'
     - type: Number
       contextPath: LogRhythm.Case.priority
-      description: ''
+      description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: ''
+      description: 'The due date time of thee case.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
-      description: ''
+      description: 'The case resolution.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionDateUpdated
-      description: ''
+      description: 'The date the case resolution was last updated.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolutionLastUpdatedBy
-      description: ''
+      description: 'The user who last updated the case resolution.'
     - type: String
       contextPath: LogRhythm.Case.summary
-      description: ''
+      description: 'The case summary.'
     - type: Number
       contextPath: LogRhythm.Case.entity.number
-      description: ''
+      description: 'The case entity number.'
     - type: String
       contextPath: LogRhythm.Case.entity.name
-      description: ''
+      description: 'The case entity name.'
     - type: String
       contextPath: LogRhythm.Case.entity.fullName
-      description: ''
+      description: 'The case entity full name.'
     - type: Number
       contextPath: LogRhythm.Case.collaborators.number
-      description: ''
+      description: 'The case collaborator number.'
     - type: String
       contextPath: LogRhythm.Case.collaborators.name
-      description: ''
+      description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: ''
+      description: 'Whether the case collaborator is disabled or not.'
+    - type: String
+      contextPath: LogRhythm.Case.tags.text
+      description: 'The case tag name.'
+    - type: Number
+      contextPath: LogRhythm.Case.tags.number
+      description: 'TThe case tag number.'
   - name: lr-case-evidence-list
     description: ''
     arguments:
