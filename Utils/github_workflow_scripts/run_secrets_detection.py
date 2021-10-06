@@ -29,14 +29,14 @@ def arguments_handler():
 def trigger_generic_webhook(branch_name, pr_number, username, password):
     body = {
         "name": "GenericWebhook_Secrets",
-        "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number}
+        "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
     # post to Content Gold
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
 
     if res.status_code != 200:
         print(
-            f"Secrets detection playbook was failed. Post request to Content Gold has status code if {res.status_code}")
+            f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
         sys.exit(1)
 
     if res.json() and type(res.json()) == list:
