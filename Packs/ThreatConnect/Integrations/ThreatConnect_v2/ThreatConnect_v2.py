@@ -1156,13 +1156,14 @@ def tc_update_indicator_command():
     security_label = args.get('securityLabel')
     threat_assess_confidence = int(args.get('threatAssessConfidence', -1))
     threat_assess_rating = int(args.get('threatAssessRating', -1))
+    owner = args.get('owner', demisto.params()['defaultOrg'])
 
     raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size,
                                          dns_active=dns_active, whois_active=whois_active,
                                          false_positive=false_positive, observations=observations,
                                          security_label=security_label,
                                          threat_assess_confidence=threat_assess_confidence,
-                                         threat_assess_rating=threat_assess_rating)
+                                         threat_assess_rating=threat_assess_rating, owner=owner)
     ec, indicators = create_context(raw_indicators)
 
     demisto.results({
@@ -1178,11 +1179,12 @@ def tc_update_indicator_command():
 # @loger
 def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_active=None, whois_active=None,
                         false_positive=False, observations=0, security_label=None, threat_assess_confidence=-1,
-                        threat_assess_rating=-1):
+                        threat_assess_rating=-1, owner=None):
     tc = get_client()
     indicators = tc.indicators()
     filter1 = indicators.add_filter()
     filter1.add_indicator(indicator)
+    filter1.add_owner(owner)
 
     raw_indicators = []
     for ind in indicators.retrieve():

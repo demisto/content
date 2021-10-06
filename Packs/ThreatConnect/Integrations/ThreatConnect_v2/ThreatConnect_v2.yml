@@ -1199,6 +1199,8 @@ script:
       name: threatAssessConfidence
     - description: Assesses the threat rating of the indicator.
       name: threatAssessRating
+    - description: The owner of the new incident. The default is the "defaultOrg" parameter.
+      name: owner
     description: Updates the indicator in ThreatConnect.
     name: tc-update-indicator
     outputs:
