@@ -1074,11 +1074,13 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: Element to change. Can be "override_allow_list", or "override_block_list"
+      description: Element to change.
       name: element_to_change
       predefined:
       - override_allow_list
       - override_block_list
+      - allow_categories
+      - block_categories
       - description
       required: true
     - description: Element value. Limited to one value.
@@ -1363,7 +1365,7 @@ script:
       predefined:
       - Yes
       - No
-    - description: Service object names for the rule (service object) to create.
+    - description: A comma-separated list of service object names for the rule.
       isArray: true
       name: service
     - auto: PREDEFINED
@@ -1374,7 +1376,7 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object namesfor the rule
+      description: A comma-separated list of application object names for the rule.
         to create.
       isArray: true
       name: application
@@ -3414,7 +3416,7 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3

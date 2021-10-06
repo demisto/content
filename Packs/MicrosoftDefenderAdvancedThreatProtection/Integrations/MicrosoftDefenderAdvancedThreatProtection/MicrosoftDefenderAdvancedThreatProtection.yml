@@ -4460,7 +4460,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

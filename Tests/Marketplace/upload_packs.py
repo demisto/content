@@ -79,12 +79,14 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
+        -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_base_path (str): the source path of the index in the target bucket.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -94,7 +96,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
-        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+        index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -192,7 +194,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         return task_status
 
 
-def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any) -> bool:
+def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
+                             storage_base_path: str) -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -201,6 +204,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         index_folder_path (str): full path to downloaded index folder.
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+        storage_base_path (str): the source path of the packs in the target bucket.
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -230,7 +234,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
                 shutil.rmtree(invalid_pack_path)
                 logging.warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
-                invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
+                invalid_pack_gcs_path = os.path.join(storage_base_path, invalid_pack_name, "")  # by design
 
                 for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
                     logging.warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
@@ -329,7 +333,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: Optional[str]):
+                            artifacts_dir: Optional[str], storage_base_path: str):
     """Create corepacks.json file to artifacts dir. Corepacks file includes core packs for server installation.
 
      Args:
@@ -337,6 +341,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
         artifacts_dir: The CI artifacts directory to upload the corepacks.json to.
+        storage_base_path (str): the source path of the core packs in the target bucket.
 
     """
     core_packs_public_urls = []
@@ -353,7 +358,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                 metadata = json.load(metadata_file)
 
             pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
+            core_pack_relative_path = os.path.join(storage_base_path, pack.name,
                                                    pack_current_version, f"{pack.name}.zip")
             core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
 
@@ -542,7 +547,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
-            logging.info(f'metadata of changed private pack: {metadata}')
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
@@ -835,7 +839,7 @@ def get_packs_summary(packs_list):
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
-                           public_pack_names) -> Tuple[bool, list, list]:
+                           public_pack_names, storage_base_path: str) -> Tuple[bool, list, list]:
     """
     1. Add private packs to public index.json.
     2. Checks if there are private packs that were added/deleted/updated.
@@ -846,6 +850,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         extract_destination_path: full path to extract directory.
         storage_client : initialized google cloud storage client.
         public_pack_names : unique collection of public packs names to upload.
+        storage_base_path (str): the source path in the target bucket.
 
     Returns:
         is_private_content_updated (bool): True if there is at least one private pack that was updated/released.
@@ -856,7 +861,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
     if private_bucket_name:
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_index_path, _, _ = download_and_extract_index(
-            private_storage_bucket, os.path.join(extract_destination_path, "private")
+            private_storage_bucket, os.path.join(extract_destination_path, "private"), storage_base_path
         )
 
         public_index_json_file_path = os.path.join(public_index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
@@ -921,16 +926,14 @@ def main():
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
-
     # Relevant when triggering test upload flow
     if storage_bucket_name:
         GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -946,7 +949,7 @@ def main():
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
     if not option.override_all_packs:
@@ -957,7 +960,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path)
 
     # Packages that depend on new packs that are not in the previous index.json
     packs_missing_dependencies = []
@@ -976,13 +979,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.upload_integration_images(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
 
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
@@ -1047,7 +1050,8 @@ def main():
             continue
 
         task_status, skipped_upload, _ = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs or pack_was_modified)
+                                                                override_all_packs or pack_was_modified,
+                                                                storage_base_path)
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -1106,7 +1110,7 @@ def main():
 
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path))
+                            os.path.dirname(packs_artifacts_path), storage_base_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
