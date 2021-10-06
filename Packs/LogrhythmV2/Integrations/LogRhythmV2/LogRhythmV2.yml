@@ -121,10 +121,10 @@ script:
   isfetch: true
   commands:
   - name: lr-alarms-list
-    description: ''
+    description: 'Get alarms details using filter criteria.'
     arguments:
     - name: alarm_status
-      description: ''
+      description: 'The alarm status.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -141,61 +141,61 @@ script:
         - Closed_Monitor
     - name: offset
       defaultValue: "0"
-      description: ''
+      description: 'The number of alarms to skip before starting to collect the result set.'
       required: false
       isArray: false
     - name: count
       defaultValue: "30"
-      description: ''
+      description: 'The numbers of alarms to return.'
       required: false
       isArray: false
     - name: alarm_rule_name
-      description: ''
+      description: 'Filter by alarm rule name.'
       required: false
       isArray: false
     - name: entity_name
-      description: ''
+      description: 'Filter by entity name.'
       required: false
       isArray: false
     - name: alarm_id
-      description: ''
+      description: 'Filter by alarm ID.'
       required: false
       isArray: false
     - name: case_association
-      description: ''
+      description: 'Filter by case ID.'
       required: false
       isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.Alarm.alarmId
-      description: ''
+      description: 'The alarm ID.'
     - type: String
       contextPath: LogRhythm.Alarm.alarmDataCached
-      description: ''
+      description: 'A flag indicating whether the alarm data is cached.'
     - type: String
       contextPath: LogRhythm.Alarm.alarmRuleName
-      description: ''
+      description: 'The alarm rule name.'
     - type: String
       contextPath: LogRhythm.Alarm.alarmStatus
-      description: ''
+      description: 'The alarm status'
     - type: Date
       contextPath: LogRhythm.Alarm.dateInserted
-      description: ''
+      description: 'The alarm date inserted.'
     - type: String
       contextPath: LogRhythm.Alarm.entityName
-      description: ''
+      description: 'The alarm entuty name.'
     - type: String
       contextPath: LogRhythm.Alarm.associatedCases
-      description: ''
+      description: 'The alarm associated cases'
   - name: lr-alarm-update
-    description: 'alarm_status or rbp are required'
+    description: 'Update Alarm Status and RBP based on the AlarmId supplied. alarm_status or rbp are required.'
     arguments:
     - name: alarm_id
-      description: ''
+      description: 'The alarm ID.'
       required: true
       isArray: false
     - name: alarm_status
-      description: ''
+      description: 'The alarm status.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -211,39 +211,39 @@ script:
       - Closed_Reported
       - Closed_Monitor
     - name: rbp
-      description: ''
+      description: 'The alarm rbp.'
       required: false
       isArray: false
     outputs: []
   - name: lr-alarm-add-comment
-    description: ''
+    description: 'Updates AlarmHistory table to add comments in Comments column based on the AlarmId supplied.'
     arguments:
     - name: alarm_id
-      description: ''
+      description: 'The alarm ID.'
       required: true
       isArray: false
     - name: alarm_comment
-      description: ''
+      description: 'The alarm comment.'
       required: true
       isArray: false
     outputs: []
   - name: lr-alarm-history-list
-    description: ''
+    description: 'Get alarm history details by ID and filter criteria.'
     arguments:
     - name: alarm_id
-      description: ''
+      description: 'The alarm ID.'
       required: true
       isArray: false
     - name: person_id
-      description: ''
+      description: 'Filter by person ID.'
       required: false
       isArray: false
     - name: date_updated
-      description: ''
+      description: 'Filter criteria return value greater than or equal to.'
       required: false
       isArray: false
     - name: type
-      description: ''
+      description: 'Filter by history type.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -253,547 +253,547 @@ script:
         - rbp
     - name: offset
       defaultValue: "0"
-      description: ''
+      description: 'The number of items to skip before starting to collect the result set.'
       required: false
       isArray: false
     - name: count
       defaultValue: "30"
-      description: ''
+      description: 'The numbers of items to return.'
       required: false
       isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmHistory.alarmId
-      description: ''
+      description: 'The alarm ID.'
     - type: Number
       contextPath: LogRhythm.AlarmHistory.personId
-      description: ''
+      description: 'The person ID.'
     - type: String
       contextPath: LogRhythm.AlarmHistory.comments
-      description: ''
+      description: 'The alarm comments.'
     - type: Date
       contextPath: LogRhythm.AlarmHistory.dateInserted
-      description: ''
+      description: 'The alarm date inserted.'
     - type: Date
       contextPath: LogRhythm.AlarmHistory.dateUpdated
-      description: ''
+      description: 'The alarm date updated.'
   - name: lr-alarm-events-list
-    description: ''
+    description: 'Get events by alarmId.'
     arguments:
     - name: alarm_id
-      description: ''
+      description: 'The alarm ID.'
       required: true
       isArray: false
     outputs:
     - type: Number
       contextPath: LogRhythm.AlarmEvents.alarmId
-      description: ''
+      description: 'The alarm ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.account
-      description: ''
+      description: 'The alarm event account.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.action
-      description: ''
+      description: 'The alarm event action.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.amount
-      description: ''
+      description: 'The alarm event amount.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.bytesIn
-      description: ''
+      description: 'The alarm event bytes in.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.bytesOut
-      description: ''
+      description: 'The alarm event bytes out.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.classificationId
-      description: ''
+      description: 'The alarm event classification ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.classificationName
-      description: ''
+      description: 'The alarm event classification name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.classificationTypeName
-      description: ''
+      description: 'The alarm event classification type.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.command
-      description: ''
+      description: 'The alarm event command.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.commonEventId
-      description: ''
+      description: 'The common event name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.cve
-      description: ''
+      description: 'The alarm event CVE'
     - type: String
       contextPath: LogRhythm.AlarmEvents.commonEventName
-      description: ''
+      description: 'The alarm event name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.count
-      description: ''
+      description: 'The alarm events count.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.directionId
-      description: ''
+      description: 'The alarm event direction ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.directionName
-      description: ''
+      description: 'The alarm event direction name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.domain
-      description: ''
+      description: 'The alarm event domain.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.duration
-      description: ''
+      description: 'The alarm event duration.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.entityId
-      description: ''
+      description: 'The alarm entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.entityName
-      description: ''
+      description: 'The alarm event entity name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.group
-      description: ''
+      description: 'The alarm event group.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedEntityId
-      description: ''
+      description: 'The event impacted entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedEntityName
-      description: ''
+      description: 'The event impacted entity name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedHostId
-      description: ''
+      description: 'The event impacted host ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedHostName
-      description: ''
+      description: 'The event impacted host name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedInterface
-      description: ''
+      description: 'The event impacted interface.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.impactedIP
-      description: ''
+      description: 'The event impacted IP.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.countryCode
-      description: ''
+      description: 'The event impacted countryCode.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.name
-      description: ''
+      description: 'The event impacted country.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.latitude
-      description: ''
+      description: 'The event impacted location latitude.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.locationId
-      description: ''
+      description: 'The event impacted location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.locationKey
-      description: ''
+      description: 'The event impacted location key.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.longitude
-      description: ''
+      description: 'The event impacted location longitude.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.parentLocationId
-      description: ''
+      description: 'The event impacted parent location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.recordStatus
-      description: ''
+      description: 'The event impacted location record status.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.regionCode
-      description: ''
+      description: 'The event impacted location region code.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.type
-      description: ''
+      description: 'The event impacted location type.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.impactedLocation.dateUpdated
-      description: ''
+      description: 'The date the impacted location was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedMAC
-      description: ''
+      description: 'The event impacted MAC.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedName
-      description: ''
+      description: 'The event impacted name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNATIP
-      description: ''
+      description: 'The event impacted NATIP.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.impactedNATPort
-      description: ''
+      description: 'The event impacted NAT port.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value
-      description: ''
+      description: 'The event impacted network begin IP range.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.dateUpdated
-      description: ''
+      description: 'The date the impacted network was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.riskThreshold
-      description: ''
+      description: 'The event impacted network risk threshold.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value
-      description: ''
+      description: 'The event impacted network end IP range.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.entityId
-      description: ''
+      description: 'The event impacted network entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.hostZone
-      description: ''
+      description: 'The event impacted network host zone.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.locationId
-      description: ''
+      description: 'The event impacted network location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.longDesc
-      description: ''
+      description: 'The event impacted network long description.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.name
-      description: ''
+      description: 'The event impacted network name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.networkId
-      description: ''
+      description: 'The event impacted network ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.recordStatus
-      description: ''
+      description: 'The event impacted network record status.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.shortDesc
-      description: ''
+      description: 'The event impacted network short description.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedPort
-      description: ''
+      description: 'The event impacted port.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedZone
-      description: ''
+      description: 'The event impacted zone.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsIn
-      description: ''
+      description: 'The event packets in.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsOut
-      description: ''
+      description: 'The event packets out.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.logDate
-      description: ''
+      description: 'The event log date'
     - type: String
       contextPath: LogRhythm.AlarmEvents.login
-      description: ''
+      description: 'The event login.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.logMessage
-      description: ''
+      description: 'The event log message.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.logSourceHostId
-      description: ''
+      description: 'The log source host ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.logSourceHostName
-      description: ''
+      description: 'The log source host name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.logSourceName
-      description: ''
+      description: 'The log source name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.logSourceTypeName
-      description: ''
+      description: 'The log source type.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.messageId
-      description: ''
+      description: 'The event message ID.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.mpeRuleId
-      description: ''
+      description: 'The event MPE rule ID'
     - type: String
       contextPath: LogRhythm.AlarmEvents.mpeRuleName
-      description: ''
+      description: 'The event MPE rule name.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.normalDateMax
-      description: ''
+      description: 'The event max normal date.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.objectName
-      description: ''
+      description: 'The event object name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.objectType
-      description: ''
+      description: 'The event object type.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originEntityId
-      description: ''
+      description: 'The event origin entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originEntityName
-      description: ''
+      description: 'The event origin entity name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originHostId
-      description: ''
+      description: 'The event origin host ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originHostName
-      description: ''
+      description: 'The event origin host name'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originInterface
-      description: ''
+      description: 'The event origin interface.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.originIP
-      description: ''
+      description: 'The event origin IP'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.countryCode
-      description: ''
+      description: 'The origin location country code.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.name
-      description: ''
+      description: 'The origin location name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.latitude
-      description: ''
+      description: 'The origin location latitude.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.locationId
-      description: ''
+      description: 'The origin location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.locationKey
-      description: ''
+      description: 'The origin location key.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.longitude
-      description: ''
+      description: 'The origin location longitude.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.parentLocationId
-      description: ''
+      description: 'The origin parent location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.recordStatus
-      description: ''
+      description: 'The origin location record status.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.regionCode
-      description: ''
+      description: 'The origin location region code.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.type
-      description: ''
+      description: 'The origin location type.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.originLocation.dateUpdated
-      description: ''
+      description: 'The date the origin location was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originMAC
-      description: ''
+      description: 'The event origin MAC.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originName
-      description: ''
+      description: 'The event origin name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNATIP
-      description: ''
+      description: 'The event origin NATIP.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.originNATPort
-      description: ''
+      description: 'The event origin NAT port.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.beginIPRange.value
-      description: ''
+      description: 'The origin network begin IP range.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.originNetwork.dateUpdated
-      description: ''
+      description: 'The date the origin network was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.riskThreshold
-      description: ''
+      description: 'The origin network risk threshold.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.endIPRange.value
-      description: ''
+      description: 'The origin network end IP range.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.entityId
-      description: ''
+      description: 'The origin network entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.hostZone
-      description: ''
+      description: 'The origin network host zone.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.locationId
-      description: ''
+      description: 'The origin network location ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.longDesc
-      description: ''
+      description: 'The origin network long description.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.name
-      description: ''
+      description: 'The origin network name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.networkId
-      description: ''
+      description: 'The origin network ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.recordStatus
-      description: ''
+      description: 'The origin network record status.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.shortDesc
-      description: ''
+      description: 'The origin network short description.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originPort
-      description: ''
+      description: 'The event origin port.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originZone
-      description: ''
+      description: 'The event origin zone.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessId
-      description: ''
+      description: 'The event parent process ID'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessName
-      description: ''
+      description: 'The event parent process Name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessPath
-      description: ''
+      description: 'The event parent process path.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.policy
-      description: ''
+      description: 'The event policy.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.priority
-      description: ''
+      description: 'The event priority.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.process
-      description: ''
+      description: 'The event process.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.processId
-      description: ''
+      description: 'The event process ID.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.protocolId
-      description: ''
+      description: 'The event protocol ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.protocolName
-      description: ''
+      description: 'The event protocol name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.quantity
-      description: ''
+      description: 'The event quantity.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.rate
-      description: ''
+      description: 'The event rate.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.reason
-      description: ''
+      description: 'The event reason.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.recipient
-      description: ''
+      description: 'The event recipient.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.result
-      description: ''
+      description: 'The event result.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.responseCode
-      description: ''
+      description: 'Thee event response code.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.sender
-      description: ''
+      description: 'The event sender.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.session
-      description: ''
+      description: 'The event session.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.sessionType
-      description: ''
+      description: 'The event session type.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.serialNumber
-      description: ''
+      description: 'The event serial number.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.serviceId
-      description: ''
+      description: 'The event service ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.serviceName
-      description: ''
+      description: 'The event service name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.severity
-      description: ''
+      description: 'The event severity.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.status
-      description: ''
+      description: 'The event status.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.size
-      description: ''
+      description: 'The event size.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.subject
-      description: ''
+      description: 'The event subject.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.threatId
-      description: ''
+      description: 'The event threat ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.threatName
-      description: ''
+      description: 'The event threat name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.url
-      description: ''
+      description: 'The event URL.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.userAgent
-      description: ''
+      description: 'The event user agent.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.vendorInfo
-      description: ''
+      description: 'The event vendor info.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.vendorMsgId
-      description: ''
+      description: 'The event vendor message ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.version
-      description: ''
+      description: 'The alarm event version'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originUserIdentityName
-      description: ''
+      description: 'The event origin user identity.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedUserIdentityName
-      description: ''
+      description: 'The event impacted user identity.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.originUserIdentityId
-      description: ''
+      description: 'The event origin user identity ID.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.impactedUserIdentityId
-      description: ''
+      description: 'The event impacted user identity ID.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.senderIdentityId
-      description: ''
+      description: 'The event sender identity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.senderIdentityName
-      description: ''
+      description: 'The event sender identity name.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.recipientIdentityId
-      description: ''
+      description: 'The event recipient identity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.recipientIdentityName
-      description: ''
+      description: 'The event recipient identity.'
   - name: lr-alarm-summary
-    description: ''
+    description: 'Get alarm summary by alarm ID.'
     arguments:
     - name: alarm_id
-      description: ''
+      description: 'Numeric ID of the Alarm to get.'
       required: true
       isArray: false
     outputs:
     - type: Date
       contextPath: LogRhythm.AlarmSummary.dateInserted
-      description: ''
+      description: 'The date the alarm was inserted.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.rbpMax
-      description: ''
+      description: 'The alarm rbp max.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.rbpAvg
-      description: ''
+      description: 'The alarm rbp average.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmRuleId
-      description: ''
+      description: 'The alarm ruke ID'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmRuleGroup
-      description: ''
+      description: 'The alarm rule group.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.briefDescription
-      description: ''
+      description: 'The alarm brief description.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.additionalDetails
-      description: ''
+      description: 'The alarm additional details.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassId
-      description: ''
+      description: 'The alarm summary mesasge class ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassName
-      description: ''
+      description: 'The alarm summary message class name.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.commonEventId
-      description: ''
+      description: 'The alarm summary common event ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.commonEventName
-      description: ''
+      description: 'The alarm summary common event name.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originHostId
-      description: ''
+      description: 'The alarm summary origin host ID.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedHostId
-      description: ''
+      description: 'The alarm summary impacted host ID'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUser
-      description: ''
+      description: 'The alarm summary origin user.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUser
-      description: ''
+      description: 'The alarm summary impacted user.'
     - type: Unknown
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityId
-      description: ''
+      description: 'The alarm summary origin user identity ID.'
     - type: Unknown
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityId
-      description: ''
+      description: 'The alarm summary impacted user identity ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityName
-      description: ''
+      description: 'The alarm summary origin user identity name.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityName
-      description: ''
+      description: 'The alarm summary impacted user identity name.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originEntityName
-      description: ''
+      description: 'The alarm summary origin entity name.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName
-      description: ''
+      description: 'The alarm summary impacted entity name.'
   - name: lr-cases-list
     description: ''
     arguments:
