@@ -1,3 +1,4 @@
+# type: ignore
 from CommonServerPython import *
 from typing import Dict, List
 import requests
@@ -410,14 +411,15 @@ class KeyVaultClient:
         Returns:
             Dict[str,Any]: Network acls property.
         """
-        network_acls = {}
+        network_acls: Dict[str, Any] = {}
         if default_action:
             network_acls['defaultAction'] = default_action
         if bypass:
             network_acls['bypass'] = bypass
         if vnet_sub_id:
-            network_acls['virtualNetworkRules'] = [
-                {'id': vnet_sub_id, 'ignoreMissingVnetServiceEndpoint': ignore_missing_vnet_service_endpoint}]
+            network_acls['virtualNetworkRules'] = [{'id': vnet_sub_id,
+                                                    'ignoreMissingVnetServiceEndpoint':
+                                                        ignore_missing_vnet_service_endpoint}]
 
         if ip_rules:
             network_acls["ipRules"] = []
@@ -476,7 +478,7 @@ class KeyVaultClient:
             resource (str): Azure resource. Default is MANAGEMENT_RESOURCE.
 
         Returns:
-            List[Dict,Any]: List of Key Vaults/Keys/Secrets/Certificates.
+            List[dict]: List of Key Vaults/Keys/Secrets/Certificates.
         """
         entities = first_page.get('value')
         next_page_url = first_page.get('nextLink')
