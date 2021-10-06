@@ -53,7 +53,7 @@ def wait_for_playbook_to_complete(investigation_id, client):
 
         if playbook_state == PB_Status.COMPLETED:
             print("Secrets playbook finished successfully, no secrets were found.")
-            bre ak
+            break
 
         if playbook_state == PB_Status.FAILED:
             print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}.')
