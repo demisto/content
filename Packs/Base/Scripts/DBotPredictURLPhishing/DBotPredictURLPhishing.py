@@ -16,6 +16,12 @@ dill.settings['recurse'] = True
 
 no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
+VERSION = get_demisto_version_as_str()
+if VERSION[0] + '.' + VERSION[2] >= '6.5':
+    NEW_DEMISTO_VERSION = True
+else:
+    NEW_DEMISTO_VERSION = False
+
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
 MAJOR_VERSION = 0
@@ -25,7 +31,7 @@ MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
 MSG_INVALID_URL = "Error: "
 MSG_NO_URL_GIVEN = "Please input at least one URL"
-MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
+MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly - Might need to update rasterize package"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
 MSG_UPDATE_MODEL = "Update demisto model from docker model version %s.%s"
 MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s"
@@ -45,22 +51,22 @@ SUSPICIOUS_VERDICT = "Suspicious"
 BENIGN_VERDICT_WHITELIST = "Benign - whitelisted"
 
 BENIGN_THRESHOLD = 0.5
-SUSPICIOUS_THRESHOLD = 0.8
+SUSPICIOUS_THRESHOLD = 0.7
 
 SCORE_INVALID_URL = -1.0
 SCORE_BENIGN = 0.0  # type: float
 
-GREEN_COLOR = "{{color:#1DB846}}(%s)"
-RED_COLOR = "{{color:#D13C3C}}(%s)"
+GREEN_COLOR = "{{color:#1DB846}}(%s)" if NEW_DEMISTO_VERSION else "**%s**"
+RED_COLOR = "{{color:#D13C3C}}(%s)" if NEW_DEMISTO_VERSION else "**%s**"
 
-VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)"
-VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)"
-VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)"
-VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)"
+VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
+VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
+VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
+VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
 MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT: VERDICT_BENIGN_COLOR,
                          SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
-SCORE_THRESHOLD = 0.7  # type: float
+SCORE_THRESHOLD = 0.6  # type: float
 
 STATUS_CODE_VALID = 200
 
@@ -79,7 +85,7 @@ KEY_CONTENT_SEO = "ContentBasedVerdict"
 KEY_CONTENT_AGE = "DomainAge"
 
 KEY_HR_DOMAIN = "Domain"
-KEY_HR_SEO = "Domain reputation"
+KEY_HR_SEO = "Search engine optimisation"
 KEY_HR_LOGIN = "Is there a Login form ?"
 KEY_HR_LOGO = "Suspiscious use of company logo"
 KEY_HR_URL_SCORE = "URL severity score (from 0 to 1)"
@@ -90,10 +96,10 @@ KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
 KEY_FINAL_VERDICT = "Final Verdict"
 
 WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
-                    MODEL_KEY_URL_SCORE: 1, MODEL_KEY_LOGO_FOUND: 1}
+                    MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
 
 MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
-    MODEL_KEY_SEO: {True: RED_COLOR % 'Malicious', False: GREEN_COLOR % 'Benign'},
+    MODEL_KEY_SEO: {True: RED_COLOR % 'Bad', False: GREEN_COLOR % 'Good'},
     MODEL_KEY_LOGO_FOUND: {True: RED_COLOR % 'Suspicious', False: GREEN_COLOR % 'Not Suspicious'},
     MODEL_KEY_LOGIN_FORM: {True: RED_COLOR % 'Yes', False: GREEN_COLOR % 'No'},
     DOMAIN_AGE_KEY: {True: RED_COLOR % 'Less than 6 months ago', False: GREEN_COLOR % 'More than 6 months ago',
@@ -450,7 +456,7 @@ def extract_created_date(entry_list: List):
     return None
 
 
-def get_prediction_single_url(model, url, force_model):
+def get_prediction_single_url(model, url, force_model, debug):
     is_white_listed = False
     valid_url, error = is_valid_url(url)
 
@@ -480,10 +486,14 @@ def get_prediction_single_url(model, url, force_model):
 
     # Create X_pred
     if isinstance(output_rasterize, str):
-        return_error(output_rasterize)
+        return_error(MSG_FAILED_RASTERIZE)
     X_pred = create_X_pred(output_rasterize, url)
 
     pred_json = model.predict(X_pred)
+    if debug:
+        demisto.results(pred_json['debug_top_words'])
+        demisto.results(pred_json['debug_found_domains_list'])
+        demisto.results(pred_json['seo'])
 
     pred_json[DOMAIN_AGE_KEY] = is_new_domain
 
@@ -593,7 +603,7 @@ def main():
         msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
     number_entries_to_return = int(demisto.args().get('numberDetailedReports'))
-    results = [get_prediction_single_url(model, x, force_model) for x in urls]
+    results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
     general_summary = return_general_summary(results)
     detailed_summary = return_detailed_summary(results, number_entries_to_return)
     if debug:
