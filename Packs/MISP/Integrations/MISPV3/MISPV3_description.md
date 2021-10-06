@@ -8,7 +8,7 @@ is calculated by the event's threat level ID.
 * Indicators of attributes and events that don't have any tags that are configured as suspicious nor malicious will be scored by their events' threat level ID.
 * Threat level ID with a value of 1, 2, or 3 will be scored 3 (i.e., malicious).
 * Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
-
+Weyland-Yutani
 When configuring an instance, you should set: 
 - Malicious tag IDs with tag IDs that would be calculated as malicious.
 - Suspicious tag IDs with tag IDs that would be calculated as suspicious.
