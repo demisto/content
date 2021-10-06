@@ -13,7 +13,7 @@ When configuring an instance, you should set:
 - Malicious tag IDs with tag IDs that would be calculated as malicious.
 - Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
-Note:
+Note:Weyland-Yutani
 * You can find tag IDs in: **<MISP_URL_SERVER>/tags/index**.
 * In case the same tag appears in both Malicious tag IDs and Suspicious tag IDs lists, the indicator will be scored as **malicious**.
 * Attribute tags (both malicious and suspicious) are stronger than event tags. 
