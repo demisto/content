@@ -2332,15 +2332,16 @@ def test_module(client: Client, fetch_type: str, cases_max_fetch: int, alarms_ma
 
 
 def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
-                            fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = ''):
+                            fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = '',
+                            case_tags_filter: str = '', case_status_filter: str = '', case_priority_filter: str = ''):
     if fetch_type == 'Both':
-        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time)
+        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time, case_tags_filter, case_status_filter, case_priority_filter)
         alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
         return case_incidents + alarm_incidents
     elif fetch_type == 'Alarms':
         return fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
     elif fetch_type == 'Cases':
-        return fetch_cases(client, cases_max_fetch, fetch_time)
+        return fetch_cases(client, cases_max_fetch, fetch_time, case_tags_filter, case_status_filter, case_priority_filter)
 
 
 def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str, alarm_rule_name_filter: str):
@@ -2356,7 +2357,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     elif next_run:
         alarms_list_args['created_after'] = next_run
 
-    if alarm_status_filter and alarm_status_filter != 'All':
+    if alarm_status_filter:
         alarms_list_args['alarm_status'] = alarm_status_filter
     if alarm_rule_name_filter:
         alarms_list_args['alarm_rule_name'] = alarm_rule_name_filter
@@ -2377,15 +2378,30 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     return alarm_incidents
 
 
-def fetch_cases(client: Client, limit: int, fetch_time: str):
+def fetch_cases(client: Client, limit: int, fetch_time: str,
+                case_tags_filter: str, case_status_filter: str, case_priority_filter: str):
     case_incidents = []
     last_run = demisto.getLastRun()
     case_last_run = last_run.get('CaseLastRun')
+    next_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    cases_list_args = {'count': limit}
 
     if case_last_run:
-        cases = client.cases_list_request(timestamp_filter_type='createdAfter', timestamp=case_last_run, count=limit)
-    else:
-        cases = client.cases_list_request(count=limit)
+        cases_list_args['timestamp_filter_type'] = 'createdAfter'
+        cases_list_args['timestamp'] = case_last_run
+    elif next_run:
+        cases_list_args['timestamp_filter_type'] = 'createdAfter'
+        cases_list_args['timestamp'] = next_run
+
+    if case_tags_filter:
+        cases_list_args['tags'] = case_tags_filter
+    if case_status_filter:
+        cases_list_args['status'] = str(CASE_STATUS.get(case_status_filter))
+    if case_priority_filter:
+        cases_list_args['priority'] = case_priority_filter
+
+    cases = client.cases_list_request(**cases_list_args)
 
     for case in cases:
         incident = {
@@ -2413,6 +2429,9 @@ def main() -> None:
     cases_max_fetch = params.get('casesMaxFetch', 100)
     alarm_status_filter = params.get('alarm_status_filter')
     alarm_rule_name_filter = params.get('alarm_rule_name_filter')
+    case_priority_filter = params.get('case_priority_filter')
+    case_status_filter = params.get('case_status_filter')
+    case_tags_filter = params.get('case_tags_filter')
 
     headers = {'Authorization': f'Bearer {params["token"]}'}
 
@@ -2464,7 +2483,8 @@ def main() -> None:
             test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch,
-                                                      fetch_time, alarm_status_filter, alarm_rule_name_filter))
+                                                      fetch_time, alarm_status_filter, alarm_rule_name_filter,
+                                                      case_tags_filter, case_status_filter, case_priority_filter))
         elif command in commands:
             return_results(commands[command](client, args))
         else:

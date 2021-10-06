@@ -70,11 +70,9 @@ configuration:
   - Both
 - display: Alarm status filter
   name: alarm_status_filter
-  defaultvalue: All
   type: 15
   required: false
   options:
-  - All
   - New
   - Opened
   - Working
@@ -95,6 +93,26 @@ configuration:
   defaultvalue: ''
   type: 4
   required: false
+- display: Case status filter
+  name: case_status_filter
+  type: 15
+  required: false
+  options:
+  - Created
+  - Completed
+  - Incident
+  - Mitigated
+  - Resolved
+- display: Case priority filter
+  name: case_priority_filter
+  type: 15
+  required: false
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
 script:
   script: ''
   type: python
