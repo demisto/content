@@ -1510,7 +1510,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(ctx.get(LAST_FETCH_KEY, '0')),
+                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
