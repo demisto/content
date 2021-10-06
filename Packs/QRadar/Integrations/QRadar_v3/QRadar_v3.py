@@ -1520,7 +1520,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 if incident_batch_for_sample:
                     print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
                     set_to_integration_context_with_retries({'samples': incident_batch_for_sample,
-                                                             LAST_FETCH_KEY: str(new_highest_id)})
+                                                             LAST_FETCH_KEY: new_highest_id})
 
                 demisto.createIncidents(incidents)
 
