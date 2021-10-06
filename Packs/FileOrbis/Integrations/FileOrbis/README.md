@@ -45,17 +45,31 @@ Changes user status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FileOrbis.Success | Boolean | True if operation completed successfully | 
-| FileOrbis.Status | Number | Result code of the operation | 
-| FileOrbis.Message | String | User friendly result message of the operation | 
+| FileOrbis.UserStatus.UserID | String | User Id to change its status | 
+| FileOrbis.UserStatus.Success | Boolean | True if operation completed successfully | 
+| FileOrbis.UserStatus.Status | Number | Result code of the operation | 
+| FileOrbis.UserStatus.Message | String | User friendly result message of the operation | 
 
 
 #### Command Example
 ``` !change-user-status user_id="69a0e65c-54d7-4210-9cc4-08c40d1a0b9d" status="1" ```
 
+#### Context Example
+```json
+{
+    "FileOrbis": {
+        "UserStatus": {
+            "Success": true,
+            "Status": 0,
+            "Message": "Your Operation is Completed Successfully",
+            "UserID": "69a0e65c-54d7-4210-9cc4-08c40d1a0b9d"
+        }
+    }
+}
+```
 #### Human Readable Output
 
-| **Success** | **Status** | **Message** |
-| --- | --- | --- |
-| true | 0 | Your Operation is Completed Successfully | 
+| **Success** | **Status** | **Message** | **UserID** |
+| --- | --- | --- | --- |
+| true | 0 | Your Operation is Completed Successfully | 69a0e65c-54d7-4210-9cc4-08c40d1a0b9d |
 

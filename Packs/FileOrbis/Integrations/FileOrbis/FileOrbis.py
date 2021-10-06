@@ -124,10 +124,14 @@ def change_user_status_command(client: FileOrbisClient, args: Dict[str, Any]) ->
     client.login()
     result = client.change_user_status(user_id=user_id, status=status)
     client.logout()
+    result['UserID'] = user_id
 
     return CommandResults(
         readable_output=result.get("Message"),
         outputs=result,
+        outputs_prefix='FileOrbis.UserStatus',
+        outputs_key_field='UserID',
+        raw_response=result
     )
 
 

@@ -59,13 +59,16 @@ script:
     execution: false
     name: change-user-status
     outputs:
-    - contextPath: FileOrbis.Success
+    - contextPath: FileOrbis.UserStatus.UserID
+      description: User Id to change its status.
+      type: String
+    - contextPath: FileOrbis.UserStatus.Success
       description: True if operation completed successfully
       type: Boolean
-    - contextPath: FileOrbis.Status
+    - contextPath: FileOrbis.UserStatus.Status
       description: Result code of the operation
       type: Number
-    - contextPath: FileOrbis.Message
+    - contextPath: FileOrbis.UserStatus.Message
       description: User friendly result message of the operation
       type: String
   dockerimage: demisto/python3:3.9.7.24076
@@ -79,4 +82,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
