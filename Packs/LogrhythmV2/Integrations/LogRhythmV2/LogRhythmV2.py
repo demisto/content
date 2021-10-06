@@ -1221,14 +1221,6 @@ class Client(BaseClient):
         filename = re.findall("filename=\"(.+)\"", response.headers['Content-Disposition'])[0]
         return fileResult(filename, response.content)
 
-    def case_evidence_user_events_list_request(self, case_id, evidence_number):
-        headers = self._headers
-
-        response = self._http_request(
-            'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/userEvents/', headers=headers)
-
-        return response
-
     def case_tags_add_request(self, case_id, tag_numbers):
         headers = self._headers
 
@@ -1876,21 +1868,6 @@ def case_file_evidence_download_command(client: Client, args: Dict[str, Any]) ->
     return client.case_file_evidence_download_request(case_id, evidence_number)
 
 
-def case_evidence_user_events_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get('case_id')
-    evidence_number = args.get('evidence_number')
-
-    response = client.case_evidence_user_events_list_request(case_id, evidence_number)
-    command_results = CommandResults(
-        outputs_prefix='LogrhythmV2.CaseEvidenceUserEventsList',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
 def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id')
     tag_numbers = argToList(args.get('tag_numbers'))
@@ -2462,7 +2439,6 @@ def main() -> None:
             'lr-case-file-evidence-add': case_file_evidence_add_command,
             'lr-case-evidence-delete': case_evidence_delete_command,
             'lr-case-file-evidence-download': case_file_evidence_download_command,
-            'lr-case-evidence-user-events-list': case_evidence_user_events_list_command,
             'lr-case-tags-add': case_tags_add_command,
             'lr-case-tags-remove': case_tags_remove_command,
             'lr-tags-list': tags_list_command,
