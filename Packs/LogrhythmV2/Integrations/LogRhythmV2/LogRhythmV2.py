@@ -1202,7 +1202,6 @@ class Client(BaseClient):
                'Content-Disposition: form-data; name="note"\n\n' \
                '-------------------------------'
 
-
         response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', headers=headers, data=data)
 
         return response
@@ -1337,8 +1336,9 @@ class Client(BaseClient):
     def list_summary_create_update_request(self, list_type, name, enabled, use_patterns, replace_existing, read_access,
                                            write_access, restricted_read, entity_name, need_to_notify, does_expire, owner):
         data = {"autoImportOption": {"enabled": enabled, "replaceExisting": replace_existing, "usePatterns": use_patterns},
-                "doesExpire": does_expire, "entityName": entity_name,"owner": int(owner),
-                "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access, "restrictedRead": restricted_read, "writeAccess": write_access}
+                "doesExpire": does_expire, "entityName": entity_name, "owner": int(owner),
+                "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access,
+                "restrictedRead": restricted_read, "writeAccess": write_access}
         headers = self._headers
 
         response = self._http_request('POST', 'lr-admin-api/lists', json_data=data, headers=headers)
@@ -1648,8 +1648,8 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
     alarm_event_summary = alarm_summary.get('alarmEventSummary')
     if alarm_event_summary:
         del alarm_summary['alarmEventSummary']
-        hr = tableToMarkdown(f'Alarm summary', alarm_summary, headerTransform=pascalToSpace)
-        hr = hr +tableToMarkdown(f'Alarm event summary', alarm_event_summary, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Alarm summary', alarm_summary, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown('Alarm event summary', alarm_event_summary, headerTransform=pascalToSpace)
     else:
         hr = tableToMarkdown(f'Alarm {alarm_id} summary', alarm_summary, headerTransform=pascalToSpace)
 
@@ -1682,7 +1682,7 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     count = args.get('count')
 
     cases = client.cases_list_request(case_id, timestamp_filter_type, timestamp, priority, status, owners, tags,
-                                         text, evidence_type, reference_id, external_id, offset, count)
+                                      text, evidence_type, reference_id, external_id, offset, count)
 
     if cases:
         hr = tableToMarkdown('Cases', cases, headerTransform=pascalToSpace)
@@ -2113,7 +2113,7 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
         list_type, name, enabled, use_patterns, replace_existing, read_access, write_access, restricted_read, entity_name,
         need_to_notify, does_expire, owner)
 
-    hr = tableToMarkdown(f'List created successfully', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+    hr = tableToMarkdown('List created successfully', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -2137,7 +2137,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 
     hr = tableToMarkdown(f'List {list_id} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     if list_items:
-        hr = hr + tableToMarkdown(f'List items', list_items, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown('fList items', list_items, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -2292,7 +2292,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
-    endpoints = client.hosts_list_request(endpoint_id_list = endpoint_id_list,
+    endpoints = client.hosts_list_request(endpoint_id_list=endpoint_id_list,
                                           endpoint_hostname_list=endpoint_hostname_list)
 
     if type(endpoints) is dict:
@@ -2335,13 +2335,16 @@ def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: in
                             fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = '',
                             case_tags_filter: str = '', case_status_filter: str = '', case_priority_filter: str = ''):
     if fetch_type == 'Both':
-        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time, case_tags_filter, case_status_filter, case_priority_filter)
-        alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
+        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time,
+                                     case_tags_filter, case_status_filter, case_priority_filter)
+        alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time,
+                                       alarm_status_filter, alarm_rule_name_filter)
         return case_incidents + alarm_incidents
     elif fetch_type == 'Alarms':
         return fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
     elif fetch_type == 'Cases':
-        return fetch_cases(client, cases_max_fetch, fetch_time, case_tags_filter, case_status_filter, case_priority_filter)
+        return fetch_cases(client, cases_max_fetch, fetch_time,
+                           case_tags_filter, case_status_filter, case_priority_filter)
 
 
 def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str, alarm_rule_name_filter: str):
