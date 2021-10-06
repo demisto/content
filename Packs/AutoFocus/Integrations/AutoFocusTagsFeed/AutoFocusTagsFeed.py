@@ -108,8 +108,7 @@ class Client(BaseClient):
                 demisto.debug(f"integration_context after set: {str(get_integration_context())}")
             else:
                 page_num = arg_to_number(integration_context.get('page_num', 0))
-        #TODO change page num
-        get_tags_response = self.get_tags({"pageNum": 73,
+        get_tags_response = self.get_tags({"pageNum": page_num,
                                            "pageSize": PAGE_SIZE,
                                            "sortBy": "created_at"})
         tags = get_tags_response.get('tags', [])
@@ -125,22 +124,13 @@ class Client(BaseClient):
             results.append(tag_details_response)
         if not is_get_command:
             page_num += 1
-            demisto.debug("Im here before update")
             context = get_integration_context()
             context['page_num'] = page_num
-            # context['most_updated_tag'] = get_update_time_most_updated_tag(tags)
             set_integration_context(context)
         return results
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def get_update_time_most_updated_tag(tags: list) -> str:
-    # if the the order is desc than it is the first tag in the list
-    if len(tags) > 0:
-        return tags[0].get('updated_at', '').replace(' ', 'T')
-    return ''
 
 
 def only_updated_tags(client: Client) -> list:
@@ -156,11 +146,7 @@ def only_updated_tags(client: Client) -> list:
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', []))
-    # time_from_last_update = integration_context.get('time_of_first_fetch')
-    time_from_last_update = "2019-07-02 03:59:57"
-    time_from_last_update = datetime.strptime(time_from_last_update, AF_TAGS_DATE_FORMAT).strftime(
-        DATE_FORMAT) if time_from_last_update else None
-    time_from_last_update = date_to_timestamp(time_from_last_update, DATE_FORMAT)
+    time_from_last_update = integration_context.get('time_of_first_fetch')
     # if there are such tags, we first get all of them and upload to demisto
     index_to_delete = 0
     for tag in list_of_all_updated_tags:
@@ -174,7 +160,6 @@ def only_updated_tags(client: Client) -> list:
             demisto.debug("before set")
             set_integration_context(context)
             demisto.debug("after set should be here")
-            # TODO delete tags that did get details
             return results
 
     page_num = 0
@@ -185,7 +170,6 @@ def only_updated_tags(client: Client) -> list:
                                     "sortBy": "updated_at",
                                     "order": "desc"})
         tags = response.get('tags', [])
-        # most_updated_tag = get_update_time_most_updated_tag(tags)
         for tag in tags:
             update_time = tag.get('updated_at')
             update_time = datetime.strptime(update_time, AF_TAGS_DATE_FORMAT).strftime(
@@ -237,6 +221,17 @@ def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[s
     if (tag_class != 'malicious_behavior') or (tag_class == 'malicious_behavior' and source == 'Unit 42'):
         return TAG_CLASS_TO_DEMISTO_TYPE.get(tag_class)
     return None
+
+
+def get_tag_groups(tag_groups: list) -> list:
+    # Tag_groups is a list of dictionaries, each contains a tag group name and its decription
+    results = []
+    if len(tag_groups) > 0:
+        for group in tag_groups:
+            tag_group_name = group.get('tag_group_name', '')
+            if tag_group_name:
+                results.append(tag_group_name)
+    return results
 
 
 def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
@@ -378,9 +373,9 @@ def fetch_indicators(client: Client,
             relationships = (create_relationships_for_tag(client, value_, type_, related_tags))
             if relationships:
                 indicator_obj['relationships'] = relationships
-        # TODO add group tags here
-        if feed_tags:
-            indicator_obj['fields']['tags'] = feed_tags
+        tag_groups = get_tag_groups(tag_details.get('tag_groups', []))
+        if feed_tags or tag_groups:
+            indicator_obj['fields']['tags'] = feed_tags.extend(tag_groups)
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
