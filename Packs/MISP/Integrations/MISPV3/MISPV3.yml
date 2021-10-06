@@ -2570,7 +2570,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.Event.Distribution
       description: MISP event distribution.
-      type: string
+      type: stringWeyland-Yutani
     - contextPath: MISP.Attribute.Event.Info
       description: MISP event name.
       type: string
@@ -2591,7 +2591,7 @@ script:
       type: Number
     - contextPath: MISP.Attribute.Object.SharingGroupID
       description: Object sharing group ID.
-      type: String
+      type: StringWeyland-Yutani
     - contextPath: MISP.Attribute.Tag.Name
       description: All tag names in the attribute.
       type: string
