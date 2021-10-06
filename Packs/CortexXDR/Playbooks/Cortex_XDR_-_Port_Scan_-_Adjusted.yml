@@ -7,8 +7,8 @@ description: |-
   - Notifies management about a compromised host.
   - Escalates the incident in case of lateral movement alert detection.
 
-  The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
-starttaskid: "0"
+  The playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling'. 
+  It depends on the data from the parent playbooks and can not be used as a standalone version.
 tasks:
   "0":
     id: "0"
@@ -42,12 +42,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+    taskid: 3e3c4263-c9b2-46be-8a11-118be5a06403
     type: regular
     task:
-      id: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+      id: 3e3c4263-c9b2-46be-8a11-118be5a06403
       version: -1
       name: Check if attacker is internal or external
       description: Uses an automated script to determine if the IP used in the incident
@@ -62,7 +64,8 @@ tasks:
     scriptarguments:
       ip:
         complex:
-          root: AttackerIPs
+          root: PortScan
+          accessor: AttackerIPs
           transformers:
           - operator: uniq
       ipRanges:
@@ -81,6 +84,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
@@ -99,10 +104,8 @@ tasks:
       '#none#':
       - "97"
     scriptarguments:
-      append: {}
       key:
         simple: EmailAddressesToNotify
-      stringify: {}
       value:
         complex:
           root: inputs.EmailAddressesToNotify
@@ -118,7 +121,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2620,
+          "x": 2600,
           "y": 195
         }
       }
@@ -127,6 +130,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: 9de655f8-11e9-4297-8a3d-90b5c7878c91
@@ -150,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 1835
+          "y": 2215
         }
       }
     note: false
@@ -158,6 +163,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 65b36c78-8ae6-4b39-8db7-d7d0ad96039f
@@ -176,10 +183,8 @@ tasks:
       '#none#':
       - "96"
     scriptarguments:
-      append: {}
       key:
         simple: PortScan.BlockPorts
-      stringify: {}
       value:
         simple: "True"
     separatecontext: false
@@ -187,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 2010
+          "y": 2390
         }
       }
     note: false
@@ -195,6 +200,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 64fbf8eb-55c3-4f8e-8b29-0fd97ddf5728
@@ -212,10 +219,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: PortScan.AttackerIPs
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -246,6 +251,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
     taskid: 67145acf-123a-44ac-83d5-6de9ad5967e0
@@ -263,10 +270,8 @@ tasks:
       '#none#':
       - "97"
     scriptarguments:
-      append: {}
       key:
         simple: PortScan.AttackerUsername
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -315,6 +320,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
     taskid: 90618b30-5615-45e8-84ca-91bb9e0fb297
@@ -332,10 +339,8 @@ tasks:
       '#none#':
       - "97"
     scriptarguments:
-      append: {}
       key:
         simple: PortScan.FileArtifacts
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -367,6 +372,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
     taskid: a154ff28-c430-49ac-85ef-049af8fb1adc
@@ -384,10 +391,8 @@ tasks:
       '#none#':
       - "97"
     scriptarguments:
-      append: {}
       key:
         simple: PortScan.AttackerHostnames
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -418,6 +423,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "48":
     id: "48"
     taskid: b86c3a71-3196-46ba-82d2-4394de10f48d
@@ -458,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 1030
+          "y": 1410
         }
       }
     note: false
@@ -466,6 +473,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
     taskid: 50d1df58-29c9-4257-8ddf-01971eae17e9
@@ -483,12 +492,10 @@ tasks:
     nexttasks:
       '#none#':
       - "50"
-      - "51"
+      - "100"
     scriptarguments:
-      append: {}
       key:
         simple: IncidentAlerts
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -508,7 +515,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3105,
+          "x": 3060,
           "y": 195
         }
       }
@@ -517,12 +524,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 81d8b30b-307b-4ea0-8426-0d4f01c5becc
+    taskid: 96bc7145-929a-459f-8db8-31ae7a1489b2
     type: regular
     task:
-      id: 81d8b30b-307b-4ea0-8426-0d4f01c5becc
+      id: 96bc7145-929a-459f-8db8-31ae7a1489b2
       version: -1
       name: Save port scan date time
       description: Saves the date and time of the first port scan alert.
@@ -538,7 +547,6 @@ tasks:
         simple: "false"
       key:
         simple: PortScan.PortScanFirstDatetime
-      stringify: {}
       value:
         complex:
           root: IncidentAlerts
@@ -555,7 +563,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                  simple: IncidentAlerts.alert_id
                 iscontext: true
               right:
                 value:
@@ -577,8 +585,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2860,
-          "y": 370
+          "x": 3280,
+          "y": 390
         }
       }
     note: false
@@ -586,12 +594,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 72154049-3cbe-4d93-8b24-676bd59cc38b
+    taskid: 6c1634cb-a052-46d4-870f-3dfe8e497422
     type: regular
     task:
-      id: 72154049-3cbe-4d93-8b24-676bd59cc38b
+      id: 6c1634cb-a052-46d4-870f-3dfe8e497422
       version: -1
       name: Save lateral movement date time
       description: Saves the date and time of the first lateral movement alert, when
@@ -608,7 +618,6 @@ tasks:
         simple: "false"
       key:
         simple: PortScan.LateralMovementFirstDatetime
-      stringify: {}
       value:
         complex:
           root: IncidentAlerts
@@ -638,8 +647,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3320,
-          "y": 370
+          "x": 2860,
+          "y": 620
         }
       }
     note: false
@@ -647,6 +656,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "63":
     id: "63"
     taskid: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
@@ -667,20 +678,18 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
       roles:
         complex:
           root: inputs.RoleForEscalation
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2440,
-          "y": 1520
+          "y": 1900
         }
       }
     note: false
@@ -688,6 +697,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "64":
     id: "64"
     taskid: 1ab03196-0d35-431c-83f5-1b5d8b3b6e73
@@ -720,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 2220,
-          "y": 1350
+          "y": 1730
         }
       }
     note: false
@@ -728,6 +739,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "75":
     id: "75"
     taskid: 4830e0a6-14de-40fb-8b7a-331a28311f0b
@@ -799,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 1502.5,
-          "y": 690
+          "y": 1070
         }
       }
     note: false
@@ -807,6 +820,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "76":
     id: "76"
     taskid: b9dc1315-c732-4365-8561-999d8662de3d
@@ -825,19 +840,8 @@ tasks:
       '#none#':
       - "48"
     scriptarguments:
-      additionalHeader: {}
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      from: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: Port scan & potential compromise
-      templateParams: {}
       to:
         complex:
           root: inputs.EmailAddressesToNotify
@@ -848,15 +852,12 @@ tasks:
                 value:
                   simple: ','
           - operator: uniq
-      transientFile: {}
-      transientFileCID: {}
-      transientFileContent: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1280,
-          "y": 860
+          "y": 1240
         }
       }
     note: false
@@ -864,6 +865,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "86":
     id: "86"
     taskid: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
@@ -884,7 +887,7 @@ tasks:
       {
         "position": {
           "x": 2220,
-          "y": 1200
+          "y": 1580
         }
       }
     note: false
@@ -892,6 +895,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "88":
     id: "88"
     taskid: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
@@ -912,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 1690
+          "y": 2070
         }
       }
     note: false
@@ -920,6 +925,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "91":
     id: "91"
     taskid: e7bd791b-e0f7-4bb4-8a08-9b5112da9293
@@ -963,7 +970,7 @@ tasks:
       {
         "position": {
           "x": 2047.5,
-          "y": 690
+          "y": 1070
         }
       }
     note: false
@@ -971,6 +978,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "96":
     id: "96"
     taskid: 0dfd512e-ddfc-40ab-879c-301b55822d1a
@@ -988,7 +997,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 2180
+          "y": 2560
         }
       }
     note: false
@@ -996,6 +1005,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "97":
     id: "97"
     taskid: 65a62ec6-98d0-4d9f-870b-618561453d17
@@ -1017,7 +1028,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 545
+          "y": 795
         }
       }
     note: false
@@ -1025,6 +1036,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "98":
     id: "98"
     taskid: b50a8913-48c0-4157-84af-215f0bf57211
@@ -1043,10 +1056,8 @@ tasks:
       '#none#':
       - "96"
     scriptarguments:
-      append: {}
       key:
         simple: BlockPorts
-      stringify: {}
       value:
         simple: "False"
     separatecontext: false
@@ -1054,7 +1065,7 @@ tasks:
       {
         "position": {
           "x": 2032.5,
-          "y": 2010
+          "y": 2390
         }
       }
     note: false
@@ -1062,9 +1073,65 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 813d620e-f1fc-43ae-8e5b-40040541bd2d
+    type: condition
+    task:
+      id: 813d620e-f1fc-43ae-8e5b-40040541bd2d
+      version: -1
+      name: Check timestamp for lateral movement alert
+      description: Check timestamp for lateral movement alert
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "97"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IncidentAlerts
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: IncidentAlerts.category
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Lateral Movement
+                accessor: detection_timestamp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2750,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
+      "100_51_yes": 0.45,
+      "100_97_#default#": 0.1,
       "32_34_yes": 0.51,
       "32_98_#default#": 0.47,
       "48_86_yes": 0.56,
@@ -1076,8 +1143,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 2750,
+        "height": 2575,
+        "width": 2710,
         "x": 950,
         "y": 50
       }
@@ -1094,7 +1161,8 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Determines whether attacking IPs should be automatically blocked using firewalls.
+  description: Determines whether attacking IPs should be automatically blocked using
+    firewalls.
   playbookInputQuery:
 - key: EmailAddressesToNotify
   value: {}
@@ -1114,8 +1182,9 @@ inputs:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Cortex XSOAR role of the users that the incident can be
-    escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place.
+  description: The name of the Cortex XSOAR role of the users that the incident can
+    be escalated to in case of developments like lateral movement. If this input is
+    left empty, no escalation will take place.
   playbookInputQuery:
 - key: OnCall
   value:
@@ -1134,7 +1203,7 @@ inputs:
   description: |-
     Please use "InternalIPRanges" input instead.
     This input is deprecated.
-  playbookInputQuery: null  
+  playbookInputQuery:
 outputs:
 - contextPath: PortScan.BlockPorts
   description: Indicates whether there's a need to block the ports used for exploitation
@@ -1159,5 +1228,5 @@ outputs:
   description: Port Scan First Date time
   type: unknown
 tests:
-- No test.
+- No tests (auto formatted)
 fromversion: 5.0.0
