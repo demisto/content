@@ -1,0 +1,12 @@
+{
+    "id": "Campaign",
+    "layout": "Campaign Report",
+    "locked": false,
+    "name": "Campaign",
+    "color": "#00FFFF",
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

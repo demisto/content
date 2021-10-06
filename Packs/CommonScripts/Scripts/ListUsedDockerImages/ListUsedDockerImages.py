@@ -7,6 +7,7 @@ This is a script that list all the dockers images that are in ues in the integra
 import demistomock as demisto
 from CommonServerPython import *
 import json
+from typing import Dict
 
 '''REST API HTTP COMMANDS'''
 POST_COMMAND = "POST"
@@ -41,7 +42,7 @@ MAX_PER_DOCKER = 5
 ''' HELPER FUNCTION '''
 
 
-def get_docker_from_conf(conf: Any) -> str:
+def get_docker_from_conf(conf: Dict) -> str:
     """
     :type conf: ``json object``
     :param conf: json represents integration configuration
@@ -60,12 +61,12 @@ def get_docker_from_conf(conf: Any) -> str:
     return docker_image
 
 
-def get_integration_conf(integration_search_json: Any, instance_brand: str,
+def get_integration_conf(integration_search_json: Dict, instance_brand: str,
                          ignore_deprecated: bool = False) -> Any:
     """ returns the corresponding integration_configuration json object for the given instance_brand
     Args:
         :type integration_search_json: ``json object``
-        :param integration_search_json: json object represents XSOAR integrations configuration.
+        :param integration_search_json: j son object represents XSOAR integrations configuration.
 
         :type instance_brand: ``str``
         :param instance_brand: the configured instance brand value.
@@ -121,7 +122,6 @@ def extract_dockers_from_integration_search_result(content: str, ignore_deprecat
             if conf_json:
                 docker_image = get_docker_from_conf(conf_json)
                 dockers[conf_json[INTEGRATION_DISPLAY]] = docker_image
-
     return dockers
 
 
