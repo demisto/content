@@ -3778,13 +3778,7 @@ Update an attribute of an existing MISP event.
 | MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
 | MISP.Attribute.Category | string | Attribute category. | 
 | MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
-| MISP.Attribute.Comment | string | Attribute comment. | 
-| MISP.Attribute.Event.ID | string | MISP event ID. | 
-| MISP.Attribute.Event.Distribution | string | MISP event distribution. | 
-| MISP.Attribute.Event.Info | string | MISP event name. | 
-| MISP.Attribute.Event.OrganizationID | string | MISP event organization ID. | 
-| MISP.Attribute.Event.OwnerOrganization.ID | string | Event owner organization ID. | 
-| MISP.Attribute.Event.UUID | string | MISP event UUID. | 
+| MISP.Attribute.Comment | string | Attribute comment. |
 
 
 #### Command Example
