@@ -43,10 +43,12 @@ class AddressObject(object):
             return []
         indicator = indicator.string.encode('ascii', 'replace').decode()
 
+        indicator_list = indicator.split('##comma##')
+
         acategory = props.get('category', None)
         if acategory is None:
             try:
-                ip_include_cidr = IPNetwork(indicator)
+                ip_include_cidr = IPNetwork(indicator_list[0])
                 ip = ip_include_cidr.ip
                 if ip.version == 4:
                     type_ = 'IP'
@@ -69,10 +71,7 @@ class AddressObject(object):
             LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
             return []
 
-        return [{
-            'indicator': indicator,
-            'type': type_
-        }]
+        return [{'indicator': i, 'type': type_} for i in indicator_list]
 
 
 class DomainNameObject(object):
@@ -1042,6 +1041,8 @@ def fetch_indicators_command(client):
             indicator_obj = {
                 'value': indicator,
                 'type': item.get('type'),
+                'title': item.get('stix_title'),
+                'description': item.get('stix_description'),
                 'fields': {
                     'tags': client.tags,
                 },
@@ -1086,7 +1087,7 @@ def main():
             demisto.setLastRun({'time': client.last_taxii_run})
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
-            demisto.info(f'aaaaaaaa {raw_response}')
+            demisto.info(f'bbbbbb {raw_response}')
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

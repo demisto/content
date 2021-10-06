@@ -1,5 +1,6 @@
 [
   {
+    "id_ref": "ctix:Observable-c263575b-015f-4fa7-a22e-43e3989044a9",
     "indicator": "https://demisto.com",
     "type": "Domain",
     "stix_title": "testing obs1",
