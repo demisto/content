@@ -82,8 +82,6 @@ ATTRIBUTE_TO_INDICATOR_MAP = {
     'filename|md5': FeedIndicatorType.File,
     'filename|sha1': FeedIndicatorType.File,
     'filename|sha256': FeedIndicatorType.File,
-    'ip-src': FeedIndicatorType.IP,
-    'ip-dst': FeedIndicatorType.IP,
     'domain': FeedIndicatorType.Domain,
     'email': FeedIndicatorType.Email,
     'email-src': FeedIndicatorType.Email,
@@ -233,6 +231,19 @@ def clean_user_query(query: str) -> Dict[str, Any]:
     return params
 
 
+def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
+    """
+    Returns the correct FeedIndicatorType for attributes of type ip
+    Args:
+        ip_attribute: the ip attribute
+    Returns: FeedIndicatorType
+    """
+    if ':' in ip_attribute['value']:
+        return FeedIndicatorType.IPv6
+    else:
+        return FeedIndicatorType.IP
+
+
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     """
     Gets the correct Indicator type that matches the attribute type, attribute type is not supported
@@ -242,7 +253,10 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     Returns: The matching indicator type or None if the attribute type is not supported
     """
     attribute_type = attribute['type']
-    return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
+    if attribute_type == 'ip-src' or attribute == 'ip-dst':
+        return get_ip_type(attribute)
+    else:
+        return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
 
 
 def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
@@ -258,13 +272,14 @@ def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
     return None
 
 
-def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputation: Optional[str]) -> Dict[str, Any]:
     """
     Creates an indicator object
     Args:
         value_: value of the indicator
         type_: type of the indicator
         raw_data: raw data of the indicator
+        reputation: string representing reputation of the indicator
     Returns: Dictionray which is the indicator object
     """
     indicator_obj = {
@@ -273,8 +288,36 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[s
         'service': 'MISP',
         'fields': {},
         'rawJSON': raw_data,
+        'Reputation': reputation,
     }
     return indicator_obj
+
+
+def update_indicators_iterator(
+                                indicators_iterator: List[Dict[str, Any]],
+                                params_dict: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
+    """
+    returns sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
+    Args:
+        params_dict: user's params sent to misp
+        indicators_iterator: list of indicators
+    Returns: Sorted list of new indicators
+    """
+    # TODO: need to test with params in lastrun, test flow
+    last_run = demisto.getLastRun()
+    indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
+
+    if last_run is None:
+        return indicators_iterator
+    if params_dict != last_run.get('params'):
+        demisto.setLastRun(None)
+        return indicators_iterator
+    last_timestamp = last_run.get('timestamp')
+
+    for index in range(len(indicators_iterator)):
+        if indicators_iterator[index]['value']['timestamp'] > last_timestamp:
+            return indicators_iterator[index:]
+    return None
 
 
 def fetch_indicators(client: Client,
@@ -283,6 +326,7 @@ def fetch_indicators(client: Client,
                      query: Optional[str],
                      tlp_color: Optional[str],
                      url: Optional[str],
+                     reputation: Optional[str],
                      limit: int = -1) -> List[Dict]:
     if query:
         params_dict = clean_user_query(query)
@@ -291,20 +335,30 @@ def fetch_indicators(client: Client,
 
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict)
     indicators = []
 
-    if limit > 0:
-        indicators_iterator = indicators_iterator[:limit]
+    if not added_indicators_iterator:
+        return []
 
-    for indicator in indicators_iterator:
+    if limit > 0:
+        added_indicators_iterator = added_indicators_iterator[:limit]
+    else:
+        # fetching command, need to update last run dict
+        demisto.setLastRun({
+            'params': params_dict,
+            'timestamp': added_indicators_iterator[len(added_indicators_iterator) - 1]['value']['timestamp']
+        })
+
+    for indicator in added_indicators_iterator:
         value_ = indicator['value']['value']
         type_ = indicator['type']
         raw_type = indicator.pop('raw_type')
 
-        indicator_obj = build_indicator(value_, type_, indicator)
+        indicator_obj = build_indicator(value_, type_, indicator, reputation)
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type)
-        galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
+        galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
@@ -312,11 +366,12 @@ def fetch_indicators(client: Client,
     return indicators
 
 
-def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Optional[str]) -> List[Dict[str, Any]]:
     """
     Builds indicators from the galaxy tags in the attribute
     Args:
         indicator_obj: Indicator being built
+        reputation: string representing reputation of the indicator
     Returns: List of indicators created from the galaxies
     """
     tags = indicator_obj['rawJSON']['value'].get('Tag', [])
@@ -326,7 +381,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[s
         type_ = get_galaxy_indicator_type(tag_name)
         if tag_name and type_:
             value_ = tag_name[tag_name.index('=') + 2: tag_name.index(" -")]
-            galaxy_indicators.append(build_indicator(value_, type_, tag))
+            galaxy_indicators.append(build_indicator(value_, type_, tag, reputation))
 
     return galaxy_indicators
 
@@ -450,11 +505,12 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     """
     limit = arg_to_number(args.get('limit', '10')) or 10
     tlp_color = params.get('tlp_color')
+    reputation = params.get('feedReputation')
     tags = argToList(args.get('tags', ''))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
 
-    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), limit)
+    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), reputation, limit)
 
     hr_indicators = []
     for indicator in indicators:
@@ -484,11 +540,12 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     Returns: List of indicators.
     """
     tlp_color = params.get('tlp_color')
+    reputation = params.get('feedReputation')
     tags = argToList(params.get('attribute_tags', ''))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
 
-    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color, params.get('url'))
+    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color, params.get('url'), reputation)
     return indicators
 
 
