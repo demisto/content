@@ -1,4 +1,5 @@
-"""HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
+"""
+AutoFocus Tags Feed integration
 """
 import time
 from concurrent.futures import wait
@@ -50,6 +51,13 @@ MAP_RELATIONSHIPS = {
 
 }
 
+SCORES_MAP = {
+    ThreatIntel.ObjectsNames.MALWARE: ThreatIntel.ObjectsScore.MALWARE,
+    'Threat Actor': 3,
+    ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: ThreatIntel.ObjectsScore.ATTACK_PATTERN,
+}
+
 PAGE_SIZE = 50
 
 ''' CLIENT CLASS '''
@@ -58,13 +66,15 @@ PAGE_SIZE = 50
 class Client(BaseClient):
     """
     Client class to interact with AutoFocus API
+    Args:
+        api_key: AutoFocus API Key.
     """
 
     def __init__(self, api_key, verify, proxy):
         super().__init__(BASE_URL, verify, proxy)
         self.api_key = api_key
 
-    def get_tags(self, data: Dict[str, Any], page_num: int = 0):
+    def get_tags(self, data: Dict[str, Any]):
         res = self._http_request('POST',
                                  url_suffix='tags',
                                  headers={
@@ -90,29 +100,28 @@ class Client(BaseClient):
     def build_iterator(self, is_get_command: bool) -> list:
         """
         Retrieves all entries from the feed.
+        This method implements all of the logic to get the tags from thr feed.
+        Args:
+            is_get_command: is this method called from the get-indicators-command
         Returns:
             A list of objects, containing the indicators.
         """
+
         results = []
         if is_get_command:
             page_num = 0
         else:
             integration_context = get_integration_context()
-            demisto.debug(f"integration_context: {str(integration_context)}")
-
             if not integration_context:
-                demisto.debug("if not integration context")
                 page_num = 0
                 time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
-                demisto.debug(f"integration_context after set: {str(get_integration_context())}")
             else:
                 page_num = arg_to_number(integration_context.get('page_num', 0))
         get_tags_response = self.get_tags({"pageNum": page_num,
                                            "pageSize": PAGE_SIZE,
                                            "sortBy": "created_at"})
         tags = get_tags_response.get('tags', [])
-
         # when finishing the "first level fetch" (getting all he tags from the feed), the next call to the api
         # will be with a page num greater than the total pages, and the api should return an empty tags list.
         if not tags:
@@ -224,7 +233,15 @@ def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[s
 
 
 def get_tag_groups(tag_groups: list) -> list:
-    # Tag_groups is a list of dictionaries, each contains a tag group name and its decription
+    """
+    Returns the tag groups as a list of the groups names.
+    Args:
+        tag_groups: list of all groups
+    Returns:
+        The tag groups as a list of the groups names
+    """
+
+    # Tag_groups is a list of dictionaries, each contains a tag group name and its description
     results = []
     if len(tag_groups) > 0:
         for group in tag_groups:
@@ -238,11 +255,11 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     """
     Returns the indicator fields
     Args:
-        tag_details:
-
+        tag_details: a dictionary containing the tag details.
     Returns:
-
+        A dictionary represents the indicator fields.
     """
+
     fields: Dict[str, Any] = {}
     tag = tag_details.get('tag', {})
     refs = json.loads(tag.get('refs', '[]'))
@@ -267,26 +284,17 @@ def get_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     return fields
 
 
-def create_dict_of_all_tags(tags_list: list) -> Dict[str, Any]:
-    """
-    Creates a dict of all the tag_details, with tag name as key and tag details as value.
-    Args:
-        tags_list: list of all the tag details.
-
-    Returns:
-        Dictionary with tag name as key and tag details as value.
-    """
-
-    all_tags: Dict[str, Any] = {}
-    for tag_details in tags_list:
-        tag = tag_details.get('tag')
-        public_tag_name = tag.get('public_tag_name')
-        if public_tag_name:
-            all_tags[public_tag_name] = tag_details
-    return all_tags
-
-
 def create_relationships_for_tag(client: Client, name: str, tag_type: str, related_tags: List[str]):
+    """
+    Creates all the relationships of an indicator.
+    Args:
+        client: Client class
+        name: The indicator's name
+        tag_type: The indicator's type
+        related_tags: A list of all indicators related to the spesific indicator
+    Returns:
+        a list represents the relationships of an indicator.
+    """
     relationships: list = []
     for related_tag in related_tags:
         related_tag_details = client.get_tag_details(related_tag)
@@ -357,8 +365,6 @@ def fetch_indicators(client: Client,
             'value': value_,
             'type': type_,
         }
-        # Create indicator object for each value.
-        # The object consists of a dictionary with required and optional keys and values, as described blow.
         for key, value in tag_details.items():
             raw_data.update({key: value})
         indicator_obj = {
@@ -367,6 +373,7 @@ def fetch_indicators(client: Client,
             'service': 'AutoFocus',
             'fields': get_fields(tag_details),
             'rawJSON': raw_data,
+            'score': SCORES_MAP.get(type_)
         }
         related_tags = tag_details.get('related_tags', [])
         if related_tags:
@@ -375,7 +382,7 @@ def fetch_indicators(client: Client,
                 indicator_obj['relationships'] = relationships
         tag_groups = get_tag_groups(tag_details.get('tag_groups', []))
         if feed_tags or tag_groups:
-            indicator_obj['fields']['tags'] = feed_tags.extend(tag_groups)
+            indicator_obj['fields']['tags'] = tag_groups.extend(feed_tags)
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -387,7 +394,8 @@ def get_indicators_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
                            ) -> CommandResults:
-    """Wrapper for retrieving indicators from the feed to the war-room.
+    """
+    Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
         params: demisto.params()
@@ -395,6 +403,7 @@ def get_indicators_command(client: Client,
     Returns:
         Outputs.
     """
+
     limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
@@ -412,13 +421,15 @@ def get_indicators_command(client: Client,
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
-    """Wrapper for fetching indicators from the feed to the Indicators tab.
+    """
+    Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
         params: demisto.params()
     Returns:
         Indicators.
     """
+
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
     indicators = fetch_indicators(client, False, tlp_color, feed_tags)

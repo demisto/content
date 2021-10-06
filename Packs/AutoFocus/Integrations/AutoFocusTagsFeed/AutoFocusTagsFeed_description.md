@@ -1,3 +1,4 @@
-## Feed Hello World
-- This text is markdown
-- This section explains how to configure the instance of FeedHelloWorld in Cortex XSOAR.
+## AutoFocus Tags Feed
+Use the AutoFocus Tags Feeds integration to fetch indicators from AutoFocus Tags.
+
+
