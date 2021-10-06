@@ -11,7 +11,8 @@ The Druva Cloud Platform integration empowers you to automate ransomware inciden
 - Operational Security: 24x7x365 fully managed security operations including automatic patching and continuous monitoring
 - Accelerated Recovery: Robust API integrations with SIEM and SOAR platforms are coupled with our Accelerated Recovery solutions so you can get back to normal faster
 
-**What does this pack do? **
+**What does this pack do?**
+
 
 ![alt text](https://github.com/demisto/content/raw/5d61f14e1de2a5f82f874acf4b3a50567b49a231/Packs/Druva/CortexXsoar.png)
 
