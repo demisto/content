@@ -1,12 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "comment",
-    "id": "generic_ThreatIntelReport_comment",
-    "name": "Comment",
+    "cliName": "value",
+    "id": "generic_ThreatIntelReport_value",
+    "name": "Value",
     "closeForm": false,
     "content": true,
     "editForm": true,
