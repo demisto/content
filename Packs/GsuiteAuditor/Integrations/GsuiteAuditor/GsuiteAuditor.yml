@@ -65,26 +65,33 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the event being queried
+      description: The name of the event being queried. for a list of event names
+        for each application, see integration documentation.
       isArray: false
       name: event_name
       required: false
       secret: false
     - default: false
-      description: a comma-separated list composed of event parameters and relational
-        operators
+      description: |-
+        a comma-separated list composed of event parameters and relational operators. for example-
+        'API_CLIENT_NAME==111,API_SCOPES=aaa'.
+        relevent 'event name' argument must be supplied to use this argument.
       isArray: false
       name: filters
       required: false
       secret: false
     - default: false
-      description: ID of the organizational unit to report on
+      description: ID of the organizational unit to report on. Activity records will
+        be shown only for users who belong to the specified organizational unit.
       isArray: false
       name: org_unit_id
       required: false
       secret: false
     - default: false
-      description: Comma separated group ids on which user activities are filtered
+      description: |-
+        Comma separated group ids on which user activities are filtered. the response will contain activities for only those users that are a part of at least one of the group ids mentioned here. example: "id:abc123,id:xyz456".
+
+        to retrieve a group id use the 'gsuite-get-group' coomand in 'G Suite Admin' Pack
       isArray: false
       name: group_id
       required: false
@@ -123,7 +130,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      description: Email address of the G Suite domain admin. we will preform the
+        request based on this users permissions
       isArray: false
       name: admin_email
       required: false
