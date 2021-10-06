@@ -316,28 +316,30 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "gibdatahash",
+                                "fieldId": "gibnameservers",
                                 "height": 22,
-                                "id": "9f22aa80-7371-11eb-8aef-c39e29f029fe",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibleakeddata",
-                                "height": 44,
-                                "id": "b696b1c0-7371-11eb-8aef-c39e29f029fe",
-                                "index": 3,
+                                "id": "ec5ba620-0f12-11ec-b4dd-539628da0f41",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "giblinklist",
-                                "height": 44,
-                                "id": "c64b1480-7371-11eb-8aef-c39e29f029fe",
+                                "fieldId": "gibtitle",
+                                "height": 22,
+                                "id": "8c7ce9e0-0f11-11ec-b4dd-539628da0f41",
+                                "index": 3,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibphishingtype",
+                                "height": 22,
+                                "id": "01126220-0f13-11ec-b4dd-539628da0f41",
                                 "index": 4,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
@@ -346,9 +348,9 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibmatches",
-                                "height": 44,
-                                "id": "d827d580-7371-11eb-8aef-c39e29f029fe",
+                                "fieldId": "gibphishingstatus",
+                                "height": 22,
+                                "id": "29a76e80-7362-11eb-8aef-c39e29f029fe",
                                 "index": 5,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
@@ -359,53 +361,73 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Leak Information from GIB TIA",
+                        "name": "Phishing Information from GIB TIA",
                         "static": false,
-                        "w": 2,
-                        "x": 0,
+                        "w": 1,
+                        "x": 1,
                         "y": 4
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-fe2e05e0-0f1d-11ec-b4dd-539628da0f41",
+                        "i": "caseinfoid-69c7f3b0-0f1e-11ec-b4dd-539628da0f41",
                         "items": [
                             {
                                 "endCol": 4,
                                 "fieldId": "gibdatecreated",
                                 "height": 22,
-                                "id": "998326e0-7371-11eb-8aef-c39e29f029fe",
+                                "id": "d3f80ec0-0f12-11ec-b4dd-539628da0f41",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibseverity",
+                                "fieldId": "gibdateexpired",
                                 "height": 22,
-                                "id": "ccadc250-72c7-11eb-9bde-efbce7414b24",
+                                "id": "dd41d5b0-0f12-11ec-b4dd-539628da0f41",
                                 "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibid",
-                                "height": 22,
-                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibportallink",
+                                "fieldId": "gibid",
                                 "height": 22,
-                                "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
-                                "index": 3,
+                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
+                                "index": 2,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibscreenshot",
+                                "height": 22,
+                                "id": "c59fe0a0-0f12-11ec-b4dd-539628da0f41",
+                                "index": 3,
+                                "listId": "caseinfoid-69c7f3b0-0f1e-11ec-b4dd-539628da0f41",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibhtml",
+                                "height": 22,
+                                "id": "b57b7e00-0f12-11ec-b4dd-539628da0f41",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibfavicon",
+                                "height": 22,
+                                "id": "b8585f30-0f12-11ec-b4dd-539628da0f41",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -419,6 +441,63 @@
                         "w": 2,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-81b45f40-0f1e-11ec-b4dd-539628da0f41",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "gibperson",
+                                "height": 22,
+                                "id": "355968d0-0f13-11ec-b4dd-539628da0f41",
+                                "index": 0,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "gibaddress",
+                                "height": 22,
+                                "id": "31a64be0-0f13-11ec-b4dd-539628da0f41",
+                                "index": 1,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phonenumber",
+                                "height": 22,
+                                "id": "3f55b6e0-0f13-11ec-b4dd-539628da0f41",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibemail",
+                                "height": 22,
+                                "id": "3ac161b0-0f13-11ec-b4dd-539628da0f41",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Person Information from GIB TIA",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -451,8 +530,8 @@
         ]
     },
     "group": "incident",
-    "id": "GIB OSI Public Leak Layout",
-    "name": "GIB OSI Public Leak Layout",
+    "id": "GIB Brand Protection Domain Layout",
+    "name": "GIB Brand Protection Domain Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

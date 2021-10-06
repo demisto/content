@@ -331,7 +331,7 @@
                                 "fieldId": "gibleakname",
                                 "height": 22,
                                 "id": "be8170f0-cea2-11eb-bac7-713ca72ecbc9",
-                                "index": 2,
+                                "index": 1,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -342,8 +342,26 @@
                                 "fieldId": "gibpassword",
                                 "height": 22,
                                 "id": "c29ac9c0-cea2-11eb-bac7-713ca72ecbc9",
-                                "index": 3,
+                                "index": 2,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibid",
+                                "height": 22,
+                                "id": "edaa5720-0f1b-11ec-b4dd-539628da0f41",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibseverity",
+                                "height": 22,
+                                "id": "f2c36cb0-0f1b-11ec-b4dd-539628da0f41",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -352,7 +370,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB TI&A",
+                        "name": "Information from GIB TI\u0026A",
                         "static": false,
                         "w": 2,
                         "x": 0,
