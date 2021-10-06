@@ -137,7 +137,7 @@
 
 .run-unittests-and-lint:
   tags:
-    - docker
+    - gce
   needs: []
   stage: unittests-and-validations
   artifacts:
