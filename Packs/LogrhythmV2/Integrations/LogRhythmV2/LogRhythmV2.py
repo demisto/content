@@ -2325,32 +2325,43 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def test_module(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int) -> None:
+def test_module(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int, fetch_time: str) -> None:
     client.lists_get_request(None, None, None)
-    fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch)
+    fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch, fetch_time)
     return_results('ok')
 
 
-def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int):
+def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
+                            fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = ''):
     if fetch_type == 'Both':
-        case_incidents = fetch_cases(client, cases_max_fetch)
-        alarm_incidents = fetch_alarms(client, alarms_max_fetch)
+        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time)
+        alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
         return case_incidents + alarm_incidents
     elif fetch_type == 'Alarms':
-        return fetch_alarms(client, alarms_max_fetch)
+        return fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
     elif fetch_type == 'Cases':
-        return fetch_cases(client, cases_max_fetch)
+        return fetch_cases(client, cases_max_fetch, fetch_time)
 
 
-def fetch_alarms(client, limit):
+def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str, alarm_rule_name_filter: str):
     alarm_incidents = []
     last_run = demisto.getLastRun()
     alarm_last_run = last_run.get('AlarmLastRun')
+    next_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%S")
+
+    alarms_list_args = {'count': limit}
 
     if alarm_last_run:
-        alarms, _ = client.alarms_list_request(created_after=alarm_last_run, count=limit)
-    else:
-        alarms, _ = client.alarms_list_request(count=limit)
+        alarms_list_args['created_after'] = alarm_last_run
+    elif next_run:
+        alarms_list_args['created_after'] = next_run
+
+    if alarm_status_filter and alarm_status_filter != 'All':
+        alarms_list_args['alarm_status'] = alarm_status_filter
+    if alarm_rule_name_filter:
+        alarms_list_args['alarm_rule_name'] = alarm_rule_name_filter
+
+    alarms, _ = client.alarms_list_request(**alarms_list_args)
 
     for alarm in alarms:
         incident = {
@@ -2366,7 +2377,7 @@ def fetch_alarms(client, limit):
     return alarm_incidents
 
 
-def fetch_cases(client, limit):
+def fetch_cases(client: Client, limit: int, fetch_time: str):
     case_incidents = []
     last_run = demisto.getLastRun()
     case_last_run = last_run.get('CaseLastRun')
@@ -2397,11 +2408,13 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     incidents_type = params.get('fetchType', 'Both')
+    fetch_time = params.get('first_fetch', '7 days')
     alarms_max_fetch = params.get('alarmsMaxFetch', 100)
     cases_max_fetch = params.get('casesMaxFetch', 100)
+    alarm_status_filter = params.get('alarm_status_filter')
+    alarm_rule_name_filter = params.get('alarm_rule_name_filter')
 
-    headers = {}
-    headers['Authorization'] = f'Bearer {params["token"]}'
+    headers = {'Authorization': f'Bearer {params["token"]}'}
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -2448,9 +2461,10 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch)
+            test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch))
+            demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch,
+                                                      fetch_time, alarm_status_filter, alarm_rule_name_filter))
         elif command in commands:
             return_results(commands[command](client, args))
         else:

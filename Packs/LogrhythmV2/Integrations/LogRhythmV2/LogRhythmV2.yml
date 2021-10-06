@@ -68,6 +68,33 @@ configuration:
   - Alarms
   - Cases
   - Both
+- display: Alarm status filter
+  name: alarm_status_filter
+  defaultvalue: All
+  type: 15
+  required: false
+  options:
+  - All
+  - New
+  - Opened
+  - Working
+  - Escalated
+  - Closed
+  - Closed_FalseAlarm
+  - Closed_Resolved
+  - Closed_Unresolved
+  - Closed_Reported
+  - Closed_Monitor
+- display: Alarm rule name filter
+  name: alarm_rule_name_filter
+  defaultvalue: ''
+  type: 4
+  required: false
+- display: Case tags filter
+  name: case_tags_filter
+  defaultvalue: ''
+  type: 4
+  required: false
 script:
   script: ''
   type: python
