@@ -18,7 +18,7 @@ inputs:
   playbookInputQuery: null
 - key: polling_timeout
   value:
-    simple: "45"
+    simple: "10"
   required: false
   description: Search action polling timeout.
   playbookInputQuery: null
