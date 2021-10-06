@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "reporttype",
-    "id": "generic_ThreatIntelReport_reporttype",
-    "name": "Report Type",
+    "cliName": "cve",
+    "id": "generic_ThreatIntelReport_cve",
+    "name": "CVE",
     "closeForm": false,
     "content": true,
     "editForm": true,
