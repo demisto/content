@@ -35,7 +35,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
 
 
 def wait_for_playbook_to_complete(investigation_id, client):
-    investigation_url = f'{GOLD_SERVER_URL}/#/WorkPlan/{investigation_id}'
+    investigation_url = f'{GOLD_SERVER_URL}/#/Custom/caseinfoid/{investigation_id}'
     print(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT
@@ -56,8 +56,7 @@ def wait_for_playbook_to_complete(investigation_id, client):
             break
 
         if playbook_state == PB_Status.FAILED:
-            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url} and'
-                  f' see SecretsDetection.FoundSecrets in the Context data.')
+            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}.')
             sys.exit(1)
 
         if time.time() > timeout:
