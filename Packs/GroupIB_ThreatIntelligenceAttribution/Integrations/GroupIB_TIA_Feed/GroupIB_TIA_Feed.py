@@ -249,7 +249,7 @@ MAPPING: dict = {
                     "main_field": 'indicators.params.ipv4', "main_field_type": 'IP',
                     "add_fields": [
                         'threatActor.name',
-                        'threatActor.isAPT', 'threatActor.id'
+                        'threatActor.isAPT', 'threatActor.id',
                         'indicators.dateFirstSeen', 'indicators.dateLastSeen'
                     ],
                     "add_fields_types": [
@@ -290,7 +290,7 @@ MAPPING: dict = {
                         'indicators.params.name', 'indicators.params.hashes.md5',
                         'indicators.params.hashes.sha1',
                         'indicators.params.hashes.sha256', 'indicators.params.size',
-                        'threatActor.name', 'threatActor.isAPT', 'threatActor.id'
+                        'threatActor.name', 'threatActor.isAPT', 'threatActor.id',
                         'indicators.dateFirstSeen', 'indicators.dateLastSeen'
                     ],
                     "add_fields_types": [
@@ -308,7 +308,7 @@ MAPPING: dict = {
                     "main_field": 'indicators.params.ipv4', "main_field_type": 'IP',
                     "add_fields": [
                         'threatActor.name',
-                        'threatActor.isAPT', 'threatActor.id'
+                        'threatActor.isAPT', 'threatActor.id',
                         'indicators.dateFirstSeen', 'indicators.dateLastSeen'
                     ],
                     "add_fields_types": [
@@ -349,7 +349,7 @@ MAPPING: dict = {
                         'indicators.params.name', 'indicators.params.hashes.md5',
                         'indicators.params.hashes.sha1',
                         'indicators.params.hashes.sha256', 'indicators.params.size',
-                        'threatActor.name', 'threatActor.isAPT', 'threatActor.id'
+                        'threatActor.name', 'threatActor.isAPT', 'threatActor.id',
                         'indicators.dateFirstSeen', 'indicators.dateLastSeen'
                     ],
                     "add_fields_types": [
@@ -366,7 +366,7 @@ MAPPING: dict = {
                 {
                     "main_field": 'ipv4.ip', "main_field_type": 'IP',
                     "add_fields": ['ipv4.asn', 'ipv4.countryName', 'ipv4.region', 'dateFirstSeen', 'dateLastSeen'],
-                    "add_fields_types": ['asn', 'geocountry', 'geolocation', 'firstseenbysource', 'lastseenbysource']                
+                    "add_fields_types": ['asn', 'geocountry', 'geolocation', 'firstseenbysource', 'lastseenbysource']
                 }
             ]
     },
@@ -378,7 +378,7 @@ MAPPING: dict = {
                     "add_fields":
                     [
                         'ipv4.asn', 'ipv4.countryName', 'ipv4.region',
-                        'port', 'anonymous', 'source'
+                        'port', 'anonymous', 'source',
                         'dateFirstSeen', 'dateDetected'
                     ],
                     "add_fields_types":
