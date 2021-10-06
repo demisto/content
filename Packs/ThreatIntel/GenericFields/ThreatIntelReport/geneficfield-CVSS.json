@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Vulnerability"
     ],
     "caseInsensitive": true,
-    "cliName": "actor",
-    "id": "generic_ThreatIntelReport_actor",
-    "name": "Actor",
+    "cliName": "cvss",
+    "id": "generic_ThreatIntelReport_cvss",
+    "name": "CVSS",
     "closeForm": false,
     "content": true,
     "editForm": true,
