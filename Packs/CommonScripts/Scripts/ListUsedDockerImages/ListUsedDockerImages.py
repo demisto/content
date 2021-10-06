@@ -7,6 +7,7 @@ This is a script that list all the dockers images that are in ues in the integra
 import demistomock as demisto
 from CommonServerPython import *
 import json
+from typing import Dict
 
 '''REST API HTTP COMMANDS'''
 POST_COMMAND = "POST"
@@ -20,6 +21,7 @@ INTEGRATION_SCRIPT = 'integrationScript'
 
 PYTHON_SCRIPT = 'python'
 POWERSHELL_SCRIPT = 'powershell'
+JAVA_SCRIPT = 'javascript'
 
 INTEGRATION_SCRIPT_TYPE = 'type'
 INTEGRATION_ID = 'id'
@@ -41,7 +43,7 @@ MAX_PER_DOCKER = 5
 ''' HELPER FUNCTION '''
 
 
-def get_docker_from_conf(conf: Any) -> str:
+def get_docker_from_conf(conf: Dict) -> str:
     """
     :type conf: ``json object``
     :param conf: json represents integration configuration
@@ -51,7 +53,7 @@ def get_docker_from_conf(conf: Any) -> str:
     """
 
     docker_image = ''
-    if INTEGRATION_SCRIPT in conf[INTEGRATION_SCRIPT] and conf[INTEGRATION_SCRIPT][SCRIPT_TYPE] in (
+    if SCRIPT_TYPE in conf[INTEGRATION_SCRIPT] and conf[INTEGRATION_SCRIPT][SCRIPT_TYPE] in (
             PYTHON_SCRIPT, POWERSHELL_SCRIPT):
         if DOCKER_IMAGE not in conf[INTEGRATION_SCRIPT] or conf[INTEGRATION_SCRIPT][DOCKER_IMAGE] in (None, ''):
             docker_image = 'Default Image Name'
@@ -60,12 +62,12 @@ def get_docker_from_conf(conf: Any) -> str:
     return docker_image
 
 
-def get_integration_conf(integration_search_json: Any, instance_brand: str,
+def get_integration_conf(integration_search_json: Dict, instance_brand: str,
                          ignore_deprecated: bool = False) -> Any:
     """ returns the corresponding integration_configuration json object for the given instance_brand
     Args:
         :type integration_search_json: ``json object``
-        :param integration_search_json: json object represents XSOAR integrations configuration.
+        :param integration_search_json: j son object represents XSOAR integrations configuration.
 
         :type instance_brand: ``str``
         :param instance_brand: the configured instance brand value.
@@ -120,8 +122,8 @@ def extract_dockers_from_integration_search_result(content: str, ignore_deprecat
             conf_json = get_integration_conf(integration_search_json, instance_brand, ignore_deprecated_integrations)
             if conf_json:
                 docker_image = get_docker_from_conf(conf_json)
-                dockers[conf_json[INTEGRATION_DISPLAY]] = docker_image
-
+                if docker_image and docker_image != '':
+                    dockers[conf_json[INTEGRATION_DISPLAY]] = docker_image
     return dockers
 
 
@@ -141,10 +143,9 @@ def extract_dockers_from_automation_search_result(content: str, ignore_deprecate
     json_content = json.loads(content)
     dockers = {}
     for script in json_content[SCRIPTS]:
-        if (DEPRECATED in script and script[DEPRECATED] is True) or \
+        if (ignore_deprecated and (DEPRECATED in script and script[DEPRECATED] is True)) or \
                 (ENABLED in script and script[ENABLED] is False) or \
-                (SCRIPT_TYPE not in script) or \
-                ((script[SCRIPT_TYPE] != PYTHON_SCRIPT) and (script[SCRIPT_TYPE] != POWERSHELL_SCRIPT)):
+                (SCRIPT_TYPE in script and script[SCRIPT_TYPE] == JAVA_SCRIPT):
             continue
         else:
             if DOCKER_IMAGE in script and script[DOCKER_IMAGE] in (None, ''):
@@ -201,15 +202,11 @@ def format_result_for_markdown(result_dict: dict) -> list:
 ''' COMMAND FUNCTION '''
 
 
-def list_used_docker_images() -> CommandResults:
+def list_used_docker_images(export_to_context: bool = True,
+                            ignore_deprecated_automations: bool = True) -> CommandResults:
     md = None
     active_docker_list_integration = {}
     active_docker_list_automation = {}
-
-    export_to_context = demisto.args().get('export_to_context') == 'true'
-    ignore_deprecated_automations = demisto.args().get('ignore_deprecated_automations') == 'true'
-    ignore_deprecated_integrations = demisto.args().get('ignore_deprecated_integrations') == 'true'
-    ignore_disabled_integrations = demisto.args().get('ignore_disabled_integrations') == 'true'
 
     ''' Examples for output: { 'demisto/python3:3.9.7.24076' : ['ListUsedDockerImage', 'VirusTotal',...]}'''
     result_dict: Dict[str, List[str]] = {}
@@ -219,7 +216,7 @@ def list_used_docker_images() -> CommandResults:
     demisto.debug(f'response code = {0}', active_integration_instances['statusCode'])
     if active_integration_instances and active_integration_instances['statusCode'] == 200:
         active_docker_list_integration = extract_dockers_from_integration_search_result(
-            active_integration_instances['body'], ignore_deprecated_integrations, ignore_disabled_integrations)
+            active_integration_instances['body'], False, True)
 
     active_automation = demisto.internalHttpRequest(POST_COMMAND, '/automation/search',
                                                     '{\"size\":500}')
@@ -254,8 +251,11 @@ def list_used_docker_images() -> CommandResults:
 
 def main():
     demisto.debug("running list_used_docker_images()")
+    export_to_context = demisto.args().get('export_to_context') == 'true'
+    ignore_deprecated_automations = demisto.args().get('ignore_deprecated_automations') == 'true'
+
     try:
-        return_results(list_used_docker_images())
+        return_results(list_used_docker_images(export_to_context, ignore_deprecated_automations))
     except Exception as e:
         return_error(f'Failed to execute ListUserDockerImages Script. Error: {str(e)}')
 
