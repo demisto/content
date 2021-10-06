@@ -577,7 +577,7 @@ def fetch_incidents():
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     alerts = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
-    if not incidents:  # if incidents empty, try to get next page of alerts
+    if alerts and not incidents:  # if incidents empty, try to get next page of alerts
         payload['offset'] = limit
         alerts = req('POST', 'alert', payload, {'detailed': 'true'})
         incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
