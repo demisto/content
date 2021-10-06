@@ -6,7 +6,7 @@ description: "Investigates a Cortex XDR incident containing internal port scan a
   \ host.\n- Escalates the incident in case of lateral movement alert detection.\n\
   \nThe playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling\
   \ - v3 & Cortex XDR Alerts Handling'. \nIt depends on the data from the parent playbooks\
-  \ and can not be used as a standalone playbook."
+  \ and can not be used as a standalone version."
 starttaskid: "0"
 tasks:
   "0":

@@ -4,7 +4,7 @@ Investigates a Cortex XDR incident containing internal port scan alerts. The pla
 - Escalates the incident in case of lateral movement alert detection.
 
 The playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling'. 
-It depends on the data from the parent playbooks and can not be used as a standalone playbook.
+It depends on the data from the parent playbooks and can not be used as a standalone version.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -52,4 +52,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Cortex XDR - Port Scan - Adjusted](Insert the link to your image here)
+![Cortex XDR - Port Scan - Adjusted](https://raw.githubusercontent.com/demisto/content/59e1358f019b04d1706562dda5eeeb623ed5160b/Packs/CortexXDR/doc_files/Cortex_XDR_-_Port_Scan_-_Adjusted.png)
