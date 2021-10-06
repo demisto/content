@@ -4520,6 +4520,11 @@
             "fromversion": "5.0.0"
         },
         {
+          "integrations": "Azure Key Vault",
+          "playbookID": "playbook-AzureKeyVault-Test",
+          "fromversion": "6.0.1"
+        },
+        {
             "playbookID": "Test - ExtFilter Main",
             "fromversion": "5.0.0"
         },
@@ -4554,11 +4559,6 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
-        },
-               {
-          "integrations": "Azure Key Vault",
-          "playbookID": "playbook-AzureKeyVault-Test",
-          "fromversion": "6.0.1"
         }
     ],
     "skipped_tests": {
