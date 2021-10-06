@@ -2707,24 +2707,6 @@ script:
     - contextPath: MISP.Attribute.Comment
       description: Attribute comment.
       type: string
-    - contextPath: MISP.Attribute.Event.ID
-      description: MISP event ID.
-      type: string
-    - contextPath: MISP.Attribute.Event.Distribution
-      description: MISP event distribution.
-      type: string
-    - contextPath: MISP.Attribute.Event.Info
-      description: MISP event name.
-      type: string
-    - contextPath: MISP.Attribute.Event.OrganizationID
-      description: MISP event organization ID.
-      type: string
-    - contextPath: MISP.Attribute.Event.OwnerOrganization.ID
-      description: Event owner organization ID.
-      type: string
-    - contextPath: MISP.Attribute.Event.UUID
-      description: MISP event UUID.
-      type: string
   dockerimage: demisto/pymisp2:1.0.0.23423
   feed: false
   isfetch: false
