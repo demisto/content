@@ -12,7 +12,8 @@ configuration:
   required: true
   type: 9
 - display: Customer name
-  additionalinfo: If you are a multi-tenant user you will also need to provide the customerName.
+  additionalinfo: If you are a multi-tenant user you will also need to provide the
+    customerName.
   name: customer_name
   required: false
   type: 0
@@ -267,7 +268,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false
