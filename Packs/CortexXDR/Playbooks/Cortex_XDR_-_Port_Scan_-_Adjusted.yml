@@ -1,14 +1,13 @@
 id: Cortex XDR - Port Scan - Adjusted
 version: -1
 name: Cortex XDR - Port Scan - Adjusted
-description: |-
-  Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
-  - Syncs data with Cortex XDR.
-  - Notifies management about a compromised host.
-  - Escalates the incident in case of lateral movement alert detection.
-
-  The playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling'. 
-  It depends on the data from the parent playbooks and can not be used as a standalone version.
+description: "Investigates a Cortex XDR incident containing internal port scan alerts.\
+  \ The playbook:\n- Syncs data with Cortex XDR.\n- Notifies management about a compromised\
+  \ host.\n- Escalates the incident in case of lateral movement alert detection.\n\
+  \nThe playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling\
+  \ - v3 & Cortex XDR Alerts Handling'. \nIt depends on the data from the parent playbooks\
+  \ and can not be used as a standalone playbook."
+starttaskid: "0"
 tasks:
   "0":
     id: "0"
