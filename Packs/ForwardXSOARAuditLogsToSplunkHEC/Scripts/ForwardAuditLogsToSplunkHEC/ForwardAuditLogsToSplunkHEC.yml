@@ -10,9 +10,6 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 1051dd86-5c9e-447b-837b-80dfeecbca24
     propagationLabels:
     - all
 dependson:
