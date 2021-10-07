@@ -49,22 +49,13 @@ script:
       isArray: true
       name: file
       required: false
-      secret: false
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check.
+    - description: SHA256 hash to check.
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve results for a file hash using WildFire
-    execution: false
     name: file
     outputs:
     - contextPath: File.Name
@@ -140,64 +131,41 @@ script:
       description: File behavior action.
       type: String
   - arguments:
-    - default: false
-      description: ID of the entry containing the file to upload
+    - description: ID of the entry containing the file to upload
       isArray: true
       name: upload
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - default: false
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '60'
-    - default: false
+    - deprecated: true
       description: Used for the inner polling flow, for uploading a file use the 'upload'
         argument instead
       isArray: true
       name: md5
-      required: false
-      secret: false
-      deprecated: true
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
       description: Request a structured report. Possible values are "XML" and "PDF".
         Only relevant when polling=true.
-      isArray: false
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Receive extended information from WildFire. Only relevant when
         polling=true.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file to WildFire for analysis.
-    execution: false
     name: wildfire-upload
-    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -310,65 +278,41 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
-    - default: false
-      description: URL of the remote file to upload.
-      isArray: false
+    - description: URL of the remote file to upload.
       name: upload
-      required: false
-      secret: false
-    - default: false
+    - deprecated: true
       description: Used for the inner polling flow, for uploading a url use the 'upload'
         argument instead.
-      isArray: false
       name: url
-      required: false
-      secret: false
-      deprecated: true
     - auto: PREDEFINED
-      default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - default: false
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '60'
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
       description: Request a structured report (XML or PDF). Only relevant for when
         using polling=true.
-      isArray: false
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Receive extended information from WildFire. Only relevant for when
         using polling=true.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads the URL of a remote file to WildFire for analysis.
-    execution: false
     name: wildfire-upload-file-url
-    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -478,57 +422,36 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check
+    - description: SHA256 hash to check
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: Deprecated - Use the sha256 argument instead.
+    - description: Deprecated - Use the sha256 argument instead.
       isArray: true
       name: hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
       description: Request a structured report (XML or PDF).
-      isArray: false
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Receive extended information from WildFire.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Retrieves results for a URL using WildFire. The report format is in JSON.
+    - description: Retrieves results for a URL using WildFire. The report format is
+        in JSON.
       isArray: true
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves results for a file hash using WildFire.
-    execution: false
     name: wildfire-report
     outputs:
     - contextPath: File.Name
@@ -634,15 +557,11 @@ script:
       description: The verdict of the report.
       type: string
   - arguments:
-    - default: false
-      description: Hash to get the verdict for.
+    - description: Hash to get the verdict for.
       isArray: true
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Returns a verdict for a hash.
-    execution: false
     name: wildfire-get-verdict
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -670,23 +589,15 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is
+    - description: EntryID of the text file that contains multiple hashes. Limit is
         500 hashes.
       isArray: true
       name: EntryID
-      required: false
-      secret: false
-    - default: false
-      description: A list of hashes to get verdicts for.
+    - description: A list of hashes to get verdicts for.
       isArray: true
       name: hash_list
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a verdict regarding multiple hashes, stored in a TXT file
       or given as list.
-    execution: false
     name: wildfire-get-verdicts
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -714,64 +625,41 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: URL to submit to WildFire.
+    - description: URL to submit to WildFire.
       isArray: true
       name: upload
-      required: false
-      secret: false
-    - default: false
+    - deprecated: true
       description: Used for the inner polling flow, for uploading a url use the 'upload'
         argument instead.
       isArray: true
       name: url
-      required: false
-      secret: false
-      deprecated: true
     - auto: PREDEFINED
-      default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - default: false
+    - defaultValue: '60'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
-      defaultValue: '60'
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
       description: Request a structured report (XML or PDF). Only relevant for when
         using polling=true.
-      isArray: false
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Receive extended information from WildFire. Only relevant for when
         using polling=true.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a URL of a webpage to WildFire for analysis.
-    execution: false
     name: wildfire-upload-url
-    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 of the submission.
@@ -881,45 +769,29 @@ script:
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
       type: string
+    polling: true
   - arguments:
-    - default: false
-      description: MD5 hash of the sample.
+    - description: MD5 hash of the sample.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash of the sample.
-      isArray: false
+    - description: SHA256 hash of the sample.
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a sample.
-    execution: false
     name: wildfire-get-sample
   - arguments:
-    - default: false
-      description: URL of the webpage.
+    - description: URL of the webpage.
       isArray: true
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to download as screenshots or as downloadable files. if
         not specified, both will be downloaded.
-      isArray: false
       name: types
-      required: false
       predefined:
-      - 'download_files'
-      - 'screenshot'
-      secret: false
-    deprecated: false
+      - download_files
+      - screenshot
     description: Get web artifacts for a URL webpage. An empty tgz will be returned,
       no matter what the verdict, or even if the URL is malformed.
-    execution: false
     name: wildfire-get-url-webartifacts
     outputs:
     - contextPath: InfoFile.EntryID
@@ -941,15 +813,11 @@ script:
       description: The webartifacts file type.
       type: string
   dockerimage: demisto/python3:3.9.7.24076
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - Wildfire Test
 - Detonate File - WildFire - Test
-fromversion: 5.0.0
