@@ -1,9 +1,11 @@
-FileOrbis content pack enables you to manage users.
+This pack enables you to integrate with FileOrbis. FileOrbis is an on-premise file management system with secure content collaboration features allowing you to: access, manage, authorize and share your files, apply security analyzes and processes, conduct content and sensitive data analysis.
 
-## What does this pack do?
+This integration enables the status management for FileOrbis users. Users that use FileOrbis can be enabled/disable with integration in this pack. When an suspicious user detected, then user can be disabled on FileOrbis to prevent data leak.
+
+##### What does this pack do?
 
 The integration in this pack enables you to:
-- Change of the user status
-
-## Authorization
-To connect to the FileOrbis you will need to create Client Id and Client Secret from XSOAR settings on FileOrbis.
+- Change of the user status (enable/disable)
+ 
+ \
+For more information on FileOrbis, please visit [www.fileorbis.com](https://www.fileorbis.com)
