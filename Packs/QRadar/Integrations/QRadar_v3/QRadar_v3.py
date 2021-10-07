@@ -1163,17 +1163,17 @@ def reset_mirroring_events_variables(mirror_options: str):
 
     Returns: None
     """
-    ctx = get_integration_context()
+    ctx = extract_context_data(get_integration_context().copy())
     print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
                                    f"Mirror Option {mirror_options}")
-    new_ctx = ctx.copy()
-    if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
-        new_ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
-        new_ctx[MIRRORED_OFFENSES_CTX_KEY] = []
-        new_ctx[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = []
 
-    print_mirror_events_stats(new_ctx, "New Long Running Container - After Mirroring Variables Reset")
-    set_to_integration_context_with_retries(new_ctx)
+    if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
+        ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
+        ctx[MIRRORED_OFFENSES_CTX_KEY] = []
+        ctx[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = []
+
+    print_mirror_events_stats(ctx, "New Long Running Container - After Mirroring Variables Reset")
+    set_to_integration_context_with_retries(encode_context_data(ctx))
 
 
 def is_reset_triggered(handle_reset: bool = False):
@@ -1238,6 +1238,8 @@ def test_module_command(client: Client, params: Dict) -> str:
         - raises DemistoException if something had failed the test.
     """
     try:
+        ctx = extract_context_data(get_integration_context())
+        print_mirror_events_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
         if is_long_running:
             validate_long_running_params(params)
@@ -1251,7 +1253,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(get_integration_context().get(LAST_FETCH_KEY, '0')),
+                last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
                 incident_type=params.get('incident_type'),
                 mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
@@ -1582,14 +1584,26 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
 
     Returns: The ids of the mirrored offenses being currently processed.
     """
+    if not context_data:
+        print_debug_msg("Not printing stats")
+        return {}
+
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     resubmitted_ids = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
+    last_fetch_key = context_data.get(LAST_FETCH_KEY, '0')
+    last_mirror_update = context_data.get('last_mirror_update', 0)
+    samples = context_data.get('samples', [])
+    sample_length = 0
+    if samples:
+        sample_length = len(samples[0])
     not_updated_ids = [str(offense.get('id')) for offense in waiting_for_update]
     stats = [(str(offense.get('id')), len(offense.get('events', []))) for offense in updated]
     print_debug_msg(f"Mirror Events Stats: {stage}\n Updated Offenses (id, len(events)): {stats}"
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
-                    f"\n Resubmitted offenses: {resubmitted_ids}")
+                    f"\n Resubmitted offenses: {resubmitted_ids}"
+                    f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
+                    f"sample length {sample_length}")
     updated_ids = [offense_id for offense_id, events_num in stats]
     return set(not_updated_ids + updated_ids + resubmitted_ids)
 
@@ -1647,9 +1661,10 @@ def long_running_execution_command(client: Client, params: Dict):
                 mirror_direction=mirror_direction
             )
 
-            context_data = ctx.copy()
+            context_data = extract_context_data(ctx.copy())
 
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+                ctx = extract_context_data(ctx)
                 print_mirror_events_stats(ctx, "Long Running Command - Before Update")
                 updated_mirrored_offenses, not_updated_offenses = update_mirrored_events(client=client,
                                                                                          fetch_mode=fetch_mode,
@@ -1664,14 +1679,14 @@ def long_running_execution_command(client: Client, params: Dict):
                 print_mirror_events_stats(context_data, "Long Running Command - After Update")
 
             if incidents and new_highest_id:
-                incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else json.loads(
-                    ctx.get('samples', '[]'))
+                incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
                 if incident_batch_for_sample:
                     print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
-                    set_to_integration_context_with_retries({'samples': incident_batch_for_sample,
-                                                             LAST_FETCH_KEY: str(new_highest_id)})
+                    context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: new_highest_id})
 
                 demisto.createIncidents(incidents)
+
+            set_to_integration_context_with_retries(encode_context_data(context_data))
 
         except Exception:
             demisto.error('Error occurred during long running loop')
@@ -2888,6 +2903,17 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 
 def update_events_mirror_message(mirror_options: Optional[Any], events_limit: int,
                                  failure_message: str, events_count: int, events_mirrored: int) -> str:
+    """Return the offense's events' mirror error message.
+
+    Args:
+        mirror_options (str): The mirror options for the instance.
+        events_limit (int): The events limit for the mirroring.
+        failure_message (str): A failure message if there was a failure during fetching of events.
+        events_count (int): The number of events in the offense.
+        events_mirrored (int): The number of events mirrored in the offense
+
+    Returns: (str) An updated offense events mirror message.
+    """
     mirroring_events_message = 'Unknown'
     print_debug_msg(f"mirror_options {mirror_options}\n events_limit {events_limit} \n"
                     f"failure_message {failure_message}\n events_count {events_count}\n "
@@ -2903,6 +2929,81 @@ def update_events_mirror_message(mirror_options: Optional[Any], events_limit: in
         mirroring_events_message = 'All available events in the offense were mirrored.'
 
     return mirroring_events_message
+
+
+def json_loads_inner(json_dumps_list: List[str]) -> list:
+    """ Json load values of list.
+
+    Args:
+        json_dumps_list: A list with json dumps as nodes.
+
+    Returns: json loaded list of the json dumps in the original list.
+    """
+    python_object_list = []
+    for json_dump in json_dumps_list:
+        python_object_list.append(json.loads(json_dump))
+
+    return python_object_list
+
+
+def json_dumps_inner(listed_objects: list) -> List[str]:
+    """ Json dump values of list.
+
+    Args:
+        listed_objects: A list with nodes to be json dumped.
+
+    Returns: json dumped list of the json dumps in the original list.
+    """
+    listed_json_dumps = []
+    for python_object in listed_objects:
+        listed_json_dumps.append(json.dumps(python_object))
+
+    return listed_json_dumps
+
+
+def extract_context_data(context_data: dict) -> dict:
+    """Transform the context data from partially json encoded to fully decoded.
+
+    Args:
+        context_data: The context data.
+
+    Returns: The extracted context data.
+    """
+    new_context_data = context_data.copy()
+    if not new_context_data:
+        new_context_data = {}
+    new_context_data.update({
+        UPDATED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
+        MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(MIRRORED_OFFENSES_CTX_KEY, '[]'))),
+        RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
+        'samples': json_loads_inner(json.loads(context_data.get('samples', '[]'))),
+        LAST_FETCH_KEY: json.loads(context_data.get(LAST_FETCH_KEY, '0')),
+        'last_mirror_update': json.loads(context_data.get('last_mirror_update', '0'))
+    })
+    return new_context_data
+
+
+def encode_context_data(context_data: dict) -> dict:
+    """Transform the context data from a decoded python object form to a partially json encoded form.
+    This is done in order to maintain compatibility with the set_to_integration_context_with_retries command.
+
+    Args:
+        context_data: The context data in its decoded python object form
+
+    Returns: The context data in its partially json encoded form.
+    """
+    new_context_data = context_data.copy()
+    new_context_data.pop('retry_compatible', None)
+    new_context_data.update({
+        UPDATED_MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])),
+        MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])),
+        RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY,
+                                                                                 [])),
+        'samples': json_dumps_inner(context_data.get('samples', [])),
+        LAST_FETCH_KEY: str(context_data.get(LAST_FETCH_KEY, 0)),
+        'last_mirror_update': str(context_data.get('last_mirror_update', 0))
+    })
+    return new_context_data
 
 
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
@@ -2927,7 +3028,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
-    context_data = get_integration_context()
+    context_data = extract_context_data(get_integration_context().copy())
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     processed_offenses = print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
                                                                  f"Offense {str(offense.get('id'))}")
@@ -2978,7 +3079,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         while ((not evented_offense) or is_waiting_to_be_updated) and retries < max_retries:
             if retries != 0:
                 time.sleep(FAILURE_SLEEP)
-            context_data = get_integration_context().copy()
+            context_data = extract_context_data(get_integration_context().copy())
             print_mirror_events_stats(context_data, f"Get Remote Data Loop for id {offense.get('id')}, retry {retries}")
             retries += 1
             offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
@@ -3010,7 +3111,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
         context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
         print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense.get('id')}")
-        set_to_integration_context_with_retries(context_data)
+        set_to_integration_context_with_retries(encode_context_data(context_data))
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
@@ -3040,16 +3141,15 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
-    ctx = get_integration_context()
+    ctx = extract_context_data(get_integration_context())
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = ctx.get(LAST_FETCH_KEY, '0')
+    highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
-    last_update_time = json.loads(ctx.get('last_mirror_update', '""'))
+    last_update_time = ctx.get('last_mirror_update', 0)
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
-
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
@@ -3058,8 +3158,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     current_last_update = last_update if not offenses else offenses[-1].get('last_persisted_time')
     new_context_data = ctx.copy()
     print_debug_msg(f'Saving New Highest ID: {ctx.get(LAST_FETCH_KEY, 0)}')
-    new_context_data.update({'samples': ctx.get('samples', []), 'last_mirror_update': json.dumps(current_last_update),
-                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, '0')})
+    new_context_data.update({'last_mirror_update': current_last_update})
 
     if params.get('mirror_options') == MIRROR_OFFENSE_AND_EVENTS:
         print_mirror_events_stats(new_context_data, "Get Modified Remote Data - Before update")
@@ -3086,7 +3185,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
             new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: clean_updates_mirrored_offenses_ids})
 
     print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
-    set_to_integration_context_with_retries(new_context_data)
+    set_to_integration_context_with_retries(encode_context_data(new_context_data))
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
@@ -3103,12 +3202,12 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         (None): Modifies context to be compatible.
     """
     ctx = get_integration_context()
-    if not ctx.get('retry_compatible'):
-        ctx[LAST_FETCH_KEY] = json.dumps(ctx.get(LAST_FETCH_KEY, 0))
-        ctx['samples'] = json.dumps(ctx.get('samples', []))
-        ctx['last_mirror_update'] = json.dumps(ctx.get('last_mirror_update', ''))
-        ctx['retry_compatible'] = True
-        set_integration_context(ctx)
+    if not ctx.get('retry_compatible', False):
+        ctx = encode_context_data(ctx)
+        print_debug_msg(f"Change ctx context data is {ctx}")
+        set_integration_context({'retry_compatible': True})
+        set_to_integration_context_with_retries(ctx)
+        print_debug_msg(f"Change ctx context data was changed to {ctx}")
 
 
 ''' MAIN FUNCTION '''
