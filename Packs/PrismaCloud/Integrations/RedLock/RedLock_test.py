@@ -34,7 +34,6 @@ def test_fetch_incident(mocker):
     assert last_seen_time == 1633109203697
 
 
-
 @freeze_time("2021-07-10T16:34:14.758295 UTC+1")
 def test_empty_incident(mocker):
     from RedLock import fetch_incidents
