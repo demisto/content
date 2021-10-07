@@ -4,7 +4,7 @@
     "toVersion": "5.9.9",
     "custom": true,
     "defaultIncidentType": "Lacework Event",
-    "id": "fcb9f8bc-4b35-4407-9329-e08f17d8d711",
+    "id": "LaceworkClassifier",
     "keyTypeMap": {},
     "mapping": {
         "Lacework Event": {
