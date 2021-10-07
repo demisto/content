@@ -350,10 +350,21 @@ class StixDecode(object):
         if result:
             return timestamp, StixDecode._deduplicate(result), None, None
 
-        indicator = get_indicator_info(package)
-        if indicator
-            return timestamp, None, indicator, None
+        result: Dict[str, dict] = {}
+        indicator_info: Dict[str: str] = {}
 
+        observable = package.find_all('Observable')
+        if observable:
+            indicator_ref = observable[0].get('idref')
+
+            indicators = package.find_all('Indicator')
+            for i in indicators:
+                indicator_info = indicator_extract_properties(i)
+
+            result[indicator_ref] = indicator_info
+
+        if result:
+            return timestamp, None, result, None
 
     @staticmethod
     def get_indicator_info(package) -> dict[str: dict]:
