@@ -1,8 +1,6 @@
 """
 AutoFocus Tags Feed integration
 """
-import time
-from concurrent.futures import wait
 from typing import Dict, List, Optional
 
 import urllib3
@@ -125,7 +123,7 @@ class Client(BaseClient):
         # when finishing the "first level fetch" (getting all he tags from the feed), the next call to the api
         # will be with a page num greater than the total pages, and the api should return an empty tags list.
         if not tags:
-            return only_updated_tags(self)
+            return incremental_level_fetch(self)
         # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
             public_tag_name = tag.get('public_tag_name', '')
@@ -142,7 +140,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def only_updated_tags(client: Client) -> list:
+def incremental_level_fetch(client: Client) -> list:
     """
 
     Args:
@@ -151,7 +149,7 @@ def only_updated_tags(client: Client) -> list:
     Returns:
     """
 
-    results = []
+    results: list = []
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', []))
@@ -166,12 +164,11 @@ def only_updated_tags(client: Client) -> list:
             context = get_integration_context()
             context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
             context['tags_need_to_be_fetched'] = list_of_all_updated_tags[index_to_delete:]
-            demisto.debug("before set")
             set_integration_context(context)
-            demisto.debug("after set should be here")
             return results
 
     page_num = 0
+    # TODO change flag name
     flag = False
     while not flag:
         response = client.get_tags({"pageNum": page_num,
@@ -186,7 +183,7 @@ def only_updated_tags(client: Client) -> list:
             update_time = date_to_timestamp(update_time, DATE_FORMAT)
             if update_time >= time_from_last_update:
                 list_of_all_updated_tags.append(
-                    {'public_tag_name': tag.get('public_tag_name'), 'updated_at': update_time})
+                    {'public_tag_name': tag.get('public_tag_name')})
             else:
                 flag = True
                 break
@@ -202,14 +199,13 @@ def only_updated_tags(client: Client) -> list:
             list_index += 1
         else:
             break
-    # delete from the list all tags that we will return this fetch
+    # delete from the list all tags that will be returned this fetch
     list_of_all_updated_tags = list_of_all_updated_tags[list_index:]
     # update integration context if needed
     if list_of_all_updated_tags:
         context = get_integration_context()
         context['tags_need_to_be_fetched'] = list_of_all_updated_tags
         context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
-
         set_integration_context(context)
     return results
 
@@ -220,7 +216,6 @@ def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[s
     Args:
         tag_class: tag class name
         source: tag source
-
     Returns:
         The tag class as demisto indicator type, None if class is not specified.
     """
@@ -382,7 +377,8 @@ def fetch_indicators(client: Client,
                 indicator_obj['relationships'] = relationships
         tag_groups = get_tag_groups(tag_details.get('tag_groups', []))
         if feed_tags or tag_groups:
-            indicator_obj['fields']['tags'] = tag_groups.extend(feed_tags)
+            tag_groups.extend(feed_tags)
+            indicator_obj['fields']['tags'] = tag_groups
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -449,6 +445,8 @@ def main():
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_key = params.get('api_key', '')
+    if not api_key:
+        api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.token")
 
     command = demisto.command()
     args = demisto.args()

@@ -23,9 +23,9 @@ def test_build_iterator(mocker):
     """
 
     client = Client(api_key='1234', verify=False, proxy=False)
-    mocker.patch.object(client, 'get_all_tags', return_value=util_load_json('test_data/all_tags_result.json'))
+    mocker.patch.object(client, 'get_tags', return_value=util_load_json('test_data/all_tags_result.json'))
     mocker.patch.object(client, 'get_tag_details', return_value={'tag': []})
-    indicators = client.build_iterator()
+    indicators = client.build_iterator(is_get_command=True)
     assert len(indicators) == 2
 
 
@@ -57,9 +57,12 @@ def test_get_indicators_command(mocker):
 
     """
     client = Client(api_key='1234', verify=False, proxy=False)
-    indicators_list = util_load_json('test_data/build_iterator_results.json')[:10]
+    indicators_list = util_load_json('test_data/build_iterator_results.json')[:2]
     mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
-    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '10'})
-    human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators_list,
-                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
+    tag_details = util_load_json('test_data/tag_details_result.json')
+    mocker.patch.object(Client, 'get_tag_details', return_value=tag_details)
+    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '2'})
+    human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators_list,
+                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
+                                     removeNull=True)
     assert results.readable_output == human_readable

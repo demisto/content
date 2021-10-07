@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
+defaultEnabled: true
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
@@ -21,7 +22,6 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -31,7 +31,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
@@ -84,7 +84,8 @@ configuration:
 - display: API Key
   hidden: false
   name: api_key
-  required: true
+  required: false
+  fromlicense: encrypted
   type: 4
 description: This is the Feed Hello World integration for getting started with your
   feed integration.
@@ -104,7 +105,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: autofocus-tags-feed-get-indicators
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false
