@@ -16,7 +16,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -24,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 602.5,
           "y": 50
         }
       }
@@ -33,6 +32,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 70090998-8edf-4e41-8fe2-a07ea531cda6
@@ -67,7 +68,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 387.5,
           "y": 545
         }
       }
@@ -76,6 +77,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: f565187c-1885-43fa-8e28-8074da0d36e7
@@ -87,13 +90,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2405
+          "x": 510,
+          "y": 2555
         }
       }
     note: false
@@ -101,6 +103,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: b468ef52-00b3-45c2-8a03-8fc321a97f7a
@@ -124,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1370,
           "y": 1535
         }
       }
@@ -133,6 +137,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: a6a6d0f2-5ee2-4df7-836a-55b2d0b64b1c
@@ -156,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 510,
           "y": 1535
         }
       }
@@ -165,6 +171,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: b3e084ec-bcc9-4ebf-809f-b325f474a217
@@ -188,7 +196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 50,
           "y": 1535
         }
       }
@@ -197,6 +205,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: ae17aef1-b139-4f96-8539-73cf2e27f008
@@ -220,8 +230,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2030
+          "x": 397.5,
+          "y": 2205
         }
       }
     note: false
@@ -229,6 +239,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 2845d11d-c192-4747-8fd3-e7addeb59871
@@ -252,7 +264,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 1370,
           "y": 1185
         }
       }
@@ -261,6 +273,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: fe44aea6-1d68-4c78-8540-a5efdef8e35c
@@ -272,7 +286,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -280,7 +293,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1370,
           "y": 865
         }
       }
@@ -289,6 +302,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
@@ -314,7 +329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1370,
           "y": 1360
         }
       }
@@ -323,6 +338,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 2135c722-279a-41f1-86b8-3a91d3351cc3
@@ -334,7 +351,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -342,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 510,
           "y": 1200
         }
       }
@@ -351,6 +367,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 52ddaccc-bef7-40a4-86da-0c313f6e8552
@@ -378,7 +396,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 510,
           "y": 1360
         }
       }
@@ -387,6 +405,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 0850e0e3-60e0-4a41-8339-040874f1f3ed
@@ -398,16 +418,15 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1200
+          "x": 70,
+          "y": 1025
         }
       }
     note: false
@@ -415,6 +434,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
@@ -426,15 +447,14 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "34"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 510,
           "y": 1710
         }
       }
@@ -443,6 +463,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
@@ -466,8 +488,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1855
+          "x": 397.5,
+          "y": 2030
         }
       }
     note: false
@@ -475,6 +497,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
@@ -500,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 50,
           "y": 1360
         }
       }
@@ -509,6 +533,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: af67a5f0-6252-43be-8a8d-0fe14fa241d9
@@ -536,7 +562,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 817.5,
           "y": 370
         }
       }
@@ -545,6 +571,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: a18b95d8-d767-411b-8239-4f686185c229
@@ -587,7 +615,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 602.5,
           "y": 195
         }
       }
@@ -596,6 +624,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 8278de62-5015-4d59-8797-a2302fe7d8a5
@@ -630,7 +660,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 817.5,
           "y": 545
         }
       }
@@ -639,6 +669,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: a166e331-540f-47d2-89e9-ce4fe4f00f19
@@ -650,7 +682,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -660,7 +691,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 602.5,
           "y": 720
         }
       }
@@ -669,6 +700,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 7884abcb-78cc-4ee5-8055-035ec88e531d
@@ -725,7 +758,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1370,
           "y": 1010
         }
       }
@@ -734,6 +767,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: 56b086df-0caf-401f-81df-6a00c2f7074e
@@ -761,7 +796,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 1800,
           "y": 1185
         }
       }
@@ -770,6 +805,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
@@ -784,7 +821,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      'yes':
+      "yes":
       - "17"
     separatecontext: false
     conditions:
@@ -800,8 +837,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 1185
+          "x": 940,
+          "y": 1535
         }
       }
     note: false
@@ -809,6 +846,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
@@ -829,8 +868,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2215
+          "x": 510,
+          "y": 2380
         }
       }
     note: false
@@ -838,14 +877,96 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ce7b9c34-e320-4e2b-804a-4f7e243d68e5
+    type: condition
+    task:
+      id: ce7b9c34-e320-4e2b-804a-4f7e243d68e5
+      version: -1
+      name: Are there Lists to create?
+      description: Changes the properties of an incident.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfigurationSetup.Lists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 33a19d8e-4b9d-433e-8d66-6d413841ca69
+    type: condition
+    task:
+      id: 33a19d8e-4b9d-433e-8d66-6d413841ca69
+      version: -1
+      name: Are there Jobs to create?
+      description: Changes the properties of an incident.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfigurationSetup.Jobs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2420,
+        "height": 2570,
         "width": 2130,
-        "x": -390,
+        "x": 50,
         "y": 50
       }
     }
