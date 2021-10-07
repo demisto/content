@@ -2601,6 +2601,112 @@ script:
     - contextPath: MISP.Attribute.Sighting.Type
       description: Sighting type.
       type: String
+  - arguments:
+    - default: false
+      description: UUID of the attribute to be updated.
+      isArray: false
+      name: attribute_uuid
+      required: true
+      secret: false
+    - default: false
+      description: 'Attribute type. For example: "md5", "sha1", "email", "url".'
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: 'Attribute category. For example: "Other", "Person", "Attribution", "Payload type".'
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+      isArray: false
+      name: distribution
+      predefined:
+      - Your_organization_only
+      - This_community_only
+      - Connected_communities
+      - All_communities
+      - Inherit_event
+      required: false
+      secret: false
+    - default: false
+      description: Comment for the attribute.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: 'Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs).'
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: Updated date when the attribute was first seen. For example, `2019-02-03`.
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Updated date when the attribute was last seen. For example, `2019-02-03`.
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an attribute of an existing MISP event.
+    execution: false
+    name: misp-update-attribute
+    outputs:
+    - contextPath: MISP.Attribute.Distribution
+      description: Attribute distribution.
+      type: string
+    - contextPath: MISP.Attribute.Value
+      description: Attribute value.
+      type: string
+    - contextPath: MISP.Attribute.EventID
+      description: Attribute event ID.
+      type: string
+    - contextPath: MISP.Attribute.last_seen
+      description: Attribute last_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.first_seen
+      description: Attribute first_seen timestamp.
+      type: string
+    - contextPath: MISP.Attribute.LastChanged
+      description: Attribute last changed timestamp.
+      type: date
+    - contextPath: MISP.Attribute.Deleted
+      description: Is the attribute deleted.
+      type: boolean
+    - contextPath: MISP.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled.
+      type: boolean
+    - contextPath: MISP.Attribute.Type
+      description: Attribute type.
+      type: string
+    - contextPath: MISP.Attribute.ID
+      description: Attribute ID.
+      type: string
+    - contextPath: MISP.Attribute.UUID
+      description: Attribute UUID.
+      type: string
+    - contextPath: MISP.Attribute.ToIDs
+      description: Is the Intrusion Detection System flag set.
+      type: boolean
+    - contextPath: MISP.Attribute.Category
+      description: Attribute category.
+      type: string
+    - contextPath: MISP.Attribute.SharingGroupID
+      description: Attribute sharing group ID.
+      type: string
+    - contextPath: MISP.Attribute.Comment
+      description: Attribute comment.
+      type: string
   dockerimage: demisto/pymisp2:1.0.0.23423
   feed: false
   isfetch: false
