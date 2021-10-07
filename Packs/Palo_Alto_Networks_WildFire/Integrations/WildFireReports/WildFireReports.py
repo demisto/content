@@ -50,13 +50,13 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
     res = client.get_file_report(sha256)
 
     if res.status_code == 200:
-        demisto.results({
+        return_results({
             'status': 'success',
-            'value': res.content
+            'data': base64.b64encode(res.content).decode()
         })
 
     elif res.status_code == 404:
-        demisto.results({
+        return_results({
             'status': 'not found'
         })
 
@@ -105,9 +105,10 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        demisto.results({
+        # Its not an error because it's not return to the warroom
+        return_results({
             'status': 'error',
-            'value': {
+            'error': {
                 'title': 'Failed to download report.',
                 'description': f'Failed to download report.\nError:\n{str(e)}',
                 'tech-info': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
