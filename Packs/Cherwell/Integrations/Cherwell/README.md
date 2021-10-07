@@ -1583,25 +1583,25 @@ Get business object summary by name or ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Business object name. | Optional | 
-| id | Business object ID. | Optional | 
+| name | The name of the business object. | Optional | 
+| id | The ID of the business object. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is supporting or not. | 
-| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is major or not. | 
-| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is group or not. | 
-| Cherwell.BusinessObjectSummary.name | String | Business object name. | 
+| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is a supporting business object or not. | 
+| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is a major business object or not. | 
+| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is a group business object or not. | 
+| Cherwell.BusinessObjectSummary.name | String | The name of the business object. | 
 | Cherwell.BusinessObjectSummary.stateFieldId | String | The ID of the business object state field. | 
-| Cherwell.BusinessObjectSummary.busObId | String | Business object ID. | 
-| Cherwell.BusinessObjectSummary.states | String | The business object valid states. | 
-| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is lookup object or not. | 
-| Cherwell.BusinessObjectSummary.displayName | String | Business object display name. | 
-| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object RecID field. | 
-| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object RecID fields. | 
+| Cherwell.BusinessObjectSummary.busObId | String | The ID of the business object. | 
+| Cherwell.BusinessObjectSummary.states | String | The valid states of the business object. | 
+| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is a lookup object or not. | 
+| Cherwell.BusinessObjectSummary.displayName | String | The display name of the business object. | 
+| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object record ID (RecID) field. | 
+| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object record ID (RecID) fields. | 
 
 
 #### Command Example
@@ -1654,7 +1654,7 @@ Get business object summary by name or ID.
 
 ### cherwell-get-one-step-actions-for-business-object
 ***
-Get One-Step Actions by business object ID
+Get One-Step Actions by business object ID.
 
 
 #### Base Command
@@ -1664,14 +1664,14 @@ Get One-Step Actions by business object ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| busobjectid | Business object ID. | Required | 
+| busobjectid | The ID of the business object. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.OneStepActions.BusinessObjectId | String | Business object ID. | 
+| Cherwell.OneStepActions.BusinessObjectId | String | The ID of the business object. | 
 | Cherwell.OneStepActions.Actions | Unknown | The business object actions. | 
 
 
@@ -2719,7 +2719,7 @@ Get One-Step Actions by business object ID
 
 ### cherwell-run-one-step-action-on-business-object
 ***
-Operation to run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information such as prompt values.
+Run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information, such as prompt values.
 
 
 #### Base Command
@@ -2729,10 +2729,10 @@ Operation to run a One-Step Action using a OneStepActionRequest. This request is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| busobjectid | Business object ID. | Required | 
-| busobrecid | Business object record ID. | Required | 
-| oneStepAction_StandInKey | The key to find the One-Step Action to run, you can get it with the command cherwell-get-one-step-actions-for-business-object. | Required | 
-| prompt_values | Additional information to run the action in json format. | Required | 
+| busobjectid | The ID of the business object. | Required | 
+| busobrecid | The ID of the business object record. | Required | 
+| oneStepAction_StandInKey | The key to find the One-Step Action to run. You can get it using the command cherwell-get-one-step-actions-for-business-object. | Required | 
+| prompt_values | Additional information to run the action in JSON format. | Required | 
 
 
 #### Context Output
