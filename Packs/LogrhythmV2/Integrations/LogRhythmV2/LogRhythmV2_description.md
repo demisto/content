@@ -1,8 +1,17 @@
-## BaseIntegration Help
+Integration with LogRhythm V2 using REST API.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+## Configuration Parameters
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+**Server URL**  
+This is the network address of the LogRhythm server host.
 
+**API Token**  
+The credentials entered here should be those created in the LogRhythm console for REST api.
+
+**The integration supports the following workflows:**
+- Execute queries on logs.
+- Retrieve case summaries,create new cases, or update the properties of a case.
+- Get hosts information, add new hosts and update host status, query and update alarms.
+- Fetching cases and alarms as incidents.
+- Retrieve, update and remove Tags.
+- Get lists details, add or remove items from list.
