@@ -3051,7 +3051,6 @@ script:
       - MS_Windows_Event_Logging_XML_-_Application
       - MS_Windows_Event_Logging_XML_-_Forwarded_Events
       - MS_Windows_Event_Logging_XML_-_Generic
-      - MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational
       - MS_Windows_Event_Logging_XML_-_Security
       - MS_Windows_Event_Logging_XML_-_Sysmon
       - MS_Windows_Event_Logging_XML_-_Sysmon_7.01

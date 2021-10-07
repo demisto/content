@@ -422,7 +422,6 @@ SOURCE_TYPE_MAP = {
     "MS_Windows_Event_Logging_XML_-_Forwarded_Events": 1000746,
     "MS_Windows_Event_Logging_XML_-_Generic": 1000738,
     "MS_Windows_Event_Logging_XML_-_LRTracer": 1000784,
-    "MS_Windows_Event_Logging_XML_-_Microsoft-Windows-NTLM/Operational": 1000781,
     "MS_Windows_Event_Logging_XML_-_Security": 1000639,
     "MS_Windows_Event_Logging_XML_-_Sysmon": 1000862,
     "MS_Windows_Event_Logging_XML_-_Sysmon_7.01": 1000724,
