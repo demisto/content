@@ -587,6 +587,18 @@ script:
     - contextPath: File.Name
       description: The full file name.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
