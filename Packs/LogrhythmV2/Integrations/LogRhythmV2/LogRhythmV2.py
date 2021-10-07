@@ -2112,7 +2112,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
     list_items = response.get('items')
     response.pop('items', None)
 
-    hr = tableToMarkdown(f'List {list_id} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
+    hr = tableToMarkdown(f'List {list_guid} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     if list_items:
         hr = hr + tableToMarkdown('fList items', list_items, headerTransform=pascalToSpace)
 

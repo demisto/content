@@ -4,8 +4,8 @@ commonfields:
 name: Logrhythm v2
 display: Logrhythm v2
 fromversion: 5.5.0
-category: Utilities
-description: Generated description - REPLACE THIS
+category: Analytics & SIEM
+description: LogRhythm security intelligence.
 configuration:
 - name: url
   display: Server URL
@@ -2584,7 +2584,7 @@ script:
       contextPath: LogRhythm.ListItemsAdd.listItemsCount
       description: 'The list items count.'
   - name: lr-list-items-remove
-    description: ''
+    description: 'Removes items from an existing list.'
     arguments:
     - name: list_guid
       description: 'The GUID stored in database.'
