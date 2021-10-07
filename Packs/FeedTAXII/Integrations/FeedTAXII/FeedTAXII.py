@@ -989,7 +989,7 @@ def indicator_extract_properties(indicator) -> dict[str: str]:
     confidence = next((c for c in indicator if c.name == 'Confidence'), None)
     if confidence is not None:
         value = next((c for c in confidence if c.name == 'Value'), None)
-        if value is None:
+        if value is not None:
             value = value.text
             result['confidence'] = value
 
