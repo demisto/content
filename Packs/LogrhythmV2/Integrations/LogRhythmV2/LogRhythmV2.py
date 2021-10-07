@@ -2286,7 +2286,8 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                 id=endpoint.get('id'),
                 hostname=endpoint.get('name'),
                 os=endpoint.get('os'),
-                os_version=endpoint.get('osVersion'))
+                os_version=endpoint.get('osVersion'),
+                status='Online' if endpoint.get('recordStatusName') == "Active" else 'Offline')
 
             command_results.append(CommandResults(
                 readable_output=hr,
