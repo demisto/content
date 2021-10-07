@@ -1016,7 +1016,7 @@ def event_to_human_readable(response: dict):
     return event_highlights
 
 
-def search_events(demisto_args) -> CommandResults:
+def search_events(demisto_args: dict) -> CommandResults:
     """
     Execute a MISP search using the 'event' controller.
     """
@@ -1241,7 +1241,7 @@ def add_object(event_id: str, obj: MISPObject):
     )
 
 
-def add_file_object(demisto_args: dict = {}):
+def add_file_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     file_path = demisto.getFilePath(entry_id).get('path')
@@ -1249,7 +1249,7 @@ def add_file_object(demisto_args: dict = {}):
     return add_object(event_id, obj)
 
 
-def add_domain_object(demisto_args: dict = {}):
+def add_domain_object(demisto_args: dict):
     """Adds a domain object to MISP
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
     """
@@ -1266,7 +1266,7 @@ def add_domain_object(demisto_args: dict = {}):
     return add_object(event_id, obj)
 
 
-def add_url_object(demisto_args: dict = {}):
+def add_url_object(demisto_args: dict):
     """Building url object in MISP scheme
     Scheme described https://www.misp-project.org/objects.html#_url
     """
@@ -1293,7 +1293,7 @@ def add_url_object(demisto_args: dict = {}):
     return add_object(event_id, g_object)
 
 
-def add_generic_object_command(demisto_args: dict = {}):
+def add_generic_object_command(demisto_args: dict):
     event_id = demisto_args.get('event_id')
     template = demisto_args.get('template')
     attributes = demisto_args.get('attributes').replace("'", '"')
@@ -1312,7 +1312,7 @@ def convert_arg_to_misp_args(demisto_args, args_names):
     return [{arg.replace('_', '-'): demisto_args.get(arg)} for arg in args_names if demisto_args.get(arg)]
 
 
-def add_ip_object(demisto_args: dict = {}):
+def add_ip_object(demisto_args: dict):
     event_id = demisto_args.get('event_id')
     ip_object_args = [
         'dst_port',
