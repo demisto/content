@@ -7,7 +7,7 @@ BASE_URL = 'http://testurl.com/'
 CLIENT = Client(BASE_URL, True, True, headers={}, auth=None)
 
 ALARMS_LIST = {'alarmsSearchDetails': [{'alarmId': 2, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'},
-                                           {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-03-23T15:19:00'}]}
+               {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-03-23T15:19:00'}]}
 
 CASES_LIST = [{'id': '525569EF-CA80-4901-BA8A-95D80851BACA'}, {'id': '75081347-EB56-4AEA-A6F9-A6EB6662F48E'}]
 
@@ -34,16 +34,25 @@ SEARCH_QUERY_REQUEST_DATA = {"maxMsgsToQuery": 60, "logCacheSize": 10000, "query
                              "queryEventManager": False,
                              "dateCriteria": {"useInsertedDate": False, "lastIntervalValue": 4, "lastIntervalUnit": 4},
                              "queryLogSources": [],
-                             "queryFilter": {"msgFilterType": 2, "isSavedFilter": False, "filterGroup":
-                                 {"filterItemType": 1, "fieldOperator": 1, "filterMode": 1, "filterGroupOperator": 0,
-                                  "filterItems":
-                                      [{"filterItemType": 0, "fieldOperator": 1, "filterMode": 1, "values": [
-                                          {"filterType": 23, "valueType": 4,
-                                           "value": {"value": "host1", "matchType": 2}}]},
-                                       {"filterItemType": 0, "fieldOperator": 1, "filterMode": 1,
-                                        "values": [{"filterType": 9, "valueType": 2, "value": 1000633}]},
-                                       {"filterItemType": 0, "fieldOperator": 1, "filterMode": 1,
-                                        "values": [{"filterType": 17, "valueType": 5, "value": "127.0.0.1"}]}]}}}
+                             "queryFilter":
+                                 {"msgFilterType": 2, "isSavedFilter": False, "filterGroup":
+                                     {"filterItemType": 1, "fieldOperator": 1, "filterMode": 1,
+                                      "filterGroupOperator": 0, "filterItems": [{"filterItemType": 0,
+                                                                                 "fieldOperator": 1, "filterMode": 1,
+                                                                                 "values": [{"filterType": 23,
+                                                                                             "valueType": 4, "value":
+                                                                                                 {"value": "host1",
+                                                                                                  "matchType": 2}}]},
+                                                                                {"filterItemType": 0,
+                                                                                 "fieldOperator": 1, "filterMode": 1,
+                                                                                 "values":
+                                                                                     [{"filterType": 9, "valueType": 2,
+                                                                                       "value": 1000633}]},
+                                                                                {"filterItemType": 0,
+                                                                                 "fieldOperator": 1,
+                                                                                 "filterMode": 1, "values":
+                                                                                     [{"filterType": 17, "valueType": 5,
+                                                                                       "value": "127.0.0.1"}]}]}}}
 
 
 def test_alarms_list_request_filter_by_alarm_id(requests_mock):
@@ -129,7 +138,7 @@ def test_case_file_evidence_add_request(requests_mock, mocker):
     """
     case_id = '75081347-EB56-4AEA-A6F9-A6EB6662F48E'
     requests_mock.post(f'{BASE_URL}lr-case-api/cases/{case_id}/evidence/file', json={})
-    mocker.patch.object(demisto, 'getFilePath',return_value={
+    mocker.patch.object(demisto, 'getFilePath', return_value={
                         'path': 'test_data/test.txt',
                         'name': 'test.txt'})
     CLIENT.case_file_evidence_add_request(case_id, '23@32')
