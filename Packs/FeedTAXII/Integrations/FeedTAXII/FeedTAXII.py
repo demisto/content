@@ -347,14 +347,19 @@ class StixDecode(object):
                         r.update(pprops)
                         result.append(r)
 
-        return timestamp, StixDecode._deduplicate(result)
+        if result:
+            return timestamp, StixDecode._deduplicate(result), None, None
+
+        indicator = get_indicator_info(package)
+        if indicator
+            return timestamp, None, indicator, None
+
 
     @staticmethod
-    def get_indicator_info(content: str) -> dict[str: dict]:
+    def get_indicator_info(package) -> dict[str: dict]:
         result: Dict[str, dict] = {}
         indicator_info: Dict[str: str] = {}
 
-        package = BeautifulSoup(content, 'xml')
         if package.contents[0].name == 'STIX_Package':
             package = package.contents[0]
 
@@ -791,13 +796,13 @@ class TAXIIClient(object):
                                     continue
 
                                 content = etree.tostring(c[0], encoding='unicode')
-                                timestamp, observable = StixDecode.decode(content)
+                                timestamp, observable, indicator, ttp = StixDecode.decode(content)
                                 if observable:
                                     observables.append(list(observable)[0])
-                                else:
-                                    indicator = StixDecode.get_indicator_info(content)
-                                    if indicator:
-                                        indicators.update(indicator)
+                                elif indicator:
+                                    indicators.update(indicator)
+                                elif ttp:
+                                    yield ttp
 
                                 if timestamp:
                                     if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:

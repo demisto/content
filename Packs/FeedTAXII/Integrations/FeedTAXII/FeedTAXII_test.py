@@ -98,6 +98,26 @@ class TestCommands:
                 assert res == expected
 
 
+def test_poll_collection():
+    import requests_mock
+    from FeedTAXII import TAXIIClient
+    client = TAXIIClient(collection='a collection')
+    with requests_mock.Mocker() as m:
+        m.post('google.com')
+        res = client._poll_collection('http://google.com', '1', '2')
+    assert res
+
+
+def test_parse_indicator():
+    from FeedTAXII import StixDecode
+    with open('FeedTAXII_test/indicator.xml', 'r') as xml_f:
+        stix_str = xml_f.read()
+        res = StixDecode.get_indicator_info(stix_str)
+        with open('FeedTAXII_test/indicator-result.json', 'r') as res_f:
+            expected_res = json.load(res_f)
+            assert expected_res == res
+
+
 @pytest.mark.parametrize('tags', (['tags1, tags2'], []))
 def test_tags_parameter(mocker, tags):
     """
