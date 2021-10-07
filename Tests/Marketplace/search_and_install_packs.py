@@ -20,7 +20,7 @@ from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, 
 from Tests.scripts.utils.content_packs_util import is_pack_deprecated
 
 PACK_METADATA_FILE = 'pack_metadata.json'
-PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
 
@@ -423,7 +423,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     Returns: The latest version of the pack as it is in the production bucket
 
     """
-    pack_bucket_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack_id)
+    pack_bucket_path = os.path.join(GCPConfig.PRODUCTION_STORAGE_BASE_PATH, pack_id)
     logging.debug(f'Trying to get latest version for pack {pack_id} from bucket path {pack_bucket_path}')
     # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
@@ -500,8 +500,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
 
     storage_client = init_storage_client(service_account)
     build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
-    GCPConfig.STORAGE_BASE_PATH = bucket_packs_root_path  # Setting Storage base path
-    index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path)
+    index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path, bucket_packs_root_path)
 
     for pack_id in os.listdir(index_folder_path):
         if os.path.isdir(os.path.join(index_folder_path, pack_id)):
