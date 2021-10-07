@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "description",
     "id": "generic_ThreatIntelReport_description",
@@ -22,7 +19,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "markdown",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
