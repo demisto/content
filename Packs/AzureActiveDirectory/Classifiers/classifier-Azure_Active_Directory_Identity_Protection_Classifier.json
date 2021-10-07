@@ -1,0 +1,33 @@
+{
+    "defaultIncidentType": "Azure Active Directory Identity and Access",
+    "description": "Classifies Azure Active Directory Identity and Access's alerts",
+    "feed": false,
+    "id": "Azure Active Directory Identity and Access",
+    "keyTypeMap": {
+        "unlikelyTravel": "Azure Active Directory Identity and Access",
+        "anonymizedIPAddress": "Azure Active Directory Identity and Access",
+        "maliciousIPAddress": "Azure Active Directory Identity and Access",
+        "unfamiliarFeatures": "Azure Active Directory Identity and Access",
+        "malwareInfectedIPAddress": "Azure Active Directory Identity and Access",
+        "suspiciousIPAddress": "Azure Active Directory Identity and Access",
+        "leakedCredentials": "Azure Active Directory Identity and Access",
+        "investigationsThreatIntelligence": "Azure Active Directory Identity and Access",
+        "generic,adminConfirmedUserCompromised": "Azure Active Directory Identity and Access",
+        "mcasImpossibleTravel": "Azure Active Directory Identity and Access",
+        "mcasSuspiciousInboxManipulationRules": "Azure Active Directory Identity and Access",
+        "investigationsThreatIntelligenceSigninLinked": "Azure Active Directory Identity and Access",
+        "maliciousIPAddressValidCredentialsBlockedIP": "Azure Active Directory Identity and Access",
+        "unknownFutureValue": "Azure Active Directory Identity and Access"
+            },
+    "name": "Azure Active Directory Identity and Access Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "riskEventType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

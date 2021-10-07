@@ -99,6 +99,9 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
+  storage_base_path:
+    type: string
+    default: ""
   slack_channel:
     type: string
     default: "dmst-content-team"
@@ -122,6 +125,7 @@ references:
       SDK_REF: << pipeline.parameters.sdk_ref >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
+      STORAGE_BASE_PATH_PAREMETER: << pipeline.parameters.storage_base_path >>
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
@@ -200,6 +204,10 @@ references:
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${STORAGE_BASE_PATH_PAREMETER}" ];
+        then
+            echo "export STORAGE_BASE_PATH=$STORAGE_BASE_PATH_PAREMETER" >> $BASH_ENV
+        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -229,7 +237,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
         python3 --version
         node --version
@@ -499,12 +507,11 @@ references:
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
-  update_tests_step: &update_tests_step
+  copy_tests_to_circle_artifact: &copy_tests_to_circle_artifact
     run:
-      name: Update Tests step
+      name: Copy Tests To Artifact Folder
       when: always
       command: |
-        python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
 
   get_contribution_pack: &get_contribution_pack
@@ -593,19 +600,10 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Run Unit Testing And Lint:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
-    - Run Validations:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Create Instances:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
+          - Setup Environment
     - Install Packs in Server 6_2:
         context: bucket_upload_env
         requires:
@@ -745,7 +743,7 @@ jobs:
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *validate_files_and_yaml
       - run:
           name: Spell Checks
@@ -827,7 +825,7 @@ jobs:
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *download_configuration
       - when:
           # If this is an ami run - No need to download server artifacts
@@ -852,7 +850,7 @@ jobs:
                     echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
                     exit 0
                   fi
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
             - run:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
@@ -1204,10 +1202,15 @@ jobs:
             CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
-            if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-              STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+            if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+              STORAGE_BASE_PATH="content"
             fi
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+
+            if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+             STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+            fi
+
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
           when: on_success
       - *store_artifacts
 
@@ -1240,19 +1243,26 @@ jobs:
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                     STORAGE_BASE_PATH="content"
                   fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
+                  if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+                  fi
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH/packs"
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  if [[ -z $STORAGE_BASE_PATH ]]; then
+                    if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+                      STORAGE_BASE_PATH="content"
+                    else
+                      STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+                    fi
                   fi
 
-                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
                   ZIP_FOLDER=$(mktemp -d)
                   echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
@@ -1309,7 +1319,7 @@ jobs:
       - *restore_cache
       - *prepare_environment
       - *secrets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *create_id_set
       - *merge_public_and_private_id_sets
       - *validate_files_and_yaml

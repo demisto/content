@@ -1666,7 +1666,7 @@ Edit a URL filtering rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. Can be "override_allow_list", or "override_block_list" | Required | 
+| element_to_change | Element to change. | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
 
@@ -2050,9 +2050,9 @@ Creates a policy rule.
 | destination_zone | A comma-separated list of destination zones. | Optional | 
 | negate_source | Whether to negate the source (address, address group). Can be "Yes" or "No". | Optional | 
 | negate_destination | Whether to negate the destination (address, address group). Can be "Yes" or "No". | Optional | 
-| service | Service object names for the rule (service object) to create. | Optional | 
+| service | A comma-separated list of service object names for the rule. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
-| application | A comma-separated list of application object namesfor the rule to create. | Optional | 
+| application | A comma-separated list of application object names for the rule. | Optional | 
 | source_user | Source user for the rule to create. | Optional | 
 | pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 

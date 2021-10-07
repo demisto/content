@@ -51,7 +51,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
-    - python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
     - cp ./Tests/conf.json $ARTIFACTS_FOLDER
     - section_end "Update Conf"
     - !reference [.create-id-set]

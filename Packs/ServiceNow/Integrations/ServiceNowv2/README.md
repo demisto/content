@@ -12,6 +12,13 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
+
+## Required Permissions
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
+ These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
+ However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
+ 
 ## Wrapper Scripts
 There are 3 scripts that serve as examples for wrapping the following generic commands:
 servicenow-query-table - ServiceNowQueryIncident

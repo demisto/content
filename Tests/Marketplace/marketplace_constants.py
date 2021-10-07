@@ -39,7 +39,8 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    CONTENT_PACKS_PATH = "content/packs"
+    PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_PATH_PREFIX = "content/builds"
     BUILD_BASE_PATH = ""
@@ -144,6 +145,7 @@ class PackFolders(enum.Enum):
     GENERIC_MODULES = "GenericModules"
     GENERIC_TYPES = "GenericTypes"
     LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -168,7 +170,8 @@ class PackFolders(enum.Enum):
             PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value
         }
 
 
