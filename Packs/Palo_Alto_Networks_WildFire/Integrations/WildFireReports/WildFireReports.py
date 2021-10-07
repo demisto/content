@@ -111,7 +111,7 @@ def main():
             'error': {
                 'title': 'Failed to download report.',
                 'description': f'Failed to download report.\nError:\n{str(e)}',
-                'tech-info': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
+                'techInfo': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
             }
         })
 
