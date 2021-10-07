@@ -4559,6 +4559,10 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "MalwareBazaar",
+            "playbookID": "MalwareBazaar_Test"
         }
     ],
     "skipped_tests": {
