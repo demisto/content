@@ -321,9 +321,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Full resource id of a vnet subnet. For example, for the subnet
-        ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1",
-        you can access the key vault from subnet1. Network acl property.
+      description: Allow accessibility of a vault from a specific virtual network.
+        This argument must be the full resource ID of a virtual network subnet. For
+        example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1",
+        you allow access to the Key Vault from subnet1. Network acl property.
       isArray: false
       name: vnet_subnet_id
       required: false
@@ -1190,7 +1191,7 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
-  dockerimage: 'demisto/crypto:1.0.0.24037'
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false
