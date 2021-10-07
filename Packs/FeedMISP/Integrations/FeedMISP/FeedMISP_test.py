@@ -206,6 +206,14 @@ def test_build_indicators_from_galaxies():
 
 
 def test_update_indicators_iterator_first_fetch(mocker):
+    """
+    Given
+        - Indicators received
+    When
+        - First fetch, no last run parameters
+    Then
+        - return all indicators
+    """
     indicators_iterator = [
         {
             'value': {'timestamp': '5'},
@@ -225,11 +233,19 @@ def test_update_indicators_iterator_first_fetch(mocker):
     ]
     query = {'key': 'val'}
     mocker.patch.object(demisto, 'getLastRun', return_value=None)
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert added_indicators_iterator == indicators_iterator
 
 
 def test_update_indicators_iterator_timestamp_exists_all_new_indicators_same_query(mocker):
+    """
+     Given
+         - Indicators received, lastrun has timestamp and query
+     When
+         - indicators updated after timestamp and same query as before
+     Then
+         - return all indicators
+     """
     indicators_iterator = [
         {
             'value': {'timestamp': '5'},
@@ -249,11 +265,19 @@ def test_update_indicators_iterator_timestamp_exists_all_new_indicators_same_que
     ]
     query = {'key': 'val'}
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '0', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert added_indicators_iterator == indicators_iterator
 
 
 def test_update_indicators_iterator_timestamp_exists_no_new_indicators_same_query(mocker):
+    """
+     Given
+         - Indicators received, lastrun has the timestamp and query
+     When
+         - last run timestamp is bigger then the indicators timestamp and query is the same
+     Then
+         - return no indicators
+     """
     indicators_iterator = [
         {
             'value': {'timestamp': '1'},
@@ -268,11 +292,19 @@ def test_update_indicators_iterator_timestamp_exists_no_new_indicators_same_quer
     ]
     query = {'key': 'val'}
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
-    assert added_indicators_iterator is None
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
+    assert not added_indicators_iterator
 
 
 def test_update_indicators_iterator_timestamp_exists_some_new_indicators_same_query(mocker):
+    """
+     Given
+         - Indicators received, lastrun has the timestamp and query
+     When
+         - some indicators has timestamp bigger then the lastrun timestamp
+     Then
+         - return indicators which have timestamp bigger then lastrun timestamp
+     """
     indicators_iterator = [
         {
             'value': {'timestamp': '5'},
@@ -292,19 +324,35 @@ def test_update_indicators_iterator_timestamp_exists_some_new_indicators_same_qu
     ]
     query = {'key': 'val'}
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert added_indicators_iterator[0]['value']['timestamp'] == '5'
 
 
 def test_update_indicators_iterator_timestamp_exists_no_indicators_same_query(mocker):
+    """
+     Given
+         - No indicators received
+     When
+         - lastrun has timestamp and query
+     Then
+         - return no indicators
+     """
     indicators_iterator = []
     query = {'key': 'val'}
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert not added_indicators_iterator
 
 
 def test_update_indicators_iterator_indicators_before_timestamp_different_query(mocker):
+    """
+     Given
+         - Indicators received, lastrun has the timestamp and query
+     When
+         - all indicators have smaller timestamp then lastrun but query has changed
+     Then
+         - reset lastrun and return all indicators
+     """
     indicators_iterator = [
         {
             'value': {'timestamp': '1'},
@@ -320,8 +368,5 @@ def test_update_indicators_iterator_indicators_before_timestamp_different_query(
     query = {'key': 'val'}
     old_query = {'key': 'old'}
     mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': old_query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
     assert added_indicators_iterator == indicators_iterator
-
-
-# TODO: add docsting to tests

@@ -295,29 +295,32 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputatio
 
 def update_indicators_iterator(
                                 indicators_iterator: List[Dict[str, Any]],
-                                params_dict: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
+                                params_dict: Dict[str, Any],
+                                is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
     """
     returns sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
     Args:
         params_dict: user's params sent to misp
         indicators_iterator: list of indicators
+        is_fetch: flag for wether funciton was called for fetching command or a get
     Returns: Sorted list of new indicators
     """
-    # TODO: need to test with params in lastrun, test flow
     last_run = demisto.getLastRun()
     indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
 
     if last_run is None:
         return indicators_iterator
     if params_dict != last_run.get('params'):
-        demisto.setLastRun(None)
+        if is_fetch:
+            demisto.setLastRun(None)
         return indicators_iterator
-    last_timestamp = last_run.get('timestamp')
+
+    last_timestamp = int(last_run.get('timestamp'))
 
     for index in range(len(indicators_iterator)):
-        if indicators_iterator[index]['value']['timestamp'] > last_timestamp:
+        if int(indicators_iterator[index]['value']['timestamp']) > last_timestamp:
             return indicators_iterator[index:]
-    return None
+    return []
 
 
 def fetch_indicators(client: Client,
@@ -327,7 +330,8 @@ def fetch_indicators(client: Client,
                      tlp_color: Optional[str],
                      url: Optional[str],
                      reputation: Optional[str],
-                     limit: int = -1) -> List[Dict]:
+                     limit: int = -1,
+                     is_fetch: bool = True) -> List[Dict]:
     if query:
         params_dict = clean_user_query(query)
     else:
@@ -335,7 +339,7 @@ def fetch_indicators(client: Client,
 
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict)
+    added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
 
     if not added_indicators_iterator:
@@ -343,7 +347,8 @@ def fetch_indicators(client: Client,
 
     if limit > 0:
         added_indicators_iterator = added_indicators_iterator[:limit]
-    else:
+
+    if is_fetch:
         # fetching command, need to update last run dict
         demisto.setLastRun({
             'params': params_dict,
@@ -510,7 +515,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
 
-    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, params.get('url'), reputation, limit)
+    indicators = fetch_indicators(client, tags, attribute_type,
+                                  query, tlp_color, params.get('url'), reputation, limit, False)
 
     hr_indicators = []
     for indicator in indicators:
