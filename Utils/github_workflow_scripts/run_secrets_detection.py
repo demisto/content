@@ -26,7 +26,11 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def trigger_generic_webhook(branch_name, pr_number, username, password):
+def trigger_generic_webhook(options):
+    pr_number = options.pr_number
+    branch_name = options.branch_name
+    username = options.username
+    password = options.password
     body = {
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
@@ -39,24 +43,21 @@ def trigger_generic_webhook(branch_name, pr_number, username, password):
             f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
         sys.exit(1)
 
-    if res.json() and type(res.json()) == list:
-        res_json = res.json()[0]
-        if res_json:
-            investigation_id = res_json.get("id")
+    res_json = res.json()
+    if res_json and type(res_json) == list:
+        res_json_response_data = res.json()[0]
+        if res_json_response_data:
+            investigation_id = res_json_response_data.get("id")
             print(investigation_id)
             return
 
-    print("Secrets detection playbook was failed")
+    print("Secrets detection playbook has failed")
     sys.exit(1)
 
 
 def main():
     options = arguments_handler()
-    pr_number = options.pr_number
-    branch_name = options.branch_name
-    username = options.username
-    password = options.password
-    trigger_generic_webhook(branch_name, pr_number, username, password)
+    trigger_generic_webhook(options)
 
 
 if __name__ == "__main__":
