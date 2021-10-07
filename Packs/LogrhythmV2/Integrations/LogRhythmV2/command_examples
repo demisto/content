@@ -28,7 +28,7 @@
 !lr-list-items-remove list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}`
 !lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host2 os=AIX risk-level="High-High" use-eventlog-credentials=false
 !endpoint hostname=EC2AMAZ-F6K2KDP using=LogrhythmV2_instance_2
-!lr-execute-search-query number_of_date=5
+!lr-execute-search-query number_of_days=5
 !lr-get-query-result task_id="2b408017-fe27-4054-acd8-cd88bbc7c834"
 !lr-list-summary-create-update does_expire=false enabled=true entity_name=`Global Entity` list_type=User name=test1 need_to_notify=false read_access=Private replace_existing=false restricted_read=false use_patterns=false write_access=Private owner=1
 

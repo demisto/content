@@ -1366,7 +1366,7 @@ class Client(BaseClient):
 
         return response
 
-    def execute_search_query_request(self, number_of_date, source_type, host_name, username, subject, sender,
+    def execute_search_query_request(self, number_of_days, source_type, host_name, username, subject, sender,
                                      recipient, hash_, url, process_name, object_, ipaddress, max_message,
                                      query_timeout, entity_id):
 
@@ -1420,7 +1420,7 @@ class Client(BaseClient):
             "queryEventManager": False,
             "dateCriteria": {
                 "useInsertedDate": False,
-                "lastIntervalValue": int(number_of_date),
+                "lastIntervalValue": int(number_of_days),
                 "lastIntervalUnit": 4
             },
             "queryLogSources": [],
@@ -2104,10 +2104,10 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_id = args.get('list_id')
+    list_guid = args.get('list_guid')
     max_items = args.get('max_items')
 
-    response, raw_response = client.list_details_and_items_get_request(list_id, max_items)
+    response, raw_response = client.list_details_and_items_get_request(list_guid, max_items)
     response = response.copy()
     list_items = response.get('items')
     response.pop('items', None)
@@ -2128,7 +2128,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_id = args.get('list_id')
+    list_guid = args.get('list_guid')
     items_json = args.get('items')
 
     try:
@@ -2136,8 +2136,8 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
     except ValueError:
         raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
 
-    response = client.list_items_add_request(list_id, items)
-    hr = tableToMarkdown(f'The item added to the list {list_id}.', response, headerTransform=pascalToSpace)
+    response = client.list_items_add_request(list_guid, items)
+    hr = tableToMarkdown(f'The item added to the list {list_guid}.', response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -2151,7 +2151,7 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_id = args.get('list_id')
+    list_guid = args.get('list_guid')
     items_json = args.get('items')
 
     try:
@@ -2159,8 +2159,8 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
     except ValueError:
         raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
 
-    response = client.list_items_remove_request(list_id, items)
-    hr = tableToMarkdown(f'The item deleted from the list {list_id}.', response, headerTransform=pascalToSpace)
+    response = client.list_items_remove_request(list_guid, items)
+    hr = tableToMarkdown(f'The item deleted from the list {list_guid}.', response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -2174,7 +2174,7 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def execute_search_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    number_of_date = args.get('number_of_date')
+    number_of_days = args.get('number_of_days')
     source_type = args.get('source_type')
     host_name = args.get('host_name')
     username = args.get('username')
@@ -2190,7 +2190,7 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     query_timeout = args.get('query_timeout')
     entity_id = args.get('entity_id')
 
-    response = client.execute_search_query_request(number_of_date, source_type, host_name, username, subject, sender,
+    response = client.execute_search_query_request(number_of_days, source_type, host_name, username, subject, sender,
                                                    recipient, hash_, url, process_name, object_, ipaddress, max_message,
                                                    query_timeout, entity_id)
     task_id = response.get('TaskId')

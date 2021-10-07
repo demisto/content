@@ -195,7 +195,7 @@ def test_execute_search_query_request(requests_mock):
     - Client object.
 
     When:
-    - Running execute_search_query_request filter by number_of_date, source_type, host_name and ipaddress.
+    - Running execute_search_query_request filter by number_of_days, source_type, host_name and ipaddress.
 
     Then:
     - Validate that search-task request body created as expected.

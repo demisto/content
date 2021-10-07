@@ -2033,13 +2033,13 @@ script:
       description: 'The host location ID.'
     - type: String
       contextPath: LogRhythm.Host.os
-      description: 'The host operation system.'
+      description: 'The OS type supported by LogRhythm.'
     - type: Boolean
       contextPath: LogRhythm.Host.useEventlogCredentials
       description: 'Whether to use the event log credentials or not.'
     - type: String
       contextPath: LogRhythm.Host.osType
-      description: 'The host operation system type.'
+      description: 'The Agent server type on which the OS is installed.'
     - type: Date
       contextPath: LogRhythm.Host.dateUpdated
       description: 'The date the host was updated'
@@ -2062,17 +2062,18 @@ script:
       contextPath: LogRhythm.Host.eventlogPassword
       description: 'The event log password.'
   - name: lr-users-list
+    description: 'Returns User records based on the permissions of the currently logged in User and the specified criteria.'
     arguments:
     - name: user_ids
-      description: ''
+      description: 'Comma separated list of user IDs.'
       required: false
       isArray: false
     - name: entity_ids
-      description: ''
+      description: 'Comma separated list of entity IDs.'
       required: false
       isArray: false
     - name: user_status
-      description: ''
+      description: 'Filter by user status.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2081,59 +2082,59 @@ script:
       - Retired
     - name: offset
       defaultValue: "0"
-      description: ''
+      description: 'The number of users to skip before starting to collect the result set.'
       required: false
       isArray: false
     - name: count
       defaultValue: "30"
-      description: ''
+      description: 'The numbers of users to return.'
       required: false
       isArray: false
     outputs:
     - contextPath: LogRhythm.User.firstName
-      description: ''
+      description: 'The user first name.'
       type: String
     - contextPath: LogRhythm.User.lastName
-      description: ''
+      description: 'The user last name.'
       type: String
     - contextPath: LogRhythm.User.userType
-      description: ''
+      description: 'The user type'
       type: String
     - contextPath: LogRhythm.User.fullName
-      description: ''
+      description: 'The user full name.'
       type: String
     - contextPath: LogRhythm.User.objectPermissions.readAccess
-      description: ''
+      description: 'The user read access permissions.'
       type: String
     - contextPath: LogRhythm.User.objectPermissions.writeAccess
-      description: ''
+      description: 'The user write access permissions.'
       type: String
     - contextPath: LogRhythm.User.objectPermissions.entity.id
-      description: ''
+      description: 'The user permissions entity ID.'
       type: Number
     - contextPath: LogRhythm.User.objectPermissions.entity.name
-      description: ''
+      description: 'The user permissions entity name.'
       type: String
     - contextPath: LogRhythm.User.objectPermissions.owner.id
-      description: ''
+      description: 'The user permissions owner ID.'
       type: Number
     - contextPath: LogRhythm.User.objectPermissions.owner.name
-      description: ''
+      description: 'The user permissions owner.'
       type: String
     - contextPath: LogRhythm.User.id
-      description: ''
+      description: 'The user ID.'
       type: Number
     - contextPath: LogRhythm.User.recordStatusName
-      description: ''
+      description: 'The user record status.'
       type: String
     - contextPath: LogRhythm.User.dateUpdated
-      description: ''
+      description: 'The date the user was updated.'
       type: Date
   - name: lr-lists-get
-    description: ''
+    description: 'Returns list details using filter criteria.'
     arguments:
     - name: list_type
-      description: ''
+      description: 'List types supported in LogRhythm.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2156,11 +2157,11 @@ script:
       - IPRange
       - Identity
     - name: list_name
-      description: ''
+      description: 'The name of the object or regex match.'
       required: false
       isArray: false
     - name: can_edit
-      description: ''
+      description: 'Specifies if Write Only (true) or Read Only (false) Lists are required for a User.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2170,78 +2171,80 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.List.listType
-      description: ''
+      description: 'The list type.'
     - type: String
       contextPath: LogRhythm.List.status
-      description: ''
+      description: 'The list status.'
     - type: String
       contextPath: LogRhythm.List.name
-      description: ''
+      description: 'The list name.'
     - type: String
       contextPath: LogRhythm.List.shortDescription
-      description: ''
+      description: 'The list short description.'
     - type: String
       contextPath: LogRhythm.List.useContext
-      description: ''
+      description: 'The use contexts type.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.usePatterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.replaceExisting
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
     - type: Number
       contextPath: LogRhythm.List.id
-      description: ''
+      description: 'The list ID.'
     - type: String
       contextPath: LogRhythm.List.guid
-      description: ''
+      description: 'The list GUID.'
     - type: Date
       contextPath: LogRhythm.List.dateCreated
-      description: ''
+      description: 'The date the list was created.'
     - type: Date
       contextPath: LogRhythm.List.dateUpdated
-      description: ''
+      description: 'The date the list was updated.'
     - type: String
       contextPath: LogRhythm.List.readAccess
-      description: ''
+      description: 'The read permission level.'
     - type: String
       contextPath: LogRhythm.List.writeAccess
-      description: ''
+      description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.List.restrictedRead
-      description: ''
+      description: 'Whether the list is restricted read or not.'
     - type: String
       contextPath: LogRhythm.List.entityName
-      description: ''
+      description: 'The list entity name.'
     - type: Number
       contextPath: LogRhythm.List.entryCount
-      description: ''
+      description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.List.needToNotify
-      description: ''
+      description: 'Whether the list need to notify or not.'
     - type: Boolean
       contextPath: LogRhythm.List.doesExpire
-      description: ''
+      description: 'Whether the list does expire or not.'
     - type: Number
       contextPath: LogRhythm.List.owner
-      description: ''
+      description: 'The list owner.'
     - type: String
       contextPath: LogRhythm.List.longDescription
-      description: ''
+      description: 'The list long description.'
     - type: Number
       contextPath: LogRhythm.List.timeToLiveSeconds
-      description: ''
+      description: 'The list time to live in seconds.'
     - type: Date
       contextPath: LogRhythm.List.revisitDate
-      description: ''
+      description: 'The list revisit date.'
   - name: lr-list-summary-create-update
-    description: ''
+    description: 'Updates a list summary based on the GUID and other required details.
+     Searches the system for existing list summaries by GUID.
+      Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
     arguments:
     - name: list_type
-      description: ''
+      description: 'The list type.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2264,11 +2267,11 @@ script:
       - IPRange
       - Identity
     - name: name
-      description: ''
+      description: 'The list name.'
       required: true
       isArray: false
     - name: enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2276,7 +2279,7 @@ script:
       - 'true'
       - 'false'
     - name: use_patterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2284,7 +2287,7 @@ script:
       - 'true'
       - 'false'
     - name: replace_existing
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2292,7 +2295,7 @@ script:
       - 'true'
       - 'false'
     - name: read_access
-      description: ''
+      description: 'The read permission level.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2304,7 +2307,7 @@ script:
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: write_access
-      description: ''
+      description: 'The write permission level.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2316,7 +2319,7 @@ script:
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: restricted_read
-      description: ''
+      description: 'Whether the list is restricted read or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2324,11 +2327,11 @@ script:
       - 'true'
       - 'false'
     - name: entity_name
-      description: ''
+      description: 'The entity name.'
       required: true
       isArray: false
     - name: need_to_notify
-      description: ''
+      description: 'Whether the list need to notify or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2336,7 +2339,7 @@ script:
       - 'true'
       - 'false'
     - name: does_expire
-      description: ''
+      description: 'Whether the list does expire or not.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2344,326 +2347,326 @@ script:
       - 'true'
       - 'false'
     - name: owner
-      description: ''
+      description: 'The owner number.'
       required: false
       isArray: false
     outputs:
     - contextPath: LogRhythm.List.listType
-      description: ''
+      description: 'The list Type.'
       type: String
     - contextPath: LogRhythm.List.status
-      description: ''
+      description: 'The list status.'
       type: String
     - contextPath: LogRhythm.List.name
-      description: ''
+      description: 'The list name.'
       type: String
     - contextPath: LogRhythm.List.useContext
-      description: ''
+      description: 'The use contexts type.'
       type: String
     - contextPath: LogRhythm.List.autoImportOption.enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
       type: Boolean
     - contextPath: LogRhythm.List.autoImportOption.usePatterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
       type: Boolean
     - contextPath: LogRhythm.List.autoImportOption.replaceExisting
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
       type: Boolean
     - contextPath: LogRhythm.List.id
-      description: ''
+      description: 'The list ID.'
       type: Number
     - contextPath: LogRhythm.List.guid
-      description: ''
+      description: 'The list GUID.'
       type: String
     - contextPath: LogRhythm.List.dateCreated
-      description: ''
+      description: 'The date the list was created.'
       type: Date
     - contextPath: LogRhythm.List.dateUpdated
-      description: ''
+      description: 'The date the list was updated.'
       type: Date
     - contextPath: LogRhythm.List.readAccess
-      description: ''
+      description: 'The read permission level.'
       type: String
     - contextPath: LogRhythm.List.writeAccess
-      description: ''
+      description: 'The write permission level.'
       type: String
     - contextPath: LogRhythm.List.restrictedRead
-      description: ''
+      description: 'Whether the list is restricted read or not.'
       type: Boolean
     - contextPath: LogRhythm.List.entityName
-      description: ''
+      description: 'The list entity name.'
       type: String
     - contextPath: LogRhythm.List.entryCount
-      description: ''
+      description: 'The list entry count.'
       type: Number
     - contextPath: LogRhythm.List.needToNotify
-      description: ''
+      description: 'Whether the list need to notify or not.'
       type: Boolean
     - contextPath: LogRhythm.List.doesExpire
-      description: ''
+      description: 'Whether the list does expire or not.'
       type: Boolean
     - contextPath: LogRhythm.List.owner
-      description: ''
+      description: 'The list owner.'
       type: Number
   - name: lr-list-details-and-items-get
-    description: ''
+    description: 'Returns list details and list items based on list GUID.'
     arguments:
-    - name: list_id
-      description: ''
+    - name: list_guid
+      description: 'The GUID stored in database.'
       required: true
       isArray: false
     - name: max_items
       defaultValue: "100"
-      description: ''
+      description: 'The upper limit for items that can be returned in a single request.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListDetails.listType
-      description: ''
+      description: 'The list type.'
     - type: String
       contextPath: LogRhythm.ListDetails.status
-      description: ''
+      description: 'The list status.'
     - type: String
       contextPath: LogRhythm.ListDetails.name
-      description: ''
+      description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListDetails.useContext
-      description: ''
+      description: 'The use contexts type.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.usePatterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.replaceExisting
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
     - type: Number
       contextPath: LogRhythm.ListDetails.id
-      description: ''
+      description: 'The list ID.'
     - type: String
       contextPath: LogRhythm.ListDetails.guid
-      description: ''
+      description: 'The list GUID'
     - type: Date
       contextPath: LogRhythm.ListDetails.dateCreated
-      description: ''
+      description: 'The date the list was created.'
     - type: Date
       contextPath: LogRhythm.ListDetails.dateUpdated
-      description: ''
+      description: 'The date the list was updated.'
     - type: Date
       contextPath: LogRhythm.ListDetails.revisitDate
-      description: ''
+      description: 'The list revisit date.'
     - type: String
       contextPath: LogRhythm.ListDetails.readAccess
-      description: ''
+      description: 'The read permission level.'
     - type: String
       contextPath: LogRhythm.ListDetails.writeAccess
-      description: ''
+      description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.restrictedRead
-      description: ''
+      description: 'Whether the list is restricted read or not.'
     - type: String
       contextPath: LogRhythm.ListDetails.entityName
-      description: ''
+      description: 'The list entity name.'
     - type: Number
       contextPath: LogRhythm.ListDetails.entryCount
-      description: ''
+      description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.needToNotify
-      description: ''
+      description: 'Whether the list need to notify or not.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.doesExpire
-      description: ''
+      description: 'Whether the list does expire or not.'
     - type: Number
       contextPath: LogRhythm.ListDetails.owner
-      description: ''
+      description: 'The list owner.'
     - type: Number
       contextPath: LogRhythm.ListDetails.listItemsCount
-      description: ''
+      description: 'The list items count.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.displayValue
-      description: ''
+      description: 'The list item value.'
     - type: Unknown
       contextPath: LogRhythm.ListDetails.items.expirationDate
-      description: ''
+      description: 'The list item expiration date'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isExpired
-      description: ''
+      description: 'Whether the item is expired or not.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isListItem
-      description: ''
+      description: 'Whether the item is list item or not.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isPattern
-      description: ''
+      description: 'Whether the item is pattern or not.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.listItemDataType
-      description: ''
+      description: 'The item data type.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.listItemType
-      description: ''
+      description: 'The item type.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.value
-      description: ''
+      description: 'The item value.'
   - name: lr-list-items-add
-    description: ''
+    description: 'Adds more items to an existing list.'
     arguments:
-    - name: list_id
-      description: ''
+    - name: list_guid
+      description: 'The GUID stored in database.'
       required: true
       isArray: false
     - name: items
-      description: ''
+      description: 'The body of the list item so that the list can be updated with new items(JSON format).'
       required: true
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListItemsAdd.listType
-      description: ''
+      description: 'The list type.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.status
-      description: ''
+      description: 'The list status.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.name
-      description: ''
+      description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.useContext
-      description: ''
+      description: 'The use contexts type.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.usePatterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.replaceExisting
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.id
-      description: ''
+      description: 'The list ID.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.guid
-      description: ''
+      description: 'The list GUID.'
     - type: Date
       contextPath: LogRhythm.ListItemsAdd.dateCreated
-      description: ''
+      description: 'The date the list was created.'
     - type: Date
       contextPath: LogRhythm.ListItemsAdd.dateUpdated
-      description: ''
+      description: 'The date the list was updated.'
     - type: Date
       contextPath: LogRhythm.ListItemsAdd.revisitDate
-      description: ''
+      description: 'The list revisit date.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.readAccess
-      description: ''
+      description: 'The read permission level.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.writeAccess
-      description: ''
+      description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.restrictedRead
-      description: ''
+      description: 'Whether the list is restricted read or not.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.entityName
-      description: ''
+      description: 'The list entity name.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.entryCount
-      description: ''
+      description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.needToNotify
-      description: ''
+      description: 'Whether the list need to notify or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.doesExpire
-      description: ''
+      description: 'Whether the list does expire or not.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.owner
-      description: ''
+      description: 'The list owner.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.listItemsCount
-      description: ''
+      description: 'The list items count.'
   - name: lr-list-items-remove
     description: ''
     arguments:
-    - name: list_id
-      description: ''
+    - name: list_guid
+      description: 'The GUID stored in database.'
       required: true
       isArray: false
     - name: items
-      description: ''
+      description: 'Body of the list items to be removed from the list(JSON format).'
       required: true
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.ListItemsRemove.listType
-      description: ''
+      description: 'The list type.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.status
-      description: ''
+      description: 'The list status.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.name
-      description: ''
+      description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.useContext
-      description: ''
+      description: 'The use contexts type.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.enabled
-      description: ''
+      description: 'Whether the list auto import is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.usePatterns
-      description: ''
+      description: 'Whether the auto import use patterns is enabled or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.replaceExisting
-      description: ''
+      description: 'Whether the auto import replace existing is enabled or not.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.id
-      description: ''
+      description: 'The list ID.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.guid
-      description: ''
+      description: 'The list GUID.'
     - type: Date
       contextPath: LogRhythm.ListItemsRemove.dateCreated
-      description: ''
+      description: 'The date the list was created.'
     - type: Date
       contextPath: LogRhythm.ListItemsRemove.dateUpdated
-      description: ''
+      description: 'The date the list was updated.'
     - type: Date
       contextPath: LogRhythm.ListItemsRemove.revisitDate
-      description: ''
+      description: 'The list revisit date.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.readAccess
-      description: ''
+      description: 'The read permission level.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.writeAccess
-      description: ''
+      description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.restrictedRead
-      description: ''
+      description: 'Whether the list is restricted read or not.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.entityName
-      description: ''
+      description: 'The list entity name.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.entryCount
-      description: ''
+      description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.needToNotify
-      description: ''
+      description: 'Whether the list need to notify or not.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.doesExpire
-      description: ''
+      description: 'Whether the list does expire or not.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.owner
-      description: ''
+      description: 'The list owner.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.listItemsCount
-      description: ''
+      description: 'The list items count.'
   - name: lr-execute-search-query
-    description: ''
+    description: 'Execute search query to LogRhythm log database.'
     arguments:
-    - name: number_of_date
-      description: ''
+    - name: number_of_days
+      description: 'Number of days to search.'
       required: true
       isArray: false
     - name: source_type
-      description: ''
+      description: 'Log source type.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3626,161 +3629,161 @@ script:
       - VLS_-_Syslog_-_Infoblox_-_DNS_RPZ
       - VLS_-_Syslog_-_Infoblox_-_Threat_Protection
     - name: host_name
-      description: ''
+      description: 'Impacted host name.'
       required: false
       isArray: false
     - name: username
-      description: ''
+      description: 'Username.'
       required: false
       isArray: false
     - name: subject
-      description: ''
+      description: 'Email subject.'
       required: false
       isArray: false
     - name: sender
-      description: ''
+      description: 'Email subject.'
       required: false
       isArray: false
     - name: recipient
-      description: ''
+      description: 'Email subject.'
       required: false
       isArray: false
     - name: hash
-      description: ''
+      description: 'Hash.'
       required: false
       isArray: false
     - name: url
-      description: ''
+      description: 'URL.'
       required: false
       isArray: false
     - name: process_name
-      description: ''
+      description: 'Process name.'
       required: false
       isArray: false
     - name: object
-      description: ''
+      description: 'Log object.'
       required: false
       isArray: false
     - name: ip_address
-      description: ''
+      description: 'IP address.'
       required: false
       isArray: false
     - name: max_message
-      description: ''
+      description: 'Maximum number of log message to query.'
       required: false
       isArray: false
       defaultValue: "100"
     - name: query_timeout
-      description: ''
+      description: 'The query timeout in seconds.'
       required: false
       isArray: false
       defaultValue: "60"
     - name: entity_id
-      description: ''
+      description: 'Entity ID.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: Logrhythm.Search.Task.TaskId
-      description: ''
+      description: 'TaskId returned from database for the current search. This is actually Search GUID.'
     - type: String
       contextPath: Logrhythm.Search.Task.StatusMessage
-      description: ''
+      description: 'TaskStatus returned from database for the current search.'
   - name: lr-get-query-result
-    description: ''
+    description: 'Get search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
     arguments:
     - name: task_id
-      description: ''
+      description: 'The task ID can be retrieved from the lr-execute-search-query command.'
       required: true
       isArray: false
     - name: page_size
-      description: ''
+      description: 'Page size.'
       required: false
       isArray: false
       defaultValue: "50"
     outputs:
     - contextPath: Logrhythm.Search.Results.TaskStatus
-      description: Task status.
+      description: 'Task status.'
       type: String
     - contextPath: Logrhythm.Search.Results.TaskID
-      description: Task ID.
+      description: 'Task ID.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.originEntityId
-      description: Entity ID.
+      description: 'Entity ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.impactedIp
-      description: Impacted IP.
+      description: 'Impacted IP.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
-      description: Classification name.
+      description: 'Classification name.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logSourceName
-      description: Log source name.
+      description: 'Log source name.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.entityName
-      description: Entity name.
+      description: 'Entity name.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.normalDate
-      description: Date.
+      description: 'Date.'
       type: Date
     - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
-      description: Vendor log message.
+      description: 'Vendor log message.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.priority
-      description: Log priority.
+      description: 'Log priority.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
-      description: Sequence number.
+      description: 'Sequence number.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.originHostId
-      description: Origin host ID.
+      description: 'Origin host ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
-      description: Logrhythm rule ID.
+      description: 'Logrhythm rule ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.originIp
-      description: Origin IP.
+      description: 'Origin IP.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
-      description: Logrhythm rule name.
+      description: 'Logrhythm rule name.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
-      description: Log source host ID.
+      description: 'Log source host ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.originHost
-      description: Origin host.
+      description: 'Origin host.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.logDate
-      description: Log date.
+      description: 'Log date.'
       type: Date
     - contextPath: Logrhythm.Search.Results.Items.classificationName
-      description: Log classification name.
+      description: 'Log classification name.'
       type: String
   - name: lr-add-host
-    description: ''
+    description: 'Add a new host to an entity.'
     arguments:
     - name: entity-id
-      description: ''
+      description: 'The entity ID for the host.'
       required: false
       isArray: false
     - name: entity-name
-      description: ''
+      description: 'The entity name for the host.'
       required: true
       isArray: false
     - name: name
-      description: ''
+      description: 'The name of the Host.'
       required: true
       isArray: false
     - name: short-description
-      description: ''
+      description: 'A brief description of the component.'
       required: false
       isArray: false
     - name: long-description
-      description: ''
+      description: 'A full description of the component.'
       required: false
       isArray: false
     - name: risk-level
-      description: ''
+      description: 'The host risk level.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3796,7 +3799,7 @@ script:
       - High-Medium
       - High-High
     - name: threat-level
-      description: ''
+      description: 'The host threat level.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3812,11 +3815,11 @@ script:
       - High-Medium
       - High-High
     - name: threat-level-comments
-      description: ''
+      description: 'Comments for the host threat level.'
       required: false
       isArray: false
     - name: host-status
-      description: ''
+      description: 'The host status.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3824,7 +3827,7 @@ script:
       - Retired
       - Active
     - name: host-zone
-      description: ''
+      description: 'The host zone.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3833,7 +3836,7 @@ script:
       - DMZ
       - Internal
     - name: use-eventlog-credentials
-      description: ''
+      description: 'Whether to use the event log credentials.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3841,7 +3844,7 @@ script:
       - 'true'
       - 'false'
     - name: os-type
-      description: ''
+      description: 'The Agent server type on which the OS is installed.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3850,7 +3853,7 @@ script:
       - Server
       - Desktop
     - name: os
-      description: ''
+      description: 'The OS type supported by LogRhythm.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3873,46 +3876,46 @@ script:
     outputs:
     - type: Number
       contextPath: LogRhythm.Host.id
-      description: ''
+      description: 'The host ID.'
     - type: Number
       contextPath: LogRhythm.Host.entity.id
-      description: ''
+      description: 'The host entity ID.'
     - type: String
       contextPath: LogRhythm.Host.entity.name
-      description: ''
+      description: 'The host entity name.'
     - type: String
       contextPath: LogRhythm.Host.name
-      description: ''
+      description: 'The host name.'
     - type: String
       contextPath: LogRhythm.Host.riskLevel
-      description: ''
+      description: 'The host risk level'
     - type: String
       contextPath: LogRhythm.Host.threatLevel
-      description: ''
+      description: 'The host threat level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevelComments
-      description: ''
+      description: 'The threat level comments'
     - type: String
       contextPath: LogRhythm.Host.recordStatusName
-      description: ''
+      description: 'The host record status name.'
     - type: String
       contextPath: LogRhythm.Host.hostZone
-      description: ''
+      description: 'The host zone.'
     - type: Number
       contextPath: LogRhythm.Host.location.id
-      description: ''
+      description: 'The host location ID.'
     - type: String
       contextPath: LogRhythm.Host.os
-      description: ''
+      description: 'The OS type supported by LogRhythm.'
     - type: Boolean
       contextPath: LogRhythm.Host.useEventlogCredentials
-      description: ''
+      description: 'Whether to use the event log credentials or not.'
     - type: String
       contextPath: LogRhythm.Host.osType
-      description: ''
+      description: 'The Agent server type on which the OS is installed.'
     - type: Date
       contextPath: LogRhythm.Host.dateUpdated
-      description: ''
+      description: 'The date the host was updated'
   - name: endpoint
     description: 'Returns information about an endpoint.'
     arguments:
