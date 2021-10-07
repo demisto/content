@@ -393,7 +393,7 @@ def get_rql_response(args):
     """"
     Retrieve any RQL
     """
-    rql = args.get('rql').encode("utf-8")
+    rql = args.get('rql')
 
     limit = str(args.get('limit', '1'))
     rql += " limit search records to {}".format(limit)
