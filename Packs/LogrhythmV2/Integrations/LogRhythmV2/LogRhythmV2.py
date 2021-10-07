@@ -2347,9 +2347,9 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
 
     # filter alerts
     if alarm_status_filter:
-        alarms_list_args['alarm_status'] = alarm_status_filter
+        alarms_list_args['alarm_status'] = alarm_status_filter  # type: ignore
     if alarm_rule_name_filter:
-        alarms_list_args['alarm_rule_name'] = alarm_rule_name_filter
+        alarms_list_args['alarm_rule_name'] = alarm_rule_name_filter  # type: ignore
 
     alarms, _ = client.alarms_list_request(**alarms_list_args)
 
@@ -2377,19 +2377,19 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     cases_list_args = {'count': limit}
 
     if case_last_run:
-        cases_list_args['timestamp_filter_type'] = 'createdAfter'
+        cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
         cases_list_args['timestamp'] = case_last_run
     elif next_run:
-        cases_list_args['timestamp_filter_type'] = 'createdAfter'
+        cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
         cases_list_args['timestamp'] = next_run
 
     # filter cases
     if case_tags_filter:
-        cases_list_args['tags'] = case_tags_filter
+        cases_list_args['tags'] = case_tags_filter  # type: ignore
     if case_status_filter:
-        cases_list_args['status'] = str(CASE_STATUS.get(case_status_filter))
+        cases_list_args['status'] = str(CASE_STATUS.get(case_status_filter))  # type: ignore
     if case_priority_filter:
-        cases_list_args['priority'] = case_priority_filter
+        cases_list_args['priority'] = case_priority_filter  # type: ignore
 
     cases = client.cases_list_request(**cases_list_args)
 
