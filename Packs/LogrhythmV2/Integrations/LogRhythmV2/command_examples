@@ -32,6 +32,3 @@
 !lr-get-query-result task_id="2b408017-fe27-4054-acd8-cd88bbc7c834"
 !lr-list-summary-create-update does_expire=false enabled=true entity_name=`Global Entity` list_type=User name=test1 need_to_notify=false read_access=Private replace_existing=false restricted_read=false use_patterns=false write_access=Private owner=1
 
-need to add:
-lr-case-evidence-user-events-list
-
