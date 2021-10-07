@@ -1586,7 +1586,7 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
     """
     if not context_data:
         print_debug_msg("Not printing stats")
-        return {}
+        return set()
 
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
@@ -2973,9 +2973,11 @@ def extract_context_data(context_data: dict) -> dict:
     if not new_context_data:
         new_context_data = {}
     new_context_data.update({
-        UPDATED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
+        UPDATED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(
+            context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
         MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(MIRRORED_OFFENSES_CTX_KEY, '[]'))),
-        RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
+        RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(
+            context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
         'samples': json_loads_inner(json.loads(context_data.get('samples', '[]'))),
         LAST_FETCH_KEY: json.loads(context_data.get(LAST_FETCH_KEY, '0')),
         'last_mirror_update': json.loads(context_data.get('last_mirror_update', '0'))

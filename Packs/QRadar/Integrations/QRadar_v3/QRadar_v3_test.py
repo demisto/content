@@ -31,7 +31,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
-    qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events
+    qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, encode_context_data
 
 client = Client(
     server='https://192.168.0.1',
@@ -1125,11 +1125,11 @@ class MockResults:
                                                   LAST_FETCH_KEY: 0,
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
-                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
+                            'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                  'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'}]}],
-                                            MIRRORED_OFFENSES_CTX_KEY: []},
+                                            MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1145,12 +1145,12 @@ class MockResults:
                                                   LAST_FETCH_KEY: 0,
                                                   MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                'last_persisted_time': 2}]},
-                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
+                            'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
                                                                                  'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'},
                                                                                             {'event_id': '3'}]}],
-                                            MIRRORED_OFFENSES_CTX_KEY: []},
+                                            MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
@@ -1173,7 +1173,7 @@ class MockResults:
                                                                                'last_persisted_time': 2},
                                                                               {'id': '11',
                                                                                'last_persisted_time': 3}]},
-                            'with_events': {'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
+                            'with_events': [{'samples': [], 'last_mirror_update': '2', LAST_FETCH_KEY: 0,
                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1', 'last_persisted_time': 2,
                                                                                  'events': [{'event_id': '2'},
                                                                                             {'event_id': '3'}]},
@@ -1181,6 +1181,14 @@ class MockResults:
                                                                                  'events': [{'event_id': '22'},
                                                                                             {'event_id': '33'}]}],
                                             MIRRORED_OFFENSES_CTX_KEY: []},
+                                            {'samples': [], 'last_mirror_update': '2',
+                                             LAST_FETCH_KEY: 0,
+                                             UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
+                                                                                  'last_persisted_time': 3,
+                                                                                  'events': [{'event_id': '22'},
+                                                                                             {'event_id': '33'}]
+                                                                                  }],
+                                             MIRRORED_OFFENSES_CTX_KEY: []}],
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': '2',
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
@@ -1210,10 +1218,12 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     """
     # Get a list of offenses to update their events
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('ids'))
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('before_offenses_ids'))
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+        context_data.get('before_offenses_ids')))
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
-    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('with_offenses_ids'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
+        context_data.get('with_offenses_ids')))
 
     # Transfer that list to the long running docker and update the events.
     mocker.patch.object(concurrent.futures.ThreadPoolExecutor, 'submit', side_effect=offenses.get('as_results'))
@@ -1227,7 +1237,8 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
 
     # Update an incident's events accordingly.
     for offense_index, offense in enumerate(offenses.get('ids')):
-        mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('with_events'))
+        mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+            context_data.get('with_events')[offense_index]))
         mocker.patch.object(client, 'offenses_list', return_value=offense)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=offense)
         mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
@@ -1236,12 +1247,20 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
 
         # Make sure the final offense has it's updated events
         QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
-            context_data.get('with_updated_removed')[offense_index])
+            encode_context_data(context_data.get('with_updated_removed')[offense_index]))
         assert result.mirrored_object.get('events', '')
 
         updated_result_events = result.mirrored_object.get('events')
         for event in offenses.get('with_events')[offense_index].get('events'):
             assert event in updated_result_events
+
+
+def set_context_data_as_json(context_data):
+    new_context_data = encode_context_data(context_data)
+    for key in new_context_data.keys():
+        new_context_data[key] = json.dumps(new_context_data[key])
+
+    return new_context_data
 
 
 @pytest.mark.parametrize('offenses, context_data',
@@ -1350,10 +1369,10 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                       {'samples': [], 'last_mirror_update': '3',
                                                        LAST_FETCH_KEY: 0,
                                                        UPDATED_MIRRORED_OFFENSES_CTX_KEY: [],
-                                                       MIRRORED_OFFENSES_CTX_KEY: [],
-                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: [
+                                                       MIRRORED_OFFENSES_CTX_KEY: [
                                                            {'id': '100', 'last_persisted_time': 2},
-                                                           {'id': '200', 'last_persisted_time': 3}]}
+                                                           {'id': '200', 'last_persisted_time': 3}],
+                                                       RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: []}
                                                       ]})
                           ])
 def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, context_data):
@@ -1370,13 +1389,15 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
         Ensure get_remote_data updated incident and updated the context data accordingly.
     """
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('new_offenses'))
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_input'))
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+        context_data.get('get_modified_input')))
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
+        context_data.get('get_modified_output')))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
@@ -1385,7 +1406,8 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
 
     # Update an incident's events accordingly.
     for offense_index, offense in enumerate(updated_offenses):
-        mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_input_for_get_remote_data)
+        mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+            context_input_for_get_remote_data))
         mocker.patch.object(client, 'offenses_list', return_value=offense)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=offense)
         mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
@@ -1394,7 +1416,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
 
         # Make sure the final offense has it's updated events
         QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
-            context_data.get('after_get_remote_data')[offense_index])
+            encode_context_data(context_data.get('after_get_remote_data')[offense_index]))
 
         context_input_for_get_remote_data = context_data.get('after_get_remote_data')[offense_index]
 
@@ -1509,23 +1531,27 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
         Ensure get_modified_remote_data deletes relevant offense from mirror processing.
     """
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('new_offenses'))
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_input'))
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+        context_data.get('get_modified_input')))
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
+        context_data.get('get_modified_output')))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('newer_offenses'))
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data.get('get_modified_output'))
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=set_context_data_as_json(
+        context_data.get('get_modified_output')))
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     mocker.patch.object(QRadar_v3, 'GetModifiedRemoteDataResponse')
 
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
-    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(context_data.get('clean_get_modified_output'))
+    QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
+        context_data.get('clean_get_modified_output')))
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('clean_to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('clean_to_update'))
