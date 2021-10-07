@@ -15,7 +15,6 @@ contentitemexportablefields:
     packID: 1051dd86-5c9e-447b-837b-80dfeecbca24
     propagationLabels:
     - all
-    toServerVersion: ""
 dependson:
   must: []
 dockerimage: demisto/python3:3.9.7.24076
