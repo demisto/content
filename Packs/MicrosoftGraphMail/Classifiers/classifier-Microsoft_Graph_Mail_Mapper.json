@@ -295,7 +295,7 @@
                     },
                     "simple": ""
                 },
-                "Phishing Email Thread Headers": {
+                "Phishing Reporter Email Headers": {
                     "complex": null,
                     "simple": "headers"
                 }

@@ -1224,7 +1224,7 @@ tasks:
       context_path:
         simple: headers
       grid_id:
-        simple: phishingemailthreadheaders
+        simple: phishingreporteremailheaders
       overwrite:
         simple: "true"
       sort_by:
@@ -1270,7 +1270,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: phishingemailthreadheaders
+          accessor: phishingreporteremailheaders
     separatecontext: false
     view: |-
       {
@@ -1366,7 +1366,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: phishingemailthreadheaders
+      accessor: phishingreporteremailheaders
   required: false
   description: The email’s headers.
   playbookInputQuery:

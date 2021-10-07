@@ -1,10 +1,10 @@
 {
-    "id": "incident_phishingemailthreadheaders",
+    "id": "incident_phishingreporteremailheaders",
     "version": -1,
     "modified": "2021-09-22T22:00:56.93721224Z",
-    "name": "Phishing Email Thread Headers",
+    "name": "Phishing Reporter Email Headers",
     "ownerOnly": false,
-    "cliName": "phishingemailthreadheaders",
+    "cliName": "phishingreporteremailheaders",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

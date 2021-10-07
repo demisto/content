@@ -260,12 +260,12 @@ inputs:
 - key: InReplyTo
   value:
     complex:
-      root: incident.phishingemailthreadheaders
+      root: incident.phishingreporteremailheaders
       filters:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.phishingemailthreadheaders.headername
+              simple: incident.phishingreporteremailheaders.headername
             iscontext: true
           right:
             value:
@@ -277,12 +277,12 @@ inputs:
 - key: ThreadTopic
   value:
     complex:
-      root: incident.phishingemailthreadheaders
+      root: incident.phishingreporteremailheaders
       filters:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.phishingemailthreadheaders.headername
+              simple: incident.phishingreporteremailheaders.headername
             iscontext: true
           right:
             value:
