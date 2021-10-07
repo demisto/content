@@ -2976,9 +2976,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The alert ID list.
+      description: a comma-separated list of alert IDs.
       isArray: true
-      name: alert_id_list
+      name: alert_ids
       required: true
       secret: false
     deprecated: false

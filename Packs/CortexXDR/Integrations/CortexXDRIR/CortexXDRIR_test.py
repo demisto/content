@@ -2478,7 +2478,7 @@ def test_filter_general_fields():
     }
 
 
-def test_filter_general_fields_no_event():
+def test_filter_general_fields_no_event(mocker):
     """
     Given:
         - An alert dict with no event
@@ -2498,9 +2498,9 @@ def test_filter_general_fields_no_event():
         'raw_abioc': {
         }
     }
-    with pytest.raises(SystemExit) as pytest_e:
-        filter_general_fields(alert)
-    assert pytest_e.type == SystemExit
+    err = mocker.patch('CortexXDRIR.return_warning')
+    filter_general_fields(alert)
+    assert err.call_args[0][0] == "No XDR cloud analytics event."
 
 
 def test_filter_vendor_fields():
@@ -2556,7 +2556,7 @@ def test_get_original_alerts_command(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
-        'alert_id_list': '2',
+        'alert_ids': '2',
     }
 
     response = get_original_alerts_command(client, args)

@@ -3388,13 +3388,11 @@ def filter_general_fields(alert: dict) -> dict:
     event = alert.get('raw_abioc', {}).get('event', {})
     if not event:
         return_warning('No XDR cloud analytics event.')
-        sys.exit(0)
-
-    for field in ALERT_EVENT_GENERAL_FIELDS:
-        if field in event:
-            updated_event[field] = event.get(field)
-
-    updated_alert['event'] = updated_event
+    else:
+        for field in ALERT_EVENT_GENERAL_FIELDS:
+            if field in event:
+                updated_event[field] = event.get(field)
+        updated_alert['event'] = updated_event
     return updated_alert
 
 
@@ -3423,10 +3421,11 @@ def filter_vendor_fields(alert: dict):
 
 
 def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
-    alert_id_list = argToList(args.get('alert_id_list', []))
+    alert_id_list = argToList(args.get('alert_ids', []))
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
+    filtered_alerts = []
     for i, alert in enumerate(alerts):
         # decode raw_response
         try:
@@ -3440,13 +3439,14 @@ def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
         alert.update(
             alert.pop('original_alert_json', None))
         updated_alert = filter_general_fields(alert)
-        filter_vendor_fields(updated_alert)
-        alerts[i] = updated_alert
+        if 'event' in updated_alert:
+            filter_vendor_fields(updated_alert)
+        filtered_alerts.append(updated_alert)
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
         outputs_key_field='internal_id',
-        outputs=alerts,
+        outputs=filtered_alerts,
         raw_response=raw_response,
     )
 
@@ -3557,7 +3557,8 @@ def main():
     """
     Executes an integration command
     """
-    LOG(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
 
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
@@ -3602,160 +3603,160 @@ def main():
     args = demisto.args()
 
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             client.test_module(first_fetch_time)
             demisto.results('ok')
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
                                                   max_fetch, statuses)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'xdr-get-incidents':
+        elif command == 'xdr-get-incidents':
             return_outputs(*get_incidents_command(client, args))
 
-        elif demisto.command() == 'xdr-get-incident-extra-data':
+        elif command == 'xdr-get-incident-extra-data':
             return_outputs(*get_incident_extra_data_command(client, args))
 
-        elif demisto.command() == 'xdr-update-incident':
+        elif command == 'xdr-update-incident':
             return_outputs(*update_incident_command(client, args))
 
-        elif demisto.command() == 'xdr-get-endpoints':
+        elif command == 'xdr-get-endpoints':
             return_outputs(*get_endpoints_command(client, args))
 
-        elif demisto.command() == 'xdr-insert-parsed-alert':
+        elif command == 'xdr-insert-parsed-alert':
             return_outputs(*insert_parsed_alert_command(client, args))
 
-        elif demisto.command() == 'xdr-insert-cef-alerts':
+        elif command == 'xdr-insert-cef-alerts':
             return_outputs(*insert_cef_alerts_command(client, args))
 
-        elif demisto.command() == 'xdr-isolate-endpoint':
+        elif command == 'xdr-isolate-endpoint':
             return_outputs(*isolate_endpoint_command(client, args))
 
-        elif demisto.command() == 'xdr-unisolate-endpoint':
+        elif command == 'xdr-unisolate-endpoint':
             return_outputs(*unisolate_endpoint_command(client, args))
 
-        elif demisto.command() == 'xdr-get-distribution-url':
+        elif command == 'xdr-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, args))
 
-        elif demisto.command() == 'xdr-get-create-distribution-status':
+        elif command == 'xdr-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, args))
 
-        elif demisto.command() == 'xdr-get-distribution-versions':
+        elif command == 'xdr-get-distribution-versions':
             return_outputs(*get_distribution_versions_command(client))
 
-        elif demisto.command() == 'xdr-create-distribution':
+        elif command == 'xdr-create-distribution':
             return_outputs(*create_distribution_command(client, args))
 
-        elif demisto.command() == 'xdr-get-audit-management-logs':
+        elif command == 'xdr-get-audit-management-logs':
             return_outputs(*get_audit_management_logs_command(client, args))
 
-        elif demisto.command() == 'xdr-get-audit-agent-reports':
+        elif command == 'xdr-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, args))
 
-        elif demisto.command() == 'xdr-blacklist-files':
+        elif command == 'xdr-blacklist-files':
             return_outputs(*blacklist_files_command(client, args))
 
-        elif demisto.command() == 'xdr-whitelist-files':
+        elif command == 'xdr-whitelist-files':
             return_outputs(*whitelist_files_command(client, args))
 
-        elif demisto.command() == 'xdr-quarantine-files':
+        elif command == 'xdr-quarantine-files':
             return_outputs(*quarantine_files_command(client, args))
 
-        elif demisto.command() == 'xdr-get-quarantine-status':
+        elif command == 'xdr-get-quarantine-status':
             return_outputs(*get_quarantine_status_command(client, args))
 
-        elif demisto.command() == 'xdr-restore-file':
+        elif command == 'xdr-restore-file':
             return_outputs(*restore_file_command(client, args))
 
-        elif demisto.command() == 'xdr-endpoint-scan':
+        elif command == 'xdr-endpoint-scan':
             return_outputs(*endpoint_scan_command(client, args))
 
-        elif demisto.command() == 'xdr-endpoint-scan-abort':
+        elif command == 'xdr-endpoint-scan-abort':
             return_outputs(*endpoint_scan_abort_command(client, args))
 
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
-        elif demisto.command() == 'get-remote-data':
+        elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
 
-        elif demisto.command() == 'update-remote-system':
+        elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
 
-        elif demisto.command() == 'xdr-delete-endpoints':
+        elif command == 'xdr-delete-endpoints':
             return_outputs(*delete_endpoints_command(client, args))
 
-        elif demisto.command() == 'xdr-get-policy':
+        elif command == 'xdr-get-policy':
             return_outputs(*get_policy_command(client, args))
 
-        elif demisto.command() == 'xdr-get-endpoint-device-control-violations':
+        elif command == 'xdr-get-endpoint-device-control-violations':
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
-        elif demisto.command() == 'xdr-retrieve-files':
+        elif command == 'xdr-retrieve-files':
             return_outputs(*retrieve_files_command(client, args))
 
-        elif demisto.command() == 'xdr-retrieve-file-details':
+        elif command == 'xdr-retrieve-file-details':
             return_entry, file_results = retrieve_file_details_command(client, args)
             demisto.results(return_entry)
             if file_results:
                 demisto.results(file_results)
 
-        elif demisto.command() == 'xdr-get-scripts':
+        elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
 
-        elif demisto.command() == 'xdr-get-script-metadata':
+        elif command == 'xdr-get-script-metadata':
             return_outputs(*get_script_metadata_command(client, args))
 
-        elif demisto.command() == 'xdr-get-script-code':
+        elif command == 'xdr-get-script-code':
             return_outputs(*get_script_code_command(client, args))
 
-        elif demisto.command() == 'xdr-action-status-get':
+        elif command == 'xdr-action-status-get':
             return_outputs(*action_status_get_command(client, args))
 
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
 
-        elif demisto.command() == 'xdr-run-script':
+        elif command == 'xdr-run-script':
             return_results(run_script_command(client, args))
 
-        elif demisto.command() == 'xdr-run-snippet-code-script':
+        elif command == 'xdr-run-snippet-code-script':
             return_results(run_snippet_code_script_command(client, args))
 
-        elif demisto.command() == 'xdr-get-script-execution-status':
+        elif command == 'xdr-get-script-execution-status':
             return_results(get_script_execution_status_command(client, args))
 
-        elif demisto.command() == 'xdr-get-script-execution-results':
+        elif command == 'xdr-get-script-execution-results':
             return_results(get_script_execution_results_command(client, args))
 
-        elif demisto.command() == 'xdr-get-script-execution-result-files':
+        elif command == 'xdr-get-script-execution-result-files':
             return_results(get_script_execution_result_files_command(client, args))
 
-        elif demisto.command() == 'xdr-get-cloud-original-alerts':
+        elif command == 'xdr-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
 
-        elif demisto.command() == 'xdr-run-script-execute-commands':
+        elif command == 'xdr-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))
 
-        elif demisto.command() == 'xdr-run-script-delete-file':
+        elif command == 'xdr-run-script-delete-file':
             return_results(run_script_delete_file_command(client, args))
 
-        elif demisto.command() == 'xdr-run-script-file-exists':
+        elif command == 'xdr-run-script-file-exists':
             return_results(run_script_file_exists_command(client, args))
 
-        elif demisto.command() == 'xdr-run-script-kill-process':
+        elif command == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
 
-        elif demisto.command() == 'endpoint':
+        elif command == 'endpoint':
             return_results(endpoint_command(client, args))
 
-        elif demisto.command() == 'xdr-get-endpoints-by-status':
+        elif command == 'xdr-get-endpoints-by-status':
             return_results(get_endpoints_by_status_command(client, args))
 
     except Exception as err:
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             LOG(str(err))
             raise
 
