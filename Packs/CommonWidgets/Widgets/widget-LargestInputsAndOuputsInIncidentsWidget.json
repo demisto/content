@@ -20,7 +20,6 @@
   "fromDateLicense": "0001-01-01T00:00:00Z"
  },
  "fromVersion": "6.0.0",
- "toVersion": "6.1.9",
  "description": "",
  "isPredefined": true
 }
