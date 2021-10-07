@@ -532,8 +532,10 @@ def get_incidents(alerts, last_fetches, last_seen_time):
         if last_seen_time < alert_time:
             last_fetches = [alert_id]
         last_seen_time = alert_time
+        policy_name = demisto.get(alert, 'policy.name')
+        policy_name = policy_name if policy_name else 'No policy'
         incidents.append({
-            'name': demisto.get(alert, 'policy.name', 'No policy') + ' - ' + alert_id,
+            'name': f"{policy_name} - {alert_id}",
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
