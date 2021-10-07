@@ -304,6 +304,8 @@ def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
         attributes = res.get("attributes", {})
         hr["Title"] = attributes.get("title")
         hr["State"] = attributes.get("state")
+        severity = relationships.get("severity", {}).get("data", {}).get("attributes", {})
+        hr["Severity"] = severity.get("rating", "")
         hr["Created At"] = attributes.get("created_at")
         hr["Vulnerability Information"] = attributes.get("vulnerability_information")
         reporter = relationships.get("reporter", {})
@@ -313,7 +315,7 @@ def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
 
         reports_hr.append(hr)
     return tableToMarkdown("Report(s)", reports_hr,
-                           headers=["Report ID", "Reporter Username", "Title", "State", "Created At",
+                           headers=["Report ID", "Reporter Username", "Title", "State", "Severity", "Created At",
                                     "Vulnerability Information"], removeNull=True)
 
 

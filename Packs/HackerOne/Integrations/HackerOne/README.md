@@ -25,10 +25,10 @@ To get the detailed information regarding the valid attributes for filtering use
     | Username | The username of the user. | True |
     | Maximum number of incidents per fetch | The maximum limit is 100. | True |
     | First fetch time interval | Date or relative timestamp to start fetching incidents from. <br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc | False |
-    | Program Handle | Fetches reports based on the specified program handle.<br/><br/>Note: Supports comma separated values. | True |
-    | Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\} | False |
+    | Program Handle | Fetches reports based on the specified program handle. Supports comma separated values.<br/><br/>Note: To get program handle, use the "hackerone-program-list" command. | True |
     | State | Fetches reports based on the specified report state. <br/><br/>Note: Supports comma separated values. | False |
     | Severity | Fetches reports based on severity ratings of the report. <br/><br/>Note: Supports comma separated values. | False |
+    | Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\} | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
