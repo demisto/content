@@ -638,6 +638,10 @@ Return File Details.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | File.Name | String | The full file name. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA256 hash of the file.| 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -803,7 +807,8 @@ Return File Details.
     },
     "File": [
         {
-            "Name": "4ebb2b00a11f9361cf3757e96f14ad4b"
+            "Name": "4ebb2b00a11f9361cf3757e96f14ad4b",
+            "MD5": "4ebb2b00a11f9361cf3757e96f14ad4b"
         }
     ]
 }

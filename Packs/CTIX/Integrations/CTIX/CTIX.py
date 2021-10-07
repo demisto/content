@@ -434,6 +434,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
             file_map.update({file_obj: []})
     file_data_list = []
     for file_key, file_data in file_map.items():
+        hash_type = get_hash_type(file_key)
         if file_data:
             score = to_dbot_score(file_data.get("score", 0))
             dbot_score = Common.DBotScore(
@@ -446,6 +447,15 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
                 name=file_key,
                 dbot_score=dbot_score
             )
+            if hash_type == "md5":
+                file_standard_context.md5 = file_key
+            elif hash_type == "sha1":
+                file_standard_context.sha1 = file_key
+            elif hash_type == "sha256":
+                file_standard_context.sha256 = file_key
+            elif hash_type == "sha512":
+                file_standard_context.sha512 == file_key
+
             file_data_list.append(CommandResults(
                 readable_output=tableToMarkdown('File Data', file_data, removeNull=True),
                 outputs_prefix='CTIX.File',
@@ -464,6 +474,15 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
                 name=file_key,
                 dbot_score=dbot_score
             )
+            if hash_type == "md5":
+                file_standard_context.md5 = file_key
+            elif hash_type == "sha1":
+                file_standard_context.sha1 = file_key
+            elif hash_type == "sha256":
+                file_standard_context.sha256 = file_key
+            elif hash_type == "sha512":
+                file_standard_context.sha512 == file_key
+
             file_data_list.append(CommandResults(
                 readable_output=f'No matches found for FILE {file_key}',
                 outputs_prefix='CTIX.File',
