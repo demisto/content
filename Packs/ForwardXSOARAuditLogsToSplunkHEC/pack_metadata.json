@@ -10,6 +10,10 @@
         "SplunkPy": {
             "mandatory": true,
             "display_name": "SplunkPy"
+        },
+        "Demisto REST API": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
         }
        },
     "created": "2021-09-30T11:08:39Z",
