@@ -6,7 +6,7 @@ args:
 comment: 'This Automation script uses the XSOAR API to get the audit logs and pushes
   them to Splunk HEC. Dependencies: SlunkPy and Demisto REST API integrations'
 commonfields:
-  id: a5f052e5-0328-46c3-8710-85964e37683e
+  id: ForwardAuditLogsToSplunkHEC
   version: -1
 contentitemexportablefields:
   contentitemfields:
