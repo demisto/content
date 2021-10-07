@@ -8,10 +8,6 @@ comment: 'This Automation script uses the XSOAR API to get the audit logs and pu
 commonfields:
   id: ForwardAuditLogsToSplunkHEC
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 dependson:
   must: []
 dockerimage: demisto/python3:3.9.7.24076
