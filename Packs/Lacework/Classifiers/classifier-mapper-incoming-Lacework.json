@@ -4,7 +4,7 @@
 	"type": "mapping-incoming",
 	"description": "Lacework Mapper for incidents",
 	"version": -1,
-	"defaultIncidentType": "",
+	"defaultIncidentType": "Lacework Event",
 	"fromVersion": "6.0.0",
 	"mapping": {
 		"Lacework Event": {

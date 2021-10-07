@@ -1,5 +1,5 @@
 {
-	"id": "Lacework",
+	"id": "Lacework - Classifier",
 	"name": "Lacework - Classifier",
 	"type": "classification",
 	"description": "Lacework Incident Classifier",
