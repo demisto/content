@@ -332,7 +332,11 @@ script:
     - default: false
       defaultValue: 'True'
       description: Specifies whether the Network Resource Provider will ignore the
-        check if parent subnet has serviceEndpoints configured. Network Acl property.
+        check if parent subnet has serviceEndpoints configured.  This allows the configuration
+        for the Key Vault to complete without error before the configuration to the
+        virtual network's subnet is complete. Once the subnet configuration is complete,
+        the Cosmos account will then be accessible through the configured subnet.
+        Network Acl property.
       isArray: false
       name: ignore_missing_vnet_service_endpoint
       predefined:
