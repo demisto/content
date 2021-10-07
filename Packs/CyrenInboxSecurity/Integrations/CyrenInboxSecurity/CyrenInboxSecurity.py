@@ -31,7 +31,7 @@ MAX_INCIDENTS_TO_FETCH = 50
 class Client(BaseClient):
     """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any Demisto logic.
+    This Client implements API calls, and does not contain any XSOAR logic.
     It handles requests and returns data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.

@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
+
 # noqa: F401
 # noqa: F401
 # type: ignore
@@ -8,57 +8,27 @@ import json
 
 
 def stringify_indicators(threat_indicators):
-    markdown_result = ""
+    #
+
     indicator_type = threat_indicators.get('type')
-    indicator_value = threat_indicators.get('value')
+
     # url indicators
     if indicator_type == 'url':
-        if threat_indicators.get('attachment') is not None:
-            indicator_type = 'URL in attachment'
-        else:
-            indicator_type = 'URL in body'
-        markdown_result += '|Type|Value|\n|---|---|\n'
-        markdown_result +=\
-            '|' +\
-            indicator_type +\
-            '|' +\
-            indicator_value +\
-            '|\n\n'
-
-        return markdown_result
+        return tableToMarkdown("", threat_indicators, ["type", "subType", "value"],pretty_title) + '\n\n'
 
     # attachment indicators
     if indicator_type == 'attachment':
-        attachment = threat_indicators.get('attachment')
-        markdown_result +=\
-            '|Type|Filename|Size|Category|Hash|' \
-            '\n|---|---|---|---|---|\n'
-        markdown_result += (
-            '|'
-            + 'Attachment'
-            + '|'
-            + str(attachment.get('file_name', ''))
-            + '|'
-            + str(attachment.get('file_size', ''))
-            + '|'
-            + str(attachment.get('file_category', ''))
-            + '|'
-            + str(attachment.get('file_hash', ''))
-            + '|\n\n'
-        )
-        return markdown_result
+        attachment = threat_indicators.get('attachment',[])
+        attachment["type"] = "attachment"
+        return tableToMarkdown("", attachment, ["type", "file_name", "file_size", "file_category", "file_hash"],pretty_title) + '\n\n'
 
     # other indicators
     if threat_indicators.get("type") is not None:
-        markdown_result += '|Type|Value|\n|---|---|\n'
-        markdown_result +=\
-            '|' +\
-            indicator_type +\
-            '|' +\
-            indicator_value +\
-            '|\n\n'
+        return tableToMarkdown("", threat_indicators, ["type", "value"],pretty_title) + '\n\n'
 
-    return markdown_result
+def pretty_title (s):
+    s = s.replace('_',' ')
+    return pascalToSpace(s)
 
 
 def no_indicators():
