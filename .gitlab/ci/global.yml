@@ -104,7 +104,6 @@
     - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_end "Creating new clean logs folder"
     - *install_node_modules
-    - $(echo $0) --version
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
