@@ -1,12 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Malware"
     ],
     "caseInsensitive": true,
-    "cliName": "bodythreatactor",
-    "id": "generic_ThreatIntelReport_bodythreatactor",
-    "name": "Body Threat Actor",
+    "cliName": "operatingsystem",
+    "id": "generic_ThreatIntelReport_operatingsystem",
+    "name": "Operating System",
     "closeForm": false,
     "content": true,
     "editForm": true,
@@ -22,8 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "markdown",
-    "template": "**Overview**\n\n\n**Code Sample**\n\n\n**Severity**\n\n\n**Affects**\n\n\n**Appendix**\n\n",
+    "type": "tagsSelect",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
