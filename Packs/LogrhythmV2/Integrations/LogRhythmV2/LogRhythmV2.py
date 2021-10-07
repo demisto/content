@@ -1609,6 +1609,8 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
 
     alarm_events, raw_response = client.alarm_events_list_request(alarm_id)
 
@@ -1633,6 +1635,8 @@ def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alarm_id = args.get('alarm_id')
+    if not alarm_id:
+        raise DemistoException('Invalid alarm_id')
 
     alarm_summary, raw_response = client.alarm_summary_request(alarm_id)
     ec = alarm_summary.copy()
@@ -2130,6 +2134,8 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     list_guid = args.get('list_guid')
     items_json = args.get('items')
+    if not items_json:
+        raise DemistoException('Invalid items_json')
 
     try:
         items = json.loads(items_json)
@@ -2153,6 +2159,8 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     list_guid = args.get('list_guid')
     items_json = args.get('items')
+    if not items_json:
+        raise DemistoException('Invalid items_json')
 
     try:
         items = json.loads(items_json)
@@ -2265,7 +2273,7 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
@@ -2338,6 +2346,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     elif next_run:
         alarms_list_args['created_after'] = next_run
 
+    # filter alerts
     if alarm_status_filter:
         alarms_list_args['alarm_status'] = alarm_status_filter
     if alarm_rule_name_filter:
@@ -2375,6 +2384,7 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
         cases_list_args['timestamp_filter_type'] = 'createdAfter'
         cases_list_args['timestamp'] = next_run
 
+    # filter cases
     if case_tags_filter:
         cases_list_args['tags'] = case_tags_filter
     if case_status_filter:
@@ -2408,11 +2418,11 @@ def main() -> None:
     fetch_time = params.get('first_fetch', '7 days')
     alarms_max_fetch = params.get('alarmsMaxFetch', 100)
     cases_max_fetch = params.get('casesMaxFetch', 100)
-    alarm_status_filter = params.get('alarm_status_filter')
-    alarm_rule_name_filter = params.get('alarm_rule_name_filter')
-    case_priority_filter = params.get('case_priority_filter')
-    case_status_filter = params.get('case_status_filter')
-    case_tags_filter = params.get('case_tags_filter')
+    alarm_status_filter = params.get('alarm_status_filter', '')
+    alarm_rule_name_filter = params.get('alarm_rule_name_filter', '')
+    case_priority_filter = params.get('case_priority_filter', '')
+    case_status_filter = params.get('case_status_filter', '')
+    case_tags_filter = params.get('case_tags_filter', '')
 
     headers = {'Authorization': f'Bearer {params["token"]}'}
 
@@ -2463,8 +2473,11 @@ def main() -> None:
             test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch,
-                                                      fetch_time, alarm_status_filter, alarm_rule_name_filter,
-                                                      case_tags_filter, case_status_filter, case_priority_filter))
+                                                      fetch_time, alarm_status_filter=alarm_status_filter,
+                                                      alarm_rule_name_filter=alarm_rule_name_filter,
+                                                      case_tags_filter=case_tags_filter,
+                                                      case_status_filter=case_status_filter,
+                                                      case_priority_filter=case_priority_filter))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
