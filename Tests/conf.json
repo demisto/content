@@ -4562,7 +4562,8 @@
         },
         {
             "integrations": "MalwareBazaar",
-            "playbookID": "MalwareBazaar_Test"
+            "playbookID": "MalwareBazaar_Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
