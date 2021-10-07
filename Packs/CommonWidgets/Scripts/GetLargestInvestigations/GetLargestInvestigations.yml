@@ -28,7 +28,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Deprecated. Use System Diagonstics page instead. Returns all investigations larger than 1 MB from all Cortex XSOAR.
+comment: Deprecated. Use System Diagonstics page instead (available from version 6.2.0). Returns all investigations larger than 1 MB from all Cortex XSOAR.
 commonfields:
   id: GetLargestInvestigations
   version: -1

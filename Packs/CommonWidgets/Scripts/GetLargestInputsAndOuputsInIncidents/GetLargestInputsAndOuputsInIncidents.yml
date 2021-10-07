@@ -23,7 +23,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Deprecated. Use System Diagonstics page instead. Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
+comment: Deprecated. Use System Diagonstics page instead (available from version 6.2.0). Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations.
 commonfields:
   id: GetLargestInputsAndOuputsInIncidents
   version: -1
