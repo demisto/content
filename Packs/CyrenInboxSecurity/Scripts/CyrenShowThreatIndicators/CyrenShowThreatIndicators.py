@@ -1,5 +1,5 @@
-
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # noqa: F401
 # noqa: F401
 # type: ignore
@@ -14,20 +14,23 @@ def stringify_indicators(threat_indicators):
 
     # url indicators
     if indicator_type == 'url':
-        return tableToMarkdown("", threat_indicators, ["type", "subType", "value"],pretty_title) + '\n\n'
+        return tableToMarkdown("", threat_indicators, ["type", "subType", "value"], pretty_title) + '\n\n'
 
     # attachment indicators
     if indicator_type == 'attachment':
-        attachment = threat_indicators.get('attachment',[])
+        attachment = threat_indicators.get('attachment', [])
         attachment["type"] = "attachment"
-        return tableToMarkdown("", attachment, ["type", "file_name", "file_size", "file_category", "file_hash"],pretty_title) + '\n\n'
+        return tableToMarkdown("", attachment,
+                               ["type", "file_name", "file_size", "file_category", "file_hash"],
+                               pretty_title) + '\n\n'
 
     # other indicators
     if threat_indicators.get("type") is not None:
-        return tableToMarkdown("", threat_indicators, ["type", "value"],pretty_title) + '\n\n'
+        return tableToMarkdown("", threat_indicators, ["type", "value"], pretty_title) + '\n\n'
 
-def pretty_title (s):
-    s = s.replace('_',' ')
+
+def pretty_title(s):
+    s = s.replace('_', ' ')
     return pascalToSpace(s)
 
 
