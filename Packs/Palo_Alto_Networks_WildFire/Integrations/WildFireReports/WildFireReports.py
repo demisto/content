@@ -50,13 +50,15 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
     res = client.get_file_report(sha256)
 
     if res.status_code == 200:
-        file_name = f'wildfire_report_{sha256}.pdf'
-        file_type = entryTypes['entryInfoFile']
-        result = fileResult(file_name, res.content, file_type)  # will be saved under 'InfoFile' in the context.
-        demisto.results(result)
+        demisto.results({
+            'status': 'success',
+            'value': res.content
+        })
 
     elif res.status_code == 404:
-        return_results('Report not found.')
+        demisto.results({
+            'status': 'not found'
+        })
 
 
 ''' MAIN FUNCTION '''
@@ -103,7 +105,14 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        demisto.results({
+            'status': 'error',
+            'value': {
+                'title': 'Failed to download report.',
+                'description': f'Failed to download report.\nError:\n{str(e)}',
+                'tech-info': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
+            }
+        })
 
 
 ''' ENTRY POINT '''
