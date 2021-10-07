@@ -28,17 +28,17 @@ configuration:
 - display: DBot Scoring - Bad Score Threshold
   name: dbotBadThreshold
   required: true
-  defaultValue: 90
+  defaultvalue: 90
   type: 0
 - display: DBot Scoring - Suspicious Score Threshold
   name: dbotSuspiciousThreshold
   required: true
-  defaultValue: 50
+  defaultvalue: 50
   type: 0
 - display: DBot Scoring - Good Score Threshold
   name: dbotGoodThreshold
   required: true
-  defaultValue: 5
+  defaultvalue: 5
   type: 0
 description: Gathers PerimeterX related data
 detaileddescription: This integration will query the PerimeterX API for useful information regarding the supplied item (IP, User Agent, path, etc...)
@@ -99,6 +99,7 @@ script:
       secret: false
     deprecated: false
     description: Gets the PerimeterX related details for a particular IP
+    name: investigate_by_name
     execution: false
   isfetch: true
   runonce: false

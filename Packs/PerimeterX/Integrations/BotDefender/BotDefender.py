@@ -114,7 +114,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-     def post_investigate_by_ip(self, ip_type: str, ip_address: str) -> Dict[str, Any]:
+    def post_investigate_by_ip(self, ip_type: str, ip_address: str) -> Dict[str, Any]:
         """
         Query the PerimeterX API to get the relevant details regarding the provided IP within a particular customer's own data
 
