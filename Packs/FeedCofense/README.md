@@ -4,9 +4,9 @@ Cofense Intelligence is reliable, human-verified phishing intelligence for actio
 
 ##### What does this pack do?
 
-Ingests human-verified phishing intelligence with associated malware families
-Correlates global phishing campaigns and indicators
-Checks the reputation with impact ratings (Major, Moderate, Minor, None) of:
+- Ingests human-verified phishing intelligence with associated malware families
+- Correlates global phishing campaigns and indicators
+- Checks the reputation with impact ratings (Major, Moderate, Minor, None) of:
   - URLs
   - Domains
   - IP addresses
