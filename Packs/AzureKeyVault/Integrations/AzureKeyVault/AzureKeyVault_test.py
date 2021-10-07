@@ -3,7 +3,7 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     get_key_vault_command, delete_key_vault_command, update_access_policy_command, list_keys_command, get_key_command, \
     delete_key_command, list_secrets_command, get_secret_command, delete_secret_command, list_certificates_command, \
     get_certificate_command, get_certificate_policy_command, convert_attributes_to_readable, \
-    convert_key_info_to_readable, convert_time_attributes_to_iso, fetch_credentials
+    convert_key_info_to_readable, convert_time_attributes_to_iso
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
