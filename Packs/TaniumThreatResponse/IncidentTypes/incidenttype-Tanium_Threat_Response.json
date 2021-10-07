@@ -20,6 +20,7 @@
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "detached": false,
+    "layout": "Tanium Threat Response",
     "extractSettings": {},
     "fromVersion": "6.0.0"
 }
