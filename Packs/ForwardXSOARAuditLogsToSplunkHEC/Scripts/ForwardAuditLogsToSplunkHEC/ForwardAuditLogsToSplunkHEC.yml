@@ -20,7 +20,6 @@ dependson:
 dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: ForwardAuditLogsToSplunkHEC
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
