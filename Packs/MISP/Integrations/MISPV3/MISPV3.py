@@ -1363,7 +1363,7 @@ def is_tag_list_valid(tag_ids):
             raise DemistoException(f"Tag id has to be a positive integer, please change the given: '{tag}' id.")
 
 
-def create_updated_attribute_instance(demisto_args, attribute_uuid):
+def create_updated_attribute_instance(demisto_args: dict, attribute_uuid: str) -> MISPAttribute:
     attribute_type = demisto_args.get('type')
     distribution = demisto_args.get('distribution')
     category = demisto_args.get('category')
@@ -1391,7 +1391,7 @@ def create_updated_attribute_instance(demisto_args, attribute_uuid):
     return attribute_instance
 
 
-def update_attribute_command(demisto_args: dict = {}):
+def update_attribute_command(demisto_args: dict) -> CommandResults:
     attribute_uuid = demisto_args.get('attribute_uuid')
     attribute_instance = create_updated_attribute_instance(demisto_args, attribute_uuid)
     attribute_instance_response = PYMISP.update_attribute(attribute=attribute_instance, attribute_id=attribute_uuid)
@@ -1407,7 +1407,7 @@ def update_attribute_command(demisto_args: dict = {}):
         readable_output=human_readable,
         outputs_prefix='MISP.Attribute',
         outputs_key_field='ID',
-        outputs=parsed_attribute_data
+        outputs=parsed_attribute_data,
     )
 
 
