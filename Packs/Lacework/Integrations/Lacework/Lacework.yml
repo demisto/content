@@ -1162,7 +1162,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.summary.last_evaluation_time
       description: The time of the last vulnerability evaluation.
       type: String
-  dockerimage: demisto/lacework:1.0.0.23290
+  dockerimage: demisto/lacework:1.0.0.24154
   feed: false
   isfetch: true
   longRunning: false
