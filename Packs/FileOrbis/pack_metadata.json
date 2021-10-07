@@ -1,0 +1,23 @@
+{
+    "name": "FileOrbis",
+    "description": "FileOrbis XSOAR integration.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "FileOrbis",
+    "url": "https://www.fileorbis.com/",
+    "email": "info@fileorbis.com",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "IT",
+        "Security"
+    ],
+    "useCases": [
+        "Employee Offboarding",
+        "Identity and Access Management",
+        "IT Services"
+    ],
+    "keywords": [],
+    "githubUser": []
+}
