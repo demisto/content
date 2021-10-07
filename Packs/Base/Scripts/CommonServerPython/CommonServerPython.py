@@ -6327,7 +6327,7 @@ def pascalToSpace(s):
     tokens = pascalRegex.findall(s)
     for t in tokens:
         # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()))
+        s = s.replace(t, ' {} '.format(t.title()), 1)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())

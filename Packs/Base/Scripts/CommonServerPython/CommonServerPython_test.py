@@ -794,6 +794,7 @@ def test_pascalToSpace():
         ('eventID', 'Event ID'),
         ('eventId', 'Event Id'),
         ('IPAddress', 'IP Address'),
+        ('isDisabled', 'Is Disabled'),
     ]
     for s, expected in use_cases:
         assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
