@@ -1656,7 +1656,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(ctx.get(LAST_FETCH_KEY, '0')),
+                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
@@ -2979,7 +2979,7 @@ def extract_context_data(context_data: dict) -> dict:
         RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_loads_inner(json.loads(
             context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, '[]'))),
         'samples': json_loads_inner(json.loads(context_data.get('samples', '[]'))),
-        LAST_FETCH_KEY: json.loads(context_data.get(LAST_FETCH_KEY, '0')),
+        LAST_FETCH_KEY: int(json.loads(context_data.get(LAST_FETCH_KEY, '0'))),
         'last_mirror_update': json.loads(context_data.get('last_mirror_update', '0'))
     })
     return new_context_data
@@ -3002,7 +3002,7 @@ def encode_context_data(context_data: dict) -> dict:
         RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY,
                                                                                  [])),
         'samples': json_dumps_inner(context_data.get('samples', [])),
-        LAST_FETCH_KEY: str(context_data.get(LAST_FETCH_KEY, 0)),
+        LAST_FETCH_KEY: context_data.get(LAST_FETCH_KEY, 0),
         'last_mirror_update': str(context_data.get('last_mirror_update', 0))
     })
     return new_context_data
