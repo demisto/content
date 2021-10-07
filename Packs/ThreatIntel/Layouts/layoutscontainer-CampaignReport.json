@@ -100,7 +100,7 @@
 								"endCol": 4,
 								"fieldId": "bodycampaign",
 								"height": 106,
-								"id": "666ba6a0-152f-11ec-aa7d-4dcf86721255",
+								"id": "c79f2d90-2680-11ec-9e51-e53ce5b892ff",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -210,21 +210,21 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "primarymotivation",
+								"endCol": 1,
+								"fieldId": "value",
 								"height": 53,
-								"id": "1105c0b0-00d0-11ec-a297-5338d677a3d9",
-								"index": 1,
+								"id": "70c34ec0-2680-11ec-9a7b-c73ae08c9d0f",
+								"index": 0,
 								"listId": "vug7e0qild-6f681d80-00ce-11ec-a297-5338d677a3d9",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "secondarymotivations",
-								"height": 53,
-								"id": "204da600-00d0-11ec-a297-5338d677a3d9",
-								"index": 2,
+								"fieldId": "threatactor",
+								"height": 22,
+								"id": "fa2bb300-2680-11ec-9e51-e53ce5b892ff",
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -240,40 +240,27 @@
 								"startCol": 1
 							},
 							{
-								"dropEffect": "move",
-								"endCol": 3,
-								"fieldId": "sophistication",
+								"endCol": 4,
+								"fieldId": "objective",
 								"height": 53,
-								"id": "90b4c8c0-00cf-11ec-a297-5338d677a3d9",
+								"id": "a05b4c50-2680-11ec-ab70-3db76b5afa59",
 								"index": 0,
-								"listId": "vug7e0qild-6f681d80-00ce-11ec-a297-5338d677a3d9",
 								"sectionItemType": "field",
 								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "logo",
-								"height": 106,
-								"id": "04193570-0b21-11ec-b82c-b31f362b9365",
-								"index": 0,
-								"listId": "vug7e0qild-6f681d80-00ce-11ec-a297-5338d677a3d9",
-								"sectionItemType": "field",
-								"startCol": 3
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Threat Actor Details",
+						"name": "Campaign Details",
 						"static": false,
 						"w": 2,
 						"x": 0,
 						"y": 2
 					}
 				],
-				"type": "custom",
-				"showEmptyFields": true
+				"showEmptyFields": true,
+				"type": "custom"
 			}
 		]
 	},
@@ -282,10 +269,6 @@
 			{
 				"description": "",
 				"fields": [
-					{
-						"fieldId": "name",
-						"isVisible": true
-					},
 					{
 						"fieldId": "generic_ThreatIntelReport_trafficlightprotocol",
 						"isVisible": true
@@ -302,7 +285,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "generic_ThreatIntelReport_threatactor",
+						"fieldId": "generic_ThreatIntelReport_value",
 						"isVisible": true
 					},
 					{
@@ -310,39 +293,16 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "generic_ThreatIntelReport_primarymotivation",
+						"fieldId": "generic_ThreatIntelReport_objective",
 						"isVisible": true
 					},
 					{
-						"fieldId": "generic_ThreatIntelReport_secondarymotivations",
-						"isVisible": true
-					},
-					{
-						"fieldId": "generic_ThreatIntelReport_sophistication",
-						"isVisible": true
-					},
-					{
-						"fieldId": "generic_ThreatIntelReport_logo",
+						"fieldId": "generic_ThreatIntelReport_threatactor",
 						"isVisible": true
 					}
 				],
 				"isVisible": true,
-				"name": "Threat Actor Details",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": ""
-			},
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "generic_ThreatIntelReport_body",
-						"isVisible": true
-					}
-				],
-				"isVisible": true,
-				"name": "Report Body",
+				"name": "Campaign Details",
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
