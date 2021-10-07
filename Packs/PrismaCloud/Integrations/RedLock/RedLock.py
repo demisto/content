@@ -533,7 +533,7 @@ def get_incidents(alerts, last_fetches, last_seen_time):
             last_fetches = [alert_id]
         last_seen_time = alert_time
         incidents.append({
-            'name': alert.get('policy.name', 'No policy') + ' - ' + alert_id,
+            'name': demisto.get(alert, 'policy.name', 'No policy') + ' - ' + alert_id,
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
@@ -545,13 +545,12 @@ def fetch_incidents(limit: int):
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
-    now = int(time.mktime(datetime.now().timetuple()))
+    now = date_to_timestamp(datetime.now())
     last_run = demisto.getLastRun()
     last_seen_time = last_run.get('time')
     last_fetches = last_run.get('last_fetches', [])
     if not last_seen_time:  # first time fetch
-        last_seen_time = dateparser.parse(demisto.params().get('fetch_time', '3 days').strip())
-        last_seen_time = int(time.mktime(last_seen_time.timetuple()))
+        last_seen_time = date_to_timestamp(dateparser.parse(demisto.params().get('fetch_time', '3 days').strip()))
 
     payload = {
         'timeRange': {
@@ -575,11 +574,13 @@ def fetch_incidents(limit: int):
         payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
-    alerts = req('POST', 'alert', payload, {'detailed': 'true'})
+    response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
+    alerts = response.get('items')
     incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
-    if alerts and not incidents:  # if incidents empty, try to get next page of alerts
-        payload['offset'] = limit
-        alerts = req('POST', 'alert', payload, {'detailed': 'true'})
+    if alerts and not incidents and response.get('nextPageToken'):  # if incidents empty, try to get next page of alerts
+        payload['nextPageToken'] = response.get('nextPageToken')
+        response = req('POST', '/v2/alert', payload, {'detailed': 'true'})
+        alerts = response.get('items')
         incidents, last_fetches, last_seen_time = get_incidents(alerts, last_fetches, last_seen_time)
     return incidents, last_fetches, last_seen_time
 
