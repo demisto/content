@@ -51,9 +51,14 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Azure Active Directory Identity Protection",
+            "integrations": [
+                "Azure Active Directory Identity Protection",
+                "Demisto REST API"
+            ],
             "playbookID": "AzureADTest",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 3000,
+            "is_mockable": false
         },
         {
             "integrations": "GoogleCalendar",
@@ -4644,7 +4649,6 @@
         "iDefense_v2_Test": "Issue 40126",
         "EWS Mail Sender Test": "Issue 27944",
         "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
-        "AzureADTest": "Issue 40131",
         "Feed iDefense Test": "Issue 34035",
         "FireEyeNX-Test": "Issue 33216",
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
