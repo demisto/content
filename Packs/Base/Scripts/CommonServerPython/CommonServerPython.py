@@ -6252,7 +6252,7 @@ sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
-pascalRegex = re.compile('([A-Z]?[a-z]+)')
+pascalRegex = r'([A-Z]?[a-z]+)'
 
 
 # ############################## REGEX FORMATTING end ###############################
@@ -6324,10 +6324,9 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    tokens = pascalRegex.findall(s)
-    for t in tokens:
-        # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()), 1)
+    s = s[0].upper() + s[1:]
+    # double space to handle capital words like IP/URL/DNS that not included in the regex
+    s = re.sub(pascalRegex, r' \1 ', s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
