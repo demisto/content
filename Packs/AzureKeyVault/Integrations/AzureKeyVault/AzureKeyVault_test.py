@@ -3,7 +3,7 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     get_key_vault_command, delete_key_vault_command, update_access_policy_command, list_keys_command, get_key_command, \
     delete_key_command, list_secrets_command, get_secret_command, delete_secret_command, list_certificates_command, \
     get_certificate_command, get_certificate_policy_command, convert_attributes_to_readable, \
-    convert_key_info_to_readable, convert_time_attributes_to_iso
+    convert_key_info_to_readable, convert_time_attributes_to_iso, fetch_credentials
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -393,6 +393,67 @@ def test_azure_key_vault_certificate_list_command(requests_mock):
     assert result.outputs[0].get('x5t') == "fLi3U52HunIVNXubkEnf8tP6Wbo"
     assert result.outputs[0].get('attributes').get('enabled') is True
 
+def test_fetch_all_credentials(requests_mock, capfd):
+    """
+      Scenario: Fetch credentials command.
+      Given:
+         - User has provided list of Key Vaults.
+         - User has provided list of secrets.
+     When:
+        - Fetching credentials by vaults and secrets.
+      Then:
+       - Ensure that the expected credentials were printed in stdout.
+      """
+    client = mock_client()
+    key_vaults_list = [VAULT_NAME]
+    secrets = [SECRET_NAME]
+
+    expected_output = "credentials: {}".format([{
+        'user': SECRET_NAME,
+        'password': 'mysecretvalue',
+        'name': f'{VAULT_NAME}/{SECRET_NAME}'
+    }])
+    mock_response = json.loads(load_mock_response('get_secret.json'))
+    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME}{API_VAULT_VERSION_PARAM}'
+
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
+    requests_mock.get(url, json=mock_response)
+    fetch_credentials(client, key_vaults_list, secrets, '')
+    captured = capfd.readouterr()
+    assert expected_output in captured.out
+
+
+def test_fetch_specific_credentials(requests_mock, capfd):
+    """
+      Scenario: Fetch credentials command.
+      Given:
+         - User has provided specific set of credentials name.
+         - User has provided list of Key Vaults.
+         - User has provided list of secrets.
+     When:
+        - Fetching credentials by vaults and secrets.
+      Then:
+       - Ensure that the expected credentials were printed in stdout.
+      """
+    client = mock_client()
+    credentials_name = f"{VAULT_NAME}/{SECRET_NAME_2}"
+    key_vaults_list = [VAULT_NAME]
+    secrets = [SECRET_NAME]
+
+    expected_output = "credentials: {}".format([{
+        'user': SECRET_NAME_2,
+        'password': 'mysecretvalue',
+        'name': f'{VAULT_NAME}/{SECRET_NAME_2}'
+    }])
+    mock_response = json.loads(load_mock_response('get_secret_2.json'))
+    url = f'{BASE_VAULT_URL}/secrets/{SECRET_NAME_2}{API_VAULT_VERSION_PARAM}'
+    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
+    requests_mock.get(url, json=mock_response)
+
+    fetch_credentials(client, key_vaults_list, secrets, credentials_name)
+    captured = capfd.readouterr()
+    assert expected_output in captured.out
+
 
 def test_azure_key_vault_certificate_get_command(requests_mock):
     """
@@ -630,3 +691,6 @@ def test_convert_time_attributes_to_iso():
     assert readable_time_attributes['exp'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['created'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['updated'] == "2017-05-04T22:53:30"
+
+
+
