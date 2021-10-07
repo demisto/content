@@ -4559,6 +4559,10 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "Logrhythm v2",
+            "playbookID": "LogrhythmV2-test"
         }
     ],
     "skipped_tests": {
