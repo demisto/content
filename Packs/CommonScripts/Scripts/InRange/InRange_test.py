@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 import demistomock as demisto
