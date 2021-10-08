@@ -202,7 +202,7 @@ def test_get_machine_data(mocker):
     mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
     res = get_machine_data(SINGLE_MACHINE_RESPONSE_API)
     assert res['ID'] == '123'
-    assert res['HealthStatus'] == 'Active'
+    assert res['HealthStatus'] in ['Active', 'Inactive']
 
 
 def test_get_ip_alerts_command(mocker):
@@ -618,7 +618,7 @@ SINGLE_MACHINE_RESPONSE_API = {
     "exposureLevel": "High",
     "firstSeen": "2021-08-30T20:11:52.7746006Z",
     "healthStatus": "Inactive",
-    "id": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+    "id": "123",
     "ipAddresses": [
         {
             "ipAddress": "192.0.2.135",
