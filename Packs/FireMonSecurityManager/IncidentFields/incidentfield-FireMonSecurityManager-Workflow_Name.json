@@ -16,7 +16,7 @@
 			"name": "Workflow Name",
 			"prevName": "Workflow Name",
 			"ownerOnly": false,
-			"placeholder": "Access Req WF",
+			"placeholder": " access-request",
 			"description": "Enter workflow Name",
 			"cliName": "workflowname",
 			"type": "shortText",

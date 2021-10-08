@@ -351,11 +351,11 @@ def main():
         if demisto.command() == 'test-module':
             result = test_module(client)
             demisto.results(result)
-        elif demisto.command() == 'user-authentication':
+        elif demisto.command() == 'firemon-user-authentication':
             return_results(authenticate_command(client))
-        elif demisto.command() == 'create-pp-ticket':
+        elif demisto.command() == 'firemon-create-pp-ticket':
             return_results(create_pp_ticket_command(client, demisto.args()))
-        elif demisto.command() == 'pca':
+        elif demisto.command() == 'firemon-pca':
             return_results(pca_command(client, demisto.args()))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

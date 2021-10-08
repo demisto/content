@@ -1,7 +1,7 @@
 id: FireMon Create Policy Planner Ticket
 version: -1
-description: Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box
-fromversion: 5.5.0
+fromversion: 6.0.0
+description: Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box.
 name: FireMon Create Policy Planner Ticket
 starttaskid: "0"
 tasks:
@@ -11,11 +11,11 @@ tasks:
     type: start
     task:
       id: 35b4a2d3-4658-48f9-8b03-16bfc62dc693
+      description: Starts the playbook.
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -38,12 +38,12 @@ tasks:
     type: title
     task:
       id: 11c46959-b4e1-435e-81c3-e49916190755
+      description: Closes the playbook.
       version: -1
       name: Close
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -59,17 +59,17 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 48749469-09cc-4c4a-8df7-2908ebc9e916
+    taskid: e84dafce-b553-4f6c-8008-c361db725bce
     type: regular
     task:
-      id: 48749469-09cc-4c4a-8df7-2908ebc9e916
+      id: e84dafce-b553-4f6c-8008-c361db725bce
       version: -1
       name: create-pp-ticket
       description: Creates a ticket in policy planner application
-      script: FireMonSecurityManager|||create-pp-ticket
+      script: '|||firemon-create-pp-ticket'
       type: regular
       iscommand: true
-      brand: FireMonSecurityManager
+      brand: ""
     nexttasks:
       '#none#':
       - "5"

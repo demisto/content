@@ -4,8 +4,7 @@ commonfields:
   id: FireMonSecurityManager
   version: -1
 configuration:
-- defaultvalue: 
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://example.net)
   name: url
   required: true
   type: 0
@@ -41,11 +40,11 @@ script:
     description: Returns authentication token
     execution: false
     hidden: false
-    name: user-authentication
+    name: firemon-user-authentication
     outputs:
     - contextPath: FireMonSecurityManager.Authentication.token
-      type: String
       description: Authentication token
+      type: String
   - arguments:
     - default: false
       description: Domain Id
@@ -83,11 +82,11 @@ script:
     description: Creates a ticket in policy planner application
     execution: false
     hidden: false
-    name: create-pp-ticket
+    name: firemon-create-pp-ticket
     outputs:
-      - contextPath: FireMonSecurityManager.CreatePPTicket.pp_ticket
-        type: Unknown
-        description: Response for Policy Planner Ticket
+    - contextPath: FireMonSecurityManager.CreatePPTicket.pp_ticket
+      description: Response for Policy Planner Ticket
+      type: Unknown
   - arguments:
     - default: false
       description: Domain ID
@@ -131,11 +130,11 @@ script:
       We can check the PCA table in Review stage of Policy planner ticket."
     execution: false
     hidden: false
-    name: pca
+    name: firemon-pca
     outputs:
-      - contextPath: FireMonSecurityManager.PCA.pca
-        type: Unknown
-        description: Response for PCA
+    - contextPath: FireMonSecurityManager.PCA.pca
+      description: Response for PCA
+      type: Unknown
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
@@ -145,6 +144,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0

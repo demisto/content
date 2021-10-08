@@ -6,6 +6,7 @@
     "name": "FireMon Policy Planner",
     "prevName": "FireMon Policy Planner",
     "color": "#64dc17",
+    "playbookId": "FireMon Create Policy Planner Ticket",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -25,5 +26,5 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.0.0"
 }

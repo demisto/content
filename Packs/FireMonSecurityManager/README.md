@@ -16,13 +16,13 @@ Use FireMon Security Manager to create a Policy Planner Ticket and Verify Pre Ch
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### create-pp-ticket
+### firemon-create-pp-ticket
 ***
 Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box.
  
 #### Base Command
  
-`create-pp-ticket`
+`firemon-create-pp-ticket`
 #### Input
  
 | **Argument Name** | **Description** | **Required** |
@@ -34,16 +34,16 @@ Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box.
 | due_date | Due Date is required | Required | 
  
 #### Command Example
-```!create-pp-ticket domain_id=1 worflow_name="test WF" priority="LOW" due_date="2021-08-01T04:15-00:00" requirement=[{​​​​​​​​"sources":"1.1.1.1", "destinations":"2.2.2.2", "services":"http, tcp", "action":"ACCEPT"}​​​​​​​​]```
+```!firemon-create-pp-ticket domain_id=1 worflow_name="test WF" priority="LOW" due_date="2021-08-01T04:15-00:00" requirement=[{​​​​​​​​"sources":"1.1.1.1", "destinations":"2.2.2.2", "services":"http, tcp", "action":"ACCEPT"}​​​​​​​​]```
  
 
-### pca
+### firemon-pca
 ***
 Validates and Return Pre Changes Assessment on Rules added as Requirement.
  
 #### Base Command
  
-`pca`
+`firemon-pca`
 #### Input
  
 | **Argument Name** | **Description** | **Required** |
@@ -58,7 +58,7 @@ Validates and Return Pre Changes Assessment on Rules added as Requirement.
 
  
 #### Command Example
-```!pca domain_id=1 device_group_id=1 sources="1.1.1.1" destinations="2.2.2.2" services="http" action="ACCEPT"```
+```!firemon-pca domain_id=1 device_group_id=1 sources="1.1.1.1" destinations="2.2.2.2" services="http" action="ACCEPT"```
  
 
 
