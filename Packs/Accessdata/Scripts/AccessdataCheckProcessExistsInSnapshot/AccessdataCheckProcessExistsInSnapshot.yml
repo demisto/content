@@ -1,0 +1,29 @@
+commonfields:
+  id: AccessdataCheckProcessExistsInSnapshot
+  version: -1
+name: AccessdataCheckProcessExistsInSnapshot
+script: '-'
+type: python
+subtype: python2
+tags: []
+deprecated: true
+comment: Reads the contents of the processes list XML file from context and checks if the given process exists in the process list.
+enabled: true
+args:
+- name: process
+  required: true
+  description: The process name that needs to be checked.
+- name: filepath
+  required: true
+  description: Path of the file with processes.
+outputs:
+- contextPath: Accessdata.Process.Exists
+  description: ""
+  type: boolean
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066

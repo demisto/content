@@ -1,0 +1,300 @@
+"""
+
+"""
+
+# python 3.9 imports
+from functools import wraps
+from json import dumps, loads
+
+# accessdata imports
+from accessdata.api.agents import Agent
+from accessdata.api.jobs import Job
+from accessdata.api.filters import and_, or_
+from accessdata.client import Client
+
+""" decorator wrapping demisto commands"""
+
+_run_functions = {}
+
+def wrap_demisto_command(command):
+    def _func(func):
+        @wraps(func)
+        def _inside(*args, **kwargs):
+            return func(*args, **kwargs)
+        _run_functions[command] = func
+        return _inside
+    return _func
+
+""" register demisto commands """
+
+@wrap_demisto_command("accessdata-api-get-case-by-name")
+def _get_case_by_name(client, name):
+    case = client.cases.first_matching_attribute("name", name)
+    if not case:
+        demisto.error(f"Failed to gather case with name ({name}).")
+
+    return CommandResults(
+        outputs_prefix="Accessdata.Case",
+        outputs={
+            "ID": case["id"],
+            "Name": name,
+            "CaseFolder": case["ftkcasefolderpath"]
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-create-case")
+def _create_case(client, **kwargs):
+    case = client.cases.create(**kwargs)
+    if not case:
+        demisto.error(f"Failed to create case.")
+        return CommandResults(
+            outputs_prefix="Accessdata.Case",
+            outputs={}
+        )
+
+    return CommandResults(
+        outputs_prefix="Accessdata.Case",
+        outputs={
+            "ID": case["id"],
+            "Name": case["name"],
+            "CaseFolder": case["ftkcasefolderpath"]
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-process-evidence")
+def _process_evidence(client, caseid, evidence_path, evidence_type, options):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", int(caseid))
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+
+    # try find json in the options
+    try:
+        options = loads(options)
+    except:
+        pass
+
+    # determine the type of processing options supplied
+    options_type = type(options)
+    if options_type is str:
+        jobs = case.evidence.process(evidence_path, evidence_type,
+            completeprocessingoptions=options)
+        return CommandResults(
+            outputs_prefix="Accessdata.Case.Jobs",
+            outputs=[
+                {"ID": job["id"]} for job in jobs
+            ]
+        )
+    elif options_type is dict:
+        jobs = case.evidence.process(evidence_path, evidence_type,
+            processingoptions=options)
+        return CommandResults(
+            outputs_prefix="Accessdata.Case.Jobs",
+            outputs=[
+                {"ID": job["id"]} for job in jobs
+            ]
+        )
+    # if bad, raise error
+    else:
+        demisto.error("Processing Options supplied are not supported. " /
+            "Must be `dict` or `string`.")
+
+@wrap_demisto_command("accessdata-api-export-natives")
+def _export_natives(client, caseid, path, filter_json):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", caseid)
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+
+    job = case.evidence.export_natives(path, filter=filter_json)
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-get-job-status")
+def _get_job_status(client, caseid, jobid):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", int(caseid))
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+
+    job = Job(case, id=int(jobid))
+    if not job:
+        demisto.error(f"Failed to gather job with id ({jobid}).")
+
+    job.update()
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+            "State": str(job["state"]),
+            "ResultData": dumps(job["resultData"])
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-endpoint-volatile-analysis")
+def _run_volatile_analysis(client, caseid, target):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", int(caseid))
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+
+    agent = Agent(case, target)
+    job = agent.analyse_volatile()
+
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-endpoint-memory-collect")
+def _run_memory_acquisition(client, caseid, target):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", int(caseid))
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+
+    agent = Agent(case, target)
+    job = agent.acquire_memory()
+
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-endpoint-disk-collect")
+def _run_disk_acquisition(client, caseid, target, **kwargs):
+    # gather the case object from it's id
+    case = client.cases.first_matching_attribute("id", int(caseid))
+    if not case:
+        demisto.error(f"Failed to gather case with id ({caseid}).")
+        return CommandResults(
+            outputs_prefix="Accessdata.Case",
+            outputs={}
+        )
+
+    agent = Agent(case, target)
+    job = agent.acquire_disk(**kwargs)
+
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
+
+_comparator_mapping = {
+    "==": "__eq__",
+    "!=": "__ne__",
+    ">":  "__gt__",
+    "<":  "__lt__",
+    ">=": "__ge__",
+    "<=": "__le__"
+}
+
+@wrap_demisto_command("accessdata-api-create-filter")
+def _create_filter(client, column, comparator, value):
+    comp = _comparator_mapping.get(comparator, comparator)
+    # get the relevant attribute
+    attr = client.attributes.first_matching_attribute("attributeUniqueName", column)
+    # if not exists, raise error
+    if not attr:
+        demisto.error(f"Cannot find attribute of name ({column}).")
+    # if datatype is int, convert value
+    ##if attr["dataType"] & AttributeType.INT_ALL == attr["dataType"]:
+    ##    value = int(value)
+    # try get comparison method
+    has_comp = hasattr(attr, comp)
+    if not has_comp:
+        demisto.error(f"Cannot find compare method of method name ({comp}).")
+    # compare and return
+    filter_json = getattr(attr, comp)(value)
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-combine-filter-and")
+def _and_filter(client, filter_json1, filter_json2):
+    # try find json in the filters
+    try:
+        filter_json1 = loads(filter_json1)
+        filter_json2 = loads(filter_json2)
+    except:
+        demisto.error("Both filters must be JSON content.")
+        return CommandResults(
+            outputs_prefix="Accessdata",
+            outputs={}
+        )
+
+    filter_json = and_(filter_json1, filter_json2)
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
+
+@wrap_demisto_command("accessdata-api-combine-filter-or")
+def _or_filter(client, filter_json1, filter_json2):
+    # try find json in the filters
+    try:
+        filter_json1 = loads(filter_json1)
+        filter_json2 = loads(filter_json2)
+    except:
+        demisto.error("Both filters must be JSON content.")
+        return CommandResults(
+            outputs_prefix="Accessdata",
+            outputs={}
+        )
+
+    filter_json = or_(filter_json1, filter_json2)
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
+
+""" Entry Point """
+
+# gather parameters
+params = demisto.params()
+
+# generate client arguments
+protocol = params.get("PROTOCOL", "http")
+port = params.get("PORT", "4443")
+address = params.get("SERVER", "localhost")
+url = f"{protocol}://{address}:{port}/"
+apikey = params.get("APIKEY", "")
+# check if using ssl
+is_secure = protocol[-1] == 's'
+
+# build client
+client = Client(url, apikey, validate=not is_secure)
+# if using ssl, gather certs and apply
+if is_secure:
+    public_certificate = params.get("PUBLIC_CERT", None)
+    client.session.cert = public_certificate
+
+# call function with supplied args
+command = demisto.command()
+func = _run_functions[command]
+args = demisto.args()
+
+# return value from called function
+prefix, return_values = func(client, **args)
+results = CommandResults(
+    outputs_prefix=prefix,
+    outputs=return_values
+)
+return_results(results)
