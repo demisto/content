@@ -439,6 +439,18 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.ipAddress
+      description: IP Address for Machine network interface
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.macAddress
+      description: MAC Address for Machine network interface
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.operationalStatus
+      description: Status of Machine network interface
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.type
+      description: Network interface Type (e.g. Ethernet)
+      type: String
   - arguments:
     - default: false
       description: The machine ID to run the scan on.

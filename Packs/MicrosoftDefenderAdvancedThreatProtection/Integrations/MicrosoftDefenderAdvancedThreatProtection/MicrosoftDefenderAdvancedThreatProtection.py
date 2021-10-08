@@ -1099,7 +1099,7 @@ def get_machine_details_command(client: MsClient, args: dict):
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machine {machine_id} details:', machine_data,
                                      headers=headers, removeNull=True)
     results = CommandResults(
-        outputs_prefix='MicrosoftATP.Machine',
+        outputs_prefix='',
         outputs_key_field='ID',
         outputs=machine_data,
         readable_output=human_readable,
