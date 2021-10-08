@@ -5,7 +5,7 @@ Runs a one time specified polling command. This is useful for initiating a local
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | - |
 | Cortex XSOAR Version | 4.0.0+ |
 
