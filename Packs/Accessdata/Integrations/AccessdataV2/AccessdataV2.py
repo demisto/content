@@ -33,24 +33,33 @@ def _get_case_by_name(client, name):
     if not case:
         demisto.error(f"Failed to gather case with name ({name}).")
 
-    return "accessdata.case", {
-        "id": case["id"],
-        "name": name,
-        "casefolder": case["ftkcasefolderpath"]
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case",
+        outputs={
+            "ID": case["id"],
+            "Name": name,
+            "CaseFolder": case["ftkcasefolderpath"]
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-create-case")
 def _create_case(client, **kwargs):
     case = client.cases.create(**kwargs)
     if not case:
         demisto.error(f"Failed to create case.")
-        return {}
+        return CommandResults(
+            outputs_prefix="Accessdata.Case",
+            outputs={}
+        )
 
-    return "accessdata.case", {
-        "id": case["id"],
-        "name": case["name"],
-        "casefolder": case["ftkcasefolderpath"]
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case",
+        outputs={
+            "ID": case["id"],
+            "Name": case["name"],
+            "CaseFolder": case["ftkcasefolderpath"]
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-process-evidence")
 def _process_evidence(client, caseid, evidence_path, evidence_type, options):
@@ -70,15 +79,21 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
     if options_type is str:
         jobs = case.evidence.process(evidence_path, evidence_type,
             completeprocessingoptions=options)
-        return "accessdata.case.jobs", [
-            {"id": job["id"]} for job in jobs
-        ]
+        return CommandResults(
+            outputs_prefix="Accessdata.Case.Jobs",
+            outputs=[
+                {"ID": job["id"]} for job in jobs
+            ]
+        )
     elif options_type is dict:
         jobs = case.evidence.process(evidence_path, evidence_type,
             processingoptions=options)
-        return "accessdata.case.jobs", [
-            {"id": job["id"]} for job in jobs
-        ]
+        return CommandResults(
+            outputs_prefix="Accessdata.Case.Jobs",
+            outputs=[
+                {"ID": job["id"]} for job in jobs
+            ]
+        )
     # if bad, raise error
     else:
         demisto.error("Processing Options supplied are not supported. " /
@@ -92,9 +107,12 @@ def _export_natives(client, caseid, path, filter_json):
         demisto.error(f"Failed to gather case with id ({caseid}).")
 
     job = case.evidence.export_natives(path, filter=filter_json)
-    return "accessdata.case.job", {
-        "id": job["id"],
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-get-job-status")
 def _get_job_status(client, caseid, jobid):
@@ -108,11 +126,14 @@ def _get_job_status(client, caseid, jobid):
         demisto.error(f"Failed to gather job with id ({jobid}).")
 
     job.update()
-    return "accessdata.case.job", {
-        "id": job["id"],
-        "state": str(job["state"]),
-        "resultdata": dumps(job["resultData"])
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+            "State": str(job["state"]),
+            "ResultData": dumps(job["resultData"])
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-endpoint-volatile-analysis")
 def _run_volatile_analysis(client, caseid, target):
@@ -124,9 +145,12 @@ def _run_volatile_analysis(client, caseid, target):
     agent = Agent(case, target)
     job = agent.analyse_volatile()
 
-    return "accessdata.case.job", {
-        "id": job["id"],
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-endpoint-memory-collect")
 def _run_memory_acquisition(client, caseid, target):
@@ -138,9 +162,12 @@ def _run_memory_acquisition(client, caseid, target):
     agent = Agent(case, target)
     job = agent.acquire_memory()
 
-    return "accessdata.case.job", {
-        "id": job["id"],
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-endpoint-disk-collect")
 def _run_disk_acquisition(client, caseid, target, **kwargs):
@@ -148,14 +175,20 @@ def _run_disk_acquisition(client, caseid, target, **kwargs):
     case = client.cases.first_matching_attribute("id", int(caseid))
     if not case:
         demisto.error(f"Failed to gather case with id ({caseid}).")
-        return {}
+        return CommandResults(
+            outputs_prefix="Accessdata.Case",
+            outputs={}
+        )
 
     agent = Agent(case, target)
     job = agent.acquire_disk(**kwargs)
 
-    return "accessdata.case.job", {
-        "id": job["id"],
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata.Case.Job",
+        outputs={
+            "ID": job["id"],
+        }
+    )
 
 _comparator_mapping = {
     "==": "__eq__",
@@ -183,9 +216,12 @@ def _create_filter(client, column, comparator, value):
         demisto.error(f"Cannot find compare method of method name ({comp}).")
     # compare and return
     filter_json = getattr(attr, comp)(value)
-    return "accessdata", {
-        "filter": dumps(filter_json)
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-combine-filter-and")
 def _and_filter(client, filter_json1, filter_json2):
@@ -195,12 +231,18 @@ def _and_filter(client, filter_json1, filter_json2):
         filter_json2 = loads(filter_json2)
     except:
         demisto.error("Both filters must be JSON content.")
-        return {}
+        return CommandResults(
+            outputs_prefix="Accessdata",
+            outputs={}
+        )
 
     filter_json = and_(filter_json1, filter_json2)
-    return "accessdata", {
-        "filter": dumps(filter_json)
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
 
 @wrap_demisto_command("accessdata-api-combine-filter-or")
 def _or_filter(client, filter_json1, filter_json2):
@@ -210,12 +252,18 @@ def _or_filter(client, filter_json1, filter_json2):
         filter_json2 = loads(filter_json2)
     except:
         demisto.error("Both filters must be JSON content.")
-        return {}
+        return CommandResults(
+            outputs_prefix="Accessdata",
+            outputs={}
+        )
 
     filter_json = or_(filter_json1, filter_json2)
-    return "accessdata", {
-        "filter": dumps(filter_json)
-    }
+    return CommandResults(
+        outputs_prefix="Accessdata",
+        outputs={
+            "Filter": dumps(filter_json)
+        }
+    )
 
 """ Entry Point """
 
@@ -244,9 +292,5 @@ func = _run_functions[command]
 args = demisto.args()
 
 # return value from called function
-prefix, return_values = func(client, **args)
-results = CommandResults(
-    outputs_prefix=prefix,
-    outputs=return_values
-)
-return_results(results)
+return_values = func(client, **args)
+return_results(return_values)

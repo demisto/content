@@ -32,7 +32,7 @@ configuration:
   name: PUBLIC_CERT
   defaultvalue: 
   type: 0
-  required: true
+  required: false
 
 script:
   commands:
