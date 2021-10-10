@@ -3756,10 +3756,6 @@ def main():
             return_results(get_endpoints_by_status_command(client, args))
 
     except Exception as err:
-        if command == 'fetch-incidents':
-            LOG(str(err))
-            raise
-
         demisto.error(traceback.format_exc())
         return_error(str(err))
 
