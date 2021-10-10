@@ -145,7 +145,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of alarms to return.'
       required: false
       isArray: false
@@ -257,7 +257,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of items to return.'
       required: false
       isArray: false
@@ -874,7 +874,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of cases to return.'
       required: false
       isArray: false
@@ -1837,7 +1837,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of tags to return.'
       required: false
       isArray: false
@@ -1943,7 +1943,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of entities to return.'
       required: false
       isArray: false
@@ -1996,7 +1996,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of hosts to return.'
       required: false
       isArray: false
@@ -2086,7 +2086,7 @@ script:
       required: false
       isArray: false
     - name: count
-      defaultValue: "30"
+      defaultValue: "50"
       description: 'The numbers of users to return.'
       required: false
       isArray: false
