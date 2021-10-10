@@ -1,7 +1,5 @@
 Whenever Cortex XSOAR runs an investigation that entails a suspicion of compromised user account it leverages Silverfort’s visibility to gain wider context of the investigated user account and applies Silverfort’s proactive protection capabilities such as requiring MFA or blocking access altogether as part of Cortex playbooks.
 
-
-
 ##### What does this pack do?
 Mutual data enrichment on user’s risk and triggering protective actions:
 - Cortex XSOAR queries Silverfort whether  an investigated user account is a service account or a human user
