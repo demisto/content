@@ -59,6 +59,17 @@
 				"score_impact": -2
 			}]
 		}],
+	"incidents": [
+		{
+			"name": "Domain1 Score Change",
+			"occurred": "2021-07-27T00:00:00Z",
+			"rawJSON": "{\"id\": \"27\", \"username\": \"user@domain.com\", \"change_type\": \"score_change\", \"domain\": \"domain1.co.il\", \"company_name\": \"Domain1\", \"portfolios\": [{\"id\": \"a\", \"name\": \"test_portfolio\"}], \"my_scorecard\": false, \"created_at\": \"2021-07-27T00:00:00.000Z\", \"change_data\": [{\"score\": 77, \"factor\": \"network_security\", \"direction\": \"drops\", \"grade_letter\": \"C\", \"score_impact\": -3}, {\"score\": 69, \"factor\": \"ip_reputation\", \"direction\": \"drops\", \"grade_letter\": \"D\", \"score_impact\": -3}]}"}, 
+		{
+			"name": "Domain2 Score Change",
+			"occurred": "2021-07-26T00:00:00Z",
+			"rawJSON": "{\"id\": \"26\", \"username\": \"user@domain.com\", \"change_type\": \"score_change\", \"domain\": \"domain2.com\", \"company_name\": \"Domain2\", \"portfolios\": [{\"id\": \"b\", \"name\": \"test_portfolio2\"}], \"my_scorecard\": false, \"created_at\": \"2021-07-26T00:00:00.000Z\", \"change_data\": [{\"score\": 78, \"factor\": \"network_security\", \"direction\": \"drops\", \"grade_letter\": \"C\", \"score_impact\": -2}]}"
+		}
+	],
 	"portfolios": {
 		"entries": [{
 			"id": "1",

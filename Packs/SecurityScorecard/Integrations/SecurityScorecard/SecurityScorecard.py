@@ -262,27 +262,31 @@ class SecurityScorecardClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def get_last_run():
+def get_last_run(
+    last_run: str = demisto.getLastRun().get("last_run"),
+    first_fetch: str = demisto.params().get("first_fetch", "2 days")
+) -> datetime:
 
     """
     Helper function to return the last incident fetch runtime as a `datetime` object.
     It uses the datetime of last_run from the demisto instance and first_fetch parameter.
 
+    Args:
+        ``last_run`` (``str``): last run datetime string of fetch
+        ``first_fetch`` (``str``): first fetch from integration parameters
+
     Returns:
         ``datetime`` representing the last fetch occurred.
+        
     """
 
     # Check for existence of last run
     # When integration runs for the first time, it will not exist
     # Set 2 days by default if the first fetch parameter is not set
 
-    last_run: str = demisto.getLastRun().get("last_run")
-
     if last_run:
         return arg_to_datetime(last_run)
     else:
-
-        first_fetch: str = demisto.params().get("first_fetch", "2 days")
 
         demisto.debug(f"First fetch is defined as '{first_fetch}'")
         days_ago = first_fetch
@@ -294,7 +298,7 @@ def get_last_run():
         return fetch_days_ago  # type: ignore
 
 
-def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_last_run()) -> List[Dict[str, Any]]:
     """
     Helper function to filter events that need to be imported.
     It filters the events based on the `created_at` timestamp.
@@ -306,7 +310,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    last_run = get_last_run()  # type: ignore
+    # last_run = get_last_run()  # type: ignore
 
     incidents_to_import: List[Dict[str, Any]] = []
 
