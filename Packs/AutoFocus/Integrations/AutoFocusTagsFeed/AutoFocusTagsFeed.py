@@ -118,9 +118,9 @@ class Client(BaseClient):
             else:
                 page_num = arg_to_number(integration_context.get('page_num', 0))
                 page_num = page_num if page_num else 0
-        get_tags_response = self.get_tags({"pageNum": page_num,
-                                           "pageSize": PAGE_SIZE,
-                                           "sortBy": "created_at"})
+        get_tags_response = self.get_tags({'pageNum': page_num,
+                                           'pageSize': PAGE_SIZE,
+                                           'sortBy': 'created_at'})
         tags = get_tags_response.get('tags', [])
         # when finishing the "first level fetch" (getting all he tags from the feed), the next call to the api
         # will be with a page num greater than the total pages, and the api should return an empty tags list.
@@ -173,10 +173,10 @@ def incremental_level_fetch(client: Client) -> list:
     page_num = 0
     has_updates = True
     while has_updates:
-        response = client.get_tags({"pageNum": page_num,
-                                    "pageSize": 200,
-                                    "sortBy": "updated_at",
-                                    "order": "desc"})
+        response = client.get_tags({'pageNum': page_num,
+                                    'pageSize': 200,
+                                    'sortBy': 'updated_at',
+                                    'order': 'desc'})
         tags = response.get('tags', [])
         for tag in tags:
             update_time = tag.get('updated_at')

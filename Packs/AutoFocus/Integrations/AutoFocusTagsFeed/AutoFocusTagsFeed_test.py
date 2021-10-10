@@ -46,25 +46,3 @@ def test_fetch_indicators(mocker):
     assert actual_results["type"] == expected_results["type"]
     assert actual_results["value"] == expected_results["value"]
     assert actual_results["fields"] == expected_results["fields"]
-
-
-def test_get_indicators_command(mocker):
-    """
-
-    Given:
-        - Output of the feed API as list
-    When:
-        - Getting a limited number of indicators from the API
-    Then:
-        - Return results as war-room entry
-
-    """
-    client = Client(api_key='1234', verify=False, proxy=False)
-    indicators_list = util_load_json('test_data/fetch_indicators_results.json')[:1]
-    #mocker.patch.object(client, 'build_iterator', return_value=indicators_list)
-    mocker.patch(__name__ + '.fetch_indicators', return_value=indicators_list)
-    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '1'})
-    human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators_list,
-                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
-                                     removeNull=True)
-    assert results.readable_output == human_readable
