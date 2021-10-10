@@ -93,8 +93,8 @@ View a list of IP addresses in the user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.IP.Address | unknown | IP Addresses | 
-| Qualys.IP.Range | unknown | IP Range | 
+| Qualys.IP.Address | unknown | IP Addresses. | 
+| Qualys.IP.Range | unknown | IP Range. | 
 
 
 #### Command Example
@@ -148,16 +148,16 @@ Get a list of generated reports in the system
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
-| Qualys.Report.TITLE | unknown | Report title | 
-| Qualys.Report.TYPE | unknown | Report type | 
-| Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched | 
-| Qualys.Report.OUTPUT_FORMAT | unknown | Report output format | 
-| Qualys.Report.SIZE | unknown | Report size | 
-| Qualys.Report.STATUS.STATE | unknown | Report state status | 
-| Qualys.Report.STATUS.MESSAGE | unknown | Report status message | 
-| Qualys.Report.STATUS.PERCENT | unknown | Report status percent | 
-| Qualys.Report.EXPIRATION_DATETIME | unknown | Report expiration datetime | 
+| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.TITLE | unknown | Report title. | 
+| Qualys.Report.TYPE | unknown | Report type. | 
+| Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched. | 
+| Qualys.Report.OUTPUT_FORMAT | unknown | Report output format. | 
+| Qualys.Report.SIZE | unknown | Report size. | 
+| Qualys.Report.STATUS.STATE | unknown | Report state status. | 
+| Qualys.Report.STATUS.MESSAGE | unknown | Report status message. | 
+| Qualys.Report.STATUS.PERCENT | unknown | Report status percent. | 
+| Qualys.Report.EXPIRATION_DATETIME | unknown | Report expiration datetime. | 
 
 
 #### Command Example
@@ -203,20 +203,20 @@ Lists vulnerability scans in the user’s account
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Scan.REF | unknown | Scan REF | 
-| Qualys.Scan.TYPE | unknown | Scan type | 
-| Qualys.Scan.TITLE | unknown | Scan title | 
-| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched | 
-| Qualys.Scan.DURATION | unknown | Scan Duration | 
-| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority | 
-| Qualys.Scan.PROCESSED | unknown | Scan Processed | 
-| Qualys.Scan.STATUS.STATE | unknown | Scan status state | 
-| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state | 
-| Qualys.Scan.SCHEDULE | unknown | Scan Schedule | 
-| Qualys.Scan.TARGET | unknown | Scan Target | 
-| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag | 
-| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan | 
+| Qualys.Scan.REF | unknown | Scan REF. | 
+| Qualys.Scan.TYPE | unknown | Scan type. | 
+| Qualys.Scan.TITLE | unknown | Scan title. | 
+| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched. | 
+| Qualys.Scan.DURATION | unknown | Scan Duration. | 
+| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority. | 
+| Qualys.Scan.PROCESSED | unknown | Scan Processed. | 
+| Qualys.Scan.STATUS.STATE | unknown | Scan status state. | 
+| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state. | 
+| Qualys.Scan.SCHEDULE | unknown | Scan Schedule. | 
+| Qualys.Scan.TARGET | unknown | Scan Target. | 
+| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
 
 
 #### Command Example
@@ -590,22 +590,22 @@ Gives you a list of SCAP scans in your account
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.SCAP.Scan.ID | unknown | Scan ID | 
-| Qualys.SCAP.Scan.Reference | unknown | Scan ref | 
-| Qualys.SCAP.Scan.REF | unknown | Scan REF | 
-| Qualys.SCAP.Scan.Type | unknown | Scan type | 
-| Qualys.SCAP.Scan.Title | unknown | Scan title | 
-| Qualys.SCAP.Scan.LaunchDatetime | unknown | Date and time the scan launched | 
-| Qualys.SCAP.Scan.Duration | unknown | Scan Duration | 
-| Qualys.SCAP.Scan.ProcessingPriority | unknown | Scan Processing Priority | 
-| Qualys.SCAP.Scan.Processed | unknown | Scan Processed | 
-| Qualys.SCAP.Scan.Status.State | unknown | Scan status state | 
-| Qualys.SCAP.Scan.Status.SubState | unknown | Scan status sub state | 
-| Qualys.SCAP.Scan.Schedule | unknown | Scan Schedule | 
-| Qualys.SCAP.Scan.Target | unknown | Scan Target | 
-| Qualys.SCAP.Scan.AssetGroupTitle | unknown | Target Asset Group Title | 
-| Qualys.SCAP.Scan.DeafualtFlag | unknown | Scan Deafualt Flag | 
-| Qualys.SCAP.Scan.UserLogin | unknown | The user that created the scan | 
+| Qualys.SCAP.Scan.ID | unknown | Scan ID. | 
+| Qualys.SCAP.Scan.Reference | unknown | Scan ref. | 
+| Qualys.SCAP.Scan.REF | unknown | Scan REF. | 
+| Qualys.SCAP.Scan.Type | unknown | Scan type. | 
+| Qualys.SCAP.Scan.Title | unknown | Scan title. | 
+| Qualys.SCAP.Scan.LaunchDatetime | unknown | Date and time the scan launched. | 
+| Qualys.SCAP.Scan.Duration | unknown | Scan Duration. | 
+| Qualys.SCAP.Scan.ProcessingPriority | unknown | Scan Processing Priority. | 
+| Qualys.SCAP.Scan.Processed | unknown | Scan Processed. | 
+| Qualys.SCAP.Scan.Status.State | unknown | Scan status state. | 
+| Qualys.SCAP.Scan.Status.SubState | unknown | Scan status sub state. | 
+| Qualys.SCAP.Scan.Schedule | unknown | Scan Schedule. | 
+| Qualys.SCAP.Scan.Target | unknown | Scan Target. | 
+| Qualys.SCAP.Scan.AssetGroupTitle | unknown | Target Asset Group Title. | 
+| Qualys.SCAP.Scan.DeafualtFlag | unknown | Scan Deafualt Flag. | 
+| Qualys.SCAP.Scan.UserLogin | unknown | The user that created the scan. | 
 
 
 #### Command Example
@@ -651,20 +651,20 @@ Get a list of compliance scans in your account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Scan.REF | unknown | Scan REF | 
-| Qualys.Scan.TYPE | unknown | Scan type | 
-| Qualys.Scan.TITLE | unknown | Scan title | 
-| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched | 
-| Qualys.Scan.DURATION | unknown | Scan Duration | 
-| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority | 
-| Qualys.Scan.PROCESSED | unknown | Scan Processed | 
-| Qualys.Scan.STATUS.STATE | unknown | Scan status state | 
-| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state | 
-| Qualys.Scan.SCHEDULE | unknown | Scan Schedule | 
-| Qualys.Scan.TARGET | unknown | Scan Target | 
-| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag | 
-| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan | 
+| Qualys.Scan.REF | unknown | Scan REF. | 
+| Qualys.Scan.TYPE | unknown | Scan type. | 
+| Qualys.Scan.TITLE | unknown | Scan title. | 
+| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched. | 
+| Qualys.Scan.DURATION | unknown | Scan Duration. | 
+| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority. | 
+| Qualys.Scan.PROCESSED | unknown | Scan Processed. | 
+| Qualys.Scan.STATUS.STATE | unknown | Scan status state. | 
+| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state. | 
+| Qualys.Scan.SCHEDULE | unknown | Scan Schedule. | 
+| Qualys.Scan.TARGET | unknown | Scan Target. | 
+| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
 
 
 #### Command Example
@@ -702,35 +702,35 @@ Shows schedule scans
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Scan.ID | unknown | Scan ID | 
-| Qualys.Scan.REF | unknown | Scan REF | 
-| Qualys.Scan.TYPE | unknown | Scan type | 
-| Qualys.Scan.TITLE | unknown | Scan title | 
-| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched | 
-| Qualys.Scan.DURATION | unknown | Scan Duration | 
-| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority | 
-| Qualys.Scan.PROCESSED | unknown | Scan Processed | 
-| Qualys.Scan.STATUS.STATE | unknown | Scan status state | 
-| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state | 
-| Qualys.Scan.TARGET | unknown | Scan Target | 
-| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag | 
-| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan | 
-| Qualys.Scan.ACTIVE | unknown | Scheduled scan active | 
-| Qualys.Scan.USER_ENTERED_IPS.RANGE.START | unknown | IP range requested start | 
-| Qualys.Scan.USER_ENTERED_IPS.RANGE.END | unknown | IP range requested end | 
-| Qualys.Scan.ISCANNER_NAME | unknown | Iscanner name used in the scan | 
-| Qualys.Scan.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of usage of the scan | 
-| Qualys.Scan.SCHEDULE.START_DATE_UTC | unknown | Start date of the scheduled scan in UTC format | 
-| Qualys.Scan.SCHEDULE.START_HOUR | unknown | Start hour of the scheduled scan | 
-| Qualys.Scan.SCHEDULE.START_MINUTE | unknown | Start minute of the scheduled scan | 
-| Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE | unknown | Time zone code of the time for the scheduled scan | 
-| Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS | unknown | Time zone details of the time for the scheduled scan | 
-| Qualys.Scan.OPTION_PROFILE.DEFAULT_FLAG | unknown | Default flag of the option profile | 
-| Qualys.Scan.OPTION_PROFILE.TITLE | unknown | Title of the option profile | 
-| Qualys.Scan.EC2_INSTANCE.CONNECTOR_UUID | unknown | Connector UUID of EC2 instance | 
-| Qualys.Scan.EC2_INSTANCE.EC2_ENDPOINT | unknown | Endpoint of EC2 instance | 
-| Qualys.Scan.EC2_INSTANCE.EC2_ONLY_CLASSIC | unknown | EC2 only classic | 
+| Qualys.Scan.ID | unknown | Scan ID. | 
+| Qualys.Scan.REF | unknown | Scan REF. | 
+| Qualys.Scan.TYPE | unknown | Scan type. | 
+| Qualys.Scan.TITLE | unknown | Scan title. | 
+| Qualys.Scan.LAUNCH_DATETIME | unknown | Date and time the scan launched. | 
+| Qualys.Scan.DURATION | unknown | Scan Duration. | 
+| Qualys.Scan.PROCESSING_PRIORITY | unknown | Scan Processing Priority. | 
+| Qualys.Scan.PROCESSED | unknown | Scan Processed. | 
+| Qualys.Scan.STATUS.STATE | unknown | Scan status state. | 
+| Qualys.Scan.STATUS.SUB_STATE | unknown | Scan status sub state. | 
+| Qualys.Scan.TARGET | unknown | Scan Target. | 
+| Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
+| Qualys.Scan.ACTIVE | unknown | Scheduled scan active. | 
+| Qualys.Scan.USER_ENTERED_IPS.RANGE.START | unknown | IP range requested start. | 
+| Qualys.Scan.USER_ENTERED_IPS.RANGE.END | unknown | IP range requested end. | 
+| Qualys.Scan.ISCANNER_NAME | unknown | Iscanner name used in the scan. | 
+| Qualys.Scan.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of usage of the scan. | 
+| Qualys.Scan.SCHEDULE.START_DATE_UTC | unknown | Start date of the scheduled scan in UTC format. | 
+| Qualys.Scan.SCHEDULE.START_HOUR | unknown | Start hour of the scheduled scan. | 
+| Qualys.Scan.SCHEDULE.START_MINUTE | unknown | Start minute of the scheduled scan. | 
+| Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE | unknown | Time zone code of the time for the scheduled scan. | 
+| Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS | unknown | Time zone details of the time for the scheduled scan. | 
+| Qualys.Scan.OPTION_PROFILE.DEFAULT_FLAG | unknown | Default flag of the option profile. | 
+| Qualys.Scan.OPTION_PROFILE.TITLE | unknown | Title of the option profile. | 
+| Qualys.Scan.EC2_INSTANCE.CONNECTOR_UUID | unknown | Connector UUID of EC2 instance. | 
+| Qualys.Scan.EC2_INSTANCE.EC2_ENDPOINT | unknown | Endpoint of EC2 instance. | 
+| Qualys.Scan.EC2_INSTANCE.EC2_ONLY_CLASSIC | unknown | EC2 only classic. | 
 
 
 #### Command Example
@@ -823,19 +823,19 @@ View a list of scanned hosts in the user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Endpoint.ID | unknown | Endpoint ID | 
-| Qualys.Endpoint.IP | unknown | IP | 
-| Qualys.Endpoint.CLOUD_PROVIDER | unknown | Host's cloud provider | 
-| Qualys.Endpoint.DNS | unknown | DNS | 
-| Qualys.Endpoint.EC2_INSTANCE_ID | unknown | EC2 instance ID | 
-| Qualys.Endpoint.QG_HOSTID | unknown | QG host ID | 
-| Qualys.Endpoint.CLOUD_SERVICE | unknown | Cloud service of the endpoint | 
-| Qualys.Endpoint.TRACKING_METHOD | unknown | Tracking method of the endpoint | 
-| Qualys.Endpoint.CLOUD_RESOURCE_ID | unknown | Cloud resource ID of the endpoint | 
-| Qualys.Endpoint.DNS_DATA.DOMAIN | unknown | Domain of the endpoint | 
-| Qualys.Endpoint.DNS_DATA.HOSTNAME | unknown | Host name of the endpoint | 
-| Qualys.Endpoint.NETBIOS | unknown | NETBIOS | 
-| Qualys.Endpoint.OS | unknown | Endpoint operation system | 
+| Qualys.Endpoint.ID | unknown | Endpoint ID. | 
+| Qualys.Endpoint.IP | unknown | IP. | 
+| Qualys.Endpoint.CLOUD_PROVIDER | unknown | Host's cloud provider. | 
+| Qualys.Endpoint.DNS | unknown | DNS. | 
+| Qualys.Endpoint.EC2_INSTANCE_ID | unknown | EC2 instance ID. | 
+| Qualys.Endpoint.QG_HOSTID | unknown | QG host ID. | 
+| Qualys.Endpoint.CLOUD_SERVICE | unknown | Cloud service of the endpoint. | 
+| Qualys.Endpoint.TRACKING_METHOD | unknown | Tracking method of the endpoint. | 
+| Qualys.Endpoint.CLOUD_RESOURCE_ID | unknown | Cloud resource ID of the endpoint. | 
+| Qualys.Endpoint.DNS_DATA.DOMAIN | unknown | Domain of the endpoint. | 
+| Qualys.Endpoint.DNS_DATA.HOSTNAME | unknown | Host name of the endpoint. | 
+| Qualys.Endpoint.NETBIOS | unknown | NETBIOS. | 
+| Qualys.Endpoint.OS | unknown | Endpoint operating system. | 
 
 
 #### Command Example
@@ -911,9 +911,9 @@ View a list of virtual hosts in the user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.VirtualEndpoint.IP | unknown | IP | 
-| Qualys.VirtualEndpoint.PORT | unknown | Port | 
-| Qualys.VirtualEndpoint.FQDN | unknown | Fully qualified domain name | 
+| Qualys.VirtualEndpoint.IP | unknown | IP. | 
+| Qualys.VirtualEndpoint.PORT | unknown | Port. | 
+| Qualys.VirtualEndpoint.FQDN | unknown | Fully qualified domain name. | 
 
 
 #### Command Example
@@ -963,8 +963,8 @@ View a list of virtual hosts in the user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.VirtualEndpoint.DATETIME | unknown | Date and time of the executed manage action | 
-| Qualys.VirtualEndpoint.TEXT | unknown | Result message of the executed action | 
+| Qualys.VirtualEndpoint.DATETIME | unknown | Date and time of the executed manage action. | 
+| Qualys.VirtualEndpoint.TEXT | unknown | Result message of the executed action. | 
 
 
 #### Command Example
@@ -1018,12 +1018,12 @@ Show the excluded host list for the user's account. Hosts in your excluded host 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Excluded.Host.Address | unknown | IP Address | 
-| Qualys.Excluded.Host.Address.#text | unknown | IP of excluded host with expiration date | 
-| Qualys.Excluded.Host.Address.@expiration_date | unknown | Expiration date of excluded host address | 
-| Qualys.Excluded.Host.Range.#text | unknown | Range of excluded hosts with expiration date | 
-| Qualys.Excluded.Host.Range.@expiration_date | unknown | Expiration date of excluded hosts ranges | 
-| Qualys.Excluded.Host.Range | unknown | Range of IP addresses | 
+| Qualys.Excluded.Host.Address | unknown | IP Address. | 
+| Qualys.Excluded.Host.Address.#text | unknown | IP of excluded host with expiration date. | 
+| Qualys.Excluded.Host.Address.@expiration_date | unknown | Expiration date of excluded host address. | 
+| Qualys.Excluded.Host.Range.#text | unknown | Range of excluded hosts with expiration date. | 
+| Qualys.Excluded.Host.Range.@expiration_date | unknown | Expiration date of excluded hosts ranges. | 
+| Qualys.Excluded.Host.Range | unknown | Range of IP addresses. | 
 
 
 #### Command Example
@@ -1075,24 +1075,24 @@ Get list of scheduled reports
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
-| Qualys.Report.TITLE | unknown | Report title | 
-| Qualys.Report.TYPE | unknown | Report type | 
-| Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched | 
-| Qualys.Report.OUTPUT_FORMAT | unknown | Report output format | 
-| Qualys.Report.SIZE | unknown | Report size | 
-| Qualys.Report.STATUS.STATE | unknown | Report state status | 
-| Qualys.Report.STATUS.MESSAGE | unknown | Report status message | 
-| Qualys.Report.STATUS.PERCENT | unknown | Report status percent | 
-| Qualys.Report.EXPIRATION_DATETIME | unknown | Report expiration datetime | 
-| Qualys.Report.ACTIVE | unknown | Report active | 
-| Qualys.Report.TEMPLATE_TITLE | unknown | Title of the template | 
-| Qualys.Report.SCHEDULE.START_DATE_UTC | unknown | Start date of the scheduled report in UTC format | 
-| Qualys.Report.SCHEDULE.START_HOUR | unknown | Start hour of the scheduled report | 
-| Qualys.Report.SCHEDULE.START_MINUTE | unknown | start minute of the scheduled report | 
-| Qualys.Report.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of the schduled report | 
-| Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE | unknown | Timezone of the scheduled report | 
-| Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS | unknown | Timezone details of the scheduled report | 
+| Qualys.Report.ID | unknown | Report ID. | 
+| Qualys.Report.TITLE | unknown | Report title. | 
+| Qualys.Report.TYPE | unknown | Report type. | 
+| Qualys.Report.LAUNCH_DATETIME | unknown | Date and time the report launched. | 
+| Qualys.Report.OUTPUT_FORMAT | unknown | Report output format. | 
+| Qualys.Report.SIZE | unknown | Report size. | 
+| Qualys.Report.STATUS.STATE | unknown | Report state status. | 
+| Qualys.Report.STATUS.MESSAGE | unknown | Report status message. | 
+| Qualys.Report.STATUS.PERCENT | unknown | Report status percent. | 
+| Qualys.Report.EXPIRATION_DATETIME | unknown | Report expiration datetime. | 
+| Qualys.Report.ACTIVE | unknown | Report active. | 
+| Qualys.Report.TEMPLATE_TITLE | unknown | Title of the template. | 
+| Qualys.Report.SCHEDULE.START_DATE_UTC | unknown | Start date of the scheduled report in UTC format. | 
+| Qualys.Report.SCHEDULE.START_HOUR | unknown | Start hour of the scheduled report. | 
+| Qualys.Report.SCHEDULE.START_MINUTE | unknown | Start minute of the scheduled report. | 
+| Qualys.Report.SCHEDULE.DAILY.@frequency_days | unknown | Frequency of the schduled report. | 
+| Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE | unknown | Timezone of the scheduled report. | 
+| Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS | unknown | Timezone details of the scheduled report. | 
 
 
 #### Command Example
@@ -1153,16 +1153,16 @@ get list of report template for user
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.ReportTemplate.ID | unknown | Report template ID | 
-| Qualys.ReportTemplate.TYPE | unknown | Report type | 
-| Qualys.ReportTemplate.TITLE | unknown | Report template title | 
-| Qualys.ReportTemplate.LAST_UPDATE | unknown | Last update time | 
-| Qualys.ReportTemplate.GLOBAL | unknown | Report template global | 
-| Qualys.ReportTemplate.DEFAULT | unknown | Report template default | 
-| Qualys.ReportTemplate.USER.LOGIN | unknown | Last updated user login | 
-| Qualys.ReportTemplate.USER.FIRSTNAME | unknown | Last updated user login first name | 
-| Qualys.ReportTemplate.USER.LASTNAME | unknown | Last updated user login last name | 
-| Qualys.ReportTemplate.TEMPLATE_TYPE | unknown | Type of report template | 
+| Qualys.ReportTemplate.ID | unknown | Report template ID. | 
+| Qualys.ReportTemplate.TYPE | unknown | Report type. | 
+| Qualys.ReportTemplate.TITLE | unknown | Report template title. | 
+| Qualys.ReportTemplate.LAST_UPDATE | unknown | Last update time. | 
+| Qualys.ReportTemplate.GLOBAL | unknown | Report template global. | 
+| Qualys.ReportTemplate.DEFAULT | unknown | Report template default. | 
+| Qualys.ReportTemplate.USER.LOGIN | unknown | Last updated user login. | 
+| Qualys.ReportTemplate.USER.FIRSTNAME | unknown | Last updated user login first name. | 
+| Qualys.ReportTemplate.USER.LASTNAME | unknown | Last updated user login last name. | 
+| Qualys.ReportTemplate.TEMPLATE_TYPE | unknown | Type of report template. | 
 
 
 #### Command Example
@@ -1545,27 +1545,27 @@ download a list of vulnerabilities from Qualys’ KnowledgeBase
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Vulnerability.List.QID | unknown | Vulnerability QID | 
-| Qualys.Vulnerability.List.PATCHABLE | unknown | Is Vulnerability patchable | 
-| Qualys.Vulnerability.List.SEVERITY_LEVEL | unknown | Severity level of the Vulnerability | 
-| Qualys.Vulnerability.List.CONSEQUENCE | unknown | Consequence of the Vulnerability | 
-| Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.ID | unknown | ID of the vendor | 
-| Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.URL | unknown | URL of the vendor | 
-| Qualys.Vulnerability.List.LAST_SERVICE_MODIFICATION_DATETIME | unknown | Date of the last service modification | 
-| Qualys.Vulnerability.List.CVE_LIST.CVE.ID | unknown | CVE ID | 
-| Qualys.Vulnerability.List.CVE_LIST.CVE.URL | unknown | CVE URL | 
-| Qualys.Vulnerability.List.PUBLISHED_DATETIME | unknown | Published date | 
-| Qualys.Vulnerability.List.DISCOVERY.ADDITIONAL_INFO | unknown | Additional info | 
-| Qualys.Vulnerability.List.DISCOVERY.AUTH_TYPE_LIST.AUTH_TYPE | unknown | Discovery Authentication type | 
-| Qualys.Vulnerability.List.DISCOVERY.REMOTE | unknown | Is discovery remote | 
-| Qualys.Vulnerability.List.DIAGNOSIS | unknown | Diagnosis of vulnerability | 
-| Qualys.Vulnerability.List.PCI_FLAG | unknown | PCI flag | 
-| Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.PRODUCT | unknown | Product name | 
-| Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.VENDOR | unknown | Vendor of the product | 
-| Qualys.Vulnerability.List.VULN_TYPE | unknown | Type of the vulnerability | 
-| Qualys.Vulnerability.List.TITLE | unknown | Title of the vulnerability | 
-| Qualys.Vulnerability.List.SOLUTION | unknown | Solution for the vulnerability | 
-| Qualys.Vulnerability.List.CATEGORY | unknown | Category of the vulnerability | 
+| Qualys.Vulnerability.List.QID | unknown | Vulnerability QID. | 
+| Qualys.Vulnerability.List.PATCHABLE | unknown | Is Vulnerability patchable. | 
+| Qualys.Vulnerability.List.SEVERITY_LEVEL | unknown | Severity level of the Vulnerability. | 
+| Qualys.Vulnerability.List.CONSEQUENCE | unknown | Consequence of the Vulnerability. | 
+| Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.ID | unknown | ID of the vendor. | 
+| Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.URL | unknown | URL of the vendor. | 
+| Qualys.Vulnerability.List.LAST_SERVICE_MODIFICATION_DATETIME | unknown | Date of the last service modification. | 
+| Qualys.Vulnerability.List.CVE_LIST.CVE.ID | unknown | CVE ID. | 
+| Qualys.Vulnerability.List.CVE_LIST.CVE.URL | unknown | CVE URL. | 
+| Qualys.Vulnerability.List.PUBLISHED_DATETIME | unknown | Published date. | 
+| Qualys.Vulnerability.List.DISCOVERY.ADDITIONAL_INFO | unknown | Additional info. | 
+| Qualys.Vulnerability.List.DISCOVERY.AUTH_TYPE_LIST.AUTH_TYPE | unknown | Discovery Authentication type. | 
+| Qualys.Vulnerability.List.DISCOVERY.REMOTE | unknown | Is discovery remote. | 
+| Qualys.Vulnerability.List.DIAGNOSIS | unknown | Diagnosis of vulnerability. | 
+| Qualys.Vulnerability.List.PCI_FLAG | unknown | PCI flag. | 
+| Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.PRODUCT | unknown | Product name. | 
+| Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.VENDOR | unknown | Vendor of the product. | 
+| Qualys.Vulnerability.List.VULN_TYPE | unknown | Type of the vulnerability. | 
+| Qualys.Vulnerability.List.TITLE | unknown | Title of the vulnerability. | 
+| Qualys.Vulnerability.List.SOLUTION | unknown | Solution for the vulnerability. | 
+| Qualys.Vulnerability.List.CATEGORY | unknown | Category of the vulnerability. | 
 
 
 #### Command Example
@@ -19252,15 +19252,15 @@ Get account asset groups
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.AssetGroup.ID | unknown | Asset Group ID | 
-| Qualys.AssetGroup.TITLE | unknown | Asset Group title | 
-| Qualys.AssetGroup.OWNER_ID | unknown | Asset Group owner ID | 
-| Qualys.AssetGroup.UNIT_ID | unknown | Asset Group unit ID | 
-| Qualys.AssetGroup.NETWORK_ID | unknown | Asset Group network ID | 
-| Qualys.AssetGroup.IP_SET.IP | unknown | IP in the asset group | 
-| Qualys.AssetGroup.IP_SET.IP_RANGE | unknown | Asset Group IP range | 
-| Qualys.AssetGroup.APPLIANCE_IDS | unknown | Appliance ids of the asset group | 
-| Qualys.AssetGroup.DEFAULT_APPLIANCE_ID | unknown | Default appliance ids of the asset group | 
+| Qualys.AssetGroup.ID | unknown | Asset Group ID. | 
+| Qualys.AssetGroup.TITLE | unknown | Asset Group title. | 
+| Qualys.AssetGroup.OWNER_ID | unknown | Asset Group owner ID. | 
+| Qualys.AssetGroup.UNIT_ID | unknown | Asset Group unit ID. | 
+| Qualys.AssetGroup.NETWORK_ID | unknown | Asset Group network ID. | 
+| Qualys.AssetGroup.IP_SET.IP | unknown | IP in the asset group. | 
+| Qualys.AssetGroup.IP_SET.IP_RANGE | unknown | Asset Group IP range. | 
+| Qualys.AssetGroup.APPLIANCE_IDS | unknown | Appliance IDs of the asset group. | 
+| Qualys.AssetGroup.DEFAULT_APPLIANCE_ID | unknown | Default appliance IDs of the asset group. | 
 
 
 #### Command Example
@@ -19384,12 +19384,12 @@ Download scan results when scan has status Finished, Canceled, Paused or Error
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.VM.Dns | unknown | Scanned device DNS | 
-| Qualys.VM.Instance | unknown | Scanned device instance | 
-| Qualys.VM.IP | unknown | Scanned device IP address | 
-| Qualys.VM.Netbios | unknown | Scanned device Netbios | 
-| Qualys.VM.QID | unknown | Qualys ID for vulnerabilities | 
-| Qualys.VM.Result | unknown | Scan result | 
+| Qualys.VM.Dns | unknown | Scanned device DNS. | 
+| Qualys.VM.Instance | unknown | Scanned device instance. | 
+| Qualys.VM.IP | unknown | Scanned device IP address. | 
+| Qualys.VM.Netbios | unknown | Scanned device Netbios. | 
+| Qualys.VM.QID | unknown | Qualys ID for vulnerabilities. | 
+| Qualys.VM.Result | unknown | Scan result. | 
 
 
 #### Command Example
@@ -19779,19 +19779,19 @@ fetch scan results for a scan
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.PC.USERNAME | unknown | The user who executed the scan | 
-| Qualys.PC.COMPANY | unknown | The company of the user who executed the scan | 
-| Qualys.PC.USERNAME | unknown | The user who executed the scan | 
-| Qualys.PC.DATE | unknown | The date of the scan | 
-| Qualys.PC.TITLE | unknown | The scan title | 
+| Qualys.PC.USERNAME | unknown | The user who executed the scan. | 
+| Qualys.PC.COMPANY | unknown | The company of the user who executed the scan. | 
+| Qualys.PC.USERNAME | unknown | The user who executed the scan. | 
+| Qualys.PC.DATE | unknown | The date of the scan. | 
+| Qualys.PC.TITLE | unknown | The scan title. | 
 | Qualys.PC.TARGET | unknown | IP’s which were scanned. | 
-| Qualys.PC.EXCLUDED_TARGET | unknown | IP’s which were excluded from the scan | 
-| Qualys.PC.DURATION | unknown | The duration of the scan | 
-| Qualys.PC.NBHOST_ALIVE | unknown | Number of hosts that are available during the scan | 
-| Qualys.PC.NBHOST_TOTAL | unknown | Total number of hosts that were submitted to scan | 
-| Qualys.PC.REPORT_TYPE | unknown | Type of the report | 
-| Qualys.PC.OPTIONS | unknown | Scan option profile | 
-| Qualys.PC.STATUS | unknown | Status of the scan | 
+| Qualys.PC.EXCLUDED_TARGET | unknown | IP’s which were excluded from the scan. | 
+| Qualys.PC.DURATION | unknown | The duration of the scan. | 
+| Qualys.PC.NBHOST_ALIVE | unknown | Number of hosts that are available during the scan. | 
+| Qualys.PC.NBHOST_TOTAL | unknown | Total number of hosts that were submitted to scan. | 
+| Qualys.PC.REPORT_TYPE | unknown | Type of the report. | 
+| Qualys.PC.OPTIONS | unknown | Scan option profile. | 
+| Qualys.PC.STATUS | unknown | Status of the scan. | 
 
 
 #### Command Example
@@ -19891,7 +19891,7 @@ Delete a saved report in the user’s Report Share
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Deleted Report ID | 
+| Qualys.Report.ID | unknown | Deleted Report ID. | 
 
 
 #### Command Example
@@ -19950,7 +19950,7 @@ Launch a vulnerability scorecard report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
+| Qualys.Report.ID | unknown | Report ID. | 
 
 
 #### Command Example
@@ -20026,8 +20026,8 @@ Launch a vulnerability scorecard report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.VM.Launched.KEY | unknown | Key name of launched VM scan, either ID or a REFERENCE | 
-| Qualys.Report.VM.Launched.VALUE | unknown | Value of the key | 
+| Qualys.Report.VM.Launched.KEY | unknown | Key name of launched VM scan, either ID or a REFERENCE. | 
+| Qualys.Report.VM.Launched.VALUE | unknown | Value of the key. | 
 
 
 #### Command Example
@@ -20111,8 +20111,8 @@ Allows users to take actions on compliance scans in their account, like cancel, 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Scan.KEY | unknown | key name, either ID or REFERENCE | 
-| Qualys.Scan.VALUE | unknown | Value of either ID or REFERENCE | 
+| Qualys.Scan.KEY | unknown | Key name, either ID or REFERENCE. | 
+| Qualys.Scan.VALUE | unknown | Value of either ID or REFERENCE. | 
 
 
 #### Command Example
@@ -20245,7 +20245,7 @@ Add IP addresses to the subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.IP.Add.TEXT | unknown | Action result message | 
+| Qualys.IP.Add.TEXT | unknown | Action result message. | 
 | Qualys.IP.Add.DATETIME | unknown | Date &amp; time of the action | 
 
 
@@ -20298,7 +20298,7 @@ gives you the ability to update IP addresses within the subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.IP.Update.TEXT | unknown | Action result message | 
+| Qualys.IP.Update.TEXT | unknown | Action result message. | 
 | Qualys.IP.Update.DATETIME | unknown | Date &amp; time of the action | 
 
 
@@ -20347,8 +20347,8 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Endpoint.KEY | unknown | Result of action requested | 
-| Qualys.Endpoint | unknown | IPs action was made on | 
+| Qualys.Endpoint.KEY | unknown | Result of action requested. | 
+| Qualys.Endpoint | unknown | IPs action was made on. | 
 
 
 #### Command Example
@@ -20395,7 +20395,7 @@ Launch a scheduled report now
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Launched Report ID | 
+| Qualys.Report.ID | unknown | Launched Report ID. | 
 
 
 #### Command Example
@@ -20448,7 +20448,7 @@ Launches a map report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Launched Map Report ID | 
+| Qualys.Report.ID | unknown | Launched Map Report ID. | 
 
 
 #### Command Example
@@ -20501,7 +20501,7 @@ Run host based findings report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
+| Qualys.Report.ID | unknown | Report ID. | 
 
 
 #### Command Example
@@ -20553,7 +20553,7 @@ launches a scan report including scan based findings
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
+| Qualys.Report.ID | unknown | Report ID. | 
 
 
 #### Command Example
@@ -20605,7 +20605,7 @@ Run patch report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Report ID | 
+| Qualys.Report.ID | unknown | Report ID. | 
 
 
 #### Command Example
@@ -20658,7 +20658,7 @@ Run remediation report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Remediation Report ID | 
+| Qualys.Report.ID | unknown | Remediation Report ID. | 
 
 
 #### Command Example
@@ -20711,7 +20711,7 @@ Run compliance report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Compliance Report ID | 
+| Qualys.Report.ID | unknown | Compliance Report ID. | 
 
 
 #### Command Example
@@ -20766,7 +20766,7 @@ Run compliance policy report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | unknown | Policy Report ID | 
+| Qualys.Report.ID | unknown | Policy Report ID. | 
 
 
 #### Command Example
@@ -20810,8 +20810,8 @@ Get the list of restricted IPs within the user's subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Restricted.Address | unknown | List of the restricted IPs | 
-| Qualys.Restricted.Range | unknown | List of the restricted IPs | 
+| Qualys.Restricted.Address | unknown | List of the restricted IPs. | 
+| Qualys.Restricted.Range | unknown | List of the restricted IPs. | 
 
 
 #### Command Example
@@ -20858,9 +20858,9 @@ Get the list of restricted IPs within the user's subscription.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Restricted.Manage.TEXT | unknown | Action result message | 
+| Qualys.Restricted.Manage.TEXT | unknown | Action result message. | 
 | Qualys.Restricted.Manage.DATETIME | unknown | Date &amp; time of the action | 
-| Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE | unknown | Status of the restricted ips feature | 
+| Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE | unknown | Status of the restricted ips feature. | 
 
 
 #### Command Example
