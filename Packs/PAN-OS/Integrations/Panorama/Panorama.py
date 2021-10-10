@@ -6774,8 +6774,8 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
 
 
 def show_user_id_interface_config_request(args: dict):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
+    template= str(args.get('template', TEMPLATE))
+    template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
     if VSYS and not vsys:
@@ -6858,10 +6858,10 @@ def show_zone_config_command(args):
 
 
 def list_configured_user_id_agents_request(args: dict, version):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
-    vsys = args.get('vsys')
+    template = str(args.get('template', TEMPLATE))
+    template_stack = str(args.get('template_stack', ''))
 
+    vsys = args.get('vsys')
     if VSYS and not vsys:
         vsys = VSYS
     elif not vsys:
