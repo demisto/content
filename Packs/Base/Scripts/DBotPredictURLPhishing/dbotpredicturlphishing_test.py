@@ -240,3 +240,11 @@ def test_get_score():
         MODEL_KEY_URL_SCORE: 0.6
     }
     assert round(get_score(pred_json_2), 2) == 0.53
+
+def test_get_final_urls():
+    assert get_final_urls(['d1.com', 'test.d2.com', 'test.d1.com', 'd2.com'], 3) == ['d1.com', 'test.d2.com',
+                                                                                     'test.d1.com']
+    assert get_final_urls(['d1.com', 'test.d2.com', 'test.d1.com', 'd2.com'], 1) == ['d1.com']
+    assert get_final_urls(['d1.com', 'test.d2.com', 'test.d1.com', 'd2.com'], 4) == ['d1.com', 'test.d2.com',
+                                                                                     'test.d1.com', 'd2.com']
+    assert get_final_urls(['d1.com', 'd2.com', 'd3.com', 'd4.com'], 3) == ['d1.com', 'd2.com', 'd3.com']

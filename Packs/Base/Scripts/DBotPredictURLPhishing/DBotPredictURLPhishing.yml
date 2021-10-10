@@ -49,6 +49,17 @@ args:
   - 'True'
   required: false
   secret: false
+- default: false
+  defaultValue: '5'
+  isArray: false
+  name: maxNumberOfURL
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: emailText
+  required: false
+  secret: false
 comment: Predict phishing URLs using pre-trained model.
 commonfields:
   id: DBotPredictURLPhishing
