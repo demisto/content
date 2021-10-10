@@ -6774,7 +6774,7 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
 
 
 def show_user_id_interface_config_request(args: dict):
-    template= str(args.get('template', TEMPLATE))
+    template = str(args.get('template', TEMPLATE))
     template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
