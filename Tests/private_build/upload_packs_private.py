@@ -191,8 +191,8 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
-                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
-        -> Tuple[Union[list, list], str, Any]:
+                                   index_folder_path: str, pack_names: set, is_private_build: bool,
+                                   storage_base_path: str) -> Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -201,6 +201,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         index_folder_path (str): downloaded index folder directory path.
         pack_names (set): Collection of pack names.
         is_private_build (bool): Indicates if the build is private.
+        storage_base_path (str): the path of the target bucket to retrieve the index from.
 
     Returns:
         list: priced packs from private bucket.
@@ -213,7 +214,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         (private_index_path, private_index_blob, _) = \
             download_and_extract_index(private_storage_bucket,
                                        os.path.join(extract_destination_path,
-                                                    'private'))
+                                                    'private'), storage_base_path)
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
@@ -240,7 +241,7 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
 
 
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
-                                       packs_dependencies_mapping: dict, private_bucket_name: str,
+                                       packs_dependencies_mapping: dict, private_bucket_name: str, storage_base_path,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
                                        remote_previous_commit_hash: str = '') \
@@ -285,13 +286,13 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status = pack.upload_integration_images(storage_bucket)
+    task_status = pack.upload_integration_images(storage_bucket, storage_base_path)
     if not task_status:
         pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status = pack.upload_author_image(storage_bucket)
+    task_status = pack.upload_author_image(storage_bucket, storage_base_path)
     if not task_status:
         pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
         pack.cleanup()
@@ -347,7 +348,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
         pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                               bucket_for_uploading, override_all_packs
+                               bucket_for_uploading, override_all_packs, storage_base_path
                                or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
                                private_content=True)
     if full_pack_path is not None:
@@ -488,7 +489,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     if not is_private_build:
@@ -499,9 +501,6 @@ def main():
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
-
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
@@ -518,17 +517,18 @@ def main():
                                                                                                extract_destination_path,
                                                                                                index_folder_path,
                                                                                                pack_names,
-                                                                                               is_private_build)
+                                                                                               is_private_build,
+                                                                                               storage_base_path)
     else:  # skipping private packs
         logging.info("Skipping index update of priced packs")
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                           packs_dependencies_mapping, private_bucket_name,
+                                           packs_dependencies_mapping, private_bucket_name, storage_base_path,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
                                            remote_previous_commit_hash=remote_previous_commit_hash)
@@ -536,7 +536,7 @@ def main():
 
     if should_upload_core_packs(storage_bucket_name):
         create_corepacks_config(default_storage_bucket, build_number, index_folder_path,
-                                artifacts_dir=os.path.dirname(packs_artifacts_path))
+                                os.path.dirname(packs_artifacts_path), storage_base_path)
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)

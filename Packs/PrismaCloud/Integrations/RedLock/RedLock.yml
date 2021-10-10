@@ -28,6 +28,10 @@ configuration:
   name: ruleName
   required: false
   type: 0
+- display: Fetch only incidents matching this policy name
+  name: policyName
+  required: false
+  type: 0
 - display: Fetch only incidents with this severity
   name: policySeverity
   required: false
@@ -690,7 +694,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.0.0
 defaultclassifier: RedLock
 defaultmapperin: RedLock-mapper
