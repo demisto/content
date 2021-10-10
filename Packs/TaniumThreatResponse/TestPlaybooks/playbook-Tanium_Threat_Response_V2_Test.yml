@@ -637,43 +637,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 43da41e5-81e4-436c-84bc-b99f2c363619
-    type: regular
-    task:
-      id: 43da41e5-81e4-436c-84bc-b99f2c363619
-      version: -1
-      name: tanium-tr-delete-snapshot
-      script: Tanium Threat Response v2|||tanium-tr-delete-snapshot
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response v2
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      snapshot_ids:
-        complex:
-          root: Tanium.Snapshot
-          accessor: uuid
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 6799bcb1-a3be-491a-8757-e9aedfcf1b81
@@ -3702,7 +3665,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
