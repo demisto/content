@@ -1224,7 +1224,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(get_integration_context().get(LAST_FETCH_KEY, '0')),
+                last_highest_id=int(json.loads(get_integration_context().get(LAST_FETCH_KEY, '0'))),
                 incident_type=params.get('incident_type'),
                 mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
@@ -1510,7 +1510,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=json.loads(ctx.get(LAST_FETCH_KEY, '0')),
+                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
@@ -1520,7 +1520,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 if incident_batch_for_sample:
                     print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
                     set_to_integration_context_with_retries({'samples': incident_batch_for_sample,
-                                                             LAST_FETCH_KEY: str(new_highest_id)})
+                                                             LAST_FETCH_KEY: new_highest_id})
 
                 demisto.createIncidents(incidents)
 

@@ -6,6 +6,7 @@ For more details about the authentication used in this integration, see [Microso
 ### Required Permissions
 * Mail.ReadWrite - Application
 * User.Read - Application
+* Mail.Send - Application
 
 ### OData Usage
 The OData parameter can be used to create different queries for the ***msgraph-mail-list-emails*** and ***msgraph-mail-get-email*** commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
