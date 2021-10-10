@@ -49,7 +49,7 @@ def edit_server_config(args: Dict[str, Any]) -> CommandResults:
     elif action == "remove":
         remove_server_config(key, sys_conf)
     else:
-        raise DemistoException("EditServerConfig Error: action must be update ot remove.")
+        raise DemistoException("EditServerConfig Error: action must be update or remove.")
 
     return CommandResults(readable_output=f"Server configuration with {key} was {action}d successfully.")
 
