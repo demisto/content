@@ -2354,6 +2354,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     alarms, _ = client.alarms_list_request(**alarms_list_args)
 
     for alarm in alarms:
+        alarm['incidentType'] = 'Alarm'
         incident = {
             'name': f'Alarm #{str(alarm.get("alarmId"))} {alarm.get("alarmRuleName")}',
             'occurred': f'{alarm.get("dateInserted")}Z',
@@ -2394,6 +2395,7 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     cases = client.cases_list_request(**cases_list_args)
 
     for case in cases:
+        case['incidentType'] = 'Case'
         incident = {
             'name': f'Case #{str(case.get("number"))} {case.get("name")}',
             'occurred': case.get('dateCreated'),
