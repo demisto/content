@@ -252,9 +252,7 @@ class SecurityScorecardClient(BaseClient):
 
         try:
             error_response_json = response.json().get("error")
-            error_message: str = f'{error_response_json.get("message")} ({error_response_json.get("statusCode")})'
-            demisto.error(error_message)
-            raise DemistoException(error_message)
+            raise DemistoException(f'{error_response_json.get("message")} ({error_response_json.get("statusCode")})')
         except ValueError:
             raise DemistoException(f'Error parsing response as JSON. Response: {response.status_code} {str(response.content)}')
 
