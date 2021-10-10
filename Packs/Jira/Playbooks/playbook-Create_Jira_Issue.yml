@@ -41,12 +41,12 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 16c86c60-a3b6-43fb-8a2b-7e2e59269006
+    taskid: 0ed04187-71c6-44bf-83e4-fa8d14a4042f
     type: regular
     task:
-      id: 16c86c60-a3b6-43fb-8a2b-7e2e59269006
+      id: 0ed04187-71c6-44bf-83e4-fa8d14a4042f
       version: -1
-      name: Create Jira ticket
+      name: Create Jira issue
       description: Creates a new issue in Jira.
       script: '|||jira-create-issue'
       type: regular
@@ -165,19 +165,14 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 9c3980ab-19ba-41bb-8d5f-6ef9c9b00ec1
+    taskid: 57149749-f162-4300-842d-26ec90df6fee
     type: playbook
     task:
-      id: 9c3980ab-19ba-41bb-8d5f-6ef9c9b00ec1
+      id: 57149749-f162-4300-842d-26ec90df6fee
       version: -1
       name: Mirror Jira Ticket
-      description: |-
-        Mirror Jira Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with Jira.
-        It enables you to manage Jira tickets in Cortex xSOAR while data is continuously synced between Jira and Cortex xSOAR, including Jira schema, fields, comments, work notes, and attachments.
-        To enable OOTB mirroring, use the Jira Create ticket  - common mappers for incoming and outgoing mirroring.
-        FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(Jira Status field) of the Jira ticket until it marks as either resolved or closed.
-        In Addition to the playbook, we recommend that you use the included layout for Jira Ticket, which helps visualize Jira ticket information in Cortex xSOAR.
-        You can add the new layout as a tab to existing layouts using the Edit Layout page.
+      description: Mirror Jira Ticket is designed to serve as a sub-playbook, which
+        enables ticket mirroring with Jira.
       playbookName: Mirror Jira Ticket
       type: playbook
       iscommand: false
@@ -195,14 +190,15 @@ tasks:
       FieldPollingTimeout:
         complex:
           root: inputs.PollingTimeout
-      MirrorCommentTags:
-        simple: comment
       MirrorDirection:
         complex:
           root: inputs.MirrorDirection
       MirrorInstanceName:
         complex:
           root: inputs.InstanceName
+      MirrorTags:
+        complex:
+          root: inputs.MirrorTags
       TicketId:
         complex:
           root: Ticket
@@ -428,11 +424,6 @@ inputs:
   required: false
   description: Set the impact for the new ticket. Leave empty for Jira default impact.
   playbookInputQuery:
-- key: Attachment
-  value: {}
-  required: false
-  description: Set the urgency of the new ticket. Leave empty for Jira default urgency.
-  playbookInputQuery:
 - key: ProjectKey
   value: {}
   required: true
@@ -484,15 +475,19 @@ inputs:
     Set the Jira Instance that will be used for mirroring/running polling commands.
   playbookInputQuery:
 - key: MirrorDirection
-  value: {}
+  value:
+    simple: Both
   required: false
   description: "Set the mirror direction, should be one of the following: \n1. In\n\
     2. Out\n3. Both"
   playbookInputQuery:
-- key: MirrorCommentTags
-  value: {}
+- key: MirrorTags
+  value:
+    simple: comment,attachment
   required: false
-  description: Set tags for mirror comments and files to Jira.
+  description: "Set tags for mirror comments and files to Jira.\nAs defined in the\
+    \ instance settings, by default it will be comment for comments mirroring and\
+    \ attachment for attachments mirroring. "
   playbookInputQuery:
 - key: FieldPolling
   value: {}
@@ -504,5 +499,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Jira-v2-Test
+- No test.
 fromversion: 6.0.0

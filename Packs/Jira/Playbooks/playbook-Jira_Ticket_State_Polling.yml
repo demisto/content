@@ -263,5 +263,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Jira-v2-Test
+- No test.
 fromversion: 6.0.0

@@ -36,10 +36,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5384366c-ee98-4af3-8a9c-e2a9288f282a
+    taskid: e050eea9-ff4c-4afc-8a65-efcffb1f37e2
     type: regular
     task:
-      id: 5384366c-ee98-4af3-8a9c-e2a9288f282a
+      id: e050eea9-ff4c-4afc-8a65-efcffb1f37e2
       version: -1
       name: Set Mirroring fields
       description: Change the properties of an incident.
@@ -62,13 +62,13 @@ tasks:
           root: inputs.MirrorInstanceName
       dbotMirrorTags:
         complex:
-          root: inputs.MirrorCommentTags
+          root: inputs.MirrorTags
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 530
+          "y": 550
         }
       }
     note: false
@@ -221,17 +221,17 @@ inputs:
   description: "Set the mirror direction, should be one of the following: \n1. In\n\
     2. Out\n3. Both"
   playbookInputQuery:
-- key: MirrorCommentTags
+- key: MirrorTags
   value: {}
   required: false
-  description: Set tags for mirror comments and files to ServiceNow
+  description: Set tags for mirror comments and files to Jira
   playbookInputQuery:
 - key: 'FieldPolling '
   value: {}
   required: false
   description: |
     Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.
-    This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.
+    This is useful in cases when it is needed to wait for the Jira issue to be resolved in order to continue the parent playbook.
   playbookInputQuery:
 - key: FieldPollingInterval
   value: {}
@@ -250,5 +250,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Jira-v2-Test
+- No test.
 fromversion: 6.0.0
