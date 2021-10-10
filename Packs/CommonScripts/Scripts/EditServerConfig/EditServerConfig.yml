@@ -1,13 +1,14 @@
 args:
 - default: false
-  description: The action to make. If update is chosen and the key is not exist, a new key will be added.
+  description: The action to make. If update is chosen and the key is not exist, a
+    new key will be added.
   isArray: false
   name: action
   required: true
   auto: PREDEFINED
   predefined:
-    - update
-    - remove
+  - update
+  - remove
   secret: false
 - default: false
   description: The key to set.
@@ -21,7 +22,8 @@ args:
   name: value
   required: false
   secret: false
-comment: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
+comment: Edit the server configuration (under *settings/troubleshooting*). You can
+  either add a new configuration or update and remove an existing one.
 commonfields:
   id: EditServerConfig
   version: -1
@@ -34,3 +36,5 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
+tests:
+- TestEditServerConfig
