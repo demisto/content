@@ -618,7 +618,7 @@ def test_show_user_id_interface_config_command():
     """
     from Panorama import show_user_id_interface_config_command
     args = {}
-    str_match = 'In order to show the the configured user interfaces in your Panorama, ' \
+    str_match = 'In order to show the User Interface configuration in your Panorama, ' \
                 'supply either the template or the template_stack arguments.'
     with pytest.raises(DemistoException, match=str_match):
         show_user_id_interface_config_command(args)
@@ -651,7 +651,7 @@ def test_list_configured_user_id_agents_command(mocker):
     from Panorama import list_configured_user_id_agents_command
     mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
     args = {}
-    str_match = 'In order to show the the configured user interfaces in your Panorama, ' \
+    str_match = 'In order to show the the User ID Agents in your Panorama, ' \
                 'supply either the template or the template_stack arguments.'
     with pytest.raises(DemistoException, match=str_match):
         list_configured_user_id_agents_command(args)

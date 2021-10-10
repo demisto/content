@@ -6784,7 +6784,7 @@ def show_user_id_interface_config_request(args: dict):
         vsys = 'vsys1'
 
     if not VSYS and not template and not template_stack:
-        raise DemistoException('In order to show the the configured user interfaces in your Panorama, '
+        raise DemistoException('In order to show the User Interface configuration in your Panorama, '
                                'supply either the template or the template_stack arguments.')
 
     if VSYS:  # firewall instance xpath
