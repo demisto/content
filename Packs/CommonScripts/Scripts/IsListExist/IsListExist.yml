@@ -11,7 +11,7 @@ comment: Check if list exist in demisto lists.
 enabled: true
 args:
 - name: listName
-  description: List name to check
+  description: List name to check.
 scripttarget: 0
 runonce: false
 tests:
