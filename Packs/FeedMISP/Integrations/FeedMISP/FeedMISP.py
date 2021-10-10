@@ -157,7 +157,7 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
 
 def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
     """
-    Adds tags from the attribute to the indicator if they're a valid indicator
+    Adds tags from the attribute to the indicator if they're a valid tag
     Args:
         indicator_obj: Indicator currently being built
         tags: List of tags of the attribute retrieved from MISP
@@ -253,7 +253,7 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     Returns: The matching indicator type or None if the attribute type is not supported
     """
     attribute_type = attribute['type']
-    if attribute_type == 'ip-src' or attribute == 'ip-dst':
+    if attribute_type == 'ip-src' or attribute_type == 'ip-dst':
         return get_ip_type(attribute)
     else:
         return ATTRIBUTE_TO_INDICATOR_MAP.get(attribute_type, None)
