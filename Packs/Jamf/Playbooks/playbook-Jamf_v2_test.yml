@@ -1,0 +1,559 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: aaef493b-243d-4ea8-8178-9837abf03678
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 64c370bb-e8c2-4e1b-84b0-a1c96d139d89
+inputs: []
+name: Jamf_v2_test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "6"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40a03933-95c2-4f32-8501-e1a1b8d1f537
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 40a03933-95c2-4f32-8501-e1a1b8d1f537
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command will return a list of all computers with their associated
+        IDs . By default, will return the first 50 computers to the context (ID +
+        name).
+      id: 66d05321-8457-44af-81cb-8188ad01cf6d
+      iscommand: true
+      name: jamf-get-computers
+      script: '|||jamf-get-computers'
+      type: regular
+      version: -1
+    taskid: 66d05321-8457-44af-81cb-8188ad01cf6d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: "138"
+      lock_message:
+        simple: Testing
+      passcode:
+        simple: "123456"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Will send a "DeviceLock" command to a computer which will then
+        reboot it and lock the computer with a passcode.
+      id: a00345ef-02ad-4df6-85eb-7e95b2805a4e
+      iscommand: true
+      name: jamf-computer-lock
+      script: '|||jamf-computer-lock'
+      type: regular
+      version: -1
+    taskid: a00345ef-02ad-4df6-85eb-7e95b2805a4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: "138"
+      passcode:
+        simple: "123456"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Will send a "EraseDevice" command to a computer which will then
+        reboot it and lock the computer with a passcode.
+      id: 3ceff652-dffd-4920-85e4-84a3655073aa
+      iscommand: true
+      name: jamf-computer-erase
+      script: '|||jamf-computer-erase'
+      type: regular
+      version: -1
+    taskid: 3ceff652-dffd-4920-85e4-84a3655073aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identifier:
+        simple: id
+      identifier_value:
+        complex:
+          accessor: id
+          root: JAMF.Computer
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns the general subset for a specific computer according to
+        the given arguments.
+      id: b7a5ffdc-3019-43fa-81b9-f0a01148886c
+      iscommand: true
+      name: jamf-get-computer-general-subset
+      script: '|||jamf-get-computer-general-subset'
+      type: regular
+      version: -1
+    taskid: b7a5ffdc-3019-43fa-81b9-f0a01148886c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      application:
+        simple: safari
+      limit:
+        simple: "10"
+      version:
+        simple: 7.0.1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Will return a list of computers with basic information based on
+        an application filter.
+      id: 0824515f-8d05-49e8-892b-b0e30205831f
+      iscommand: true
+      name: jamf-get-computers-by-application
+      script: '|||jamf-get-computers-by-application'
+      type: regular
+      version: -1
+    taskid: 0824515f-8d05-49e8-892b-b0e30205831f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return a list of users with their IDs or a specific user with general
+        data about the user.
+      id: fb8badae-f7a7-4918-8da8-2d6f7eae99eb
+      iscommand: true
+      name: jamf-get-users
+      script: '|||jamf-get-users'
+      type: regular
+      version: -1
+    taskid: fb8badae-f7a7-4918-8da8-2d6f7eae99eb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Will return a list of all devices with general information on each
+        of them.
+      id: 58d5807c-7941-4aee-8e26-4a671ae4e9d5
+      iscommand: true
+      name: jamf-get-mobile-devices
+      script: '|||jamf-get-mobile-devices'
+      type: regular
+      version: -1
+    taskid: 58d5807c-7941-4aee-8e26-4a671ae4e9d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identifier:
+        simple: id
+      identifier_value:
+        complex:
+          accessor: id
+          root: JAMF.MobileDevice
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns the applications subset for a specific mobile device according
+        to the given arguments.
+      id: 46b9cc7a-9e00-44cf-8d48-1a4ccbb809f9
+      iscommand: true
+      name: jamf-get-mobile-device-applications-subset
+      script: '|||jamf-get-mobile-device-applications-subset'
+      type: regular
+      version: -1
+    taskid: 46b9cc7a-9e00-44cf-8d48-1a4ccbb809f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          accessor: id
+          root: JAMF.User
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return a specific user with general data about the user according
+        to the given ID.
+      id: a60a59c5-1077-47e9-818b-7c57a20f6164
+      iscommand: true
+      name: jamf-get-user-by-id
+      script: '|||jamf-get-user-by-id'
+      type: regular
+      version: -1
+    taskid: a60a59c5-1077-47e9-818b-7c57a20f6164
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          accessor: id
+          root: JAMF.Computer
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This command will return  the "general" subset of a specific computer,
+        e.g: name, mac address, ip, serial number, udid etc.'
+      id: d6ca97c2-b417-4eb7-8e57-2fe22f03365a
+      iscommand: true
+      name: jamf-get-computer-by-id
+      script: '|||jamf-get-computer-by-id'
+      type: regular
+      version: -1
+    taskid: d6ca97c2-b417-4eb7-8e57-2fe22f03365a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "5"
+      match:
+        simple: '"Computer 9*"'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This command will match computers by specific characteristics and
+        returns general data on each one of the computers.
+      id: 18553e94-82e0-4d76-810e-5e7e489d28c3
+      iscommand: true
+      name: jamf-get-computer-by-match
+      script: '|||jamf-get-computer-by-match'
+      type: regular
+      version: -1
+    taskid: 18553e94-82e0-4d76-810e-5e7e489d28c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 520
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identifier:
+        simple: serialnumber
+      identifier_value:
+        simple: CA41097460A3
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns the hardware subset for a specific computer according to
+        the given arguments.
+      id: 643e10d3-bfea-41fd-8b7a-6a03777f6376
+      iscommand: true
+      name: jamf-get-computer-hardware-subset
+      script: '|||jamf-get-computer-hardware-subset'
+      type: regular
+      version: -1
+    taskid: 643e10d3-bfea-41fd-8b7a-6a03777f6376
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 510
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      identifier:
+        simple: name
+      identifier_value:
+        complex:
+          accessor: name
+          root: JAMF.MobileDevice
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns the general subset for a specific mobile device according
+        to the given arguments.
+      id: 0fbc3725-7c08-435f-85e7-ce5700eea5b6
+      iscommand: true
+      name: |
+        jamf-get-mobile-device-general-subset
+      script: '|||jamf-get-mobile-device-general-subset'
+      type: regular
+      version: -1
+    taskid: 0fbc3725-7c08-435f-85e7-ce5700eea5b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 510
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 2110,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

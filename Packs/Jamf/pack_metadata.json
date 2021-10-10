@@ -1,0 +1,17 @@
+{
+    "name": "jamf",
+    "description": "test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "test",
+    "url": "",
+    "email": "",
+    "created": "2021-10-10T11:11:06Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
