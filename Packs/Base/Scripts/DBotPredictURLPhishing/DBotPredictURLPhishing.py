@@ -79,11 +79,11 @@ MODEL_KEY_LOGIN_FORM = 'login_form'
 
 KEY_CONTENT_DOMAIN = "Domain"
 KEY_CONTENT_URL = "URL"
-KEY_CONTENT_LOGO = "SuspiciousLogo"
-KEY_CONTENT_LOGIN = "LoginForm"
+KEY_CONTENT_LOGO = "UseOfSuspiciousLogo"
+KEY_CONTENT_LOGIN = "HasLoginForm"
 KEY_CONTENT_URL_SCORE = "URLScore"
-KEY_CONTENT_SEO = "ContentBasedVerdict"
-KEY_CONTENT_AGE = "DomainAge"
+KEY_CONTENT_SEO = "BadSEOQuality"
+KEY_CONTENT_AGE = "NewDomain"
 KEY_CONTENT_VERDICT = "FinalVerdict"
 KEY_CONTENT_IS_WHITELISTED = "IsWhitelisted"
 
@@ -298,7 +298,7 @@ def is_valid_url(url: str) -> Tuple[bool, str]:
         return False, response.reason
 
 
-def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str, return_hr: bool):
+def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str):
     """
     Return entry to demisto
     :param pred_json: json with output of the model
@@ -341,26 +341,16 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     }
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain_hr[DOMAIN_AGE_KEY] = str(pred_json_colored[DOMAIN_AGE_KEY])
-    if return_hr:
-        return_entry = {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats['json'],
-            "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
-            "Contents": explain,
-            "EntryContext": {'DBotPredictURLPhishing': explain}
-        }
-        demisto.results(return_entry)
-    else:
-        demisto.results('here')
-        return_entry = {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats['json'],
-            "Contents": explain,
-            "EntryContext": {'DBotPredictURLPhishing': explain}
-        }
-        demisto.results(return_entry)
+    return_entry = {
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats['json'],
+        "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
+        "Contents": explain,
+        "EntryContext": {'DBotPredictURLPhishing': explain}
+    }
+    demisto.results(return_entry)
     # Get rasterize image or logo detection if logo was found
-    if pred_json and return_hr:
+    if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
             image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
@@ -490,7 +480,7 @@ def get_prediction_single_url(model, url, force_model, debug):
             return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
-    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 6
+    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 7
                                            })
     is_new_domain = extract_created_date(res)
     # Rasterize html and image
@@ -549,7 +539,7 @@ def return_detailed_summary(results, number_entries_to_return):
     outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
-    for i in range(len(results)):
+    for i in range(min(number_entries_to_return, len(results))):
         index = indice_descending_severity[i]
         if results[index].get('score') == SCORE_INVALID_URL:
             continue
@@ -558,8 +548,7 @@ def return_detailed_summary(results, number_entries_to_return):
         url = results[index].get('url')
         is_white_listed = results[index].get('is_white_listed')
         output_rasterize = results[index].get('output_rasterize')
-        return_hr = (i < number_entries_to_return)
-        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict, return_hr)
+        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict)
         outputs.append(summary_json)
         outputs = [x for x in outputs if x]
     return outputs
@@ -596,7 +585,7 @@ def get_final_urls(urls, max_urls):
     final_url = []
     seen = []
     duplicate = []
-    i=0
+    i = 0
     for url in urls:
         if i < max_urls:
             if extract_domainv2(url) in seen:
@@ -608,8 +597,6 @@ def get_final_urls(urls, max_urls):
     if len(final_url) < max_urls:
         final_url = final_url + duplicate[:min(len(duplicate), max_urls-len(final_url))]
     return final_url
-
-
 
 
 def main():
@@ -656,7 +643,7 @@ def main():
         msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
     urls = get_final_urls(urls, max_urls)
-    urls = [demisto.executeCommand("UnEscapeURLs", {"input": x}) for x in urls]
+    urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
         demisto.results(urls)
     number_entries_to_return = int(demisto.args().get('numberDetailedReports'))
