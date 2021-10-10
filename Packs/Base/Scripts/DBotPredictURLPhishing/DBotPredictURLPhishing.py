@@ -29,7 +29,7 @@ MINOR_DEFAULT_VERSION = 0
 
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
-MSG_INVALID_URL = "Error: "
+MSG_INVALID_URL = "Error: %s (status code:%s)"
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly - Might need to update rasterize package"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
@@ -266,7 +266,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
     return p.geturl()
 
 
-def is_valid_url(url: str) -> Tuple[bool, str]:
+def is_valid_url(url: str) -> Tuple[bool, str, str]:
     """
     Check is an url is valid by requesting it using different protocol
     :param url: url
@@ -291,11 +291,11 @@ def is_valid_url(url: str) -> Tuple[bool, str]:
                     try:
                         response = requests.get(prepend_url, verify=False)  # nosec guardrails-disable-line
                     except requests.exceptions.RequestException:
-                        return False, MSG_IMPOSSIBLE_CONNECTION
+                        return False, MSG_IMPOSSIBLE_CONNECTION, "Unknown"
     if response.status_code == 200:
-        return True, EMPTY_STRING
+        return True, EMPTY_STRING, response.status_code
     else:
-        return False, response.reason
+        return False, response.reason, response.status_code
 
 
 def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str):
@@ -465,10 +465,10 @@ def extract_created_date(entry_list: List):
 
 def get_prediction_single_url(model, url, force_model, debug):
     is_white_listed = False
-    valid_url, error = is_valid_url(url)
+    valid_url, error, status_code = is_valid_url(url)
 
     if not valid_url:
-        return create_dict_context(url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed, {})
+        return create_dict_context(url, MSG_INVALID_URL % (error, status_code), {}, SCORE_INVALID_URL, is_white_listed, {})
 
     # Check domain age from WHOIS command
     domain = extract_domainv2(url)
@@ -535,11 +535,11 @@ def return_general_summary(results, tag="Summary"):
     return df_summary_json
 
 
-def return_detailed_summary(results, number_entries_to_return):
+def return_detailed_summary(results):
     outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
-    for i in range(min(number_entries_to_return, len(results))):
+    for i in range(len(results)):
         index = indice_descending_severity[i]
         if results[index].get('score') == SCORE_INVALID_URL:
             continue
@@ -581,21 +581,21 @@ def load_demisto_model():
     model = decode_model_data(model_64_str)
     return model
 
-def get_final_urls(urls, max_urls):
+def get_final_urls(urls, max_urls, model):
     final_url = []
     seen = []
-    duplicate = []
+    low_priority_urls = []
     i = 0
     for url in urls:
         if i < max_urls:
-            if extract_domainv2(url) in seen:
-                duplicate.append(url)
+            if extract_domainv2(url) in seen or extract_domainv2(url) in model.top_domains:
+                low_priority_urls.append(url)
             else:
                 final_url.append(url)
                 seen.append(extract_domainv2(url))
                 i += 1
     if len(final_url) < max_urls:
-        final_url = final_url + duplicate[:min(len(duplicate), max_urls-len(final_url))]
+        final_url = final_url + low_priority_urls[:min(len(low_priority_urls), max_urls-len(final_url))]
     return final_url
 
 
@@ -642,14 +642,13 @@ def main():
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_error(MSG_NO_URL_GIVEN)
-    urls = get_final_urls(urls, max_urls)
+    urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
         demisto.results(urls)
-    number_entries_to_return = int(demisto.args().get('numberDetailedReports'))
     results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
     general_summary = return_general_summary(results)
-    detailed_summary = return_detailed_summary(results, number_entries_to_return)
+    detailed_summary = return_detailed_summary(results)
     if debug:
         demisto.results(msg_list)
     return general_summary, detailed_summary, msg_list
