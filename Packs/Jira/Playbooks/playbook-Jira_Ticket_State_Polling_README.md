@@ -11,8 +11,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* PrintErrorEntry
 * RunPollingCommand
+* PrintErrorEntry
 * ScheduleGenericPolling
 
 ### Commands

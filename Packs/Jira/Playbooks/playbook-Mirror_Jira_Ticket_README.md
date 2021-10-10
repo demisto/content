@@ -23,8 +23,8 @@ This playbook does not use any scripts.
 | TicketId | Jira Ticket ID to mirror. |  | Optional |
 | MirrorInstanceName | Set the mirror instance name to enable mirroring with Jira. |  | Optional |
 | MirrorDirection | Set the mirror direction, should be one of the following: <br/>1. In<br/>2. Out<br/>3. Both |  | Optional |
-| MirrorCommentTags | Set tags for mirror comments and files to ServiceNow |  | Optional |
-| FieldPolling  | Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.<br/>This is useful in cases when it is needed to wait for the ServiceNow ticket to be resolved in order to continue the parent playbook.<br/> |  | Optional |
+| MirrorTags | Set tags for mirror comments and files to Jira |  | Optional |
+| FieldPolling  | Set the value to true or false to determine if the FieldPolling sub-playbook will be executed in the context of a parent playbook.<br/>This is useful in cases when it is needed to wait for the Jira issue to be resolved in order to continue the parent playbook.<br/> |  | Optional |
 | FieldPollingInterval | Set interval time for the polling to run<br/>\(In minutes\) |  | Optional |
 | FieldPollingTimeout | <br/>Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) |  | Optional |
 
