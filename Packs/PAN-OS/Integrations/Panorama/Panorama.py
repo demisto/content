@@ -6774,7 +6774,6 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
 
 
 def show_user_id_interface_config_request(args: dict):
-    template = str(args.get('template', TEMPLATE))
     template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
@@ -6783,21 +6782,20 @@ def show_user_id_interface_config_request(args: dict):
     elif not vsys:
         vsys = 'vsys1'
 
-    if not VSYS and not template and not template_stack:
+    if not VSYS and not TEMPLATE and not template_stack:
         raise DemistoException('In order to show the User Interface configuration in your Panorama, '
                                'supply either the template or the template_stack arguments.')
 
     if VSYS:  # firewall instance xpath
         xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/zone"
     elif not template_stack:  # panorama instance xpath with template
-        template_test(template)  # verify that the template exists
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                "template/entry[@name=\'" + template + "\']/config/devices/entry[@name='localhost.localdomain']/" \
-                                                       "vsys/entry[@name=\'" + vsys + "\']/zone"
+        template_test(str(TEMPLATE))  # verify that the template exists
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']/config" \
+                f"/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/zone"
     else:  # panorama instance xpath with template_stack
-        xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                "/template-stack/entry[@name=\'" + template_stack + \
-                "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack/" \
+                f"entry[@name=\'{template_stack}\']/config/devices/entry[@name='localhost.localdomain']/vsys/" \
+                f"entry[@name=\'{vsys}\']/zone"
 
     params = {
         'action': 'show',
@@ -6858,7 +6856,6 @@ def show_zone_config_command(args):
 
 
 def list_configured_user_id_agents_request(args: dict, version):
-    template = str(args.get('template', TEMPLATE))
     template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
@@ -6867,18 +6864,17 @@ def list_configured_user_id_agents_request(args: dict, version):
     elif not vsys:
         vsys = 'vsys1'
 
-    if not VSYS and not template and not template_stack:
+    if not VSYS and not TEMPLATE and not template_stack:
 
         raise DemistoException('In order to show the the User ID Agents in your Panorama, '
                                'supply either the template or the template_stack arguments.')
 
     if VSYS:
         if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                    "vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/user-id-agent"
         else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/" \
+                    "redistribution-agent"
 
     elif template_stack:
         if version < 10:
@@ -6890,15 +6886,14 @@ def list_configured_user_id_agents_request(args: dict, version):
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
                                                          "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
     else:
-        template_test(template)  # verify that the template exists
+        template_test(str(TEMPLATE))  # verify that the template exists
         if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/user-id-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']" \
+                    f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/user-id-agent"
         else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/redistribution-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']/" \
+                    f"config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/" \
+                    "redistribution-agent"
 
     params = {
         'action': 'show',
@@ -6986,7 +6981,6 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     API_KEY = str(params.get('key'))
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
-    TEMPLATE = params.get('template')
 
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
@@ -6995,6 +6989,11 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
     else:
         DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
+
+    if args and args.get('template'):
+        TEMPLATE = args.get('template')  # type: ignore[assignment]
+    else:
+        TEMPLATE = params.get('template', None)  # type: ignore[arg-type]
 
     PRE_POST = args.get('pre_post', '')
 

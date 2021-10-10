@@ -605,7 +605,7 @@ def test_validate_search_time():
         assert validate_search_time('219/10/35')
 
 
-def test_show_user_id_interface_config_command(mocker):
+def test_show_user_id_interface_config_command():
     """
     Given:
      - missing template and template_stack arguments for the show_user_id_interface_config_command command
@@ -618,7 +618,6 @@ def test_show_user_id_interface_config_command(mocker):
     """
     from Panorama import show_user_id_interface_config_command
     args = {}
-    mocker.patch('Panorama.template_test', return_value='')
     str_match = 'In order to show the User Interface configuration in your Panorama, ' \
                 'supply either the template or the template_stack arguments.'
     with pytest.raises(DemistoException, match=str_match):
@@ -650,7 +649,6 @@ def test_list_configured_user_id_agents_command(mocker):
      - a proper exception is raised
     """
     from Panorama import list_configured_user_id_agents_command
-    mocker.patch('Panorama.template_test', return_value='')
     mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
     args = {}
     str_match = 'In order to show the the User ID Agents in your Panorama, ' \
