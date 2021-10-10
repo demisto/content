@@ -4,7 +4,6 @@ from CommonServerPython import *
 import requests
 import traceback
 from typing import Dict, Any
-from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -263,44 +262,39 @@ class SecurityScorecardClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def get_last_run(last_run: str, first_fetch: str):
+def get_last_run():
 
     """
-    Helper function to return the last incident fetch runtime as
-    a UNIX timestamp.
-
-    Args:
-        ``last_run`` (``str``): The last runtime, ``demisto.getLastRun().get("last_run")``
-        ``first_fetch`` (``str``): The first fetch configuration from ``demisto.params().get("first_fetch"")``
+    Helper function to return the last incident fetch runtime as a `datetime` object.
+    It uses the datetime of last_run from the demisto instance and first_fetch parameter.
 
     Returns:
-        ``int``, Last run timestamp.
+        ``datetime`` representing the last fetch occurred.
     """
 
     # Check for existence of last run
     # When integration runs for the first time, it will not exist
-    # Set 3 days by default if the first fetch parameter is not set
+    # Set 2 days by default if the first fetch parameter is not set
+
+    last_run: str = demisto.getLastRun().get("last_run")
 
     if last_run:
-        return int(last_run)
+        return arg_to_datetime(last_run)
     else:
+
+        first_fetch: str = demisto.params().get("first_fetch", "2 days")
 
         demisto.debug(f"First fetch is defined as '{first_fetch}'")
         days_ago = first_fetch
 
         fetch_days_ago = arg_to_datetime(arg=days_ago, arg_name="first_fetch", required=False)
 
-        demisto.debug(f"getLastRun is 'None' in Integration context, using parameter 'first_fetch' value '{fetch_days_ago}'")
-        demisto.debug(f"{days_ago} => {fetch_days_ago}")
+        demisto.debug(f"getLastRun is 'None' in Integration context, using parameter '{days_ago}' value '{fetch_days_ago}'")
 
-        return int(fetch_days_ago.timestamp())  # type: ignore
+        return fetch_days_ago  # type: ignore
 
 
-def incidents_to_import(
-    alerts: List[Dict[str, Any]],
-    last_run: Optional[str] = demisto.getLastRun().get("last_run"),
-    first_fetch: Optional[str] = demisto.params().get("first_fetch", "2 days")
-) -> List[Dict[str, Any]]:
+def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Helper function to filter events that need to be imported.
     It filters the events based on the `created_at` timestamp.
@@ -308,15 +302,11 @@ def incidents_to_import(
 
     Args:
         ``alerts``(``List[Dict[str, Any]]``): A list of alerts to sort through.
-        ``last_run``(``str``): UNIX timestamp when the fetch incidents had last run.
-        ``first_fetch`` (``str``): Configured 'First fetch' parameter
     Returns:
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    last_run_timestamp = get_last_run(last_run=last_run, first_fetch=first_fetch)  # type: ignore
-
-    demisto.debug(f"Last run timestamp: {last_run_timestamp}")
+    last_run = get_last_run()  # type: ignore
 
     incidents_to_import: List[Dict[str, Any]] = []
 
@@ -328,38 +318,43 @@ def incidents_to_import(
 
         most_recent_alert_created_date = most_recent_alert.get("created_at")
 
-        most_recent_alert_timestamp = \
-            int(datetime.strptime(most_recent_alert_created_date, SECURITYSCORECARD_DATE_FORMAT).timestamp())  # type: ignore
-        demisto.debug(f"Setting last runtime as alert most recent timestamp: {most_recent_alert_timestamp}")
+        most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date)  # type: ignore
+        demisto.debug(f"Setting last runtime as alert most recent: {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}")
+
         demisto.setLastRun({
-            'last_run': most_recent_alert_timestamp
+            'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)
         })
+        demisto.debug("Finished setLastRun")
 
         for alert in alerts:
 
-            alert_created_at = alert.get("created_at")
-            alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())  # type: ignore
-
+            demisto.debug(f"iterating alert id '{alert}'...")
             alert_id = alert.get("id")
+            alert_created_at = alert.get("created_at")
+
+            # alert_created_at includes a timezone whereas arg_to_datetime doesn't
+            # therefore we need to eliminate tz info
+            alert_datetime = arg_to_datetime(alert_created_at).replace(tzinfo=None)  # type: ignore
             company_name: str = alert.get("company_name")  # type: ignore
             change_type: str = alert.get("change_type")  # type: ignore
-
-            debug_msg = f"import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_timestamp)}"  # type: ignore
+            demisto.debug(f"alert_created_at: {alert_created_at}")
+            demisto.debug(f"alert_datetime: {alert_datetime}")
+            demisto.debug(f"last_run: {last_run}")
+            debug_msg = f"import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_datetime)}"  # type: ignore
 
             demisto.debug(debug_msg)
 
-            if alert_timestamp > last_run:  # type: ignore
+            if alert_datetime > last_run:  # type: ignore
                 incident = {}
                 incident["name"] = f"{company_name} {change_type.replace('_', ' ').title()}"
-                incident["occurred"] = \
-                    datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)  # type: ignore
+                incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp
     # So we'll use the last run timestamp (last alert fetch modified date)
     else:
-        demisto.debug(f"No alerts retrieved, setting last_run to last modified time ({last_run_timestamp})")
-        demisto.setLastRun(last_run_timestamp)
+        demisto.debug(f"No alerts retrieved, setting last_run to last modified time ({last_run})")
+        demisto.setLastRun(last_run)
 
     return incidents_to_import
 
