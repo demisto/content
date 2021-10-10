@@ -323,7 +323,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         demisto.debug(
             f"Setting last runtime as alert most recent: \
             {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
-        ) 
+        )
         demisto.setLastRun({
             'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
         })
