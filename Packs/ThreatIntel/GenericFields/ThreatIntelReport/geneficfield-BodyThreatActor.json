@@ -4,9 +4,9 @@
         "Threat Actor"
     ],
     "caseInsensitive": true,
-    "cliName": "bodyvulnerability",
-    "id": "generic_ThreatIntelReport_bodyvulnerability",
-    "name": "Body Vulnerability",
+    "cliName": "bodythreatactor",
+    "id": "generic_ThreatIntelReport_bodythreatactor",
+    "name": "Body Threat Actor",
     "closeForm": false,
     "content": true,
     "editForm": true,
