@@ -306,6 +306,8 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     :param whitelist: if url belongs to whitelist of the model
     :return: entry to demisto
     """
+    if whitelist:
+        return
     if verdict == BENIGN_VERDICT_WHITELIST:
         verdict = BENIGN_VERDICT
     if whitelist or not pred_json:
@@ -527,7 +529,7 @@ def return_general_summary(results, tag="Summary"):
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
                                          headers=['URL', KEY_FINAL_VERDICT]),
         "Contents": summary_context,
-        #"EntryContext": {'DBotPredictURLPhishing': summary_context}
+        #"EntryContext": {'DBotPredictURLPhishing': context_dict}
     }
     if tag is not None:
         return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]

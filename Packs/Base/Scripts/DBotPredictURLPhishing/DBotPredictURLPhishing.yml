@@ -57,6 +57,16 @@ commonfields:
   version: -1
 enabled: true
 name: DBotPredictURLPhishing
+outputs:
+- contextPath: DBotPredictURLPhishing.URL
+  description: URL on which the model runned.
+  type: String
+- contextPath: DBotPredictURLPhishing.FinalVerdict
+  description: Final verdict of the URL.
+  type: String
+- contextPath: DBotPredictURLPhishing.IsWhitelisted
+  description: Wether the URL has been whitelisted bu the model.
+  type: Boolean
 script: '-'
 subtype: python3
 system: false
