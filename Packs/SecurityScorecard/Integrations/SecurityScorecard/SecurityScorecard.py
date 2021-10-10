@@ -277,7 +277,6 @@ def get_last_run(
 
     Returns:
         ``datetime`` representing the last fetch occurred.
-        
     """
 
     # Check for existence of last run
@@ -285,7 +284,7 @@ def get_last_run(
     # Set 2 days by default if the first fetch parameter is not set
 
     if last_run:
-        return arg_to_datetime(last_run)
+        return arg_to_datetime(last_run)  # type: ignore
     else:
 
         demisto.debug(f"First fetch is defined as '{first_fetch}'")
@@ -323,10 +322,12 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         most_recent_alert_created_date = most_recent_alert.get("created_at")
 
         most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date)  # type: ignore
-        demisto.debug(f"Setting last runtime as alert most recent: {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}")
-
+        demisto.debug(
+            f"Setting last runtime as alert most recent: \
+            {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
+        ) 
         demisto.setLastRun({
-            'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)
+            'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
         })
         demisto.debug("Finished setLastRun")
 
@@ -351,7 +352,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
             if alert_datetime > last_run:  # type: ignore
                 incident = {}
                 incident["name"] = f"{company_name} {change_type.replace('_', ' ').title()}"
-                incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)
+                incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp

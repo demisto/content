@@ -1,7 +1,6 @@
 from CommonServerPython import *
 from SecurityScorecard import \
     SecurityScorecardClient, \
-    SECURITYSCORECARD_DATE_FORMAT, \
     incidents_to_import, \
     get_last_run, \
     portfolios_list_command, \
@@ -16,7 +15,6 @@ from SecurityScorecard import \
 
 import json
 import io
-import datetime  # type: ignore
 import pytest
 
 
@@ -82,7 +80,6 @@ def test_get_last_run(last_run, first_fetch):
         assert last_run_dt == arg_to_datetime(arg_name="last_run", arg=last_run)
     else:
         # resetting microsecond as causes failure:
-        # E           assert datetime.datetime(2021, 10, 3, 14, 50, 3, 242595) == datetime.datetime(2021, 10, 3, 14, 50, 3, 244008)
         # E             +datetime.datetime(2021, 10, 3, 14, 50, 3, 242595)
         # E             -datetime.datetime(2021, 10, 3, 14, 50, 3, 244008)
         assert last_run_dt.replace(microsecond=0) == \
@@ -115,7 +112,10 @@ def test_incidents_to_import(alerts: list):
     """
 
     # Need to remove tz info to deal with tz awareness with arg_to_datetime
-    incidents = incidents_to_import(alerts=alerts, last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None))
+    incidents = incidents_to_import(
+        alerts=alerts,
+        last_run=arg_to_datetime("2021-07-25T00:00:00.000Z").replace(tzinfo=None)  # type: ignore
+    )
     if not alerts:
         assert not incidents
     else:
