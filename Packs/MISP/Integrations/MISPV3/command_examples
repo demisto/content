@@ -19,3 +19,4 @@
 !misp-add-events-from-feed limit=1 feed=Botvrij.eu
 !misp-delete-event event_id=1655
 !misp-add-file-object entry_id=${File.EntryID} event_id=1655
+!misp-update-attribute attribute_uuid=c0ba7147-d99a-418a-a23a-d9be62590c33 last_seen=2030-06-84 category=Person
