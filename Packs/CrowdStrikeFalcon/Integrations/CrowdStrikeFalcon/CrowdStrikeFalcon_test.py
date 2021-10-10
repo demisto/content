@@ -2950,6 +2950,7 @@ def test_list_host_group_members(requests_mock):
 
 @pytest.mark.parametrize('endpoint_status, status, is_isolated',
                          [('Normal', 'Online', ''),
+                          ('normal', 'Online', ''),
                           ('containment_pending', '', 'Pending isolation'),
                           ('contained', '', 'Yes'),
                           ('lift_containment_pending', '', 'Pending unisolation'),
