@@ -239,7 +239,7 @@ def test_user_get_command(gsuite_client, mocker):
     - Ensure CommandResult entry should be as expected.
     """
     from GSuiteAdmin import user_get_command
-    args = {'user_key': '113088517730792434177'}
+    args = {'user': 'testuser'}
     with open('test_data/user_create_response.json') as file:
         api_response = json.load(file)
     with open('test_data/user_get_entry_context.json') as file:

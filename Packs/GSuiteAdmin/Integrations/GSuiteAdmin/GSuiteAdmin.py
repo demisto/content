@@ -707,7 +707,7 @@ def group_get_command(client, args: Dict[str, str]) -> CommandResults:
     :return: CommandResults.
     """
     client.set_authorized_http(scopes=SCOPES['GROUP'], subject=ADMIN_EMAIL)
-    group_key_suffix = URL_SUFFIX['GROUP_GET'].format(args.pop('group_key', ''))
+    group_key_suffix = URL_SUFFIX['GROUP_GET'].format(args.pop('group', ''))
 
     response = client.http_request(
         url_suffix=group_key_suffix, method='GET')
@@ -1036,8 +1036,8 @@ def user_get_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
     client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
-    user_key = args.get('user_key', '')
-    url_suffix = f"{URL_SUFFIX['USER']}/{urllib.parse.quote(user_key)}"
+    user_key = args.get('user', '')
+    url_suffix = urljoin(URL_SUFFIX['USER'], urllib.parse.quote(user_key))
     response = client.http_request(url_suffix=url_suffix, method='GET')
 
     # Context
@@ -1056,8 +1056,9 @@ def user_get_command(client, args: Dict[str, str]) -> CommandResults:
 
     return CommandResults(outputs_prefix=OUTPUT_PREFIX['CREATE_USER'],
                           outputs_key_field=['id'],
-                          outputs=outputs, raw_response=response,
-                          readable_output=readable_output)
+                          outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
 
 
 def main() -> None:

@@ -1845,10 +1845,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Identifies the user in the API request. The value can be the user's
-        primary email address, alias email address, or unique user ID.
+      description: One of the following- user email address, alias email address, or the unique user ID.
       isArray: false
-      name: user_key
+      name: user
       required: true
       secret: false
     deprecated: false
@@ -2230,10 +2229,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Identifies the group in the request. The value can be the group's
-        email address, group alias, or the unique group ID.
+      description: One of the following- group email address, group alias, or the unique group ID.
       isArray: false
-      name: group_key
+      name: group
       required: true
       secret: false
     deprecated: false

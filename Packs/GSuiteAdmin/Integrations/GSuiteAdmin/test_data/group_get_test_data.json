@@ -1,6 +1,6 @@
 {
   "args": {
-    "group_key": "SOME_ID"
+    "group": "SOME_ID"
   },
   "response_data": {
     "kind": "admin#directory#group",
