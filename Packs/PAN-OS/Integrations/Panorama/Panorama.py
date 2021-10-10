@@ -6774,6 +6774,7 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
 
 
 def show_user_id_interface_config_request(args: dict):
+    # template argument is managed in hte initialize_instance method
     template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
@@ -6856,6 +6857,7 @@ def show_zone_config_command(args):
 
 
 def list_configured_user_id_agents_request(args: dict, version):
+    # template argument is managed in hte initialize_instance method
     template_stack = str(args.get('template_stack', ''))
 
     vsys = args.get('vsys')
