@@ -58,6 +58,7 @@ SCORES_MAP = {
 
 PAGE_SIZE = 50
 
+
 ''' CLIENT CLASS '''
 
 
@@ -98,7 +99,7 @@ class Client(BaseClient):
     def build_iterator(self, is_get_command: bool) -> list:
         """
         Retrieves all entries from the feed.
-        This method implements all of the logic to get the tags from thr feed.
+        This method implements all of the logic to get the tags from the feed.
         Args:
             is_get_command: is this method called from the get-indicators-command
         Returns:
@@ -116,6 +117,7 @@ class Client(BaseClient):
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
             else:
                 page_num = arg_to_number(integration_context.get('page_num', 0))
+                page_num = page_num if page_num else 0
         get_tags_response = self.get_tags({"pageNum": page_num,
                                            "pageSize": PAGE_SIZE,
                                            "sortBy": "created_at"})
@@ -142,17 +144,18 @@ class Client(BaseClient):
 
 def incremental_level_fetch(client: Client) -> list:
     """
-
+    This method implements the incremental level of the feed. It checks if any updates
+    have been made in the tags from the last time, and returns the updated tags.
     Args:
-        client:
-
+        client: Client object
     Returns:
+        A list of tag details represents the tags that have been updated.
     """
 
     results: list = []
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
-    list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', []))
+    list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
     time_from_last_update = integration_context.get('time_of_first_fetch')
     # if there are such tags, we first get all of them and upload to demisto
     index_to_delete = 0
@@ -168,9 +171,8 @@ def incremental_level_fetch(client: Client) -> list:
             return results
 
     page_num = 0
-    # TODO change flag name
-    flag = False
-    while not flag:
+    has_updates = True
+    while has_updates:
         response = client.get_tags({"pageNum": page_num,
                                     "pageSize": 200,
                                     "sortBy": "updated_at",
@@ -185,11 +187,11 @@ def incremental_level_fetch(client: Client) -> list:
                 list_of_all_updated_tags.append(
                     {'public_tag_name': tag.get('public_tag_name')})
             else:
-                flag = True
+                has_updates = False
                 break
         page_num += 1
 
-    # add only PAGE_SIZE get_tag_details to results, so we wont make to many calls to the api
+    # add only PAGE_SIZE tag_details to results, so we wont make to many calls to the api
     list_index = 0
     for tag in list_of_all_updated_tags:
         if len(results) < PAGE_SIZE:
@@ -201,12 +203,11 @@ def incremental_level_fetch(client: Client) -> list:
             break
     # delete from the list all tags that will be returned this fetch
     list_of_all_updated_tags = list_of_all_updated_tags[list_index:]
-    # update integration context if needed
-    if list_of_all_updated_tags:
-        context = get_integration_context()
-        context['tags_need_to_be_fetched'] = list_of_all_updated_tags
-        context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
-        set_integration_context(context)
+    # update integration context
+    context = get_integration_context()
+    context['tags_need_to_be_fetched'] = list_of_all_updated_tags
+    context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+    set_integration_context(context)
     return results
 
 
@@ -292,7 +293,10 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
     """
     relationships: list = []
     for related_tag in related_tags:
-        related_tag_details = client.get_tag_details(related_tag)
+        try:
+            related_tag_details = client.get_tag_details(related_tag)
+        except DemistoException:
+            continue
         if related_tag_details:
             tag = related_tag_details.get('tag')
             related_tag_name = tag.get('tag_name')
@@ -326,15 +330,17 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-
-    client.build_iterator(True)
+    try:
+        client.build_iterator(True)
+    except Exception as e:
+        return_error(str(e))
     return 'ok'
 
 
 def fetch_indicators(client: Client,
                      is_get_command: bool,
                      tlp_color: Optional[str] = None,
-                     feed_tags: List = [],
+                     feed_tags: List = None,
                      limit: int = -1) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
@@ -344,7 +350,7 @@ def fetch_indicators(client: Client,
         feed_tags (list): tags to assign fetched indicators
         limit (int): limit the results
     Returns:
-        Indicators.
+        Indicators list.
     """
     iterator = client.build_iterator(is_get_command)
     indicators = []
@@ -377,12 +383,15 @@ def fetch_indicators(client: Client,
                 indicator_obj['relationships'] = relationships
         tag_groups = get_tag_groups(tag_details.get('tag_groups', []))
         if feed_tags or tag_groups:
-            tag_groups.extend(feed_tags)
+            if feed_tags:
+                tag_groups.extend(feed_tags)
             indicator_obj['fields']['tags'] = tag_groups
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
         indicators.append(indicator_obj)
+    if limit > 0 and is_get_command:
+        indicators = indicators[:limit]
     return indicators
 
 

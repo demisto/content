@@ -31,7 +31,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
@@ -66,6 +66,7 @@ configuration:
   required: false
   type: 8
 - name: feedExpirationPolicy
+  display: ''
   options:
   - never
   - interval
@@ -73,7 +74,9 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+
 - name: feedExpirationInterval
+  display: ''
   required: false
   type: 1
 - additionalinfo: Supports CSV values.
@@ -87,8 +90,8 @@ configuration:
   required: false
   fromlicense: encrypted
   type: 4
-description: This is the Feed Hello World integration for getting started with your
-  feed integration.
+description: Use the AutoFocus Tags Feeds integration to fetch indicators from AutoFocus
+  Tags.
 display: AutoFocusTagsFeed
 name: AutoFocusTagsFeed
 script:

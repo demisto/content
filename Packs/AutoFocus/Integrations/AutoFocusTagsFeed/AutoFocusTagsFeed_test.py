@@ -1,7 +1,7 @@
 """
 """
 
-from AutoFocusTagsFeed import Client, get_indicators_command, fetch_indicators_command
+from AutoFocusTagsFeed import Client, get_indicators_command, fetch_indicators_command, fetch_indicators
 from CommonServerPython import tableToMarkdown, string_to_table_header
 import json
 import io
@@ -40,9 +40,12 @@ def test_fetch_indicators(mocker):
     """
 
     client = Client(api_key='1234', verify=False, proxy=False)
-    mocker.patch.object(Client, 'build_iterator', return_value=util_load_json('test_data/build_iterator_results.json'))
-    results = fetch_indicators_command(client, params={'tlp_color': 'RED'})
-    assert results == util_load_json('test_data/get_indicators_command_results.json')
+    mocker.patch.object(client, 'build_iterator', return_value=util_load_json('test_data/build_iterator_results.json'))
+    actual_results = fetch_indicators_command(client, params={'tlp_color': 'RED'})[0]
+    expected_results = util_load_json('test_data/fetch_indicators_results.json')[0]
+    assert actual_results["type"] == expected_results["type"]
+    assert actual_results["value"] == expected_results["value"]
+    assert actual_results["fields"] == expected_results["fields"]
 
 
 def test_get_indicators_command(mocker):
@@ -57,11 +60,10 @@ def test_get_indicators_command(mocker):
 
     """
     client = Client(api_key='1234', verify=False, proxy=False)
-    indicators_list = util_load_json('test_data/build_iterator_results.json')[:2]
-    mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
-    tag_details = util_load_json('test_data/tag_details_result.json')
-    mocker.patch.object(Client, 'get_tag_details', return_value=tag_details)
-    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '2'})
+    indicators_list = util_load_json('test_data/fetch_indicators_results.json')[:1]
+    #mocker.patch.object(client, 'build_iterator', return_value=indicators_list)
+    mocker.patch(__name__ + '.fetch_indicators', return_value=indicators_list)
+    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '1'})
     human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators_list,
                                      headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
                                      removeNull=True)

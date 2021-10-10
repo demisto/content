@@ -1,5 +1,3 @@
-This is the Feed Hello World integration for getting started with your feed integration.
-This integration was integrated and tested with version xx of AutoFocusTagsFeed
 
 ## Configure AutoFocusTagsFeed on Cortex XSOAR
 
