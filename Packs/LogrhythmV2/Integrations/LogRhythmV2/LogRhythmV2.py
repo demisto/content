@@ -6,8 +6,8 @@ from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 
 ''' GLOBAL VARS '''
-ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'entityName',
-                 'alarmDataCached']
+ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
+                 'entityName', 'alarmDataCached', 'eventCount', 'rbpMax', 'rbpAvg']
 
 ALARM_EVENTS_HEADERS = ['commonEventName', 'logMessage', 'priority', 'logDate', 'impactedHostId', 'impactedZone',
                         'serviceName', '', 'entityName', 'classificationName', 'classificationTypeName']
@@ -1009,32 +1009,32 @@ class Client(BaseClient):
                             entity_name=None, case_association=None, created_after=None):
         headers = self._headers
 
-        if alarm_status:
-            alarm_status = next((id for id, status in ALARM_STATUS.items() if status == alarm_status))
-
-        params = assign_params(alarmStatus=alarm_status, offset=offset, count=count, associatedCases=case_association,
-                               alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
-
-        response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
-
-        alarms = response.get('alarmsSearchDetails')
         if alarm_id:
-            alarms = next((alarm for alarm in alarms if alarm.get('alarmId') == int(alarm_id)), None)
-            if type(alarms) is dict:
-                alarms = [alarms]
+            response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}', headers=headers)
+            alarms = [response.get('alarmDetails')]
+        else:
+            if alarm_status:
+                alarm_status = next((id for id, status in ALARM_STATUS.items() if status == alarm_status))
 
-        if created_after:
-            filtered_alarms = []
-            created_after = dateparser.parse(created_after)
+            params = assign_params(alarmStatus=alarm_status, offset=offset, count=count,
+                                   associatedCases=case_association,
+                                   alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
 
-            for alarm in alarms:
-                date_inserted = dateparser.parse(alarm.get('dateInserted'))
-                if date_inserted > created_after:
-                    filtered_alarms.append(alarm)
-                else:
-                    break
+            response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
+            alarms = response.get('alarmsSearchDetails')
 
-            alarms = filtered_alarms
+            if created_after:
+                filtered_alarms = []
+                created_after = dateparser.parse(created_after)
+
+                for alarm in alarms:
+                    date_inserted = dateparser.parse(alarm.get('dateInserted'))
+                    if date_inserted > created_after:
+                        filtered_alarms.append(alarm)
+                    else:
+                        break
+
+                alarms = filtered_alarms
 
         if alarms:
             for alarm in alarms:
@@ -1535,7 +1535,7 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                       entity_name, case_association)
 
     if alarms:
-        hr = tableToMarkdown('Alarms', alarms, headerTransform=pascalToSpace, headers=ALARM_HEADERS)
+        hr = tableToMarkdown('Alarms', alarms, headerTransform=pascalToSpace, headers=ALARM_HEADERS, removeNull=True)
     else:
         hr = 'No alarms were found.'
 
