@@ -31,7 +31,8 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        r = self._http_request("GET", url_suffix="", full_url=self._base_url, resp_type="text")
+        session = requests.Session()
+        r = session.request("GET", self._base_url, headers={'User-Agent': 'Mozilla/5.0'}, verify=self._verify).text
 
         soup = BeautifulSoup(r, "html.parser")
 
