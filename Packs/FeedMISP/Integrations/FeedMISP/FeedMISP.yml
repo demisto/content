@@ -88,7 +88,7 @@ configuration:
   type: 0
 - display: MISP Attribute Types
   additionalinfo: Attribute types to get. You can enter a comma-separated list of types, 
-    for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes> Type dropdown list'
+    for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list'
   name: attribute_types
   required: false
   type: 0
