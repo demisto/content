@@ -1,4 +1,4 @@
-id: DevSecOps - Fetch PR - Triage v2
+id: DevSecOps - Fetch PR - Triage V2
 version: -1
 name: DevSecOps - Fetch PR - Triage V2
 description: A PR Triage Playbook
@@ -569,7 +569,7 @@ inputs:
     simple: "false"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
 tests:
