@@ -7,13 +7,13 @@ SERVER_SYSTEM_CONFIG_PATH = '/system/config'
 ''' STANDALONE FUNCTION '''
 
 
-def get_current_server_config():
+def get_current_server_config() -> dict:
     res = execute_command("demisto-api-get", {"uri": SERVER_SYSTEM_CONFIG_PATH})
     config_json = res['response']
     return config_json.get('sysConf', {})
 
 
-def set_system_config(server_config):
+def set_system_config(server_config: dict):
     execute_command(
         "demisto-api-post",
         {
@@ -38,9 +38,9 @@ def update_server_config(key: str, value: str, server_config: dict):
 
 
 def edit_server_config(args: Dict[str, Any]) -> CommandResults:
-    action = args.get('action')
-    key = args.get('key')
-    value = args.get('value')
+    action = args.get('action', "")
+    key = args.get('key', "")
+    value = args.get('value', "")
 
     sys_conf = get_current_server_config()
 
