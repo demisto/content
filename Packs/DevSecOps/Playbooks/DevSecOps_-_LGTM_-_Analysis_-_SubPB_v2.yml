@@ -3,12 +3,7 @@ version: -1
 name: DevSecOps - LGTM - Analysis - SubPB v2
 description: A CodeQL Code Analysis Playbook
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.3
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: Start
     nexttasks:
       '#none#':
       - "35"
@@ -47,6 +43,7 @@ tasks:
       id: c5d3bb57-60d9-4f54-8b3a-1dba7760c9b4
       version: -1
       name: Alerts Found?
+      description: Alerts Found?
       type: condition
       iscommand: false
       brand: ""
@@ -92,6 +89,7 @@ tasks:
       id: 9354f52e-d52d-48ac-8f89-51393189de3b
       version: -1
       name: SQL-Injection Discovered?
+      description: SQL-Injection Discovered?
       type: condition
       iscommand: false
       brand: ""
@@ -457,6 +455,7 @@ tasks:
       id: 211401da-8e1f-4387-810b-f0ee12b16992
       version: -1
       name: Playbook End
+      description: Playbook End
       type: title
       iscommand: false
       brand: ""
@@ -487,6 +486,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -565,6 +565,7 @@ tasks:
       id: 483d035a-a13f-478c-8097-3abc85642ee6
       version: -1
       name: Slack Enabled?
+      description: Slack Enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -623,6 +624,7 @@ tasks:
       id: 23f2c20d-2f39-40b4-8540-1ca3efb36251
       version: -1
       name: LGTM Enabled?
+      description: LGTM Enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -691,22 +693,22 @@ inputs:
     simple: g
   required: false
   description: Git Platform
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Organization
   value: {}
   required: false
   description: Git Project Organization
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Repository
   value: {}
   required: false
   description: Git Repository
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LGTM Task ID
   value: {}
   required: false
   description: LGTM Task ID
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: LGTM.project_details.languages.grade
   description: The grade of the code for this language.
@@ -724,4 +726,8 @@ outputs:
   description: LGTM Code Review Result Languages Alerts
 - contextPath: LGTM.code_review_result.languages.alerts.query.properties
   description: LGTM Code Review Results Alerts Query Properties
-sourceplaybookid: DevSecOps - LGTM - Analysis - SubPB
+tests:
+- GitLab-test-playbook
+- LGTM-test-playbook
+- playbook-MinIO-Test
+fromversion: 6.0.0

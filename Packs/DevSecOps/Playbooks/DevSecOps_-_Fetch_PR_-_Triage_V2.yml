@@ -12,6 +12,7 @@ tasks:
       id: 72943dbd-c2f3-4271-8538-c2eb8b19a383
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -368,6 +369,7 @@ tasks:
       id: 69313fb5-4fcd-4f9b-8f53-b1237b30dbf7
       version: -1
       name: GenericPolling
+      description: Task Polling
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -450,6 +452,7 @@ tasks:
       id: c0963112-bfa9-42e7-8bda-ffb40f07edb2
       version: -1
       name: Playbook End
+      description: Playbook End
       type: title
       iscommand: false
       brand: ""
@@ -476,6 +479,7 @@ tasks:
       id: 5fb2b645-2cd4-4fbf-85aa-8cabf5a2789d
       version: -1
       name: DevSecOps - LGTM - Analysis - SubPB v2
+      description: DevSecOps LGTM Analysis Subplaybook
       playbookName: DevSecOps - LGTM - Analysis - SubPB v2
       type: playbook
       iscommand: false
@@ -524,6 +528,7 @@ tasks:
       id: 1e55f0e2-1144-4c8f-8734-bc1f6c1a5169
       version: -1
       name: DevSecOps - Prisma - Analysis -SubPB
+      description: DevSecOps Prisma Analysis
       playbookName: DevSecOps - Prisma - Analysis -SubPB
       type: playbook
       iscommand: false
