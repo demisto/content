@@ -247,7 +247,16 @@ tasks:
       - "12"
     scriptarguments:
       object_name:
-        simple: ${ConfigurationSetup.CustomPacks.packurl}
+        complex:
+          root: ConfigurationSetup.CustomPacks
+          accessor: packurl
+          transformers:
+            - operator: Stringify
+            - operator: join
+              args:
+                separator:
+                  value:
+                    simple: ','
     separatecontext: false
     view: |-
       {
