@@ -29,8 +29,8 @@ class TestStixDecode:
                 res = StixDecode.decode(stix_str)
                 res_path = f'{file_path.rstrip(".xml")}-result.json'
                 with open(res_path, 'r') as res_f:
-                    expctd_res = json.load(res_f)
-                    assert expctd_res == list(res[1])
+                    expected_res = json.load(res_f)
+                    assert expected_res == list(res[1])
 
 
 class TestUtilFunctions:

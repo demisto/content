@@ -48,12 +48,17 @@ class AddressObject(object):
         acategory = props.get('category', None)
         if acategory is None:
             try:
-                ip_include_cidr = IPNetwork(indicator_list[0])
-                ip = ip_include_cidr.ip
+                ip = IPNetwork(indicator_list[0])
                 if ip.version == 4:
-                    type_ = 'IP'
+                    if len(indicator_list[0].split('/')) > 1:
+                        type_ = 'CIDR'
+                    else:
+                        type_ = 'IP'
                 elif ip.version == 6:
-                    type_ = 'IPv6'
+                    if len(indicator_list[0].split('/')) > 1:
+                        type_ = 'IPv6CIDR'
+                    else:
+                        type_ = 'IPv6'
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
@@ -295,16 +300,14 @@ class StixDecode(object):
         for iv in indicators:
             result['{}:{}'.format(iv['indicator'], iv['type'])] = iv
 
-        return result.values()
+        return list(result.values())
 
     @staticmethod
     def decode(content, **kwargs):
-        result = []
-
         package = BeautifulSoup(content, 'xml')
 
         if package.contents[0].name != 'STIX_Package':
-            return None, []
+            return None, None, None, None
 
         package = package.contents[0]
 
@@ -312,79 +315,82 @@ class StixDecode(object):
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
-        pprops = package_extract_properties(package)
+        if package.find_all('Observable'):
+            observable_result = []
 
-        observables = package.find_all('Observable')
-        for o in observables:
-            gprops = observable_extract_properties(o)
+            pprops = package_extract_properties(package)
 
-            obj = next((ob for ob in o if ob.name == 'Object'), None)
-            if obj is None:
-                continue
+            observables = package.find_all('Observable')
+            for o in observables:
+                gprops = observable_extract_properties(o)
 
-            # main properties
-            properties = next((c for c in obj if c.name == 'Properties'), None)
-            if properties is not None:
-                for r in StixDecode.object_extract_properties(properties, kwargs):
-                    r.update(gprops)
-                    r.update(pprops)
+                obj = next((ob for ob in o if ob.name == 'Object'), None)
+                if obj is None:
+                    continue
 
-                    result.append(r)
-
-            # then related objects
-            related = next((c for c in obj if c.name == 'Related_Objects'), None)
-            if related is not None:
-                for robj in related:
-                    if robj.name != 'Related_Object':
-                        continue
-
-                    properties = next((c for c in robj if c.name == 'Properties'), None)
-                    if properties is None:
-                        continue
-
+                # main properties
+                properties = next((c for c in obj if c.name == 'Properties'), None)
+                if properties is not None:
                     for r in StixDecode.object_extract_properties(properties, kwargs):
                         r.update(gprops)
                         r.update(pprops)
-                        result.append(r)
 
-        if result:
-            return timestamp, StixDecode._deduplicate(result), None, None
+                        observable_result.append(r)
 
-        result: Dict[str, dict] = {}
-        indicator_info: Dict[str: str] = {}
+                # then related objects
+                related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                if related is not None:
+                    for robj in related:
+                        if robj.name != 'Related_Object':
+                            continue
 
-        observable = package.find_all('Observable')
-        if observable:
-            indicator_ref = observable[0].get('idref')
+                        properties = next((c for c in robj if c.name == 'Properties'), None)
+                        if properties is None:
+                            continue
 
-            indicators = package.find_all('Indicator')
-            for i in indicators:
-                indicator_info = indicator_extract_properties(i)
+                        for r in StixDecode.object_extract_properties(properties, kwargs):
+                            r.update(gprops)
+                            r.update(pprops)
+                            observable_result.append(r)
 
-            result[indicator_ref] = indicator_info
+            return timestamp, StixDecode._deduplicate(observable_result), None, None
 
-        if result:
-            return timestamp, None, result, None
-
-    @staticmethod
-    def get_indicator_info(package) -> dict[str: dict]:
-        result: Dict[str, dict] = {}
-        indicator_info: Dict[str: str] = {}
-
-        if package.contents[0].name == 'STIX_Package':
-            package = package.contents[0]
-
+        elif package.find_all('Indicators'):
+            indicator_result: Dict[str, dict] = {}
             observable = package.find_all('Observable')
+
             if observable:
                 indicator_ref = observable[0].get('idref')
-
                 indicators = package.find_all('Indicator')
-                for i in indicators:
-                    indicator_info = indicator_extract_properties(i)
+                indicator_info = indicator_extract_properties(indicators[0])
+                indicator_result[indicator_ref] = indicator_info
 
-                result[indicator_ref] = indicator_info
+            return timestamp, None, indicator_result, None
 
-                return result
+        elif ttp := package.find_all('TTP'):
+            ttp_result: Dict[str, dict] = {}
+            ttp_info: Dict[str, str] = {}
+
+            id_ref = ttp[0].get('id')
+
+            title = next((c for c in ttp[0] if c.name == 'Title'), None)
+            if title is not None:
+                title = title.text
+                ttp_info['stix_ttp_type'] = title
+
+            behavior = package.find_all('Behavior')
+
+            if behavior[0].find_all('Malware'):
+                ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
+
+            elif behavior[0].find_all('Attack_Patterns'):
+                ttp_info.update(ttp_extract_properties(package.find_all('Attack_Patterns')[0], 'Attack_Patterns'))
+
+            ttp_result[id_ref] = ttp_info
+
+            return timestamp, None, None, ttp_result
+
+        return None, None, None, None
 
 
 class Taxii11(object):
@@ -773,8 +779,9 @@ class TAXIIClient(object):
             result_id = None
             more = None
             tag_stack = collections.deque()  # type: ignore
-            indicators: Dict[str, dict] = {}
             observables = []
+            indicators: Dict[str, dict] = {}
+            ttps: Dict[str, dict] = {}
 
             try:
                 for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
@@ -809,11 +816,11 @@ class TAXIIClient(object):
                                 content = etree.tostring(c[0], encoding='unicode')
                                 timestamp, observable, indicator, ttp = StixDecode.decode(content)
                                 if observable:
-                                    observables.append(list(observable)[0])
+                                    observables.append(observable[0])
                                 elif indicator:
                                     indicators.update(indicator)
                                 elif ttp:
-                                    yield ttp
+                                    ttps.update(ttp)
 
                                 if timestamp:
                                     if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
@@ -850,12 +857,25 @@ class TAXIIClient(object):
             )
 
         for observable in observables:
-            id_ref = observable.get('id_ref')
-            if id_ref:
-                indicator_info = indicators.get(id_ref)
+
+            indicator_ref = observable.get('indicator_ref')
+            if indicator_ref:
+                indicator_info = indicators.get(indicator_ref)
                 if indicator_info:
-                    observable.update(indicators.get(id_ref))
+                    observable.update(indicators.get(indicator_ref))
+
+            ttp_ref = observable.get('ttp_ref')
+            if ttp_ref:
+                relationship = {
+                    'name': ttps.get(ttp_ref, {}).get('indicator'),
+                    'type': ttps.get(ttp_ref, {}).get('type')
+                }
+                observable['relationship'] = relationship
+
             yield observable
+
+        for i in ttps.values():
+            yield i
 
     def _incremental_poll_collection(self, poll_service, begin, end):
         """Polls collection in increments of 10 days"""
@@ -937,7 +957,7 @@ def package_extract_properties(package):
         if 'tlpmarkingstructuretype' not in type_:
             continue
 
-        result['share_level'] = color.lower()  # https://www.us-cert.gov/tlp
+        result['TLP'] = color.upper()  # https://www.us-cert.gov/tlp
         break
 
     # decode title
@@ -973,7 +993,7 @@ def observable_extract_properties(observable):
 
     id_ref = observable.get('id')
     if id_ref:
-        result['id_ref'] = id_ref
+        result['indicator_ref'] = id_ref
 
     title = next((c for c in observable if c.name == 'Title'), None)
     if title is not None:
@@ -1009,6 +1029,56 @@ def indicator_extract_properties(indicator) -> dict[str: str]:
             value = value.text
             result['confidence'] = value
 
+    indicated_ttp = next((c for c in indicator if c.name == 'Indicated_TTP'), None)
+    if indicated_ttp is not None:
+        ttp = next((c for c in indicated_ttp if c.name == 'TTP'), None)
+        if ttp is not None:
+            value = ttp.get('idref')
+            result['ttp_ref'] = value
+
+    return result
+
+
+def ttp_extract_properties(ttp, behavior):
+    result = {'type': behavior}
+
+    if behavior == 'Malware':
+        type_ = next((c for c in ttp if c.name == 'Type'), None)
+        if type_ is not None:
+            type_ = type_.text
+            result['stix_type'] = type_
+
+        name = next((c for c in ttp if c.name == 'Name'), None)
+        if name is not None:
+            name = name.text
+            result['indicator'] = name
+
+        title = next((c for c in ttp if c.name == 'Title'), None)
+        if title is not None:
+            title = title.text
+            result['stix_title'] = title
+
+    if behavior == 'Attack_Patterns':
+        id_ref = next((c for c in ttp if c.name == 'idref'), None)
+        if id_ref is not None:
+            id_ref = id_ref.text
+            result['stix_id_ref'] = id_ref
+
+        title = next((c for c in ttp if c.name == 'Title'), None)
+        if title is not None:
+            title = title.text
+            result['indicator'] = title
+
+    description = next((c for c in ttp if c.name == 'Description'), None)
+    if description is not None:
+        description = description.text
+        result['stix_description'] = description
+
+    short_description = next((c for c in ttp if c.name == 'Short_Description'), None)
+    if short_description is not None:
+        short_description = short_description.text
+        result['stix_short_description'] = short_description
+
     return result
 
 
@@ -1038,6 +1108,18 @@ def interval_in_sec(val):
             return number * m_value
 
     return None
+
+
+def create_relationships(indicator):
+    if relationship_type := indicator.get('relationship', {}).get('type') == 'Malware':
+        name = 'indicator-of'
+    else:
+        name = 'related-to'
+
+    if name:
+        return EntityRelationship(name=name, entity_a=indicator.get('value'), entity_a_type=indicator.get('type'),
+                                  entity_b=indicator.get('relationship', {}).get('name'),
+                                  entity_b_type=relationship_type)
 
 
 def test_module(client, *_):
@@ -1071,6 +1153,8 @@ def fetch_indicators_command(client):
                 },
                 'rawJSON': item,
             }
+            if item.get('relationship'):
+                indicator_obj['relationships'] = create_relationships(item)
             if client.tlp_color:
                 indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
