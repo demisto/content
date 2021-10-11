@@ -200,6 +200,7 @@ script:
     - contextPath: accessdata.filter
       description: A JSON representation of the filter created.
       type: string
+    description: Creates an internal filter to be used with other API endpoint calls.
 
   - name: accessdata-api-combine-filter-and
     arguments:
@@ -213,6 +214,7 @@ script:
     - contextPath: accessdata.filter
       description: A JSON representation of the filter created.
       type: string
+    description: Combines 2 internal filters together enforcing both.
 
   - name: accessdata-api-combine-filter-or
     arguments:
@@ -226,6 +228,7 @@ script:
     - contextPath: accessdata.filter
       description: A JSON representation of the filter created.
       type: string
+    description: Combines 2 internal filters together enforcing either.
 
   dockerimage: demisto/accessdata-python3:latest
   runonce: false
