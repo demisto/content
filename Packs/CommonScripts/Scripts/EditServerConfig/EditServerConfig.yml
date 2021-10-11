@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The action to make. If update is chosen and the key is not exist, a
+  description: The action to make. If update is chosen and the key does not exist, a
     new key will be added.
   isArray: false
   name: action

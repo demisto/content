@@ -14,7 +14,7 @@ Edit the server configuration (under *settings/troubleshooting*). You can either
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| action | The action to make. If update is chosen and the key is not exist, a new key will be added. |
+| action | The action to make. If update is chosen and the key does not exist, a new key will be added. |
 | key | The key to set. |
 | value | The value to set. |
 
