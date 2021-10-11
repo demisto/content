@@ -36,58 +36,55 @@ List cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Limit the number of results. | Optional | 
+| limit | Limit the number of returned results. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | _routing | 
-| TheHive.Cases._parent | string | _parent | 
-| TheHive.Cases.customFields | unknown | Custom Fields | 
-| TheHive.Cases.caseId | number | Case ID | 
-| TheHive.Cases.flag | boolean | Flagged | 
-| TheHive.Cases.startDate | number | Start date | 
-| TheHive.Cases.status | string | Status | 
-| TheHive.Cases.owner | string | Owner | 
-| TheHive.Cases.tlp | number | TLP | 
-| TheHive.Cases.title | string | Title | 
-| TheHive.Cases.tags | unknown | Tags | 
-| TheHive.Cases._type | string | _type | 
-| TheHive.Cases._version | number | _version | 
-| TheHive.Cases._id | string | _id | 
-| TheHive.Cases.id | string | ID | 
-| TheHive.Cases.createdAt | number | Created at | 
-| TheHive.Cases.description | string | Description | 
-| TheHive.Cases.severity | number | Severity | 
-| TheHive.Cases.pap | number | PAP | 
-| TheHive.Cases.createdBy | string | Created by | 
-| TheHive.Cases.tasks._routing | string | _routing | 
-| TheHive.Cases.tasks._parent | string | _parent | 
-| TheHive.Cases.tasks.flag | boolean | Flagged | 
-| TheHive.Cases.tasks.order | number | Order | 
-| TheHive.Cases.tasks.status | string | Status | 
-| TheHive.Cases.tasks.title | string | Title | 
-| TheHive.Cases.tasks._type | string | _type | 
-| TheHive.Cases.tasks._version | number | _version | 
-| TheHive.Cases.tasks._id | string | _id | 
-| TheHive.Cases.tasks.id | string | ID | 
-| TheHive.Cases.tasks.createdAt | number | Created at | 
-| TheHive.Cases.tasks.createdBy | string | Created by | 
-| TheHive.Cases.tasks.group | string | Group | 
-| TheHive.Cases.tasks.logs.message | string | Message | 
-| TheHive.Cases.tasks.logs._routing | string | _routing | 
-| TheHive.Cases.tasks.logs._parent | string | _parent | 
-| TheHive.Cases.tasks.logs.startDate | number | Start date | 
-| TheHive.Cases.tasks.logs.status | string | Status | 
-| TheHive.Cases.tasks.logs.owner | string | Owner | 
-| TheHive.Cases.tasks.logs._type | string | Type | 
-| TheHive.Cases.tasks.logs._version | number | _version | 
-| TheHive.Cases.tasks.logs._id | string | _id | 
-| TheHive.Cases.tasks.logs.id | string | ID | 
-| TheHive.Cases.tasks.logs.createdAt | number | Created at | 
-| TheHive.Cases.tasks.logs.createdBy | string | Created by | 
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
+| TheHive.Cases.caseId | number | The order of the case. | 
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.status | string | Status of the case. | 
+| TheHive.Cases.owner | string | Owner of the case. | 
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
+| TheHive.Cases.title | string | Title of the case. | 
+| TheHive.Cases.tags | unknown | Tags added to the case. | 
+| TheHive.Cases._type | string | Type of the case. | 
+| TheHive.Cases._version | number | The version of TheHive Project. | 
+| TheHive.Cases.id | string | The ID of the case. | 
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.description | string | Description of the case. | 
+| TheHive.Cases.severity | number | Severity of the case. | 
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
+| TheHive.Cases.createdBy | string | The user who created the case. | 
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.tasks.order | number | The order of the task. | 
+| TheHive.Cases.tasks.status | string | Status of the task. | 
+| TheHive.Cases.tasks.title | string | Title of the task. | 
+| TheHive.Cases.tasks._type | string | Type of the task. | 
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.id | string | The ID of the task. | 
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
+| TheHive.Cases.tasks.group | string | Group of the task. | 
+| TheHive.Cases.tasks.logs.message | string | Log message. | 
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
 
 
 #### Command Example
@@ -99,100 +96,254 @@ List cases.
     "TheHive": {
         "Cases": [
             {
-                "_id": "~41324616",
+                "_id": "~479312",
                 "_type": "case",
-                "caseId": 2,
-                "createdAt": "2021-09-19T09:22:28Z",
+                "caseId": 1,
+                "createdAt": "2021-10-11T17:02:01Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
-                "description": "description for new case",
+                "description": "case with tasks",
                 "endDate": null,
                 "flag": false,
-                "id": "~41324616",
+                "id": "~479312",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1633971660000,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [
+                    {
+                        "_createdAt": 1633971721834,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~41500824",
+                        "_type": "Task",
+                        "extraData": {
+                            "shareCount": 0
+                        },
+                        "flag": false,
+                        "group": "default",
+                        "logs": [],
+                        "order": 0,
+                        "status": "Waiting",
+                        "title": "task1"
+                    },
+                    {
+                        "_createdAt": 1633971721837,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~438408",
+                        "_type": "Task",
+                        "extraData": {
+                            "shareCount": 0
+                        },
+                        "flag": false,
+                        "group": "default",
+                        "logs": [],
+                        "order": 0,
+                        "status": "Waiting",
+                        "title": "task2"
+                    },
+                    {
+                        "_createdAt": 1633971721840,
+                        "_createdBy": "adrugobitski@paloaltonetworks.com",
+                        "_id": "~442504",
+                        "_type": "Task",
+                        "extraData": {
+                            "shareCount": 0
+                        },
+                        "flag": false,
+                        "group": "default",
+                        "logs": [],
+                        "order": 0,
+                        "status": "Waiting",
+                        "title": "task3"
+                    }
+                ],
+                "title": "case with tasks",
+                "tlp": 2,
+                "updatedAt": 1633971749765,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~487504",
+                "_type": "case",
+                "caseId": 2,
+                "createdAt": "2021-10-11T17:02:34Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "case with no task",
+                "endDate": null,
+                "flag": false,
+                "id": "~487504",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1633971720000,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [],
+                "title": "no tasks case",
+                "tlp": 2,
+                "updatedAt": 1633971809110,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~491600",
+                "_type": "case",
+                "caseId": 3,
+                "createdAt": "2021-10-11T17:02:55Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "case to merge",
+                "endDate": null,
+                "flag": false,
+                "id": "~491600",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1633971720000,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [],
+                "title": "merge 1",
+                "tlp": 2,
+                "updatedAt": 1633971809811,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~524320",
+                "_type": "case",
+                "caseId": 4,
+                "createdAt": "2021-10-11T17:03:12Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "case to merge 2",
+                "endDate": null,
+                "flag": false,
+                "id": "~524320",
+                "impactStatus": null,
+                "instance": "TheHive Project_instance_1",
+                "mirroring": "Both",
+                "observables": [],
+                "owner": "adrugobitski@paloaltonetworks.com",
+                "pap": 2,
+                "permissions": [
+                    "manageShare",
+                    "manageAnalyse",
+                    "manageTask",
+                    "manageCaseTemplate",
+                    "manageCase",
+                    "manageUser",
+                    "manageProcedure",
+                    "managePage",
+                    "manageObservable",
+                    "manageTag",
+                    "manageConfig",
+                    "manageAlert",
+                    "accessTheHiveFS",
+                    "manageAction"
+                ],
+                "resolutionStatus": null,
+                "severity": 2,
+                "startDate": 1633971720000,
+                "stats": {},
+                "status": "Open",
+                "summary": null,
+                "tags": [],
+                "tasks": [],
+                "title": "merge 2",
+                "tlp": 2,
+                "updatedAt": 1633971810562,
+                "updatedBy": "adrugobitski@paloaltonetworks.com"
+            },
+            {
+                "_id": "~561160",
+                "_type": "case",
+                "caseId": 5,
+                "createdAt": "2021-10-11T17:12:06Z",
+                "createdBy": "adrugobitski@paloaltonetworks.com",
+                "customFields": {},
+                "description": "case with observables",
+                "endDate": null,
+                "flag": false,
+                "id": "~561160",
                 "impactStatus": null,
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
                 "observables": [
                     {
-                        "_createdAt": 1632316225834,
+                        "_createdAt": 1633972384854,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~41418904",
-                        "_type": "Observable",
-                        "data": "datas for test 2",
-                        "dataType": "domain",
-                        "extraData": {
-                            "permissions": [
-                                "manageShare",
-                                "manageAnalyse",
-                                "manageTask",
-                                "manageCaseTemplate",
-                                "manageCase",
-                                "manageUser",
-                                "manageProcedure",
-                                "managePage",
-                                "manageObservable",
-                                "manageTag",
-                                "manageConfig",
-                                "manageAlert",
-                                "accessTheHiveFS",
-                                "manageAction"
-                            ],
-                            "seen": {
-                                "ioc": false,
-                                "seen": 0
-                            },
-                            "shareCount": 0
-                        },
-                        "ioc": false,
-                        "message": "messages for test 2",
-                        "reports": {},
-                        "sighted": false,
-                        "startDate": 1632316225834,
-                        "tags": [],
-                        "tlp": 2
-                    },
-                    {
-                        "_createdAt": 1632316030325,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~41377816",
-                        "_type": "Observable",
-                        "data": "datas for test",
-                        "dataType": "domain",
-                        "extraData": {
-                            "permissions": [
-                                "manageShare",
-                                "manageAnalyse",
-                                "manageTask",
-                                "manageCaseTemplate",
-                                "manageCase",
-                                "manageUser",
-                                "manageProcedure",
-                                "managePage",
-                                "manageObservable",
-                                "manageTag",
-                                "manageConfig",
-                                "manageAlert",
-                                "accessTheHiveFS",
-                                "manageAction"
-                            ],
-                            "seen": {
-                                "ioc": false,
-                                "seen": 0
-                            },
-                            "shareCount": 0
-                        },
-                        "ioc": false,
-                        "message": "messages for test",
-                        "reports": {},
-                        "sighted": false,
-                        "startDate": 1632316030325,
-                        "tags": [],
-                        "tlp": 2
-                    },
-                    {
-                        "_createdAt": 1632307576963,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~446472",
+                        "_id": "~41504920",
                         "_type": "Observable",
                         "data": "google",
                         "dataType": "domain",
@@ -219,59 +370,22 @@ List cases.
                             },
                             "shareCount": 0
                         },
+                        "ignoreSimilarity": false,
                         "ioc": false,
-                        "message": "new observable",
+                        "message": "observable 2",
                         "reports": {},
                         "sighted": false,
-                        "startDate": 1632307576963,
+                        "startDate": 1633972384854,
                         "tags": [],
-                        "tlp": 2
+                        "tlp": 1
                     },
                     {
-                        "_createdAt": 1632306875578,
+                        "_createdAt": 1633972365905,
                         "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~442400",
+                        "_id": "~532512",
                         "_type": "Observable",
-                        "data": "demisto",
-                        "dataType": "domain",
-                        "extraData": {
-                            "permissions": [
-                                "manageShare",
-                                "manageAnalyse",
-                                "manageTask",
-                                "manageCaseTemplate",
-                                "manageCase",
-                                "manageUser",
-                                "manageProcedure",
-                                "managePage",
-                                "manageObservable",
-                                "manageTag",
-                                "manageConfig",
-                                "manageAlert",
-                                "accessTheHiveFS",
-                                "manageAction"
-                            ],
-                            "seen": {
-                                "ioc": false,
-                                "seen": 1
-                            },
-                            "shareCount": 0
-                        },
-                        "ioc": false,
-                        "message": "test observ",
-                        "reports": {},
-                        "sighted": false,
-                        "startDate": 1632306875578,
-                        "tags": [],
-                        "tlp": 2
-                    },
-                    {
-                        "_createdAt": 1632306875561,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~41345048",
-                        "_type": "Observable",
-                        "data": "demisto",
-                        "dataType": "domain",
+                        "data": "8.8.8.8",
+                        "dataType": "ip",
                         "extraData": {
                             "permissions": [
                                 "manageShare",
@@ -295,11 +409,12 @@ List cases.
                             },
                             "shareCount": 0
                         },
+                        "ignoreSimilarity": false,
                         "ioc": false,
-                        "message": "test observ",
+                        "message": "observable 1",
                         "reports": {},
                         "sighted": false,
-                        "startDate": 1632306875561,
+                        "startDate": 1633972365905,
                         "tags": [],
                         "tlp": 2
                     }
@@ -324,249 +439,28 @@ List cases.
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632043348213,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [
-                    {
-                        "_createdAt": 1632307981876,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~430144",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632307981851,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~454688",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632307552125,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~323720",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632307552231,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~430328",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632308185938,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~462856",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632308185978,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~331912",
-                        "_type": "Task",
-                        "description": "new description",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "newly added task"
-                    },
-                    {
-                        "_createdAt": 1632307008722,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~41357336",
-                        "_type": "Task",
-                        "description": "desc for task 1",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "task1"
-                    },
-                    {
-                        "_createdAt": 1632307008686,
-                        "_createdBy": "adrugobitski@paloaltonetworks.com",
-                        "_id": "~41349144",
-                        "_type": "Task",
-                        "description": "desc for task 1",
-                        "extraData": {
-                            "shareCount": 0
-                        },
-                        "flag": false,
-                        "group": "default",
-                        "logs": [],
-                        "order": 0,
-                        "status": "Waiting",
-                        "title": "task1"
-                    }
-                ],
-                "title": "updated title",
-                "tlp": 2,
-                "updatedAt": 1632316446722,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~352336",
-                "_type": "case",
-                "caseId": 4,
-                "createdAt": "2021-09-22T10:01:26Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~352336",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632304886335,
+                "startDate": 1633972260000,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
                 "tags": [],
                 "tasks": [],
-                "title": "new created case",
+                "title": "observables case",
                 "tlp": 2,
-                "updatedAt": 1632304906505,
+                "updatedAt": 1633972353588,
                 "updatedBy": "adrugobitski@paloaltonetworks.com"
             },
             {
-                "_id": "~409848",
-                "_type": "case",
-                "caseId": 5,
-                "createdAt": "2021-09-22T10:01:26Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~409848",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632304886343,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632304908785,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~413944",
+                "_id": "~41509016",
                 "_type": "case",
                 "caseId": 6,
-                "createdAt": "2021-09-22T10:03:12Z",
+                "createdAt": "2021-10-11T17:16:33Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
-                "description": "description for new case",
+                "description": "case to be removed",
                 "endDate": null,
                 "flag": false,
-                "id": "~413944",
+                "id": "~41509016",
                 "impactStatus": null,
                 "instance": "TheHive Project_instance_1",
                 "mirroring": "Both",
@@ -591,291 +485,15 @@ List cases.
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632304992384,
+                "startDate": 1633972560000,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
                 "tags": [],
                 "tasks": [],
-                "title": "new created case",
+                "title": "remove case",
                 "tlp": 2,
-                "updatedAt": 1632305031043,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~430088",
-                "_type": "case",
-                "caseId": 7,
-                "createdAt": "2021-09-22T10:09:25Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~430088",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632305365792,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632305391510,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~364624",
-                "_type": "case",
-                "caseId": 8,
-                "createdAt": "2021-09-22T10:09:25Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~364624",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632305365797,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632305392665,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~418040",
-                "_type": "case",
-                "caseId": 9,
-                "createdAt": "2021-09-22T10:03:12Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~418040",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632304992392,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632305031833,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~413824",
-                "_type": "case",
-                "caseId": 12,
-                "createdAt": "2021-09-22T10:53:00Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~413824",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632307980064,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632308031147,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~458760",
-                "_type": "case",
-                "caseId": 14,
-                "createdAt": "2021-09-22T10:56:23Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~458760",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632308183798,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632308211253,
-                "updatedBy": "adrugobitski@paloaltonetworks.com"
-            },
-            {
-                "_id": "~327816",
-                "_type": "case",
-                "caseId": 15,
-                "createdAt": "2021-09-22T10:53:00Z",
-                "createdBy": "adrugobitski@paloaltonetworks.com",
-                "customFields": {},
-                "description": "description for new case",
-                "endDate": null,
-                "flag": false,
-                "id": "~327816",
-                "impactStatus": null,
-                "instance": "TheHive Project_instance_1",
-                "mirroring": "Both",
-                "observables": [],
-                "owner": "adrugobitski@paloaltonetworks.com",
-                "pap": 2,
-                "permissions": [
-                    "manageShare",
-                    "manageAnalyse",
-                    "manageTask",
-                    "manageCaseTemplate",
-                    "manageCase",
-                    "manageUser",
-                    "manageProcedure",
-                    "managePage",
-                    "manageObservable",
-                    "manageTag",
-                    "manageConfig",
-                    "manageAlert",
-                    "accessTheHiveFS",
-                    "manageAction"
-                ],
-                "resolutionStatus": null,
-                "severity": 2,
-                "startDate": 1632307980076,
-                "stats": {},
-                "status": "Open",
-                "summary": null,
-                "tags": [],
-                "tasks": [],
-                "title": "new created case",
-                "tlp": 2,
-                "updatedAt": 1632308031887,
+                "updatedAt": 1633972648939,
                 "updatedBy": "adrugobitski@paloaltonetworks.com"
             }
         ]
@@ -888,16 +506,12 @@ List cases.
 >### TheHive Cases:
 >|id|title|description|createdAt|
 >|---|---|---|---|
->| ~41324616 | updated title | description for new case | 2021-09-19T09:22:28Z |
->| ~352336 | new created case | description for new case | 2021-09-22T10:01:26Z |
->| ~409848 | new created case | description for new case | 2021-09-22T10:01:26Z |
->| ~413944 | new created case | description for new case | 2021-09-22T10:03:12Z |
->| ~430088 | new created case | description for new case | 2021-09-22T10:09:25Z |
->| ~364624 | new created case | description for new case | 2021-09-22T10:09:25Z |
->| ~418040 | new created case | description for new case | 2021-09-22T10:03:12Z |
->| ~413824 | new created case | description for new case | 2021-09-22T10:53:00Z |
->| ~458760 | new created case | description for new case | 2021-09-22T10:56:23Z |
->| ~327816 | new created case | description for new case | 2021-09-22T10:53:00Z |
+>| ~479312 | case with tasks | case with tasks | 2021-10-11T17:02:01Z |
+>| ~487504 | no tasks case | case with no task | 2021-10-11T17:02:34Z |
+>| ~491600 | merge 1 | case to merge | 2021-10-11T17:02:55Z |
+>| ~524320 | merge 2 | case to merge 2 | 2021-10-11T17:03:12Z |
+>| ~561160 | observables case | case with observables | 2021-10-11T17:12:06Z |
+>| ~41509016 | remove case | case to be removed | 2021-10-11T17:16:33Z |
 
 
 ### thehive-get-case
@@ -912,271 +526,77 @@ Get a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID. | Required | 
+| id | ID of the case. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | _routing | 
-| TheHive.Cases._parent | string | _parent | 
-| TheHive.Cases.customFields | unknown | Custom Fields | 
-| TheHive.Cases.caseId | number | Case ID | 
-| TheHive.Cases.flag | boolean | Flagged | 
-| TheHive.Cases.startDate | number | Start date | 
-| TheHive.Cases.status | string | Status | 
-| TheHive.Cases.owner | string | Owner | 
-| TheHive.Cases.tlp | number | TLP | 
-| TheHive.Cases.title | string | Title | 
-| TheHive.Cases.tags | unknown | Tags | 
-| TheHive.Cases._type | string | _type | 
-| TheHive.Cases._version | number | _version | 
-| TheHive.Cases._id | string | _id | 
-| TheHive.Cases.id | string | ID | 
-| TheHive.Cases.createdAt | number | Created at | 
-| TheHive.Cases.description | string | Description | 
-| TheHive.Cases.severity | number | Severity | 
-| TheHive.Cases.pap | number | PAP | 
-| TheHive.Cases.createdBy | string | Created by | 
-| TheHive.Cases.tasks._routing | string | _routing | 
-| TheHive.Cases.tasks._parent | string | _parent | 
-| TheHive.Cases.tasks.flag | boolean | Flagged | 
-| TheHive.Cases.tasks.order | number | Order | 
-| TheHive.Cases.tasks.status | string | Status | 
-| TheHive.Cases.tasks.title | string | Title | 
-| TheHive.Cases.tasks._type | string | _type | 
-| TheHive.Cases.tasks._version | number | _version | 
-| TheHive.Cases.tasks._id | string | _id | 
-| TheHive.Cases.tasks.id | string | ID | 
-| TheHive.Cases.tasks.createdAt | number | Created at | 
-| TheHive.Cases.tasks.createdBy | string | Created by | 
-| TheHive.Cases.tasks.group | string | Group | 
-| TheHive.Cases.tasks.logs.message | string | Message | 
-| TheHive.Cases.tasks.logs._routing | string | _routing | 
-| TheHive.Cases.tasks.logs._parent | string | _parent | 
-| TheHive.Cases.tasks.logs.startDate | number | Start date | 
-| TheHive.Cases.tasks.logs.status | string | Status | 
-| TheHive.Cases.tasks.logs.owner | string | Owner | 
-| TheHive.Cases.tasks.logs._type | string | Type | 
-| TheHive.Cases.tasks.logs._version | number | _version | 
-| TheHive.Cases.tasks.logs._id | string | _id | 
-| TheHive.Cases.tasks.logs.id | string | ID | 
-| TheHive.Cases.tasks.logs.createdAt | number | Created at | 
-| TheHive.Cases.tasks.logs.createdBy | string | Created by | 
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
+| TheHive.Cases.caseId | number | The order of the case. | 
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.status | string | Status of the case. | 
+| TheHive.Cases.owner | string | Owner of the case. | 
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
+| TheHive.Cases.title | string | Title of the case. | 
+| TheHive.Cases.tags | unknown | Tags added to the case. | 
+| TheHive.Cases._type | string | Type of the case. | 
+| TheHive.Cases._version | number | The version of TheHive Project. | 
+| TheHive.Cases.id | string | The ID of the case. | 
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.description | string | Description of the case. | 
+| TheHive.Cases.severity | number | Severity of the case. | 
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
+| TheHive.Cases.createdBy | string | The user who created the case. | 
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.tasks.order | number | The order of the task. | 
+| TheHive.Cases.tasks.status | string | Status of the task. | 
+| TheHive.Cases.tasks.title | string | Title of the task. | 
+| TheHive.Cases.tasks._type | string | Type of the task. | 
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.id | string | The ID of the task. | 
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
+| TheHive.Cases.tasks.group | string | Group of the task. | 
+| TheHive.Cases.tasks.logs.message | string | Log message. | 
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
 
 
 #### Command Example
-```!thehive-get-case id="~41324616"```
+```!thehive-get-case id="~479312"```
 
 #### Context Example
 ```json
 {
     "TheHive": {
         "Cases": {
-            "_id": "~41324616",
+            "_id": "~479312",
             "_type": "case",
-            "caseId": 2,
-            "createdAt": "2021-09-19T09:22:28Z",
+            "caseId": 1,
+            "createdAt": "2021-10-11T17:02:01Z",
             "createdBy": "adrugobitski@paloaltonetworks.com",
             "customFields": {},
-            "description": "description for new case",
+            "description": "case with tasks",
             "endDate": null,
             "flag": false,
-            "id": "~41324616",
+            "id": "~479312",
             "impactStatus": null,
-            "observables": [
-                {
-                    "_createdAt": 1632316225834,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~41418904",
-                    "_type": "Observable",
-                    "data": "datas for test 2",
-                    "dataType": "domain",
-                    "extraData": {
-                        "permissions": [
-                            "manageShare",
-                            "manageAnalyse",
-                            "manageTask",
-                            "manageCaseTemplate",
-                            "manageCase",
-                            "manageUser",
-                            "manageProcedure",
-                            "managePage",
-                            "manageObservable",
-                            "manageTag",
-                            "manageConfig",
-                            "manageAlert",
-                            "accessTheHiveFS",
-                            "manageAction"
-                        ],
-                        "seen": {
-                            "ioc": false,
-                            "seen": 0
-                        },
-                        "shareCount": 0
-                    },
-                    "ioc": false,
-                    "message": "messages for test 2",
-                    "reports": {},
-                    "sighted": false,
-                    "startDate": 1632316225834,
-                    "tags": [],
-                    "tlp": 2
-                },
-                {
-                    "_createdAt": 1632316030325,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~41377816",
-                    "_type": "Observable",
-                    "data": "datas for test",
-                    "dataType": "domain",
-                    "extraData": {
-                        "permissions": [
-                            "manageShare",
-                            "manageAnalyse",
-                            "manageTask",
-                            "manageCaseTemplate",
-                            "manageCase",
-                            "manageUser",
-                            "manageProcedure",
-                            "managePage",
-                            "manageObservable",
-                            "manageTag",
-                            "manageConfig",
-                            "manageAlert",
-                            "accessTheHiveFS",
-                            "manageAction"
-                        ],
-                        "seen": {
-                            "ioc": false,
-                            "seen": 0
-                        },
-                        "shareCount": 0
-                    },
-                    "ioc": false,
-                    "message": "messages for test",
-                    "reports": {},
-                    "sighted": false,
-                    "startDate": 1632316030325,
-                    "tags": [],
-                    "tlp": 2
-                },
-                {
-                    "_createdAt": 1632307576963,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~446472",
-                    "_type": "Observable",
-                    "data": "google",
-                    "dataType": "domain",
-                    "extraData": {
-                        "permissions": [
-                            "manageShare",
-                            "manageAnalyse",
-                            "manageTask",
-                            "manageCaseTemplate",
-                            "manageCase",
-                            "manageUser",
-                            "manageProcedure",
-                            "managePage",
-                            "manageObservable",
-                            "manageTag",
-                            "manageConfig",
-                            "manageAlert",
-                            "accessTheHiveFS",
-                            "manageAction"
-                        ],
-                        "seen": {
-                            "ioc": false,
-                            "seen": 0
-                        },
-                        "shareCount": 0
-                    },
-                    "ioc": false,
-                    "message": "new observable",
-                    "reports": {},
-                    "sighted": false,
-                    "startDate": 1632307576963,
-                    "tags": [],
-                    "tlp": 2
-                },
-                {
-                    "_createdAt": 1632306875578,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~442400",
-                    "_type": "Observable",
-                    "data": "demisto",
-                    "dataType": "domain",
-                    "extraData": {
-                        "permissions": [
-                            "manageShare",
-                            "manageAnalyse",
-                            "manageTask",
-                            "manageCaseTemplate",
-                            "manageCase",
-                            "manageUser",
-                            "manageProcedure",
-                            "managePage",
-                            "manageObservable",
-                            "manageTag",
-                            "manageConfig",
-                            "manageAlert",
-                            "accessTheHiveFS",
-                            "manageAction"
-                        ],
-                        "seen": {
-                            "ioc": false,
-                            "seen": 1
-                        },
-                        "shareCount": 0
-                    },
-                    "ioc": false,
-                    "message": "test observ",
-                    "reports": {},
-                    "sighted": false,
-                    "startDate": 1632306875578,
-                    "tags": [],
-                    "tlp": 2
-                },
-                {
-                    "_createdAt": 1632306875561,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~41345048",
-                    "_type": "Observable",
-                    "data": "demisto",
-                    "dataType": "domain",
-                    "extraData": {
-                        "permissions": [
-                            "manageShare",
-                            "manageAnalyse",
-                            "manageTask",
-                            "manageCaseTemplate",
-                            "manageCase",
-                            "manageUser",
-                            "manageProcedure",
-                            "managePage",
-                            "manageObservable",
-                            "manageTag",
-                            "manageConfig",
-                            "manageAlert",
-                            "accessTheHiveFS",
-                            "manageAction"
-                        ],
-                        "seen": {
-                            "ioc": false,
-                            "seen": 0
-                        },
-                        "shareCount": 0
-                    },
-                    "ioc": false,
-                    "message": "test observ",
-                    "reports": {},
-                    "sighted": false,
-                    "startDate": 1632306875561,
-                    "tags": [],
-                    "tlp": 2
-                }
-            ],
+            "observables": [],
             "owner": "adrugobitski@paloaltonetworks.com",
             "pap": 2,
             "permissions": [
@@ -1197,114 +617,17 @@ Get a case
             ],
             "resolutionStatus": null,
             "severity": 2,
-            "startDate": 1632043348213,
+            "startDate": 1633971660000,
             "stats": {},
             "status": "Open",
             "summary": null,
             "tags": [],
             "tasks": [
                 {
-                    "_createdAt": 1632307981876,
+                    "_createdAt": 1633971721834,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~430144",
+                    "_id": "~41500824",
                     "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632307981851,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~454688",
-                    "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632307552125,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~323720",
-                    "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632307552231,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~430328",
-                    "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632308185938,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~462856",
-                    "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632308185978,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~331912",
-                    "_type": "Task",
-                    "description": "new description",
-                    "extraData": {
-                        "shareCount": 0
-                    },
-                    "flag": false,
-                    "group": "default",
-                    "logs": [],
-                    "order": 0,
-                    "status": "Waiting",
-                    "title": "newly added task"
-                },
-                {
-                    "_createdAt": 1632307008722,
-                    "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~41357336",
-                    "_type": "Task",
-                    "description": "desc for task 1",
                     "extraData": {
                         "shareCount": 0
                     },
@@ -1316,11 +639,10 @@ Get a case
                     "title": "task1"
                 },
                 {
-                    "_createdAt": 1632307008686,
+                    "_createdAt": 1633971721837,
                     "_createdBy": "adrugobitski@paloaltonetworks.com",
-                    "_id": "~41349144",
+                    "_id": "~438408",
                     "_type": "Task",
-                    "description": "desc for task 1",
                     "extraData": {
                         "shareCount": 0
                     },
@@ -1329,12 +651,27 @@ Get a case
                     "logs": [],
                     "order": 0,
                     "status": "Waiting",
-                    "title": "task1"
+                    "title": "task2"
+                },
+                {
+                    "_createdAt": 1633971721840,
+                    "_createdBy": "adrugobitski@paloaltonetworks.com",
+                    "_id": "~442504",
+                    "_type": "Task",
+                    "extraData": {
+                        "shareCount": 0
+                    },
+                    "flag": false,
+                    "group": "default",
+                    "logs": [],
+                    "order": 0,
+                    "status": "Waiting",
+                    "title": "task3"
                 }
             ],
-            "title": "updated title",
+            "title": "case with tasks",
             "tlp": 2,
-            "updatedAt": 1632316446722,
+            "updatedAt": 1633971749765,
             "updatedBy": "adrugobitski@paloaltonetworks.com"
         }
     }
@@ -1343,10 +680,10 @@ Get a case
 
 #### Human Readable Output
 
->### TheHive Case ID ~41324616:
+>### TheHive Case ID ~479312:
 >|id|title|description|createdAt|
 >|---|---|---|---|
->| ~41324616 | updated title | description for new case | 2021-09-19T09:22:28Z |
+>| ~479312 | case with tasks | case with tasks | 2021-10-11T17:02:01Z |
 
 
 ### thehive-update-case
@@ -1361,92 +698,89 @@ Update a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID. | Required | 
-| title | Title. | Optional | 
-| description | Description. | Optional | 
-| severity | Severity. Possible values are: 1, 2, 3. | Optional | 
-| startDate | Start date. | Optional | 
-| owner | Owner. | Optional | 
-| flag | Flag. Possible values are: true, false. | Optional | 
-| tlp | TLP. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| tags | Tags (can be CSV). | Optional | 
-| resolutionStatus | Resolution status. Possible values are: Indeterminate, FalsePositive, TruePositive, Other, Duplicated. | Optional | 
-| impactStatus | Impact status. Possible values are: NoImpact, WithImpact, NotApplicable. | Optional | 
-| summary | Summary. | Optional | 
-| endDate | End date. | Optional | 
-| metrics | Metrics. | Optional | 
-| status | Status. Possible values are: Open, Resolved, Deleted. | Optional | 
+| id | ID of the case. | Required | 
+| title | Title of the case. | Optional | 
+| description | Description of the case. | Optional | 
+| severity | Severity of the case. Possible values are: 1, 2, 3. | Optional | 
+| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| owner | Owner of the case. | Optional | 
+| flag | A boolean flag used for filtering. Possible values are: true, false. | Optional | 
+| tlp | Traffic Light Protocol designation for the case. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
+| tags | Tags added to the case. | Optional | 
+| resolutionStatus | Resolution status of the case. Possible values are: Indeterminate, FalsePositive, TruePositive, Other, Duplicated. | Optional | 
+| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, NotApplicable. | Optional | 
+| summary | Summary of the case. | Optional | 
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| metrics | Metrics of the case. | Optional | 
+| status | Status of the case. Possible values are: Open, Resolved, Deleted. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | _routing | 
-| TheHive.Cases._parent | string | _parent | 
-| TheHive.Cases.customFields | unknown | Custom Fields | 
-| TheHive.Cases.caseId | number | Case ID | 
-| TheHive.Cases.flag | boolean | Flagged | 
-| TheHive.Cases.startDate | number | Start date | 
-| TheHive.Cases.status | string | Status | 
-| TheHive.Cases.owner | string | Owner | 
-| TheHive.Cases.tlp | number | TLP | 
-| TheHive.Cases.title | string | Title | 
-| TheHive.Cases.tags | unknown | Tags | 
-| TheHive.Cases._type | string | _type | 
-| TheHive.Cases._version | number | _version | 
-| TheHive.Cases._id | string | _id | 
-| TheHive.Cases.id | string | ID | 
-| TheHive.Cases.createdAt | number | Created at | 
-| TheHive.Cases.description | string | Description | 
-| TheHive.Cases.severity | number | Severity | 
-| TheHive.Cases.pap | number | PAP | 
-| TheHive.Cases.createdBy | string | Created by | 
-| TheHive.Cases.tasks._routing | string | _routing | 
-| TheHive.Cases.tasks._parent | string | _parent | 
-| TheHive.Cases.tasks.flag | boolean | Flagged | 
-| TheHive.Cases.tasks.order | number | Order | 
-| TheHive.Cases.tasks.status | string | Status | 
-| TheHive.Cases.tasks.title | string | Title | 
-| TheHive.Cases.tasks._type | string | _type | 
-| TheHive.Cases.tasks._version | number | _version | 
-| TheHive.Cases.tasks._id | string | _id | 
-| TheHive.Cases.tasks.id | string | ID | 
-| TheHive.Cases.tasks.createdAt | number | Created at | 
-| TheHive.Cases.tasks.createdBy | string | Created by | 
-| TheHive.Cases.tasks.group | string | Group | 
-| TheHive.Cases.tasks.logs.message | string | Message | 
-| TheHive.Cases.tasks.logs._routing | string | _routing | 
-| TheHive.Cases.tasks.logs._parent | string | _parent | 
-| TheHive.Cases.tasks.logs.startDate | number | Start date | 
-| TheHive.Cases.tasks.logs.status | string | Status | 
-| TheHive.Cases.tasks.logs.owner | string | Owner | 
-| TheHive.Cases.tasks.logs._type | string | Type | 
-| TheHive.Cases.tasks.logs._version | number | _version | 
-| TheHive.Cases.tasks.logs._id | string | _id | 
-| TheHive.Cases.tasks.logs.id | string | ID | 
-| TheHive.Cases.tasks.logs.createdAt | number | Created at | 
-| TheHive.Cases.tasks.logs.createdBy | string | Created by | 
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
+| TheHive.Cases.caseId | number | The order of the case. | 
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.status | string | Status of the case. | 
+| TheHive.Cases.owner | string | Owner of the case. | 
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
+| TheHive.Cases.title | string | Title of the case. | 
+| TheHive.Cases.tags | unknown | Tags added to the case. | 
+| TheHive.Cases._type | string | Type of the case. | 
+| TheHive.Cases._version | number | The version of TheHive Project. | 
+| TheHive.Cases.id | string | The ID of the case. | 
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.description | string | Description of the case. | 
+| TheHive.Cases.severity | number | Severity of the case. | 
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
+| TheHive.Cases.createdBy | string | The user who created the case. | 
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.tasks.order | number | The order of the task. | 
+| TheHive.Cases.tasks.status | string | Status of the task. | 
+| TheHive.Cases.tasks.title | string | Title of the task. | 
+| TheHive.Cases.tasks._type | string | Type of the task. | 
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.id | string | The ID of the task. | 
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
+| TheHive.Cases.tasks.group | string | Group of the task. | 
+| TheHive.Cases.tasks.logs.message | string | Log message. | 
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
 
 
 #### Command Example
-```!thehive-update-case id="~41324616" title="updated title"```
+```!thehive-update-case id="~487504" title="updated title for case with no tasks"```
 
 #### Context Example
 ```json
 {
     "TheHive": {
         "Cases": {
-            "_id": "~41324616",
+            "_id": "~487504",
             "_type": "case",
             "caseId": 2,
-            "createdAt": "2021-09-19T09:22:28Z",
+            "createdAt": "2021-10-11T17:02:34Z",
             "createdBy": "adrugobitski@paloaltonetworks.com",
             "customFields": {},
-            "description": "description for new case",
+            "description": "case with no task",
             "endDate": null,
             "flag": false,
-            "id": "~41324616",
+            "id": "~487504",
             "impactStatus": null,
             "owner": "adrugobitski@paloaltonetworks.com",
             "pap": 2,
@@ -1468,14 +802,14 @@ Update a case
             ],
             "resolutionStatus": null,
             "severity": 2,
-            "startDate": 1632043348213,
+            "startDate": 1633971720000,
             "stats": {},
             "status": "Open",
             "summary": null,
             "tags": [],
-            "title": "updated title",
+            "title": "updated title for case with no tasks",
             "tlp": 2,
-            "updatedAt": 1632316670768,
+            "updatedAt": 1633973798560,
             "updatedBy": "adrugobitski@paloaltonetworks.com"
         }
     }
@@ -1484,10 +818,10 @@ Update a case
 
 #### Human Readable Output
 
->### TheHive Update Case ID ~41324616:
+>### TheHive Update Case ID ~487504:
 >|id|title|description|createdAt|
 >|---|---|---|---|
->| ~41324616 | updated title | description for new case | 2021-09-19T09:22:28Z |
+>| ~487504 | updated title for case with no tasks | case with no task | 2021-10-11T17:02:34Z |
 
 
 ### thehive-create-case
@@ -1502,74 +836,71 @@ Create a new case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | Title. | Required | 
-| description | Description. | Required | 
-| severity | Severity 9default = 2). Possible values are: 1, 2, 3. | Optional | 
-| startDate | Start date (default = now). | Optional | 
-| owner | Owner. | Required | 
-| flag | Flag (defaul = false). Possible values are: false, true. | Optional | 
-| tlp | TLP (default = 2). Possible values are: 0, 1, 2, 3. | Optional | 
-| tags | Tags (can be CSV). | Optional | 
-| resolutionStatus | Resolution status. | Optional | 
-| impactStatus | Imapct status. Possible values are: NoImpact, WithImpact, qNotApplicable. | Optional | 
-| summary | Summary. | Optional | 
-| endDate | End date. | Optional | 
-| metrics | Metrics. | Optional | 
+| title | Title of the case. | Required | 
+| description | Description of the case. | Required | 
+| severity | Severity of the case (default = 2). Possible values are: 1, 2, 3. | Optional | 
+| startDate | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| owner | Owner of the case. | Required | 
+| flag | A boolean flag used for filtering (default = false). Possible values are: false, true. | Optional | 
+| tlp | Traffic Light Protocol designation for the case (default = 2). Possible values are: 0, 1, 2, 3. | Optional | 
+| tags | Tags added to the case. | Optional | 
+| resolutionStatus | Resolution status of the case. | Optional | 
+| impactStatus | Impact status of the case. Possible values are: NoImpact, WithImpact, qNotApplicable. | Optional | 
+| summary | Summary of the case. | Optional | 
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| metrics | Metrics of the case. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | _routing | 
-| TheHive.Cases._parent | string | _parent | 
-| TheHive.Cases.customFields | unknown | Custom Fields | 
-| TheHive.Cases.caseId | number | Case ID | 
-| TheHive.Cases.flag | boolean | Flagged | 
-| TheHive.Cases.startDate | number | Start date | 
-| TheHive.Cases.status | string | Status | 
-| TheHive.Cases.owner | string | Owner | 
-| TheHive.Cases.tlp | number | TLP | 
-| TheHive.Cases.title | string | Title | 
-| TheHive.Cases.tags | unknown | Tags | 
-| TheHive.Cases._type | string | _type | 
-| TheHive.Cases._version | number | _version | 
-| TheHive.Cases._id | string | _id | 
-| TheHive.Cases.id | string | ID | 
-| TheHive.Cases.createdAt | number | Created at | 
-| TheHive.Cases.description | string | Description | 
-| TheHive.Cases.severity | number | Severity | 
-| TheHive.Cases.pap | number | PAP | 
-| TheHive.Cases.createdBy | string | Created by | 
-| TheHive.Cases.tasks._routing | string | _routing | 
-| TheHive.Cases.tasks._parent | string | _parent | 
-| TheHive.Cases.tasks.flag | boolean | Flagged | 
-| TheHive.Cases.tasks.order | number | Order | 
-| TheHive.Cases.tasks.status | string | Status | 
-| TheHive.Cases.tasks.title | string | Title | 
-| TheHive.Cases.tasks._type | string | _type | 
-| TheHive.Cases.tasks._version | number | _version | 
-| TheHive.Cases.tasks._id | string | _id | 
-| TheHive.Cases.tasks.id | string | ID | 
-| TheHive.Cases.tasks.createdAt | number | Created at | 
-| TheHive.Cases.tasks.createdBy | string | Created by | 
-| TheHive.Cases.tasks.group | string | Group | 
-| TheHive.Cases.tasks.logs.message | string | Message | 
-| TheHive.Cases.tasks.logs._routing | string | _routing | 
-| TheHive.Cases.tasks.logs._parent | string | _parent | 
-| TheHive.Cases.tasks.logs.startDate | number | Start date | 
-| TheHive.Cases.tasks.logs.status | string | Status | 
-| TheHive.Cases.tasks.logs.owner | string | Owner | 
-| TheHive.Cases.tasks.logs._type | string | Type | 
-| TheHive.Cases.tasks.logs._version | number | _version | 
-| TheHive.Cases.tasks.logs._id | string | _id | 
-| TheHive.Cases.tasks.logs.id | string | ID | 
-| TheHive.Cases.tasks.logs.createdAt | number | Created at | 
-| TheHive.Cases.tasks.logs.createdBy | string | Created by | 
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
+| TheHive.Cases.caseId | number | The order of the case. | 
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.status | string | Status of the case. | 
+| TheHive.Cases.owner | string | Owner of the case. | 
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
+| TheHive.Cases.title | string | Title of the case. | 
+| TheHive.Cases.tags | unknown | Tags added to the case. | 
+| TheHive.Cases._type | string | Type of the case. | 
+| TheHive.Cases._version | number | The version of TheHive Project. | 
+| TheHive.Cases.id | string | The ID of the case. | 
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.description | string | Description of the case. | 
+| TheHive.Cases.severity | number | Severity of the case. | 
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
+| TheHive.Cases.createdBy | string | The user who created the case. | 
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.tasks.order | number | The order of the task. | 
+| TheHive.Cases.tasks.status | string | Status of the task. | 
+| TheHive.Cases.tasks.title | string | Title of the task. | 
+| TheHive.Cases.tasks._type | string | Type of the task. | 
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.id | string | The ID of the task. | 
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
+| TheHive.Cases.tasks.group | string | Group of the task. | 
+| TheHive.Cases.tasks.logs.message | string | Log message. | 
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
 
 
 #### Command Example
-```!thehive-create-case title="new created case" description="description for new case" owner="demisto"```
+```!thehive-create-case title="new created case" description="description for new case" owner="owner"```
 
 #### Context Example
 ```json
@@ -1577,16 +908,16 @@ Create a new case
     "TheHive": {
         "Cases": [
             {
-                "_id": "~454904",
+                "_id": "~41492552",
                 "_type": "case",
-                "caseId": 16,
-                "createdAt": "2021-09-22T13:17:52Z",
+                "caseId": 7,
+                "createdAt": "2021-10-11T17:36:40Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
-                "id": "~454904",
+                "id": "~41492552",
                 "impactStatus": null,
                 "owner": "adrugobitski@paloaltonetworks.com",
                 "pap": 2,
@@ -1608,7 +939,7 @@ Create a new case
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632316672635,
+                "startDate": 1633973800326,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
@@ -1619,16 +950,16 @@ Create a new case
                 "updatedBy": null
             },
             {
-                "_id": "~385104",
+                "_id": "~41496648",
                 "_type": "case",
-                "caseId": 17,
-                "createdAt": "2021-09-22T13:17:52Z",
+                "caseId": 7,
+                "createdAt": "2021-10-11T17:36:40Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "customFields": {},
                 "description": "description for new case",
                 "endDate": null,
                 "flag": false,
-                "id": "~385104",
+                "id": "~41496648",
                 "impactStatus": null,
                 "owner": "adrugobitski@paloaltonetworks.com",
                 "pap": 2,
@@ -1650,7 +981,7 @@ Create a new case
                 ],
                 "resolutionStatus": null,
                 "severity": 2,
-                "startDate": 1632316672673,
+                "startDate": 1633973800334,
                 "stats": {},
                 "status": "Open",
                 "summary": null,
@@ -1670,7 +1001,7 @@ Create a new case
 >### TheHive newly Created Case:
 >|id|title|description|createdAt|
 >|---|---|---|---|
->| ~454904 | new created case | description for new case | 2021-09-22T13:17:52Z |
+>| ~41492552 | new created case | description for new case | 2021-10-11T17:36:40Z |
 
 
 ### thehive-create-task
@@ -1685,29 +1016,29 @@ Create a new task
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Case Id. | Required | 
-| title | Title. | Required | 
+| id | Case ID. | Required | 
+| title | Title of the case. | Required | 
 | description | Description. | Optional | 
-| startDate | Start date (default = now). | Optional | 
+| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Tasks.status | string | Status | 
-| TheHive.TasKs.title | string | Title | 
-| TheHive.Tasks.id | string | ID | 
-| TheHive.Tasks.createdAt | number | Created at | 
-| TheHive.Tasks._type | string | Type | 
-| TheHive.Tasks.createdBy | string | Created by | 
-| TheHive.Tasks.group | string | Group | 
-| TheHive.Tasks.flag | boolean | Flag | 
-| TheHive.Tasks.order | int | Order | 
+| TheHive.Tasks.status | string | Status of the task. | 
+| TheHive.TasKs.title | string | Title of the task. | 
+| TheHive.Tasks.id | string | The ID of the task. | 
+| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Tasks._type | string | Type of the task. | 
+| TheHive.Tasks.createdBy | string | The user who created the task. | 
+| TheHive.Tasks.group | string | Group of the task. | 
+| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Tasks.order | int | The order of the task. | 
 
 
 #### Command Example
-```!thehive-create-task id="~41324616" title="newly added task" description="new description"```
+```!thehive-create-task id="~479312" title="newly added task" description="new description"```
 
 #### Context Example
 ```json
@@ -1715,27 +1046,27 @@ Create a new task
     "TheHive": {
         "Tasks": [
             {
-                "_id": "~41381960",
+                "_id": "~585736",
                 "_type": "case_task",
-                "createdAt": "2021-09-22T13:17:54Z",
+                "createdAt": "2021-10-11T17:36:42Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
-                "id": "~41381960",
+                "id": "~585736",
                 "order": 0,
                 "status": "Waiting",
                 "title": "newly added task"
             },
             {
-                "_id": "~41386056",
+                "_id": "~581640",
                 "_type": "case_task",
-                "createdAt": "2021-09-22T13:17:54Z",
+                "createdAt": "2021-10-11T17:36:42Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "description": "new description",
                 "flag": false,
                 "group": "default",
-                "id": "~41386056",
+                "id": "~581640",
                 "order": 0,
                 "status": "Waiting",
                 "title": "newly added task"
@@ -1750,7 +1081,7 @@ Create a new task
 >### The newly created task
 >|id|title|createdAt|status|
 >|---|---|---|---|
->| ~41381960 | newly added task | 2021-09-22T13:17:54Z | Waiting |
+>| ~581640 | newly added task | 2021-10-11T17:36:42Z | Waiting |
 
 
 ### thehive-remove-case
@@ -1774,10 +1105,10 @@ Removes a case
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```thehive-remove-case id='~41496648'```
 
 #### Human Readable Output
-
+```Case ID ~41496648 removed successfully```
 
 
 ### thehive-merge-cases
@@ -1792,63 +1123,60 @@ Merges 2 cases
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| firstCaseID | First case ID. | Required | 
-| secondCaseID | Second case ID. | Required | 
+| firstCaseID | ID of the first case. | Required | 
+| secondCaseID | ID of the second case. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Cases._routing | string | _routing | 
-| TheHive.Cases._parent | string | _parent | 
-| TheHive.Cases.customFields | unknown | Custom Fields | 
-| TheHive.Cases.caseId | number | Case ID | 
-| TheHive.Cases.flag | boolean | Flagged | 
-| TheHive.Cases.startDate | number | Start date | 
-| TheHive.Cases.status | string | Status | 
-| TheHive.Cases.owner | string | Owner | 
-| TheHive.Cases.tlp | number | TLP | 
-| TheHive.Cases.title | string | Title | 
-| TheHive.Cases.tags | unknown | Tags | 
-| TheHive.Cases._type | string | _type | 
-| TheHive.Cases._version | number | _version | 
-| TheHive.Cases._id | string | _id | 
-| TheHive.Cases.id | string | ID | 
-| TheHive.Cases.createdAt | number | Created at | 
-| TheHive.Cases.description | string | Description | 
-| TheHive.Cases.severity | number | Severity | 
-| TheHive.Cases.pap | number | PAP | 
-| TheHive.Cases.createdBy | string | Created by | 
-| TheHive.Cases.tasks._routing | string | _routing | 
-| TheHive.Cases.tasks._parent | string | _parent | 
-| TheHive.Cases.tasks.flag | boolean | Flagged | 
-| TheHive.Cases.tasks.order | number | Order | 
-| TheHive.Cases.tasks.status | string | Status | 
-| TheHive.Cases.tasks.title | string | Title | 
-| TheHive.Cases.tasks._type | string | _type | 
-| TheHive.Cases.tasks._version | number | _version | 
-| TheHive.Cases.tasks._id | string | _id | 
-| TheHive.Cases.tasks.id | string | ID | 
-| TheHive.Cases.tasks.createdAt | number | Created at | 
-| TheHive.Cases.tasks.createdBy | string | Created by | 
-| TheHive.Cases.tasks.group | string | Group | 
-| TheHive.Cases.tasks.logs.message | string | Message | 
-| TheHive.Cases.tasks.logs._routing | string | _routing | 
-| TheHive.Cases.tasks.logs._parent | string | _parent | 
-| TheHive.Cases.tasks.logs.startDate | number | Start date | 
-| TheHive.Cases.tasks.logs.status | string | Status | 
-| TheHive.Cases.tasks.logs.owner | string | Owner | 
-| TheHive.Cases.tasks.logs._type | string | Type | 
-| TheHive.Cases.tasks.logs._version | number | _version | 
-| TheHive.Cases.tasks.logs._id | string | _id | 
-| TheHive.Cases.tasks.logs.id | string | ID | 
-| TheHive.Cases.tasks.logs.createdAt | number | Created at | 
-| TheHive.Cases.tasks.logs.createdBy | string | Created by | 
+| TheHive.Cases._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.customFields | unknown | Any fields that the user of TheHiveProject has added to the platform and filled in as part of a case. | 
+| TheHive.Cases.caseId | number | The order of the case. | 
+| TheHive.Cases.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.startDate | number | Datetime the case was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.status | string | Status of the case. | 
+| TheHive.Cases.owner | string | Owner of the case. | 
+| TheHive.Cases.tlp | number | Traffic Light Protocol designation for the case. | 
+| TheHive.Cases.title | string | Title of the case. | 
+| TheHive.Cases.tags | unknown | Tags added to the case. | 
+| TheHive.Cases._type | string | Type of the case. | 
+| TheHive.Cases._version | number | The version of TheHive Project. | 
+| TheHive.Cases.id | string | The ID of the case. | 
+| TheHive.Cases.createdAt | number | Datetime the case was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.description | string | Description of the case. | 
+| TheHive.Cases.severity | number | Severity of the case. | 
+| TheHive.Cases.pap | number | Permissible Actions Protocol \(PAP\), used to indicate what kind of action is allowed. | 
+| TheHive.Cases.createdBy | string | The user who created the case. | 
+| TheHive.Cases.tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Cases.tasks.order | number | The order of the task. | 
+| TheHive.Cases.tasks.status | string | Status of the task. | 
+| TheHive.Cases.tasks.title | string | Title of the task. | 
+| TheHive.Cases.tasks._type | string | Type of the task. | 
+| TheHive.Cases.tasks._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.id | string | The ID of the task. | 
+| TheHive.Cases.tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.createdBy | string | The user who created the task. | 
+| TheHive.Cases.tasks.group | string | Group of the task. | 
+| TheHive.Cases.tasks.logs.message | string | Log message. | 
+| TheHive.Cases.tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Cases.tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Cases.tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.status | string | Status of the log. | 
+| TheHive.Cases.tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Cases.tasks.logs._type | string | Type of the log. | 
+| TheHive.Cases.tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Cases.tasks.logs.id | string | The ID of the log. | 
+| TheHive.Cases.tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Cases.tasks.logs.createdBy | string | The user who created the log. | 
 
 
 #### Command Example
-```!thehive-merge-cases firstCaseID= "~413824" secondCaseID= "~364624" ```
+```thehive-merge-cases firstCaseID=12402 secondCaseID=49683```
 
 #### Context Example
 ```json
@@ -1913,7 +1241,7 @@ Get the tasks of a case
 There is no context output for this command.
 
 #### Command Example
-```!thehive-get-case-tasks id="~41324616"```
+```!thehive-get-case-tasks id="~479312"```
 
 #### Context Example
 ```json
@@ -1921,9 +1249,9 @@ There is no context output for this command.
     "TheHive": {
         "Tasks": [
             {
-                "_createdAt": "2021-09-22T10:53:01Z",
+                "_createdAt": "2021-10-11T17:36:42Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~430144",
+                "_id": "~585736",
                 "_type": "Task",
                 "description": "new description",
                 "extraData": {
@@ -1937,9 +1265,9 @@ There is no context output for this command.
                 "title": "newly added task"
             },
             {
-                "_createdAt": "2021-09-22T10:53:01Z",
+                "_createdAt": "2021-10-11T17:36:42Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~454688",
+                "_id": "~581640",
                 "_type": "Task",
                 "description": "new description",
                 "extraData": {
@@ -1953,107 +1281,10 @@ There is no context output for this command.
                 "title": "newly added task"
             },
             {
-                "_createdAt": "2021-09-22T10:45:52Z",
+                "_createdAt": "2021-10-11T17:02:01Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~323720",
+                "_id": "~41500824",
                 "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T10:45:52Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~430328",
-                "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T10:56:25Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~331912",
-                "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T10:56:25Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~462856",
-                "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T13:17:54Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41381960",
-                "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T13:17:54Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41386056",
-                "_type": "Task",
-                "description": "new description",
-                "extraData": {
-                    "shareCount": 0
-                },
-                "flag": false,
-                "group": "default",
-                "logs": [],
-                "order": 0,
-                "status": "Waiting",
-                "title": "newly added task"
-            },
-            {
-                "_createdAt": "2021-09-22T10:36:48Z",
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41357336",
-                "_type": "Task",
-                "description": "desc for task 1",
                 "extraData": {
                     "shareCount": 0
                 },
@@ -2065,11 +1296,10 @@ There is no context output for this command.
                 "title": "task1"
             },
             {
-                "_createdAt": "2021-09-22T10:36:48Z",
+                "_createdAt": "2021-10-11T17:02:01Z",
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41349144",
+                "_id": "~438408",
                 "_type": "Task",
-                "description": "desc for task 1",
                 "extraData": {
                     "shareCount": 0
                 },
@@ -2078,7 +1308,22 @@ There is no context output for this command.
                 "logs": [],
                 "order": 0,
                 "status": "Waiting",
-                "title": "task1"
+                "title": "task2"
+            },
+            {
+                "_createdAt": "2021-10-11T17:02:01Z",
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~442504",
+                "_type": "Task",
+                "extraData": {
+                    "shareCount": 0
+                },
+                "flag": false,
+                "group": "default",
+                "logs": [],
+                "order": 0,
+                "status": "Waiting",
+                "title": "task3"
             }
         ]
     }
@@ -2087,19 +1332,14 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### TheHive Tasks For Case ~41324616:
+>### TheHive Tasks For Case ~479312:
 >|_id|title|_createdAt|_createdBy|status|group|
 >|---|---|---|---|---|---|
->| ~430144 | newly added task | 2021-09-22T10:53:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~454688 | newly added task | 2021-09-22T10:53:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~323720 | newly added task | 2021-09-22T10:45:52Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~430328 | newly added task | 2021-09-22T10:45:52Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~331912 | newly added task | 2021-09-22T10:56:25Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~462856 | newly added task | 2021-09-22T10:56:25Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41381960 | newly added task | 2021-09-22T13:17:54Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41386056 | newly added task | 2021-09-22T13:17:54Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41357336 | task1 | 2021-09-22T10:36:48Z | adrugobitski@paloaltonetworks.com | Waiting | default |
->| ~41349144 | task1 | 2021-09-22T10:36:48Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~585736 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~581640 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~41500824 | task1 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~438408 | task2 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
+>| ~442504 | task3 | 2021-10-11T17:02:01Z | adrugobitski@paloaltonetworks.com | Waiting | default |
 
 
 ### thehive-get-task
@@ -2121,69 +1361,37 @@ Get a specific task.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Tasks._routing | string | _routing | 
-| TheHive.Tasks._parent | string | _parent | 
-| TheHive.Tasks.flag | boolean | Flagged | 
-| TheHive.Tasks.order | number | Order | 
-| TheHive.Tasks.status | string | Status | 
-| TheHive.Tasks.title | string | Title | 
-| TheHive.Tasks._type | string | _type | 
-| TheHive.Tasks._version | number | _version | 
-| TheHive.Tasks._id | string | _id | 
-| TheHive.Tasks.id | string | ID | 
-| TheHive.Tasks.createdAt | number | Created at | 
-| TheHive.Tasks.createdBy | string | Created by | 
-| TheHive.Tasks.group | string | Group | 
-| TheHive.Tasks.logs.message | string | Message | 
-| TheHive.Tasks.logs._routing | string | _routing | 
-| TheHive.Tasks.logs._parent | string | _parent | 
-| TheHive.Tasks.logs.startDate | number | Start date | 
-| TheHive.Tasks.logs.status | string | Status | 
-| TheHive.Tasks.logs.owner | string | Owner | 
-| TheHive.Tasks.logs._type | string | Type | 
-| TheHive.Tasks.logs._version | number | _version | 
-| TheHive.Tasks.logs._id | string | _id | 
-| TheHive.Tasks.logs.id | string | ID | 
-| TheHive.Tasks.logs.createdAt | number | Created at | 
-| TheHive.Tasks.logs.createdBy | string | Task ID | 
+| TheHive.Tasks._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Tasks._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Tasks.flag | boolean | A boolean flag used for filtering. | 
+| TheHive.Tasks.order | number | The order of the task. | 
+| TheHive.Tasks.status | string | Status of the task. | 
+| TheHive.Tasks.title | string | Title of the task. | 
+| TheHive.Tasks._type | string | Type of the task. | 
+| TheHive.Tasks._version | number | The version of TheHive Project. | 
+| TheHive.Tasks.id | string | The ID of the task. | 
+| TheHive.Tasks.createdAt | number | Datetime the task was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Tasks.createdBy | string | The user who created the task. | 
+| TheHive.Tasks.group | string | Group of the task. | 
+| TheHive.Tasks.logs.message | string | Log message. | 
+| TheHive.Tasks.logs._routing | string | The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case. | 
+| TheHive.Tasks.logs._parent | string | The direct parent level object which the current object belongs to. | 
+| TheHive.Tasks.logs.startDate | number | Datetime the log was started on, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Tasks.logs.status | string | Status of the log. | 
+| TheHive.Tasks.logs.owner | string | Owner of the log. | 
+| TheHive.Tasks.logs._type | string | Type of the log. | 
+| TheHive.Tasks.logs._version | number | The version of TheHive Project. | 
+| TheHive.Tasks.logs.id | string | The ID of the log. | 
+| TheHive.Tasks.logs.createdAt | number | Datetime the task log was created, for example, 2018-06-29 08:15:27.243860. | 
+| TheHive.Tasks.logs.createdBy | string | The user who created the task. | 
 
 
 #### Command Example
-```!thehive-get-task id="~34592" ```
-
-#### Context Example
-```No task found with id: ~34592.```
+```!thehive-get-task id="~41357336"```
 
 #### Human Readable Output
 
-
-
-### thehive-get-attachment
-***
-Retrieves an attachment from a log.
-
-
-#### Base Command
-
-`thehive-get-attachment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Attachmenmt ID. | Required | 
-| name | Attachment Name. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
+>No task found with id: ~41357336.
 
 ### thehive-update-task
 ***
@@ -2198,12 +1406,12 @@ Updates a task.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Task ID. | Required | 
-| title | Title. | Optional | 
-| status | Status. Possible values are: Waiting, InProgress, Completed, Cancel. | Optional | 
-| flag | Flag. Possible values are: false, true. | Optional | 
-| owner | Owner. | Optional | 
-| startDate | Start date. | Optional | 
-| endDate | End date. | Optional | 
+| title | Title of the task. | Optional | 
+| status | Status of the task. Possible values are: Waiting, InProgress, Completed, Cancel. | Optional | 
+| flag | A boolean flag used for filtering. Possible values are: false, true. | Optional | 
+| owner | Owner of the task. | Optional | 
+| startDate | Datetime the task was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| endDate | Datetime the case ended, for example, 2018-06-29 08:15:27.243860. | Optional | 
 
 
 #### Context Output
@@ -2219,7 +1427,7 @@ There is no context output for this command.
 
 ### thehive-list-users
 ***
-Get a list of users
+Get a list of users.
 
 
 #### Base Command
@@ -2251,8 +1459,8 @@ There is no context output for this command.
                 "hasKey": true,
                 "id": "adrugobitski@paloaltonetworks.com",
                 "login": "adrugobitski@paloaltonetworks.com",
-                "name": "Demist API",
-                "organisation": "Demist",
+                "name": "name API",
+                "organisation": "name",
                 "roles": [
                     "admin",
                     "write",
@@ -2270,7 +1478,7 @@ There is no context output for this command.
                 "id": "rrapoport@paloaltonetworks.com",
                 "login": "rrapoport@paloaltonetworks.com",
                 "name": "Roman Rapoport",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "admin",
                     "write",
@@ -2288,7 +1496,7 @@ There is no context output for this command.
                 "id": "example@example.com",
                 "login": "example@example.com",
                 "name": "username",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2303,7 +1511,7 @@ There is no context output for this command.
                 "id": "example@example.com",
                 "login": "example@example.com",
                 "name": "usernamee",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2315,10 +1523,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T12:16:53Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "example@example.com",
-                "login": "example@example.com",
+                "id": "new_example@example.com",
+                "login": "new_example@example.com",
                 "name": "user_name",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2330,10 +1538,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-15T12:17:35Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "example@example.com",
-                "login": "example@example.com",
+                "id": "example_2@example.com",
+                "login": "example_2@example.com",
                 "name": "user_name_2",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2345,10 +1553,10 @@ There is no context output for this command.
                 "createdAt": "2021-09-22T10:27:48Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "demisto_login@thehive.local",
-                "login": "demisto_login@thehive.local",
+                "id": "name_login@thehive.local",
+                "login": "name_login@thehive.local",
                 "name": "dem_test",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2360,10 +1568,10 @@ There is no context output for this command.
                 "createdAt": "2021-07-21T09:21:38Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "example@example.com",
-                "login": "example@example.com",
+                "id": "example_2@example.com",
+                "login": "example_2@example.com",
                 "name": "merit",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2375,10 +1583,10 @@ There is no context output for this command.
                 "createdAt": "2021-09-22T10:32:01Z",
                 "createdBy": "adrugobitski@paloaltonetworks.com",
                 "hasKey": false,
-                "id": "example@example.example",
-                "login": "example@example.example",
+                "id": "test@example.com",
+                "login": "test@example.com",
                 "name": "testing",
-                "organisation": "Demist",
+                "organisation": "name",
                 "roles": [
                     "read"
                 ],
@@ -2394,15 +1602,15 @@ There is no context output for this command.
 >### TheHive Users:
 >|id|name|roles|status|
 >|---|---|---|---|
->| adrugobitski@paloaltonetworks.com | Demist API | admin,<br/>write,<br/>read,<br/>alert | Ok |
+>| adrugobitski@paloaltonetworks.com | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
 >| rrapoport@paloaltonetworks.com | Roman Rapoport | admin,<br/>write,<br/>read,<br/>alert | Ok |
 >| example@example.com | username | read | Ok |
 >| example@example.com | usernamee | read | Ok |
->| example@example.com | user_name | read | Ok |
->| example@example.com | user_name_2 | read | Ok |
->| demist_login@thehive.local | dem_test | read | Ok |
->| example@example.com | merit | read | Ok |
->| example@example.com | testing | read | Ok |
+>| new_example@example.com | user_name | read | Ok |
+>| test@example.com | user_name_2 | read | Ok |
+>| name_login@thehive.local | dem_test | read | Ok |
+>| example_2@example.com | merit | read | Ok |
+>| test@example.com | testing | read | Ok |
 
 
 ### thehive-get-user
@@ -2425,10 +1633,37 @@ Get a single user
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!thehive-get-user id="~41402520"```
+
+#### Context Example
+```json
+{
+    "TheHive": {
+        "Users": {
+            "_id": "~41402520",
+            "_type": "user",
+            "createdAt": "2021-09-22T10:32:01Z",
+            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "hasKey": false,
+            "id": "test@example.com",
+            "login": "test@example.com",
+            "name": "testing",
+            "organisation": "name",
+            "roles": [
+                "read"
+            ],
+            "status": "Ok"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### TheHive User ID ~41402520:
+>|_id|name|roles|status|organisation|createdAt|
+>|---|---|---|---|---|---|
+>| ~41402520 | testing | read | Ok | name | 2021-09-22T10:32:01Z |
 
 
 ### thehive-create-local-user
@@ -2443,11 +1678,11 @@ Create a new user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| login | Login username. | Required | 
-| name | Name. | Required | 
+| login | Username login. | Required | 
+| name | Name of the user. | Required | 
 | roles | Roles (CSV: can be read, write, admin). Default is read. | Optional | 
 | password | Password. | Required | 
-| profile | Profile name (only used with TheHive Project v4 onwards). | Optional | 
+| profile | Profile name (only used with TheHive Project v4 and onwards). | Optional | 
 
 
 #### Context Output
@@ -2455,10 +1690,54 @@ Create a new user
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!thehive-create-local-user login=name name=dem password=1234```
+
+#### Context Example
+```json
+{
+    "TheHive": {
+        "Users": [
+            {
+                "_createdAt": 1633973834658,
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~593928",
+                "hasKey": false,
+                "hasMFA": false,
+                "hasPassword": false,
+                "locked": false,
+                "login": "name@example.local",
+                "name": "dem",
+                "organisation": "name",
+                "organisations": [],
+                "permissions": [],
+                "profile": "read-only"
+            },
+            {
+                "_createdAt": 1633973834659,
+                "_createdBy": "adrugobitski@paloaltonetworks.com",
+                "_id": "~598024",
+                "hasKey": false,
+                "hasMFA": false,
+                "hasPassword": false,
+                "locked": false,
+                "login": "name@thehive.local",
+                "name": "dem",
+                "organisation": "name",
+                "organisations": [],
+                "permissions": [],
+                "profile": "read-only"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### New User ~593928:
+>|_id|login|name|profile|
+>|---|---|---|---|
+>| ~593928 | name@example.local | dem | read-only |
 
 
 ### thehive-block-user
@@ -2481,11 +1760,11 @@ Block a user
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!thehive-block-user id="~41208"```
 
 #### Human Readable Output
 
-
+>User "~41208" blocked successfully
 
 ### thehive-list-observables
 ***
@@ -2506,11 +1785,11 @@ List observables for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TheHive.Observables | string | list of observables for a case | 
+| TheHive.Observables | string | List of observables for a case. | 
 
 
 #### Command Example
-```!thehive-list-observables id="~41324616"```
+```!thehive-list-observables id="~561160"```
 
 #### Context Example
 ```json
@@ -2518,85 +1797,9 @@ List observables for a case.
     "TheHive": {
         "Observables": [
             {
-                "_createdAt": 1632316225834,
+                "_createdAt": 1633972384854,
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41418904",
-                "_type": "Observable",
-                "data": "datas for test 2",
-                "dataType": "domain",
-                "extraData": {
-                    "permissions": [
-                        "manageShare",
-                        "manageAnalyse",
-                        "manageTask",
-                        "manageCaseTemplate",
-                        "manageCase",
-                        "manageUser",
-                        "manageProcedure",
-                        "managePage",
-                        "manageObservable",
-                        "manageTag",
-                        "manageConfig",
-                        "manageAlert",
-                        "accessTheHiveFS",
-                        "manageAction"
-                    ],
-                    "seen": {
-                        "ioc": false,
-                        "seen": 0
-                    },
-                    "shareCount": 0
-                },
-                "ioc": false,
-                "message": "messages for test 2",
-                "reports": {},
-                "sighted": false,
-                "startDate": 1632316225834,
-                "tags": [],
-                "tlp": 2
-            },
-            {
-                "_createdAt": 1632316030325,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41377816",
-                "_type": "Observable",
-                "data": "datas for test",
-                "dataType": "domain",
-                "extraData": {
-                    "permissions": [
-                        "manageShare",
-                        "manageAnalyse",
-                        "manageTask",
-                        "manageCaseTemplate",
-                        "manageCase",
-                        "manageUser",
-                        "manageProcedure",
-                        "managePage",
-                        "manageObservable",
-                        "manageTag",
-                        "manageConfig",
-                        "manageAlert",
-                        "accessTheHiveFS",
-                        "manageAction"
-                    ],
-                    "seen": {
-                        "ioc": false,
-                        "seen": 0
-                    },
-                    "shareCount": 0
-                },
-                "ioc": false,
-                "message": "messages for test",
-                "reports": {},
-                "sighted": false,
-                "startDate": 1632316030325,
-                "tags": [],
-                "tlp": 2
-            },
-            {
-                "_createdAt": 1632307576963,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~446472",
+                "_id": "~41504920",
                 "_type": "Observable",
                 "data": "google",
                 "dataType": "domain",
@@ -2623,59 +1826,22 @@ List observables for a case.
                     },
                     "shareCount": 0
                 },
+                "ignoreSimilarity": false,
                 "ioc": false,
-                "message": "new observable",
+                "message": "observable 2",
                 "reports": {},
                 "sighted": false,
-                "startDate": 1632307576963,
+                "startDate": 1633972384854,
                 "tags": [],
-                "tlp": 2
+                "tlp": 1
             },
             {
-                "_createdAt": 1632306875578,
+                "_createdAt": 1633972365905,
                 "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~442400",
+                "_id": "~532512",
                 "_type": "Observable",
-                "data": "demisto",
-                "dataType": "domain",
-                "extraData": {
-                    "permissions": [
-                        "manageShare",
-                        "manageAnalyse",
-                        "manageTask",
-                        "manageCaseTemplate",
-                        "manageCase",
-                        "manageUser",
-                        "manageProcedure",
-                        "managePage",
-                        "manageObservable",
-                        "manageTag",
-                        "manageConfig",
-                        "manageAlert",
-                        "accessTheHiveFS",
-                        "manageAction"
-                    ],
-                    "seen": {
-                        "ioc": false,
-                        "seen": 1
-                    },
-                    "shareCount": 0
-                },
-                "ioc": false,
-                "message": "test observ",
-                "reports": {},
-                "sighted": false,
-                "startDate": 1632306875578,
-                "tags": [],
-                "tlp": 2
-            },
-            {
-                "_createdAt": 1632306875561,
-                "_createdBy": "adrugobitski@paloaltonetworks.com",
-                "_id": "~41345048",
-                "_type": "Observable",
-                "data": "demisto",
-                "dataType": "domain",
+                "data": "8.8.8.8",
+                "dataType": "ip",
                 "extraData": {
                     "permissions": [
                         "manageShare",
@@ -2699,11 +1865,12 @@ List observables for a case.
                     },
                     "shareCount": 0
                 },
+                "ignoreSimilarity": false,
                 "ioc": false,
-                "message": "test observ",
+                "message": "observable 1",
                 "reports": {},
                 "sighted": false,
-                "startDate": 1632306875561,
+                "startDate": 1633972365905,
                 "tags": [],
                 "tlp": 2
             }
@@ -2714,14 +1881,11 @@ List observables for a case.
 
 #### Human Readable Output
 
->### Observables for Case ~41324616:
+>### Observables for Case ~561160:
 >|data|dataType|message|
 >|---|---|---|
->| datas for test 2 | domain | messages for test 2 |
->| datas for test | domain | messages for test |
->| google | domain | new observable |
->| demist | domain | test observ |
->| demist | domain | test observ |
+>| google | domain | observable 2 |
+>| 8.8.8.8 | ip | observable 1 |
 
 
 ### thehive-create-observable
@@ -2737,13 +1901,13 @@ Creates an observable.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Case ID. | Required | 
-| data | Data. | Required | 
-| dataType | Data type. Possible values are: autonomous-system, domain, file, filename, fqdn, hash, ip, mail, mail_subject, other, regexp, registry, uri_path, url, user-agent. Default is other. | Required | 
-| message | Message. | Required | 
-| startDate | Start date. | Optional | 
-| tlp | TLP. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| ioc | Is IOC?. Possible values are: true, false. | Optional | 
-| status | Status. Possible values are: Ok, Deleted. | Optional | 
+| data | Data of the observable. | Required | 
+| dataType | Data type of the observable. Possible values are: autonomous-system, domain, file, filename, fqdn, hash, ip, mail, mail_subject, other, regexp, registry, uri_path, url, user-agent. Default is other. | Required | 
+| message | Observable message. | Required | 
+| startDate | Datetime the observable was started on, for example, 2018-06-29 08:15:27.243860. | Optional | 
+| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
+| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional | 
+| status | Status of the observable. Possible values are: Ok, Deleted. | Optional | 
 
 
 #### Context Output
@@ -2759,7 +1923,7 @@ There is no context output for this command.
 
 ### thehive-update-observable
 ***
-Update an observable
+Update an observable.
 
 
 #### Base Command
@@ -2770,10 +1934,10 @@ Update an observable
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Observable ID. | Required | 
-| message | Message. | Required | 
-| tlp | TLP. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
-| ioc | Is IOC?. Possible values are: true, false. | Optional | 
-| status | Status. Possible values are: Ok, Deleted. | Optional | 
+| message | Observable message. | Required | 
+| tlp | Traffic Light Protocol designation for the observable. Possible values are: WHITE, GREEN, AMBER, RED. | Optional | 
+| ioc | Is the observable an IOC?. Possible values are: true, false. | Optional | 
+| status | Status of the observable. Possible values are: Ok, Deleted. | Optional | 
 
 
 #### Context Output
@@ -2781,10 +1945,42 @@ Update an observable
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!thehive-update-observable id="~41504920" message="updated message for observable"```
+
+#### Context Example
+```json
+{
+    "TheHive": {
+        "Observables": {
+            "_id": "~41504920",
+            "_type": "case_artifact",
+            "createdAt": 1633972384854,
+            "createdBy": "adrugobitski@paloaltonetworks.com",
+            "data": "google",
+            "dataType": "domain",
+            "id": "~41504920",
+            "ignoreSimilarity": false,
+            "ioc": false,
+            "message": "updated message for observable",
+            "reports": {},
+            "sighted": false,
+            "startDate": 1633972384854,
+            "stats": {},
+            "tags": [],
+            "tlp": 1,
+            "updatedAt": 1633973833004,
+            "updatedBy": "adrugobitski@paloaltonetworks.com"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Updated Observable:
+>|id|data|dataType|message|
+>|---|---|---|---|
+>| ~41504920 | google | domain | updated message for observable |
 
 
 ### get-mapping-fields
@@ -2841,7 +2037,7 @@ There is no context output for this command.
 
 ### thehive-get-version
 ***
-Displays the version of TheHive Project
+Displays the version of TheHive Project.
 
 
 #### Base Command

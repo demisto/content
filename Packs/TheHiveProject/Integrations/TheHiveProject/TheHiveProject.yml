@@ -1246,6 +1246,7 @@ script:
       type: string
     description: Get a specific task.
   - name: thehive-get-attachment
+    deprecated: true
     arguments:
     - name: id
       required: true
