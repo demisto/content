@@ -23,7 +23,7 @@ oauth_config:
     bot:
       - channels:history
       - channels:read
-      - channels:write
+      - channels:manage
       - chat:write
       - files:write
       - groups:history

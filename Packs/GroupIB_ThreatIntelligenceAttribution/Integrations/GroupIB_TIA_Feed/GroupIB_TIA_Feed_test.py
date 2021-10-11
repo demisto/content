@@ -24,5 +24,6 @@ def test_fetch_indicators_command(mocker, session_fixture):
     collection_name, client = session_fixture
     mocker.patch.object(client, 'create_update_generator', return_value=[[RAW_JSON[collection_name]]])
     result = fetch_indicators_command(client=client, last_run={}, first_fetch_time='3 days',
-                                      indicator_collections=[collection_name], requests_count=1)
+                                      indicator_collections=[collection_name], requests_count=1,
+                                      common_fields={})
     assert result == tuple(RESULTS[collection_name])

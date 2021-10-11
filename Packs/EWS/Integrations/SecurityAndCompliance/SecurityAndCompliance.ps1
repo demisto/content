@@ -1339,6 +1339,11 @@ function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$k
 function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ListSearch()
+
+    if ($raw_response.count -eq 0){
+        return "#### No compliance searches were retrieved from the Compliance Center.", @{}, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - Search configurations"

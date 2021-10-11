@@ -17,7 +17,7 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ## Permissions in the Security & Compliance Center
 
-To access the Security & Compliance Center, you need to be a global administrator or a member of one or more Security & Compliance Center role groups.
+To access the Security & Compliance Center, the user account needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
 
 1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
@@ -1107,8 +1107,7 @@ Gets compliance search action from the Security & Compliance Center.
     * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
     * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
     * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
-    * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide
-)
+    * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
 * Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
 * Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
 ## Known Limitations
@@ -1118,4 +1117,4 @@ Gets compliance search action from the Security & Compliance Center.
 * Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
 * Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 * A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
-
+* For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).

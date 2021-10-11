@@ -35,6 +35,8 @@ demisto-sdk-nightly:run-validations:
 
 
 demisto_sdk_nightly:check_idset_dependent_commands:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -49,7 +51,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
-    - python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
     - cp ./Tests/conf.json $ARTIFACTS_FOLDER
     - section_end "Update Conf"
     - !reference [.create-id-set]
@@ -82,6 +83,8 @@ demisto_sdk_nightly:check_idset_dependent_commands:
 
 
 demisto-sdk-nightly:create-instance:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -99,6 +102,8 @@ demisto-sdk-nightly:create-instance:
 
 
 demisto-sdk-nightly:run-commands-against-instance:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -144,6 +149,8 @@ demisto-sdk-nightly:run-commands-against-instance:
 
 
 demisto-sdk-nightly:fan-in:
+  tags:
+    - gke
   stage: fan-in
   extends:
     - .sdk-nightly-schedule-rule-always

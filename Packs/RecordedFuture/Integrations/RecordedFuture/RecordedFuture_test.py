@@ -1,16 +1,14 @@
 import os
 import unittest
 import json
+from datetime import datetime
 from pathlib import Path
+from unittest.mock import call
 from RecordedFuture import (
-    lookup_command,
+    Actions,
     Client,
-    enrich_command,
-    get_alert_rules_command,
-    get_alerts_command,
-    get_alert_single_command,
-    triage_command,
 )
+
 from CommonServerPython import CommandResults
 import vcr as vcrpy
 import io
@@ -52,10 +50,11 @@ class RFTest(unittest.TestCase):
         self.client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
         )
+        self.actions = Actions(self.client)
 
     @vcr.use_cassette()
     def test_ip_reputation(self) -> None:
-        resp = lookup_command(self.client, "37.48.83.137", "ip")
+        resp = self.actions.lookup_command("37.48.83.137", "ip")
         entity = resp[0].to_context()["Contents"]["data"]["results"][0]
         context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
         self.assertIsInstance(resp[0], CommandResults)
@@ -65,14 +64,14 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
-        resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
+        resp = self.actions.enrich_command("125.63.101.62", "ip", True, True)
         context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp[0], CommandResults)
         # rules are concatenated
         self.assertIn(',', context['concatRules'])
         self.assertEqual(
-            "184.168.221.96", resp[0].to_context()["Contents"]["data"]["name"]
+            "125.63.101.62", resp[0].to_context()["Contents"]["data"]["name"]
         )
 
     @vcr.use_cassette()
@@ -83,10 +82,10 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
         """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
+        resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']])  # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
         self.assertEqual(list_of_lists, sorted(expected))
 
@@ -104,7 +103,7 @@ class RFTest(unittest.TestCase):
             "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
         }
         # mocker.patch.object(DBotScore, 'get_integration_name', return_value='Recorded Future v2')
-        resp = triage_command(self.client, entities, context)
+        resp = self.actions.triage_command(entities, context)
         self.assertIsInstance(resp[0], CommandResults)
         self.assertFalse(resp[0].to_context()["Contents"]["verdict"])
         self.assertEqual("phishing", resp[0].to_context()["Contents"]["context"])
@@ -124,7 +123,7 @@ class RFTest(unittest.TestCase):
             "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
             "filter": "yes"
         }
-        resp = triage_command(self.client, entities, context)
+        resp = self.actions.triage_command(entities, context)
         context = resp[0].to_context()
         self.assertIsInstance(resp[0], CommandResults)
         self.assertFalse(context["Contents"]["verdict"])
@@ -134,7 +133,7 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_get_alerting_rules(self) -> None:
-        resp = get_alert_rules_command(self.client, rule_name="", limit=10)
+        resp = self.actions.get_alert_rules_command(rule_name="", limit=10)
         self.assertTrue(resp)
         self.assertTrue(resp["Contents"]["data"])
         self.assertIsInstance(resp, dict)
@@ -142,7 +141,7 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_get_alerts(self) -> None:
-        resp = get_alerts_command(self.client, params={'limit': 200})
+        resp = self.actions.get_alerts_command(params={'limit': 200})
         self.assertTrue(resp)
         self.assertTrue(resp["Contents"]["data"])
         self.assertIsInstance(resp, dict)
@@ -151,13 +150,13 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_single_alert_vulnerability(self) -> None:
         """Gets data for an alert related to vulnerabilities"""
-        resp = get_alert_single_command(self.client, "f1IGiW")
+        resp = self.actions.get_alert_single_command("f1IGiW")
         self.assertTrue(resp.get('HumanReadable'))
 
     @vcr.use_cassette()
     def test_single_alert_credential_leaks(self):
         """Alert related to credential leaks"""
-        resp = get_alert_single_command(self.client, "fzpmIG")
+        resp = self.actions.get_alert_single_command("fzpmIG")
         self.assertTrue(resp.get('HumanReadable'))
         context = resp['EntryContext']['RecordedFuture.SingleAlert(val.ID === obj.id)']  # noqa
         entity = context['flat_entities'][0]
@@ -172,12 +171,45 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_single_alert_typosquat(self):
         """Alert related to typosquats"""
-        resp = get_alert_single_command(self.client, "fp0_an")
+        resp = self.actions.get_alert_single_command("fp0_an")
         self.assertTrue(resp.get('HumanReadable'))
+
+    @vcr.use_cassette()
+    def test_get_links_command(self):
+        """Get Technical Links"""
+        resp = self.actions.get_links_command('152.169.22.67', 'ip')
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+
+    @vcr.use_cassette()
+    def test_get_alert_set_status_command(self):
+        """Set a status for alert"""
+        alert_status = 'no-action'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_set_status(alert_id, alert_status)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['status'], alert_status)
+
+    @vcr.use_cassette()
+    def test_get_alert_set_note(self):
+        """Set a note for alert"""
+        note_text = 'note unittest'
+        alert_id = 'jrhrfx'
+        resp = self.actions.alert_set_note(alert_id, note_text)
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+        self.assertEqual(context['Contents']['note']['text'], note_text)
 
 
 def create_client():
-    base_url = "https://api.recordedfuture.com/v2/"
+    base_url = "https://api.recordedfuture.com/gw/xsoar/"
     verify_ssl = True
     token = os.environ.get("RF_TOKEN")
     headers = {
@@ -233,3 +265,71 @@ def test_entity_enrich_no_related_entities(mocker):
     returned_data = client.entity_enrich('184.168.221.96', 'ip', False, False, 'Vulnerability Analyst')
     assert expected_entity_data == returned_data
     assert 'relatedEntities' not in returned_data.get('data').keys()
+
+
+def test_fetch_incidents(mocker):
+    """Fetch alerts from Recorded Future"""
+    first_fetch = "72 hours"
+    rule_names = "Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers"
+    max_fetch = 3
+    client = create_client()
+    actions = Actions(client)
+    incidents_mock = mocker.patch('demistomock.incidents')
+    set_last_run_mock = mocker.patch('demistomock.setLastRun')
+    get_last_run_mock = mocker.patch(
+        'demistomock.getLastRun',
+        return_value={"time": "2018-10-24T14:13:20.000001Z"}
+    )
+
+    rules_response = util_load_json('./cassettes/alert_rules_response.json')
+    client.get_alert_rules = mocker.Mock(return_value=rules_response)
+    alerts_response = util_load_json('./cassettes/alerts_response.json')
+    client.get_alerts = mocker.Mock(return_value=alerts_response)
+    client.update_alerts = mocker.Mock()
+    client.get_single_alert = mocker.Mock()
+    single_alerts_responses = util_load_json('./cassettes/responses_for_single_alerts.json')
+
+    def get_single_alert_response(alert_id):
+        for alert_response in single_alerts_responses:
+            if alert_response['data']['id'] == alert_id:
+                return alert_response
+
+    client.get_single_alert.side_effect = lambda alert_id: get_single_alert_response(alert_id)
+
+    actions.fetch_incidents(rule_names, first_fetch, max_fetch)
+    get_last_run_mock.assert_called_once_with()
+    client.get_alert_rules.assert_has_calls([
+        call("Global Trends, Trending Vulnerabilities"),
+        call("Global Trends, Trending Attackers"),
+    ])
+    client.get_alerts.assert_has_calls([
+        call({
+            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
+            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
+        }),
+        call({
+            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
+            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
+        }),
+    ])
+    incidents = []
+    for _ in rule_names.split(';'):
+        for alert_data in single_alerts_responses:
+            alert = alert_data['data']
+            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            incidents.append({
+                "name": "Recorded Future Alert - " + alert['title'],
+                "occurred": datetime.strftime(alert_time, "%Y-%m-%dT%H:%M:%SZ"),
+                "rawJSON": json.dumps(alert),
+            })
+    incidents.reverse()
+    incidents_mock.assert_called_once_with(incidents)
+    client.update_alerts.assert_called_once_with([
+        {'id': 'jy5xRA', 'status': 'pending'},
+        {'id': 'jzj0f5', 'status': 'pending'},
+        {'id': 'j0MSf6', 'status': 'pending'},
+        {'id': 'jy5xRA', 'status': 'pending'},
+        {'id': 'jzj0f5', 'status': 'pending'},
+        {'id': 'j0MSf6', 'status': 'pending'}
+    ])
+    set_last_run_mock.assert_called_once_with({'start_time': '2021-09-13T04:04:10.720000Z'})

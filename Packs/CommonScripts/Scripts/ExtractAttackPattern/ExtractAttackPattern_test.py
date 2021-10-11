@@ -5,7 +5,7 @@ from CommonServerPython import *
 def test_extract_existing_mitre_ids(mocker):
     """
     Given
-    - MITRE ID to extract
+    - MITRE IDs to extract
     When
     - we need to get its value (name).
     Then
@@ -35,10 +35,19 @@ def test_extract_non_existing_mitre_ids(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=[])
 
     indicators = is_valid_attack_pattern(['T1111', 'T2222'])
-    assert not indicators
+    assert indicators == []
 
 
 def test_extract_existing_mitre_id(mocker):
+    """
+    Given
+    - MITRE ID to extract
+    When
+    - we need to get its value (name).
+    Then
+    - run the ExtractAttackPattern script
+    Validate that name extracted successfully from the ID.
+    """
     mocker.patch.object(demisto, 'executeCommand', return_value=[{}, {}, {'Contents':
                         [{'id': 'T1530', 'value': 'Data from Cloud Storage Object'}]}])
 

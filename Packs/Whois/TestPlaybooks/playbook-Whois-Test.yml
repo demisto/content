@@ -1,7 +1,7 @@
 id: whois_test
 version: -1
 name: whois_test
-description: This is a test playbook for Whois. It will retrieve details for google.com
+description: This is a test playbook for Whois. It will retrieve details for google.com/uk/in
   and confirm the domain name is the same.
 starttaskid: "0"
 tasks:
@@ -417,7 +417,7 @@ tasks:
       '#default#':
       - "12"
       "yes":
-      - "15"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -437,7 +437,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 14-02-2021
+              simple: 13-09-2028
     view: |-
       {
         "position": {
@@ -531,7 +531,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -588,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2750
+          "y": 3090
         }
       }
     note: false
@@ -620,7 +620,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2940
+          "y": 3260
         }
       }
     note: false
@@ -666,7 +666,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3120
+          "y": 3440
         }
       }
     note: false
@@ -691,7 +691,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3300
+          "y": 3680
         }
       }
     note: false
@@ -699,12 +699,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: b66b8745-0109-48f7-82bb-0de72b81534d
+    type: regular
+    task:
+      id: b66b8745-0109-48f7-82bb-0de72b81534d
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+        - "20"
+    scriptarguments:
+      domain:
+        simple: google.in
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 6b626e5b-2bd7-4402-8cce-ec2332d5a9e2
+    type: condition
+    task:
+      id: 6b626e5b-2bd7-4402-8cce-ec2332d5a9e2
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3315,
+        "height": 3695,
         "width": 760,
         "x": 50,
         "y": 50
