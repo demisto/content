@@ -12,8 +12,6 @@ Automatically preserve electronic evidence by initiating the immediate collectio
 Ensure evidence is collected and preserved in a legally defensible manner for full data integrity with forensically sound collection capabilities using a single, secure back-end database.
 Reduce data movement between platforms to avoid data spoliation with seamless handoff from incident detection to analysis and response. 
 
-Add helpful, relevant links below 
-
 - Learn more about FTK Enterprise: https://www.exterro.com/ftk-enterprise
 
 - Learn more about the FTK Connect API: https://www.exterro.com/ftk-api
