@@ -1,15 +1,15 @@
-id: AutoFocusTagsFeed-test
+id: AutoFocusTagsFeed
 name: AutoFocusTagsFeed
 version: -1
-fromversion: 4.5.0
+fromversion: 5.5.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '5db5221d-d993-409d-9657-47a497a55f78'
     type: start
     task:
-      id: '0'
+      id: '5db5221d-d993-409d-9657-47a497a55f78'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '9d078c9b-49bd-439f-b941-a1c11e390f59'
     type: regular
     task:
-      id: '1'
+      id: '9d078c9b-49bd-439f-b941-a1c11e390f59'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '6db9fb8f-1e13-411a-8357-f2044aa61c7e'
     type: regular
     task:
-      id: '2'
+      id: '6db9fb8f-1e13-411a-8357-f2044aa61c7e'
       version: -1
       name: autofocus-tags-feed-get-indicators
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '53073468-bf47-4851-90ca-103d46c2eb19'
     type: title
     task:
-      id: '3'
+      id: '53073468-bf47-4851-90ca-103d46c2eb19'
       version: -1
       name: Test Done
       type: title
@@ -93,3 +93,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: Test playbook for AutoFocus Tags Feed integration
