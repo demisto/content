@@ -33,6 +33,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  defaultvalue: 'A - Completely reliable'
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
   display: Traffic Light Protocol Color
