@@ -282,7 +282,8 @@ def get_last_run(
     # Set 2 days by default if the first fetch parameter is not set
 
     if last_run:
-        return arg_to_datetime(last_run)  # type: ignore
+        demisto.debug(f"Last run already exists: '{last_run}'")
+        return arg_to_datetime(last_run).replace(tzinfo=None)  # type: ignore
     else:
 
         demisto.debug(f"First fetch is defined as '{first_fetch}'")
@@ -292,7 +293,7 @@ def get_last_run(
 
         demisto.debug(f"getLastRun is 'None' in Integration context, using parameter '{days_ago}' value '{fetch_days_ago}'")
 
-        return fetch_days_ago  # type: ignore
+        return fetch_days_ago.replace(tzinfo=None)  # type: ignore
 
 
 def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_last_run()) -> List[Dict[str, Any]]:
@@ -307,8 +308,6 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    # last_run = get_last_run()  # type: ignore
-
     incidents_to_import: List[Dict[str, Any]] = []
 
     # Check if there are more than 0 alerts
@@ -319,11 +318,13 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
 
         most_recent_alert_created_date = most_recent_alert.get("created_at")
 
-        most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date)  # type: ignore
+        most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date).replace(tzinfo=None)  # type: ignore
+        demisto.debug(f"most_recent_alert_datetime: {most_recent_alert_datetime}")
         demisto.debug(
             f"Setting last runtime as alert most recent: \
-            {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
+                {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
         )
+
         demisto.setLastRun({
             'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
         })
@@ -336,14 +337,15 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
             alert_created_at = alert.get("created_at")
 
             # alert_created_at includes a timezone whereas arg_to_datetime doesn't
-            # therefore we need to eliminate tz info
-            alert_datetime = arg_to_datetime(alert_created_at).replace(tzinfo=None)  # type: ignore
+            # therefore we need to eliminate tz info and set seconds=0
+            # preventing err "can't compare offset-naive and offset-aware datetimes"
+            alert_datetime = arg_to_datetime(alert_created_at).replace(tzinfo=None).replace(second=0)  # type: ignore
             company_name: str = alert.get("company_name")  # type: ignore
             change_type: str = alert.get("change_type")  # type: ignore
             demisto.debug(f"alert_created_at: {alert_created_at}")
             demisto.debug(f"alert_datetime: {alert_datetime}")
             demisto.debug(f"last_run: {last_run}")
-            debug_msg = f"import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_datetime)}"  # type: ignore
+            debug_msg = f"import alert '{alert_id}'? (last_run < alert_datetime): {(last_run < alert_datetime)}"  # type: ignore
 
             demisto.debug(debug_msg)
 
