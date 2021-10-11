@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 """ IMPORTS """
 
 import json
@@ -464,7 +463,7 @@ class Client(BaseClient):
                 break
 
             params = {"df": date_from, "seqUpdate": seq_update}
-            params = {key: value for key, value in params.items() if value}
+            params = assign_params(**params)
             portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
                                          params=params, timeout=TIMEOUT, retries=RETRIES,
                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -506,7 +505,7 @@ class Client(BaseClient):
                         params = {'resultId': result_id}
                     else:
                         params = {'df': starting_date_from, 'dt': date_to}
-                    params = {key: value for key, value in params.items() if value}
+                    params = assign_params(**params)
                     portion = self._http_request(method="GET", url_suffix=collection_name,
                                                  params=params, timeout=TIMEOUT, retries=RETRIES,
                                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -517,7 +516,7 @@ class Client(BaseClient):
                 params = {'resultId': result_id}
             else:
                 params = {'df': starting_date_from, 'dt': date_to}
-            params = {key: value for key, value in params.items() if value}
+            params = assign_params(**params)
             portion = self._http_request(method="GET", url_suffix=collection_name,
                                          params=params, timeout=TIMEOUT, retries=RETRIES,
                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -561,7 +560,7 @@ class Client(BaseClient):
                 break
 
             params = {"action": action, "last": last, "module": "get", "lang": 3}
-            params = {key: value for key, value in params.items() if value}
+            params = assign_params(**params)
             portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
                                          headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -589,7 +588,7 @@ class Client(BaseClient):
         :param date_from: date to get the "last" identifier.
         """
         params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
-        params = {key: value for key, value in params.items() if value}
+        params = assign_params(**params)
         resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
                                   headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
                                   status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -655,7 +654,7 @@ class Client(BaseClient):
         result_id = None
         while True:
             params = {'df': date_from, 'dt': date_to, 'resultId': result_id, 'q': query}
-            params = {key: value for key, value in params.items() if value}
+            params = assign_params(**params)
             portion = self._http_request(method="GET", url_suffix=collection_name,
                                          params=params, timeout=TIMEOUT, retries=RETRIES,
                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
@@ -1292,3 +1291,4 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
