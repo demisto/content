@@ -378,7 +378,7 @@ tasks:
     task:
       id: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
       version: -1
-      name: Get Original Email - Generic
+      name: Get Original Email - Generic v2
       description: |-
         Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -386,7 +386,7 @@ tasks:
 
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
-      playbookName: Get Original Email - Generic
+      playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
       brand: ""
@@ -1310,7 +1310,7 @@ tasks:
       - "3"
     scriptarguments:
       entryid:
-        simple: ${inputs.File.EntryID}
+        simple: ${File.EntryID}
     reputationcalc: 1
     results:
     - reportedemailentryid
