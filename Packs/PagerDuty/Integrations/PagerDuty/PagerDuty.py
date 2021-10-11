@@ -48,6 +48,8 @@ ON_CALLS_USERS_SUFFIX = 'oncalls?include%5B%5D=users'
 USERS_NOTIFICATION_RULE = 'users/{0}/notification_rules'
 GET_INCIDENTS_SUFFIX = 'incidents?include%5B%5D=assignees'
 USERS_CONTACT_METHODS_SUFFIX = 'users/{0}/contact_methods'
+RESPONDER_REQUESTS_SUFFIX = 'incidents/{0}/responder_requests'
+RESPONSE_PLAY_SUFFIX = 'response_plays/{0}/run'
 
 '''CONTACT_METHOD_TYPES'''
 SMS_CONTACT_TYPE = 'sms_contact_method'
@@ -89,15 +91,18 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None):
+def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers={}):
     LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+    headers = DEFAULT_HEADERS.copy()
+    headers.update(additional_headers)
     try:
         res = requests.request(method,
                                url,
                                verify=USE_SSL,
                                params=params_dict,
-                               headers=DEFAULT_HEADERS,
-                               data=data
+                               headers=headers,
+                               data=data,
+                               json=json_data
                                )
         res.raise_for_status()
 
@@ -484,6 +489,35 @@ def extract_users_notification_role(user_notification_role):
     }
 
 
+def extract_responder_request(responder_request_response):
+    """Extract the users that were requested to respond"""
+    outputs = []
+    responder_request = responder_request_response.get("responder_request")
+    for request in responder_request.get("responder_request_targets", []):
+        output = {}
+        output["Type"] = request.get("type")
+        output["ID"] = request.get("id")
+        responder_user = request.get("incident_responders", {}).get("user", {})
+        output["ResponderID"] = responder_user.get("id")
+        output["ResponderType"] = responder_user.get("type")
+        output["ResponderName"] = responder_user.get("summary")
+        output["Message"] = responder_request.get("message")
+        output["IncidentID"] = responder_request.get("incident", {}).get("id")
+        output["IncidentSummary"] = responder_request.get("incident", {}).get("summary")
+        outputs.append(output)
+    return {
+        'Type': entryTypes['note'],
+        'Contents': outputs,
+        'ContentsFormat': formats['json'],
+        # 'ReadableContentsFormat': formats['markdown'],
+        # 'HumanReadable': tableToMarkdown(CONTACT_METHODS, outputs, CONTACT_METHODS_HEADERS),
+        'EntryContext': {
+            'PagerDuty.ResponderRequests(val.id==obj.id)': outputs,
+        }
+    }
+
+
+
 '''COMMANDS'''
 
 
@@ -710,6 +744,55 @@ def get_service_keys():
     }
 
 
+def add_responders_to_incident(IncidentID, Message, UserRequests="", EscalationPolicyRequests="", RequestorID=DEFAULT_REQUESTOR):
+    """Add the responders to an incident"""
+    if RequestorID is None or RequestorID == "":
+        RequestorID = DEFAULT_REQUESTOR
+    url = SERVER_URL + RESPONDER_REQUESTS_SUFFIX.format(IncidentID)
+    body = {
+        'requestor_id': RequestorID,
+        'message': Message,
+        'responder_request_targets': []
+    }
+    for user_id in UserRequests.split(","):
+        body['responder_request_targets'].append({
+            'responder_request': {
+                "id": user_id,
+                "type": 'user_reference'
+            }
+        })
+    for escalation_policy_id in EscalationPolicyRequests:
+        body['responder_request_targets'].append({
+            'responder_request': {
+                "id": escalation_policy_id,
+                "type": 'escalation_policy_reference'
+            }
+        })
+    response = http_request('POST', url, data=body)
+    return extract_responder_request(response)
+
+
+def run_response_play(IncidentID, From, ResponsePlayID):
+    """Add the responders to an incident"""
+    url = SERVER_URL + RESPONSE_PLAY_SUFFIX.format(ResponsePlayID)
+    body = {
+        'incident': {
+            'id': IncidentID,
+            'type': 'incident_reference'
+        }
+    }
+    extra_headers = {
+        "From": From
+    }
+    response = http_request('POST', url, json_data=body, additional_headers=extra_headers)
+    if response != {"status": "ok"}:
+        raise Exception("Status NOT Ok - {}".format(response))
+    return CommandResults(
+        readable_output="Command ran successfully",
+        raw_response=response
+    )
+
+
 ''' EXECUTION CODE '''
 
 
@@ -742,6 +825,10 @@ def main():
             demisto.results(get_incident_data())
         elif demisto.command() == 'PagerDuty-get-service-keys':
             demisto.results(get_service_keys())
+        elif demisto.command() == 'PagerDuty-add-responders':
+            demisto.results(add_responders_to_incident(**demisto.args()))
+        elif demisto.command() == 'PagerDuty-run-response-play':
+            return_results(run_response_play(**demisto.args()))
     except Exception as err:
         return_error(err)
 
