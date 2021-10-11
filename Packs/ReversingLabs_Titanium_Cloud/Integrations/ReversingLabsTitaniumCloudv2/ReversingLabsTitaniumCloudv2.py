@@ -672,7 +672,7 @@ def url_report_output(response_json, url):
         analysis_history = analysis.get("analysis_history")
         last_analysis = analysis.get("last_analysis")
 
-        markdown += f"""\n**First analysis**: {analysis.get("first_analysis")}
+        markdown += f"""\n    **First analysis**: {analysis.get("first_analysis")}
         **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get(
             "analysis_id")}
         **Analysis time**: {last_analysis.get("analysis_time")}
