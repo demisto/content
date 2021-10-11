@@ -1329,6 +1329,9 @@ def test_get_reputation_command_success(request_mocker, client):
     with open('test_data/Reputation/reputation_command_readable_output.md', 'r') as f:
         readable_output = f.read()
 
+    with open('test_data/Reputation/reputation_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
     request_mocker.return_value = dummy_response
 
     # Execute
@@ -1339,6 +1342,7 @@ def test_get_reputation_command_success(request_mocker, client):
     assert command_response.outputs_key_field == 'query'
     assert command_response.readable_output == readable_output
     assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_custom_context
 
 
 def test_get_reputation_command_failure(client):

@@ -1881,7 +1881,7 @@ Retrieves the list of all profiles.
 | id | Specify the ID of the profile to retrieve the specific profile.<br/><br/>Note: If 'id' argument is provided, all other arguments will be neglected. | Optional | 
 | query | Filter the result based on title or aliases. . | Optional | 
 | type | Filter the results based on the profile type. <br/><br/>Possible values: actor, tool, backdoor. | Optional | 
-| indicator_value | Specify the indicator value to retrieve the profiles containing the given indicator.<br/><br/>Note: When both indicator_value and query are provided, higher priority will be given to indicator_value. | Optional | 
+| indicator_value | Specify the indicator value to retrieve the profiles containing the given indicator.<br/><br/>Note: To retrieve the list of indicators, execute the "pt-list-intel-profile-indicators" command.<br/>When both indicator_value and query are provided, higher priority will be given to indicator_value. | Optional | 
 | source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
 | category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
 
@@ -1987,7 +1987,7 @@ Retrieves the indicators for the given profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the ID of the profile to retrieve indicators for the specific profile. | Required | 
+| id | Specify the ID of the profile to retrieve indicators for the specific profile.<br/><br/>Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.| Required | 
 | type | Filter the results based on the indicator type. <br/><br/>Possible values: certificate_sha1, domain, email, hash_md5, hash_sha256, ip, pdb_path, soa_email, url, whois_email. | Optional | 
 | indicator_value | Specify the indicator value to retrieve the specific indicator. | Optional | 
 | source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq. | Optional | 
@@ -2307,7 +2307,7 @@ Retrieves the attack surface insight information of the given third-party accoun
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the third-party insights information. | Required | 
+| id | Specify the vendor ID to retrieve the third-party insights information.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
 | priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required | 
 
 
@@ -2394,8 +2394,8 @@ Retrieves the attack surface asset information of the individual's account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the insight ID to retrieve the assets. | Required | 
-| segment_by | Specify the segment_by to retrieve the assets. | Required | 
+| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command. | Required | 
+| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 
@@ -2603,7 +2603,7 @@ Retrieves the attack surface vulnerability information of the individual's accou
 #### Human Readable Output
 
 >### Vulnerabilities
->|CVE ID|CWE ID|Priority Score|Asset Count|
+>|CVE ID|CWE ID|RiskIQ Priority Score|Asset Count|
 >|---|---|---|---|
 >| CVE-2021-23017 | CWE-193  | 98.0 | 149 |
 >| CVE-2019-20372 | CWE-444  | 53.0 | 145 |
@@ -2621,7 +2621,7 @@ Retrieves the attack surface vulnerability observation information of the indivi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Specify the CVE ID to retrieve observations of that CVE. | Required | 
+| cve_id | Specify the CVE ID to retrieve observations of that CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 
@@ -2704,9 +2704,9 @@ Retrieves the attack surface asset information of the given third-party account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the insight ID to retrieve the assets. | Required | 
-| vendor_id | Specify the vendor ID to retrieve the assets of a specific vendor. | Required | 
-| segment_by | Specify the segment_by to retrieve the assets. | Required | 
+| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command. | Required | 
+| vendor_id | Specify the vendor ID to retrieve the assets of a specific vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
+| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 
@@ -2788,7 +2788,7 @@ Retrieves the attack surface vulnerable component information of the given third
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerable components for a particular vendor. | Required | 
+| id | Specify the vendor ID to retrieve the vulnerable components for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 
@@ -2865,7 +2865,7 @@ Retrieves the attack surface vulnerability information of the given third-party 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerabilities for a particular vendor. | Required | 
+| id | Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 
@@ -2935,7 +2935,7 @@ Retrieves the attack surface vulnerability information of the given third-party 
 #### Human Readable Output
 
 >### Vulnerabilities
->|CVE ID|CWE ID|Priority Score|Asset Count|
+>|CVE ID|CWE ID|RiskIQ Priority Score|Asset Count|
 >|---|---|---|---|
 >| CVE-2020-11022 | CWE-79  | 61.0 | 19 |
 >| CVE-2020-11023 | CWE-79  | 61.0 | 19 |
@@ -2953,8 +2953,8 @@ Retrieves the attack surface vulnerability observation information of the given 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerability observations for a particular vendor. | Required | 
-| cve_id | Specify the CVE ID to retrieve observations of the CVE. | Required | 
+| id | Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
+| cve_id | Specify the CVE ID to retrieve observations of the CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command. | Required | 
 | page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
 | page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
 

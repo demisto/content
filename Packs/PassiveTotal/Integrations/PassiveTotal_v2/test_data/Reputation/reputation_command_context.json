@@ -12,14 +12,12 @@
     {
       "name": "Registrant email provider",
       "description": "Domain is registered with an email provider that is more likely to register malicious domains",
-      "severity": 3,
-      "link": null
+      "severity": 3
     },
     {
       "name": "Registrar",
       "description": "Domains registered with this registrar are more likely to be malicious",
-      "severity": 3,
-      "link": null
+      "severity": 3
     }
   ]
 }

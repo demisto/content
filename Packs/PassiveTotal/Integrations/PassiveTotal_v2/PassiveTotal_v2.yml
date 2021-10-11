@@ -1686,10 +1686,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Specify the indicator value to retrieve the profiles containing the given indicator.
-
-        Note: When both indicator_value and query are provided, higher priority will be given to indicator_value.
+      description: "Specify the indicator value to retrieve the profiles containing\
+        \ the given indicator.\n\nNote: To retrieve the list of indicators, execute\
+        \ the \"pt-list-intel-profile-indicators\" command. \nWhen both indicator_value\
+        \ and query are provided, higher priority will be given to indicator_value."
       isArray: false
       name: indicator_value
       required: false
@@ -1751,8 +1751,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the ID of the profile to retrieve indicators for the specific
-        profile.
+      description: |-
+        Specify the ID of the profile to retrieve indicators for the specific profile.
+
+        Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.
       isArray: false
       name: id
       required: true
@@ -2016,7 +2018,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the vendor ID to retrieve the third-party insights information.
+      description: |-
+        Specify the vendor ID to retrieve the third-party insights information.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
       isArray: false
       name: id
       required: true
@@ -2079,13 +2084,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the insight ID to retrieve the assets.
+      description: |-
+        Specify the insight ID to retrieve the assets.
+
+        Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Specify the segment_by to retrieve the assets.
+      description: |-
+        Specify the segment_by to retrieve the assets.
+
+        Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command.
       isArray: false
       name: segment_by
       required: true
@@ -2253,7 +2264,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the CVE ID to retrieve observations of that CVE.
+      description: |-
+        Specify the CVE ID to retrieve observations of that CVE.
+
+        Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command.
       isArray: false
       name: cve_id
       required: true
@@ -2316,19 +2330,28 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the insight ID to retrieve the assets.
+      description: |-
+        Specify the insight ID to retrieve the assets.
+
+        Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Specify the vendor ID to retrieve the assets of a specific vendor.
+      description: |-
+        Specify the vendor ID to retrieve the assets of a specific vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
       isArray: false
       name: vendor_id
       required: true
       secret: false
     - default: false
-      description: Specify the segment_by to retrieve the assets.
+      description: |-
+        Specify the segment_by to retrieve the assets.
+
+        Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command.
       isArray: false
       name: segment_by
       required: true
@@ -2394,8 +2417,10 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Specify the vendor ID to retrieve the vulnerable components for
-        a particular vendor.
+      description: |-
+        Specify the vendor ID to retrieve the vulnerable components for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
       isArray: false
       name: id
       required: true
@@ -2455,8 +2480,10 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Specify the vendor ID to retrieve the vulnerabilities for a particular
-        vendor.
+      description: |-
+        Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
       isArray: false
       name: id
       required: true
@@ -2519,14 +2546,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify the vendor ID to retrieve the vulnerability observations
-        for a particular vendor.
+      description: |-
+        Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.
+
+        Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Specify the CVE ID to retrieve observations of the CVE.
+      description: |-
+        Specify the CVE ID to retrieve observations of the CVE.
+
+        Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command.
       isArray: false
       name: cve_id
       required: true

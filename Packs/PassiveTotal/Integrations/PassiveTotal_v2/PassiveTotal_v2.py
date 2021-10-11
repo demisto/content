@@ -1308,13 +1308,13 @@ def get_human_readable_for_my_asi_vulnerabilities_command(results: List[Dict[str
         hr_row = {
             'CVE ID': component.get('cveId', ''),
             'CWE ID': f'{", ".join("{}".format(i.get("cweId")) for i in component.get("cwes", []))} ',
-            'Priority Score': component.get('priorityScore', ''),
+            'RiskIQ Priority Score': component.get('priorityScore', ''),
             'Asset Count': component.get('observationCount', ''),
         }
         hr_table_content.append(hr_row)
 
     hr = tableToMarkdown("Vulnerabilities", hr_table_content,
-                         headers=["CVE ID", "CWE ID", "Priority Score", "Asset Count"],
+                         headers=["CVE ID", "CWE ID", "RiskIQ Priority Score", "Asset Count"],
                          removeNull=True)
     return hr
 
