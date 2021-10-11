@@ -1163,6 +1163,9 @@
             "playbookID": "CutTransformerTest"
         },
         {
+            "playbookID": "TestEditServerConfig"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
