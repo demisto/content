@@ -108,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 1350
+          "x": -980,
+          "y": 1390
         }
       }
     note: false
@@ -147,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1350
+          "x": 600,
+          "y": 1560
         }
       }
     note: false
@@ -218,8 +218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 2580
+          "x": 350,
+          "y": 2760
         }
       }
     note: false
@@ -259,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2800
+          "x": 110,
+          "y": 2980
         }
       }
     note: false
@@ -286,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 3030
+          "x": 350,
+          "y": 3210
         }
       }
     note: false
@@ -316,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 2430
+          "x": 350,
+          "y": 2610
         }
       }
     note: false
@@ -378,7 +378,7 @@ tasks:
     task:
       id: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
       version: -1
-      name: Get Original Email - Generic v2
+      name: Get Original Email - Generic
       description: |-
         Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -386,7 +386,7 @@ tasks:
 
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
-      playbookName: Get Original Email - Generic v2
+      playbookName: Get Original Email - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -424,7 +424,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "3"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -629,8 +629,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 2040
+          "x": 810,
+          "y": 2220
         }
       }
     note: false
@@ -676,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 1910
+          "x": -2.5,
+          "y": 2180
         }
       }
     note: false
@@ -719,8 +719,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 1700
+          "x": 230,
+          "y": 1880
         }
       }
     note: false
@@ -750,8 +750,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1510
+          "x": 600,
+          "y": 1730
         }
       }
     note: false
@@ -866,8 +866,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2490,
-          "y": 1700
+          "x": 2380,
+          "y": 1880
         }
       }
     note: false
@@ -916,8 +916,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1880,
-          "y": 1860
+          "x": 1770,
+          "y": 2040
         }
       }
     note: false
@@ -971,8 +971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 1860
+          "x": 1370,
+          "y": 2040
         }
       }
     note: false
@@ -1026,8 +1026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2287.5,
-          "y": 1860
+          "x": 2177.5,
+          "y": 2040
         }
       }
     note: false
@@ -1081,8 +1081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3100,
-          "y": 1860
+          "x": 2990,
+          "y": 2040
         }
       }
     note: false
@@ -1136,8 +1136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2700,
-          "y": 1860
+          "x": 2590,
+          "y": 2040
         }
       }
     note: false
@@ -1191,8 +1191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3510,
-          "y": 1860
+          "x": 3400,
+          "y": 2040
         }
       }
     note: false
@@ -1208,13 +1208,13 @@ tasks:
     type: regular
     task:
       id: c833db72-2412-4e50-84f5-8e33981f5195
-      description: ''
       version: -1
       name: Normalize Email Headers
       scriptName: SetGridField
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "17"
@@ -1224,7 +1224,7 @@ tasks:
       context_path:
         simple: headers
       grid_id:
-        simple: phishingreporteremailheaders
+        simple: phishingemailthreadheaders
       overwrite:
         simple: "true"
       sort_by:
@@ -1270,13 +1270,56 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: phishingreporteremailheaders
+          accessor: phishingemailthreadheaders
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 140,
           "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d91a150d-2069-4334-8ff6-73d1ee7a7052
+    type: condition
+    task:
+      id: d91a150d-2069-4334-8ff6-73d1ee7a7052
+      version: -1
+      name: Do we have original emails attached?
+      description: Identify whether the incident includes an email message attached
+        as an eml or msg file and return the answer to playbook. Also saves the identified
+        entry ID to context for use for later. Commonly used in automated playbooks
+        that handle phishing reports sent to a special phishing mailbox set up by
+        the security team.
+      scriptName: IdentifyAttachedEmail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "22"
+      "yes":
+      - "3"
+    scriptarguments:
+      entryid:
+        simple: ${inputs.File.EntryID}
+    reputationcalc: 1
+    results:
+    - reportedemailentryid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1390
         }
       }
     note: false
@@ -1299,9 +1342,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3375,
-        "width": 4820,
-        "x": -930,
+        "height": 3555,
+        "width": 4760,
+        "x": -980,
         "y": -280
       }
     }
@@ -1366,7 +1409,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: phishingreporteremailheaders
+      accessor: phishingemailthreadheaders
   required: false
   description: The email’s headers.
   playbookInputQuery:
