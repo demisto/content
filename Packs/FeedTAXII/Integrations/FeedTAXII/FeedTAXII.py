@@ -38,45 +38,38 @@ class AddressObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
+        result =[]
+
         indicator = props.find('Address_Value')
         if indicator is None:
-            return []
+            return result
+
         indicator = indicator.string.encode('ascii', 'replace').decode()
+        address_list = indicator.split('##comma##')
 
-        indicator_list = indicator.split('##comma##')
-
-        acategory = props.get('category', None)
-        if acategory is None:
-            try:
-                ip = IPNetwork(indicator_list[0])
+        try:
+            for address in address_list:
+                ip = IPNetwork(address)
                 if ip.version == 4:
-                    if len(indicator_list[0].split('/')) > 1:
-                        type_ = 'CIDR'
+                    if len(address.split('/')) > 1:
+                        _type = 'CIDR'
                     else:
-                        type_ = 'IP'
+                        _type = 'IP'
                 elif ip.version == 6:
-                    if len(indicator_list[0].split('/')) > 1:
-                        type_ = 'IPv6CIDR'
+                    if len(address.split('/')) > 1:
+                        _type = 'IPv6CIDR'
                     else:
-                        type_ = 'IPv6'
+                        _type = 'IPv6'
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
 
-            except Exception:
-                return []
+                result.append({'indicator': address, 'type': _type})
 
-        elif acategory == 'ipv4-addr':
-            type_ = 'IP'
-        elif acategory == 'ipv6-addr':
-            type_ = 'IPv6'
-        elif acategory == 'e-mail':
-            type_ = 'Email'
-        else:
-            LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
-            return []
+        except Exception:
+            return result
 
-        return [{'indicator': i, 'type': type_} for i in indicator_list]
+        return result
 
 
 class DomainNameObject(object):
@@ -304,6 +297,10 @@ class StixDecode(object):
 
     @staticmethod
     def decode(content, **kwargs):
+        observable_result = []
+        indicator_result: Dict[str, dict] = {}
+        ttp_result: Dict[str, dict] = {}
+
         package = BeautifulSoup(content, 'xml')
 
         if package.contents[0].name != 'STIX_Package':
@@ -315,9 +312,8 @@ class StixDecode(object):
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
+        # extract the Observable
         if package.find_all('Observable'):
-            observable_result = []
-
             pprops = package_extract_properties(package)
 
             observables = package.find_all('Observable')
@@ -353,10 +349,8 @@ class StixDecode(object):
                             r.update(pprops)
                             observable_result.append(r)
 
-            return timestamp, StixDecode._deduplicate(observable_result), None, None
-
-        elif package.find_all('Indicators'):
-            indicator_result: Dict[str, dict] = {}
+        # extract the Indicator
+        if package.find_all('Indicator'):
             observable = package.find_all('Observable')
 
             if observable:
@@ -365,10 +359,8 @@ class StixDecode(object):
                 indicator_info = indicator_extract_properties(indicators[0])
                 indicator_result[indicator_ref] = indicator_info
 
-            return timestamp, None, indicator_result, None
-
-        elif ttp := package.find_all('TTP'):
-            ttp_result: Dict[str, dict] = {}
+        # extract the ttp
+        if ttp := package.find_all('TTP'):
             ttp_info: Dict[str, str] = {}
 
             id_ref = ttp[0].get('id')
@@ -380,17 +372,16 @@ class StixDecode(object):
 
             behavior = package.find_all('Behavior')
 
-            if behavior[0].find_all('Malware'):
-                ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
+            if behavior:
+                if behavior[0].find_all('Malware'):
+                    ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
 
-            elif behavior[0].find_all('Attack_Patterns'):
-                ttp_info.update(ttp_extract_properties(package.find_all('Attack_Patterns')[0], 'Attack_Patterns'))
+                elif behavior[0].find_all('Attack_Patterns'):
+                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Patterns')[0], 'Attack_Patterns'))
 
-            ttp_result[id_ref] = ttp_info
+                ttp_result[id_ref] = ttp_info
 
-            return timestamp, None, None, ttp_result
-
-        return None, None, None, None
+        return timestamp, StixDecode._deduplicate(observable_result), indicator_result, ttp_result
 
 
 class Taxii11(object):
@@ -817,9 +808,9 @@ class TAXIIClient(object):
                                 timestamp, observable, indicator, ttp = StixDecode.decode(content)
                                 if observable:
                                     observables.append(observable[0])
-                                elif indicator:
+                                if indicator:
                                     indicators.update(indicator)
-                                elif ttp:
+                                if ttp:
                                     ttps.update(ttp)
 
                                 if timestamp:
