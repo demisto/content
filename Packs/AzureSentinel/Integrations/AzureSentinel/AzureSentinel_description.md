@@ -9,10 +9,14 @@ Follow these steps for a self-deployed configuration.
 2. In your registered app - create a new Client secret.
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
    2. Copy and save the new secret value to use in the add credentials step.
-3. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
-4. Enter your registered app Application (client) ID in the ***Username*** parameter.
-5. Enter the secret value you created in the *Password* parameter.
-6. Copy your tenant ID for the integration configuration usage.
+3. Assign a role to the registered app.
+   1. In Azure portal, go to the Subscriptions and select the subscription you are using -> Access control (IAM).
+   2. Click Add -> Add role assignment.
+   3. Select the Azure Sentinel Contributor role -> Select your registered app, and click Save.
+4. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
+5. In the ***Username*** parameter, enter your registered app Application (client) ID.
+6. In the ***Password*** parameter, enter the secret value you created.
+7. Copy your tenant ID for the integration configuration usage.
 
 ## Configure the server URL
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 

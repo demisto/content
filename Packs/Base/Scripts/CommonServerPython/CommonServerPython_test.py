@@ -668,6 +668,38 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    @staticmethod
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
+            {
+                "docker_image": "demisto/python3",
+                "create_time": '1631521313466'
+            },
+            {
+                "docker_image": "demisto/python2",
+                "create_time": 1631521521466
+            }
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
+|docker_image|create_time|
+|---|---|
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
+'''
+        assert table == expected_md_table
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
