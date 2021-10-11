@@ -86,6 +86,9 @@ def get_month_database_names():
 
 def main():
     try:
+        if is_demisto_version_ge("6.2.0"):
+            raise DemistoException("This script has been deprecated. Please checkout the System Diagnostic page for an "
+                                   "alternative.")
         investigations: Dict = {}
         args: Dict = demisto.args()
         from_date = args.get('from')
@@ -102,6 +105,8 @@ def main():
             # change result to MD
             result = tableToMarkdown('Largest Incidents by Storage Size', result.get("data"),
                                      headers=["IncidentID", "Size(MB)", "AmountOfEntries", "Date"])
+        if not result:
+            result = "No incidents found. Note: only incidents larger than 1MB are scanned."
         demisto.results(result)
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
