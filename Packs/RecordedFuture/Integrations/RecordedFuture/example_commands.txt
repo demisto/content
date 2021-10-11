@@ -7,3 +7,6 @@
 !recordedfuture-alert-rules limit=1
 !recordedfuture-alerts limit=1
 !recordedfuture-intelligence entity_type="ip" entity="8.8.8.8"
+!recordedfuture-links entity=CVE-2017-0143 entity_type=cve
+!recordedfuture-alert-set-status alert_id=jfy31 status="pending"
+!recordedfuture-alert-set-note alert_id=jfy31 note="this is the note for alert"
