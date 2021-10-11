@@ -17,14 +17,12 @@ def main():
     if not list_name.startswith("OOO"):
         list_name = f"OOO {list_name}"
 
-    # get current user and the current values in the list
-    current_username = demisto.executeCommand("getUsers", {"current": True})
-    if isError(current_username):
-        return_error(f'Failed to get current user: {str(get_error(current_username))}')
-    current_username = current_username[0]["Contents"][0]['username']
-
     if not username:
-        username = current_username
+        # get current user
+        current_username = demisto.executeCommand("getUsers", {"current": True})
+        if isError(current_username):
+            return_error(f'Failed to get current user: {str(get_error(current_username))}')
+        username = current_username[0]["Contents"][0]['username']
     else:
         # check if provided username is a valid xsoar user
         users = demisto.executeCommand("getUsers", {})
@@ -53,7 +51,9 @@ def main():
     if option == "add":
         # check if user is already in the list, and remove, to allow updating
         list_data = [i for i in list_data if not (i['user'] == username)]
-        list_data.append({"user": username, "offuntil": off_until, "addedby": current_username})
+        list_data.append({"user": username,
+                          "offuntil": off_until,
+                          "addedby": username if username else 'playbook'})
     else:
         # remove the user from the list.
         list_data = [i for i in list_data if not (i['user'] == username)]
