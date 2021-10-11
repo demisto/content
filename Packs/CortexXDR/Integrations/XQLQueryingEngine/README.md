@@ -1,7 +1,7 @@
 Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
 This integration was integrated and tested with version 3.0 of Cortex XDR - XQL Query Engine
 
-In order to access all of the datasets, make sure your api token role is set at least to 'investigator'. Investigation query view will provide you access to all of the datasets except endpoints and host_inventory.
+In order to access all of the datasets, make sure your api token role is set to at least 'investigator'. Investigation query view will provide you access to all of the datasets except endpoints and host_inventory.
 For additional information see [Predefined User Roles for Cortex XDR](https://docs-new.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/get-started-with-cortex-xdr-pro/manage-cortex-xdr-roles/administrative-roles.html)
 
 ## Configure Cortex XDR - XQL Query Engine on Cortex XSOAR
