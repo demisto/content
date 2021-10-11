@@ -128,7 +128,7 @@ def test_tags_parameter(mocker, tags):
     Then:
     - Validate the tags supplied exists in the indicators
     """
-    client = TAXIIClient(collection='a collection', tags=json.dumps(tags))
+    client = TAXIIClient(collection='a collection', feedTags=json.dumps(tags))
     with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
