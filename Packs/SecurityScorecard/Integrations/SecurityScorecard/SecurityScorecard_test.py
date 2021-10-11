@@ -77,7 +77,8 @@ def test_get_last_run(last_run, first_fetch):
     last_run_dt = get_last_run(last_run=last_run, first_fetch=first_fetch)
 
     if last_run:
-        assert last_run_dt.replace(microsecond=0) == arg_to_datetime(arg_name="last_run", arg=last_run).replace(microsecond=0, tzinfo=None)
+        assert last_run_dt.replace(microsecond=0) == \
+            arg_to_datetime(arg_name="last_run", arg=last_run).replace(microsecond=0, tzinfo=None)
     else:
         # resetting microsecond as causes failure:
         # E             +datetime.datetime(2021, 10, 3, 14, 50, 3, 242595)
