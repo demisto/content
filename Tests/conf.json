@@ -4559,6 +4559,10 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "AutoFocusTagsFeed",
+            "playbookID": "AutoFocusTagsFeed-test"
         }
     ],
     "skipped_tests": {
