@@ -23,7 +23,7 @@ def set_system_config(server_config: dict):
         })
 
 
-def remove_server_config(key: str, server_config: dict):
+def remove_key_from_server_config(key: str, server_config: dict):
     if key in server_config:
         server_config.pop(key)
         set_system_config(server_config)
@@ -47,7 +47,7 @@ def edit_server_config(args: Dict[str, Any]) -> CommandResults:
     if action == "update":
         update_server_config(key, value, sys_conf)
     elif action == "remove":
-        remove_server_config(key, sys_conf)
+        remove_key_from_server_config(key, sys_conf)
     else:
         raise DemistoException("EditServerConfig Error: action must be update or remove.")
 
