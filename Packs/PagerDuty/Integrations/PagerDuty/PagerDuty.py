@@ -17,6 +17,7 @@ USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
+DEFAULT_REQUESTOR = demisto.params()['DefaultRequestor']
 
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
@@ -744,7 +745,7 @@ def get_service_keys():
     }
 
 
-def add_responders_to_incident(IncidentID, Message, UserRequests="", EscalationPolicyRequests="", RequestorID=DEFAULT_REQUESTOR):
+def add_responders_to_incident(incident_id, message, user_requests="", escalation_policy_requests="", requestor_id=DEFAULT_REQUESTOR):
     """Add the responders to an incident"""
     if RequestorID is None or RequestorID == "":
         RequestorID = DEFAULT_REQUESTOR
@@ -772,17 +773,17 @@ def add_responders_to_incident(IncidentID, Message, UserRequests="", EscalationP
     return extract_responder_request(response)
 
 
-def run_response_play(IncidentID, From, ResponsePlayID):
+def run_response_play(incident_id, from_email, response_play_uuid):
     """Add the responders to an incident"""
-    url = SERVER_URL + RESPONSE_PLAY_SUFFIX.format(ResponsePlayID)
+    url = SERVER_URL + RESPONSE_PLAY_SUFFIX.format(response_play_uuid)
     body = {
         'incident': {
-            'id': IncidentID,
+            'id': incident_id,
             'type': 'incident_reference'
         }
     }
     extra_headers = {
-        "From": From
+        "From": from_email
     }
     response = http_request('POST', url, json_data=body, additional_headers=extra_headers)
     if response != {"status": "ok"}:

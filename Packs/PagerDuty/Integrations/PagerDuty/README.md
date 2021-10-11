@@ -782,3 +782,87 @@ There are no input arguments for this command.
 >|ID|Name|Status|Created At|Integration|
 >|---|---|---|---|---|
 >| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
+
+
+
+### PagerDuty-add-responders
+***
+Add responders to an incident
+
+
+#### Base Command
+
+`PagerDuty-add-responders`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | PagerDuty Incident ID to add responders to. | Required | 
+| message | Message to send to responders. | Required | 
+| user_requests | Comma separated list of User IDs to request response from. | Optional | 
+| escalation_policy_requests | Comma separated list of Escalation Policy IDs to request response from. | Optional | 
+| requestor_id | UserID sending the request (if blank, uses the default for the integraiton). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.ResponderRequests.ResponderID | String | The User ID of the responder added | 
+| PagerDuty.ResponderRequests.ResponderName | String | The name of the responder added | 
+
+
+#### Command Example
+```!PagerDuty-add-responders incident_id=someid user_requests="ABC123" requestor_id="GHI789"```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "ResponderRequests": {
+            "ResponderID": "ABC123",
+            "ResponderName": "someuser"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+```json
+{
+    "PagerDuty": {
+        "ResponderRequests": {
+            "ResponderID": "ABC123",
+            "ResponderName": "someuser"
+        }
+    }
+}
+```
+
+
+### PagerDuty-run-response-play
+***
+Run a response play on PagerDuty (based on its UUID)
+
+
+#### Base Command
+
+`PagerDuty-run-response-play`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The PagerDuty Incident ID to run the play on. | Required | 
+| from_email | User's email to trigger the response play from. | Required | 
+| response_play_uuid | The UUID of the response play to run. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!PagerDuty-run-response-play incident_id=someincident from_email=me@mycompany.com response_play_uuid="123-1235-2134-124"```
+
+#### Human Readable Output
+Command ran successfully

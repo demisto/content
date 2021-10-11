@@ -475,7 +475,7 @@ script:
       description: Incident Urgency
       type: string
     - contextPath: PagerDuty.Incidents.assignee
-      description: 'The assignee of the incident '
+      description: The assignee of the incident
       type: string
     - contextPath: PagerDuty.Incidents.service_id
       description: The id of the impacted service
@@ -558,33 +558,33 @@ script:
     - default: false
       description: PagerDuty Incident ID to add responders to
       isArray: false
-      name: IncidentID
+      name: incident_id
       required: true
       secret: false
     - default: false
       description: Message to send to responders
       isArray: false
-      name: Message
+      name: message
       required: true
       secret: false
     - default: false
       description: Comma separated list of User IDs to request response from
       isArray: false
-      name: UserRequests
+      name: user_requests
       required: false
       secret: false
     - default: false
       description: Comma separated list of Escalation Policy IDs to request response
         from
       isArray: false
-      name: EscalationPolicyRequests
+      name: escalation_policy_requests
       required: false
       secret: false
     - default: false
       description: UserID sending the request (if blank, uses the default for the
         integraiton)
       isArray: false
-      name: RequestorID
+      name: requestor_id
       required: false
       secret: false
     deprecated: false
@@ -593,31 +593,34 @@ script:
     name: PagerDuty-add-responders
     outputs:
     - contextPath: PagerDuty.ResponderRequests.ResponderID
+      description: The User ID of the responder added
       type: String
     - contextPath: PagerDuty.ResponderRequests.ResponderName
+      description: The name of the responder added
       type: String
   - arguments:
     - default: false
       description: The PagerDuty Incident ID to run the play on
       isArray: false
-      name: IncidentID
+      name: incident_id
       required: true
       secret: false
     - default: false
       description: User's email to trigger the response play from
       isArray: false
-      name: From
+      name: from_email
       required: true
       secret: false
     - default: false
       description: The UUID of the response play to run
       isArray: false
-      name: ResponsePlayID
+      name: response_play_uuid
       required: true
       secret: false
     deprecated: false
     execution: false
     name: PagerDuty-run-response-play
+    description: Run a response play on PagerDuty (based on its UUID)
   feed: false
   isfetch: true
   longRunning: false
