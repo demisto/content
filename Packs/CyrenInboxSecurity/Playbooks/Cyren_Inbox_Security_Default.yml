@@ -1,5 +1,5 @@
 description: 'Processes Cyren Incidents, sets resolutions, and applies remediations
-  to end-user mailboxes. '
+  to end-user mailboxes.'
 id: Cyren Inbox Security Default
 inputs: []
 name: Cyren Inbox Security Default

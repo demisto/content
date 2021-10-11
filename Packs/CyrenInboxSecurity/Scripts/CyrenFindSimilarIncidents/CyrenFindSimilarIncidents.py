@@ -21,7 +21,7 @@ def get_incidents_by_case(case_id, incident_id):
          }
 
     res = demisto.executeCommand("getIncidents", get_incidents_argument)
-    if res[0]['Type'] == entryTypes['error']:
+    if res[0]['Type'] == EntryType.ERROR:
         raise NameError(str(res[0]['Contents']))
 
     incident_list = res[0]['Contents']['data'] or []
@@ -55,10 +55,15 @@ def did_not_find_duplicates():
         'isSimilarIncidentFound': False
     }
     demisto.results({'ContentsFormat': formats['markdown'],
-                     'Type': entryTypes['note'],
+                     'Type': EntryType.NOTE,
                      'Contents': 'No similar incidents have been found.',
                      'EntryContext': context})
     sys.exit(0)
+
+
+def pretty_title(s):
+    s = s.replace('_', ' ')
+    return s.title()
 
 
 def main():
@@ -68,10 +73,10 @@ def main():
         case_id = demisto.args().get('case_id')
         incident_id = ""
         # case id from current incident context
-        if not (case_id):
+        if not case_id:
             case_id = demisto.get(demisto.incidents()[0],
                                   'CustomFields.cyrencaseid')
-        if not (case_id):
+        if not case_id:
             return did_not_find_duplicates()
 
         # don't include this incident id in list
@@ -111,27 +116,16 @@ def main():
             }
 
             # build printed output
-            hr_result =\
-                map(lambda row:
-                    dict(((k).replace("_", " ").upper(), v)
-                         for k, v in row.items()),
-                    similar_incidents_rows
-                    )
             markdown_result =\
-                "Total Incidents: " +\
+                "**Number of Incidents:** " +\
                 str(len(similar_incidents_rows)) +\
                 "\n"
-            for x in hr_result:
-                markdown_result =\
-                    markdown_result +\
-                    '**' +\
-                    x["ID"] +\
-                    '** &nbsp;&nbsp;' +\
-                    x["CYREN INCIDENT ID"] +\
-                    '\n'
+            markdown_result = markdown_result +\
+                tableToMarkdown("", similar_incidents_rows,
+                                ["time", "id", "cyren_incident_id", "name"], pretty_title)
 
             return {'ContentsFormat': formats['markdown'],
-                    'Type': entryTypes['note'],
+                    'Type': EntryType.NOTE,
                     'Contents': markdown_result,
                     'EntryContext': context}
         else:
