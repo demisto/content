@@ -12,6 +12,14 @@ from accessdata.api.jobs import Job
 from accessdata.api.filters import and_, or_
 from accessdata.client import Client
 
+# xsoar imports
+from CommonServerPython import (
+    CommandResults,
+    return_values,
+    return_results
+)
+import demistomock as demisto
+
 """ decorator wrapping demisto commands"""
 
 _run_functions = {}

@@ -2,6 +2,7 @@
 
 import traceback
 
+from CommonServerPython import return_error
 import demistomock as demisto
 
 """ Main Definition """
