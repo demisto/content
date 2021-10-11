@@ -1623,8 +1623,8 @@ def add_login(data_args):
 
 def get_privileges(data_args):
     id = data_args.get('user_id')
-    res = http_request('GET', 'lr-admin-api/users/' + id + '/privileges?offset=' +
-                       data_args['offset'] + '&count=' + data_args['count'])
+    res = http_request('GET', 'lr-admin-api/users/' + id + '/privileges?offset='
+                       + data_args['offset'] + '&count=' + data_args['count'])
     res = {"ID": id, "Privileges": res}
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Privileges(val.ID === obj.ID)': context}
