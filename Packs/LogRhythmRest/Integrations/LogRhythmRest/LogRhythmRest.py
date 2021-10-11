@@ -37,6 +37,11 @@ PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "U
 NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
                    "ThreatLevel", "DateUpdated", "HostZone"]
 ALARM_SUMMARY_HEADERS = ["PIFType", "DrillDownSummaryLogs"]
+USER_HEADERS = ["ID", "DateUpdated", "HostStatus", "LastName", "FirstName", "UserType", "Entity", "Owner", "ReadAccess",
+                "WriteAccess"]
+LOGIN_HEADERS = ["Login", "UserProfileId", "UserId", "DefaultEntityId", "HostStatus", "DateUpdated", "DateCreated"]
+PROFILE_HEADERS = ["ID", "Name", "ShortDescription", "LongDescription", "DataProcessorAccessMode", "SecurityRole", "ProfileType",
+                   "DateUpdated", "TotalAssociatedUsers"]
 
 PIF_TYPES = {
     "1": "Direction",
@@ -1283,6 +1288,72 @@ def update_networks_keys(networks):
     return new_networks
 
 
+def update_users_keys(users):
+    new_users = []
+
+    for user in users:
+        tmp_user = {
+            'ID': user.get('id'),
+            'DateUpdated': user.get('dateUpdated'),
+            'HostStatus': user.get('recordStatusName'),
+            'LastName': user.get('lastName'),
+            'FirstName': user.get('firstName'),
+            'UserType': user.get('userType'),
+            'Entity': user.get('objectPermissions').get('entity'),
+            'Owner': user.get('objectPermissions').get('owner'),
+            'ReadAccess': user.get('objectPermissions').get('readAccess'),
+            'WriteAccess': user.get('objectPermissions').get('writeAccess')
+        }
+        new_users.append(tmp_user)
+    return new_users
+
+
+def update_logins_keys(logins):
+    new_logins = []
+
+    for login in logins:
+        tmp_login = {
+            'Login': login.get('login'),
+            'UserProfileId': login.get('userProfileId'),
+            'UserId': login.get('userId'),
+            'DefaultEntityId': login.get('defaultEntityId'),
+            'HostStatus': login.get('recordStatusName'),
+            'DateUpdated': login.get('dateUpdated'),
+            'DateCreated': login.get('dateCreated'),
+            'Entities': login.get('entities')
+        }
+        new_logins.append(tmp_login)
+    return new_logins
+
+
+def update_profiles_keys(profiles):
+    new_profiles = []
+
+    for profile in profiles:
+        tmp_profile = {
+            'ID': profile.get('id'),
+            'Name': profile.get('name'),
+            'ShortDescription': profile.get('shortDescription'),
+            'LongDescription': profile.get('longDescription'),
+            'DataProcessorAccessMode': profile.get('dataProcessorAccessMode'),
+            'SecurityRole': profile.get('securityRole'),
+            'ProfileType': profile.get('ProfileType'),
+            'DateUpdated': profile.get('dateUpdated'),
+            'TotalAssociatedUsers': profile.get('totalAssociatedUsers'),
+            'NotificationGroupsPermissions': profile.get('notificationGroupsPermissions'),
+            'ADGroupsPermissions': profile.get('adGroupsPermissions'),
+            'EntityPermissions': profile.get('entityPermissions'),
+            'DataProcessorsPermissions': profile.get('dataProcessorsPermissions'),
+            'LogsourceListPermissions': profile.get('logsourceListPermissions'),
+            'LogSourcePermissions': profile.get('logSourcePermissions'),
+            'Privileges': profile.get('privileges'),
+            'SmartResponsePluginsPermissions': profile.get('smartResponsePluginsPermissions')
+
+        }
+        new_profiles.append(tmp_profile)
+    return new_profiles
+
+
 def update_persons_keys(persons):
     new_persons = []
 
@@ -1487,6 +1558,90 @@ def get_persons(data_args):
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Persons information', context, PERSON_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_users(data_args):
+    id = data_args.get('user_id')
+    if id:
+        res = [http_request('GET', 'lr-admin-api/users/' + id)]
+    else:
+        res = http_request('GET', 'lr-admin-api/users?count=' + data_args['count'])
+    res = update_users_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Users information', context, USER_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def add_user(data_args):
+    data = {
+        "userType": "Individual",
+        "firstName": data_args.get("first_name"),
+        "lastName": data_args.get("last_name")
+    }
+    if not data_args.get("abbreviation"):
+        data["abbreviation"] = f"{data_args.get('first_name')[0]}{data_args.get('last_name')}".lower()
+    else:
+        data["abbreviation"] = data_args.get("abbreviation")
+    res = [http_request('POST', 'lr-admin-api/users/', json.dumps(data))]
+    res = update_users_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('User added', context, USER_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_logins(data_args):
+    id = data_args.get('user_id')
+    if id:
+        res = [http_request('GET', 'lr-admin-api/users/' + id + '/login/')]
+    else:
+        res = http_request('GET', 'lr-admin-api/users/user-logins?count=' + data_args['count'])
+    res = update_logins_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Login(val.Login === obj.Login)': context}
+    human_readable = tableToMarkdown('Logins information', context, LOGIN_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def add_login(data_args):
+    id = data_args.get('user_id')
+    data = {
+        "login": data_args.get("login"),
+        "userProfileId": arg_to_number(data_args.get("profile_id")),
+        "defaultEntityId": arg_to_number(data_args.get("entity_id")),
+        "password": data_args.get("password")
+    }
+    res = [http_request('POST', 'lr-admin-api/users/' + id + '/login/', json.dumps(data))]
+    res = update_logins_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.User(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Login added', context, LOGIN_HEADERS)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_privileges(data_args):
+    id = data_args.get('user_id')
+    res = http_request('GET', 'lr-admin-api/users/' + id + '/privileges?offset=' +
+                       data_args['offset'] + '&count=' + data_args['count'])
+    res = {"ID": id, "Privileges": res}
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Privileges(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Privileges information', context, ["Privileges"])
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_profiles(data_args):
+    id = data_args.get('profile_id')
+    if id:
+        res = [http_request('GET', 'lr-admin-api/user-profiles/' + id)]
+    else:
+        res = http_request('GET', 'lr-admin-api/user-profiles?count=' + data_args['count'])
+    res = update_profiles_keys(res)
+    context = createContext(res, removeNull=True)
+    outputs = {'Logrhythm.Profile(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Users information', context, PROFILE_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -1806,6 +1961,14 @@ def main():
             change_status(demisto.args())
         elif demisto.command() == 'lr-get-persons':
             get_persons(demisto.args())
+        elif demisto.command() == 'lr-get-users':
+            get_users(demisto.args())
+        elif demisto.command() == 'lr-get-logins':
+            get_logins(demisto.args())
+        elif demisto.command() == 'lr-get-privileges':
+            get_privileges(demisto.args())
+        elif demisto.command() == 'lr-get-profiles':
+            get_profiles(demisto.args())
         elif demisto.command() == 'lr-get-networks':
             get_networks(demisto.args())
         elif demisto.command() == 'lr-get-alarm-data':
@@ -1820,6 +1983,10 @@ def main():
             lr_get_query_result(demisto.args())
         elif demisto.command() == 'lr-get-case-evidence':
             lr_get_case_evidence(demisto.args())
+        elif demisto.command() == 'lr-add-user':
+            add_user(demisto.args())
+        elif demisto.command() == 'lr-add-login':
+            add_login(demisto.args())
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
 

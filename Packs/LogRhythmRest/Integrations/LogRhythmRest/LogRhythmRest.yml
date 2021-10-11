@@ -1770,6 +1770,245 @@ script:
       description: Task ID
       type: String
   isfetch: false
+  - name: lr-get-users
+    arguments:
+    - name: user_id
+      description: The LogRhythm user ID.
+    - name: count
+      description: Number of users to return.
+      defaultValue: "30"
+    outputs:
+    - contextPath: Logrhythm.User.ID
+      description: LogRhythm user ID
+      type: string
+    - contextPath: Logrhythm.User.DateUpdated
+      description: Date that the user was updated.
+      type: string
+    - contextPath: Logrhythm.User.HostStatus
+      description: Host status of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.LastName
+      description: Last name of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.FirstName
+      description: First name of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.UserType
+      description: LogRhythm user type
+      type: string
+    - contextPath: Logrhythm.User.Entity
+      description: LogRhythm entity information
+      type: string
+    - contextPath: Logrhythm.User.Owner
+      description: LogRhythm owner information
+      type: string
+    - contextPath: Logrhythm.User.ReadAccess
+      description: Read Access of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.WriteAccess
+      description: Write Access of the LogRhythm user.
+      type: string
+    description: Returns a list of users
+  - name: lr-get-logins
+    arguments:
+    - name: user_id
+      description: The LogRhythm user ID.
+    - name: count
+      description: Number of logins to return.
+      defaultValue: "30"
+    outputs:
+    - contextPath: Logrhythm.Login.Login
+      description: The login username
+      type: string
+    - contextPath: Logrhythm.Login.UserProfileId
+      description: The profile ID for the LogRhythm user
+      type: string
+    - contextPath: Logrhythm.Login.UserId
+      description: LogRhythm user ID
+      type: string
+    - contextPath: Logrhythm.Login.DefaultEntityId
+      description: The default entity ID of the login
+      type: string
+    - contextPath: Logrhythm.Login.HostStatus
+      description: Host status of the LogRhythm login.
+      type: string
+    - contextPath: Logrhythm.Login.DateUpdated
+      description: Date that the login was updated.
+      type: string
+    - contextPath: Logrhythm.Login.DateCreated
+      description: Date that the login was created.
+      type: string
+    - contextPath: Logrhythm.Login.Entities
+      description: LogRhythm entities information
+      type: string
+    description: Returns a list of logins
+  - name: lr-get-privileges
+    arguments:
+    - name: user_id
+      required: true
+      description: The LogRhythm user ID
+    - name: offset
+      description: 'The position to start at '
+      defaultValue: "0"
+    - name: count
+      description: Number of privileges to return
+      defaultValue: "30"
+    outputs:
+    - contextPath: Logrhythm.Privileges.ID
+      description: The LogRhythm user ID
+      type: string
+    - contextPath: Logrhythm.Privileges.Privileges
+      description: A list of the LogRhythm user's privileges.
+      type: string
+    description: Returns the privileges of a given user.
+  - name: lr-get-profiles
+    arguments:
+    - name: profile_id
+      description: The LogRhythm profile ID
+    - name: count
+      description: Number of profiles to return
+      defaultValue: "30"
+    outputs:
+    - contextPath: Logrhythm.Profile.ID
+      description: ID of the LogRhythm user profile
+      type: string
+    - contextPath: LogRhythm.Profile.Name
+      description: Name of the Logrhythm user profile
+      type: string
+    - contextPath: LogRhythm.Profile.ShortDescription
+      description: Short description of the profile
+      type: string
+    - contextPath: LogRhythm.Profile.LongDescription
+      description: Long description of the profile
+      type: string
+    - contextPath: LogRhythm.Profile.DataProcessorAccessMode
+      description: Data processor access mode
+      type: string
+    - contextPath: LogRhythm.Profile.SecurityRole
+      description: The user profile's security role
+      type: string
+    - contextPath: LogRhythm.Profile.ProfileType
+      description: The user profile's type
+      type: string
+    - contextPath: LogRhythm.Profile.DateUpdated
+      description: Date that the profile was updated.
+      type: string
+    - contextPath: LogRhythm.Profile.TotalAssociatedUsers
+      description: Total number of users with this profile
+      type: string
+    - contextPath: LogRhythm.Profile.NotificationGroupsPermissions
+      description: Permissions on notification groups
+      type: string
+    - contextPath: LogRhythm.Profile.ADGroupsPermissions
+      description: Active Directory group permissions
+      type: string
+    - contextPath: LogRhythm.Profile.EntityPermissions
+      description: Entity permissions for the profile
+      type: string
+    - contextPath: LogRhythm.Profile.DataProcessorsPermissions
+      description: Profile's data processor permissions
+      type: string
+    - contextPath: LogRhythm.Profile.LogsourceListPermissions
+      description: Profile's logsource list permissions
+      type: string
+    - contextPath: LogRhythm.Profile.LogSourcePermissions
+      description: Profile's permissions for log sources
+      type: string
+    - contextPath: LogRhythm.Profile.Privileges
+      description: Profile's privileges
+      type: string
+    - contextPath: LogRhythm.Profile.SmartResponsePluginsPermissions
+      description: Profile's smart response plugin permissions
+      type: string
+    description: Returns a list of user profiles
+  - name: lr-add-user
+    arguments:
+    - name: first_name
+      required: true
+      description: First name of the LogRhythm user
+    - name: last_name
+      required: true
+      description: Last name of the LogRhythm user
+    - name: abbreviation
+      description: Abbreviation of the user name. Defaults to first letter of first
+        name and then last name, all lowercase
+    outputs:
+    - contextPath: Logrhythm.User.ID
+      description: LogRhythm user ID
+      type: string
+    - contextPath: Logrhythm.User.DateUpdated
+      description: Date that the user was updated.
+      type: string
+    - contextPath: Logrhythm.User.HostStatus
+      description: Host status of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.LastName
+      description: Last name of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.FirstName
+      description: First name of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.UserType
+      description: LogRhythm user type
+      type: string
+    - contextPath: Logrhythm.User.Entity
+      description: LogRhythm entity information
+      type: string
+    - contextPath: Logrhythm.User.Owner
+      description: LogRhythm owner information
+      type: string
+    - contextPath: Logrhythm.User.ReadAccess
+      description: Read Access of the LogRhythm user.
+      type: string
+    - contextPath: Logrhythm.User.WriteAccess
+      description: Write Access of the LogRhythm user.
+      type: string
+    description: Add a new user to the LogRhythm SIEM
+  - name: lr-add-login
+    arguments:
+    - name: user_id
+      required: true
+      description: ID of the user to attach the login to.
+    - name: login
+      required: true
+      description: Login name for the user
+    - name: profile_id
+      required: true
+      description: ID of the user profile to associate with the login
+    - name: password
+      required: true
+      description: 'Password for the user. '
+    - name: entity_id
+      description: ID of the entity to associate with the login. Defaults to 1.
+      defaultValue: "1"
+    outputs:
+    - contextPath: Logrhythm.Login.Login
+      description: The login username
+      type: string
+    - contextPath: Logrhythm.Login.UserProfileId
+      description: The profile ID for the LogRhythm user
+      type: string
+    - contextPath: Logrhythm.Login.UserId
+      description: LogRhythm user ID
+      type: string
+    - contextPath: Logrhythm.Login.DefaultEntityId
+      description: The default entity ID of the login
+      type: string
+    - contextPath: Logrhythm.Login.HostStatus
+      description: Host status of the LogRhythm login.
+      type: string
+    - contextPath: Logrhythm.Login.DateUpdated
+      description: Date that the login was updated.
+      type: string
+    - contextPath: Logrhythm.Login.DateCreated
+      description: Date that the login was created.
+      type: string
+    - contextPath: Logrhythm.Login.Entities
+      description: LogRhythm entities information
+      type: string
+    description: Add a new login to the LogRhythm user
+    execution: true
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: '-'
   type: python
