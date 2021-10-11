@@ -57,19 +57,19 @@ class AddressObject(object):
                 ip = IPNetwork(address)
                 if ip.version == 4:
                     if len(address.split('/')) > 1:
-                        _type = 'CIDR'
+                        type_ = 'CIDR'
                     else:
-                        _type = 'IP'
+                        type_ = 'IP'
                 elif ip.version == 6:
                     if len(address.split('/')) > 1:
-                        _type = 'IPv6CIDR'
+                        type_ = 'IPv6CIDR'
                     else:
-                        _type = 'IPv6'
+                        type_ = 'IPv6'
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
 
-                result.append({'indicator': address, 'type': _type})
+                result.append({'indicator': address, 'type': type_})
 
         except Exception:
             return result
@@ -1192,7 +1192,6 @@ def main():
             demisto.setLastRun({'time': client.last_taxii_run})
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
-            demisto.info(f'bbbbbb {raw_response}')
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
