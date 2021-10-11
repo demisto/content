@@ -1133,6 +1133,10 @@ def internalHttpRequest(method, uri, body=None):
     }
 
 
+def getLicenseCustomField(brand_name: str):
+    return ''
+
+
 def parentEntry():
     """
     Retrieves information regarding the war room entry from which the method runs
