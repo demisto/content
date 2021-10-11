@@ -272,15 +272,18 @@ def gcs_list_bucket_objects(client, default_bucket, args):
 
 
 def gcs_download_file(client, default_bucket, args):
-    blob_name = args['object_name']
-    saved_file_name = args.get('saved_file_name', '')
-    bucket_name = get_bucket_name(args, default_bucket)
+    list_results = []
+    blob_name = argToList(['object_name'])
+    for obj in blob_name:
+        saved_file_name = args.get('saved_file_name', '')
+        bucket_name = get_bucket_name(args, default_bucket)
 
-    bucket = client.get_bucket(bucket_name)
-    blob = storage.Blob(blob_name, bucket)
-    saved_file_name = download_blob(client, blob, saved_file_name)
+        bucket = client.get_bucket(bucket_name)
+        blob = storage.Blob(obj, bucket)
+        saved_file_name = download_blob(client, blob, saved_file_name)
+        list_results.append(file_result_existing_file(saved_file_name))
 
-    demisto.results(file_result_existing_file(saved_file_name))
+    demisto.results(list_results)
 
 
 def gcs_upload_file(client, default_bucket, args):
