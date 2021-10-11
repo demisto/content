@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 0
 - display: Guard Duty Severity level
-  name: gd_severity
+  name: gs_severity
   required: false
   type: 0
 - display: Trust any certificate (not secure)

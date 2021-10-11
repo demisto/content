@@ -541,7 +541,7 @@ def main():
     aws_role_policy = None
     aws_access_key_id = params.get('access_key')
     aws_secret_access_key = params.get('secret_key')
-    aws_gd_severity = params.get('gd_severity', '')
+    aws_gd_severity = params.get('gs_severity', '')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
