@@ -38,13 +38,18 @@ class AddressObject(object):
 
     @staticmethod
     def decode(props, **kwargs):
-        result =[]
+        result: List[Dict[str, str]] = []
 
         indicator = props.find('Address_Value')
         if indicator is None:
             return result
 
         indicator = indicator.string.encode('ascii', 'replace').decode()
+        category = props.get('category', None)
+
+        if category == 'e-mail':
+            return [{'indicator': indicator, 'type': 'Email'}]
+
         address_list = indicator.split('##comma##')
 
         try:
@@ -312,7 +317,7 @@ class StixDecode(object):
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
-        # extract the Observable
+        # extract the Observable info
         if package.find_all('Observable'):
             pprops = package_extract_properties(package)
 
@@ -349,17 +354,19 @@ class StixDecode(object):
                             r.update(pprops)
                             observable_result.append(r)
 
-        # extract the Indicator
+        # extract the Indicator info
         if package.find_all('Indicator'):
             observable = package.find_all('Observable')
 
             if observable:
                 indicator_ref = observable[0].get('idref')
-                indicators = package.find_all('Indicator')
-                indicator_info = indicator_extract_properties(indicators[0])
-                indicator_result[indicator_ref] = indicator_info
 
-        # extract the ttp
+                if indicator_ref:
+                    indicators = package.find_all('Indicator')
+                    indicator_info = indicator_extract_properties(indicators[0])
+                    indicator_result[indicator_ref] = indicator_info
+
+        # extract the TTP info
         if ttp := package.find_all('TTP'):
             ttp_info: Dict[str, str] = {}
 
@@ -999,7 +1006,7 @@ def observable_extract_properties(observable):
     return result
 
 
-def indicator_extract_properties(indicator) -> dict[str: str]:
+def indicator_extract_properties(indicator) -> Dict[str, str]:
     """Extracts properties from indicator"""
     result: Dict[str, str] = {}
 

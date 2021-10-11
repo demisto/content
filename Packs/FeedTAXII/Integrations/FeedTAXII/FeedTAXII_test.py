@@ -108,16 +108,6 @@ def test_poll_collection():
     assert res
 
 
-def test_parse_indicator():
-    from FeedTAXII import StixDecode
-    with open('FeedTAXII_test/indicator.xml', 'r') as xml_f:
-        stix_str = xml_f.read()
-        res = StixDecode.get_indicator_info(stix_str)
-        with open('FeedTAXII_test/indicator-result.json', 'r') as res_f:
-            expected_res = json.load(res_f)
-            assert expected_res == res
-
-
 @pytest.mark.parametrize('tags', (['tags1, tags2'], []))
 def test_tags_parameter(mocker, tags):
     """
