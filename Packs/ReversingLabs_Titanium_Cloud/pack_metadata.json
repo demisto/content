@@ -2,7 +2,7 @@
   "name": "ReversingLabs TitaniumCloud",
   "description": "ReversingLabs TitaniumCloud provides file reputation services, threat classification and rich context on over 10 billion files.",
   "support": "partner",
-  "currentVersion": "2.0.1",
+  "currentVersion": "2.0.2",
   "author": "ReversingLabs",
   "url": "https://www.reversinglabs.com/products/malware-analysis-platform",
   "email": "support@reversinglabs.com",
@@ -11,7 +11,7 @@
         "MislavReversingLabs",
         "ivukovicRL"
     ],
-  "created": "2020-04-14T00:00:00Z",
+  "created": "2020-10-08T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"
   ],
