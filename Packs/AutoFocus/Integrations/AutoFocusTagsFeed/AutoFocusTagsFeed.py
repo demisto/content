@@ -454,7 +454,7 @@ def main():
     proxy = params.get('proxy', False)
     api_key = params.get('api_key', '')
     if not api_key:
-        api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.token")
+        api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
 
     command = demisto.command()
     args = demisto.args()
