@@ -116,8 +116,7 @@ class Client(BaseClient):
                 time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
             else:
-                page_num = arg_to_number(integration_context.get('page_num', 0))
-                page_num = page_num if page_num else 0
+                page_num = arg_to_number(integration_context.get('page_num', 0)) or 0
         get_tags_response = self.get_tags({'pageNum': page_num,
                                            'pageSize': PAGE_SIZE,
                                            'sortBy': 'created_at'})
@@ -333,7 +332,7 @@ def test_module(client: Client) -> str:
     try:
         client.build_iterator(True)
     except Exception as e:
-        return_error(str(e))
+        raise DemistoException(str(e))
     return 'ok'
 
 

@@ -1,8 +1,8 @@
 """
 """
 
-from AutoFocusTagsFeed import Client, get_indicators_command, fetch_indicators_command, fetch_indicators
-from CommonServerPython import tableToMarkdown, string_to_table_header
+from AutoFocusTagsFeed import Client, fetch_indicators_command
+# from CommonServerPython import tableToMarkdown, string_to_table_header
 import json
 import io
 
