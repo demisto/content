@@ -912,7 +912,7 @@ def main() -> None:
     response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
     packs = json.loads(response["body"])
 
-    pack_version = "0.0.0"
+    pack_version = "1.1.0"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]
@@ -961,8 +961,8 @@ def main() -> None:
             result = context_command(client, demisto.args())
             return_results(result)
     # Log exceptions and return errors
-    except RequestFailure:
-        raise DemistoException(EXCEPTION_MESSAGES["UNAUTHENTICATED"])
+    except DemistoException as err:
+        return_error(str(err))
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback

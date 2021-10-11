@@ -291,7 +291,7 @@ def main() -> None:
     response = demisto.internalHttpRequest('GET', '/contentpacks/metadata/installed')
     packs = json.loads(response['body'])
 
-    pack_version = "0.0.0"
+    pack_version = "1.1.0"
     for pack in packs:
         if pack["name"] == "GreyNoise":
             pack_version = pack["currentVersion"]
