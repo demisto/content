@@ -662,7 +662,7 @@ def url_report_output(response_json, url):
         return_error("There is no rl object in the response JSON.")
 
     classification = report_base.get("classification", "UNAVAILABLE").upper()
-    markdown = f"""\n ## ReversingLabs URL Threat Intelligence report for URL {url}\n **Requested URL**: {report_base.get(
+    markdown = f"""## ReversingLabs URL Threat Intelligence report for URL {url}\n **Requested URL**: {report_base.get(
         "requested_url")}
     **Classification**: {classification}"""
 
@@ -672,7 +672,7 @@ def url_report_output(response_json, url):
         analysis_history = analysis.get("analysis_history")
         last_analysis = analysis.get("last_analysis")
 
-        markdown += f"""\n **First analysis**: {analysis.get("first_analysis")}
+        markdown += f"""\n**First analysis**: {analysis.get("first_analysis")}
         **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get(
             "analysis_id")}
         **Analysis time**: {last_analysis.get("analysis_time")}
