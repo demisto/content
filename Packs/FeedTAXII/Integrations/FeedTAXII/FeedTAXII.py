@@ -552,6 +552,7 @@ class TAXIIClient(object):
         self.crt = None
         self.tags = argToList(feedTags)
         self.tlp_color = tlp_color
+        self.ttps: Dict[str, dict] = {}
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -779,7 +780,6 @@ class TAXIIClient(object):
             tag_stack = collections.deque()  # type: ignore
             observables = []
             indicators: Dict[str, dict] = {}
-            ttps: Dict[str, dict] = {}
 
             try:
                 for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
@@ -818,7 +818,7 @@ class TAXIIClient(object):
                                 if indicator:
                                     indicators.update(indicator)
                                 if ttp:
-                                    ttps.update(ttp)
+                                    self.ttps.update(ttp)
 
                                 if timestamp:
                                     if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
@@ -865,15 +865,12 @@ class TAXIIClient(object):
             ttp_ref = observable.get('ttp_ref')
             if ttp_ref:
                 relationship = {
-                    'name': ttps.get(ttp_ref, {}).get('indicator'),
-                    'type': ttps.get(ttp_ref, {}).get('type')
+                    'name': self.ttps.get(ttp_ref, {}).get('indicator'),
+                    'type': self.ttps.get(ttp_ref, {}).get('type')
                 }
                 observable['relationship'] = relationship
 
             yield observable
-
-        for i in ttps.values():
-            yield i
 
     def _incremental_poll_collection(self, poll_service, begin, end):
         """Polls collection in increments of 10 days"""
@@ -1135,8 +1132,10 @@ def test_module(client, *_):
 
 
 def fetch_indicators_command(client):
-    iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     indicators = []
+
+    # Create the indicators from the observables
+    iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     for item in iterator:
         indicator = item.get('indicator')
         if indicator:
@@ -1155,6 +1154,25 @@ def fetch_indicators_command(client):
                 indicator_obj['relationships'] = create_relationships(item)
             if client.tlp_color:
                 indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicators.append(indicator_obj)
+
+    # Create the indicators from the ttps
+    ttps = client.ttps
+    for item in ttps.values():
+        indicator = item.get('indicator')
+        if indicator:
+            item['value'] = indicator
+            indicator_obj = {
+                'value': indicator,
+                'type': item.get('type'),
+                'title': item.get('stix_title'),
+                'description': item.get('stix_description'),
+                'fields': {
+                    'tags': client.tags,
+                },
+                'rawJSON': item,
+            }
 
             indicators.append(indicator_obj)
 
