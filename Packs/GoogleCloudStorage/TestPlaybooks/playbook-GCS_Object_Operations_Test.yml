@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bdf650db-5b82-483b-8992-9277a81bed10
+    taskid: 87dfda82-2209-4bbe-8e1c-b4864961b8f1
     type: start
     task:
-      id: bdf650db-5b82-483b-8992-9277a81bed10
+      id: 87dfda82-2209-4bbe-8e1c-b4864961b8f1
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3fd0ebec-72e5-4fef-81bf-056a12d0bf2b
+    taskid: eeeb4f4c-c116-4832-80d8-357d98deabc5
     type: regular
     task:
-      id: 3fd0ebec-72e5-4fef-81bf-056a12d0bf2b
+      id: eeeb4f4c-c116-4832-80d8-357d98deabc5
       version: -1
       name: Create bucket demisto-test-2
       description: Creates a new bucket
@@ -44,10 +48,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      bucket_acl: {}
       bucket_name:
         simple: demisto-test-2
-      default_object_acl: {}
     separatecontext: false
     view: |-
       {
@@ -59,12 +61,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 15a221a5-8554-4661-8f62-9f7b978f6147
+    taskid: 94a0359c-2c3a-4b1a-83c0-9684da331e4a
     type: regular
     task:
-      id: 15a221a5-8554-4661-8f62-9f7b978f6147
+      id: 94a0359c-2c3a-4b1a-83c0-9684da331e4a
       version: -1
       name: List objects in bucket
       description: Retrieves the list of objects in a bucket
@@ -89,12 +95,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d1bdfab5-fd80-4e74-833a-5dfd1ec0b603
+    taskid: 41adbe6b-1e22-42c0-80f6-2330cd9b1da4
     type: regular
     task:
-      id: d1bdfab5-fd80-4e74-833a-5dfd1ec0b603
+      id: 41adbe6b-1e22-42c0-80f6-2330cd9b1da4
       version: -1
       name: Upload test.txt (create object)
       description: Uploads a file (object) into a bucket
@@ -104,13 +114,12 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "8"
+      - "30"
     scriptarguments:
       bucket_name:
         simple: demisto-test-2
       entry_id:
         simple: ${File.EntryID}
-      object_acl: {}
       object_name:
         simple: foo/bar/baz.txt
     separatecontext: false
@@ -124,12 +133,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 29779a24-31d1-4e7e-8731-48fe0334a337
+    taskid: 062f6e29-8460-4910-89ad-7c139b54a1f1
     type: regular
     task:
-      id: 29779a24-31d1-4e7e-8731-48fe0334a337
+      id: 062f6e29-8460-4910-89ad-7c139b54a1f1
       version: -1
       name: List objects in bucket
       description: Retrieves the list of objects in a bucket
@@ -148,18 +161,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2090
+          "y": 2265
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 186182d0-b4fd-4b70-84b5-3d81b7a02829
+    taskid: 2c6cff42-19b9-4d72-819c-9acecfc7f704
     type: regular
     task:
-      id: 186182d0-b4fd-4b70-84b5-3d81b7a02829
+      id: 2c6cff42-19b9-4d72-819c-9acecfc7f704
       version: -1
       name: Delete bucket with force=true
       description: Permanently deletes a bucket
@@ -180,18 +197,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3255
+          "y": 3430
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 19b9e980-5e2a-4048-8b3c-bc7a0e9f98f8
+    taskid: 229381e6-ac92-42ed-8aad-77ac61d7b1ef
     type: regular
     task:
-      id: 19b9e980-5e2a-4048-8b3c-bc7a0e9f98f8
+      id: 229381e6-ac92-42ed-8aad-77ac61d7b1ef
       version: -1
       name: Create test.txt file
       description: |
@@ -206,7 +227,6 @@ tasks:
     scriptarguments:
       data:
         simple: Think I'll take TWO chickens.
-      entryId: {}
       filename:
         simple: test.txt
     separatecontext: false
@@ -220,12 +240,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d505c96a-6337-4e68-854b-4c79b5a24c3b
+    taskid: af90a446-7b79-4e09-8f42-7e8206359559
     type: title
     task:
-      id: d505c96a-6337-4e68-854b-4c79b5a24c3b
+      id: af90a446-7b79-4e09-8f42-7e8206359559
       version: -1
       name: Done
       type: title
@@ -236,18 +260,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3955
+          "y": 4130
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: c7e6c250-d0a5-45a2-85b5-22f16a4920b6
+    taskid: f0ac8ce9-7966-4f93-8ce8-98a9eb09e227
     type: regular
     task:
-      id: c7e6c250-d0a5-45a2-85b5-22f16a4920b6
+      id: f0ac8ce9-7966-4f93-8ce8-98a9eb09e227
       version: -1
       name: Clear context
       description: Delete field from context
@@ -259,11 +287,8 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: GCS
-      keysToKeep: {}
       subplaybook:
         simple: "yes"
     separatecontext: false
@@ -277,12 +302,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 4fc13b70-309c-4c03-8afe-a820b7554a57
+    taskid: 2145112e-4039-46de-8620-6a21bd866715
     type: condition
     task:
-      id: 4fc13b70-309c-4c03-8afe-a820b7554a57
+      id: 2145112e-4039-46de-8620-6a21bd866715
       version: -1
       name: Verify no objects in bucket
       type: condition
@@ -321,12 +350,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 479aae91-be0f-48b6-8f92-359265f232cd
+    taskid: 557ae9fc-eb19-483e-86be-475476b4d510
     type: condition
     task:
-      id: 479aae91-be0f-48b6-8f92-359265f232cd
+      id: 557ae9fc-eb19-483e-86be-475476b4d510
       version: -1
       name: Verify object created
       type: condition
@@ -367,18 +400,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2265
+          "y": 2440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4336ae3b-9a18-4c17-8f62-bad1b6f0d3ff
+    taskid: 6ea967fb-60e8-4c6d-86a5-be9a158cc784
     type: condition
     task:
-      id: 4336ae3b-9a18-4c17-8f62-bad1b6f0d3ff
+      id: 6ea967fb-60e8-4c6d-86a5-be9a158cc784
       version: -1
       name: Verify downloaded file name and size
       type: condition
@@ -411,18 +448,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 3110
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a630d29f-1cad-4dfb-8d3c-38406daa3e2b
+    taskid: 432aa9f7-9833-4530-8441-de53960b2a02
     type: condition
     task:
-      id: a630d29f-1cad-4dfb-8d3c-38406daa3e2b
+      id: 432aa9f7-9833-4530-8441-de53960b2a02
       version: -1
       name: Verify bucket was force-deleted
       type: condition
@@ -455,18 +496,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3780
+          "y": 3955
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1432e563-9b87-43b9-8380-ef9c3714215e
+    taskid: 2bc2f919-951d-43bd-8967-7c2420c85f10
     type: regular
     task:
-      id: 1432e563-9b87-43b9-8380-ef9c3714215e
+      id: 2bc2f919-951d-43bd-8967-7c2420c85f10
       version: -1
       name: Clear context
       description: Delete field from context
@@ -478,11 +523,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: GCS
-      keysToKeep: {}
       subplaybook:
         simple: "yes"
     separatecontext: false
@@ -490,18 +532,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3430
+          "y": 3605
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a77d921e-91c8-43e9-8d6b-b89719587c4c
+    taskid: 56f8b5cd-4a94-4a13-85fc-ee70aa0c22f1
     type: regular
     task:
-      id: a77d921e-91c8-43e9-8d6b-b89719587c4c
+      id: 56f8b5cd-4a94-4a13-85fc-ee70aa0c22f1
       version: -1
       name: gcs-list-buckets
       description: Retrieves the list of buckets in the project
@@ -517,18 +563,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3605
+          "y": 3780
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ba111847-892d-4e8a-8356-b4bda64bef9c
+    taskid: aec4479e-40a3-42dd-84dc-ab72711b2d53
     type: regular
     task:
-      id: ba111847-892d-4e8a-8356-b4bda64bef9c
+      id: aec4479e-40a3-42dd-84dc-ab72711b2d53
       version: -1
       name: Clear context
       description: Delete field from context
@@ -540,11 +590,8 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: GCS
-      keysToKeep: {}
       subplaybook:
         simple: "yes"
     separatecontext: false
@@ -552,18 +599,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 154407db-c656-408b-8c39-b24af6191839
+    taskid: 02339ac1-11d4-4d40-831d-3d81e986e3e2
     type: regular
     task:
-      id: 154407db-c656-408b-8c39-b24af6191839
+      id: 02339ac1-11d4-4d40-831d-3d81e986e3e2
       version: -1
       name: List buckets
       description: Retrieves the list of buckets in the project
@@ -585,12 +636,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 0a74a50b-3ddd-414d-89a2-7c349ca35b6f
+    taskid: 9e60d79e-bf89-4987-8930-b86fcb300b0d
     type: condition
     task:
-      id: 0a74a50b-3ddd-414d-89a2-7c349ca35b6f
+      id: 9e60d79e-bf89-4987-8930-b86fcb300b0d
       version: -1
       name: Bucket demisto-test-2 exists?
       type: condition
@@ -623,12 +678,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 76d80703-7260-4947-8b8b-ddd750be40e6
+    taskid: 545a473e-e15b-4c78-872f-148ee2b3792d
     type: regular
     task:
-      id: 76d80703-7260-4947-8b8b-ddd750be40e6
+      id: 545a473e-e15b-4c78-872f-148ee2b3792d
       version: -1
       name: Delete bucket
       description: Permanently deletes a bucket
@@ -655,12 +714,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6da2fdb7-3313-4e77-8bb9-84be2a6a6321
+    taskid: abafd250-d8c7-45e6-85b3-4be728241015
     type: title
     task:
-      id: 6da2fdb7-3313-4e77-8bb9-84be2a6a6321
+      id: abafd250-d8c7-45e6-85b3-4be728241015
       version: -1
       name: 'Test: List Objects + Upload File'
       type: title
@@ -680,12 +743,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 91a5bb2c-a3b2-4d64-8b1a-f5a592afaf89
+    taskid: f0cd8dcd-05f9-4bb6-87c5-f9b419756ca0
     type: regular
     task:
-      id: 91a5bb2c-a3b2-4d64-8b1a-f5a592afaf89
+      id: f0cd8dcd-05f9-4bb6-87c5-f9b419756ca0
       version: -1
       name: Download the object
       description: Retrieves object data into a file
@@ -700,24 +767,28 @@ tasks:
       bucket_name:
         simple: demisto-test-2
       object_name:
-        simple: foo/bar/baz.txt
+        simple: foo/bar/baz.txt,foo/bar/baz.txt
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 0c26f405-8f2c-46fa-8e9a-75930c8cb759
+    taskid: 39630a05-eeda-4f26-86e9-8b2b491023c5
     type: title
     task:
-      id: 0c26f405-8f2c-46fa-8e9a-75930c8cb759
+      id: 39630a05-eeda-4f26-86e9-8b2b491023c5
       version: -1
       name: 'Test: Download File'
       type: title
@@ -731,18 +802,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2440
+          "y": 2615
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 0da256be-7a13-43ff-86f4-dd0d744c412f
+    taskid: 8b7cbfd0-6f83-4f5f-8d11-041da0b3493a
     type: title
     task:
-      id: 0da256be-7a13-43ff-86f4-dd0d744c412f
+      id: 8b7cbfd0-6f83-4f5f-8d11-041da0b3493a
       version: -1
       name: 'Test: Force-delete Bucket'
       type: title
@@ -756,18 +831,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 3285
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: cd7fa3c2-0d60-4a0b-899d-745d688822e5
+    taskid: d2d9f678-070e-4480-86fa-b23694ace769
     type: condition
     task:
-      id: cd7fa3c2-0d60-4a0b-899d-745d688822e5
+      id: d2d9f678-070e-4480-86fa-b23694ace769
       version: -1
       name: Test sanity - verify context cleared
       type: condition
@@ -795,12 +874,54 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 04a1c182-389e-48f8-8a84-98c1f87c5930
+    type: regular
+    task:
+      id: 04a1c182-389e-48f8-8a84-98c1f87c5930
+      version: -1
+      name: Upload test.txt (create object)
+      description: Uploads a file (object) into a bucket
+      script: Google Cloud Storage|||gcs-upload-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-2
+      entry_id:
+        simple: ${File.EntryID}
+      object_name:
+        simple: foo/bar/baz2.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3970,
+        "height": 4145,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -809,4 +930,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
