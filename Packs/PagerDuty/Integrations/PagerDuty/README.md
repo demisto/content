@@ -682,6 +682,7 @@ Get data about a incident from PagerDuty
 | PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
 | PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
 | PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId     | string | The ID of the acknowledger to the incident |
 | PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
 
 
