@@ -1030,28 +1030,123 @@ List DevOps Scans
 | sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
 | filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
 | filter_time_amount | Number of time units. Default is 1. | Optional | 
-| filter_time_unit | Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
+| to_now_time_unit | To Now Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
 | filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
 | filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
 | filter_asset_type | Asset type to search with. | Optional | 
 | filter_asset_name | Asset name to search with. | Optional | 
 | filter_user | User to filter with, example: ayman@example.domain. | Optional | 
 | filter_status | Status to filter with, example: passed. Possible values are: . | Optional | 
+| relative_time_unit | Relative Time unit. Possible values are: epoch, login, year. Default is login. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Scans.id | String | Scan ID | 
-| Redlock.Scans.attributes.user.[0] | String | Scan user | 
+| Redlock.Scans.attributes.deployed | Boolean | Scan deployed attribute. | 
+| Redlock.Scans.attributes.fail | Number | Scan fail attribute. | 
+| Redlock.Scans.attributes.failureCriteria | String | Scan failure criteria attribute. | 
+| Redlock.Scans.attributes.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. | 
+| Redlock.Scans.attributes.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. | 
+| Redlock.Scans.attributes.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. | 
+| Redlock.Scans.attributes.merged | Boolean | Scan merged attribute. | 
+| Redlock.Scans.attributes.name | String | Scan name attribute. | 
+| Redlock.Scans.attributes.pass | Number | Scan pass attribute. | 
+| Redlock.Scans.attributes.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. | 
+| Redlock.Scans.attributes.scanAttributes.branch | String | Scan Scan branch attribute. | 
+| Redlock.Scans.attributes.scanAttributes.org | String | Scan org attribute. | 
+| Redlock.Scans.attributes.scanAttributes.pullRequestId | String | Scan PR ID attribute. | 
+| Redlock.Scans.attributes.scanAttributes.repository | String | Scan repository attribute. | 
+| Redlock.Scans.attributes.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. | 
+| Redlock.Scans.attributes.scanAttributes.templateType | String | Scan template type attribute. | 
+| Redlock.Scans.attributes.scanAttributes.triggeredOn | String | Scan triggered on attribute. | 
+| Redlock.Scans.attributes.scanAttributes.userId | String | Scan user id attribute. | 
+| Redlock.Scans.attributes.scanTime | Date | Scan scan time attribute. | 
+| Redlock.Scans.attributes.status | String | Scan status attribute. | 
+| Redlock.Scans.attributes.tags.name | String | Scan tags name attribute. | 
+| Redlock.Scans.attributes.tags.value | String | Scan tags value attribute. | 
+| Redlock.Scans.attributes.type | String | Scan type attribute. | 
+| Redlock.Scans.attributes.user | String | Scan user attribute. | 
+| Redlock.Scans.id | String | Scan id. | 
+| Redlock.Scans.links.self | String | Scan links. | 
+| Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . | 
 
 
 #### Command Example
+```!redlock-list-scans filter_type="absolute" filter_start_time="01/01/2021 10:10:10" filter_end_time="10/08/2021 10:10:10" filter_asset_type="GitHub" filter_asset_name="Github Asset Dev" filter_user="user@domain.example"```
+
+#### Context Example
 ```json
 {
     "Redlock": {
         "Scans": [
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "my-devsecops",
+                        "pullRequestId": "96",
+                        "repository": "moon",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "my-devsecops"
+                    },
+                    "scanTime": "2021-09-27T11:26:23Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "user@domain.example"
+                    ]
+                },
+                "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d",
+                "links": {
+                    "self": "/v2/scans/81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
+            },
             {
                 "attributes": {
                     "deployed": false,
@@ -1103,7 +1198,7 @@ List DevOps Scans
                         "GitHub"
                     ],
                     "user": [
-                        "amahmoud@paloaltonetworks.com"
+                        "user@domain.example"
                     ]
                 },
                 "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783",
@@ -1117,17 +1212,220 @@ List DevOps Scans
                         }
                     }
                 }
+            },
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "my-devsecops",
+                        "pullRequestId": "92",
+                        "repository": "moon",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "my-devsecops"
+                    },
+                    "scanTime": "2021-09-23T04:44:24Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "user@domain.example"
+                    ]
+                },
+                "id": "47f90302-9814-4182-808c-b4ceed56bb6a",
+                "links": {
+                    "self": "/v2/scans/47f90302-9814-4182-808c-b4ceed56bb6a"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
+            },
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "my-devsecops",
+                        "pullRequestId": "90",
+                        "repository": "moon",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "my-devsecops"
+                    },
+                    "scanTime": "2021-09-22T09:43:37Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "user@domain.example"
+                    ]
+                },
+                "id": "d220c175-d915-4f93-910f-248dcbbf257a",
+                "links": {
+                    "self": "/v2/scans/d220c175-d915-4f93-910f-248dcbbf257a"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
+            },
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "xsoar-pov",
+                        "pullRequestId": "9",
+                        "repository": "venus",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "xsoar-pov"
+                    },
+                    "scanTime": "2021-09-02T09:03:10Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "user@domain.example"
+                    ]
+                },
+                "id": "bd5123a2-f7ef-4310-a54b-5dd82927802f",
+                "links": {
+                    "self": "/v2/scans/bd5123a2-f7ef-4310-a54b-5dd82927802f"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
             }
         ]
     }
 }
 ```
+
 #### Human Readable Output
 
 >### Scans List:
 >|ID|Name|Scan Time|Type|User|
 >|---|---|---|---|---|
->| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | Github Asset Dev | 2021-09-23T04:49:22Z | GitHub | amahmoud@paloaltonetworks.com |
+>| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | Github Asset Dev | 2021-09-27T11:26:23Z | GitHub | user@domain.example |
+>| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | Github Asset Dev | 2021-09-23T04:49:22Z | GitHub | user@domain.example |
+>| 47f90302-9814-4182-808c-b4ceed56bb6a | Github Asset Dev | 2021-09-23T04:44:24Z | GitHub | user@domain.example |
+>| d220c175-d915-4f93-910f-248dcbbf257a | Github Asset Dev | 2021-09-22T09:43:37Z | GitHub | user@domain.example |
+>| bd5123a2-f7ef-4310-a54b-5dd82927802f | Github Asset Dev | 2021-09-02T09:03:10Z | GitHub | user@domain.example |
 
 
 ### redlock-get-scan-status
@@ -1154,6 +1452,9 @@ Get scan status
 
 
 #### Command Example
+```!redlock-get-scan-status scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
+
+#### Context Example
 ```json
 {
     "Redlock": {
@@ -1161,16 +1462,19 @@ Get scan status
             "attributes": {
                 "status": "failed"
             },
-            "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783"
+            "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"
         }
     }
 }
 ```
+
 #### Human Readable Output
->### Scans Status:
+
+>### Scan Status:
 >|ID|Status|
 >|---|---|
->| 94cc4018-5f4b-4b52-a38f-3cd5117e4783 | failed |
+>| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | failed |
+
 
 ### redlock-get-scan-results
 ***
@@ -1192,19 +1496,29 @@ Get scan results
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Redlock.Scans.id | String | Scan ID | 
-| Redlock.Scans.results.attributes.name | String | Scan result name | 
-| Redlock.Scans.results.attributes.policyId | String | Scan result policy id | 
-| Redlock.Scans.results.attributes.desc | String | Scan result description | 
-| Redlock.Scans.results.id | String | Scan result ID | 
-| Redlock.Scans.results.attributes.severity | String | Scan result severity | 
+| Redlock.Scans.results.attributes.blameList.file | String | Scan results blame list file | 
+| Redlock.Scans.results.attributes.blameList.locations.line | Number | Scan results blame list locations line | 
+| Redlock.Scans.results.attributes.blameList.locations.path | String | Scan results blame list locations path | 
+| Redlock.Scans.results.attributes.desc | String | Scan results description | 
+| Redlock.Scans.results.attributes.docUrl | String | Scan results doc URL | 
+| Redlock.Scans.results.attributes.files | String | Scan results files | 
+| Redlock.Scans.results.attributes.name | String | Scan results name | 
+| Redlock.Scans.results.attributes.policyId | String | Scan results policy ID | 
+| Redlock.Scans.results.attributes.rule | String | Scan results rule | 
+| Redlock.Scans.results.attributes.severity | String | Scan results severity | 
+| Redlock.Scans.results.attributes.systemDefault | Boolean | Scan results system default | 
+| Redlock.Scans.results.id | String | Scan results ID | 
 
 
 #### Command Example
+```!redlock-get-scan-results scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
+
+#### Context Example
 ```json
 {
     "Redlock": {
         "Scans": {
-            "id": "94cc4018-5f4b-4b52-a38f-3cd5117e4783",
+            "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d",
             "results": [
                 {
                     "attributes": {
@@ -1286,7 +1600,7 @@ Get scan results
                         ],
                         "name": "Entrypoint of the container must be run with a user with a high ID",
                         "policyId": "aea7eaac-fbd7-4f1d-8e2c-f85b8119998a",
-                        "rule": "$.spec.template.spec.containers[*].securityContext.runAsUser exists and $.spec.template.spec.containers[*].securityContext.runAsUser \u003c 9999",
+                        "rule": "$.spec.template.spec.containers[*].securityContext.runAsUser exists and $.spec.template.spec.containers[*].securityContext.runAsUser < 9999",
                         "severity": "medium",
                         "systemDefault": false
                     },
@@ -1551,7 +1865,7 @@ Get scan results
                         ],
                         "name": "Use high UID for containers",
                         "policyId": "6a558fd3-606b-4ce1-9ccd-f6f1759f2b38",
-                        "rule": "($.kind equals Pod and ($.spec.securityContext.runAsUser \u003c 10000 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists)) or ($.spec.securityContext.runAsUser \u003e 9999 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser \u003c 10000)] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser \u003c 10000)] exists)) or ($.spec.securityContext.runAsUser does not exist and (($.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists) or ($.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists)))) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ($.spec.template.spec.securityContext.runAsUser \u003c 10000 and ($.spec.template.spec.containers exists and $.spec.template.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000))] exists)) or (($.spec.template.spec.securityContext.runAsUser exists and $.spec.template.spec.securityContext.runAsUser \u003e 9999) and ($.spec.template.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser \u003c 10000)] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser \u003c 10000)] exists)) or ($.spec.template.spec.securityContext.runAsUser does not exist and (($.spec.template.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists) or ($.spec.template.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser \u003c 10000)] exists))))",
+                        "rule": "($.kind equals Pod and ($.spec.securityContext.runAsUser < 10000 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser < 10000))] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser < 10000))] exists)) or ($.spec.securityContext.runAsUser > 9999 and ($.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser < 10000)] exists) or ($.spec.initContainers exists and $.spec.initContainers[?any(securityContext.runAsUser < 10000)] exists)) or ($.spec.securityContext.runAsUser does not exist and (($.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser < 10000)] exists) or ($.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser < 10000)] exists)))) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and ($.spec.template.spec.securityContext.runAsUser < 10000 and ($.spec.template.spec.containers exists and $.spec.template.spec.containers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser < 10000))] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser does not exist or  (securityContext.runAsUser exists and securityContext.runAsUser < 10000))] exists)) or (($.spec.template.spec.securityContext.runAsUser exists and $.spec.template.spec.securityContext.runAsUser > 9999) and ($.spec.template.spec.containers exists and $.spec.containers[?any(securityContext.runAsUser < 10000)] exists) or ($.spec.template.spec.initContainers exists and $.spec.template.spec.initContainers[?any(securityContext.runAsUser < 10000)] exists)) or ($.spec.template.spec.securityContext.runAsUser does not exist and (($.spec.template.spec.containers[?any(securityContext.runAsUser exists and securityContext.runAsUser < 10000)] exists) or ($.spec.template.spec.initContainers[?any(securityContext.runAsUser exists and securityContext.runAsUser < 10000)] exists))))",
                         "severity": "low",
                         "systemDefault": false
                     },
@@ -1562,12 +1876,22 @@ Get scan results
     }
 }
 ```
+
 #### Human Readable Output
 
->### Scans Results:
+>### Scan Results:
 >|Description|ID|Name|Policy ID|Severity|
 >|---|---|---|---|---|
 >| Ensure that all capabilities are dropped. | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | All capabilities should be dropped | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | high |
+>| Docker has a list of capabilities which are allowed by default for a container. These capabilities should be restricted to only the required set. | a5662da6-733a-4aba-b764-ba06c37419b1 | Container configured to use the default set of capabilities | a5662da6-733a-4aba-b764-ba06c37419b1 | medium |
 >| Ensure entrypoint of the container runs with a user with a high ID. | aea7eaac-fbd7-4f1d-8e2c-f85b8119998a | Entrypoint of the container must be run with a user with a high ID | aea7eaac-fbd7-4f1d-8e2c-f85b8119998a | medium |
-
+>| Ensure that all capabilities are dropped. | 212b481a-4132-4bdd-a0f8-e429d5d9842a | Gordon All capabilities should be dropped | 212b481a-4132-4bdd-a0f8-e429d5d9842a | medium |
+>| The root filesytem for a container should be set to read-only to prevent any attackers from making any machine level changes. | 03b12ba0-63fc-4157-a71b-16f70cd7fed2 | Root filesystem is writable | 03b12ba0-63fc-4157-a71b-16f70cd7fed2 | medium |
+>| Without CPU limits the container can cause the host to be crash and become non-responsive. | 4dd625e4-21af-4804-b957-ba1539e3b38d | CPU limits not configued | 4dd625e4-21af-4804-b957-ba1539e3b38d | low |
+>| Custom hosts configuration should be avoided. | 3697e567-0687-4728-81dd-a67c8f7c414f | Container configured with custom hosts | 3697e567-0687-4728-81dd-a67c8f7c414f | low |
+>| By default images are not pulled from remote if the image is available locally. This combined with image tags like "latest" can result in containers running with outdated images. | 15ebd2f1-f49d-45b8-8f46-2e9e42117bb8 | Container could run using outdated docker image | 15ebd2f1-f49d-45b8-8f46-2e9e42117bb8 | low |
+>| Liveness probe is used to detect responsiveness of a container and schedule restarts. | fe0c2150-79a5-4d33-8d6b-5debfbd67863 | Liveness probe not configured | fe0c2150-79a5-4d33-8d6b-5debfbd67863 | low |
+>| Without memory limits the containers can keep allocating memory until the host runs out of memory. | a6e6cfc8-aec7-4dc1-b7e6-78defc6875bb | Memory limits not configured | a6e6cfc8-aec7-4dc1-b7e6-78defc6875bb | low |
+>| Rediness probe is used to determine if a container is ready to receive traffic. | 3497d330-ee07-4f58-9662-c0259b3f8d78 | Readiness probe not configured | 3497d330-ee07-4f58-9662-c0259b3f8d78 | low |
+>| Container UID should be set to a high value to avoid conflicts with processes running on the host system. | 6a558fd3-606b-4ce1-9ccd-f6f1759f2b38 | Use high UID for containers | 6a558fd3-606b-4ce1-9ccd-f6f1759f2b38 | low |
 

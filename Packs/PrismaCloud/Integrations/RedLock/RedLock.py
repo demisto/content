@@ -98,7 +98,7 @@ def list_filters():
 
 def convert_date_to_unix(date_str, date_format="%m/%d/%Y"):
     """
-    Convert a given string with MM/DD/YYYY format to millis since epoch
+    Convert the given string in the given format (by default - MM/DD/YYYY) to millis since epoch
     """
     date = datetime.strptime(date_str, date_format)
     return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
@@ -525,19 +525,21 @@ def redlock_list_scans():
     """
     List DevOps Scans
     """
-    group_by = demisto.args().get('group_by', 'scanId')
-    page_size = demisto.args().get('page_size', 25)
-    page_number = demisto.args().get('page_number', 1)
-    sort = demisto.args().get('sort', None)
-    filter_type = demisto.args().get('filter_type', 'relative')
-    filter_time_amount = demisto.args().get('filter_time_amount', 1)
-    filter_time_unit = demisto.args().get('filter_time_unit', 'day')
-    filter_user = demisto.args().get('filter_user', None)
-    filter_status = demisto.args().get('filter_status', None)
-    filter_asset_type = demisto.args().get('filter_asset_type', None)
-    filter_asset_name = demisto.args().get('filter_asset_name', None)
-    filter_start_time = demisto.args().get('filter_start_time', None)
-    filter_end_time = demisto.args().get('filter_end_time', None)
+    args = demisto.args()
+    group_by = args.get('group_by', 'scanId')
+    page_size = args.get('page_size', 25)
+    page_number = args.get('page_number', 1)
+    sort = args.get('sort', None)
+    filter_type = args.get('filter_type', 'relative')
+    filter_time_amount = args.get('filter_time_amount', 1)
+    to_now_time_unit = args.get('to_now_time_unit', 'login')
+    relative_time_unit = args.get('relative_time_unit', 'day')
+    filter_user = args.get('filter_user', None)
+    filter_status = args.get('filter_status', None)
+    filter_asset_type = args.get('filter_asset_type', None)
+    filter_asset_name = args.get('filter_asset_name', None)
+    filter_start_time = args.get('filter_start_time', None)
+    filter_end_time = args.get('filter_end_time', None)
 
     list_filter = {
         'groupBy': group_by,
@@ -550,16 +552,16 @@ def redlock_list_scans():
         list_filter['sort'] = sort
 
     if filter_type == 'relative':
-        if filter_time_unit and filter_time_amount:
-            list_filter['filter[timeUnit]'] = filter_time_unit
+        if relative_time_unit and filter_time_amount:
+            list_filter['filter[timeUnit]'] = relative_time_unit
             list_filter['filter[timeAmount]'] = filter_time_amount
         else:
             return_error('You must specify a filter_time_unit and filter_time_amount with relative type filter')
     elif filter_type == 'to_now':
-        if filter_start_time:
-            list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
+        if to_now_time_unit:
+            list_filter['filter[timeUnit]'] = to_now_time_unit
         else:
-            return_error('You must specify filter_start_time with to_now type filter')
+            return_error('You must specify filter_time_unit with to_now type filter')
     elif filter_type == 'absolute':
         if filter_start_time and filter_end_time:
             list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
@@ -583,19 +585,21 @@ def redlock_list_scans():
     if (
             not response
             or 'data' not in response
-            or not isinstance(response['data'], list)
+            or not isinstance(response.get('data'), list)
     ):
         demisto.results('No results found')
     else:
-        items = response['data']
+        items = response.get('data', [])
         readable_output = []
         for item in items:
+            id = item.get('id')
+            attributes = item.get('attributes', {})
             readable_output.append({
-                "ID": item.get('id'),
-                "Name": item.get('attributes')['name'],
-                "Type": item.get('attributes')['type'],
-                "Scan Time": item.get('attributes')['scanTime'],
-                "User": item.get('attributes')['user']
+                "ID": id,
+                "Name": attributes.get('name', []),
+                "Type": attributes.get('type', []),
+                "Scan Time": attributes.get('scanTime'),
+                "User": attributes.get('user', [])
             })
         md = tableToMarkdown("Scans List:", readable_output)
         demisto.results({
@@ -620,11 +624,18 @@ def redlock_get_scan_status():
     ):
         demisto.results('No results found')
     else:
-        result = response['data']
+        result = response.get('data')
+        id = result.get('id')
+        status = result.get('attributes', {}).get('status')
         readable_output = {
-                "ID": result.get('id'),
-                "Status": result.get('attributes')['status']
+            "ID": id,
+            "Status": status
         }
+
+        result = {
+            'id': id,
+            'status': status}
+
         md = tableToMarkdown("Scan Status:", readable_output)
         demisto.results({
             'Type': entryTypes['note'],
@@ -645,11 +656,11 @@ def redlock_get_scan_results():
     if (
             not response
             or 'data' not in response
-            or not isinstance(response['data'], list)
+            or not isinstance(response.get('data'), list)
     ):
         demisto.results('No results found')
     else:
-        items = response['data']
+        items = response.get('data')
         readable_output = []
         for item in items:
             readable_output.append({
