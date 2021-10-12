@@ -1106,15 +1106,17 @@ def interval_in_sec(val):
 
 
 def create_relationships(indicator):
-    if relationship_type := indicator.get('relationship', {}).get('type') == 'Malware':
+    if indicator.get('relationship', {}).get('type') == 'Malware':
         name = 'indicator-of'
+        relationship_type = 'Malware'
     else:
         name = 'related-to'
+        relationship_type = 'Attack Pattern'
 
     if name:
         return EntityRelationship(name=name, entity_a=indicator.get('value'), entity_a_type=indicator.get('type'),
                                   entity_b=indicator.get('relationship', {}).get('name'),
-                                  entity_b_type=relationship_type)
+                                  entity_b_type=relationship_type).to_indicator()
 
 
 def test_module(client, *_):
