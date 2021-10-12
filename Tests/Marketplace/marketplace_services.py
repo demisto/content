@@ -963,7 +963,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
@@ -986,7 +986,7 @@ class Pack(object):
         task_status = True
 
         try:
-            version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
+            version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
             if existing_files and not override_pack:
@@ -1034,7 +1034,8 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict, storage_base_path,
+                                   build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
@@ -1043,7 +1044,8 @@ class Pack(object):
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
-
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
             bool: Status - whether the operation succeeded.
             bool: Skipped pack - true in case of pack existence at the targeted path and the copy process was skipped,
@@ -1059,7 +1061,7 @@ class Pack(object):
         latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
         self._latest_version = latest_version
 
-        build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
+        build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
 
         # Verifying that the latest version of the pack has been uploaded to the build bucket
         existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
@@ -1069,7 +1071,7 @@ class Pack(object):
             return False, False
 
         # We upload the pack zip object taken from the build bucket into the production bucket
-        prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
+        prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
         prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
         build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
@@ -1340,7 +1342,6 @@ class Pack(object):
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
-                        # TODO Need to implement support for pre-release versions
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
                                       f"and latest release notes version: {latest_release_notes}")
                         task_status = False
@@ -2102,7 +2103,7 @@ class Pack(object):
             integration_path_basename in unified_integrations
         ])
 
-    def upload_integration_images(self, storage_bucket, diff_files_list=None, detect_changes=False):
+    def upload_integration_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
         """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
@@ -2138,7 +2139,7 @@ class Pack(object):
             if not pack_local_images:
                 return True  # return empty list if no images were found
 
-            pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
+            pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
 
             for image_data in pack_local_images:
                 image_path = image_data.get('image_path')
@@ -2183,7 +2184,7 @@ class Pack(object):
             self._displayed_integration_images = integration_images
             return task_status
 
-    def copy_integration_images(self, production_bucket, build_bucket, images_data):
+    def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
@@ -2201,7 +2202,7 @@ class Pack(object):
         pc_uploaded_integration_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.INTEGRATIONS, [])
 
         for image_name in pc_uploaded_integration_images:
-            build_bucket_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, image_name)
+            build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name, image_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -2213,7 +2214,7 @@ class Pack(object):
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                        new_name=os.path.join(storage_base_path, self._pack_name, image_name)
                     )
                     if not copied_blob.exists():
                         logging.error(f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} "
@@ -2236,7 +2237,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, diff_files_list=None, detect_changes=False):
+    def upload_author_image(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
@@ -2244,6 +2245,7 @@ class Pack(object):
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
+            storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
             detect_changes (bool): Whether to detect changes or upload the author image in any case.
 
@@ -2259,7 +2261,7 @@ class Pack(object):
             author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
+                image_to_upload_storage_path = os.path.join(storage_base_path, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
@@ -2299,7 +2301,7 @@ class Pack(object):
             self._author_image = author_image_storage_path
             return task_status
 
-    def copy_author_image(self, production_bucket, build_bucket, images_data):
+    def copy_author_image(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's author image from the build bucket to the production bucket
 
         Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
@@ -2316,15 +2318,15 @@ class Pack(object):
         """
         if images_data.get(self._pack_name, {}).get(BucketUploadFlow.AUTHOR, False):
 
-            build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+            build_author_image_path = os.path.join(build_bucket_base_path, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
             build_author_image_blob = build_bucket.blob(build_author_image_path)
 
             if build_author_image_blob.exists():
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_author_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-                    )
+                        new_name=os.path.join(storage_base_path, self._pack_name,
+                                              Pack.AUTHOR_IMAGE_NAME))
                     if not copied_blob.exists():
                         logging.error(f"Failed copying {self._pack_name} pack author image.")
                         return False
@@ -2457,7 +2459,6 @@ class Pack(object):
                 else:
                     changelog[changelog_entry].pop('breakingChangesNotes', None)
             else:
-                logging.info('Version no BC!')
                 changelog[changelog_entry].pop('breakingChanges', None)
             predecessor_version = rn_loose_version
 
