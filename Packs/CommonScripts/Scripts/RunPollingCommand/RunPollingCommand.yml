@@ -5,7 +5,7 @@ name: RunPollingCommand
 fromversion: 5.0.0
 script: ''
 type: python
-subtype: python3
+subtype: python2
 tags: []
 comment: Runs a specified polling command one time. This is useful for initiating a local playbook context before running a polling scheduled task.
 enabled: true
@@ -29,4 +29,4 @@ runas: DBotRole
 runonce: false
 tests:
 - No test
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python:2.7.18.24066
