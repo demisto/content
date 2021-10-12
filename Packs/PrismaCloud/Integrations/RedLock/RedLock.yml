@@ -1017,7 +1017,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: relative
-      description: ' Time filter type'
+      description: Time filter type
       isArray: false
       name: filter_type
       predefined:
@@ -1076,12 +1076,18 @@ script:
       name: filter_user
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: 'Status to filter with, example: passed'
       isArray: false
       name: filter_status
       predefined:
-      - ''
+      - passed
+      - failed
+      - processing
+      - errored
+      - failed_n_merged
+      - failed_n_deployed
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1099,7 +1105,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List DevOps Scans
+    description: Returns a list of IaC scans that meet the given conditions.
     execution: false
     name: redlock-list-scans
     outputs:
@@ -1174,7 +1180,7 @@ script:
       type: String
     - contextPath: Redlock.Scans.attributes.user
       description: Scan user attribute.
-      type: String
+      type: List
     - contextPath: Redlock.Scans.id
       description: Scan id.
       type: String
@@ -1186,13 +1192,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
       isArray: false
       name: scan_id
       required: true
       secret: false
     deprecated: false
-    description: Get scan status
+    description: Returns the status of the asynchronous IaC scan job that has the
+      specified scan ID.
     execution: false
     name: redlock-get-scan-status
     outputs:
@@ -1204,13 +1211,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
       isArray: false
       name: scan_id
       required: true
       secret: false
     deprecated: false
-    description: Get scan results
+    description: Returns scan result details for the completed scan that has the specified
+      scan ID
     execution: false
     name: redlock-get-scan-results
     outputs:

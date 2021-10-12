@@ -408,7 +408,8 @@ def get_rql_response(args):
 
     human_readable = []
 
-    items = response["data"]["items"]
+    attributes = response.get('data')
+    items = attributes.get('items', [])
 
     for item in items:
         tmp_human_readable = {
@@ -510,7 +511,8 @@ def redlock_search_config():
     ):
         demisto.results('No results found')
     else:
-        items = response['data']['items']
+        response_data = response.get('data')
+        items = response_data.get('items', [])
         md = tableToMarkdown("Configuration Details", items)
         demisto.results({
             'Type': entryTypes['note'],
@@ -523,7 +525,7 @@ def redlock_search_config():
 
 def redlock_list_scans():
     """
-    List DevOps Scans
+    Returns a list of IaC scans that meet the given conditions.
     """
     args = demisto.args()
     group_by = args.get('group_by', 'scanId')
@@ -613,7 +615,7 @@ def redlock_list_scans():
 
 def redlock_get_scan_status():
     """
-    Get DevOps Scan Status
+    Returns the status of the asynchronous IaC scan job that has the specified scan ID.
     """
     scan_id = demisto.args().get('scan_id', None)
 
@@ -624,7 +626,7 @@ def redlock_get_scan_status():
     ):
         demisto.results('No results found')
     else:
-        result = response.get('data')
+        result = response.get('data', {})
         id = result.get('id')
         status = result.get('attributes', {}).get('status')
         readable_output = {
@@ -648,7 +650,7 @@ def redlock_get_scan_status():
 
 def redlock_get_scan_results():
     """
-    Get DevOps Scan Results
+    Returns scan result details for the completed scan that has the specified scan ID.
     """
     scan_id = demisto.args().get('scan_id', None)
 
@@ -660,15 +662,17 @@ def redlock_get_scan_results():
     ):
         demisto.results('No results found')
     else:
-        items = response.get('data')
+        items = response.get('data', [])
         readable_output = []
         for item in items:
+            id = item.get('id')
+            attributes = item.get('attributes', {})
             readable_output.append({
-                "ID": item.get('id'),
-                "Name": item.get('attributes')['name'],
-                "Policy ID": item.get('attributes')['policyId'],
-                "Description": item.get('attributes')['desc'],
-                "Severity": item.get('attributes')['severity']
+                "ID": id,
+                "Name": attributes.get('name'),
+                "Policy ID": attributes.get('policyId'),
+                "Description": attributes.get('desc'),
+                "Severity": attributes.get('severity')
             })
         results = {
             "id": scan_id,
