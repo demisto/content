@@ -1,5 +1,6 @@
 from CommonServerPython import *  # noqa: F401
 
+
 def _get_current_user():
     current_username = demisto.executeCommand("getUsers", {"current": True})
     if isError(current_username):
@@ -7,6 +8,7 @@ def _get_current_user():
         return
     else:
         return current_username[0]["Contents"][0]['username']
+
 
 def main():
     # get current time
@@ -26,7 +28,7 @@ def main():
 
     current_user = _get_current_user()
     if not current_user and not username:
-        return_error(f'Failed to get current user. Please set the username argument in the script.')
+        return_error('Failed to get current user. Please set the username argument in the script.')
 
     if not username:
         # Current user was found, running script on it.
