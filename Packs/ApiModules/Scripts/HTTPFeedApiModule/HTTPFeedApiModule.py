@@ -210,11 +210,20 @@ class Client(BaseClient):
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
+                # Set the If-None-Match and If-Modified-Since headers if we have etag or
+                # last_modified values in the context.
                 etag = get_integration_context().get(url, {}).get('etag')
+                last_modified = get_integration_context().get(url, {}).get('last_modified')
+
                 if etag:
                     if not kwargs.get('headers'):
                         kwargs['headers'] = {}
                     kwargs['headers']['If-None-Match'] = etag
+
+                if last_modified:
+                    if not kwargs.get('headers'):
+                        kwargs['headers'] = {}
+                    kwargs['headers']['If-Modified-Since'] = last_modified
 
                 r = requests.get(
                     url,
@@ -304,30 +313,25 @@ def get_no_update_value(response: requests.Response, url: str) -> bool:
         boolean with the value for noUpdate argument.
         The value should be False if the response was modified.
     """
-    context = get_integration_context()
-    old_last_modified = context.get(url, {}).get('last_modified')
-
-    etag = response.headers.get('ETag')
-    last_modified = response.headers.get('Last-Modified')
-
-    context[url] = {'last_modified': last_modified, 'etag': etag}
-    set_integration_context(context)
-
     if response.status_code == 304:
         demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
         return True
 
-    if not old_last_modified:
-        demisto.debug('New indicators fetched - createIndicators will be executed with noUpdate=False.')
+    etag = response.headers.get('ETag')
+    last_modified = response.headers.get('Last-Modified')
+
+    if not etag and not last_modified:
+        demisto.debug('Last-Modified and Etag headers are not exists,'
+                      'createIndicators will be executed with noUpdate=False.')
         return False
 
-    if old_last_modified != last_modified:
-        demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
-                      ' createIndicators will be executed with noUpdate=False.')
-        return False
+    context = get_integration_context()
+    context[url] = {'last_modified': last_modified, 'etag': etag}
+    set_integration_context(context)
 
-    demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
-    return True
+    demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
+                  ' createIndicators will be executed with noUpdate=False.')
+    return False
 
 
 def datestring_to_server_format(date_string: str) -> str:
