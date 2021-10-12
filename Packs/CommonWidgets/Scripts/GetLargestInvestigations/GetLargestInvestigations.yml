@@ -28,7 +28,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Returns all investigations larger than 1 MB from all Cortex XSOAR.
+comment: Deprecated. Use System Diagonstics page instead (available from version 6.2.0). Returns all investigations larger than 1 MB from all Cortex XSOAR.
 commonfields:
   id: GetLargestInvestigations
   version: -1
@@ -43,3 +43,4 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
+deprecated: true
