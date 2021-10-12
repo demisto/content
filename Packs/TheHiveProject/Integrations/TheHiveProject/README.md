@@ -1720,7 +1720,7 @@ There is no context output for this command.
                 "hasMFA": false,
                 "hasPassword": false,
                 "locked": false,
-                "login": "name@thehive.local",
+                "login": "name@example.loc",
                 "name": "dem",
                 "organisation": "name",
                 "organisations": [],
