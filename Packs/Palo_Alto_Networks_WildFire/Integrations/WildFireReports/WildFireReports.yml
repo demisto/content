@@ -21,8 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- licensekey: true
-- licensekeyencrypted: true
 description: Generates a Palo Alto Networks WildFire PDF report.
 display: Palo Alto Networks WildFire Reports.
 name: WildFire-Reports
