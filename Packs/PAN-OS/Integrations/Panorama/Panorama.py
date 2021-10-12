@@ -1,12 +1,14 @@
 import shutil
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple, Union
-import uuid
 import json
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import requests
 
 # disable insecure warnings
@@ -299,23 +301,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -2370,26 +2372,31 @@ def prettify_get_url_filter(url_filter: dict):
     if 'override' in url_filter:
         override_category_list = url_filter['override']['member']
 
+    alert_category_list = argToList(alert_category_list)
     for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'alert'
         })
+    block_category_list = argToList(block_category_list)
     for category in block_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    allow_category_list = argToList(allow_category_list)
     for category in allow_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    continue_category_list = argToList(continue_category_list)
     for category in continue_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
             'Action': 'block'
         })
+    override_category_list = argToList(override_category_list)
     for category in override_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
@@ -2410,7 +2417,7 @@ def panorama_get_url_filter(name: str):
     params = {
         'action': 'get',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\"{name}\"]',
         'key': API_KEY
     }
     result = http_request(
@@ -2444,6 +2451,7 @@ def panorama_get_url_filter_command(name: str):
         }
     })
 
+
 @logger
 def create_url_filter_params(
         url_filter_name: str, action: str,
@@ -2452,9 +2460,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
+        add_argument_list(override_allow_list, 'allow-list', True) + \
+        add_argument_list(override_block_list, 'block-list', True) + \
+        add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -2490,17 +2498,17 @@ def panorama_create_url_filter_command(args: dict):
     """
     Create a URL Filter
     """
-    url_filter_name = args['name']
-    action = args['action']
-    url_category_list = argToList(args['url_category'])
+    url_filter_name = str(args.get('name', ''))
+    action = str(args.get('action', ''))
+    url_category_list = argToList(args.get('url_category'))
     override_allow_list = argToList(args.get('override_allow_list'))
     override_block_list = argToList(args.get('override_block_list'))
-    description = args.get('description')
+    description = args.get('description', '')
 
     result = panorama_create_url_filter(url_filter_name, action, url_category_list, override_allow_list,
                                         override_block_list, description)
 
-    url_filter_output = {'Name': url_filter_name}
+    url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
         url_filter_output['DeviceGroup'] = DEVICE_GROUP
     url_filter_output['Category'] = []
@@ -2529,12 +2537,31 @@ def panorama_create_url_filter_command(args: dict):
 
 
 @logger
+def verify_edit_url_filter_args(major_version: int, element_to_change: str) -> None:
+    if major_version >= 9:  # only url categories are allowed, e.g gambling, abortion
+        if element_to_change not in ('allow_categories', 'block_categories', 'description'):
+            raise DemistoException('Only the allow_categories, block_categories, description properties can be changed'
+                                   ' in PAN-OS 9.x or later versions.')
+    else:  # major_version 8.x or lower. only url lists are allowed, e.g www.test.com
+        if element_to_change not in ('override_allow_list', 'override_block_list', 'description'):
+            raise DemistoException('Only the override_allow_list, override_block_list, description properties can be'
+                                   ' changed in PAN-OS 8.x or earlier versions.')
+
+
+@logger
+def set_edit_url_filter_xpaths(major_version: int) -> Tuple[str, str]:
+    if major_version >= 9:
+        return 'allow', 'block'
+    return 'allow-list', 'block-list'
+
+
+@logger
 def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, element_value: str,
                              add_remove_element: Optional[str] = None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
         LOG(f'Found uncommitted item:\n{url_filter_prev}')
-        raise Exception('Please commit the instance prior to editing the URL Filter.')
+        raise DemistoException('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output: Dict[str, Any] = {'Name': url_filter_name}
     if DEVICE_GROUP:
@@ -2545,36 +2572,46 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
         'key': API_KEY,
     }
 
+    major_version = get_pan_os_major_version()
+    # it seems that in major 9.x pan-os changed the terminology from allow-list/block-list to allow/block
+    # with regards to url filter xpaths
+    verify_edit_url_filter_args(major_version, element_to_change)
+    allow_name, block_name = set_edit_url_filter_xpaths(major_version)
+
     if element_to_change == 'description':
-        params['xpath'] = XPATH_OBJECTS + f"profiles/url-filtering/entry[@name='{url_filter_name}']/{element_to_change}"
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
 
-    elif element_to_change == 'override_allow_list':
-        prev_override_allow_list = argToList(url_filter_prev['allow-list']['member'])
+    elif element_to_change in ('override_allow_list', 'allow_categories'):
+        previous_allow = argToList(url_filter_prev.get(allow_name, {}).get('member', []))
         if add_remove_element == 'add':
-            new_override_allow_list = list((set(prev_override_allow_list)).union(set([element_value])))
+            new_allow = list((set(previous_allow)).union(set([element_value])))
         else:
-            new_override_allow_list = [url for url in prev_override_allow_list if url != element_value]
+            if element_value not in previous_allow:
+                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
+            new_allow = [url for url in previous_allow if url != element_value]
 
-        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/allow-list"
-        params['element'] = add_argument_list(new_override_allow_list, 'allow-list', True)
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{allow_name}"
+        params['element'] = add_argument_list(new_allow, allow_name, True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_override_allow_list
+        url_filter_output[element_to_change] = new_allow
 
-    # element_to_change == 'override_block_list'
+    # element_to_change in ('override_block_list', 'block_categories')
     else:
-        prev_override_block_list = argToList(url_filter_prev['block-list']['member'])
+        previous_block = argToList(url_filter_prev.get(block_name, {}).get('member', []))
         if add_remove_element == 'add':
-            new_override_block_list = list((set(prev_override_block_list)).union(set([element_value])))
+            new_block = list((set(previous_block)).union(set([element_value])))
         else:
-            new_override_block_list = [url for url in prev_override_block_list if url != element_value]
+            if element_value not in previous_block:
+                raise DemistoException(f'The element {element_value} is not present in {url_filter_name}')
+            new_block = [url for url in previous_block if url != element_value]
 
-        params['xpath'] = XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']/block-list"
-        params['element'] = add_argument_list(new_override_block_list, 'block-list', True)
+        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{block_name}"
+        params['element'] = add_argument_list(new_block, block_name, True)
         result = http_request(URL, 'POST', body=params)
-        url_filter_output[element_to_change] = new_override_block_list
+        url_filter_output[element_to_change] = new_block
 
     return result, url_filter_output
 
@@ -2583,10 +2620,10 @@ def panorama_edit_url_filter_command(args: dict):
     """
     Edit a URL Filter
     """
-    url_filter_name = args['name']
-    element_to_change = args['element_to_change']
-    add_remove_element = args['add_remove_element']
-    element_value = args['element_value']
+    url_filter_name = str(args.get('name'))
+    element_to_change = str(args.get('element_to_change'))
+    add_remove_element = str(args.get('add_remove_element'))
+    element_value = str(args.get('element_value'))
 
     result, url_filter_output = panorama_edit_url_filter(url_filter_name, element_to_change, element_value,
                                                          add_remove_element)
@@ -2798,7 +2835,7 @@ def panorama_create_rule_command(args: dict):
     negate_source = args.get('negate_source')
     negate_destination = args.get('negate_destination')
     action = args.get('action')
-    service = args.get('service')
+    service = argToList(args.get('service'))
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
@@ -2900,7 +2937,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/' + element_to_change
+    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
     current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
     if behaviour == 'add':
@@ -3687,18 +3724,21 @@ def panorama_refresh_edl_command(args: dict):
 
 
 @logger
-def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int):
     entry: str = ''
     for ip in ips:
-        entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
+        if timeout:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}' \
+                     f'</member></tag></entry>'
+        else:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry
-               + '</register></payload></uid-message>',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
+               f'</register></payload></uid-message>',
         'key': API_KEY
     }
-
     result = http_request(
         URL,
         'POST',
@@ -3712,13 +3752,21 @@ def panorama_register_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag = args['tag']
-    ips = argToList(args['IPs'])
-
-    persistent = args['persistent'] if 'persistent' in args else 'true'
+    tag: str = args.get('tag', '')
+    ips: list = argToList(args.get('IPs'))
+    persistent = args.get('persistent', 'true')
     persistent = '1' if persistent == 'true' else '0'
+    # if not given, timeout will be 0 and persistent will be used
+    timeout = int(args.get('timeout', '0'))
 
-    result = panorama_register_ip_tag(tag, ips, str(persistent))
+    major_version = get_pan_os_major_version()
+
+    if timeout and persistent == '1':
+        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
+    if major_version <= 8 and timeout:
+        raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
+
+    result = panorama_register_ip_tag(tag, ips, persistent, timeout)
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
@@ -4272,8 +4320,6 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    if url and url[-1] != '/':
-        url += '/'
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
@@ -4285,8 +4331,7 @@ def panorama_query_logs_command(args: dict):
 
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            raise Exception('Query logs failed' + message)
+            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
         else:
             raise Exception('Query logs failed.')
 
@@ -6728,29 +6773,30 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
     return pretty_interface_config
 
 
-def show_user_id_interface_config_request(args):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
-    vsys = args.get('vsys')
+def show_user_id_interface_config_request(args: dict):
+    # template argument is managed in hte initialize_instance method
+    template_stack = str(args.get('template_stack', ''))
 
+    vsys = args.get('vsys')
     if VSYS and not vsys:
         vsys = VSYS
     elif not vsys:
         vsys = 'vsys1'
 
-    # firewall instance xpath
-    if VSYS:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
+    if not VSYS and not TEMPLATE and not template_stack:
+        raise DemistoException('In order to show the User Interface configuration in your Panorama, '
+                               'supply either the template or the template_stack arguments.')
 
-    # panorama instance xpath
-    elif not template_stack:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                "template/entry[@name=\'" + template + "\']/config/devices/entry[@name='localhost.localdomain']/" \
-                                                       "vsys/entry[@name=\'" + vsys + "\']/zone"
-    else:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                "/template-stack/entry[@name=\'" + template_stack + \
-                "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
+    if VSYS:  # firewall instance xpath
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/zone"
+    elif not template_stack:  # panorama instance xpath with template
+        template_test(str(TEMPLATE))  # verify that the template exists
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']/config" \
+                f"/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/zone"
+    else:  # panorama instance xpath with template_stack
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack/" \
+                f"entry[@name=\'{template_stack}\']/config/devices/entry[@name='localhost.localdomain']/vsys/" \
+                f"entry[@name=\'{vsys}\']/zone"
 
     params = {
         'action': 'show',
@@ -6810,23 +6856,27 @@ def show_zone_config_command(args):
         return_results("No results found")
 
 
-def list_configured_user_id_agents_request(args, version):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
-    vsys = args.get('vsys')
+def list_configured_user_id_agents_request(args: dict, version):
+    # template argument is managed in hte initialize_instance method
+    template_stack = str(args.get('template_stack', ''))
 
+    vsys = args.get('vsys')
     if VSYS and not vsys:
         vsys = VSYS
     elif not vsys:
         vsys = 'vsys1'
 
+    if not VSYS and not TEMPLATE and not template_stack:
+
+        raise DemistoException('In order to show the the User ID Agents in your Panorama, '
+                               'supply either the template or the template_stack arguments.')
+
     if VSYS:
         if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                    "vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/user-id-agent"
         else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/" \
+                    "redistribution-agent"
 
     elif template_stack:
         if version < 10:
@@ -6838,14 +6888,14 @@ def list_configured_user_id_agents_request(args, version):
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
                                                          "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
     else:
+        template_test(str(TEMPLATE))  # verify that the template exists
         if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/user-id-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']" \
+                    f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/user-id-agent"
         else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/redistribution-agent"
+            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'{TEMPLATE}\']/" \
+                    f"config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'{vsys}\']/" \
+                    "redistribution-agent"
 
     params = {
         'action': 'show',
@@ -6901,7 +6951,7 @@ def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Uni
     return pretty_user_id_agents
 
 
-def list_configured_user_id_agents_command(args):
+def list_configured_user_id_agents_command(args: dict):
     version = get_pan_os_major_version()
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
@@ -6933,7 +6983,6 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     API_KEY = str(params.get('key'))
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
-    TEMPLATE = params.get('template')
 
     # determine a vsys or a device-group
     VSYS = params.get('vsys', '')
@@ -6942,6 +6991,11 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         DEVICE_GROUP = args.get('device-group')  # type: ignore[assignment]
     else:
         DEVICE_GROUP = params.get('device_group', None)  # type: ignore[arg-type]
+
+    if args and args.get('template'):
+        TEMPLATE = args.get('template')  # type: ignore[assignment]
+    else:
+        TEMPLATE = params.get('template', None)  # type: ignore[arg-type]
 
     PRE_POST = args.get('pre_post', '')
 
@@ -7079,6 +7133,7 @@ def main():
 
         # Remove proxy if not set to true in params
         handle_proxy()
+
 
         if demisto.command() == 'test-module':
             panorama_test()
@@ -7436,7 +7491,6 @@ def main():
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
-
     except Exception as err:
         return_error(str(err))
 

@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 packs = []
 need_update = 0
-not_certified = 0
 
 incident = demisto.incidents()[0]
 accountName = incident.get('account')
@@ -15,8 +14,6 @@ for item in config_json:
     packs.append({"packs": item['name'], "currentversion": item['currentVersion'], 'updateavailable': item['updateAvailable']})
     if item['updateAvailable']:
         need_update += 1
-    if item['certification'].lower() != 'certified':
-        not_certified += 1
 
 
 res = []
@@ -25,12 +22,6 @@ if need_update > 0:
     res.append({"category": "Content packs", "severity": "Low",
                 "description": "There are content packs that require an update",
                 "resolution": "Navigate to the market place and update the outdated packs"
-                })
-
-if not_certified > 0:
-    res.append({"category": "Content packs", "severity": "Low",
-                "description": "There are uncertified content packs in use",
-                "resolution": "Consider to remove these packs"
                 })
 
 

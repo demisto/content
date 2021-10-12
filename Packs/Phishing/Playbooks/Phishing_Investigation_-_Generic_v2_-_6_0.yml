@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 3fa6bd94-e6fa-4cad-8e42-a35aa3370a56
+    taskid: dc2824f3-564e-4270-893b-80318ac5c5f6
     type: regular
     task:
-      id: 3fa6bd94-e6fa-4cad-8e42-a35aa3370a56
+      id: dc2824f3-564e-4270-893b-80318ac5c5f6
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -201,10 +201,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 9551bc3f-272d-4db9-8a40-30b48d1ba33b
+    taskid: 09a01f5c-142b-48cf-8c92-4205ca9a6d42
     type: regular
     task:
-      id: 9551bc3f-272d-4db9-8a40-30b48d1ba33b
+      id: 09a01f5c-142b-48cf-8c92-4205ca9a6d42
       version: -1
       name: Acknowledge incident was received
       description: |
@@ -218,10 +218,11 @@ tasks:
       - "56"
     scriptarguments:
       body:
-        simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account\
-          \ = val.Account && val.Account.filter(function(acc) { return acc.DisplayName\
-          \ && acc.Email && acc.Email.Address === reporter }); return account && account[0]\
-          \ && account[0].DisplayName || reporter || ''; }(val)},\nWe've received\
+        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress;\
+          \ var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc)\
+          \ { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email)\
+          \ && acc.Email.indexOf(reporter) > -1) }); return account && account[0]\
+          \ && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received\
           \ your email and are investigating.\nPlease do not touch the email until\
           \ further notice.\n\nCordially, \n  Your friendly neighborhood security\
           \ team"
@@ -229,8 +230,7 @@ tasks:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         complex:
-          root: incident
-          accessor: labels.Email/from
+          root: ReporterAddress
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -288,10 +288,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 50a5fc78-c35e-40ef-8359-3a36c7d3982f
+    taskid: 511c7226-fa33-4a95-88b7-709566ab4f90
     type: regular
     task:
-      id: 50a5fc78-c35e-40ef-8359-3a36c7d3982f
+      id: 511c7226-fa33-4a95-88b7-709566ab4f90
       version: -1
       name: Update the user that the reported email is safe
       description: Send an email to the user explaining that the email they reported
@@ -306,7 +306,7 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
           We've concluded that the email you forwarded to us is safe.
           Thank you for your alertness and your participation in keeping our organization secure.
 
@@ -315,7 +315,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: ${incident.labels.Email/from}
+        simple: ${ReporterAddress}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -334,10 +334,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 440f0a75-36c6-4245-8e76-59dbffa36329
+    taskid: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
     type: regular
     task:
-      id: 440f0a75-36c6-4245-8e76-59dbffa36329
+      id: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
       version: -1
       name: Update the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported
@@ -352,7 +352,7 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
           We've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!
 
           All the best,
@@ -360,12 +360,12 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: ${incident.labels.Email/from}
+        simple: ${ReporterAddress}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 122.5,
+          "x": 120,
           "y": 3390
         }
       }
@@ -979,6 +979,7 @@ tasks:
       '#none#':
       - "101"
       - "80"
+      - "131"
     separatecontext: false
     view: |-
       {
@@ -1034,7 +1035,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 390,
           "y": 1555
         }
       }
@@ -1062,7 +1063,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 390,
           "y": 1410
         }
       }
@@ -1100,7 +1101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 62.5,
+          "x": 392.5,
           "y": 1740
         }
       }
@@ -1173,7 +1174,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 62.5,
+          "x": 392.5,
           "y": 1935
         }
       }
@@ -1660,10 +1661,10 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: 476e3b9e-4fb8-4edb-8f46-de3aa23f2d90
+    taskid: 93c79a23-70e3-4eb2-87b4-fb3609ebb4e4
     type: playbook
     task:
-      id: 476e3b9e-4fb8-4edb-8f46-de3aa23f2d90
+      id: 93c79a23-70e3-4eb2-87b4-fb3609ebb4e4
       version: -1
       name: Entity Enrichment - Phishing v2
       description: Enrich entities using one or more integrations
@@ -1674,7 +1675,22 @@ tasks:
     nexttasks:
       '#none#':
       - "56"
-    separatecontext: true
+    scriptarguments:
+      Email:
+        complex:
+          root: Account.Email.Address
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: ReporterAddress
+                iscontext: true
+          transformers:
+          - operator: uniq
     view: |-
       {
         "position": {
@@ -1785,13 +1801,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "84"
       - "126"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -587.5,
+          "x": -260,
           "y": 1410
         }
       }
@@ -1873,8 +1888,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -587.5,
-          "y": 1555
+          "x": -260,
+          "y": 1545
         }
       }
     note: false
@@ -1884,10 +1899,10 @@ tasks:
     quietmode: 0
   "130":
     id: "130"
-    taskid: 2334647e-4ced-466e-8c05-0ae6b76adc28
+    taskid: fd39af07-3674-4de7-8d83-3fb41a3d2055
     type: regular
     task:
-      id: 2334647e-4ced-466e-8c05-0ae6b76adc28
+      id: fd39af07-3674-4de7-8d83-3fb41a3d2055
       version: -1
       name: Update the user that the email is a malicious campaign
       description: Send an email to the user explaining that the email they reported
@@ -1902,7 +1917,7 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
           We've concluded that the email you forwarded to us is part of a bigger phishing campaign that targeted our company. No further action is required on your part. Good job on detecting and forwarding it to us!
 
           All the best,
@@ -1910,7 +1925,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: ${incident.labels.Email/from}
+        simple: ${ReporterAddress}
     separatecontext: false
     view: |-
       {
@@ -1923,6 +1938,119 @@ tasks:
     timertriggers:
     - fieldname: detectionsla
       action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "131":
+    id: "131"
+    taskid: b4505dbf-4de5-4de9-893f-379efc7a6f43
+    type: title
+    task:
+      id: b4505dbf-4de5-4de9-893f-379efc7a6f43
+      version: -1
+      name: Microsoft's Headers Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "132"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "132":
+    id: "132"
+    taskid: bf3eb3d0-9df6-4aff-8731-b5a108227b76
+    type: condition
+    task:
+      id: bf3eb3d0-9df6-4aff-8731-b5a108227b76
+      version: -1
+      name: Check Microsoft's Headers?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CheckMicrosoftHeaders
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "133":
+    id: "133"
+    taskid: ce12dc0c-dd63-47d6-8933-5f58797eb00b
+    type: playbook
+    task:
+      id: ce12dc0c-dd63-47d6-8933-5f58797eb00b
+      version: -1
+      name: Process Microsoft's Anti-Spam Headers
+      description: |-
+        This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
+        It also does the following:
+        1) Sets the email classification to "spam" if the "SCL" score is equal to or higher than 5.
+        2) Set the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
+        - PCL (Phishing Confidence Level) score is between and including 4-8: The message content is likely to be phishing.
+        - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+        - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
+
+        For further information on SCL/BCL/PCL, see the following Microsoft documentation:
+
+        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
+
+        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide
+
+        https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019
+      playbookName: Process Microsoft's Anti-Spam Headers
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2030,6 +2158,13 @@ inputs:
   description: Used only when searching and deleting emails in O365. Comma-separated
     list of mailboxes/distribution groups to exclude when you use the value "All"
     for the O365ExchangeLocation input.
+  playbookInputQuery:
+- key: CheckMicrosoftHeaders
+  value:
+    simple: "True"
+  required: false
+  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
+    and "Email Classification" accordingly.
   playbookInputQuery:
 outputs: []
 tests:

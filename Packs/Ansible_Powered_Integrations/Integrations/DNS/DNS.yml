@@ -19,8 +19,8 @@ configuration:
   name: key_secret
   required: false
   type: 4
-description: Manage DNS records using NSUpdate
-display: DNS
+description: Manage DNS records using NSUpdate.  Deprecated. Use Ansible DNS (in the Ansible Linux pack) instead.
+display: Ansible DNS (Deprecated)
 name: DNS
 script:
   commands:
@@ -74,7 +74,7 @@ script:
       - udp
     description: Manage DNS records.
     name: dns-nsupdate
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -82,3 +82,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

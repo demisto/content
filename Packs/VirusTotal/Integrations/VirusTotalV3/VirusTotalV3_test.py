@@ -70,10 +70,10 @@ class TestScoreCalculator:
         assert self.score_calculator.is_malicious_by_threshold(analysis_results, threshold) is result
 
     @pytest.mark.parametrize('ranks, result', [
-        ({'vendor1': {'rank': 10000}}, True),
+        ({'vendor1': {'rank': 10000}}, False),
         ({'vendor1': {'rank': 3000}, 'vendor2': {'rank': 7000}}, True),
-        ({'vendor1': {'rank': 0}}, False),
-        ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, False),
+        ({'vendor1': {'rank': 0}}, True),
+        ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, True),
         ({}, None)
     ])
     def test_is_good_by_popularity_ranks(self, ranks: Dict[str, dict], result: bool):

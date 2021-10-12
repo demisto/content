@@ -1297,6 +1297,11 @@ def get_non_added_packs_ids(build: Build):
     compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
+    if os.getenv('CONTRIB_BRANCH'):
+        added_contrib_files = run_command(
+            'git status -uall --porcelain -- Packs/*/pack_metadata.json | grep "?? "').replace('?? ', '')
+        added_files = added_files if not added_contrib_files else '\n'.join([added_files, added_contrib_files])
+
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     return set(get_pack_ids_to_install()) - set(added_pack_ids)
