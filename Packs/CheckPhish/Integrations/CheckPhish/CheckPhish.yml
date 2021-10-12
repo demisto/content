@@ -138,7 +138,7 @@ script:
   - arguments:
     - default: true
       description: URL to query.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
