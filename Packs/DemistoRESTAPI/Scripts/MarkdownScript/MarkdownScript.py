@@ -73,6 +73,10 @@ def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
     full_table = hunting_table_md + mitigation_table_md + remediation_table_md + eradication_table_md
 
     return CommandResults(
+        outputs_prefix='Tasks',
+        outputs_key_field='id',
+        entry_type=EntryType.NOTE,
+        outputs=tasks,
         readable_output=full_table
     )
 

@@ -36,9 +36,41 @@ commonfields:
 enabled: false
 name: MarkdownScript
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
-  type: String
+- contextPath: Tasks
+  description: The entire task object
+- contextPath: Tasks.id
+  description: Task ID
+  type: string
+- contextPath: Tasks.name
+  description: Task name
+  type: string
+- contextPath: Tasks.type
+  description: The type of the task (regular, condition, title, playbook, start)
+  type: string
+- contextPath: Tasks.owner
+  description: Task owner
+  type: string
+- contextPath: Tasks.state
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
+  type: string
+- contextPath: Tasks.scriptId
+  description: Task related script (empty if manual)
+  type: string
+- contextPath: Tasks.startDate
+  description: Task start date
+  type: unknown
+- contextPath: Tasks.completedDate
+  description: Task completed date
+  type: unknown
+- contextPath: Tasks.dueDate
+  description: Task due date (SLA)
+  type: unknown
+- contextPath: Tasks.parentPlaybookID
+  description: Task parent playbook ID (in case the task is part of sub-playbook)
+  type: unknown
+- contextPath: Tasks.completedBy
+  description: Task completed by (username)
+  type: string
 script: '-'
 system: false
 tags:
