@@ -1,10 +1,10 @@
 {
-    "id": "indicator_stixindicatordescription",
+    "id": "indicator_taxiifeedstixindicatordescription",
     "version": -1,
     "modified": "2021-10-11T10:58:47.145743Z",
-    "name": "STIX Indicator Description",
+    "name": "TAXII Feed STIX Indicator Description",
     "ownerOnly": false,
-    "cliName": "stixindicatordescription",
+    "cliName": "taxiifeedstixindicatordescription",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
