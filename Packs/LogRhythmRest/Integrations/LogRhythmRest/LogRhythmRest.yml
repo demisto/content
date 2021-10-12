@@ -1770,7 +1770,6 @@ script:
         - contextPath: Logrhythm.Search.Task.TaskID
           description: Task ID
           type: String
-      isfetch: false
     - name: lr-get-users
       arguments:
         - name: user_id
@@ -2009,6 +2008,7 @@ script:
           type: string
       description: Add a new login to the LogRhythm user
       execution: true
+  isfetch: false
   runonce: false
   script: '-'
   type: python
