@@ -165,29 +165,10 @@ Stam : Ba
     assert len(res) == 3
 
 
-def test_get_no_update_value_empty_context():
-    """
-    Given
-    - response with last_modified and etag headers.
-
-    When
-    - Running get_no_update_value method with empty integration context.
-
-    Then
-    - Ensure that the response is False.
-    """
-    class MockResponse:
-        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
-        status_code = 200
-    no_update = get_no_update_value(MockResponse())
-    assert not no_update
-
-
 def test_get_no_update_value(mocker):
     """
     Given
-    - response with last_modified and etag headers with the same values like in the integration context.
+    - valid response with last_modified and etag headers.
 
     When
     - Running get_no_update_value method.
@@ -195,19 +176,19 @@ def test_get_no_update_value(mocker):
     Then
     - Ensure that the response is False
     """
-    mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
+    mocker.patch.object(demisto, 'debug')
 
     class MockResponse:
         headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
     no_update = get_no_update_value(MockResponse())
-    assert no_update
+    assert not no_update
+    assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
+                                            ' createIndicators will be executed with noUpdate=False.'
 
 
-def test_build_iterator_not_modified_header():
+def test_build_iterator_not_modified_header(mocker):
     """
     Given
     - response with status code 304(Not Modified)
@@ -218,6 +199,7 @@ def test_build_iterator_not_modified_header():
     Then
     - Ensure that the no_update value is True
     """
+    mocker.patch.object(demisto, 'debug')
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
@@ -227,3 +209,28 @@ def test_build_iterator_not_modified_header():
         result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'})
         assert not result
         assert no_update
+        assert demisto.debug.call_args[0][0] == 'No new indicators fetched, ' \
+                                                'createIndicators will be executed with noUpdate=True.'
+
+
+def test_get_no_update_value_without_headers(mocker):
+    """
+    Given
+    - response without last_modified and etag headers.
+
+    When
+    - Running get_no_update_value.
+
+    Then
+    - Ensure that the response is False.
+    """
+    mocker.patch.object(demisto, 'debug')
+
+    class MockResponse:
+        headers = {}
+        status_code = 200
+    no_update = get_no_update_value(MockResponse())
+    assert not no_update
+    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
+                                            'createIndicators will be executed with noUpdate=False.'
+
