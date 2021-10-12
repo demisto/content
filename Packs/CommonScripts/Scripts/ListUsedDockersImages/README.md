@@ -1,4 +1,4 @@
-List all dockers images that are in used by the installed Integration and/or Automations. 
+List all the docker images used by installed integrations and/or automations.
 
 Example: !ListUsedDockersImages
 
@@ -18,4 +18,4 @@ No Input
 
 ## Outputs
 ---
-Table that list all dockers images that are in used by installed Integration and/or Automations
+Table that lists all the docker images used by installed integrations and/or automations
