@@ -3,46 +3,21 @@
 This is an empty script with some basic structure according
 to the code conventions.
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 """
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from typing import Dict, Any
 import traceback
-
-''' STANDALONE FUNCTION '''
-
-
-# TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
-    """Returns a simple python dict with the information provided
-    in the input (dummy).
-
-    :type dummy: ``str``
-    :param dummy: string to add in the dummy dict that is returned
-
-    :return: dict as {"dummy": dummy}
-    :rtype: ``str``
-    """
-
-    return {"dummy": dummy}
-
-
-# TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
 
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
 def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
     incident_id = args.get('incident_id')
     if not incident_id:
@@ -112,7 +87,7 @@ def main():
         return_results(create_markdown_tasks(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute MarkdownScript. Error: {str(ex)}')
+        return_error(f'Failed to execute SetIRProceduresMarkdown. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''

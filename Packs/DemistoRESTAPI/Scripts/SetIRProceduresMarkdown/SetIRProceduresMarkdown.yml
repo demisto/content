@@ -31,10 +31,10 @@ args:
   secret: false
 comment: 'Creates a markdown table based on te info of the GetIncidentTasksById command'
 commonfields:
-  id: MarkdownScript
+  id: SetIRProceduresMarkdown
   version: -1
 enabled: false
-name: MarkdownScript
+name: SetIRProceduresMarkdown
 outputs:
 - contextPath: Tasks
   description: The entire task object
