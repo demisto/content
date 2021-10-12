@@ -2601,9 +2601,9 @@ tasks:
       - "48"
     scriptarguments:
       limit:
-        simple: "50"
+        simple: "150"
       offset:
-        simple: "78"
+        simple: "30"
     separatecontext: false
     view: |-
       {
@@ -2778,7 +2778,7 @@ tasks:
                   simple: event
           accessor: uuid
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
