@@ -7,7 +7,7 @@ import demistomock as demisto  # noqa: F401
 
 ''' GLOBAL VARS '''
 ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
-                 'entityName', 'alarmDataCached', 'eventCount', 'rbpMax', 'rbpAvg']
+                 'entityName', 'alarmDataCached', 'personId', 'eventCount', 'rbpMax', 'rbpAvg']
 
 ALARM_EVENTS_HEADERS = ['commonEventName', 'logMessage', 'priority', 'logDate', 'impactedHostId', 'impactedZone',
                         'serviceName', '', 'entityName', 'classificationName', 'classificationTypeName']
@@ -1521,6 +1521,12 @@ class Client(BaseClient):
 
         return response
 
+    def hosts_status_update(self, host_id, status):
+        headers = self._headers
+        data = [{'hostId': int(host_id), 'status': status}]
+        response = self._http_request('PUT', 'lr-admin-api/hosts/status', json_data=data, headers=headers)
+        return response
+
 
 def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alarm_id = args.get('alarm_id')
@@ -2272,6 +2278,19 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
+def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_id = args.get('host_id')
+    status = args.get('host_status')
+
+    response = client.hosts_status_update(host_id, status)
+    command_results = CommandResults(
+        readable_output=f'Host status updated successfully to {status}.',
+        raw_response=response
+    )
+
+    return command_results
+
+
 def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
@@ -2467,6 +2486,8 @@ def main() -> None:
             'lr-execute-search-query': execute_search_query_command,
             'lr-get-query-result': get_query_result_command,
             'lr-add-host': add_host_command,
+            'lr-hosts-status-update': hosts_status_update_command,
+            # 'lr-networks-list': networks_list_command
             'endpoint': endpoint_command,
         }
 

@@ -3926,5 +3926,21 @@ script:
       description: 'The endpoint hostname.'
       required: false
       isArray: false
+  - name: lr-hosts-status-update
+    description: 'Updates the status of a Host to retire or activate it.'
+    arguments:
+    - name: host_id
+      description: 'The host ID.'
+      required: true
+      isArray: false
+    - name: host_status
+      description: 'The host status.'
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Retired
+      - Active
+    outputs: []
 tests:
 - LogrhythmV2-test
