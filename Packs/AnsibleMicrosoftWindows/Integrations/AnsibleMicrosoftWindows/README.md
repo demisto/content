@@ -498,7 +498,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinChocolateyFacts.ansible_facts | unknown | Detailed information about the Chocolatey installation | 
+| MicrosoftWindows.WinChocolateyFacts.facts | unknown | Detailed information about the Chocolatey installation | 
 
 
 #### Command Example
@@ -1149,7 +1149,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinDiskFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
+| MicrosoftWindows.WinDiskFacts.facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
 
 
 #### Command Example
@@ -4293,7 +4293,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinProductFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
+| MicrosoftWindows.WinProductFacts.facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
 
 
 #### Command Example

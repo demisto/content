@@ -561,7 +561,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html"
     name: win-chocolatey-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinChocolateyFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinChocolateyFacts.facts
       description: Detailed information about the Chocolatey installation
       type: unknown
   - arguments:
@@ -906,7 +906,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html"
     name: win-disk-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinDiskFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinDiskFacts.facts
       description: Dictionary containing all the detailed information about the disks
         of the target.
       type: unknown
@@ -3639,7 +3639,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html"
     name: win-product-facts
     outputs:
-    - contextPath: MicrosoftWindows.WinProductFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinProductFacts.facts
       description: Dictionary containing all the detailed information about the Windows
         product and license.
       type: unknown

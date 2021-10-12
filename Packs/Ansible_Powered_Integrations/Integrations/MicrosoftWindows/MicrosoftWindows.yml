@@ -510,7 +510,7 @@ script:
     description: Create a facts collection for Chocolatey
     name: win-chocolatey-facts
     outputs:
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_chocolatey
+    - contextPath: MicrosoftWindows.facts.chocolatey
       description: Detailed information about the Chocolatey installation
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -805,7 +805,7 @@ script:
     description: Show the attached disks and disk information of the target host
     name: win-disk-facts
     outputs:
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_disks
+    - contextPath: MicrosoftWindows.facts.disks
       description: Detailed information about one particular disk.
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -3133,19 +3133,19 @@ script:
     description: Provides Windows product and license information
     name: win-product-facts
     outputs:
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_os_license_channel
+    - contextPath: MicrosoftWindows.facts.os_license_channel
       description: The Windows license channel.
       type: string
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_os_license_edition
+    - contextPath: MicrosoftWindows.facts.os_license_edition
       description: The Windows license edition.
       type: string
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_os_license_status
+    - contextPath: MicrosoftWindows.facts.os_license_status
       description: The Windows license status.
       type: string
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_os_product_id
+    - contextPath: MicrosoftWindows.facts.os_product_id
       description: The Windows product ID.
       type: string
-    - contextPath: MicrosoftWindows.ansible_facts.ansible_os_product_key
+    - contextPath: MicrosoftWindows.facts.os_product_key
       description: The Windows product key.
       type: string
   - arguments:
