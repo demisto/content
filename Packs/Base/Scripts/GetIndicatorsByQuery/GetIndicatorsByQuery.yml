@@ -20,8 +20,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The results offset page. Only change when the number
-    of the results exceed the limit.
+  description: The results offset page. Only change when the number of the results
+    exceed the limit.
   isArray: false
   name: offset
   required: false
@@ -40,9 +40,19 @@ args:
   secret: false
 - default: false
   defaultValue: id,score,investigationIDs
-  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
+  description: A comma-separated list of fields in the object to poplulate. Defaults
+    are id, score, and investigationIDs.
   isArray: false
   name: populateFields
+  required: false
+  secret: false
+- default: false
+  defaultValue: 30 days ago
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "30 days ago", ""2019-01-01T00:00:00
+    +0200").'
+  isArray: false
+  name: fromDate
   required: false
   secret: false
 comment: Gets a list of indicator objects and the associated indicator outputs that

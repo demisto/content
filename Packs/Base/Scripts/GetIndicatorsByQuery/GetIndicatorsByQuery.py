@@ -1,6 +1,7 @@
 from CommonServerPython import *
 
 import hashlib
+from dateutil import parser
 
 PAGE_SIZE = 500
 
@@ -57,7 +58,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
             return value
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+def find_indicators_with_limit(indicator_query: str, limit: int, offset: int, from_date: str) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
@@ -72,7 +73,7 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
         next_page = 0
         offset_in_page = 0
 
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
+    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page, from_date=from_date)
 
     # if offset in page is bigger than the amount of results returned return empty list
     if len(iocs) <= offset_in_page:
@@ -107,8 +108,8 @@ def parse_ioc(ioc):
     return ioc
 
 
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                    last_found_len: int = PAGE_SIZE):
+def find_indicators_with_limit_loop(indicator_query: str, limit: int, from_date:str, total_fetched: int = 0,
+                                    next_page: int = 0, last_found_len: int = PAGE_SIZE):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
@@ -117,11 +118,56 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE,
+                                                                      from_date=from_date).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
     return list(map(lambda x: parse_ioc(x), iocs)), next_page
+
+
+def parse_relative_time(datetime_str):
+    if datetime_str:
+        datetime_str = datetime_str.lower()
+        try:
+            res = re.search("([0-9]+) (minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years) ago",
+                            datetime_str)
+            if res:
+                number = int(res.group(1))
+                unit = res.group(2)
+                if unit in ['minute', 'hour', 'day', 'week', 'month', 'year']:
+                    unit += "s"
+                if unit == 'years':
+                    unit = 'days'
+                    number *= 365
+                elif unit == 'months':
+                    number *= 43800
+                    unit = 'minutes'
+
+                kargs = {}
+                kargs[unit] = int(number)
+                result = datetime.now() - timedelta(**kargs)
+                return result
+        except Exception:
+            return None
+
+
+def get_demisto_datetme_format(date_string):
+    if date_string:
+        date_object = None
+        # try to parse date string
+        try:
+            date_object = parser.parse(date_string)
+        except Exception:
+            pass
+        # try to parse relative time
+        if date_object is None and date_string.strip().endswith("ago"):
+            date_object = parse_relative_time(date_string)
+
+        if date_object:
+            return date_object.astimezone().isoformat('T')
+        else:
+            return None
 
 
 fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
@@ -136,7 +182,9 @@ def main():
     limit = int(args.get('limit', PAGE_SIZE))
     query = args.get('query', '')
     offset = int(args.get('offset', 0))
-    indicators = find_indicators_with_limit(query, limit, offset)
+    from_date = args.get('fromDate')
+    from_date = get_demisto_datetme_format(from_date)
+    indicators = find_indicators_with_limit(query, limit, offset, from_date)
 
     entry = fileResult("indicators.json", json.dumps(indicators).encode('utf8'))
     entry['Contents'] = indicators
