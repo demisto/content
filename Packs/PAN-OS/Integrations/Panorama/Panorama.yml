@@ -1,11 +1,9 @@
 commonfields:
   id: Panorama
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Panorama
 display: Panorama
 category: Network Security
-polling: true
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 configuration:
@@ -182,17 +180,18 @@ script:
     arguments:
     - name: description
       description: Commit description.
-    - name: use_polling
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether to use polling.
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: timeout
       description: Timeout (in seconds) for polling.
     - name: interval_in_seconds
       description: Interval (in seconds) to check each polling.
+      defaultValue: '30'
     - name: job_id
     outputs:
     - contextPath: Panorama.Commit.JobID
@@ -2150,12 +2149,13 @@ script:
       defaultValue: "true"
     - name: interval_in_seconds
       description: Interval (in seconds) for polling.
-    - name: use_polling
+      defaultValue: '30'
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether to use polling or not
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: job_id
       description: Do not use this field. Only used internally for polling.
@@ -2649,12 +2649,12 @@ script:
     arguments:
     - name: target
       description: The device to which to download the content update.
-    - name: use_polling
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether to use polling.
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: interval_in_seconds
       description: Interval (in seconds) to check the status.
@@ -2693,17 +2693,18 @@ script:
     arguments:
     - name: target
       description: The device on which to install the content update.
-    - name: use_polling
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether or not to use polling
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: job_id
       description: Do not use this field. Only used internally for polling.
     - name: interval_in_seconds
-      description: Timeout in seconds for polling.
+      description: Interval in seconds between each poll.
+      defaultValue: '30'
     - name: timeout
       description: Timeout in seconds for polling.
     outputs:
@@ -2746,17 +2747,18 @@ script:
     - name: target_version
       required: true
       description: The target version number to install.
-    - name: use_polling
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether to use polling.
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: timeout
       description: Polling timeout (in seconds).
     - name: interval_in_seconds
-      description: Interval for polling.
+      description: Interval in seconds between each poll.
+      defaultValue: '30'
     - name: job_id
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
@@ -2794,17 +2796,18 @@ script:
     - name: target_version
       required: true
       description: Target PAN-OS version to install.
-    - name: use_polling
+    - name: polling
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Whether to use polling.
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: timeout
       description: Timeout for the polling.
     - name: interval_in_seconds
-      description: Interval (in seconds_ for polling.
+      description: Interval in seconds between each poll.
+      defaultValue: '30'
     - name: job_id
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
@@ -3483,4 +3486,7 @@ script:
   dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   subtype: python3
-sourcemoduleid: Panorama
+fromversion: 5.0.0
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
