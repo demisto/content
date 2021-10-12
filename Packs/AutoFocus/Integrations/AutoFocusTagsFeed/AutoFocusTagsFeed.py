@@ -20,7 +20,7 @@ AF_TAGS_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
 
 TAG_CLASS_TO_DEMISTO_TYPE = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
-                             'actor': 'Threat Actor',
+                             'actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
                              'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
                              'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
                              }
@@ -28,22 +28,22 @@ TAG_CLASS_TO_DEMISTO_TYPE = {'malware_family': ThreatIntel.ObjectsNames.MALWARE,
 MAP_RELATIONSHIPS = {
     ThreatIntel.ObjectsNames.MALWARE:
         {ThreatIntel.ObjectsNames.MALWARE: 'related-to',
-         'Threat Actor': 'used-by',
+         ThreatIntel.ObjectsNames.THREAT_ACTOR: 'used-by',
          ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
-    'Threat Actor':
+    ThreatIntel.ObjectsNames.THREAT_ACTOR:
         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-         'Threat Actor': 'related-to',
+         ThreatIntel.ObjectsNames.THREAT_ACTOR: 'related-to',
          ThreatIntel.ObjectsNames.CAMPAIGN: 'attributed-by',
          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'uses'},
     ThreatIntel.ObjectsNames.CAMPAIGN:
         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-         'Threat Actor': 'attributed-to',
+         ThreatIntel.ObjectsNames.THREAT_ACTOR: 'attributed-to',
          ThreatIntel.ObjectsNames.CAMPAIGN: 'related-to',
          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'},
     ThreatIntel.ObjectsNames.ATTACK_PATTERN:
         {ThreatIntel.ObjectsNames.MALWARE: 'uses',
-         'Threat Actor': 'used-by',
+         ThreatIntel.ObjectsNames.THREAT_ACTOR: 'used-by',
          ThreatIntel.ObjectsNames.CAMPAIGN: 'uses',
          ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'related-to'},
 
@@ -51,7 +51,7 @@ MAP_RELATIONSHIPS = {
 
 SCORES_MAP = {
     ThreatIntel.ObjectsNames.MALWARE: ThreatIntel.ObjectsScore.MALWARE,
-    'Threat Actor': 3,
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: ThreatIntel.ObjectsScore.THREAT_ACTOR,
     ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: ThreatIntel.ObjectsScore.ATTACK_PATTERN,
 }
