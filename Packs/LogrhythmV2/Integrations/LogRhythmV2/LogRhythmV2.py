@@ -1527,6 +1527,15 @@ class Client(BaseClient):
         response = self._http_request('PUT', 'lr-admin-api/hosts/status', json_data=data, headers=headers)
         return response
 
+    def networks_list_request(self, network_id, name, record_status, bip, eip, offset, count):
+        headers = self._headers
+
+        if network_id:
+            return self._http_request('GET', f'lr-admin-api/networks/{network_id}', headers=headers)
+        else:
+            params = assign_params(name=name, recordStatus=record_status, BIP=bip, EIP=eip, offset=offset, count=count)
+            return self._http_request('GET', 'lr-admin-api/networks/', params=params, headers=headers)
+
 
 def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alarm_id = args.get('alarm_id')
@@ -2291,6 +2300,32 @@ def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
+def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    network_id = args.get('network_id')
+    name = args.get('name')
+    record_status = args.get('record_status')
+    bip = args.get('bip')
+    eip = args.get('eip')
+    count = args.get('count')
+    offset = args.get('offset')
+
+    response = client.networks_list_request(network_id, name, record_status, bip, eip, offset, count)
+    if response:
+        hr = tableToMarkdown('Networks', response, headerTransform=pascalToSpace)
+    else:
+        hr = 'No networks were found.'
+
+    command_results = CommandResults(
+        readable_output=hr,
+        outputs_prefix='LogRhythm.Network',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
@@ -2487,7 +2522,7 @@ def main() -> None:
             'lr-get-query-result': get_query_result_command,
             'lr-add-host': add_host_command,
             'lr-hosts-status-update': hosts_status_update_command,
-            # 'lr-networks-list': networks_list_command
+            'lr-networks-list': networks_list_command,
             'endpoint': endpoint_command,
         }
 

@@ -3942,5 +3942,92 @@ script:
       - Retired
       - Active
     outputs: []
+  - name: lr-networks-list
+    description: 'Returns all networks that match the specified criteria.'
+    arguments:
+    - name: network_id
+      description: 'Filter by network ID.'
+      required: false
+      isArray: false
+    - name: name
+      description: 'Filter by name.'
+      required: false
+      isArray: false
+    - name: record_status
+      description: 'Filter by object recordStatus.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - all
+      - retired
+      - active
+    - name: bip
+      description: 'The starting IP address to allow records to be filtered on a specified IP address, e.g. 127.0.0.1.'
+      required: false
+      isArray: false
+    - name: eip
+      description: 'The ending IP address to allow records to be filtered on a specified IP address, e.g. 127.0.0.1.'
+      required: false
+      isArray: false
+    - name: count
+      defaultValue: "50"
+      description: 'The numbers of networks to return.'
+      required: false
+      isArray: false
+    - name: offset
+      defaultValue: "0"
+      description: 'The number of networks to skip before starting to collect the result set.'
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: LogRhythm.Network.entity.id
+      description: 'The network entity ID.'
+      type: Number
+    - contextPath: LogRhythm.Network.entity.name
+      description: 'The network entity name.'
+      type: String
+    - contextPath: LogRhythm.Network.name
+      description: 'The network name.'
+      type: String
+    - contextPath: LogRhythm.Network.shortDesc
+      description: 'The network short description.'
+      type: String
+    - contextPath: LogRhythm.Network.longDesc
+      description: 'The network long description.'
+      type: String
+    - contextPath: LogRhythm.Network.riskLevel
+      description: 'The network risk level.'
+      type: String
+    - contextPath: LogRhythm.Network.threatLevel
+      description: 'The network threat level.'
+      type: String
+    - contextPath: LogRhythm.Network.threatLevelComment
+      description: 'The threat level comments'
+      type: String
+    - contextPath: LogRhythm.Network.recordStatusName
+      description: 'The network record status name.'
+      type: String
+    - contextPath: LogRhythm.Network.hostZone
+      description: 'The network zone.'
+      type: String
+    - contextPath: LogRhythm.Network.location.id
+      description: 'The network location ID.'
+      type: Number
+    - contextPath: LogRhythm.Network.location.name
+      description: 'The network location.'
+      type: String
+    - contextPath: LogRhythm.Network.bip
+      description: 'Starting IP address.'
+      type: String
+    - contextPath: LogRhythm.Network.eip
+      description: 'Ending IP address'
+      type: String
+    - contextPath: LogRhythm.Network.dateUpdated
+      description: 'The date the network was last updated.'
+      type: Date
+    - contextPath: LogRhythm.Network.id
+      description: 'The network ID.'
+      type: Number
 tests:
 - LogrhythmV2-test
