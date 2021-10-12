@@ -104,7 +104,7 @@ def main():
     for file_field in file_fields:
         files = demisto.incident().get(file_field)
         if files is None:
-            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}', [])
+            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}') or []
         if files:
             attachment_ents = [ent for ent in iterate_entries(None, {'categories': ['attachments']})]
             for file in files:
@@ -113,22 +113,22 @@ def main():
                 m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', apath)
                 if not m:
                     return_error(f'Failed to get file ID for {apath}')
+                else:
+                    # Read the file contents
+                    fpath = demisto.getFilePath(m.group())
+                    with open(fpath['path'], 'rb') as f:
+                        data = f.read()
 
-                # Read the file contents
-                fpath = demisto.getFilePath(m.group())
-                with open(fpath['path'], 'rb') as f:
-                    data = f.read()
-
-                # Find the attachment entry
-                attachment_ent = find_attachment_entry(attachment_ents, data, file.get('name'))
-                if not attachment_ent:
-                    return_error('No attachment entry found in the war room')
-
-                file_infos.append({
-                    'Attachment': file,
-                    'AttachmentEntry': attachment_ent,
-                    'File': make_file_entry_context(attachment_ent, data)
-                })
+                    # Find the attachment entry
+                    attachment_ent = find_attachment_entry(attachment_ents, data, file.get('name'))
+                    if not attachment_ent:
+                        return_error('No attachment entry found in the war room')
+                    else:
+                        file_infos.append({
+                            'Attachment': file,
+                            'AttachmentEntry': attachment_ent,
+                            'File': make_file_entry_context(attachment_ent, data)
+                        })
 
     if not file_infos:
         return_outputs('No files were found.')
