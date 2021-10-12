@@ -24,6 +24,9 @@ USER_HEADERS = ['id', 'fullName', 'userType', 'firstName', 'lastName', 'recordSt
 LIST_HEADERS = ['guid', 'name', 'listType', 'status', 'shortDescription', 'id', 'entityName', 'dateCreated',
                 'owner', 'writeAccess', 'readAccess']
 
+NETWORK_HEADERS = ['id', 'name', 'shortDesc', 'longDesc', 'recordStatusName', 'bip', 'eip', 'entity', 'riskLevel',
+                   'dateUpdated', 'threatLevel', 'threatLevelComment', 'hostZone', 'location']
+
 ALARM_STATUS = {0: 'New',
                 1: 'Opened',
                 2: 'Working',
@@ -2311,7 +2314,7 @@ def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     response = client.networks_list_request(network_id, name, record_status, bip, eip, offset, count)
     if response:
-        hr = tableToMarkdown('Networks', response, headerTransform=pascalToSpace)
+        hr = tableToMarkdown('Networks', response, headerTransform=pascalToSpace, headers=NETWORK_HEADERS)
     else:
         hr = 'No networks were found.'
 
