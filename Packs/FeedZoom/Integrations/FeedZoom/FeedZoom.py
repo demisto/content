@@ -32,10 +32,12 @@ class Client(BaseClient):
         """
         result = []
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'}
+            'User-Agent': 'PostmanRuntime/7.28.2',
+            'accept': '*/*'}
         session = requests.Session()
-        r = session.request("GET", self._base_url, headers=headers, verify=self._verify).text
+        r = session.request("GET", self._base_url, headers=headers, verify=self._verify)
+        print(r.request.headers)
+        r = r.text
 
         soup = BeautifulSoup(r, "html.parser")
 
