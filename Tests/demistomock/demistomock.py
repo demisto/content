@@ -1144,5 +1144,5 @@ def parentEntry():
     return {}
 
 
-def getLicenseCustomField(arg):
-    return arg
+def getLicenseCustomField(api_key):
+    return api_key
