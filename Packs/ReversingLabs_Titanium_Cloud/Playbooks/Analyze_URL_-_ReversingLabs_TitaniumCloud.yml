@@ -1,6 +1,5 @@
 id: 26dd9bbd-6d06-4e4e-8a76-4785d4ee827a
-version: 30
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Analyze URL - ReversingLabs TitaniumCloud
 description: |-
   Get threat intelligence data for the submitted URL.
@@ -20,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -104,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -240,7 +241,7 @@ inputs:
       root: URL.Data
   required: false
   description: URL to analyze
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: URL.Data
   description: The URL
@@ -262,4 +263,6 @@ outputs:
   description: Destination email address
 - contextPath: ReversingLabs.uri_statistics
   description: Report in JSON
-sourceplaybookid: c18adcc9-2164-4a1a-845b-a6e137591231
+tests:
+- ReversingLabsTCTest
+fromversion: 1.0.0

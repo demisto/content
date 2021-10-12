@@ -1,6 +1,5 @@
 id: afeacef4-5f4d-4f73-80b3-fecaee6d6881
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Detonate File - ReversingLabs TitaniumScale
 description: Upload sample to ReversingLabs TitaniumScale instance and retrieve the
   analysis report.
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -100,6 +100,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -201,7 +202,7 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: The Entry ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
   description: The SHA256 hash of the file.
@@ -229,4 +230,6 @@ outputs:
   description: The vendor used to calculate the score.
 - contextPath: ReversingLabs.tc_report
   description: Full report
-sourceplaybookid: c18adcc9-2164-4a1a-845b-a6e137591231
+tests:
+- No tests (auto formatted)
+fromversion: 1.0.0

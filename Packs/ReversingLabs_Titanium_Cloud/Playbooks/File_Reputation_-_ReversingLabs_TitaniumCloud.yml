@@ -1,6 +1,5 @@
 id: c18adcc9-2164-4a1a-845b-a6e137591231
-version: 13
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: File Reputation - ReversingLabs TitaniumCloud
 description: |-
   Provides file reputation data for a file (malicious, suspicious, known good or unknown).
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -103,6 +103,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -205,7 +206,7 @@ inputs:
     simple: ${File.SHA1}
   required: false
   description: File hash.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.MD5
   description: Bad hash found
@@ -223,3 +224,6 @@ outputs:
   description: The vendor used to calculate the score.
 - contextPath: ReversingLabs.file_reputation
   description: Report in JSON.
+tests:
+- ReversingLabsTCTest
+fromversion: 1.0.0
