@@ -1,0 +1,181 @@
+commonfields:
+  id: ArcusTeam
+  version: -1
+name: ArcusTeam
+display: ArcusTeam
+category: Data Enrichment & Threat Intelligence
+description: 'The ArcusTeam API allows the user to inspect connected devices'' attack
+  surface. By feeding device identifiers and the software it runs: DeviceTotal will
+  return a map of the device’s attack surface. DeviceTotal was built from the ground
+  up in order to provide complete visibility into connected devices and mitigate 3rd
+  party risk. DeviceTotal can continuously identify & predict such that the connected
+  device security posture is being assessed, prioritized and mitigated effectively.'
+configuration:
+- display: Server URL (e.g. https://web.prod.arcusteam.com)
+  name: url
+  defaultvalue: https://web.prod.arcusteam.com
+  type: 0
+  required: true
+  additionalinfo: The FQDN/IP the integration should connect to.
+- display: API Key
+  name: api_key
+  type: 4
+  required: true
+  additionalinfo: ' The API Key required to authenticate to the service.'
+- display: 'The client ID'
+  name: client_id
+  type: 0
+  required: true
+  additionalinfo: The client ID from ArcusTeam dashboard
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: arcusteam-get-devices
+    arguments:
+    - name: vendor
+      required: true
+      description: Device vendor
+    - name: model
+      description: Device model
+    - name: series
+      description: ' Device series'
+    - name: firmware_version
+      description: Firmware version
+    outputs:
+    - contextPath: ArcusTeamDevices.devices.categories
+      description: ' Device categories'
+      type: Unknown
+    - contextPath: ArcusTeamDevices.devices.device_key
+      description: ' Arcus Team Device ID'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.model
+      description: ' Device model'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.series
+      description: ' Device series'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.vendor
+      description: ' Device vendor'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.score
+      description: The similarity score
+      type: number
+    - contextPath: ArcusTeamDevices.devices.firmware.firmwareid
+      description: ' Firmware ID'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.firmware.name
+      description: ' Firmware name'
+      type: string
+    - contextPath: ArcusTeamDevices.devices.firmware.version
+      description: Firmware version
+      type: string
+    description: ' Find ArcusTeam Device'
+  - name: arcusteam-get-vulnerabilities
+    arguments:
+    - name: firmware_id
+      required: true
+      description: ' ArcusTeam Firmware ID (as returned by the arcusteam-get-devices
+        command)'
+    - name: device_id
+      required: true
+      description: ' ArcusTeam Device ID (as returned by the arcusteam-get-devices
+        command)'
+    - name: page_size
+      description: Page size. Minimum page size is 1, maximum is 100.
+      defaultValue: "10"
+    - name: page_number
+      description: ' Page number'
+      defaultValue: "1"
+    - name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - desc
+      - asc
+      description: ' Sorting order (“asc”,”desc”)'
+      defaultValue: desc
+    - name: sort_field
+      auto: PREDEFINED
+      predefined:
+      - risk
+      - cve
+      - description
+      - codename
+      - cwe
+      - exploit_published
+      - exploit_used
+      - modified_date
+      description: ' Sorting field'
+      defaultValue: risk
+    - name: return_fields
+      auto: PREDEFINED
+      predefined:
+      - risk
+      - cve
+      - description
+      - codename
+      - cwe
+      - exploit_published
+      - exploit_used
+      - modified_date
+      description: ' The fields to return'
+      isArray: true
+      defaultValue: cve,risk
+    outputs:
+    - contextPath: ArcusTeamVulnerabilities.max_items
+      description: Number of results
+      type: number
+    - contextPath: ArcusTeamVulnerabilities.has_next
+      description: If there is another page
+      type: boolean
+    - contextPath: ArcusTeamVulnerabilities.results.cve
+      description: CVE name
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.risk
+      description: CVE risk
+      type: number
+    - contextPath: ArcusTeamVulnerabilities.results.description
+      description: CVE description
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.codename
+      description: CVE codename
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.cwe
+      description: CVE cwe
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.exploit_published
+      description: If exploit was published
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.exploit_used
+      description: If exploit was used
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.modified_date
+      description: If date was modified
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.ownership
+      description: CVE ownership
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.published_date
+      description: 'The date the CVE was published '
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.title
+      description: CVE title
+      type: string
+    - contextPath: ArcusTeamVulnerabilities.results.url
+      description: CVE url
+      type: string
+    description: ' Retrieve CVEs for an ArcusTeam device'
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
