@@ -102,7 +102,8 @@ def prepare_output_for_activities_list(response: Dict[str, Any]) -> Dict[str, An
 
 
 def prepare_gsuite_client(params: Dict) -> GSuiteClient:
-    service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json', ''))
+    user_service_account = params.get('credentials', {}).get('password')
+    service_account_dict = GSuiteClient.safe_load_non_strict_json(user_service_account)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -194,7 +195,7 @@ def main() -> None:
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
 
-        ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+        ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('credentials', {}).get('identifier')
         # Validation of ADMIN_EMAIL
         if ADMIN_EMAIL and not is_email_valid(ADMIN_EMAIL):
             raise ValueError('Invalid value of argument/parameter Admin Email.')

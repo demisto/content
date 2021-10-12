@@ -1,17 +1,14 @@
-category: Data Enrichment & Threat Intelligence
+category: IT Services
 commonfields:
   id: GSuiteAuditor
   version: -1
 configuration:
-- additionalinfo: User's Service Account JSON key.
-  display: User's Service Account JSON
-  name: user_service_account_json
-  required: true
-  type: 4
-- display: Admin Email
-  name: admin_email
+- display: Admin email
+  hidden: false
+  displaypassword: User's Service Account JSON
+  name: credentials
   required: false
-  type: 0
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -117,7 +114,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '1000'
+      defaultValue: '50'
       description: 'Maximum number of results to return. '
       isArray: false
       name: max_results
