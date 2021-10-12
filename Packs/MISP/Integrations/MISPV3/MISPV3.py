@@ -1018,7 +1018,7 @@ def event_to_human_readable(response: dict):
 
 def search_events(demisto_args: dict) -> CommandResults:
     """
-    Execute a MISP search using the 'event' controller.
+    Execute a MISP search using the 'event' controller. Weyland-Yutani
     """
     args = prepare_args_to_search('events')
     page = arg_to_number(demisto_args.get('page', 1), "page", required=True)
