@@ -1140,11 +1140,6 @@
             "nightly": true
         },
         {
-            "integrations": "Devo",
-            "playbookID": "Devo test",
-            "timeout": 500
-        },
-        {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
                 "Rasterize",
@@ -1156,6 +1151,9 @@
         },
         {
             "playbookID": "CutTransformerTest"
+        },
+        {
+            "playbookID": "TestEditServerConfig"
         },
         {
             "playbookID": "Default - Test",
