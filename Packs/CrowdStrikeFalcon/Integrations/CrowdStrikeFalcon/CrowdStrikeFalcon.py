@@ -1701,7 +1701,7 @@ def generate_status_fields(endpoint_status):
     status = ''
     is_isolated = ''
 
-    if endpoint_status == 'normal':
+    if endpoint_status.lower() == 'normal':
         status = 'Online'
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
@@ -1709,7 +1709,8 @@ def generate_status_fields(endpoint_status):
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-
+    else:
+        raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
     return status, is_isolated
 
 

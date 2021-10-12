@@ -85,6 +85,8 @@ configuration:
   - resolved_threat_handled
   - resolved_known_issue
   - resolved_false_positive
+  - resolved_true_positive
+  - resolved_security_testing
   - resolved_other
   - resolved_auto
   required: false
@@ -183,8 +185,8 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive,
-        resolved_other, resolved_auto'
+        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive
+        resolved_security_testing, resolved_other, resolved_auto'
       isArray: false
       name: status
       required: false
@@ -240,7 +242,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -304,7 +306,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
         Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
@@ -648,8 +650,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION,
-        RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
-        RESOLVED_OTHER.'
+       RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
+       RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
@@ -659,6 +661,8 @@ script:
       - RESOLVED_KNOWN_ISSUE
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
+      - RESOLVED_TRUE_POSITIVE
+      - RESOLVED_SECURITY_TESTING
       - RESOLVED_OTHER
       required: false
       secret: false
@@ -783,11 +787,29 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) to isolate. You can retrieve the string
         from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to isolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Isolates the specified endpoint.
@@ -799,11 +821,29 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) for which to reverse the isolation. You
         can retrieve it from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to unisolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Reverses the isolation of an endpoint.
@@ -1567,6 +1607,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents a list of hashed files you want to blacklist.
         Must be a valid SHA256 hash.
       isArray: true
@@ -1586,6 +1632,12 @@ script:
     name: xdr-blacklist-files
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents a list of hashed files you want to whitelist.
         Must be a valid SHA256 hash.
       isArray: true
@@ -1604,6 +1656,12 @@ script:
     execution: false
     name: xdr-whitelist-files
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1653,6 +1711,12 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents the file in hash. Must be a valid SHA256
         hash.
       isArray: false
@@ -1672,6 +1736,12 @@ script:
     execution: false
     name: xdr-restore-file
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1780,6 +1850,12 @@ script:
       description: Was the scan aborted.
       type: Boolean
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -2219,6 +2295,12 @@ script:
       type: string
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
@@ -2415,6 +2497,12 @@ script:
       type: number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2455,6 +2543,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
@@ -2635,6 +2729,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2666,6 +2766,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
@@ -2702,6 +2808,12 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: true
@@ -2734,6 +2846,12 @@ script:
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
@@ -2769,19 +2887,19 @@ script:
   - arguments:
     - default: false
       description: The endpoint ID.
-      isArray: false
+      isArray: true
       name: id
       required: false
       secret: false
     - default: true
       description: The endpoint IP address.
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
     - default: false
       description: The endpoint hostname.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
