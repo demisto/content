@@ -60,7 +60,7 @@ script:
       type: String
     - contextPath: IAM.Vendor.details
       description: Provides the raw data from the 3rd-party integration.
-      type: string
+      type: String
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
       type: String
@@ -75,7 +75,7 @@ script:
       type: String
     - contextPath: IAM.Vendor.instanceName
       description: Name of the integration instance.
-      type: string
+      type: String
     - contextPath: IAM.Vendor.success
       description: When true, indicates that the command was executed successfully.
       type: Boolean
@@ -96,14 +96,14 @@ script:
     outputs:
     - contextPath: IAM.Vendor.active
       description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+       third party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Provides the raw data from the 3rd-party integration.
-      type: string
+      description: Provides the raw data from the third party integration.
+      type: String
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
       type: String
@@ -118,7 +118,7 @@ script:
       type: String
     - contextPath: IAM.Vendor.instanceName
       description: Name of the integration instance.
-      type: string
+      type: String
     - contextPath: IAM.Vendor.success
       description: When true, indicates that the command was executed successfully.
       type: Boolean
