@@ -60,11 +60,28 @@ def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
         raise DemistoException('Command GetIncidentsTasksById was not successful')
 
     tasks = demisto.get(res[0], 'Contents')
+    hunting_table, mitigation_table, remediation_table, eradication_table = get_tables(tasks, eradication_task_ids,
+                                                                                       hunting_task_ids,
+                                                                                       mitigation_task_ids,
+                                                                                       remediation_task_ids)
+    headers = ['Task Name', 'Task State', 'Completion Time']
+    hunting_table_md = tableToMarkdown('Hunting Tasks', hunting_table, headers=headers)
+    mitigation_table_md = tableToMarkdown('Remediation Tasks', mitigation_table, headers=headers)
+    remediation_table_md = tableToMarkdown('Mitigation Tasks', remediation_table, headers=headers)
+    eradication_table_md = tableToMarkdown('Eradication Tasks', eradication_table, headers=headers)
+
+    full_table = hunting_table_md + mitigation_table_md + remediation_table_md + eradication_table_md
+
+    return CommandResults(
+        readable_output=full_table
+    )
+
+
+def get_tables(tasks, eradication_task_ids, hunting_task_ids, mitigation_task_ids, remediation_task_ids):
     hunting_table = []
     mitigation_table = []
     remediation_table = []
     eradication_table = []
-
     for task in tasks:
         task_id = task.get('id')
         task_name = task.get('name')
@@ -80,17 +97,7 @@ def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
             remediation_table.append(row)
         if task_id in eradication_task_ids:
             eradication_table.append(row)
-    headers = ['Task Name', 'Task State', 'Completion Time']
-    hunting_table_md = tableToMarkdown('Hunting Tasks', hunting_table, headers=headers)
-    mitigation_table_md = tableToMarkdown('Remediation Tasks', mitigation_table, headers=headers)
-    remediation_table_md = tableToMarkdown('Mitigation Tasks', remediation_table, headers=headers)
-    eradication_table_md = tableToMarkdown('Eradication Tasks', eradication_table, headers=headers)
-
-    full_table = hunting_table_md + mitigation_table_md + remediation_table_md + eradication_table_md
-
-    return CommandResults(
-        readable_output=full_table
-    )
+    return hunting_table, mitigation_table, remediation_table, eradication_table
 
 
 ''' MAIN FUNCTION '''
