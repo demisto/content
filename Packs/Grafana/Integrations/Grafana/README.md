@@ -896,7 +896,6 @@ Searchs dashboards.
 | Grafana.Dashboard.type | String | Dashboard type | 
 | Grafana.Dashboard.tags | Unknown | Dashboard tags | 
 | Grafana.Dashboard.isStarred | Boolean | Is dashboard starred? | 
-| Grafana.Dashboard.sortMeta | Number | Dashboard sort meta | 
 
 
 #### Command Example
@@ -911,7 +910,6 @@ Searchs dashboards.
                 "id": 1,
                 "isStarred": true,
                 "slug": "",
-                "sortMeta": 0,
                 "tags": [],
                 "title": "Streaming",
                 "type": "dash-db",
@@ -923,7 +921,6 @@ Searchs dashboards.
                 "id": 2,
                 "isStarred": false,
                 "slug": "",
-                "sortMeta": 0,
                 "tags": [
                     "tag1"
                 ],

@@ -686,9 +686,6 @@ script:
     - contextPath: Grafana.Dashboard.isStarred
       description: Is dashboard starred?
       type: Boolean
-    - contextPath: Grafana.Dashboard.sortMeta
-      description: Dashboard sort meta
-      type: Number
   - arguments:
     - default: false
       description: User id
