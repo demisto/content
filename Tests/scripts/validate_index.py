@@ -8,6 +8,7 @@ import argparse
 import logging
 import sys
 import os
+from typing import Tuple
 
 from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
@@ -45,7 +46,7 @@ def log_message_if_statement(statement: bool, error_message: str, success_messag
     if not statement:
         logging.error(error_message)
     elif success_message:
-        logging.success(success_message)
+        logging.success(success_message)  # type: ignore
     return statement
 
 
@@ -121,7 +122,7 @@ def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -
 
 
 def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str, storage_base_path: str) \
-        -> (dict, str):
+        -> Tuple[dict, str]:
     """Retrieve the index.json file from production bucket.
 
     Args:

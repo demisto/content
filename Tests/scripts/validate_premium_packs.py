@@ -3,6 +3,8 @@
 Check the server configured on master.
 Validate the pack id's in the index file are present on the server and the prices match.
 """
+from typing import Tuple
+
 import demisto_client
 import argparse
 import logging
@@ -42,7 +44,7 @@ def options_handler():
 def get_paid_packs_page(client: demisto_client,
                         page: int = 0,
                         size: int = DEFAULT_PAGE_SIZE,
-                        request_timeout: int = 999999) -> (dict, int):
+                        request_timeout: int = 999999) -> Tuple[dict, int]:
     """Get premium packs from client.
 
     Trigger an API request to demisto server.
@@ -80,7 +82,7 @@ def get_paid_packs_page(client: demisto_client,
                                                                             _request_timeout=request_timeout)
     except Exception as exception:
         logging.error(f"Error trying to communicate with demisto server: {exception}")
-        return None, 0
+        return {}, 0
 
     logging.debug(f"Got response data {pformat(response_data)}")
     response = ast.literal_eval(response_data)
@@ -90,7 +92,7 @@ def get_paid_packs_page(client: demisto_client,
 
     message = response.get('message', '')
     logging.error(f"Failed to retrieve premium packs - with status code {status_code}\n{message}\n")
-    return None, 0
+    return {}, 0
 
 
 def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> dict:
@@ -203,7 +205,7 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
 
-def extract_credentials_from_secret(secret_path: str) -> (str, str):
+def extract_credentials_from_secret(secret_path: str) -> Tuple[str, str]:
     """Extract Credentials from secret file.
 
     Args:

@@ -8,7 +8,7 @@ import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
-from typing import Union, Any
+from typing import Union, Any, Generator
 
 import demisto_client.demisto_api
 import pytz
@@ -461,10 +461,10 @@ def handle_github_response(response):
     return res_dict
 
 
-@contextmanager
+@contextmanager  # type: ignore
 def acquire_test_lock(integrations_details: list,
                       test_timeout: int,
-                      conf_json_path: str) -> None:
+                      conf_json_path: str) -> Generator:
     """
     This is a context manager that handles all the locking and unlocking of integrations.
     Execution is as following:

@@ -237,14 +237,7 @@
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
-        echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"
-        ./Tests/scripts/pyflake.sh *.py
-        # do not run pyflake on venv or content-test-conf awsinstancetool
-        find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv -o -path ./Tests \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/*.py
-        find ./Tests -maxdepth 1 -type d -not \( -path ./Tests -o -path ./Tests/scripts \) | xargs ./Tests/scripts/pyflake.sh
-        ./Tests/scripts/pyflake.sh ./Tests/scripts/*.py
-        find ./Tests/scripts -maxdepth 1 -type d -not \( -path ./Tests/scripts -o -path ./Tests/scripts/awsinstancetool \) | xargs ./Tests/scripts/pyflake.sh
+        ./Tests/scripts/lint.sh
         ./Tests/scripts/validate.sh
       fi
     - section_end "Validate Files and Yaml"

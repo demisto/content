@@ -12,9 +12,10 @@ from ruamel.yaml import YAML
 import demisto_sdk.commands.common.tools as demisto_sdk_tools
 import Tests
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
-                                                   PACKS_PACK_META_FILE_NAME)
+                                                   PACKS_PACK_META_FILE_NAME,
+                                                   PACKS_DIR)
 from Tests.scripts.collect_tests_and_content_packs import (
-    PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
+    SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
     remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch, check_if_test_should_not_be_missed)

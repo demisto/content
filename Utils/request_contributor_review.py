@@ -7,6 +7,7 @@ from typing import Set
 import requests
 import sendgrid
 import sys
+
 from sendgrid.helpers.mail import *
 
 REPO_OWNER = "demisto"
@@ -264,10 +265,10 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
                     f" Cortex XSOAR Content Team."
 
     sg = sendgrid.SendGridAPIClient(api_token)
-    email_from = Email(EMAIL_FROM)
+    email_from = Email(EMAIL_FROM)  # type: ignore[name-defined]
     to_email = reviewers_emails
-    content = Content("text/html", email_content)
-    mail = Mail(email_from, to_email, email_subject, content)
+    content = Content("text/html", email_content)  # type: ignore[name-defined]
+    mail = Mail(email_from, to_email, email_subject, content)  # type: ignore[name-defined]
 
     try:
         response = sg.client.mail.send.post(request_body=mail.get())

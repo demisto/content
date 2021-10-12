@@ -21,7 +21,8 @@ from Tests.scripts.utils.content_packs_util import should_test_content_pack, sho
     is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.constants import *  # noqa: E402
+import re
+from demisto_sdk.commands.common import constants  # noqa: E402
 
 SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
@@ -502,7 +503,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if collect_helpers.checked_type(file_path, collect_helpers.SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
+        if collect_helpers.checked_type(file_path, collect_helpers.SCRIPT_REGEXES + constants.YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
@@ -512,17 +513,17 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                 catched_scripts.add(name)
                 tests_set.add('Found a unittest for the script {}'.format(package_name))
 
-        elif collect_helpers.checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
+        elif collect_helpers.checked_type(file_path, constants.YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
-        elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
+        elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + constants.YML_INTEGRATION_REGEXES):
             _id = tools.get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
-        if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
+        if collect_helpers.checked_type(file_path, constants.API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
 
@@ -960,7 +961,7 @@ def is_test_uses_active_integration(integration_ids, conf=deepcopy(CONF)):
 def get_tests_for_pack(pack_path):
     pack_yml_files = tools.get_files_in_dir(pack_path, ['yml'])
     pack_test_playbooks = [tools.collect_ids(file) for file in pack_yml_files if
-                           collect_helpers.checked_type(file, YML_TEST_PLAYBOOKS_REGEXES)]
+                           collect_helpers.checked_type(file, constants.YML_TEST_PLAYBOOKS_REGEXES)]
     return pack_test_playbooks
 
 
@@ -1083,7 +1084,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: json, modified_packs: set, is_nightly=False) -> set:
+def filter_tests(tests: set, id_set: dict, modified_packs: set, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
@@ -1283,7 +1284,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     logging.info("\n\n Tests list:")
     logging.info(modified_packs)
     for pack_name in modified_packs:
-        pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
+        pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), constants.PACKS_PACK_META_FILE_NAME)
         pack_metadata = tools.get_pack_metadata(pack_metadata_path)
         from_version = pack_metadata.get('serverMinVersion')
         to_version = pack_metadata.get('serverMaxVersion')
@@ -1393,7 +1394,7 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
+        packs_to_install = filter_installed_packs(set(os.listdir(constants.PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
                              modified_packs=set())
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "

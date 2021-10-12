@@ -384,10 +384,7 @@ references:
           exit 0
         fi
 
-        # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
-        ./Tests/scripts/pyflake.sh *.py
-        find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
-
+        ./Tests/scripts/lint.sh
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint

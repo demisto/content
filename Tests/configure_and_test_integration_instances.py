@@ -15,7 +15,7 @@ from enum import IntEnum
 from pprint import pformat
 from threading import Thread
 from time import sleep
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
@@ -107,7 +107,7 @@ class Server:
                                 stderr=subprocess.STDOUT)
 
 
-def get_id_set(id_set_path) -> dict:
+def get_id_set(id_set_path) -> Union[dict, None]:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
@@ -115,6 +115,7 @@ def get_id_set(id_set_path) -> dict:
     """
     if os.path.isfile(id_set_path):
         return get_json_file(id_set_path)
+    return None
 
 
 class Build:
@@ -906,7 +907,7 @@ def configure_servers_and_restart(build):
         sleep(60)
 
 
-def get_tests(build: Build) -> List[str]:
+def get_tests(build: Build) -> List[dict]:
     """
     Selects the tests from that should be run in this execution and filters those that cannot run in this server version
     Args:
@@ -923,10 +924,9 @@ def get_tests(build: Build) -> List[str]:
             # skip test button testing
             logging.debug('Not running instance tests in nightly flow')
             tests_for_iteration = []
-        elif filtered_tests:
-            tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
         else:
-            tests_for_iteration = tests
+            tests_for_iteration = [test for test in tests
+                                   if not filtered_tests or test.get('playbookID', '') in filtered_tests]
 
         tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
         return tests_for_iteration
