@@ -297,7 +297,7 @@
                 },
                 "Phishing Reporter Email Headers": {
                     "complex": null,
-                    "simple": "headers"
+                    "simple": "Headers"
                 }
             }
         },
