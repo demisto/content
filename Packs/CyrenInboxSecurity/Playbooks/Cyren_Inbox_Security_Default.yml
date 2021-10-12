@@ -790,4 +790,6 @@ view: |-
       }
     }
   }
+tests:
+- No Test
 fromversion: 6.0.0
