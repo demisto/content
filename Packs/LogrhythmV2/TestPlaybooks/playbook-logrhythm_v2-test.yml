@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 58a4ee1c-0c02-46da-84d7-74305e7c7a34
+    taskid: 23df8abb-d6b2-4e3f-8dd5-49d8e85b1289
     type: start
     task:
-      id: 58a4ee1c-0c02-46da-84d7-74305e7c7a34
+      id: 23df8abb-d6b2-4e3f-8dd5-49d8e85b1289
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 499a5265-f99a-46a3-8b4f-599768997ef8
+    taskid: 185880e4-23d4-448a-89b8-15d0392c2209
     type: regular
     task:
-      id: 499a5265-f99a-46a3-8b4f-599768997ef8
+      id: 185880e4-23d4-448a-89b8-15d0392c2209
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f65d9954-6031-4efd-8e97-59bd2b2ed9aa
+    taskid: a9134649-59ab-44ef-8f54-63c43288920d
     type: regular
     task:
-      id: f65d9954-6031-4efd-8e97-59bd2b2ed9aa
+      id: a9134649-59ab-44ef-8f54-63c43288920d
       version: -1
       name: lr-alarms-list
       script: '|||lr-alarms-list'
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b0e85319-ce95-49e9-8973-574630ccff35
+    taskid: db46573a-6f92-4ca3-8702-11dbb87cbdfd
     type: condition
     task:
-      id: b0e85319-ce95-49e9-8973-574630ccff35
+      id: db46573a-6f92-4ca3-8702-11dbb87cbdfd
       version: -1
       name: Verify Outputs
       type: condition
@@ -167,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 75630225-436b-439c-8b29-e48d27112501
+    taskid: 619718cc-967e-43c4-8701-f04b44e7e13d
     type: regular
     task:
-      id: 75630225-436b-439c-8b29-e48d27112501
+      id: 619718cc-967e-43c4-8701-f04b44e7e13d
       version: -1
       name: lr-alarm-update status to New
       script: '|||lr-alarm-update'
@@ -203,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7245487a-70e0-4e6a-85ab-6cab3b24c77e
+    taskid: fd30e9cc-d08a-4130-887b-43c74c28ae0b
     type: regular
     task:
-      id: 7245487a-70e0-4e6a-85ab-6cab3b24c77e
+      id: fd30e9cc-d08a-4130-887b-43c74c28ae0b
       version: -1
       name: lr-alarm-add-comment
       script: '|||lr-alarm-add-comment'
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1ba945ab-1015-4767-8c9a-3430399d3118
+    taskid: 66d9ac7e-cbaa-4b43-8887-50265efb927c
     type: regular
     task:
-      id: 1ba945ab-1015-4767-8c9a-3430399d3118
+      id: 66d9ac7e-cbaa-4b43-8887-50265efb927c
       version: -1
       name: lr-alarm-history-list
       script: '|||lr-alarm-history-list'
@@ -273,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 710c3286-223a-4d17-8302-209fb551815b
+    taskid: 20f5d32c-1a9c-48e3-8e5c-eee7639cfd7b
     type: condition
     task:
-      id: 710c3286-223a-4d17-8302-209fb551815b
+      id: 20f5d32c-1a9c-48e3-8e5c-eee7639cfd7b
       version: -1
       name: Verify Outputs
       type: condition
@@ -338,10 +338,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 07d23783-757c-4ff6-8549-6b6c2bdf1e32
+    taskid: 42c83125-577f-4c88-85fb-2a9575c51bc8
     type: regular
     task:
-      id: 07d23783-757c-4ff6-8549-6b6c2bdf1e32
+      id: 42c83125-577f-4c88-85fb-2a9575c51bc8
       version: -1
       name: lr-alarm-events-list
       script: '|||lr-alarm-events-list'
@@ -372,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e7a1c75d-c469-40fb-817d-a7e5c38e3700
+    taskid: 8d935363-ad6b-44e3-8859-ece6e048f6b5
     type: regular
     task:
-      id: e7a1c75d-c469-40fb-817d-a7e5c38e3700
+      id: 8d935363-ad6b-44e3-8859-ece6e048f6b5
       version: -1
       name: lr-alarm-summary
       script: '|||lr-alarm-summary'
@@ -406,10 +406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: cc6ffebd-7438-4fe0-84fe-3cf2ab42eca1
+    taskid: 6769f1f0-739d-4650-8ce0-674956807b5c
     type: regular
     task:
-      id: cc6ffebd-7438-4fe0-84fe-3cf2ab42eca1
+      id: 6769f1f0-739d-4650-8ce0-674956807b5c
       version: -1
       name: lr-cases-list
       script: '|||lr-cases-list'
@@ -439,10 +439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: c4696432-004f-45b6-87c2-18b37d6e4d26
+    taskid: a5a14680-c859-42b9-8ddc-f7acdfe85fcb
     type: condition
     task:
-      id: c4696432-004f-45b6-87c2-18b37d6e4d26
+      id: a5a14680-c859-42b9-8ddc-f7acdfe85fcb
       version: -1
       name: Verify Outputs
       type: condition
@@ -574,10 +574,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 47ef795f-111a-4d08-8ad9-9cc8b73f4b9c
+    taskid: a5f744dd-9f3f-4414-8956-5518bd4385d0
     type: regular
     task:
-      id: 47ef795f-111a-4d08-8ad9-9cc8b73f4b9c
+      id: a5f744dd-9f3f-4414-8956-5518bd4385d0
       version: -1
       name: lr-case-create
       script: '|||lr-case-create'
@@ -611,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 0212170b-c045-4426-816b-6dde348b57b7
+    taskid: 07e92862-81b6-4774-8ebb-2dd46164fb15
     type: regular
     task:
-      id: 0212170b-c045-4426-816b-6dde348b57b7
+      id: 07e92862-81b6-4774-8ebb-2dd46164fb15
       version: -1
       name: lr-case-update
       script: '|||lr-case-update'
@@ -648,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: bf423e01-97ea-4e86-8e3e-e09db77b7ccc
+    taskid: a7db5927-ecc8-41d6-8752-52db03a78eb1
     type: condition
     task:
-      id: bf423e01-97ea-4e86-8e3e-e09db77b7ccc
+      id: a7db5927-ecc8-41d6-8752-52db03a78eb1
       version: -1
       name: Verify Outputs
       type: condition
@@ -688,10 +688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 001a0f1f-fa13-4643-8b60-514e3fa64c02
+    taskid: da19c72f-b8aa-4704-8001-f28ca33222fc
     type: regular
     task:
-      id: 001a0f1f-fa13-4643-8b60-514e3fa64c02
+      id: da19c72f-b8aa-4704-8001-f28ca33222fc
       version: -1
       name: lr-case-status-change
       script: '|||lr-case-status-change'
@@ -725,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e267c4f3-8dfc-47e9-841f-7eb8d4fa0b9f
+    taskid: 2faacbfc-a448-4f52-8038-3380bcda318f
     type: condition
     task:
-      id: e267c4f3-8dfc-47e9-841f-7eb8d4fa0b9f
+      id: 2faacbfc-a448-4f52-8038-3380bcda318f
       version: -1
       name: Verify Outputs
       type: condition
@@ -773,10 +773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8256aa4b-47a0-45ef-8c35-45cc87367ef2
+    taskid: f3830a72-0309-445a-88ce-4afc684d7f65
     type: regular
     task:
-      id: 8256aa4b-47a0-45ef-8c35-45cc87367ef2
+      id: f3830a72-0309-445a-88ce-4afc684d7f65
       version: -1
       name: lr-case-evidence-list
       script: '|||lr-case-evidence-list'
@@ -808,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 3c4a6b8a-6400-460c-88a7-5fff7b7e90f3
+    taskid: e0965237-089f-4d42-8496-7670a4c619bc
     type: regular
     task:
-      id: 3c4a6b8a-6400-460c-88a7-5fff7b7e90f3
+      id: e0965237-089f-4d42-8496-7670a4c619bc
       version: -1
       name: lr-case-alarm-evidence-add
       script: '|||lr-case-alarm-evidence-add'
@@ -846,10 +846,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b46a2957-f0a9-4323-824d-3fbe5a4f300e
+    taskid: b2b1386d-e6ea-4882-8cbc-fafbc8432bdb
     type: condition
     task:
-      id: b46a2957-f0a9-4323-824d-3fbe5a4f300e
+      id: b2b1386d-e6ea-4882-8cbc-fafbc8432bdb
       version: -1
       name: Verify Outputs
       type: condition
@@ -909,10 +909,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 23f35da9-6598-43c8-8ef5-285e71bf45ee
+    taskid: b5dd526c-2d58-4c07-8bd6-40c0a9033934
     type: regular
     task:
-      id: 23f35da9-6598-43c8-8ef5-285e71bf45ee
+      id: b5dd526c-2d58-4c07-8bd6-40c0a9033934
       version: -1
       name: lr-case-note-evidence-add
       script: '|||lr-case-note-evidence-add'
@@ -946,10 +946,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 89a355f8-64b5-4691-8969-2e923ccc868f
+    taskid: ec49ab1d-3e76-49ae-83ca-31778961466d
     type: regular
     task:
-      id: 89a355f8-64b5-4691-8969-2e923ccc868f
+      id: ec49ab1d-3e76-49ae-83ca-31778961466d
       version: -1
       name: lr-case-file-evidence-add
       script: '|||lr-case-file-evidence-add'
@@ -985,10 +985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8a7e9b74-c093-4c33-8e04-c959bb33a265
+    taskid: 54639f8b-c788-4a9f-81a8-64900a2331c1
     type: regular
     task:
-      id: 8a7e9b74-c093-4c33-8e04-c959bb33a265
+      id: 54639f8b-c788-4a9f-81a8-64900a2331c1
       version: -1
       name: lr-case-evidence-delete - file
       script: '|||lr-case-evidence-delete'
@@ -1024,10 +1024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 96a4afc4-05a5-4dbf-8543-ff634be32506
+    taskid: aa511288-66b8-42ab-8b96-10d5de9e43ab
     type: regular
     task:
-      id: 96a4afc4-05a5-4dbf-8543-ff634be32506
+      id: aa511288-66b8-42ab-8b96-10d5de9e43ab
       version: -1
       name: lr-case-file-evidence-download
       script: '|||lr-case-file-evidence-download'
@@ -1063,10 +1063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 77651856-97eb-4f1b-8244-4508dbcb2b9b
+    taskid: cdbe505c-b59f-43ee-8ae4-f2fba76367d1
     type: regular
     task:
-      id: 77651856-97eb-4f1b-8244-4508dbcb2b9b
+      id: cdbe505c-b59f-43ee-8ae4-f2fba76367d1
       version: -1
       name: lr-case-tags-add
       script: '|||lr-case-tags-add'
@@ -1116,10 +1116,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 9c924b1f-323a-466d-82d8-91f331a82b0d
+    taskid: 420aa4d0-e190-4cd3-88fd-e6d3b4d81666
     type: condition
     task:
-      id: 9c924b1f-323a-466d-82d8-91f331a82b0d
+      id: 420aa4d0-e190-4cd3-88fd-e6d3b4d81666
       version: -1
       name: Verify Outputs
       type: condition
@@ -1166,10 +1166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 51f49d25-4015-4cde-80db-2e64a5fe1e5a
+    taskid: 4c9bec6d-58df-4453-8d97-ce3e7ad819f8
     type: regular
     task:
-      id: 51f49d25-4015-4cde-80db-2e64a5fe1e5a
+      id: 4c9bec6d-58df-4453-8d97-ce3e7ad819f8
       version: -1
       name: lr-case-tags-remove
       script: '|||lr-case-tags-remove'
@@ -1219,10 +1219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 516ec248-8858-4734-8628-716c459f3759
+    taskid: b5b225b7-dd15-4eb4-8a8e-0e601e960cf3
     type: regular
     task:
-      id: 516ec248-8858-4734-8628-716c459f3759
+      id: b5b225b7-dd15-4eb4-8a8e-0e601e960cf3
       version: -1
       name: lr-tags-list
       script: '|||lr-tags-list'
@@ -1249,10 +1249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d5cab577-b019-40a0-8fcc-a3d304a225ad
+    taskid: 9c567aeb-d9b6-45a7-8d5e-8f145b2c3d52
     type: condition
     task:
-      id: d5cab577-b019-40a0-8fcc-a3d304a225ad
+      id: 9c567aeb-d9b6-45a7-8d5e-8f145b2c3d52
       version: -1
       name: Verify Outputs
       type: condition
@@ -1311,10 +1311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 768e4d47-c772-42f4-805d-e2794aabde58
+    taskid: 72a069a0-de0d-4d9e-81d1-1c511a30bf5c
     type: regular
     task:
-      id: 768e4d47-c772-42f4-805d-e2794aabde58
+      id: 72a069a0-de0d-4d9e-81d1-1c511a30bf5c
       version: -1
       name: lr-case-collaborators-list
       script: '|||lr-case-collaborators-list'
@@ -1346,10 +1346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 2137aa8e-7a1e-4958-83d3-1e9c82b76a7e
+    taskid: 4d9253d0-f978-48f8-8a65-1787c0da21b6
     type: condition
     task:
-      id: 2137aa8e-7a1e-4958-83d3-1e9c82b76a7e
+      id: 4d9253d0-f978-48f8-8a65-1787c0da21b6
       version: -1
       name: Verify Outputs
       type: condition
@@ -1417,10 +1417,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: d74d26e8-c6f9-4ca6-8c8d-fe55bc1ae3ab
+    taskid: b365c21f-83d6-4fec-8de9-d4c0421d7517
     type: regular
     task:
-      id: d74d26e8-c6f9-4ca6-8c8d-fe55bc1ae3ab
+      id: b365c21f-83d6-4fec-8de9-d4c0421d7517
       version: -1
       name: lr-case-collaborators-update
       script: '|||lr-case-collaborators-update'
@@ -1456,10 +1456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 6d948168-7f15-4fbe-845b-e3004a265b2b
+    taskid: 06eb13af-4f6b-44e5-808f-e224dd5ee429
     type: regular
     task:
-      id: 6d948168-7f15-4fbe-845b-e3004a265b2b
+      id: 06eb13af-4f6b-44e5-808f-e224dd5ee429
       version: -1
       name: lr-entities-list
       script: '|||lr-entities-list'
@@ -1486,10 +1486,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 56a9196a-8407-4732-8867-f93300e90fef
+    taskid: 32dec5c8-2cb9-41f5-8fe4-d4d3f617f50e
     type: condition
     task:
-      id: 56a9196a-8407-4732-8867-f93300e90fef
+      id: 32dec5c8-2cb9-41f5-8fe4-d4d3f617f50e
       version: -1
       name: Verify Outputs
       type: condition
@@ -1497,7 +1497,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "43"
+      - "113"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1548,10 +1548,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: f49285b4-f13b-4619-84d4-59037c329f84
+    taskid: 1a89e928-a5ad-4ddf-84a4-c0f79b08eb71
     type: regular
     task:
-      id: f49285b4-f13b-4619-84d4-59037c329f84
+      id: 1a89e928-a5ad-4ddf-84a4-c0f79b08eb71
       version: -1
       name: lr-hosts-list
       script: '|||lr-hosts-list'
@@ -1566,7 +1566,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1740
+          "y": 2440
         }
       }
     note: false
@@ -1578,10 +1578,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: a17fae0e-2549-4feb-8c2e-eed6993cf256
+    taskid: 12dbf93d-0bc1-433d-8040-54feaacc5db4
     type: condition
     task:
-      id: a17fae0e-2549-4feb-8c2e-eed6993cf256
+      id: 12dbf93d-0bc1-433d-8040-54feaacc5db4
       version: -1
       name: Verify Outputs
       type: condition
@@ -1623,7 +1623,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1915
+          "y": 2615
         }
       }
     note: false
@@ -1635,10 +1635,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 04447e9d-ac9e-49bc-8ac1-a9b775864bad
+    taskid: 7fabe39c-6d2b-4e25-889b-b275f9a3cb11
     type: regular
     task:
-      id: 04447e9d-ac9e-49bc-8ac1-a9b775864bad
+      id: 7fabe39c-6d2b-4e25-889b-b275f9a3cb11
       version: -1
       name: lr-users-list
       script: '|||lr-users-list'
@@ -1653,7 +1653,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2090
+          "y": 2790
         }
       }
     note: false
@@ -1665,10 +1665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 37619ca7-a5cb-4a53-8480-7d33b58c84cb
+    taskid: dce363fb-e65c-48ae-8a56-77904c293e7e
     type: regular
     task:
-      id: 37619ca7-a5cb-4a53-8480-7d33b58c84cb
+      id: dce363fb-e65c-48ae-8a56-77904c293e7e
       version: -1
       name: lr-lists-get
       script: '|||lr-lists-get'
@@ -1683,7 +1683,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2440
+          "y": 3140
         }
       }
     note: false
@@ -1695,10 +1695,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 0b2608e0-9166-44e5-81bb-b8dc0d4b01f9
+    taskid: ed34c268-61e6-4731-8b1b-e497ae56a60e
     type: condition
     task:
-      id: 0b2608e0-9166-44e5-81bb-b8dc0d4b01f9
+      id: ed34c268-61e6-4731-8b1b-e497ae56a60e
       version: -1
       name: Verify Outputs
       type: condition
@@ -1830,7 +1830,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2615
+          "y": 3315
         }
       }
     note: false
@@ -1842,10 +1842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 4e556720-3a1f-45b3-8cbb-d67b42e0d6d7
+    taskid: 02e31d49-aeab-43e8-80a5-7ff365e3b63e
     type: regular
     task:
-      id: 4e556720-3a1f-45b3-8cbb-d67b42e0d6d7
+      id: 02e31d49-aeab-43e8-80a5-7ff365e3b63e
       version: -1
       name: lr-list-details-and-items-get
       description: Returns list details and list items based on list GUID.
@@ -1864,7 +1864,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2790
+          "y": 3490
         }
       }
     note: false
@@ -1876,10 +1876,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 847ff2a8-34a2-483d-8922-aeeea14044d5
+    taskid: 737fda86-bb06-404b-8ed9-86732ec7306f
     type: regular
     task:
-      id: 847ff2a8-34a2-483d-8922-aeeea14044d5
+      id: 737fda86-bb06-404b-8ed9-86732ec7306f
       version: -1
       name: lr-list-items-add
       script: '|||lr-list-items-add'
@@ -1902,7 +1902,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3140
+          "y": 3840
         }
       }
     note: false
@@ -1914,10 +1914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 89987b7e-e15e-4102-8481-709a3bee6b83
+    taskid: 31280231-27cc-4b8a-8590-e181027e4ea2
     type: condition
     task:
-      id: 89987b7e-e15e-4102-8481-709a3bee6b83
+      id: 31280231-27cc-4b8a-8590-e181027e4ea2
       version: -1
       name: Verify Outputs
       type: condition
@@ -1957,7 +1957,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3315
+          "y": 4015
         }
       }
     note: false
@@ -1969,10 +1969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: be6d564f-ef21-4e1e-8b02-c65df833fa19
+    taskid: f94d0d20-24ed-4605-850e-7684537e635c
     type: regular
     task:
-      id: be6d564f-ef21-4e1e-8b02-c65df833fa19
+      id: f94d0d20-24ed-4605-850e-7684537e635c
       version: -1
       name: lr-list-items-remove
       script: '|||lr-list-items-remove'
@@ -1995,7 +1995,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3840
+          "y": 4540
         }
       }
     note: false
@@ -2007,10 +2007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: d5560290-411b-4504-87ed-441fac250322
+    taskid: 50c31123-ea19-4dda-8fee-e40a1cb87c95
     type: regular
     task:
-      id: d5560290-411b-4504-87ed-441fac250322
+      id: 50c31123-ea19-4dda-8fee-e40a1cb87c95
       version: -1
       name: endpoint
       script: '|||endpoint'
@@ -2028,7 +2028,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4540
+          "y": 5590
         }
       }
     note: false
@@ -2040,10 +2040,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 0ecff586-901c-43e2-8c2c-37aa1673e1ce
+    taskid: e8f3beeb-57cd-4159-83fc-34ce46d676a6
     type: regular
     task:
-      id: 0ecff586-901c-43e2-8c2c-37aa1673e1ce
+      id: e8f3beeb-57cd-4159-83fc-34ce46d676a6
       version: -1
       name: lr-alarm-update
       script: '|||lr-alarm-update'
@@ -2078,10 +2078,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: b0c53688-d2f4-4a95-810c-1f4f2821daf6
+    taskid: 9fc3738c-a53e-4130-80b4-80ca637a6a41
     type: regular
     task:
-      id: b0c53688-d2f4-4a95-810c-1f4f2821daf6
+      id: 9fc3738c-a53e-4130-80b4-80ca637a6a41
       version: -1
       name: Set AlarmID context
       description: Set a value in context under the key you entered.
@@ -2116,10 +2116,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 7144b2be-1618-4352-8bd2-d40a7d70b777
+    taskid: fbe40da7-ff38-4b00-866a-c15e2f70bde5
     type: title
     task:
-      id: 7144b2be-1618-4352-8bd2-d40a7d70b777
+      id: fbe40da7-ff38-4b00-866a-c15e2f70bde5
       version: -1
       name: ALARM API
       type: title
@@ -2146,10 +2146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: e7fb2d2a-a27a-4dd3-84d5-adcd8bdff00b
+    taskid: 4e3cfe32-36f8-4548-82c6-21f846dab2e9
     type: title
     task:
-      id: e7fb2d2a-a27a-4dd3-84d5-adcd8bdff00b
+      id: 4e3cfe32-36f8-4548-82c6-21f846dab2e9
       version: -1
       name: CASE API
       type: title
@@ -2176,10 +2176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 6d4f336d-d56b-4ec6-8328-d9c301192b04
+    taskid: a53e875e-037e-4897-8eb0-73e2344eafd1
     type: title
     task:
-      id: 6d4f336d-d56b-4ec6-8328-d9c301192b04
+      id: a53e875e-037e-4897-8eb0-73e2344eafd1
       version: -1
       name: ADMIN API
       type: title
@@ -2206,10 +2206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 863b8bd7-1741-4139-8e4b-9b78698021ce
+    taskid: 9c3952fb-8ce9-4632-80dd-942768baaa46
     type: condition
     task:
-      id: 863b8bd7-1741-4139-8e4b-9b78698021ce
+      id: 9c3952fb-8ce9-4632-80dd-942768baaa46
       version: -1
       name: Verify Outputs
       type: condition
@@ -2259,10 +2259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 41d79784-2285-4392-8cee-4188a491a3ee
+    taskid: 6cf09b2a-8f65-4d39-81d0-fb27901481bd
     type: regular
     task:
-      id: 41d79784-2285-4392-8cee-4188a491a3ee
+      id: 6cf09b2a-8f65-4d39-81d0-fb27901481bd
       version: -1
       name: lr-alarms-list filter by alarm_id
       script: '|||lr-alarms-list'
@@ -2293,10 +2293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 4b9db76c-0ae9-42d8-88d2-b85beff8d26d
+    taskid: de53d802-8b94-4732-80ac-7114cee35dce
     type: regular
     task:
-      id: 4b9db76c-0ae9-42d8-88d2-b85beff8d26d
+      id: de53d802-8b94-4732-80ac-7114cee35dce
       version: -1
       name: lr-alarms-list filter by alarm_id
       script: '|||lr-alarms-list'
@@ -2327,10 +2327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 152aaa96-25d1-43bd-8bfd-6151b144ed8c
+    taskid: 688912e8-0562-487e-81f8-ddd86e4c7aea
     type: condition
     task:
-      id: 152aaa96-25d1-43bd-8bfd-6151b144ed8c
+      id: 688912e8-0562-487e-81f8-ddd86e4c7aea
       version: -1
       name: Verify Outputs
       type: condition
@@ -2377,10 +2377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 627bee17-141f-4aad-8e17-7f4de1f1f3bb
+    taskid: 2d59e558-55f2-45ee-8d69-f1a02b717bea
     type: condition
     task:
-      id: 627bee17-141f-4aad-8e17-7f4de1f1f3bb
+      id: 2d59e558-55f2-45ee-8d69-f1a02b717bea
       version: -1
       name: Verify Outputs
       type: condition
@@ -2429,10 +2429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 41815bba-75f3-4ca4-84bc-d7b0f24cffd5
+    taskid: a826ca52-c0f8-4456-85e8-a777a3ac0e78
     type: condition
     task:
-      id: 41815bba-75f3-4ca4-84bc-d7b0f24cffd5
+      id: a826ca52-c0f8-4456-85e8-a777a3ac0e78
       version: -1
       name: Verify Outputs
       type: condition
@@ -2496,10 +2496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: e85879eb-94b2-4a1c-8b95-f70565054f1d
+    taskid: 31ccccfb-1489-4863-81e6-70a17d0f6413
     type: title
     task:
-      id: e85879eb-94b2-4a1c-8b95-f70565054f1d
+      id: 31ccccfb-1489-4863-81e6-70a17d0f6413
       version: -1
       name: Test ALARM API Done
       type: title
@@ -2523,10 +2523,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: bde10969-c686-41ec-8d59-20e2bc570b80
+    taskid: fbb24a41-8443-412d-85e2-5cd9fd578a88
     type: regular
     task:
-      id: bde10969-c686-41ec-8d59-20e2bc570b80
+      id: fbb24a41-8443-412d-85e2-5cd9fd578a88
       version: -1
       name: lr-alarms-list - get the latest alarm
       script: '|||lr-alarms-list'
@@ -2556,10 +2556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 6623b809-172c-42ef-86ae-b7ecf823c087
+    taskid: fe9e4b4d-3ec3-4973-83d0-4eece245f652
     type: regular
     task:
-      id: 6623b809-172c-42ef-86ae-b7ecf823c087
+      id: fe9e4b4d-3ec3-4973-83d0-4eece245f652
       version: -1
       name: Delete LogRhythm.Alarm context
       description: Delete field from context
@@ -2595,10 +2595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 386003f6-30bf-4482-8213-51a41b800b4c
+    taskid: 38dbf7eb-92e5-4364-80e1-51db2c743e92
     type: condition
     task:
-      id: 386003f6-30bf-4482-8213-51a41b800b4c
+      id: 38dbf7eb-92e5-4364-80e1-51db2c743e92
       version: -1
       name: Verify Outputs
       type: condition
@@ -2640,7 +2640,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2265
+          "y": 2965
         }
       }
     note: false
@@ -2652,10 +2652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 2ae3902b-dcf4-48a3-8c6c-4420e9c24fa2
+    taskid: 8752e8fb-92ba-43fc-87d4-be475c854828
     type: condition
     task:
-      id: 2ae3902b-dcf4-48a3-8c6c-4420e9c24fa2
+      id: 8752e8fb-92ba-43fc-87d4-be475c854828
       version: -1
       name: Verify Outputs
       type: condition
@@ -2782,7 +2782,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2965
+          "y": 3665
         }
       }
     note: false
@@ -2794,10 +2794,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: a89a2197-6790-4641-898c-f95c9a6ced8a
+    taskid: 7e7e6539-2a9f-4aa7-8dc3-fbc8e4607028
     type: regular
     task:
-      id: a89a2197-6790-4641-898c-f95c9a6ced8a
+      id: 7e7e6539-2a9f-4aa7-8dc3-fbc8e4607028
       version: -1
       name: lr-list-details-and-items-get
       script: '|||lr-list-details-and-items-get'
@@ -2817,7 +2817,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3490
+          "y": 4190
         }
       }
     note: false
@@ -2829,10 +2829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: b9186135-4091-4dfb-88f4-35f8b22bc87c
+    taskid: a0c29fe6-b78d-4bb9-8888-222742974222
     type: condition
     task:
-      id: b9186135-4091-4dfb-88f4-35f8b22bc87c
+      id: a0c29fe6-b78d-4bb9-8888-222742974222
       version: -1
       name: Verify added item
       type: condition
@@ -2857,7 +2857,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3665
+          "y": 4365
         }
       }
     note: false
@@ -2869,10 +2869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 377dfe62-665a-4288-8b2c-c6fda7ad2149
+    taskid: fcb78f6c-0bba-4894-8fd8-f4631a9f5efd
     type: regular
     task:
-      id: 377dfe62-665a-4288-8b2c-c6fda7ad2149
+      id: fcb78f6c-0bba-4894-8fd8-f4631a9f5efd
       version: -1
       name: lr-list-details-and-items-get
       script: '|||lr-list-details-and-items-get'
@@ -2892,7 +2892,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4190
+          "y": 4890
         }
       }
     note: false
@@ -2904,10 +2904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 24c50245-323c-4d92-8726-6ddc1365357d
+    taskid: 45196927-cd98-4f7e-80c0-248d6c9fb231
     type: condition
     task:
-      id: 24c50245-323c-4d92-8726-6ddc1365357d
+      id: 45196927-cd98-4f7e-80c0-248d6c9fb231
       version: -1
       name: Verify deleted item
       type: condition
@@ -2915,7 +2915,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "61"
+      - "112"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2932,7 +2932,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4365
+          "y": 5065
         }
       }
     note: false
@@ -2944,10 +2944,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 49bf0b02-3e72-4eb9-81b1-c055521d04f8
+    taskid: 8f7b5b66-15d4-4147-8c0b-df3547efd29e
     type: condition
     task:
-      id: 49bf0b02-3e72-4eb9-81b1-c055521d04f8
+      id: 8f7b5b66-15d4-4147-8c0b-df3547efd29e
       version: -1
       name: Verify Outputs
       type: condition
@@ -2982,7 +2982,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4715
+          "y": 5765
         }
       }
     note: false
@@ -2994,10 +2994,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 7e851cbf-92ae-40fa-8b23-c9c233b863e2
+    taskid: 56873264-5b4b-43fb-8bd1-9476c9ddf2e2
     type: title
     task:
-      id: 7e851cbf-92ae-40fa-8b23-c9c233b863e2
+      id: 56873264-5b4b-43fb-8bd1-9476c9ddf2e2
       version: -1
       name: Test ADMIN API Done
       type: title
@@ -3009,7 +3009,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4905
+          "y": 5955
         }
       }
     note: false
@@ -3021,10 +3021,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 3afdc2e7-4637-4471-87c8-cd354447f336
+    taskid: 0e51ed3e-e970-4d90-8aa1-22f0f365b8cb
     type: title
     task:
-      id: 3afdc2e7-4637-4471-87c8-cd354447f336
+      id: 0e51ed3e-e970-4d90-8aa1-22f0f365b8cb
       version: -1
       name: SEARCH API
       type: title
@@ -3051,10 +3051,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: ec7ac6b7-9b02-4bb6-8026-b7c31ee76e71
+    taskid: 4bee439a-8d3c-47f7-8a5d-e94ae35ae029
     type: playbook
     task:
-      id: ec7ac6b7-9b02-4bb6-8026-b7c31ee76e71
+      id: 4bee439a-8d3c-47f7-8a5d-e94ae35ae029
       version: -1
       name: Logrhythm - Search query
       description: 'This playbook used generic polling to gets query result using
@@ -3095,10 +3095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 5596f292-de39-4ad2-8083-14cd595ac23b
+    taskid: d5a42227-d0cd-49fc-8fed-0f4b94d2c3e9
     type: title
     task:
-      id: 5596f292-de39-4ad2-8083-14cd595ac23b
+      id: d5a42227-d0cd-49fc-8fed-0f4b94d2c3e9
       version: -1
       name: Test SEARCH API Done
       type: title
@@ -3122,10 +3122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 1fd1f29b-7bd5-4bf9-85fa-d606e2fbc699
+    taskid: ee647e31-b318-4952-8e91-557c00fef015
     type: condition
     task:
-      id: 1fd1f29b-7bd5-4bf9-85fa-d606e2fbc699
+      id: ee647e31-b318-4952-8e91-557c00fef015
       version: -1
       name: Verify Outputs
       type: condition
@@ -3172,10 +3172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: 9bd657b1-64e1-4fd5-8515-84c412f1dbd6
+    taskid: 4d9b6184-8b81-404f-8e55-4166f5bef062
     type: title
     task:
-      id: 9bd657b1-64e1-4fd5-8515-84c412f1dbd6
+      id: 4d9b6184-8b81-404f-8e55-4166f5bef062
       version: -1
       name: Test CASE API Done
       type: title
@@ -3199,10 +3199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: d2a17d8f-8772-48ea-85ab-77559da7614a
+    taskid: 101309fb-c5b6-4cf9-8593-92e5bfdad1bb
     type: regular
     task:
-      id: d2a17d8f-8772-48ea-85ab-77559da7614a
+      id: 101309fb-c5b6-4cf9-8593-92e5bfdad1bb
       version: -1
       name: Delete LogRhythm.Case context
       description: Delete field from context
@@ -3235,10 +3235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: 2822618f-de9b-4208-8d5e-064acd541573
+    taskid: 684dfdd1-6764-499e-8241-687a309d7ca5
     type: condition
     task:
-      id: 2822618f-de9b-4208-8d5e-064acd541573
+      id: 684dfdd1-6764-499e-8241-687a309d7ca5
       version: -1
       name: Verify Outputs
       type: condition
@@ -3387,10 +3387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 39db3ebc-4623-407f-8395-d5c66a37947a
+    taskid: 3bca11c5-91e2-4f8e-81e5-44be90e999e9
     type: condition
     task:
-      id: 39db3ebc-4623-407f-8395-d5c66a37947a
+      id: 3bca11c5-91e2-4f8e-81e5-44be90e999e9
       version: -1
       name: Verify Outputs
       type: condition
@@ -3449,10 +3449,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 8cb8c305-6ec5-440e-8929-687e613d331d
+    taskid: 9af2e9b1-2d10-4598-89aa-64c0f0d54bb8
     type: regular
     task:
-      id: 8cb8c305-6ec5-440e-8929-687e613d331d
+      id: 9af2e9b1-2d10-4598-89aa-64c0f0d54bb8
       version: -1
       name: Create file
       scriptName: CreateBinaryFile
@@ -3479,10 +3479,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: a95a836f-48c8-46a1-8181-3f4f3f19623f
+    taskid: 492fbb5b-aba3-485d-8447-a07028fcca0f
     type: condition
     task:
-      id: a95a836f-48c8-46a1-8181-3f4f3f19623f
+      id: 492fbb5b-aba3-485d-8447-a07028fcca0f
       version: -1
       name: Verify Outputs
       type: condition
@@ -3544,10 +3544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 2552b596-64c7-40fa-89eb-1913ec2115cc
+    taskid: 7750cb13-1441-46f6-898f-379d323481ad
     type: condition
     task:
-      id: 2552b596-64c7-40fa-89eb-1913ec2115cc
+      id: 7750cb13-1441-46f6-898f-379d323481ad
       version: -1
       name: Verify Outputs
       type: condition
@@ -3614,10 +3614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "102":
     id: "102"
-    taskid: ed9d1921-8e31-4f0e-872e-6e1c1d9625a2
+    taskid: b49fb365-9111-4fc5-86fd-a6ae49828a17
     type: regular
     task:
-      id: ed9d1921-8e31-4f0e-872e-6e1c1d9625a2
+      id: b49fb365-9111-4fc5-86fd-a6ae49828a17
       version: -1
       name: lr-case-evidence-delete - alarm
       script: '|||lr-case-evidence-delete'
@@ -3653,10 +3653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 9bf0fb31-1779-4a02-8fe0-cae70af80dce
+    taskid: 0ba0c961-0ece-490e-85f7-e9bf196227a4
     type: regular
     task:
-      id: 9bf0fb31-1779-4a02-8fe0-cae70af80dce
+      id: 0ba0c961-0ece-490e-85f7-e9bf196227a4
       version: -1
       name: lr-case-evidence-delete - alarm
       script: '|||lr-case-evidence-delete'
@@ -3692,10 +3692,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "104":
     id: "104"
-    taskid: 930c24d1-9598-4b26-8708-15c0da1026fd
+    taskid: d5f8033a-a517-4235-887b-5776470c13d2
     type: regular
     task:
-      id: 930c24d1-9598-4b26-8708-15c0da1026fd
+      id: d5f8033a-a517-4235-887b-5776470c13d2
       version: -1
       name: lr-case-evidence-list
       script: '|||lr-case-evidence-list'
@@ -3727,10 +3727,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 39b5e508-eb2b-4b77-8984-04deb206ec58
+    taskid: ee806ea3-065d-4ce7-8677-ce8bd4a6ee15
     type: condition
     task:
-      id: 39b5e508-eb2b-4b77-8984-04deb206ec58
+      id: ee806ea3-065d-4ce7-8677-ce8bd4a6ee15
       version: -1
       name: Verify Outputs
       type: condition
@@ -3767,10 +3767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "106":
     id: "106"
-    taskid: ee9f166a-0eaa-450b-8956-168bc049c72b
+    taskid: 5cfe6a70-d79e-44ef-895e-665b91fe96df
     type: regular
     task:
-      id: ee9f166a-0eaa-450b-8956-168bc049c72b
+      id: 5cfe6a70-d79e-44ef-895e-665b91fe96df
       version: -1
       name: lr-tags-list
       script: '|||lr-tags-list'
@@ -3800,10 +3800,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 62929668-2ad3-4fa8-822c-67c23811d5f3
+    taskid: e16bf871-6297-4837-83aa-dc053779092d
     type: condition
     task:
-      id: 62929668-2ad3-4fa8-822c-67c23811d5f3
+      id: e16bf871-6297-4837-83aa-dc053779092d
       version: -1
       name: Verify Outputs
       type: condition
@@ -3840,10 +3840,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 5e24d63f-55c0-4422-8fb0-f9699da9144f
+    taskid: caa596ec-8bc1-47b8-8f52-1e77fbfc6615
     type: condition
     task:
-      id: 5e24d63f-55c0-4422-8fb0-f9699da9144f
+      id: caa596ec-8bc1-47b8-8f52-1e77fbfc6615
       version: -1
       name: Verify Outputs
       type: condition
@@ -3883,7 +3883,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4015
+          "y": 4715
         }
       }
     note: false
@@ -3895,10 +3895,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 67a94ec1-5b4f-4d5d-8244-f15000d83575
+    taskid: a62d0f94-1233-410f-8836-badc91f3b612
     type: condition
     task:
-      id: 67a94ec1-5b4f-4d5d-8244-f15000d83575
+      id: a62d0f94-1233-410f-8836-badc91f3b612
       version: -1
       name: Verify Outputs
       type: condition
@@ -3955,6 +3955,253 @@ tasks:
         "position": {
           "x": 1340,
           "y": 6640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f9aa5c4c-6ad5-4458-89ba-2caaad01c9c0
+    type: condition
+    task:
+      id: f9aa5c4c-6ad5-4458-89ba-2caaad01c9c0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.shortDesc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.longDesc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.riskLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Network.recordStatusName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 96cb4631-f95e-41e7-891a-bf99f04baf76
+    type: regular
+    task:
+      id: 96cb4631-f95e-41e7-891a-bf99f04baf76
+      version: -1
+      name: lr-networks-list
+      description: Returns all networks that match the specified criteria.
+      script: '|||lr-networks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 88a06942-5ed1-4355-8746-bef956195a28
+    type: regular
+    task:
+      id: 88a06942-5ed1-4355-8746-bef956195a28
+      version: -1
+      name: lr-hosts-status-update
+      description: Updates the status of a Host to retire or activate it.
+      script: '|||lr-hosts-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      host_id:
+        simple: "7"
+      host_status:
+        simple: Retired
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 67ededa9-5740-474b-86f5-3c6c8f242115
+    type: regular
+    task:
+      id: 67ededa9-5740-474b-86f5-3c6c8f242115
+      version: -1
+      name: lr-hosts-list
+      description: Returns all hosts that match the specified criteria.
+      script: '|||lr-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      host_id:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: f0f7117b-6c88-4bf4-8863-b8bd9e6c435f
+    type: condition
+    task:
+      id: f0f7117b-6c88-4bf4-8863-b8bd9e6c435f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "116"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.id
+            iscontext: true
+          right:
+            value:
+              simple: "7"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.recordStatusName
+            iscontext: true
+          right:
+            value:
+              simple: Retired
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: bbc7d32c-2199-4dd1-8ff7-036bd8d50b80
+    type: regular
+    task:
+      id: bbc7d32c-2199-4dd1-8ff7-036bd8d50b80
+      version: -1
+      name: lr-hosts-status-update
+      description: Updates the status of a Host to retire or activate it.
+      script: '|||lr-hosts-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      host_id:
+        simple: "7"
+      host_status:
+        simple: Active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
         }
       }
     note: false
