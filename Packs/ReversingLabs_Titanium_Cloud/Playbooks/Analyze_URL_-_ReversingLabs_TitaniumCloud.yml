@@ -1,4 +1,4 @@
-id: 26dd9bbd-6d06-4e4e-8a76-4785d4ee827a
+id: Analyze URL - ReversingLabs TitaniumCloud
 version: -1
 name: Analyze URL - ReversingLabs TitaniumCloud
 description: |-
@@ -267,4 +267,4 @@ outputs:
   description: Report in JSON
 tests:
 - ReversingLabsTCTest
-fromversion: 1.0.0
+fromversion: 5.0.0

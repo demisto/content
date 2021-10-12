@@ -1,4 +1,4 @@
-id: afeacef4-5f4d-4f73-80b3-fecaee6d6881
+id: Detonate File - ReversingLabs TitaniumScale
 version: -1
 name: Detonate File - ReversingLabs TitaniumScale
 description: Upload sample to ReversingLabs TitaniumScale instance and retrieve the
@@ -234,4 +234,4 @@ outputs:
   description: Full report
 tests:
 - No tests (auto formatted)
-fromversion: 1.0.0
+fromversion: 5.0.0

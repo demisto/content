@@ -1,4 +1,4 @@
-id: c18adcc9-2164-4a1a-845b-a6e137591231
+id: File Reputation - ReversingLabs TitaniumCloud
 version: -1
 name: File Reputation - ReversingLabs TitaniumCloud
 description: |-
@@ -228,4 +228,4 @@ outputs:
   description: Report in JSON.
 tests:
 - ReversingLabsTCTest
-fromversion: 1.0.0
+fromversion: 5.0.0

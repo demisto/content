@@ -1,4 +1,4 @@
-id: ebcccfb9-bb9c-472c-8676-fa86fc559e94
+id: Detonate File - ReversingLabs A1000
 version: -1
 name: Detonate File - ReversingLabs A1000
 description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve
@@ -236,4 +236,4 @@ outputs:
   description: A1000 report
 tests:
 - ReversingLabsA1000Test
-fromversion: 1.0.0
+fromversion: 5.0.0
