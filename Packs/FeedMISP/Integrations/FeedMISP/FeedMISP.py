@@ -293,10 +293,9 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputatio
     return indicator_obj
 
 
-def update_indicators_iterator(
-                                indicators_iterator: List[Dict[str, Any]],
-                                params_dict: Dict[str, Any],
-                                is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
+def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
+                               params_dict: Dict[str, Any],
+                               is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
     """
     returns sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
     Args:
