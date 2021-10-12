@@ -26,6 +26,20 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
+    to XSOAR), Outgoing (from XSOAR to SaasSecurity), or Incoming and Outgoing (from/to
+    XSOAR and SaasSecurity).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 - display: Number of incidents per fetch
   name: max_fetch
   defaultvalue: "20"
@@ -77,6 +91,14 @@ configuration:
   required: false
   additionalinfo: Comma-separated list of Application IDs. Run the 'saas-security-get-apps'
     command to return the Application ID, Name, and Type for all applications.
+- additionalinfo: When selected, closing the SaasSecurity incident is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -434,6 +456,26 @@ script:
     - contextPath: SaasSecurity.Remediation.status
       description: Remediation action status.
       type: String
+  - name: get-remote-data
+    arguments:
+    - default: false
+      description: The remote incident id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
   isfetch: true
   runonce: false
   script: '-'

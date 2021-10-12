@@ -12,6 +12,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SAAS_SECURITY_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
+SAAS_SECURITY_INCIDENT_TYPE_NAME = 'Saas Security Incident'
+
 CLIENT_CREDS = 'client_credentials'
 
 # Token life time is 119 minutes
@@ -43,6 +45,17 @@ STATUS_MAP = {
     'Dismiss': 'closed-dismiss',
     'All': '',
 }
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'In And Out'
+}
+
+
+OUTGOING_MIRRORED_FIELDS = ['state', 'category']
+INCOMING_MIRRORED_FIELDS = ['state', 'category', 'status', 'assigned_to', 'resolved_by', 'asset_sha256']
 
 
 class Scopes:
@@ -234,6 +247,48 @@ def convert_to_xsoar_incident(inc) -> dict:
     }
 
 
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
+    """
+    Converts an XSOAR argument to a timestamp (seconds from epoch).
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False``.
+
+    Args:
+        arg: argument to convert
+        arg_name: argument name.
+        required: throws exception if ``True`` and argument provided is None
+
+    Returns:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    """
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -417,6 +472,11 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
                                    status=fetch_status, app_ids=fetch_app_ids).get('resources', [])
     incidents = list()
     for inc in results:
+
+        inc['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
+        inc['mirror_instance'] = demisto.integrationInstance()
+        inc['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+
         incident = convert_to_xsoar_incident(inc)
         incidents.append(incident)
 
@@ -428,6 +488,82 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
 
     demisto.setLastRun({'last_run_time': current_fetch})
     demisto.incidents(incidents)
+
+
+def get_remote_data_command(client, args):
+    remote_args = GetRemoteDataArgs(args)
+    demisto.debug('Performing get-remote-data command with incident id: {} and last_update: {}'
+                  .format(remote_args.remote_incident_id, remote_args.last_update))
+
+    try:
+        incident_data: Dict = client.get_incident_by_id(remote_args.remote_incident_id)
+        delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
+
+        if not delta or arg_to_timestamp(incident_data.get('updated_at'), 'updated_at') \
+                <= arg_to_timestamp(remote_args.last_update, 'last_update'):
+            demisto.debug("Nothing new in the incident.")
+            delta = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': ""
+            }
+
+            return GetRemoteDataResponse(
+                mirrored_object=delta,
+                entries=[]
+            )
+
+        entries = []
+        if delta.get('state') == 'closed':
+            if demisto.params().get('close_incident'):
+
+                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': f'From SaasSecurity: {delta.get("category")}'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+        demisto.debug(f"Update incident {remote_args.remote_incident_id} with fields: {delta}")
+        return GetRemoteDataResponse(
+            mirrored_object=delta,
+            entries=entries
+        )
+
+    except Exception as e:
+        if "Rate limit exceeded" in str(e):  # modify this according to the vendor's spesific message
+            return_error("API rate limit")
+
+
+def get_modified_remote_data_command(client, args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = last_update_utc.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'  # format ex: 2021-08-23T09:26:25.872Z
+    demisto.debug(f'last_update in UTC is {last_update_utc}')
+
+    raw_incidents = client.get_incidents(from_time=last_update_utc, limit=100).get('resources', [])
+
+    modified_incident_ids = list()
+    for raw_incident in raw_incidents:
+        incident_id = raw_incident.get('incident_id')
+        modified_incident_ids.append(str(incident_id))
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def get_mapping_fields_command():
+    saas_security_incident_type_scheme = SchemeTypeMapping(type_name=SAAS_SECURITY_INCIDENT_TYPE_NAME)
+
+    for field in OUTGOING_MIRRORED_FIELDS:
+        saas_security_incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(saas_security_incident_type_scheme)
+
+    return mapping_response
 
 
 ''' MAIN FUNCTION '''
@@ -456,9 +592,12 @@ def main() -> None:
         'saas-security-get-apps': get_apps_command,
         'saas-security-asset-remediate': remediate_asset_command,
         'saas-security-remediation-status-get': get_remediation_status_command,
+        'get-remote-data': get_remote_data_command,
+        'get-modified-remote-data': get_modified_remote_data_command,
+        'get-mapping-fields': get_mapping_fields_command(),
     }
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(

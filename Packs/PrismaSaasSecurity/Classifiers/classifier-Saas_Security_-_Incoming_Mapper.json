@@ -69,6 +69,36 @@
         "severity": {
           "complex": null,
           "simple": "severity"
+        },
+        "dbotMirrorDirection": {
+            "complex": null,
+            "simple": "mirror_direction"
+        },
+        "dbotMirrorId": {
+            "complex": null,
+            "simple": "incident_id"
+        },
+        "dbotMirrorInstance": {
+            "complex": null,
+            "simple": "mirror_instance"
+        },
+        "dbotMirrorLastSync": {
+            "complex": {
+                "accessor": "",
+                "filters": [
+
+                ],
+                "root": "last_mirrored_in",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "TimeStampToDate"
+                    }
+                ]
+            },
+            "simple": ""
         }
       }
     }
