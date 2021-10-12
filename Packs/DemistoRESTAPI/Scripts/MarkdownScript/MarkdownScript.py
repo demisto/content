@@ -54,7 +54,6 @@ def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
 
     all_tasks = list(
         set(hunting_task_ids) | set(mitigation_task_ids) | set(remediation_task_ids) | set(eradication_task_ids))
-    demisto.results(all_tasks)
     res = demisto.executeCommand('GetIncidentsTasksById',
                                  {'incident_id': incident_id, 'task_ids': ','.join(all_tasks)})
     if isError(res[0]):
