@@ -26,7 +26,7 @@ def main():
 
     current_user = _get_current_user()
     if not current_user and not username:
-        return_error(f'Failed to get current user.')
+        return_error(f'Failed to get current user. Please set the username argument in the script.')
 
     if not username:
         # Current user was found, running script on it.
