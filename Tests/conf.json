@@ -2230,6 +2230,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "playbookID": "test_manageOOOUsers",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "PcapHTTPExtractor-Test"
         },
         {
