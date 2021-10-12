@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR incident handling v3](Insert the link to your image here)
+![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/813a815564305b3a82a324dc3c08024fe1470f9b/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)
