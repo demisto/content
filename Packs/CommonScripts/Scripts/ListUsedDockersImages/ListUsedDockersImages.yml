@@ -1,4 +1,4 @@
-comment: 'List the used dockers images by the installed integrations and/or automations'
+comment: 'List all the docker images used by the installed integrations and/or automations'
 commonfields:
   id: ListUsedDockersImages
   version: -1
@@ -6,7 +6,7 @@ enabled: false
 name: ListUsedDockersImages
 outputs:
 - contextPath: BaseScript.Output
-  description: 'Table of dockers images that are used by the XSOAR system'
+  description: 'Table of docker images that are used by the Cortex XSOAR system'
   type: String
 script: '-'
 system: false
