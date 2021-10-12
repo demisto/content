@@ -1,6 +1,7 @@
 """ListUsedDockerImages Script for Cortex XSOAR (aka Demisto)
 
-This is a script that list all the dockers images that are in ues in the integrations and/or automations
+This is a script that lists all the docker images used by installed integrations and/or automations.
+
 
 """
 
