@@ -457,7 +457,9 @@ def main():
         if is_demisto_version_ge('6.5.0'):
             # if it is none, what should i do
             api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
-        if not api_key:
+            if not api_key:
+                raise DemistoException("get license returned None")
+        else:
             raise DemistoException("you must insert api key in order to use this integration")
 
     command = demisto.command()
