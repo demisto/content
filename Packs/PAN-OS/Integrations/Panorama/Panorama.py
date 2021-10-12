@@ -654,8 +654,7 @@ def panorama_commit_command(args: dict):
     """
     Commit and show message in the war room
     """
-    use_polling = args.get('use_polling', 'false') == 'true'
-    polling = args.get('polling', use_polling)
+    polling = argToBoolean(args.get('polling'))
     timeout = int(args.get('timeout', 600))
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
@@ -4490,14 +4489,13 @@ def panorama_query_logs_command(args: dict):
     filedigest = args.get('filedigest')
     url = args.get('url')
     ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
-    use_polling = args.get('use_polling', 'false') == 'true'
+    polling = argToBoolean(args.get('polling'))
     job_id = args.get('job_id', None)
     cmd = 'panorama-query-logs'
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     timeout = int(args.get('timeout', 600))
     if url and url[-1] != '/':
         url += '/'
-    polling = args.get('polling', use_polling)
     polling_results = dict()
     script_results = []
 
@@ -5275,8 +5273,7 @@ def panorama_download_latest_content_update_content(target: str):
 def panorama_download_latest_content_update_command(args: dict = {}):
     target = args.get('target')
     job_id = args.get('job_id')
-    use_polling = args.get('use_polling', 'false') == 'true'
-    polling = args.get('polling', use_polling)
+    polling = argToBoolean(args.get('polling'))
     timeout = int(args.get('timeout', 600))
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     cmd = 'panorama-download-latest-content-update'
@@ -5407,8 +5404,7 @@ def panorama_install_latest_content_update(target: str):
 def panorama_install_latest_content_update_command(args: dict = {}):
 
     target = args.get('target')
-    use_polling = args.get('use_polling', 'false') == 'true'
-    polling = args.get('polling', use_polling)
+    polling = argToBoolean(args.get('polling'))
     job_id = args.get('job_id', None)
     timeout = int(args.get('timeout', 600))
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
@@ -5556,8 +5552,7 @@ def panorama_download_panos_version_command(args: dict):
         raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
     target = args.get('target', None)
     target_version = args.get('target_version')
-    use_polling = args.get('use_polling', 'false') == 'true'
-    polling = args.get('polling', use_polling)
+    polling = argToBoolean(args.get('polling'))
     timeout = int(args.get('timeout', 600))
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
@@ -5681,8 +5676,7 @@ def panorama_install_panos_version_command(args: dict):
         raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     target_version = str(args['target_version'])
-    use_polling = args.get('use_polling', 'false') == 'true'
-    polling = args.get('polling', use_polling)
+    polling = argToBoolean(args.get('polling'))
     timeout = int(args.get('timeout', 600))
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
