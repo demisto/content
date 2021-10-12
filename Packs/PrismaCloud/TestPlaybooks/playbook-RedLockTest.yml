@@ -1,19 +1,20 @@
 id: RedLockTest
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: RedLockTest
+description: test for prisma cloud
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a3772689-fba9-49bf-8bb1-8ed9871862bd
+    taskid: 1dee6957-787b-4acd-8ecf-39ec429d3e2a
     type: start
     task:
-      id: a3772689-fba9-49bf-8bb1-8ed9871862bd
+      id: 1dee6957-787b-4acd-8ecf-39ec429d3e2a
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4055561d-921e-43e2-8a69-54c52cc70657
+    taskid: 5cb2ebe9-e741-42f8-865c-ee38672b8db2
     type: regular
     task:
-      id: 4055561d-921e-43e2-8a69-54c52cc70657
+      id: 5cb2ebe9-e741-42f8-865c-ee38672b8db2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -62,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f354257e-6800-478a-8228-4757e75cd516
+    taskid: a0fa02b9-5d27-47ca-89d3-f7601405a746
     type: regular
     task:
-      id: f354257e-6800-478a-8228-4757e75cd516
+      id: a0fa02b9-5d27-47ca-89d3-f7601405a746
       version: -1
       name: Retrieve All Alerts from Last 1 year
       description: Search alerts on the RedLock platform
@@ -98,12 +103,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ca3e7d5c-5bdc-455e-8281-49afe95fed1c
+    taskid: ac0cebc6-e69d-46a0-88db-cf1341169ef1
     type: regular
     task:
-      id: ca3e7d5c-5bdc-455e-8281-49afe95fed1c
+      id: ac0cebc6-e69d-46a0-88db-cf1341169ef1
       version: -1
       name: Get Most Recent Alert Details
       script: '|||redlock-get-alert-details'
@@ -129,12 +136,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ac06e916-c010-43d7-8327-103c430c59ee
+    taskid: 24134fa8-3db2-4788-8937-5ebbf37928b4
     type: condition
     task:
-      id: ac06e916-c010-43d7-8327-103c430c59ee
+      id: 24134fa8-3db2-4788-8937-5ebbf37928b4
       version: -1
       name: Change Alert Status
       type: condition
@@ -180,12 +189,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 32bb5869-0cd9-4750-8f34-99324f881d61
+    taskid: 2d7f9a9c-05a9-4e28-846a-2b4f4706c3df
     type: condition
     task:
-      id: 32bb5869-0cd9-4750-8f34-99324f881d61
+      id: 2d7f9a9c-05a9-4e28-846a-2b4f4706c3df
       version: -1
       name: Check for response
       type: condition
@@ -217,24 +228,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c97dc68b-cf19-4b50-868e-790e58ccb097
+    taskid: e1d20eae-5564-4435-81d8-2f6d3c4b431a
     type: title
     task:
-      id: c97dc68b-cf19-4b50-868e-790e58ccb097
+      id: e1d20eae-5564-4435-81d8-2f6d3c4b431a
       version: -1
       name: Test Completed
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 4080
         }
       }
     note: false
@@ -242,12 +254,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: fa3f3613-b6b8-4eef-806c-b50d944508b5
+    taskid: 730efe4b-0d25-4232-8156-071807c55da8
     type: regular
     task:
-      id: fa3f3613-b6b8-4eef-806c-b50d944508b5
+      id: 730efe4b-0d25-4232-8156-071807c55da8
       version: -1
       name: Open the Alert
       description: Re-open the alerts matching the given filter.  Must provide either
@@ -275,12 +289,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6609c597-de32-4395-8d19-01d4f7832709
+    taskid: 6fdbb97e-9967-4c30-8e7c-c9d933c70fd2
     type: regular
     task:
-      id: 6609c597-de32-4395-8d19-01d4f7832709
+      id: 6fdbb97e-9967-4c30-8e7c-c9d933c70fd2
       version: -1
       name: Store Recent Alert ID
       description: Sets a value into the context with the given context key
@@ -313,12 +329,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5223f43d-6071-4191-859e-cdccc24008c5
+    taskid: 1f30602c-aac1-42df-8c33-757ac33d82cc
     type: regular
     task:
-      id: 5223f43d-6071-4191-859e-cdccc24008c5
+      id: 1f30602c-aac1-42df-8c33-757ac33d82cc
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -347,12 +365,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 9b653190-7744-46c6-8fee-8d32406bf830
+    taskid: 35fa8b5e-a0d1-47b6-8d7b-b983324c3b0e
     type: regular
     task:
-      id: 9b653190-7744-46c6-8fee-8d32406bf830
+      id: 35fa8b5e-a0d1-47b6-8d7b-b983324c3b0e
       version: -1
       name: Dismiss Alert
       description: Dismiss the alerts matching the given filter. Must provide either
@@ -382,12 +402,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: c8edfc42-dfde-478d-8a16-d832f0afbadd
+    taskid: 43ae472c-8233-4019-8798-4d5914f24953
     type: condition
     task:
-      id: c8edfc42-dfde-478d-8a16-d832f0afbadd
+      id: 43ae472c-8233-4019-8798-4d5914f24953
       version: -1
       name: Verify Alert Status Change
       type: condition
@@ -445,12 +467,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 1a2d839d-de73-461a-8d75-813a480b0e65
+    taskid: 6f413e8a-610c-4b0f-8e34-83fb9682397a
     type: regular
     task:
-      id: 1a2d839d-de73-461a-8d75-813a480b0e65
+      id: 6f413e8a-610c-4b0f-8e34-83fb9682397a
       version: -1
       name: Return alert To Open State
       description: Re-open the alerts matching the given filter.  Must provide either
@@ -480,12 +504,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 4e15ce71-7a1b-488f-8822-73fca4414346
+    taskid: d037f821-f97f-479b-8fc8-a012f4d42ecd
     type: regular
     task:
-      id: 4e15ce71-7a1b-488f-8822-73fca4414346
+      id: d037f821-f97f-479b-8fc8-a012f4d42ecd
       version: -1
       name: Store Recent Alert Status
       description: Sets a value into the context with the given context key
@@ -526,12 +552,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 7136015b-5f5b-477c-827f-32e517194615
+    taskid: 4c3ad6f3-2712-47e3-84a9-32e795dbbb14
     type: regular
     task:
-      id: 7136015b-5f5b-477c-827f-32e517194615
+      id: 4c3ad6f3-2712-47e3-84a9-32e795dbbb14
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -560,12 +588,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 5170cb8c-a163-40d8-8725-7ec6b536192e
+    taskid: c4b3b978-8234-47d5-885a-34cde9bc30b1
     type: regular
     task:
-      id: 5170cb8c-a163-40d8-8725-7ec6b536192e
+      id: c4b3b978-8234-47d5-885a-34cde9bc30b1
       version: -1
       name: Get Alert Details
       description: Get remediation details for a given alert
@@ -592,12 +622,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 33878693-b61b-4040-8944-c7bcf347f82e
+    taskid: 5a410e46-f71b-4aa5-8a4e-470f97566a4a
     type: condition
     task:
-      id: 33878693-b61b-4040-8944-c7bcf347f82e
+      id: 5a410e46-f71b-4aa5-8a4e-470f97566a4a
       version: -1
       name: Return to original state
       type: condition
@@ -632,12 +664,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 8d593ebb-b4fb-4aed-88eb-8fde495598c7
+    taskid: 836857d5-c46d-4ebc-83aa-7850c700be7f
     type: regular
     task:
-      id: 8d593ebb-b4fb-4aed-88eb-8fde495598c7
+      id: 836857d5-c46d-4ebc-83aa-7850c700be7f
       version: -1
       name: Return alert To Dismissed State
       description: Dismiss the alerts matching the given filter. Must provide either
@@ -669,12 +703,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 8da9e2b3-069a-4d5f-8d85-406a1f864941
+    taskid: 03a56503-2a37-4395-88e0-e7ca663a4390
     type: regular
     task:
-      id: 8da9e2b3-069a-4d5f-8d85-406a1f864941
+      id: 03a56503-2a37-4395-88e0-e7ca663a4390
       version: -1
       name: Get Remediation Details
       description: Get remediation details for a given alert
@@ -701,12 +737,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 92303671-5f48-4092-8be6-76c70247a512
+    taskid: 89e000ed-17c3-47c1-84cd-8cfb1787931b
     type: regular
     task:
-      id: 92303671-5f48-4092-8be6-76c70247a512
+      id: 89e000ed-17c3-47c1-84cd-8cfb1787931b
       version: -1
       name: List Alert Filters
       description: List the acceptable filters and values for alerts
@@ -730,12 +768,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 2f9cfca6-55cf-4433-85a4-a53e807db59c
+    taskid: 6b69bcfd-71cb-4660-8347-a24522d69c6b
     type: regular
     task:
-      id: 2f9cfca6-55cf-4433-85a4-a53e807db59c
+      id: 6b69bcfd-71cb-4660-8347-a24522d69c6b
       version: -1
       name: Run RQL
       description: Run RQL query on Prisma Cloud
@@ -745,7 +785,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "39"
     scriptarguments:
       rql:
         simple: config where api.name = 'aws-iam-list-access-keys'
@@ -762,6 +802,197 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: cfc5a209-1362-4ac8-82f6-887c1d02691a
+    type: regular
+    task:
+      id: cfc5a209-1362-4ac8-82f6-887c1d02691a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: RedLockStatus,RedLockID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2fcd21d4-3b75-4b65-8b57-b3c020314eb1
+    type: regular
+    task:
+      id: 2fcd21d4-3b75-4b65-8b57-b3c020314eb1
+      version: -1
+      name: Retrieve All Scans Since Last 1 Year
+      description: List DevOps Scans
+      script: '|||redlock-list-scans'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      filter_time_amount:
+        simple: "1"
+      filter_type:
+        simple: relative
+      relative_time_unit:
+        simple: year
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 813be5d0-7232-4390-8833-25de95cca166
+    type: condition
+    task:
+      id: 813be5d0-7232-4390-8833-25de95cca166
+      version: -1
+      name: Check for response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Scans
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 6ac6e892-dca1-4462-820a-56e6f3e8c054
+    type: regular
+    task:
+      id: 6ac6e892-dca1-4462-820a-56e6f3e8c054
+      version: -1
+      name: Check Scan Status
+      description: Get scan status
+      script: '|||redlock-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      scan_id:
+        complex:
+          root: Redlock.Scans
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bd9d9f18-88c6-40ec-87ba-4407f840c1e5
+    type: regular
+    task:
+      id: bd9d9f18-88c6-40ec-87ba-4407f840c1e5
+      version: -1
+      name: Get Scan Results
+      description: Get scan results
+      script: '|||redlock-get-scan-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      scan_id:
+        complex:
+          root: Redlock.Scans
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -775,7 +1006,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 4095,
         "width": 810,
         "x": 50,
         "y": 50
@@ -785,4 +1016,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: test for prisma cloud

@@ -1042,10 +1042,6 @@ script:
       predefined:
       - epoch
       - login
-      - hour
-      - day
-      - week
-      - month
       - year
       required: false
       secret: false
@@ -1095,8 +1091,10 @@ script:
       isArray: false
       name: relative_time_unit
       predefined:
-      - epoch
-      - login
+      - hour
+      - day
+      - week
+      - month
       - year
       required: false
       secret: false
@@ -1105,88 +1103,87 @@ script:
     execution: false
     name: redlock-list-scans
     outputs:
-      - contextPath: Redlock.Scans.attributes.deployed
-        description: 'Scan deployed attribute.'
-        type: Boolean
-      - contextPath: Redlock.Scans.attributes.fail
-        description: 'Scan fail attribute.'
-        type: Number
-      - contextPath: Redlock.Scans.attributes.failureCriteria
-        description: 'Scan failure criteria attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.high
-        description: 'Scan matched policies summary attribute.'
-        type: Number
-      - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.low
-        description: 'Scan matched low policies summary attribute.'
-        type: Number
-      - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.medium
-        description: 'Scan matched medium policies summary attribute.'
-        type: Number
-      - contextPath: Redlock.Scans.attributes.merged
-        description: 'Scan merged attribute.'
-        type: Boolean
-      - contextPath: Redlock.Scans.attributes.name
-        description: 'Scan name attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.pass
-        description: 'Scan pass attribute.'
-        type: Number
-      - contextPath: Redlock.Scans.attributes.scanAttributes.appliedAlertRules
-        description: 'Scan applied alert rules attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.branch
-        description: 'Scan Scan branch attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.org
-        description: 'Scan org attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.pullRequestId
-        description: 'Scan PR ID attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.repository
-        description: 'Scan repository attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.resourcesScanned
-        description: 'Scan resources scanned attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.templateType
-        description: 'Scan template type attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.triggeredOn
-        description: 'Scan triggered on attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanAttributes.userId
-        description: 'Scan user id attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.scanTime
-        description: 'Scan scan time attribute.'
-        type: Date
-      - contextPath: Redlock.Scans.attributes.status
-        description: 'Scan status attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.tags.name
-        description: 'Scan tags name attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.tags.value
-        description: 'Scan tags value attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.type
-        description: 'Scan type attribute.'
-        type: String
-      - contextPath: Redlock.Scans.attributes.user
-        description: 'Scan user attribute.'
-        type: String
-      - contextPath: Redlock.Scans.id
-        description: 'Scan id.'
-        type: String
-      - contextPath: Redlock.Scans.links.self
-        description: 'Scan links.'
-        type: String
-      - contextPath: Redlock.Scans.relationships.scanResult.links.related
-        description: 'Scan relationships scan result links .'
-        type: String
-
+    - contextPath: Redlock.Scans.attributes.deployed
+      description: Scan deployed attribute.
+      type: Boolean
+    - contextPath: Redlock.Scans.attributes.fail
+      description: Scan fail attribute.
+      type: Number
+    - contextPath: Redlock.Scans.attributes.failureCriteria
+      description: Scan failure criteria attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.high
+      description: Scan matched policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.low
+      description: Scan matched low policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.medium
+      description: Scan matched medium policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.attributes.merged
+      description: Scan merged attribute.
+      type: Boolean
+    - contextPath: Redlock.Scans.attributes.name
+      description: Scan name attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.pass
+      description: Scan pass attribute.
+      type: Number
+    - contextPath: Redlock.Scans.attributes.scanAttributes.appliedAlertRules
+      description: Scan applied alert rules attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.branch
+      description: Scan Scan branch attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.org
+      description: Scan org attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.pullRequestId
+      description: Scan PR ID attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.repository
+      description: Scan repository attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.resourcesScanned
+      description: Scan resources scanned attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.templateType
+      description: Scan template type attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.triggeredOn
+      description: Scan triggered on attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanAttributes.userId
+      description: Scan user id attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.scanTime
+      description: Scan scan time attribute.
+      type: Date
+    - contextPath: Redlock.Scans.attributes.status
+      description: Scan status attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.tags.name
+      description: Scan tags name attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.tags.value
+      description: Scan tags value attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.type
+      description: Scan type attribute.
+      type: String
+    - contextPath: Redlock.Scans.attributes.user
+      description: Scan user attribute.
+      type: String
+    - contextPath: Redlock.Scans.id
+      description: Scan id.
+      type: String
+    - contextPath: Redlock.Scans.links.self
+      description: Scan links.
+      type: String
+    - contextPath: Redlock.Scans.relationships.scanResult.links.related
+      description: Scan relationships scan result links .
+      type: String
   - arguments:
     - default: false
       description: The scan ID
@@ -1217,45 +1214,45 @@ script:
     execution: false
     name: redlock-get-scan-results
     outputs:
-      - contextPath: Redlock.Scans.id
-        description: 'Scan ID'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.blameList.file
-        description: 'Scan results blame list file'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.blameList.locations.line
-        description: 'Scan results blame list locations line'
-        type: Number
-      - contextPath: Redlock.Scans.results.attributes.blameList.locations.path
-        description: 'Scan results blame list locations path'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.desc
-        description: 'Scan results description'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.docUrl
-        description: 'Scan results doc URL'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.files
-        description: 'Scan results files'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.name
-        description: 'Scan results name'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.policyId
-        description: 'Scan results policy ID'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.rule
-        description: 'Scan results rule'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.severity
-        description: 'Scan results severity'
-        type: String
-      - contextPath: Redlock.Scans.results.attributes.systemDefault
-        description: 'Scan results system default'
-        type: Boolean
-      - contextPath: Redlock.Scans.results.id
-        description: 'Scan results ID'
-        type: String
+    - contextPath: Redlock.Scans.id
+      description: Scan ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.blameList.file
+      description: Scan results blame list file
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.blameList.locations.line
+      description: Scan results blame list locations line
+      type: Number
+    - contextPath: Redlock.Scans.results.attributes.blameList.locations.path
+      description: Scan results blame list locations path
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.desc
+      description: Scan results description
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.docUrl
+      description: Scan results doc URL
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.files
+      description: Scan results files
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.name
+      description: Scan results name
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.policyId
+      description: Scan results policy ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.rule
+      description: Scan results rule
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.severity
+      description: Scan results severity
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.systemDefault
+      description: Scan results system default
+      type: Boolean
+    - contextPath: Redlock.Scans.results.id
+      description: Scan results ID
+      type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
