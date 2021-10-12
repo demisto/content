@@ -303,7 +303,7 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 ### panorama-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants(single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
 
 
 #### Base Command
