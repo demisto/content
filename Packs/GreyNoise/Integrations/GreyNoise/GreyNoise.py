@@ -524,7 +524,7 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
             command_results.append(
                 CommandResults(
                     readable_output=human_readable,
-                    outputs_prefix="GreyNoise.RIOT",
+                    outputs_prefix="GreyNoise.Riot",
                     outputs_key_field="address",
                     outputs=riot_response,
                     indicator=ip_standard_context,
@@ -809,7 +809,7 @@ def riot_command(client: Client, args: Dict) -> CommandResults:
 
     human_readable = tableToMarkdown(name=name, t=hr, headers=headers, removeNull=True)
     return CommandResults(
-        outputs_prefix="GreyNoise.RIOT",
+        outputs_prefix="GreyNoise.Riot",
         outputs_key_field="ip",
         outputs=response,
         readable_output=human_readable,
