@@ -35,6 +35,3 @@ Under sample mode, only one incident will be generated when the system invokes t
 To generate another incident, click *Reset the "last run" timestamp* configuration option for this integration.
 
 Please refer to [https://www.cyren.com/cyren-inbox-security](https://www.cyren.com/cyren-inbox-security) for more information regarding Cyren Inbox Security.
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cyren-inbox-security)
