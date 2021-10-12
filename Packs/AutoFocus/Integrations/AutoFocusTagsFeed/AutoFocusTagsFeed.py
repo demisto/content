@@ -454,10 +454,11 @@ def main():
     proxy = params.get('proxy', False)
     api_key = params.get('api_key', '')
     if not api_key:
-        api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
+        if is_demisto_version_ge('6.5.0'):
+            # if it is none, what should i do
+            api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
         if not api_key:
-            # TODO change handling
-            raise Exception("you dont have a license")
+            raise DemistoException("you must insert api key in order to use this integration")
 
     command = demisto.command()
     args = demisto.args()
