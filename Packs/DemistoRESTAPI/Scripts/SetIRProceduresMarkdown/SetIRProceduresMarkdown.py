@@ -41,8 +41,8 @@ def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
                                                                                        remediation_task_ids)
     headers = ['Task Name', 'Task State', 'Completion Time']
     hunting_table_md = tableToMarkdown('Hunting Tasks', hunting_table, headers=headers)
-    mitigation_table_md = tableToMarkdown('Remediation Tasks', mitigation_table, headers=headers)
-    remediation_table_md = tableToMarkdown('Mitigation Tasks', remediation_table, headers=headers)
+    mitigation_table_md = tableToMarkdown('Mitigation Tasks', mitigation_table, headers=headers)
+    remediation_table_md = tableToMarkdown('Remediation Tasks', remediation_table, headers=headers)
     eradication_table_md = tableToMarkdown('Eradication Tasks', eradication_table, headers=headers)
 
     full_table = hunting_table_md + mitigation_table_md + remediation_table_md + eradication_table_md
