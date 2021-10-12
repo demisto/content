@@ -46,11 +46,10 @@ class AddressObject(object):
 
         indicator = indicator.string.encode('ascii', 'replace').decode()
         category = props.get('category', None)
+        address_list = indicator.split('##comma##')
 
         if category == 'e-mail':
-            return [{'indicator': indicator, 'type': 'Email'}]
-
-        address_list = indicator.split('##comma##')
+            return [{'indicator': address, 'type': 'Email'} for address in address_list]
 
         try:
             for address in address_list:
@@ -1114,9 +1113,9 @@ def create_relationships(indicator):
         relationship_type = 'Attack Pattern'
 
     if name:
-        return EntityRelationship(name=name, entity_a=indicator.get('value'), entity_a_type=indicator.get('type'),
-                                  entity_b=indicator.get('relationship', {}).get('name'),
-                                  entity_b_type=relationship_type).to_indicator()
+        return [EntityRelationship(name=name, entity_a=indicator.get('value'), entity_a_type=indicator.get('type'),
+                                   entity_b=indicator.get('relationship', {}).get('name'),
+                                   entity_b_type=relationship_type).to_indicator()]
 
 
 def test_module(client, *_):
