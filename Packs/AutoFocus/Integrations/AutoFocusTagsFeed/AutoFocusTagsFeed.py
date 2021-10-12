@@ -455,6 +455,9 @@ def main():
     api_key = params.get('api_key', '')
     if not api_key:
         api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
+        if not api_key:
+            # TODO change handling
+            raise Exception("you dont have a license")
 
     command = demisto.command()
     args = demisto.args()
