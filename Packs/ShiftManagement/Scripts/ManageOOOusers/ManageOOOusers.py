@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 def _get_current_user():
     current_username = demisto.executeCommand("getUsers", {"current": True})
     if isError(current_username):
-        demisto.debug("failed to get current username - {str(get_error(current_username))}")
+        demisto.debug(f"failed to get current username - {get_error(current_username)}")
         return
     else:
         return current_username[0]["Contents"][0]['username']
