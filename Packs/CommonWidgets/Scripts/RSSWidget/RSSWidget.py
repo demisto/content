@@ -94,7 +94,7 @@ def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
     Returns:
         str: The widget's content.
     """
-    content: str = ""
+    content: str = ''
 
     for entry_data in entries_data:
         content += f'**[{entry_data["title"]}]({entry_data["link"]})**\n'
