@@ -3056,10 +3056,10 @@ tasks:
     task:
       id: 4bee439a-8d3c-47f7-8a5d-e94ae35ae029
       version: -1
-      name: Logrhythm - Search query
+      name: LogRhythmRestV2 - Search query
       description: 'This playbook used generic polling to gets query result using
         the command: lr-execute-search-query'
-      playbookName: Logrhythm - Search query
+      playbookName: LogRhythmRestV2 - Search query
       type: playbook
       iscommand: false
       brand: ""
