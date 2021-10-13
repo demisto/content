@@ -266,5 +266,5 @@ outputs:
 - contextPath: ReversingLabs.uri_statistics
   description: Report in JSON
 tests:
-- ReversingLabsTCTest
+- No tests
 fromversion: 6.0.0

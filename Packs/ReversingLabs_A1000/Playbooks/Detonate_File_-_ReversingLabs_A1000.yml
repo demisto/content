@@ -235,5 +235,5 @@ outputs:
 - contextPath: ReversingLabs.a1000_report
   description: A1000 report
 tests:
-- ReversingLabsA1000Test
+- No tests
 fromversion: 6.0.0

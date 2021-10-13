@@ -227,5 +227,5 @@ outputs:
 - contextPath: ReversingLabs.file_reputation
   description: Report in JSON.
 tests:
-- ReversingLabsTCTest
+- No tests
 fromversion: 6.0.0
