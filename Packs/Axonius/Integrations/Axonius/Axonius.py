@@ -111,7 +111,6 @@ def get_by_value(
         valid = []
 
         for x in dir(api_obj):
-            # if not x.startswith("get_by_") or x.endswith("s") or x.endswith("_regex"):
             if not x.startswith("get_by_") or x.endswith("s"):
                 continue
 
