@@ -5,7 +5,7 @@ Checks if a list exists in the Cortex XSOAR lists.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | Condition |
 
 

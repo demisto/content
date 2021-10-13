@@ -1,23 +1,22 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+	"associatedTypes": [
+		"Cyren Inbox Security"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
     "caseInsensitive": true,
-    "cliName": "published",
-    "id": "generic_ThreatIntelReport_published",
-    "name": "Published",
-    "closeForm": false,
+    "cliName": "cyrenthreatindicators",
+    "closeForm": true,
     "content": true,
     "editForm": true,
-    "group": 4,
-    "definitionId": "ThreatIntelReport",
-    "genericModuleId": "threatIntel",
+    "group": 0,
     "hidden": false,
+    "id": "incident_cyrenthreatindicators",
     "isReadOnly": false,
     "locked": false,
+    "name": "Cyren Threat Indicators",
     "neverSetAsRequired": false,
-    "ownerOnly": false,
+    "ownerOnly": true,
     "required": false,
     "sla": 0,
     "system": false,
@@ -27,5 +26,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.0.0"
 }
