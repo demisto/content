@@ -57,5 +57,5 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: aymanam/scraper:latest
+dockerimage: demisto/bs4-py3:1.0.0.24176
 fromversion: '6.0.0'
