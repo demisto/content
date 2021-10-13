@@ -38,7 +38,7 @@ configuration:
   name: search
   type: 0
   required: false
-- display: Filter by tags, csv format, for example: tag1, tag2
+- display: "Filter by tags, csv format, for example: tag1,tag2"
   name: tags
   type: 0
   required: false

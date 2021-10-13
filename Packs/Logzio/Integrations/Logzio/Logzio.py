@@ -200,6 +200,16 @@ def get_rule_logs_by_id_command(client, args):
     return_outputs(readable, context, resp)
 
 
+def found_tag_in_event(event, tags):
+    if not tags:
+        return True
+
+    if event.get("tags") is None:
+        return False
+    for i in tags:
+        return i.lower() in [x.lower() for x in event.get("tags")]
+
+
 def fetch_incidents(client, last_run, search, severities, first_fetch_time, filter_tags):
     if client.security_api_token is None:
         raise Exception("Security API Token wasn't provided, cannot fetch incidents")
@@ -214,17 +224,7 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time, filt
                                               start_time=start_query_time)
 
     # Filter events if any of the filter tags are in an event
-    tag_filtered_events = []
-    if filter_tags:
-        for event in raw_events.get("results", []):
-            if event.get("tags") is None:
-                continue
-            for i in filter_tags:
-                if i.lower() in [x.lower() for x in event.get("tags")]:
-                    tag_filtered_events.append(event)
-                    break
-    else:
-        tag_filtered_events = raw_events.get("results", [])
+    tag_filtered_events = [x for x in raw_events.get("results", []) if found_tag_in_event(x, filter_tags)]
 
     for event in tag_filtered_events:
         if "groupBy" in event:
@@ -264,7 +264,7 @@ def main():
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
         filter_tags = demisto.params().get('tags', None)
         if filter_tags:
-            filter_tags = filter_tags.split(",")
+            filter_tags = [tag.strip() for tag in filter_tags.split(",")]
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
         max_fetch = demisto.params().get('fetch_count', DEFAULT_LIMIT)
