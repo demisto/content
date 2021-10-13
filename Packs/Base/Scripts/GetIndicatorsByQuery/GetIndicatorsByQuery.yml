@@ -47,7 +47,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: 30 days ago
+  defaultValue: 90 days ago
   description: 'The start date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "30 days ago", ""2019-01-01T00:00:00
     +0200").'

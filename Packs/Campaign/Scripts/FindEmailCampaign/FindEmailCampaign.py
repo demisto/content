@@ -417,7 +417,7 @@ def return_indicator_entry(incidents_df):
     indicators_query = 'investigationIDs:({})'.format(' '.join('"{}"'.format(id_) for id_ in incidents_df['id']))
     fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
     indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields),
-                       'fromDate': '30 days ago'}
+                       'fromDate': '90 days ago'}
     res = demisto.executeCommand('GetIndicatorsByQuery', args=indicators_args)
     if is_error(res):
         return_error(res)
