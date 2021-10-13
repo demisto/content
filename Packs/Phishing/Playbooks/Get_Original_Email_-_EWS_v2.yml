@@ -1,0 +1,544 @@
+id: Get Original Email - EWS v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Get Original Email - EWS v2
+description: |-
+  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+  You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+    type: start
+    task:
+      id: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 03f2c080-1995-42fc-82ce-16d474fb5438
+    type: condition
+    task:
+      id: 03f2c080-1995-42fc-82ce-16d474fb5438
+      version: -1
+      name: Is EWS v2 enabled?
+      description: |
+        Verifies that there is an active instance of the EWS v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d2eca123-db35-4b27-88d8-a8b77ffd6784
+    type: title
+    task:
+      id: d2eca123-db35-4b27-88d8-a8b77ffd6784
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+    type: condition
+    task:
+      id: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+      version: -1
+      name: Verify required inputs
+      description: Verify that the required input values for retrieving the original
+        email exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InReplyTo
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.ThreadTopic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Mailbox
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
+    type: regular
+    task:
+      id: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
+      version: -1
+      name: Search for messages by Thread-Topic
+      description: Retrieve all messages found in the thread of the forwarded email.
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      query:
+        simple: subject:"${inputs.ThreadTopic}"
+      selected-fields:
+        simple: in_reply_to
+      target-mailbox:
+        complex:
+          root: inputs.Mailbox
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 25f6439f-778f-45a5-841a-53efe77d590c
+    type: condition
+    task:
+      id: 25f6439f-778f-45a5-841a-53efe77d590c
+      version: -1
+      name: Was a matching email found?
+      description: Verify that an email object with a Message-Id that matches the
+        InReplyTo ID of the forwarded email was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EWSItem
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EWSItem.messageId
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.InReplyTo
+                      iscontext: true
+                accessor: messageId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c729f95f-bc75-477e-8000-14c99346873d
+    type: regular
+    task:
+      id: c729f95f-bc75-477e-8000-14c99346873d
+      version: -1
+      name: Set context
+      description: Set email object to context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: EWSItem
+      value:
+        complex:
+          root: EWS
+          accessor: Items
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 613aba55-828b-483b-85a2-aec3f1f90f23
+    type: regular
+    task:
+      id: 613aba55-828b-483b-85a2-aec3f1f90f23
+      version: -1
+      name: Get original email
+      description: Retrieves items by item ID and uploads it's content as eml file.
+      script: EWS v2|||ews-get-items-as-eml
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      item-id:
+        complex:
+          root: EWSItem
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: EWSItem.messageId
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.InReplyTo
+                iscontext: true
+          accessor: itemId
+      target-mailbox:
+        complex:
+          root: inputs.Mailbox
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8764cbb0-dd56-4095-8df2-e77035713e2e
+    type: regular
+    task:
+      id: 8764cbb0-dd56-4095-8df2-e77035713e2e
+      version: -1
+      name: Delete old context
+      description: Delete the email objects from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: EWS
+      subplaybook:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ec84a471-1f69-41f2-8415-9fc69f9baeae
+    type: regular
+    task:
+      id: ec84a471-1f69-41f2-8415-9fc69f9baeae
+      version: -1
+      name: Set File EntryID in context
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: reportedemailentryid
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ThreadTopic
+                iscontext: true
+            - operator: isExists
+              left:
+                value:
+                  simple: File.CustomEntryID
+                iscontext: true
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Mailbox
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+  required: false
+  description: Email address of the reporting user.
+  playbookInputQuery:
+- key: InReplyTo
+  value:
+    complex:
+      root: incident.phishingreporteremailheaders
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.phishingreporteremailheaders.headername
+            iscontext: true
+          right:
+            value:
+              simple: In-Reply-To
+      accessor: headervalue
+  required: false
+  description: The InReplyTo header in the forwarded email.
+  playbookInputQuery:
+- key: ThreadTopic
+  value:
+    complex:
+      root: incident.phishingreporteremailheaders
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.phishingreporteremailheaders.headername
+            iscontext: true
+          right:
+            value:
+              simple: Thread-Topic
+      accessor: headervalue
+  required: false
+  description: The ThreadTopic header in the forwarded email.
+  playbookInputQuery:
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: Email.To
+  description: The recipient of the email
+  type: string
+- contextPath: Email.From
+  description: The sender of the email
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML
+  type: string
+- contextPath: Email.Body
+  description: The email text body
+  type: string
+- contextPath: Email.Headers
+  description: The email headers
+  type: unknown
+- contextPath: Email.Subject
+  description: The email subject
+  type: string
+- contextPath: File
+  description: Original attachments
+  type: unknown
+- contextPath: Email.HeadersMap
+  description: The headers of the email.
+- contextPath: reportedemailentryid
+  description: In case the original eml was retrieved, this field will hold the File's
+    Entry ID.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
