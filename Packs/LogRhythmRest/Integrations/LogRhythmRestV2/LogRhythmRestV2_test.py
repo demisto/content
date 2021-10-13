@@ -1,6 +1,6 @@
 import json
 import pytest
-from LogRhythmV2 import Client
+from LogRhythmRestV2 import Client
 import demistomock as demisto
 
 BASE_URL = 'http://testurl.com/'

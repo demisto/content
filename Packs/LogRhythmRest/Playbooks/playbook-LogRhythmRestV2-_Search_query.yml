@@ -1,6 +1,6 @@
-id: Logrhythm - Search query
+id: LogRhythmRestV2 - Search query
 version: -1
-name: Logrhythm - Search query
+name: LogRhythmRestV2 - Search query
 description: 'This playbook used generic polling to get query results using the command:
   lr-execute-search-query'
 starttaskid: "0"
@@ -375,4 +375,4 @@ outputs:
   type: string
 fromversion: 5.5.0
 tests:
-- LogrhythmV2-test
+- LogRhythmRestV2-test

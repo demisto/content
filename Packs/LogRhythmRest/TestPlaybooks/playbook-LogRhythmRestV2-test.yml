@@ -1,6 +1,6 @@
-id: LogrhythmV2-test
+id: LogRhythmRestV2-test
 version: -1
-name: LogrhythmV2-test
+name: LogRhythmRestV2-test
 starttaskid: "0"
 tasks:
   "0":

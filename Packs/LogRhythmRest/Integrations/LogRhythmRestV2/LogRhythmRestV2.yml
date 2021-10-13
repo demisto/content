@@ -1,8 +1,8 @@
 commonfields:
-  id: Logrhythm v2
+  id: LogRhythmRest V2
   version: -1
-name: Logrhythm v2
-display: Logrhythm v2
+name: LogRhythmRest V2
+display: LogRhythmRest V2
 fromversion: 5.5.0
 category: Analytics & SIEM
 description: LogRhythm security intelligence.
@@ -4025,4 +4025,4 @@ script:
       description: 'The network ID.'
       type: Number
 tests:
-- LogrhythmV2-test
+- LogRhythmRestV2-test

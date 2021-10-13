@@ -1,4 +1,4 @@
-Integration with LogRhythm V2 using REST API.
+Integration with LogRhythmRest V2 using REST API.
 
 ## Configuration Parameters
 
