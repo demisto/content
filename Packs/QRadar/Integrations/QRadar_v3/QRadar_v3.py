@@ -379,7 +379,12 @@ class Client(BaseClient):
                 message = 'Authorization Error: make sure credentials are correct.'
             elif 'The specified encryption strength is not available' in err_msg:
                 err_msg = ''
-                message = 'The specified encryption is not available, try using a weaker encrpytion (AES128).'
+                message = 'The specified encryption is not available, try using a weaker encryption (AES128).'
+            elif 'User has insufficient capabilities to access this endpoint resource' in message:
+                message = 'The given credentials do not have the needed permissions to perform the call the endpoint' \
+                          f'\n{res.request.path_url}.\n' \
+                          'Please supply credentials with the needed permissions as can be seen in the integration ' \
+                          'description, or do not call or enrich offenses with the mentioned endpoint.'
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
         except ValueError:
@@ -897,10 +902,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        try:
-            return client.assets_list(filter_=filter_query)
-        except Exception as e:
-            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
+        return client.assets_list(filter_=filter_query)
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
