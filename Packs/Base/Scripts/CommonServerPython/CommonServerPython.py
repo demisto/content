@@ -6324,9 +6324,8 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    s = s[0].upper() + s[1:]
     # double space to handle capital words like IP/URL/DNS that not included in the regex
-    s = re.sub(pascalRegex, r' \1 ', s)
+    s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())

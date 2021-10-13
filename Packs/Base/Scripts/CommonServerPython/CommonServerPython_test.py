@@ -794,6 +794,7 @@ PASCAL_TO_SPACE_USE_CASES = [
     ('eventId', 'Event Id'),
     ('IPAddress', 'IP Address'),
     ('isDisabled', 'Is Disabled'),
+    ('device-group', 'Device - Group'),
 ]
 
 
