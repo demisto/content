@@ -311,7 +311,7 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
 
     """
     latest_version = '1.0.0'
-    entities_data : dict = {}
+    entities_data: dict = {}
     for pack_version, version_release_notes in sorted(pack_versions_dict.items(),
                                                       key=lambda pack_item: LooseVersion(pack_item[0])):
         latest_version = pack_version
