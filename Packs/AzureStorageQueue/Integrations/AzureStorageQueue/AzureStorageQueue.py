@@ -71,7 +71,7 @@ class Client:
         return response
 
     def create_message_request(self, queue_name: str, xml_data: str,
-                               visibility_time_out: int = None, time_to_live: int = None) -> str:
+                               visibility_time_out: int = None, expiration: int = None) -> str:
         """
         Add a new message to the back of the message queue.
 
@@ -79,14 +79,14 @@ class Client:
             queue_name (str): Queue name.
             xml_data (str): Request XML data.
             visibility_time_out (int): Specifies the new visibility timeout value.
-            time_to_live (int): Specifies the time-to-live interval for the message, in seconds.
+            expiration (int): Specifies the time-to-live interval for the message, in seconds.
 
         Returns:
             str: API response from Azure.
 
         """
 
-        params = assign_params(messagettl=time_to_live, visibilitytimeout=visibility_time_out)
+        params = assign_params(messagettl=expiration, visibilitytimeout=visibility_time_out)
 
         response = self.ms_client.http_request(method="POST", url_suffix=f'/{queue_name}/messages', params=params,
                                                resp_type="text", data=xml_data)
@@ -324,7 +324,7 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = args.get('limit') or '50'
     prefix = args.get('prefix')
 
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
     marker = ''
     readable_message = f'Queues List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
@@ -378,6 +378,8 @@ def create_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     queue_name = args["queue_name"]
 
     queue_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    # Rules for naming queues can be found here:
+    # https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata
 
     if not re.search(queue_name_regex, queue_name):
         raise Exception('The specified queue name is invalid.')
@@ -417,12 +419,23 @@ def delete_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def convert_dict_time_format(data: dict, keys: list):
+def iso_time_format(data: dict, keys: list):
     """
-    Convert dictionary data values time format.
+    Convert time data values to ISO 8601 time format.
+    input example: keys = ['InsertionTime','ExpirationTime'] , data = {
+                            'InsertionTime': 'Wed, 13 Oct 2021 09:11:32 GMT',
+                            'ExpirationTime': 'Wed, 20 Oct 2021 09:11:32 GMT',
+                            }
+
+    the method will convert the data to:
+    {
+        'InsertionTime': '2021-10-13T09:11:32',
+        'ExpirationTime': '2021-10-20T09:11:32'
+    }
+
     Args:
         data (dict): Data.
-        keys (list): Keys list to convert
+        keys (list): Keys list to convert.
 
     """
     for key in keys:
@@ -446,7 +459,7 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
     message_content = args["message_content"]
     queue_name = args["queue_name"]
     visibility_time_out = arg_to_number(args.get("visibility_time_out"))
-    time_to_live = arg_to_number(args.get("time_to_live"))
+    expiration = arg_to_number(args.get("expiration"))
     encode = argToBoolean(args.get("base64_encoding", False))
 
     message_content = encode_message(message_content) if encode else message_content
@@ -458,13 +471,13 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     xml_data = ET.tostring(top, encoding='unicode')
 
-    response = client.create_message_request(queue_name, xml_data, visibility_time_out, time_to_live)
+    response = client.create_message_request(queue_name, xml_data, visibility_time_out, expiration)
 
     raw_response = parse_xml_response(xml_string_response=response, tag_path="QueueMessage")
 
     message_outputs = copy.deepcopy(raw_response)[0]
 
-    convert_dict_time_format(message_outputs, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+    iso_time_format(message_outputs, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 
@@ -488,7 +501,7 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Retrieves messages from the front of the queue.
-    Retrieved messages will move to the end of the queue,and will be visible after 'TimeNextVisible' param.
+    Retrieved messages will move to the end of the queue, and will be visible after the amount of time specified in the 'TimeNextVisible' param.
     Args:
         client (Client): Azure Queue Storage API client.
         args (dict): Command arguments from XSOAR.
@@ -501,7 +514,7 @@ def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults
     queue_name = args["queue_name"]
     visibility_time_out = arg_to_number(args.get("visibility_time_out"))
 
-    if int(limit) <= 0 or int(limit) > 32:
+    if int(limit) < 1 or int(limit) > 32:
         raise Exception('Invalid limit value. Minimum value is 1, maximum value is 32')
 
     response = client.get_messages_request(queue_name, limit, visibility_time_out)  # type: ignore
@@ -512,7 +525,7 @@ def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        convert_dict_time_format(message, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+        iso_time_format(message, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 
@@ -547,7 +560,7 @@ def peek_messages_command(client: Client, args: Dict[str, Any]) -> CommandResult
     limit = args.get('limit') or '1'
     queue_name = args["queue_name"]
 
-    if int(limit) <= 0 or int(limit) > 32:
+    if int(limit) < 1 or int(limit) > 32:
         raise Exception('Invalid limit value. Minimum value is 1, maximum value is 32')
 
     response = client.peek_messages_request(limit, queue_name)
@@ -558,7 +571,7 @@ def peek_messages_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        convert_dict_time_format(message, ['ExpirationTime', 'InsertionTime'])
+        iso_time_format(message, ['ExpirationTime', 'InsertionTime'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 

@@ -218,6 +218,8 @@ def create_table_command(client: Client, args: Dict[str, Any]) -> CommandResults
     table_name = args['table_name']
 
     table_name_regex = "^[A-Za-z][A-Za-z0-9]{2,62}$"
+    # Rules for naming tables can be found here:
+    # https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model
 
     if not re.search(table_name_regex, table_name):
         raise Exception('The specified table name is invalid.')
@@ -271,7 +273,7 @@ def query_tables_command(client: Client, args: Dict[str, Any]) -> CommandResults
     """
     limit = args.get('limit') or '50'
     query_filter = args.get('filter')
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
     next_table = None
 
     readable_message = f'Tables List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
@@ -483,7 +485,7 @@ def query_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults
     query_filter = args.get('filter')
     select = args.get('select')
     limit = None if partition_key else args.get('limit') or '50'
-    page = None if partition_key else arg_to_number(args.get('page', '1'))
+    page = None if partition_key else arg_to_number(args.get('page') or '1')
     next_partition_key = None
     next_row_key = None
 

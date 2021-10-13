@@ -299,6 +299,8 @@ def create_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
     share_name = args['share_name']
 
     share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    # Rules for naming shares can be found here:
+    # https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
 
     if not re.search(share_name_regex, share_name):
         raise Exception('The specified share name is invalid.')
@@ -365,7 +367,7 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     limit = args.get('limit') or '50'
     prefix = args.get('prefix')
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
     marker = ''
     readable_message = f'Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
@@ -433,7 +435,7 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     share_name = args['share_name']
     directory_path = args.get('directory_path', '')
 
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
     marker = ''
     readable_message = f'Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 

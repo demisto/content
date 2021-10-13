@@ -2,7 +2,7 @@
     "defaultIncidentType": "Azure Storage Queue Incident",
     "description": "",
     "feed": false,
-    "id": "af445a9a-e982-47c3-8c2c-6809a79fc1ed",
+    "id": "Azure Storage Queue Classifier",
     "keyTypeMap": {},
     "name": "Azure Storage Queue Classifier",
     "propagationLabels": [

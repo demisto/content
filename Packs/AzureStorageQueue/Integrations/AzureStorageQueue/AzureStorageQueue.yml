@@ -19,14 +19,15 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: Default is 10. Maximum is 32.
+- additionalinfo: Default is 10. Maximum is 32 (due to an API limit).
   defaultvalue: '10'
   display: Maximum incidents for one fetch.
   hidden: false
   name: max_fetch
   required: false
   type: 0
-- display: The name of the Queue to fetch incidents.
+- additionalinfo: The name of the queue from which the messages will be retrieved.
+  display: Queue name
   hidden: false
   name: queue_name
   required: false
@@ -131,11 +132,11 @@ script:
       secret: false
     - default: false
       description: |-
-        Specifies the time-to-live interval for the message, in seconds.
+        Specifies the time-to-live (expiration) interval for the message, in seconds.
         the maximum time-to-live can be any positive number, as well as -1 indicating that the message does not expire.
-        Default time-to-live is 7 days.
+        Default expiration time is 7 days.
       isArray: false
-      name: time_to_live
+      name: expiration
       required: false
       secret: false
     deprecated: false
@@ -153,7 +154,9 @@ script:
       description: Message expiration time.
       type: Date
     - contextPath: AzureStorageQueue.Queue.Message.PopReceipt
-      description: Message pop receipt value.
+      description: Message pop receipt value. This value changes each time the message
+        is retrieved or updated and used to ensure that message has not been dequeued
+        by another user before deleting or updating the message.
       type: String
     - contextPath: AzureStorageQueue.Queue.Message.TimeNextVisible
       description: Message next visible time.
@@ -200,7 +203,9 @@ script:
       description: Message expiration time.
       type: Date
     - contextPath: AzureStorageQueue.Queue.Message.PopReceipt
-      description: Message pop receipt value.
+      description: Message pop receipt value. This value changes each time the message
+        is retrieved or updated and used to ensure that message has not been dequeued
+        by another user before deleting or updating the message.
       type: String
     - contextPath: AzureStorageQueue.Queue.Message.TimeNextVisible
       description: Message next visible time.
@@ -283,7 +288,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message PopReceipt parameter.
+      description: Message PopReceipt parameter. This value changes each time the
+        message is retrieved or updated and used to ensure that message has not been
+        dequeued by another user before deleting or updating the message.
       isArray: false
       name: pop_receipt
       required: true
@@ -324,7 +331,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message PopReceipt parameter.
+      description: Message PopReceipt parameter. This value changes each time the
+        message is retrieved or updated and used to ensure that message has not been
+        dequeued by another user before deleting or updating the message.
       isArray: false
       name: pop_receipt
       required: true

@@ -300,7 +300,7 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     limit = args.get('limit') or '50'
     prefix = args.get('prefix')
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
 
     marker = ''
     readable_message = f'Containers List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
@@ -369,6 +369,8 @@ def create_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
     container_name = args['container_name']
 
     container_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    # Rules for naming containers can be found here:
+    # https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
 
     if not re.search(container_name_regex, container_name):
         raise Exception('The specified container name is invalid.')
@@ -480,7 +482,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     container_name = args['container_name']
     limit = args.get('limit') or '50'
     prefix = args.get('prefix')
-    page = arg_to_number(args.get('page', '1'))
+    page = arg_to_number(args.get('page') or '1')
 
     marker = ''
     readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n ' \
