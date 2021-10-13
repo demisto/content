@@ -60,16 +60,16 @@ script:
     - name: query_name
       required: true
       description: The name of the query.
-    - name: return_file
+    - name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If set to 'false', if a query returns more than 1000 results, it
-        will not be returned as a .gz file, it will be returned as JSON  data. If
-        set to 'true' and the query results are greater than 1000, it will return
-        the .gz file (default is true).
-      defaultValue: "true"
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
+      context, instead of being returned as a .gz file. 
+      If set to 'false' and the query results are greater than 1000, it will return
+      the .gz file without extracting the results to context (default is false).
+      defaultValue: "false"
     outputs:
     - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
