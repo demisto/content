@@ -54,6 +54,10 @@
           "complex": null,
           "simple": "tenant"
         },
+        "category": {
+          "complex": null,
+          "simple": "category"
+        },
         "Saas Security Category": {
           "complex": null,
           "simple": "category"
