@@ -1,5 +1,5 @@
-commands:
 version: 2.1
+commands:
   set-instance-role-env-variable:
     description: "Sets INSTANCE_ROLE env variable into $BASH_ENV file"
     parameters:
