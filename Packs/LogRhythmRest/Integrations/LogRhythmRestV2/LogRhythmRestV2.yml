@@ -14,7 +14,7 @@ configuration:
 - displaypassword: API Token
   name: credentials
   type: 9
-  required: false
+  required: true
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
@@ -2060,7 +2060,7 @@ script:
     description: 'Returns User records based on the permissions of the currently logged in User and the specified criteria.'
     arguments:
     - name: user_ids
-      description: 'Comma separated list of user IDs.'
+      description: 'Comma separated list of person IDs.'
       required: false
       isArray: false
     - name: entity_ids
