@@ -5,6 +5,7 @@
  "dataType": "messages",
  "query": "type:mention* status:=2",
  "name": "Mentions",
+ "forceRange": true,
  "dateRange": {
   "period": {
    "byFrom": "days",
