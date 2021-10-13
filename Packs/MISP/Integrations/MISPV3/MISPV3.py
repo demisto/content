@@ -1016,6 +1016,7 @@ def event_to_human_readable(response: dict):
     return event_highlights
 
 
+
 def search_events(demisto_args: dict) -> CommandResults:
     """
     Execute a MISP search using the 'event' controller.
