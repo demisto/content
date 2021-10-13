@@ -1500,7 +1500,7 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Alarm',
         outputs_key_field='alarmId',
         outputs=alarms,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -1517,7 +1517,7 @@ def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     response = client.alarm_update_request(alarm_id, alarm_status, rbp)
     command_results = CommandResults(
         readable_output=f'Alarm {alarm_id} has been updated.',
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1530,7 +1530,7 @@ def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.alarm_add_comment_request(alarm_id, alarm_comment)
     command_results = CommandResults(
         readable_output=f'Comment added successfully to the alarm {alarm_id}.',
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1556,7 +1556,7 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_prefix='LogRhythm.AlarmHistory',
         outputs_key_field='',
         outputs=alarm_history,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -1582,7 +1582,7 @@ def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_prefix='LogRhythm.AlarmEvents',
         outputs_key_field='alarmId',
         outputs=alarm_events,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -1611,7 +1611,7 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='LogRhythm.AlarmSummary',
         outputs_key_field='alarmId',
         outputs=ec,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -1645,7 +1645,7 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=cases,
-        raw_response=cases
+        raw_response=cases,
     )
 
     return command_results
@@ -1667,7 +1667,7 @@ def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1692,7 +1692,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1711,7 +1711,7 @@ def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1738,7 +1738,7 @@ def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_prefix='LogRhythm.CaseEvidence',
         outputs_key_field='CaseID',
         outputs=ec,
-        raw_response=evidences
+        raw_response=evidences,
     )
 
     return command_results
@@ -1760,7 +1760,7 @@ def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='LogRhythm.AlarmEvidence',
         outputs_key_field='CaseID',
         outputs=ec,
-        raw_response=evidences
+        raw_response=evidences,
     )
 
     return command_results
@@ -1781,7 +1781,7 @@ def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='LogRhythm.NoteEvidence',
         outputs_key_field='',
         outputs=ec,
-        raw_response=evidences
+        raw_response=evidences,
     )
 
     return command_results
@@ -1802,7 +1802,7 @@ def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='LogRhythm.FileEvidence',
         outputs_key_field='',
         outputs=ec,
-        raw_response=evidences
+        raw_response=evidences,
     )
 
     return command_results
@@ -1814,7 +1814,7 @@ def case_evidence_delete_command(client: Client, args: Dict[str, Any]) -> Comman
 
     client.case_evidence_delete_request(case_id, evidence_number)
     command_results = CommandResults(
-        readable_output=f'Evidence deleted successfully from case {case_id}.'
+        readable_output=f'Evidence deleted successfully from case {case_id}.',
     )
 
     return command_results
@@ -1839,7 +1839,7 @@ def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1857,7 +1857,7 @@ def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs_prefix='LogRhythm.Case',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1879,7 +1879,7 @@ def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Tag',
         outputs_key_field='number',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1903,7 +1903,7 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='LogRhythm.CaseCollaborator',
         outputs_key_field='CaseID',
         outputs=ec,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1930,7 +1930,7 @@ def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> C
         outputs_prefix='LogRhythm.CaseCollaborator',
         outputs_key_field='CaseID',
         outputs=ec,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1953,7 +1953,7 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='LogRhythm.Entity',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1979,7 +1979,7 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Host',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2003,7 +2003,7 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.User',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2025,7 +2025,7 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.List',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2056,7 +2056,7 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
         outputs_prefix='LogRhythm.List',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2080,7 +2080,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
         outputs_prefix='LogRhythm.ListDetails',
         outputs_key_field='guid',
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
 
     return command_results
@@ -2106,7 +2106,7 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_prefix='LogRhythm.ListItemsAdd',
         outputs_key_field='guid',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2132,7 +2132,7 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_prefix='LogRhythm.ListItemsRemove',
         outputs_key_field='guid',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2166,7 +2166,7 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs_prefix='Logrhythm.Search.Task',
         outputs_key_field='TaskId',
         outputs=ec,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2192,7 +2192,7 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs_prefix='Logrhythm.Search.Results',
         outputs_key_field='TaskID',
         outputs=ec,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2224,7 +2224,7 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='LogRhythm.Host',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2237,7 +2237,7 @@ def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.hosts_status_update(host_id, status)
     command_results = CommandResults(
         readable_output=f'Host status updated successfully to {status}.',
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2263,7 +2263,7 @@ def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='LogRhythm.Network',
         outputs_key_field='id',
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -2296,7 +2296,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
             command_results.append(CommandResults(
                 readable_output=hr,
                 raw_response=endpoint,
-                indicator=endpoint_indicator
+                indicator=endpoint_indicator,
             ))
 
     else:
