@@ -70,7 +70,8 @@ MESSAGES: Dict[str, str] = {
     'INVALID_PAGE_NUMBER': '{} is an invalid value for page number. Page number must be between 0 and int32.',
     "INVALID_PROFILE_TYPE": "Invalid profile type {}. Valid profile types are actor, backdoor, tool.",
     "REQUIRED_INDICATOR_VALUE": "'indicator_value' must be specified if the arguments 'source' or 'category' are used.",
-    "INVALID_PRIORITY_LEVEL": "Invalid priority level {}. Valid priority level are low, medium, high."
+    "INVALID_PRIORITY_LEVEL": "Invalid priority level {}. Valid priority level are low, medium, high.",
+    "NOT_VALID_PAGE_SIZE": "{} is an invalid value for page size. Page size must be between 1 and 1000."
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -976,7 +977,7 @@ def get_data_card_summary(summary: dict) -> str:
     return data_card_summary[:-2]
 
 
-def validate_list_intel_profile_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_intel_profile_args(args: Dict[str, str]) -> Tuple[Dict[str, Any], int]:
     """
     Validate arguments for pt-list-intel-profiles, raise ValueError on invalid arguments.
 
@@ -1013,7 +1014,9 @@ def validate_list_intel_profile_args(args: Dict[str, str]) -> Dict[str, Any]:
             raise ValueError(MESSAGES["REQUIRED_INDICATOR_VALUE"])
         params["categories"] = category
 
-    return params
+    page_size = validate_page_size_args(args)
+
+    return params, page_size
 
 
 def get_human_readable_for_intel_profile_command(results: List[Dict[str, Any]]) -> str:
@@ -1130,7 +1133,7 @@ def get_human_readable_for_intel_profile_indicator_command(indicators: Dict[str,
     return hr
 
 
-def validate_list_my_asi_insights_args(args: Dict[str, Any]) -> str:
+def validate_list_my_asi_insights_args(args: Dict[str, Any]) -> Tuple[str, int]:
     """
     Validate arguments of pt-list-my-attack-surface-insights, pt-list-third-party-asi-insights command, raise ValueError
     on invalid arguments.
@@ -1147,7 +1150,9 @@ def validate_list_my_asi_insights_args(args: Dict[str, Any]) -> str:
     else:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("priority"))
 
-    return priority
+    page_size = validate_page_size_args(args)
+
+    return priority, page_size
 
 
 def prepare_context_for_my_asi_insights(response, priority_level) -> Dict[str, Any]:
@@ -1340,6 +1345,25 @@ def get_human_readable_for_my_asi_observations_command(results: Dict[str, Any]) 
                          headers=["Name", "Type", "First Seen (GMT)", "Last Seen (GMT)"],
                          removeNull=True)
     return hr
+
+
+def validate_page_size_args(args: Dict[str, str]) -> int:
+    """
+    Validate page_size argument for all command which does not supports pagination, raise ValueError on invalid
+    arguments.
+    :param args: The command arguments provided by the user.
+    :return: Validated page_size argument
+    """
+
+    page_size = arg_to_number(args.get('page_size', DEFAULT_SIZE))
+
+    if page_size is not None:
+        if page_size < 1 or page_size > 1000:
+            raise ValueError(MESSAGES["NOT_VALID_PAGE_SIZE"].format(page_size))
+    else:
+        page_size = int(DEFAULT_SIZE)
+
+    return page_size
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -2000,7 +2024,7 @@ def get_intel_profile_command(client_obj: Client, args: Dict[str, Any]) -> Comma
     :return: command output
     """
     # Retrieve arguments
-    params = validate_list_intel_profile_args(args)
+    params, page_size = validate_list_intel_profile_args(args)
 
     profile_id = args.get("id")
 
@@ -2024,6 +2048,7 @@ def get_intel_profile_command(client_obj: Client, args: Dict[str, Any]) -> Comma
     if not profiles:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format("profiles"))
 
+    profiles = profiles[:page_size]
     context_data = remove_empty_elements_for_context(profiles)
 
     hr_response = get_human_readable_for_intel_profile_command(profiles)
@@ -2079,12 +2104,14 @@ def list_my_asi_insights_command(client_obj: Client, args: Dict[str, Any]) -> Co
     :param args: it contain arguments of pt-list-my-attack-surface-insights
     :return: command output
     """
-    priority_level = validate_list_my_asi_insights_args(args)
+    priority_level, page_size = validate_list_my_asi_insights_args(args)
 
     url_suffix = f'{URL_SUFFIX["LIST_ASI_INSIGHTS"]}/{priority_level}'
 
     response = client_obj.http_request(method='GET', url_suffix=url_suffix)
 
+    insights = response.get('insights', [])
+    response['insights'] = insights[:page_size]
     context_data = prepare_context_for_my_asi_insights(response, priority_level)
     summary = {
         "name": "pt-list-my-attack-surface-insights",
@@ -2162,20 +2189,26 @@ def list_third_party_asi_command(client_obj: Client, args: Dict[str, Any]) -> Co
 
 
 @logger
-def list_my_attack_surfaces_command(client_obj: Client) -> CommandResults:
+def list_my_attack_surfaces_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface information of the individual's account.
 
     :param client_obj: client object which is used to get response from API
+    :param args: It contain arguments of pt-list-my-attack-surfaces
     :return: command output
     """
+    page_size = validate_page_size_args(args)
 
     response = client_obj.http_request(method='GET', url_suffix=URL_SUFFIX['LIST_ATTACK_SURFACE'])
+    if isinstance(response, dict):
+        response = [response]  # type: ignore
 
-    context_data = remove_empty_elements(response)
-    context_data['priority'] = context_data.pop('priorities')
+    response = response[:page_size]  # type: ignore
+    context_data = remove_empty_elements_for_context(response)
+    for data in context_data:
+        data['priority'] = data.pop('priorities')
 
-    hr_response = get_human_readable_for_attack_surface_command([response])
+    hr_response = get_human_readable_for_attack_surface_command(response)  # type: ignore
 
     return CommandResults(
         outputs_prefix='PassiveTotal.AttackSurface',
@@ -2199,10 +2232,13 @@ def list_third_party_asi_insights_command(client_obj: Client, args: Dict[str, An
     if not vendor_id:
         raise ValueError(MESSAGES['REQUIRED_ARGUMENT'].format('id'))
 
-    priority = validate_list_my_asi_insights_args(args)
+    priority, page_size = validate_list_my_asi_insights_args(args)
 
     url_suffix = URL_SUFFIX['THIRD_PARTY_ASI_INSIGHTS'].format(vendor_id, priority)
     response = client_obj.http_request(method='GET', url_suffix=url_suffix)
+
+    insights = response.get('insights', [])
+    response['insights'] = insights[:page_size]
 
     context_data_out = prepare_context_for_my_asi_insights(response, priority)
     context_data_out.pop("priorityLevel")
@@ -2647,7 +2683,8 @@ def main() -> None:
         'pt-list-third-party-attack-surface-assets': list_third_party_asi_assets_command,
         'pt-list-third-party-attack-surface-vulnerable-components': list_third_party_asi_vulnerable_components_command,
         'pt-list-third-party-attack-surface-vulnerabilities': list_third_party_attack_surface_vulnerabilities_command,
-        'pt-list-third-party-attack-surface-observations': list_third_party_asi_observations_command
+        'pt-list-third-party-attack-surface-observations': list_third_party_asi_observations_command,
+        'pt-list-my-attack-surfaces': list_my_attack_surfaces_command
     }
 
     command = demisto.command()
@@ -2673,9 +2710,6 @@ def main() -> None:
         elif command in commands:
             args = {key: value.strip() for key, value in demisto.args().items()}
             return_results(commands[command](client, args))
-
-        elif command == 'pt-list-my-attack-surfaces':
-            return_results(list_my_attack_surfaces_command(client))
 
     # Log exceptions
     except Exception as e:

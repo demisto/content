@@ -1884,6 +1884,7 @@ Retrieves the list of all profiles.
 | indicator_value | Specify the indicator value to retrieve the profiles containing the given indicator.<br/><br/>Note: To retrieve the list of indicators, execute the "pt-list-intel-profile-indicators" command.<br/>When both indicator_value and query are provided, higher priority will be given to indicator_value. | Optional | 
 | source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
 | category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -2062,6 +2063,7 @@ Retrieves the attack surface insight  information of the individual's account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required | 
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -2142,7 +2144,11 @@ Retrieves the attack surface information of the individual's account.
 `pt-list-my-attack-surfaces`
 #### Input
 
-There are no input arguments for this command.
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
+
 
 #### Context Output
 
@@ -2309,6 +2315,7 @@ Retrieves the attack surface insight information of the given third-party accoun
 | --- | --- | --- |
 | id | Specify the vendor ID to retrieve the third-party insights information.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
 | priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required | 
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
 
 
 #### Context Output

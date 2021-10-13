@@ -1716,6 +1716,16 @@ script:
       - network
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves the list of all profiles.
     execution: false
@@ -1878,6 +1888,16 @@ script:
       - low
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves the attack surface insight  information of the individual's
       account.
@@ -1917,7 +1937,18 @@ script:
     - contextPath: PassiveTotal.Insight.insight.segmentBy
       description: Segment by of the insight.
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the attack surface information of the individual's account.
     execution: false
     name: pt-list-my-attack-surfaces
@@ -2039,6 +2070,16 @@ script:
       - medium
       - low
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Maximum number of results to return per page.
+
+        Note: The minimum value supported is 1 and maximum value supported is 1000.
+      isArray: false
+      name: page_size
+      required: false
       secret: false
     deprecated: false
     description: Retrieves the attack surface insight information of the given third-party

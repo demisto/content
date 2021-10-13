@@ -1638,7 +1638,7 @@ def test_list_my_attack_surfaces_command_success(request_mocker, client):
     request_mocker.return_value = dummy_response
 
     # Execute
-    command_response = list_my_attack_surfaces_command(client)
+    command_response = list_my_attack_surfaces_command(client, {})
 
     # Assert
     assert command_response.outputs_prefix == 'PassiveTotal.AttackSurface'
@@ -1646,6 +1646,17 @@ def test_list_my_attack_surfaces_command_success(request_mocker, client):
     assert command_response.readable_output == readable_output
     assert command_response.raw_response == dummy_response
     assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_my_attack_surface_invalid_args)
+def test_list_my_attack_surfaces_command_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-my-attack-surfaces command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_my_attack_surfaces_command
+    with pytest.raises(ValueError) as de:
+        list_my_attack_surfaces_command(client, args)
+    assert str(de.value) == err_msg
 
 
 @patch('PassiveTotal_v2.Client.http_request')
@@ -1667,7 +1678,7 @@ def test_list_my_attack_surfaces_command_when_object_not_present_success(request
     request_mocker.return_value = dummy_response
 
     # Execute
-    command_response = list_my_attack_surfaces_command(client)
+    command_response = list_my_attack_surfaces_command(client, {})
 
     # Assert
     assert command_response.outputs_prefix == 'PassiveTotal.AttackSurface'
@@ -1693,14 +1704,14 @@ def test_list_third_party_asi_command_success(request_mocker, client):
     with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
         readable_output = f.read()
 
-    request_mocker.return_value = dummy_response
+    request_mocker.return_value = dummy_response[0]
 
     # Execute
     command_response = list_third_party_asi_command(client, {"id": "88256"})
 
     # Assert
     assert command_response.readable_output == readable_output
-    assert command_response.raw_response == dummy_response
+    assert command_response.raw_response == dummy_response[0]
     assert command_response.outputs == dummy_context
 
 
@@ -1720,14 +1731,14 @@ def test_list_third_party_asi_command_when_object_not_present_success(request_mo
     with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
         readable_output = f.read()
 
-    request_mocker.return_value = dummy_response
+    request_mocker.return_value = dummy_response[0]
 
     # Execute
     command_response = list_third_party_asi_command(client, {"id": "88256", "page_size": 1})
 
     # Assert
     assert command_response.readable_output == readable_output
-    assert command_response.raw_response == dummy_response
+    assert command_response.raw_response == dummy_response[0]
     assert command_response.outputs == dummy_context
 
 

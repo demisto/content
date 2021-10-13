@@ -7,7 +7,8 @@ MESSAGES = {
     "INVALID_PROFILE_TYPE": "Invalid profile type {}. Valid profile types are actor, backdoor, tool.",
     "REQUIRED_INDICATOR_VALUE": "'indicator_value' must be specified if the arguments 'source' or 'category' are used.",
     "REQUIRED_ARGUMENT": "Invalid argument value. {} is a required argument.",
-    "INVALID_PRIORITY_LEVEL": "Invalid priority level {}. Valid priority level are low, medium, high."
+    "INVALID_PRIORITY_LEVEL": "Invalid priority level {}. Valid priority level are low, medium, high.",
+    "NOT_VALID_PAGE_SIZE": "{} is an invalid value for page size. Page size must be between 1 and 1000."
 }
 
 intel_profile_indicator_invalid_args = [
@@ -25,11 +26,15 @@ list_intel_profile_invalid_args = [
     ({"source": "osint"}, MESSAGES["REQUIRED_INDICATOR_VALUE"]),
     ({"indicator_value": "abc.com", "source": "dummy"}, MESSAGES['INVALID_SOURCE'].format("dummy")),
     ({"category": "osint"}, MESSAGES["REQUIRED_INDICATOR_VALUE"]),
+    ({"page_size": -5}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(-5)),
+    ({"page_size": 5000}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(5000))
 ]
 
 list_asi_insights_invalid_args = [
     ({"priority": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("priority")),
     ({"priority": "dummy"}, MESSAGES["INVALID_PRIORITY_LEVEL"].format("dummy")),
+    ({"priority": "low", "page_size": -5}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(-5)),
+    ({"priority": "low", "page_size": 5000}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(5000))
 ]
 
 list_asi_assets_invalid_args = [
@@ -64,6 +69,8 @@ list_third_party_asi_insights_invalid_args = [
     ({"id": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("id")),
     ({"id": 88256, "priority": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("priority")),
     ({"id": 88256, "priority": "dummy"}, MESSAGES["INVALID_PRIORITY_LEVEL"].format("dummy")),
+    ({"id": 88256, "priority": "low", "page_size": -5}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(-5)),
+    ({"id": 88256, "priority": "low", "page_size": 5000}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(5000))
 ]
 
 list_asi_observation_invalid_args = [
@@ -106,4 +113,9 @@ list_third_party_asi_observation_invalid_args = [
     ({"id": 45998, "cve_id": "CVE-123", "page_number": -1}, MESSAGES['INVALID_PAGE_NUMBER'].format(-1)),
     ({"id": 45998, "cve_id": "CVE-123", "page_number": 12345678901234},
      MESSAGES['INVALID_PAGE_NUMBER'].format(12345678901234))
+]
+
+list_my_attack_surface_invalid_args = [
+    ({"page_size": -5}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(-5)),
+    ({"page_size": 5000}, MESSAGES["NOT_VALID_PAGE_SIZE"].format(5000))
 ]
