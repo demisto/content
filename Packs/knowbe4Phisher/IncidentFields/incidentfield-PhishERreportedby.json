@@ -1,0 +1,31 @@
+{
+    "id": "incident_phisherreportedby",
+    "version": -1,
+    "modified": "2021-08-16T16:34:24.441413979Z",
+    "name": "PhishER Reported By",
+    "ownerOnly": false,
+    "description": "The person who reported the message.",
+    "cliName": "phisherreportedby",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "PhishER"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
