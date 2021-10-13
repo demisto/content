@@ -236,4 +236,4 @@ outputs:
   description: A1000 report
 tests:
 - ReversingLabsA1000Test
-fromversion: 5.0.0
+fromversion: 6.0.0

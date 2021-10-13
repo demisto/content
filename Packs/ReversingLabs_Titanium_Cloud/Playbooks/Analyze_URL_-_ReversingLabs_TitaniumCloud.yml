@@ -267,4 +267,4 @@ outputs:
   description: Report in JSON
 tests:
 - ReversingLabsTCTest
-fromversion: 5.0.0
+fromversion: 6.0.0
