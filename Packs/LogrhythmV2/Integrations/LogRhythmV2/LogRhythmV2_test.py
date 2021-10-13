@@ -39,15 +39,15 @@ SEARCH_QUERY_REQUEST_DATA = {"maxMsgsToQuery": 60, "logCacheSize": 10000, "query
                                      {"filterItemType": 1, "fieldOperator": 1, "filterMode": 1,
                                       "filterGroupOperator": 0, "filterItems": [{"filterItemType": 0,
                                                                                  "fieldOperator": 1, "filterMode": 1,
+                                                                                 "values":
+                                                                                     [{"filterType": 9, "valueType": 2,
+                                                                                       "value": 1000633}]},
+                                                                                {"filterItemType": 0,
+                                                                                 "fieldOperator": 1, "filterMode": 1,
                                                                                  "values": [{"filterType": 23,
                                                                                              "valueType": 4, "value":
                                                                                                  {"value": "host1",
                                                                                                   "matchType": 2}}]},
-                                                                                {"filterItemType": 0,
-                                                                                 "fieldOperator": 1, "filterMode": 1,
-                                                                                 "values":
-                                                                                     [{"filterType": 9, "valueType": 2,
-                                                                                       "value": 1000633}]},
                                                                                 {"filterItemType": 0,
                                                                                  "fieldOperator": 1,
                                                                                  "filterMode": 1, "values":

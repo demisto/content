@@ -44,6 +44,19 @@ CASE_STATUS = {'Created': 1,
                'Mitigated': 4,
                'Resolved': 5}
 
+QUERY_TYPES_MAP = {'host_name': {'filter_type': 23, 'value_type': 4},
+                   'entity_id': {'filter_type': 136, 'value_type': 2},
+                   'source_type': {'filter_type': 9, 'value_type': 2},
+                   'username': {'filter_type': 43, 'value_type': 4},
+                   'subject': {'filter_type': 33, 'value_type': 4},
+                   'sender': {'filter_type': 31, 'value_type': 4},
+                   'recipient': {'filter_type': 32, 'value_type': 4},
+                   'hash_': {'filter_type': 138, 'value_type': 4},
+                   'url': {'filter_type': 42, 'value_type': 4},
+                   'process_name': {'filter_type': 41, 'value_type': 4},
+                   'object_': {'filter_type': 34, 'value_type': 4},
+                   'ipaddress': {'filter_type': 17, 'value_type': 5}}
+
 SOURCE_TYPE_MAP = {
     "API_-_AWS_CloudTrail": 1000598,
     "API_-_AWS_CloudWatch_Alarm": 1000607,
@@ -1331,41 +1344,18 @@ class Client(BaseClient):
         # Create filter query
         query = []
 
-        if host_name:
-            query.append(self.generate_query_item(23, 4, str(host_name)))
+        arguments = locals().copy()
 
-        if entity_id:
-            query.append(self.generate_query_item(136, 2, entity_id))
+        for field_key, field_val in arguments.items():
+            if field_val and QUERY_TYPES_MAP.get(field_key):
+                query_type = QUERY_TYPES_MAP[field_key]
+                filter_type = query_type.get('filter_type')
+                value_type = query_type.get('value_type')
 
-        if source_type and source_type != "all":
-            query.append(self.generate_query_item(9, 2, SOURCE_TYPE_MAP[source_type]))
-
-        if username:
-            query.append(self.generate_query_item(43, 4, str(username)))
-
-        if subject:
-            query.append(self.generate_query_item(33, 4, str(subject)))
-
-        if sender:
-            query.append(self.generate_query_item(31, 4, str(sender)))
-
-        if recipient:
-            query.append(self.generate_query_item(32, 4, str(recipient)))
-
-        if hash_:
-            query.append(self.generate_query_item(138, 4, str(hash_)))
-
-        if url:
-            query.append(self.generate_query_item(42, 4, str(url)))
-
-        if process_name:
-            query.append(self.generate_query_item(41, 4, str(process_name)))
-
-        if object_:
-            query.append(self.generate_query_item(34, 4, str(object_)))
-
-        if ipaddress:
-            query.append(self.generate_query_item(17, 5, ipaddress))
+                if field_key == 'source_type' and field_val != 'all':
+                    query.append(self.generate_query_item(filter_type, value_type, SOURCE_TYPE_MAP[field_val]))
+                else:
+                    query.append(self.generate_query_item(filter_type, value_type, field_val))
 
         # Search and get TaskID
         data = {
