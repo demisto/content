@@ -491,7 +491,6 @@ def main():
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
-    # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
