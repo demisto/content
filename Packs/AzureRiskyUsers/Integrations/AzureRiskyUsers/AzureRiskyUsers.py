@@ -120,6 +120,19 @@ def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> 
         return None
 
 
+def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_field: str,
+                   readable_output: str) -> Union[CommandResults, str]:
+        if not next_link:
+            return CommandResults(outputs_prefix=outputs_prefix,
+                                  outputs_key_field=outputs_key_field,
+                                  outputs=[],
+                                  readable_output=readable_output,
+                                  raw_response=[])
+        else:
+            parsed_url = urlparse(next_link)
+            return parse_qs(parsed_url.query)['$skiptoken'][0]
+
+
 def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     List all risky users.
@@ -142,16 +155,13 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                                                        risk_level,
                                                        offset)
         next_link = raw_response.get('@odata.nextLink')
-        if not next_link:
-            return CommandResults(outputs_prefix='AzureRiskyUsers.RiskyUser',
-                                  outputs_key_field='id',
-                                  outputs=[],
-                                  readable_output=f'Risky Users List\nCurrent page size: {limit}\n'
-                                                  f'Showing page {page} out others that may exist',
-                                  raw_response=[])
-        else:
-            parsed_url = urlparse(next_link)
-            skip_token = parse_qs(parsed_url.query)['$skiptoken'][0]
+        skip_token = get_skip_token(next_link=next_link,
+                                    outputs_prefix='AzureRiskyUsers.RiskyUser',
+                                    outputs_key_field='id',
+                                    readable_output=f'Risky Users List\nCurrent page size: {limit}\n'
+                                                    f'Showing page {page} out others that may exist')
+        if type(skip_token) != str:
+            return skip_token
 
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
@@ -237,15 +247,13 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                                                            offset)
 
         next_link = raw_response.get('@odata.nextLink')
-        if not next_link:
-            return CommandResults(outputs_prefix='AzureRiskyUsers.RiskDetection',
-                                  outputs_key_field='id',
-                                  outputs=[],
-                                  readable_output=readable_message,
-                                  raw_response=[])
-        else:
-            parsed_url = urlparse(next_link)
-            skip_token = parse_qs(parsed_url.query)['$skiptoken'][0]
+        skip_token = get_skip_token(next_link=next_link,
+                                    outputs_prefix='AzureRiskyUsers.RiskDetection',
+                                    outputs_key_field='id',
+                                    readable_output=f'Risk Detections List\nCurrent page size: '
+                                    f'{limit}\nShowing page {page} out others that may exist')
+        if type(skip_token) != str:
+            return skip_token
 
     raw_response = client.risk_detections_list_request(risk_state,
                                                        risk_level,

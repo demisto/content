@@ -130,3 +130,23 @@ def test_build_query_filter() -> None:
     from AzureRiskyUsers import build_query_filter
     result = build_query_filter(risk_state='dismissed', risk_level='medium')
     assert result == "riskState eq 'dismissed' and riskLevel eq 'medium'"
+
+
+def test_get_skip_token() -> None:
+    """
+    Scenario: Get skip token.
+    Given:
+     - Provided valid arguments.
+    When:
+     - get_skip_token function is called.
+    Then:
+     - Ensure results are valid.
+    """
+    from AzureRiskyUsers import get_skip_token
+    result = get_skip_token(next_link=None,
+                            outputs_prefix='AzureRiskyUsers.RiskyUser',
+                            outputs_key_field='id',
+                            readable_output='test')
+    assert result.outputs_prefix == 'AzureRiskyUsers.RiskyUser'
+    assert result.outputs_key_field == 'id'
+    assert result.readable_output == 'test'
