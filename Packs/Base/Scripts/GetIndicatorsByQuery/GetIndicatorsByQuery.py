@@ -108,7 +108,7 @@ def parse_ioc(ioc):
     return ioc
 
 
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, from_date:str, total_fetched: int = 0,
+def find_indicators_with_limit_loop(indicator_query: str, limit: int, from_date: str, total_fetched: int = 0,
                                     next_page: int = 0, last_found_len: int = PAGE_SIZE):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
