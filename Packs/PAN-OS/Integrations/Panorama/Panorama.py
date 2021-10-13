@@ -586,7 +586,7 @@ def run_polling_command(args: dict=None, cmd: str=None, search_function: Callabl
                 status_output['Message'] = details
 
                 status_warnings = []
-                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings', None):
+                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings'):
                     status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
                         'line',
                         [])
