@@ -39,6 +39,7 @@ def demisto_mocker(mocker):
                                                          'state': 'Open',
                                                          'severity': 'High,Low',
                                                          'status': 'Assigned',
+                                                         'mirror_direction': 'Incoming And Outgoing'
                                                          })
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': '2021-08-25T13:51:03.247Z'})
     mocker.patch.object(demisto, 'incidents')
@@ -130,6 +131,7 @@ def test_convert_to_xsoar_incident_without_occurred():
     assert xsoar_incident == expected
 
 
+@freeze_time("2021-08-24 18:04:00")
 def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
     """
     Configures mocker instance, requests_mock, uses the demisto_mocker fixture.
