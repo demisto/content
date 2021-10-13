@@ -1145,11 +1145,6 @@
             "nightly": true
         },
         {
-            "integrations": "Devo",
-            "playbookID": "Devo test",
-            "timeout": 500
-        },
-        {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
                 "Rasterize",
@@ -2238,6 +2233,10 @@
         {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "playbookID": "test_manageOOOUsers",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
