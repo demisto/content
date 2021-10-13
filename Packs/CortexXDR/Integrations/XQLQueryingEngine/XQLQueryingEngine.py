@@ -622,7 +622,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
-    return_file = args.get('return_file', 'true') == 'true'
+    parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     integration_context = get_integration_context()
     command_data = integration_context.get(query_id, args)
     command_name = command_data.get('command_name', demisto.command())
@@ -635,13 +635,15 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results - a file is returned
+    # if there are more then 1000 results
     if file_data:
-        if return_file:
+        if not parse_result_file_to_context:
+            #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
             remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:
+            # Parse the results to context:
             file_data = gzip.decompress(file_data).decode()
             outputs['results'] = [json.loads(line) for line in file_data.split("\n") if len(line) > 0]
 
