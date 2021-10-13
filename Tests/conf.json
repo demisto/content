@@ -4563,9 +4563,9 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
-            "integrations": "Logrhythm v2",
-            "playbookID": "LogrhythmV2-test"
-        }
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
+        },
     ],
     "skipped_tests": {
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
