@@ -1,5 +1,4 @@
 import email.utils
-from datetime import datetime
 from time import mktime
 
 import feedparser
