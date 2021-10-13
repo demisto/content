@@ -916,6 +916,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
+  subtype: python2
   type: python
 fromversion: 5.0.0
